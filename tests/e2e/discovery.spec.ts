@@ -43,7 +43,15 @@ test("eligible user completes persistent Discovery without invented results", as
       name: "Continue Discovery",
     });
     if ((await continueDiscovery.count()) === 1) {
-      await continueDiscovery.click();
+      await Promise.all([
+        page.waitForURL(
+          (url) =>
+            /^\/onboarding\/discovery\/[^/]+$/.test(url.pathname) &&
+            !url.pathname.endsWith("/review") &&
+            !url.pathname.endsWith("/complete"),
+        ),
+        continueDiscovery.click(),
+      ]);
       continue;
     }
     const reviewAnswers = page.getByRole("button", {
