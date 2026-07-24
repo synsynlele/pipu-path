@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+:root {
+  --color-ink-950: #100f0c;
+  --color-ink-900: #191712;
+  --color-ink-800: #242018;
+  --color-ink-700: #332d22;
+  --color-sand-50: #fbf9f3;
+  --color-sand-100: #f4efe3;
+  --color-sand-200: #e8deca;
+  --color-gold-300: #e6c976;
+  --color-gold-400: #d4ad45;
+  --color-gold-500: #b98d27;
+  --color-success: #69a77c;
+  --color-danger: #d56a61;
+  --background: var(--color-ink-950);
+  --foreground: var(--color-sand-50);
+  --muted: #b9b09d;
+  --border: rgb(230 201 118 / 20%);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.5rem;
+  --shadow-focus: 0 0 0 3px rgb(230 201 118 / 35%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-gold: var(--color-gold-400);
+  --color-gold-light: var(--color-gold-300);
+  --color-panel: var(--color-ink-900);
+  --color-panel-raised: var(--color-ink-800);
+  --color-border: var(--border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(
+      circle at 85% -15%,
+      rgb(212 173 69 / 12%),
+      transparent 34rem
+    ),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  border-radius: var(--radius-sm);
+  outline: 2px solid var(--color-gold-300);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--color-gold-400);
+  color: var(--color-ink-950);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
