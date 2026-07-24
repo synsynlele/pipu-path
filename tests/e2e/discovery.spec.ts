@@ -49,6 +49,7 @@ test("eligible user completes persistent Discovery without invented results", as
             /^\/onboarding\/discovery\/[^/]+$/.test(url.pathname) &&
             !url.pathname.endsWith("/review") &&
             !url.pathname.endsWith("/complete"),
+          { waitUntil: "commit" },
         ),
         continueDiscovery.click(),
       ]);
@@ -59,7 +60,9 @@ test("eligible user completes persistent Discovery without invented results", as
     });
     if ((await reviewAnswers.count()) === 1) {
       await Promise.all([
-        page.waitForURL(/\/onboarding\/discovery\/review/),
+        page.waitForURL(/\/onboarding\/discovery\/review/, {
+          waitUntil: "commit",
+        }),
         reviewAnswers.click(),
       ]);
       continue;
@@ -72,7 +75,9 @@ test("eligible user completes persistent Discovery without invented results", as
       if (await skip.count()) {
         const previousUrl = page.url();
         await Promise.all([
-          page.waitForURL((url) => url.toString() !== previousUrl),
+          page.waitForURL((url) => url.toString() !== previousUrl, {
+            waitUntil: "commit",
+          }),
           skip.click(),
         ]);
         await assertNoDiscoveryError(page);
@@ -82,7 +87,9 @@ test("eligible user completes persistent Discovery without invented results", as
         );
         const previousUrl = page.url();
         await Promise.all([
-          page.waitForURL((url) => url.toString() !== previousUrl),
+          page.waitForURL((url) => url.toString() !== previousUrl, {
+            waitUntil: "commit",
+          }),
           page.getByRole("button", { name: "Save and continue" }).click(),
         ]);
         await assertNoDiscoveryError(page);
@@ -91,7 +98,9 @@ test("eligible user completes persistent Discovery without invented results", as
       await radios.first().check();
       const previousUrl = page.url();
       await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl),
+        page.waitForURL((url) => url.toString() !== previousUrl, {
+          waitUntil: "commit",
+        }),
         page.getByRole("button", { name: "Save and continue" }).click(),
       ]);
       await assertNoDiscoveryError(page);
@@ -99,7 +108,9 @@ test("eligible user completes persistent Discovery without invented results", as
       await checkboxes.first().check();
       const previousUrl = page.url();
       await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl),
+        page.waitForURL((url) => url.toString() !== previousUrl, {
+          waitUntil: "commit",
+        }),
         page.getByRole("button", { name: "Save and continue" }).click(),
       ]);
       await assertNoDiscoveryError(page);
