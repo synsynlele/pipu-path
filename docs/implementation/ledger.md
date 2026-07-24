@@ -56,3 +56,17 @@ persistence, consent, or onboarding implementation.
 - Production build and dependency audit passed.
 
 Status: PARTIAL. Stage 3 remains locked.
+
+### Stage 2.6 continuation evidence
+
+- Both approved inbox aliases confirmed successfully.
+- Authenticated API suite passed 19/19 assertions.
+- Recovery token, callback, password update and invalid-token behavior passed.
+- Actual recovery delivery hit the hosted email quota after signup delivery.
+- Google initiation passed; interactive callback completion remains blocked.
+- Three migrations replayed successfully from an empty transaction.
+- HTTP route smoke, production build, audit and secret scan passed.
+- Browser installation failed because the permitted download returned an empty
+  artifact; browser E2E remains unexecuted.
+
+Status: BLOCKED. No Stage 3 work is authorised.
