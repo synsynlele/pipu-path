@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   parseEnvironment,
   readPublicEnvironment,
@@ -6,6 +6,10 @@ import {
 } from "./env";
 
 describe("parseEnvironment", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("provides safe Stage 1 defaults", () => {
     expect(parseEnvironment({})).toEqual({
       APP_ENV: "development",
@@ -52,5 +56,17 @@ describe("parseEnvironment", () => {
     expect(readPublicEnvironment({}).NEXT_PUBLIC_APP_URL).toBe(
       "http://localhost:3000",
     );
+  });
+
+  it("reads public values through explicit Next.js process references", () => {
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://staging.example.com");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "public-key");
+
+    expect(requireSupabasePublicEnvironment()).toEqual({
+      appUrl: "https://staging.example.com",
+      url: "https://example.supabase.co",
+      anonKey: "public-key",
+    });
   });
 });

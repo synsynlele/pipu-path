@@ -70,3 +70,18 @@ Status: PARTIAL. Stage 3 remains locked.
   artifact; browser E2E remains unexecuted.
 
 Status: BLOCKED. No Stage 3 work is authorised.
+
+### Stage 2.6 deployment verification
+
+- Published the clean three-commit repository to private GitHub.
+- Deployed the application to `https://pipu-path.vercel.app` with staging-only
+  Supabase infrastructure.
+- Verified public routes and anonymous protected-route redirects over HTTPS.
+- Browser verification exposed dynamic `process.env` access that prevented
+  Next.js from inlining `NEXT_PUBLIC_*` values.
+- Replaced the dynamic browser lookup with explicit build-time references and
+  added regression coverage.
+- Local validation and dependency audit pass after the correction.
+
+Status: BLOCKED pending deployment verification, OAuth callback, recovery
+delivery and the complete browser matrix.

@@ -16,6 +16,8 @@
 | Google OAuth initiation/config   | Passed; redirects to `accounts.google.com`                   |
 | Google OAuth completion          | Blocked by unavailable interactive browser                   |
 | Browser E2E                      | Browser download blocked in current runtime                  |
+| Deployed anonymous browser       | Public routes and protected-route redirects passed           |
+| Deployed OAuth client config     | Defect found and repaired; redeployment verification pending |
 | HTTP route smoke                 | Public `200`; protected `307`; invalid callback fails closed |
 | Production build                 | Passed                                                       |
 | Dependency audit                 | Zero vulnerabilities                                         |

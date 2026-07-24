@@ -6,7 +6,8 @@
 
 **Completed stages:** Stage 0, Stage 1
 
-**Infrastructure:** Supabase staging `kvjcswnmhwegpakbtvlh`
+**Infrastructure:** Supabase staging `kvjcswnmhwegpakbtvlh`; Vercel staging
+`https://pipu-path.vercel.app`
 
 **Current Git baseline:** `63c1e93727dc5a79d5b36aca541ef30273cdfc18`
 
@@ -26,6 +27,11 @@ Inherited Supabase default table grants allowed protected-column updates and
 default function grants exposed security-definer entry points. Append-only
 migrations `202607240002` and `202607240003` repaired both findings. The
 repeatable RLS matrix now passes.
+
+The first Vercel browser verification found that dynamic access to the
+`process.env` object prevented Next.js from inlining the public Supabase
+configuration. Public variables now use explicit build-time references and the
+regression is covered by a unit test.
 
 ## Technical debt and blockers
 
