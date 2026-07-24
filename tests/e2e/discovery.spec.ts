@@ -95,7 +95,7 @@ test("eligible user completes persistent Discovery without invented results", as
         await assertNoDiscoveryError(page);
       }
     } else if (await radios.count()) {
-      await radios.first().check();
+      await radios.first().check({ force: true });
       const previousUrl = page.url();
       await Promise.all([
         page.waitForURL((url) => url.toString() !== previousUrl, {
