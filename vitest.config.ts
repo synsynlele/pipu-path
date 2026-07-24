@@ -29,6 +29,9 @@ export default defineConfig({
         "src/modules/identity/application/form-state.ts",
         "src/modules/identity/infrastructure/identity-dal.ts",
         "src/modules/identity/ui/**",
+        "src/modules/discovery/application/discovery-actions.ts",
+        "src/modules/discovery/infrastructure/discovery-dal.ts",
+        "src/modules/discovery/ui/**",
       ],
       thresholds: {
         lines: 80,

@@ -1,4 +1,5 @@
 import { BrandMark } from "@/components/brand/brand-mark";
+import Link from "next/link";
 
 const futureNavigation = [
   "Journey",
@@ -14,7 +15,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex h-20 items-center justify-between px-5 lg:px-7">
           <BrandMark />
           <span className="border-border text-muted rounded-full border px-2 py-1 font-mono text-[0.65rem] uppercase">
-            Foundation
+            Discovery
           </span>
         </div>
         <nav
@@ -22,9 +23,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="hidden px-4 lg:block"
         >
           <p className="text-muted px-3 py-4 font-mono text-[0.65rem] tracking-[0.16em] uppercase">
-            Product areas begin after Stage 1
+            Your path
           </p>
           <ul className="space-y-1">
+            <li>
+              <Link
+                href="/onboarding/discovery"
+                className="hover:bg-gold/5 block rounded-xl px-3 py-2.5 text-sm"
+              >
+                Discovery
+              </Link>
+            </li>
             {futureNavigation.map((item) => (
               <li
                 key={item}
@@ -38,7 +47,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
       <div>
         <header className="border-border flex h-20 items-center border-b px-5 sm:px-8">
-          <p className="text-muted text-sm">Application shell</p>
+          <p className="text-muted text-sm">
+            Evidence first. Interpretation comes later.
+          </p>
         </header>
         {children}
       </div>

@@ -14,6 +14,314 @@ export type Database = {
   };
   public: {
     Tables: {
+      discovery_audit_events: {
+        Row: {
+          error_code: string | null;
+          id: number;
+          metadata: Json;
+          occurred_at: string;
+          operation: string;
+          result: string;
+          session_id: string | null;
+          user_id: string | null;
+        };
+        Insert: {
+          error_code?: string | null;
+          id?: never;
+          metadata?: Json;
+          occurred_at?: string;
+          operation: string;
+          result?: string;
+          session_id?: string | null;
+          user_id?: string | null;
+        };
+        Update: {
+          error_code?: string | null;
+          id?: never;
+          metadata?: Json;
+          occurred_at?: string;
+          operation?: string;
+          result?: string;
+          session_id?: string | null;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "discovery_audit_events_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "discovery_sessions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      discovery_question_sets: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: string;
+          intended_age_bands: Database["public"]["Enums"]["age_band"][];
+          intended_life_stages: string[];
+          published_at: string | null;
+          retired_at: string | null;
+          stable_key: string;
+          status: Database["public"]["Enums"]["discovery_question_set_status"];
+          title: string;
+          updated_at: string;
+          version: number;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: string;
+          intended_age_bands: Database["public"]["Enums"]["age_band"][];
+          intended_life_stages?: string[];
+          published_at?: string | null;
+          retired_at?: string | null;
+          stable_key: string;
+          status?: Database["public"]["Enums"]["discovery_question_set_status"];
+          title: string;
+          updated_at?: string;
+          version: number;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: string;
+          intended_age_bands?: Database["public"]["Enums"]["age_band"][];
+          intended_life_stages?: string[];
+          published_at?: string | null;
+          retired_at?: string | null;
+          stable_key?: string;
+          status?: Database["public"]["Enums"]["discovery_question_set_status"];
+          title?: string;
+          updated_at?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
+      discovery_questions: {
+        Row: {
+          conditional_rule: Json | null;
+          created_at: string;
+          display_order: number;
+          eligible_age_bands: Database["public"]["Enums"]["age_band"][];
+          id: string;
+          is_active: boolean;
+          is_required: boolean;
+          max_scale: number | null;
+          max_selections: number | null;
+          max_text_length: number | null;
+          min_scale: number | null;
+          min_selections: number | null;
+          option_definitions: Json;
+          prompt: string;
+          question_set_id: string;
+          response_type: Database["public"]["Enums"]["discovery_response_type"];
+          section_key: string;
+          section_title: string;
+          sensitivity: Database["public"]["Enums"]["discovery_sensitivity"];
+          stable_key: string;
+          supporting_text: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          conditional_rule?: Json | null;
+          created_at?: string;
+          display_order: number;
+          eligible_age_bands: Database["public"]["Enums"]["age_band"][];
+          id?: string;
+          is_active?: boolean;
+          is_required?: boolean;
+          max_scale?: number | null;
+          max_selections?: number | null;
+          max_text_length?: number | null;
+          min_scale?: number | null;
+          min_selections?: number | null;
+          option_definitions?: Json;
+          prompt: string;
+          question_set_id: string;
+          response_type: Database["public"]["Enums"]["discovery_response_type"];
+          section_key: string;
+          section_title: string;
+          sensitivity?: Database["public"]["Enums"]["discovery_sensitivity"];
+          stable_key: string;
+          supporting_text?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          conditional_rule?: Json | null;
+          created_at?: string;
+          display_order?: number;
+          eligible_age_bands?: Database["public"]["Enums"]["age_band"][];
+          id?: string;
+          is_active?: boolean;
+          is_required?: boolean;
+          max_scale?: number | null;
+          max_selections?: number | null;
+          max_text_length?: number | null;
+          min_scale?: number | null;
+          min_selections?: number | null;
+          option_definitions?: Json;
+          prompt?: string;
+          question_set_id?: string;
+          response_type?: Database["public"]["Enums"]["discovery_response_type"];
+          section_key?: string;
+          section_title?: string;
+          sensitivity?: Database["public"]["Enums"]["discovery_sensitivity"];
+          stable_key?: string;
+          supporting_text?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "discovery_questions_question_set_id_fkey";
+            columns: ["question_set_id"];
+            isOneToOne: false;
+            referencedRelation: "discovery_question_sets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      discovery_responses: {
+        Row: {
+          created_at: string;
+          id: string;
+          numeric_response: number | null;
+          question_id: string;
+          question_key: string;
+          response_type: Database["public"]["Enums"]["discovery_response_type"];
+          selected_options: string[] | null;
+          sensitivity: Database["public"]["Enums"]["discovery_sensitivity"];
+          session_id: string;
+          skipped: boolean;
+          text_response: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          numeric_response?: number | null;
+          question_id: string;
+          question_key: string;
+          response_type: Database["public"]["Enums"]["discovery_response_type"];
+          selected_options?: string[] | null;
+          sensitivity: Database["public"]["Enums"]["discovery_sensitivity"];
+          session_id: string;
+          skipped?: boolean;
+          text_response?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          numeric_response?: number | null;
+          question_id?: string;
+          question_key?: string;
+          response_type?: Database["public"]["Enums"]["discovery_response_type"];
+          selected_options?: string[] | null;
+          sensitivity?: Database["public"]["Enums"]["discovery_sensitivity"];
+          session_id?: string;
+          skipped?: boolean;
+          text_response?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "discovery_responses_question_id_fkey";
+            columns: ["question_id"];
+            isOneToOne: false;
+            referencedRelation: "discovery_questions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "discovery_responses_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "discovery_sessions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "discovery_responses_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      discovery_sessions: {
+        Row: {
+          completed_at: string | null;
+          created_at: string;
+          current_question_key: string | null;
+          current_section_key: string | null;
+          id: string;
+          last_resumed_at: string;
+          progress_percent: number;
+          question_set_id: string;
+          question_set_version: number;
+          stage_4_processing_status: Database["public"]["Enums"]["discovery_processing_status"];
+          started_at: string;
+          status: Database["public"]["Enums"]["discovery_session_status"];
+          updated_at: string;
+          user_id: string;
+          version: number;
+        };
+        Insert: {
+          completed_at?: string | null;
+          created_at?: string;
+          current_question_key?: string | null;
+          current_section_key?: string | null;
+          id?: string;
+          last_resumed_at?: string;
+          progress_percent?: number;
+          question_set_id: string;
+          question_set_version: number;
+          stage_4_processing_status?: Database["public"]["Enums"]["discovery_processing_status"];
+          started_at?: string;
+          status?: Database["public"]["Enums"]["discovery_session_status"];
+          updated_at?: string;
+          user_id: string;
+          version?: number;
+        };
+        Update: {
+          completed_at?: string | null;
+          created_at?: string;
+          current_question_key?: string | null;
+          current_section_key?: string | null;
+          id?: string;
+          last_resumed_at?: string;
+          progress_percent?: number;
+          question_set_id?: string;
+          question_set_version?: number;
+          stage_4_processing_status?: Database["public"]["Enums"]["discovery_processing_status"];
+          started_at?: string;
+          status?: Database["public"]["Enums"]["discovery_session_status"];
+          updated_at?: string;
+          user_id?: string;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "discovery_sessions_question_set_id_fkey";
+            columns: ["question_set_id"];
+            isOneToOne: false;
+            referencedRelation: "discovery_question_sets";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "discovery_sessions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       identity_audit_events: {
         Row: {
           duration_ms: number | null;
@@ -56,6 +364,8 @@ export type Database = {
           created_at: string;
           current_stage: string;
           current_step: string;
+          discovery_resume_path: string;
+          discovery_status: Database["public"]["Enums"]["discovery_checkpoint_status"];
           resume_path: string;
           status: Database["public"]["Enums"]["identity_checkpoint_status"];
           updated_at: string;
@@ -67,6 +377,8 @@ export type Database = {
           created_at?: string;
           current_stage?: string;
           current_step?: string;
+          discovery_resume_path?: string;
+          discovery_status?: Database["public"]["Enums"]["discovery_checkpoint_status"];
           resume_path?: string;
           status?: Database["public"]["Enums"]["identity_checkpoint_status"];
           updated_at?: string;
@@ -78,6 +390,8 @@ export type Database = {
           created_at?: string;
           current_stage?: string;
           current_step?: string;
+          discovery_resume_path?: string;
+          discovery_status?: Database["public"]["Enums"]["discovery_checkpoint_status"];
           resume_path?: string;
           status?: Database["public"]["Enums"]["identity_checkpoint_status"];
           updated_at?: string;
@@ -256,6 +570,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      complete_discovery: {
+        Args: { expected_version_input: number; session_id_input: string };
+        Returns: undefined;
+      };
+      complete_discovery_v1_internal: {
+        Args: { expected_version_input: number; session_id_input: string };
+        Returns: undefined;
+      };
       complete_identity_checkpoint: {
         Args: {
           accept_ai: boolean;
@@ -268,10 +590,47 @@ export type Database = {
         };
         Returns: undefined;
       };
+      discovery_progress: {
+        Args: { session_id_input: string };
+        Returns: number;
+      };
+      open_discovery_review: {
+        Args: { expected_version_input: number; session_id_input: string };
+        Returns: number;
+      };
+      open_discovery_review_v1_internal: {
+        Args: { expected_version_input: number; session_id_input: string };
+        Returns: number;
+      };
       provision_identity: {
         Args: { target_user_id: string };
         Returns: undefined;
       };
+      save_discovery_response: {
+        Args: {
+          expected_version_input: number;
+          numeric_response_input: number;
+          question_key_input: string;
+          selected_options_input: string[];
+          session_id_input: string;
+          skip_input: boolean;
+          text_response_input: string;
+        };
+        Returns: number;
+      };
+      save_discovery_response_v1_internal: {
+        Args: {
+          expected_version_input: number;
+          numeric_response_input: number;
+          question_key_input: string;
+          selected_options_input: string[];
+          session_id_input: string;
+          skip_input: boolean;
+          text_response_input: string;
+        };
+        Returns: number;
+      };
+      start_or_resume_discovery: { Args: never; Returns: string };
       withdraw_consent: {
         Args: { consent_type_input: string; policy_version_input: string };
         Returns: undefined;
@@ -288,6 +647,13 @@ export type Database = {
         | "institution"
         | "admin";
       consent_status: "granted" | "withdrawn" | "declined";
+      discovery_checkpoint_status: "not_started" | "in_progress" | "completed";
+      discovery_processing_status: "not_ready" | "ready_for_stage_4";
+      discovery_question_set_status: "draft" | "published" | "retired";
+      discovery_response_type:
+        "reflection" | "single_select" | "multi_select" | "scale";
+      discovery_sensitivity: "standard" | "sensitive";
+      discovery_session_status: "in_progress" | "review" | "completed";
       identity_checkpoint_status: "not_started" | "in_progress" | "completed";
       onboarding_status: "identity_required" | "stage_3_ready";
       profile_visibility: "private";
@@ -428,6 +794,17 @@ export const Constants = {
         "admin",
       ],
       consent_status: ["granted", "withdrawn", "declined"],
+      discovery_checkpoint_status: ["not_started", "in_progress", "completed"],
+      discovery_processing_status: ["not_ready", "ready_for_stage_4"],
+      discovery_question_set_status: ["draft", "published", "retired"],
+      discovery_response_type: [
+        "reflection",
+        "single_select",
+        "multi_select",
+        "scale",
+      ],
+      discovery_sensitivity: ["standard", "sensitive"],
+      discovery_session_status: ["in_progress", "review", "completed"],
       identity_checkpoint_status: ["not_started", "in_progress", "completed"],
       onboarding_status: ["identity_required", "stage_3_ready"],
       profile_visibility: ["private"],

@@ -24,6 +24,7 @@
     "db:types:linked": "supabase gen types typescript --linked",
     "verify:remote:read-only": "node scripts/verify-remote-boundaries.mjs",
     "verify:staging:auth": "node scripts/verify-staging-auth.mjs",
+    "verify:staging:discovery": "node scripts/verify-stage3-discovery.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run test:integration && npm run build"

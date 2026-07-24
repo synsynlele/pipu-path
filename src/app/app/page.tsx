@@ -19,15 +19,18 @@ export default async function FoundationPage() {
       </h1>
       <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
         Welcome, {profile.preferred_name}. Your account, consent history and
-        identity checkpoint are persistent. Potential discovery begins only in
-        Stage 3.
+        identity checkpoint are persistent. Discovery can now collect your own
+        evidence without inventing conclusions.
       </p>
       <Surface className="mt-10 p-6 sm:p-8">
-        <h2 className="text-xl font-semibold">Honest Stage 3 boundary</h2>
+        <h2 className="text-xl font-semibold">Begin with Discovery</h2>
         <p className="text-muted mt-3 max-w-2xl leading-7">
-          No assessment, potential signal, Journey, quest, evidence, project or
-          public Builder profile has been fabricated.
+          Answer one focused question at a time, save securely, return whenever
+          you need and review everything before completion.
         </p>
+        <ButtonLink href="/onboarding/discovery" className="mt-6">
+          Open Discovery
+        </ButtonLink>
       </Surface>
       <ButtonLink href="/" variant="secondary" className="mt-8">
         Return to the public foundation

@@ -24,3 +24,25 @@
 | Secret scan                      | Server secrets absent from Git files and browser bundle      |
 
 No unexecuted test is reported as passed.
+
+## Stage 3
+
+| Layer                  | Result                                                             |
+| ---------------------- | ------------------------------------------------------------------ |
+| Domain/unit            | 4 Discovery tests; 25 repository tests pass                        |
+| Structural integration | 21/21 repository assertions pass                                   |
+| Migration              | `004`, `005`, `006` dry-run and apply passed on disposable staging |
+| Generated types        | Management API generation exactly matches committed types          |
+| pgTAP/RLS              | 24/24 passed                                                       |
+| Staging API            | 12/12 passed with two deterministic users and cleanup              |
+| Age variants           | Youth-safe/adult-only filtering enforced server-side               |
+| Concurrency            | Stale version returns stable non-retryable conflict                |
+| Review/completion      | Required denial, review, completion and idempotency pass           |
+| Anonymous browser      | Discovery protected-route redirect covered                         |
+| Authenticated browser  | Pending deployment of this Stage 3 commit                          |
+| Formatting/lint/types  | Passed; lint has zero warnings                                     |
+| Production build       | Passed; four Discovery routes compiled                             |
+| Dependency audit       | Zero vulnerabilities                                               |
+| Secret scan            | No credential values tracked                                       |
+
+No private response content is used or retained by verification fixtures.

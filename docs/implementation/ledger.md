@@ -127,3 +127,47 @@ remains locked.
 
 Status: COMPLETE. Stage 0, Stage 1 and Stage 2 are complete. Work stops at the
 Stage 3 boundary.
+
+## 2026-07-24 — Stage 3 Discovery and persistent onboarding
+
+### Authorized scope
+
+Implement Stage 3 completely and stop before Stage 4 interpretation.
+
+### Implemented
+
+- Evidence-first ADR and complete Discovery architecture
+- Versioned seven-section question set with four response types
+- Server-enforced age variants and optional sensitive evidence
+- Private persistent sessions/responses with idempotent resume
+- Controlled save, skip, progress, review and completion state machine
+- Optimistic concurrency and stable safe error mapping
+- Mobile-first focused question, review/edit and completion routes
+- Typed completed-only Stage 4 handoff without AI interpretation
+- Privacy-safe audit events, RLS, API verification and documentation maps
+
+### Verification evidence
+
+- Migrations `202607240004`–`006` dry-run and applied to authorised disposable
+  staging `kvjcswnmhwegpakbtvlh`
+- 24/24 pgTAP Stage 3 RLS assertions passed
+- 12/12 repeatable staging API assertions passed with fixture cleanup
+- Remote generated types exactly match committed generated types
+- `npm run validate` passed: 25 unit tests, 21 integration assertions,
+  formatting, zero-warning lint, strict TypeScript, coverage and production
+  build
+- Dependency audit found zero vulnerabilities
+- Secret scan found no credential values in tracked source
+
+### Issues found and repaired
+
+- Changed intentional stale-write conflicts from retryable SQLSTATE `40001` to
+  stable application error `P0001`, preventing client retry hangs.
+- Moved a plain initial form-state export out of a `"use server"` module after
+  the production build correctly rejected the boundary violation.
+
+### Boundary
+
+Stage 3 gathers and preserves evidence only. It does not interpret answers,
+generate a Human Potential Profile or start Journeys/Quests. Stage 4 is locked
+until the Stage 3 deployment browser matrix passes.
