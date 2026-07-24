@@ -67,6 +67,21 @@ export async function signInAction(
   redirect(safeNextPath(formData.get("next")?.toString()));
 }
 
+export async function signInWithGoogleAction(next = "/app") {
+  const client = await createServerSupabaseClient();
+  const { appUrl } = requireSupabasePublicEnvironment();
+  const callbackUrl = new URL("/auth/callback", appUrl);
+  callbackUrl.searchParams.set("next", safeNextPath(next));
+
+  const { data, error } = await client.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: callbackUrl.toString() },
+  });
+
+  if (error || !data.url) redirect("/auth/error");
+  redirect(data.url);
+}
+
 export async function requestPasswordResetAction(
   _previous: FormState,
   formData: FormData,

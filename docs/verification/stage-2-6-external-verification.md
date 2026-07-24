@@ -41,8 +41,9 @@ Current evidence:
   not inline; the implementation now uses explicit `NEXT_PUBLIC_*` references
   and has regression coverage. The next deployed build exposed an invalid
   nested brand link that prevented React hydration; the duplicate link wrapper
-  was removed with component regression coverage. Redeployment verification
-  remains pending.
+  was removed with component regression coverage. OAuth initiation was also
+  moved to a server action so PKCE state and callback construction stay inside
+  the server boundary. Redeployment verification remains pending.
 - Server secrets were not found in tracked files or browser bundles.
 
 No profile content has been inspected or disclosed.

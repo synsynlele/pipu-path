@@ -14,6 +14,10 @@ const functionHardeningMigration = readFileSync(
   "utf8",
 );
 const serviceRole = readFileSync("src/lib/supabase/service-role.ts", "utf8");
+const googleAuthForm = readFileSync(
+  "src/modules/identity/ui/google-auth-form.tsx",
+  "utf8",
+);
 
 describe("Stage 2 structural security contract", () => {
   it.each([
@@ -63,5 +67,12 @@ describe("Stage 2 structural security contract", () => {
   it("structurally isolates service-role access from browser modules", () => {
     expect(serviceRole).toContain('import "server-only"');
     expect(serviceRole).not.toContain('"use client"');
+  });
+
+  it("initiates Google OAuth through the server boundary", () => {
+    expect(googleAuthForm).toContain("signInWithGoogleAction");
+    expect(googleAuthForm).toContain("<form action={action}>");
+    expect(googleAuthForm).not.toContain('"use client"');
+    expect(googleAuthForm).not.toContain("createBrowserSupabaseClient");
   });
 });

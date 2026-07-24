@@ -12,6 +12,8 @@
 8. Consent is append-only and checkpoint completion is a controlled RPC.
 9. Private identity is not public Builder discovery.
 10. Age is stored only as a band; minor status is database-derived.
+11. OAuth initiation, PKCE state creation and callback exchange execute on the
+    server; the browser receives only the provider redirect.
 
 Staging verification found and repaired inherited Supabase default table and
 function grants in migrations `202607240002` and `202607240003`.

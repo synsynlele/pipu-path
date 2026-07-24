@@ -37,6 +37,11 @@ The repaired build then exposed invalid nested home links in the authentication
 shell. The invalid wrapper was removed so React can hydrate authentication
 controls, with component regression coverage.
 
+OAuth initiation now runs through a server action rather than browser-side
+configuration. This keeps PKCE cookie handling and provider redirects inside
+the server boundary and removes a deployment-specific client configuration
+dependency.
+
 ## Technical debt and blockers
 
 - Complete actual recovery-email delivery after the hosted email quota resets

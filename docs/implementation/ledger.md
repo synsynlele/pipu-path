@@ -84,6 +84,9 @@ Status: BLOCKED. No Stage 3 work is authorised.
 - Live verification of that fix exposed an invalid nested brand link that
   prevented React from hydrating the OAuth control. Removed the duplicate link
   wrapper and added component regression coverage.
+- Moved Google OAuth initiation from a client handler to a server action so
+  PKCE state, callback construction and provider redirects use the server
+  boundary consistently across deployment environments.
 - Local validation and dependency audit pass after the correction.
 
 Status: BLOCKED pending deployment verification, OAuth callback, recovery
