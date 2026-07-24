@@ -87,6 +87,9 @@ Status: BLOCKED. No Stage 3 work is authorised.
 - Moved Google OAuth initiation from a client handler to a server action so
   PKCE state, callback construction and provider redirects use the server
   boundary consistently across deployment environments.
+- A delivered recovery link completed authentication but fell back to the
+  dashboard because `/reset-password` was absent from the safe redirect
+  allowlist. Added only that controlled destination and regression coverage.
 - Local validation and dependency audit pass after the correction.
 
 Status: BLOCKED pending deployment verification, OAuth callback, recovery

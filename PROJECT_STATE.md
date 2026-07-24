@@ -42,6 +42,11 @@ configuration. This keeps PKCE cookie handling and provider redirects inside
 the server boundary and removes a deployment-specific client configuration
 dependency.
 
+Live recovery verification found that the redirect allowlist omitted
+`/reset-password`, causing a valid recovery session to fall back to `/app`.
+The recovery destination is now explicitly allowlisted with regression
+coverage; a fresh delivered link is still required for final verification.
+
 ## Technical debt and blockers
 
 - Complete actual recovery-email delivery after the hosted email quota resets

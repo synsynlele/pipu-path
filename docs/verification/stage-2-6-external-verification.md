@@ -44,6 +44,11 @@ Current evidence:
   was removed with component regression coverage. OAuth initiation was also
   moved to a server action so PKCE state and callback construction stay inside
   the server boundary. Redeployment verification remains pending.
+- A real recovery email was delivered and its callback authenticated, but the
+  safe redirect allowlist omitted `/reset-password`, so it fell back to
+  `/app`. The controlled recovery destination is now allowlisted with
+  regression coverage; a fresh delivered link remains required to verify the
+  corrected browser flow.
 - Server secrets were not found in tracked files or browser bundles.
 
 No profile content has been inspected or disclosed.
