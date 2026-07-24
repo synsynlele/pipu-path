@@ -1,5 +1,14 @@
 import { expect, test } from "@playwright/test";
 
+async function assertNoDiscoveryError(page: import("@playwright/test").Page) {
+  const alert = page.getByRole("alert");
+  if ((await alert.count()) === 1) {
+    throw new Error(
+      `Discovery interaction failed: ${await alert.textContent()}`,
+    );
+  }
+}
+
 test("eligible user completes persistent Discovery without invented results", async ({
   page,
   isMobile,
@@ -58,6 +67,7 @@ test("eligible user completes persistent Discovery without invented results", as
           page.waitForURL((url) => url.toString() !== previousUrl),
           skip.click(),
         ]);
+        await assertNoDiscoveryError(page);
       } else {
         await textarea.fill(
           "Synthetic browser evidence for Stage 3 verification.",
@@ -67,6 +77,7 @@ test("eligible user completes persistent Discovery without invented results", as
           page.waitForURL((url) => url.toString() !== previousUrl),
           page.getByRole("button", { name: "Save and continue" }).click(),
         ]);
+        await assertNoDiscoveryError(page);
       }
     } else if (await radios.count()) {
       await radios.first().check();
@@ -75,6 +86,7 @@ test("eligible user completes persistent Discovery without invented results", as
         page.waitForURL((url) => url.toString() !== previousUrl),
         page.getByRole("button", { name: "Save and continue" }).click(),
       ]);
+      await assertNoDiscoveryError(page);
     } else if (await checkboxes.count()) {
       await checkboxes.first().check();
       const previousUrl = page.url();
@@ -82,6 +94,7 @@ test("eligible user completes persistent Discovery without invented results", as
         page.waitForURL((url) => url.toString() !== previousUrl),
         page.getByRole("button", { name: "Save and continue" }).click(),
       ]);
+      await assertNoDiscoveryError(page);
     } else {
       throw new Error(`No supported Discovery input found at ${page.url()}`);
     }
