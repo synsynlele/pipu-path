@@ -5,10 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { validateDiscoveryInput } from "../domain/discovery";
-import {
-  getDiscoveryState,
-  requireActiveDiscovery,
-} from "../infrastructure/discovery-dal";
+import { requireActiveDiscovery } from "../infrastructure/discovery-dal";
 import { safeDiscoveryError } from "./discovery-errors";
 import type { DiscoveryFormState } from "./discovery-form-state";
 
@@ -89,17 +86,20 @@ export async function saveDiscoveryResponseAction(
     };
 
   const client = await createServerSupabaseClient();
-  const { error } = await client.rpc("save_discovery_response", {
-    session_id_input: state.session.id,
-    question_key_input: question.stableKey,
-    text_response_input: (skipped ? null : text) as unknown as string,
-    selected_options_input: (skipped || !selectedOptions.length
-      ? null
-      : selectedOptions) as unknown as string[],
-    numeric_response_input: (skipped ? null : numeric) as unknown as number,
-    skip_input: skipped,
-    expected_version_input: parsed.data.expected_version,
-  });
+  const { data: savedVersion, error } = await client.rpc(
+    "save_discovery_response",
+    {
+      session_id_input: state.session.id,
+      question_key_input: question.stableKey,
+      text_response_input: (skipped ? null : text) as unknown as string,
+      selected_options_input: (skipped || !selectedOptions.length
+        ? null
+        : selectedOptions) as unknown as string[],
+      numeric_response_input: (skipped ? null : numeric) as unknown as number,
+      skip_input: skipped,
+      expected_version_input: parsed.data.expected_version,
+    },
+  );
   if (error) {
     const safe = safeDiscoveryError(error.message, "DISCOVERY_SAVE_FAILED");
     return { status: "error", ...safe };
@@ -107,36 +107,25 @@ export async function saveDiscoveryResponseAction(
 
   revalidatePath("/onboarding/discovery");
   if (parsed.data.return_to === "review") {
-    const refreshed = await getDiscoveryState();
-    if (refreshed.session) {
-      const { error: reviewError } = await client.rpc("open_discovery_review", {
-        session_id_input: refreshed.session.id,
-        expected_version_input: refreshed.session.version,
-      });
-      if (reviewError) {
-        const safe = safeDiscoveryError(
-          reviewError.message,
-          "DISCOVERY_SAVE_FAILED",
-        );
-        return { status: "error", ...safe };
-      }
+    const { error: reviewError } = await client.rpc("open_discovery_review", {
+      session_id_input: state.session.id,
+      expected_version_input: savedVersion,
+    });
+    if (reviewError) {
+      const safe = safeDiscoveryError(
+        reviewError.message,
+        "DISCOVERY_SAVE_FAILED",
+      );
+      return { status: "error", ...safe };
     }
     redirect("/onboarding/discovery/review");
   }
-  const refreshed = await getDiscoveryState();
-  if (
-    !refreshed.questions.some(
-      (candidate) => candidate.displayOrder > question.displayOrder,
-    )
-  )
-    redirect("/onboarding/discovery");
-  const current = refreshed.questions.find(
-    (candidate) =>
-      candidate.stableKey === refreshed.session?.current_question_key,
+  const nextQuestion = state.questions.find(
+    (candidate) => candidate.displayOrder > question.displayOrder,
   );
-  if (!current) redirect("/onboarding/discovery/review");
+  if (!nextQuestion) redirect("/onboarding/discovery");
   redirect(
-    `/onboarding/discovery/${current.sectionKey}?question=${current.stableKey}`,
+    `/onboarding/discovery/${nextQuestion.sectionKey}?question=${nextQuestion.stableKey}`,
   );
 }
 

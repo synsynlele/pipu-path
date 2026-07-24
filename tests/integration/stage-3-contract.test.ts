@@ -60,6 +60,13 @@ describe("Stage 3 structural contract", () => {
     expect(dal).not.toContain("service-role");
   });
 
+  it("uses the committed save result for deterministic redirects", () => {
+    expect(actions).toContain("data: savedVersion");
+    expect(actions).toContain("expected_version_input: savedVersion");
+    expect(actions).toContain("const nextQuestion = state.questions.find");
+    expect(actions).not.toContain("const refreshed = await getDiscoveryState()");
+  });
+
   it("contains no AI, profile claim, Journey or mission generation", () => {
     expect(`${migration}\n${actions}`).not.toMatch(
       /openai|anthropic|generateStrength|generatePurpose|generateMission/i,
