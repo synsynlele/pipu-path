@@ -120,8 +120,21 @@ export async function saveDiscoveryResponseAction(
     }
     redirect("/onboarding/discovery/review");
   }
+  const { data: committedSession, error: cursorError } = await client
+    .from("discovery_sessions")
+    .select("current_question_key")
+    .eq("id", state.session.id)
+    .single();
+  if (cursorError) {
+    const safe = safeDiscoveryError(
+      cursorError.message,
+      "DISCOVERY_SAVE_FAILED",
+    );
+    return { status: "error", ...safe };
+  }
   const nextQuestion = state.questions.find(
-    (candidate) => candidate.displayOrder > question.displayOrder,
+    (candidate) =>
+      candidate.stableKey === committedSession.current_question_key,
   );
   if (!nextQuestion) redirect("/onboarding/discovery");
   redirect(

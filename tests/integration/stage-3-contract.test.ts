@@ -63,7 +63,10 @@ describe("Stage 3 structural contract", () => {
   it("uses the committed save result for deterministic redirects", () => {
     expect(actions).toContain("data: savedVersion");
     expect(actions).toContain("expected_version_input: savedVersion");
-    expect(actions).toContain("const nextQuestion = state.questions.find");
+    expect(actions).toContain('.select("current_question_key")');
+    expect(actions).toContain(
+      "candidate.stableKey === committedSession.current_question_key",
+    );
     expect(actions).not.toContain(
       "const refreshed = await getDiscoveryState()",
     );
