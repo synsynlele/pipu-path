@@ -21,7 +21,12 @@ test("eligible user completes persistent Discovery without invented results", as
 
   await page.goto("/onboarding/discovery");
   const begin = page.getByRole("button", { name: "Begin Discovery" });
-  if ((await begin.count()) === 1) await begin.click();
+  if ((await begin.count()) === 1) {
+    await begin.click();
+    await page
+      .getByRole("link", { name: "Continue Discovery" })
+      .waitFor({ state: "visible" });
+  }
 
   for (let index = 0; index < 30; index += 1) {
     if (page.url().includes("/review")) break;
@@ -36,7 +41,10 @@ test("eligible user completes persistent Discovery without invented results", as
       name: "Review my answers",
     });
     if ((await reviewAnswers.count()) === 1) {
-      await reviewAnswers.click();
+      await Promise.all([
+        page.waitForURL(/\/onboarding\/discovery\/review/),
+        reviewAnswers.click(),
+      ]);
       continue;
     }
     const textarea = page.locator("textarea");
@@ -44,23 +52,39 @@ test("eligible user completes persistent Discovery without invented results", as
     const checkboxes = page.locator('input[type="checkbox"]');
     if (await textarea.count()) {
       const skip = page.getByRole("button", { name: "Skip for now" });
-      if (await skip.count()) await skip.click();
-      else {
+      if (await skip.count()) {
+        const previousUrl = page.url();
+        await Promise.all([
+          page.waitForURL((url) => url.toString() !== previousUrl),
+          skip.click(),
+        ]);
+      } else {
         await textarea.fill(
           "Synthetic browser evidence for Stage 3 verification.",
         );
-        await page.getByRole("button", { name: "Save and continue" }).click();
+        const previousUrl = page.url();
+        await Promise.all([
+          page.waitForURL((url) => url.toString() !== previousUrl),
+          page.getByRole("button", { name: "Save and continue" }).click(),
+        ]);
       }
     } else if (await radios.count()) {
       await radios.first().check();
-      await page.getByRole("button", { name: "Save and continue" }).click();
+      const previousUrl = page.url();
+      await Promise.all([
+        page.waitForURL((url) => url.toString() !== previousUrl),
+        page.getByRole("button", { name: "Save and continue" }).click(),
+      ]);
     } else if (await checkboxes.count()) {
       await checkboxes.first().check();
-      await page.getByRole("button", { name: "Save and continue" }).click();
+      const previousUrl = page.url();
+      await Promise.all([
+        page.waitForURL((url) => url.toString() !== previousUrl),
+        page.getByRole("button", { name: "Save and continue" }).click(),
+      ]);
     } else {
       throw new Error(`No supported Discovery input found at ${page.url()}`);
     }
-    await page.waitForLoadState("networkidle");
   }
 
   await expect(page).toHaveURL(/\/onboarding\/discovery\/review/);
