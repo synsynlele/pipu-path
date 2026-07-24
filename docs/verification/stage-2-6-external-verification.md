@@ -4,7 +4,7 @@
 **Classification:** Dedicated disposable non-production staging  
 **Authorization:** Reset, delete, migrate and deterministic test accounts
 approved by the owner on 2026-07-24  
-**Status:** BLOCKED
+**Status:** COMPLETE
 
 The project began with zero public tables, users and policies. The first
 migration passed a rollback dry run and then applied. Remote catalog inspection
@@ -36,9 +36,9 @@ Current evidence:
   with the approved Google test account.
 - Production HTTP smoke passed. The E2E configuration now accepts
   `E2E_BASE_URL` and does not start a local server for staging runs. A genuine
-  staging run attempted four tests, but Playwright's Chromium and WebKit
-  executables are unavailable. Installation repeatedly returned a zero-byte
-  archive, so repeatable browser E2E remains blocked.
+  local staging run could not install browser executables, so the same suite
+  was moved to GitHub Actions. Chromium and WebKit installed successfully and
+  all four desktop/mobile staging tests passed.
 - The staging application is deployed at `https://pipu-path.vercel.app`.
   Deployed anonymous routes and protected redirects passed. Live browser
   verification exposed dynamic public-environment lookup that Next.js could
@@ -59,5 +59,5 @@ Current evidence:
 
 No profile content has been inspected or disclosed.
 
-Stage 2 cannot close while the complete deterministic browser matrix remains
-unexecuted. Stage 3 remains locked.
+All mandatory Stage 2.6 gates have passed against confirmed staging. Stage 2 is
+complete. Work stops at the Stage 3 boundary.

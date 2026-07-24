@@ -15,7 +15,7 @@
 | Recovery email delivery          | Passed with approved staging inbox                           |
 | Google OAuth initiation/config   | Passed; redirects to `accounts.google.com`                   |
 | Google OAuth completion          | Passed with approved Google test account                     |
-| Browser E2E                      | 4 staging tests blocked: browser executables unavailable     |
+| Browser E2E                      | 4/4 desktop/mobile staging tests passed in GitHub Actions    |
 | Deployed anonymous browser       | Public routes and protected-route redirects passed           |
 | Deployed OAuth client config     | Repaired and verified                                        |
 | HTTP route smoke                 | Public `200`; protected `307`; invalid callback fails closed |

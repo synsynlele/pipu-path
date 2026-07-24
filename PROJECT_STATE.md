@@ -1,15 +1,15 @@
 # PipuPath project state
 
-**Current stage:** Stage 2.6 external verification
+**Current stage:** Stage 2 — Identity and access
 
-**Stage status:** BLOCKED
+**Stage status:** COMPLETE
 
-**Completed stages:** Stage 0, Stage 1
+**Completed stages:** Stage 0, Stage 1, Stage 2
 
 **Infrastructure:** Supabase staging `kvjcswnmhwegpakbtvlh`; Vercel staging
 `https://pipu-path.vercel.app`
 
-**Current Git baseline:** `cd011cdc897e32e807d2ca66e2e45f4bd8c42e6c`
+**Current Git baseline:** `2d50062c3b1e08a5932535f736aac30d7695547e`
 
 **Last verified:** 2026-07-24
 
@@ -19,8 +19,8 @@ Migrations, clean replay, catalog security, remote generated types, pgTAP,
 anonymous and authenticated API/RLS, signup, confirmation, login, delivered
 recovery email, recovery callback, password update, invalid credentials,
 duplicate signup, refresh, logout, Google OAuth, identity checkpoint,
-dashboard access, HTTP smoke, unit/integration tests, production build, audit
-and secret scan pass.
+dashboard access, HTTP smoke, unit/integration tests, production build, audit,
+secret scan and repeatable desktop/mobile staging browser tests pass.
 
 ## Security findings
 
@@ -51,11 +51,12 @@ password was accepted, subsequent login passed and logout cleared the session.
 The provider rejects reuse of the existing password, so the public error mapper
 now gives a safe, actionable instruction for that case.
 
-## Technical debt and blockers
+## Outstanding blockers
 
-- Install a supported Playwright browser in CI or another controlled runner and
-  execute the committed browser suite against staging. The current sandbox
-  receives an empty browser archive from the Playwright CDN.
+None for Stage 2.
+
+## Known technical debt
+
 - Expand the repeatable browser suite to cover the complete authenticated
   email, recovery, OAuth, checkpoint, preference, consent and isolation matrix
   without personal credentials or uncontrolled inbox state.
@@ -64,9 +65,11 @@ now gives a safe, actionable instruction for that case.
 
 ## Exact next slice
 
-Remain in Stage 2.6: run the complete deterministic browser matrix from a
-controlled runner with installed browsers, record the results and close Stage
-2 only if every mandatory gate passes. Stage 3 remains locked.
+Stage 3.1 — implement the first Potential Signal Discovery vertical slice:
+versioned assessment definition, authenticated assessment attempt creation,
+durable resumable response capture, ownership/RLS, progress recovery,
+accessibility, observability and deterministic tests. Do not implement AI
+synthesis until evidence capture is persistent and verified.
 
 ## Reproduction
 

@@ -114,3 +114,16 @@ delivery and the complete browser matrix.
 
 Status: BLOCKED only on the mandatory repeatable browser matrix. Stage 3
 remains locked.
+
+### Stage 2 closure
+
+- Added a dedicated GitHub Actions staging E2E job with controlled Chromium and
+  WebKit installation.
+- Upgraded GitHub-maintained workflow actions to Node 24-compatible releases.
+- `validate` passed remotely.
+- `staging-e2e` passed all four committed desktop/mobile browser tests against
+  `https://pipu-path.vercel.app`.
+- Vercel deployment passed.
+
+Status: COMPLETE. Stage 0, Stage 1 and Stage 2 are complete. Work stops at the
+Stage 3 boundary.
