@@ -70,30 +70,28 @@ test("eligible user completes persistent Discovery without invented results", as
     const textarea = page.locator("textarea");
     const radios = page.locator('input[type="radio"]');
     const checkboxes = page.locator('input[type="checkbox"]');
-    if (await textarea.count()) {
-      const skip = page.getByRole("button", { name: "Skip for now" });
-      if (await skip.count()) {
-        const previousUrl = page.url();
-        await Promise.all([
-          page.waitForURL((url) => url.toString() !== previousUrl, {
-            waitUntil: "commit",
-          }),
-          skip.click(),
-        ]);
-        await assertNoDiscoveryError(page);
-      } else {
-        await textarea.fill(
-          "Synthetic browser evidence for Stage 3 verification.",
-        );
-        const previousUrl = page.url();
-        await Promise.all([
-          page.waitForURL((url) => url.toString() !== previousUrl, {
-            waitUntil: "commit",
-          }),
-          page.getByRole("button", { name: "Save and continue" }).click(),
-        ]);
-        await assertNoDiscoveryError(page);
-      }
+    const skip = page.getByRole("button", { name: "Skip for now" });
+    if (await skip.count()) {
+      const previousUrl = page.url();
+      await Promise.all([
+        page.waitForURL((url) => url.toString() !== previousUrl, {
+          waitUntil: "commit",
+        }),
+        skip.click(),
+      ]);
+      await assertNoDiscoveryError(page);
+    } else if (await textarea.count()) {
+      await textarea.fill(
+        "Synthetic browser evidence for Stage 3 verification.",
+      );
+      const previousUrl = page.url();
+      await Promise.all([
+        page.waitForURL((url) => url.toString() !== previousUrl, {
+          waitUntil: "commit",
+        }),
+        page.getByRole("button", { name: "Save and continue" }).click(),
+      ]);
+      await assertNoDiscoveryError(page);
     } else if (await radios.count()) {
       await radios.first().check({ force: true });
       const previousUrl = page.url();
