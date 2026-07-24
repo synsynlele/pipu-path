@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 async function assertNoDiscoveryError(page: import("@playwright/test").Page) {
-  const alert = page.getByRole("alert");
+  const alert = page.locator('form p[role="alert"]');
   if ((await alert.count()) === 1) {
     throw new Error(
       `Discovery interaction failed: ${await alert.textContent()}`,
