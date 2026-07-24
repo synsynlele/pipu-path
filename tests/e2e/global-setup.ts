@@ -26,7 +26,12 @@ export default async function globalSetup() {
     .eq("id", data.user.id);
   const checkpoint = await admin
     .from("onboarding_checkpoints")
-    .update({ status: "completed", completed_at: new Date().toISOString() })
+    .update({
+      current_step: "completed",
+      status: "completed",
+      resume_path: "/app",
+      completed_at: new Date().toISOString(),
+    })
     .eq("user_id", data.user.id);
   if (profile.error || checkpoint.error) {
     await admin.auth.admin.deleteUser(data.user.id);
