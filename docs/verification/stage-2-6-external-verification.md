@@ -29,12 +29,16 @@ Current evidence:
   passed in a 19-check API suite.
 - Recovery link generation, callback verification, password update,
   invalid-link rejection and password restoration passed.
-- Actual recovery-email delivery is blocked by the hosted built-in provider's
-  two-emails-per-hour quota after the two signup messages.
-- Google configuration and OAuth initiation passed and redirect to
-  `accounts.google.com`; callback completion remains unexecuted.
-- Production HTTP smoke passed, but Playwright's Chromium artifact could not be
-  downloaded, so browser E2E remains unexecuted.
+- Actual recovery-email delivery, callback, new-password update, subsequent
+  login and logout passed with the approved staging inbox.
+- Google configuration, OAuth initiation, callback, identity provisioning,
+  repeated sign-in, session restoration, logout and protected redirect passed
+  with the approved Google test account.
+- Production HTTP smoke passed. The E2E configuration now accepts
+  `E2E_BASE_URL` and does not start a local server for staging runs. A genuine
+  staging run attempted four tests, but Playwright's Chromium and WebKit
+  executables are unavailable. Installation repeatedly returned a zero-byte
+  archive, so repeatable browser E2E remains blocked.
 - The staging application is deployed at `https://pipu-path.vercel.app`.
   Deployed anonymous routes and protected redirects passed. Live browser
   verification exposed dynamic public-environment lookup that Next.js could
@@ -43,15 +47,17 @@ Current evidence:
   nested brand link that prevented React hydration; the duplicate link wrapper
   was removed with component regression coverage. OAuth initiation was also
   moved to a server action so PKCE state and callback construction stay inside
-  the server boundary. Redeployment verification remains pending.
-- A real recovery email was delivered and its callback authenticated, but the
-  safe redirect allowlist omitted `/reset-password`, so it fell back to
-  `/app`. The controlled recovery destination is now allowlisted with
-  regression coverage; a fresh delivered link remains required to verify the
-  corrected browser flow.
+  the server boundary. Redeployment passed.
+- A real recovery email was delivered and its callback authenticated. After
+  `/reset-password` was added to the controlled allowlist, a fresh link reached
+  the update form and a new password was accepted. Login with the new password
+  and logout both passed. Reusing the existing password was safely rejected;
+  the UI now maps that provider error to an actionable non-sensitive message.
+- Remote types were regenerated through the Supabase Management API on
+  2026-07-24 and match the committed generated file exactly.
 - Server secrets were not found in tracked files or browser bundles.
 
 No profile content has been inspected or disclosed.
 
-Stage 2 cannot close while recovery-email delivery, Google OAuth completion and
-browser E2E remain unverified.
+Stage 2 cannot close while the complete deterministic browser matrix remains
+unexecuted. Stage 3 remains locked.

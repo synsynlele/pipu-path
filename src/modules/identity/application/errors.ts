@@ -6,6 +6,11 @@ export function publicAuthError(message?: string): string {
     return "Confirm your email before signing in.";
   if (normalized.includes("already registered"))
     return "An account may already exist. Try signing in or recovering your password.";
+  if (
+    normalized.includes("same password") ||
+    normalized.includes("different from the old password")
+  )
+    return "Choose a password you have not used for this account.";
   if (normalized.includes("rate"))
     return "Too many attempts. Please wait and try again.";
   return "We could not complete that request. Please try again.";

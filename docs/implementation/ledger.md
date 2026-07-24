@@ -94,3 +94,23 @@ Status: BLOCKED. No Stage 3 work is authorised.
 
 Status: BLOCKED pending deployment verification, OAuth callback, recovery
 delivery and the complete browser matrix.
+
+### Stage 2.6 live authentication continuation
+
+- Verified Google OAuth initiation, callback, profile reconciliation, identity
+  checkpoint, dashboard access, session restoration, repeated sign-in, logout
+  and protected-route behavior with the approved staging account.
+- Verified delivered password-recovery email, corrected callback destination,
+  password update, login with the new password and logout.
+- Added a privacy-safe actionable error for attempted password reuse.
+- Regenerated database types from confirmed staging; the generated result
+  matches the committed types exactly.
+- Re-ran anonymous boundary verification, full repository validation and
+  dependency audit successfully.
+- Corrected Playwright configuration so an explicit `E2E_BASE_URL` targets
+  staging without launching a local server.
+- A genuine four-test staging E2E run now fails explicitly because browser
+  executables are unavailable; installation returns a zero-byte archive.
+
+Status: BLOCKED only on the mandatory repeatable browser matrix. Stage 3
+remains locked.
