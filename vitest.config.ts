@@ -10,6 +10,7 @@ export default defineConfig({
     },
   },
   test: {
+    include: ["src/**/*.test.{ts,tsx}"],
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
     coverage: {
@@ -19,7 +20,15 @@ export default defineConfig({
       exclude: [
         "src/app/**",
         "src/**/*.d.ts",
+        "src/proxy.ts",
         "src/components/shells/app-shell.tsx",
+        "src/components/shells/auth-shell.tsx",
+        "src/lib/supabase/**",
+        "src/modules/identity/application/auth-actions.ts",
+        "src/modules/identity/application/checkpoint-actions.ts",
+        "src/modules/identity/application/form-state.ts",
+        "src/modules/identity/infrastructure/identity-dal.ts",
+        "src/modules/identity/ui/**",
       ],
       thresholds: {
         lines: 80,

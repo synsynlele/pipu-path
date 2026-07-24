@@ -45,3 +45,4 @@ next-env.d.ts
 # local reports
 /test-results/
 /playwright-report/
+/supabase/.temp/

@@ -1,7 +1,11 @@
 import { ButtonLink } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
+import { signOutAction } from "@/modules/identity/application/auth-actions";
+import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 
-export default function FoundationPage() {
+export default async function FoundationPage() {
+  const { profile } = await requireAuthenticatedIdentity();
   return (
     <main
       id="main-content"
@@ -11,27 +15,28 @@ export default function FoundationPage() {
         Honest system state
       </p>
       <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-6xl">
-        The foundation is ready. Product identity is not yet implemented.
+        Your private identity is ready.
       </h1>
       <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
-        Stage 2 will create the first complete vertical slice: secure account
-        creation, session protection, a persistent user record, and the
-        consent-aware onboarding checkpoint.
+        Welcome, {profile.preferred_name}. Your account, consent history and
+        identity checkpoint are persistent. Potential discovery begins only in
+        Stage 3.
       </p>
       <Surface className="mt-10 p-6 sm:p-8">
-        <h2 className="text-xl font-semibold">
-          Why this page is intentionally empty
-        </h2>
+        <h2 className="text-xl font-semibold">Honest Stage 3 boundary</h2>
         <p className="text-muted mt-3 max-w-2xl leading-7">
-          Showing invented journeys, scores, builders, projects, or progress
-          would violate PipuPath’s truthful-state rule. This shell proves the
-          application structure without pretending that product capabilities
-          exist.
+          No assessment, potential signal, Journey, quest, evidence, project or
+          public Builder profile has been fabricated.
         </p>
       </Surface>
       <ButtonLink href="/" variant="secondary" className="mt-8">
         Return to the public foundation
       </ButtonLink>
+      <form action={signOutAction} className="mt-4">
+        <Button type="submit" variant="secondary">
+          Sign out
+        </Button>
+      </form>
     </main>
   );
 }

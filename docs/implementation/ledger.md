@@ -43,3 +43,16 @@ Create a new PipuPath repository and complete Stage 0 and Stage 1 only.
 
 Stage 0 and Stage 1 are complete. Work stops before identity, authentication,
 persistence, consent, or onboarding implementation.
+
+## 2026-07-24 — Stage 2 reconstruction and staging verification
+
+- Reconstructed real email/Google authentication, SSR sessions, protected
+  routes, private identity, preferences, append-only consent and checkpoint.
+- Applied three ordered migrations to authorised disposable staging.
+- Generated and reconciled database types from staging.
+- Found and repaired inherited table and security-definer function privileges.
+- Passed 19/19 pgTAP RLS assertions and anonymous API denial probes.
+- Created two approved users; confirmation remains pending.
+- Production build and dependency audit passed.
+
+Status: PARTIAL. Stage 3 remains locked.
