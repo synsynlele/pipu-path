@@ -81,6 +81,9 @@ Status: BLOCKED. No Stage 3 work is authorised.
   Next.js from inlining `NEXT_PUBLIC_*` values.
 - Replaced the dynamic browser lookup with explicit build-time references and
   added regression coverage.
+- Live verification of that fix exposed an invalid nested brand link that
+  prevented React from hydrating the OAuth control. Removed the duplicate link
+  wrapper and added component regression coverage.
 - Local validation and dependency audit pass after the correction.
 
 Status: BLOCKED pending deployment verification, OAuth callback, recovery

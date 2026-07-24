@@ -33,6 +33,10 @@ The first Vercel browser verification found that dynamic access to the
 configuration. Public variables now use explicit build-time references and the
 regression is covered by a unit test.
 
+The repaired build then exposed invalid nested home links in the authentication
+shell. The invalid wrapper was removed so React can hydrate authentication
+controls, with component regression coverage.
+
 ## Technical debt and blockers
 
 - Complete actual recovery-email delivery after the hosted email quota resets

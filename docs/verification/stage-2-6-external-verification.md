@@ -39,7 +39,10 @@ Current evidence:
   Deployed anonymous routes and protected redirects passed. Live browser
   verification exposed dynamic public-environment lookup that Next.js could
   not inline; the implementation now uses explicit `NEXT_PUBLIC_*` references
-  and has regression coverage. Redeployment verification remains pending.
+  and has regression coverage. The next deployed build exposed an invalid
+  nested brand link that prevented React hydration; the duplicate link wrapper
+  was removed with component regression coverage. Redeployment verification
+  remains pending.
 - Server secrets were not found in tracked files or browser bundles.
 
 No profile content has been inspected or disclosed.
