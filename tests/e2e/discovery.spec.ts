@@ -20,12 +20,25 @@ test("eligible user completes persistent Discovery without invented results", as
   await expect(page).toHaveURL(/\/app$/);
 
   await page.goto("/onboarding/discovery");
-  await page
-    .getByRole("button", { name: /Begin Discovery|Continue Discovery/ })
-    .click();
+  const begin = page.getByRole("button", { name: "Begin Discovery" });
+  if ((await begin.count()) === 1) await begin.click();
 
   for (let index = 0; index < 30; index += 1) {
     if (page.url().includes("/review")) break;
+    const continueDiscovery = page.getByRole("link", {
+      name: "Continue Discovery",
+    });
+    if ((await continueDiscovery.count()) === 1) {
+      await continueDiscovery.click();
+      continue;
+    }
+    const reviewAnswers = page.getByRole("button", {
+      name: "Review my answers",
+    });
+    if ((await reviewAnswers.count()) === 1) {
+      await reviewAnswers.click();
+      continue;
+    }
     const textarea = page.locator("textarea");
     const radios = page.locator('input[type="radio"]');
     const checkboxes = page.locator('input[type="checkbox"]');
@@ -50,9 +63,6 @@ test("eligible user completes persistent Discovery without invented results", as
     await page.waitForLoadState("networkidle");
   }
 
-  if (!page.url().includes("/review")) {
-    await page.getByRole("button", { name: /Review answers/ }).click();
-  }
   await expect(page).toHaveURL(/\/onboarding\/discovery\/review/);
   await expect(
     page.getByRole("heading", { name: "Review your answers" }),
