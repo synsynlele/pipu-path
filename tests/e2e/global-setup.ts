@@ -24,9 +24,13 @@ export default async function globalSetup() {
     .from("profiles")
     .update({ age_band: "25_plus", onboarding_status: "stage_3_ready" })
     .eq("id", data.user.id);
-  if (profile.error) {
+  const checkpoint = await admin
+    .from("onboarding_checkpoints")
+    .update({ status: "completed", completed_at: new Date().toISOString() })
+    .eq("user_id", data.user.id);
+  if (profile.error || checkpoint.error) {
     await admin.auth.admin.deleteUser(data.user.id);
-    throw profile.error;
+    throw profile.error ?? checkpoint.error;
   }
 
   process.env.E2E_STAGE3_EMAIL = email;
