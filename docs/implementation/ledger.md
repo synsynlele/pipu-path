@@ -202,3 +202,55 @@ until the Stage 3 deployment browser matrix passes.
 
 Status: COMPLETE. Stage 0 through Stage 3 are complete. Work stops at the Stage
 4.1 interpretation-contract boundary.
+
+
+## 2026-07-30 — Stage 4.1 Human Potential provenance foundation
+
+### Authorized scope
+
+Implement the interpretation contract and evidence-provenance foundation only.
+Do not execute a live AI provider or begin Stage 4.2.
+
+### Implemented
+
+- Evidence, inference and user-confirmed truth as separate persistent records
+- Versioned evidence normalization with deterministic fingerprints
+- Immutable interpretation-request evidence snapshots and idempotent lifecycle
+- Provider-neutral validated interpretation contracts
+- Explicit confidence and uncertainty representation
+- Evidence-linked insight integrity and private profile versioning
+- Append-only user feedback foundation
+- Consent, age and safeguarding eligibility enforcement
+- Sensitive-evidence projection redaction
+- RLS, privilege and controlled-function boundaries
+- Generated TypeScript reconciled from confirmed staging
+
+### Verification and repairs
+
+- Applied migrations `202607300007`–`010` to disposable staging
+  `kvjcswnmhwegpakbtvlh`.
+- Verified the generated-type SHA-256
+  `bee7a507d78254520dae1811652ae9163f129103367a93a62516dade3b6fbc28`.
+- Added provenance guards preventing active insights without same-request,
+  same-owner evidence.
+- Corrected evidence replacement to supersede older eligible records.
+- Corrected request idempotency and duplicate-active-request behavior.
+- Removed sensitive values from the interpretation projection while retaining
+  change detection.
+- Traced deployed authentication failure to an old Vercel Preview lacking
+  Preview-scoped public Supabase variables.
+- Forced a new branch deployment and added explicit runtime-failure diagnostics.
+- Made authenticated Discovery E2E repeatable for both fresh and already
+  persisted valid completion state.
+- GitHub Actions run
+  [30570086797](https://github.com/synsynlele/pipu-path/actions/runs/30570086797)
+  passed `validate` and `staging-e2e`.
+- Vercel Preview deployment `HvTW1zNiYvBwyTeRHyGWuaKCDLsp` passed.
+- Production dependency audit remains clean; nine full-audit development
+  toolchain findings remain recorded debt.
+
+### Boundary
+
+Status: COMPLETE. Stage 4.1 contains no live provider call, generated user
+conclusion, public Builder projection, Journey or Quest implementation. Work
+stops before Stage 4.2 controlled interpretation execution.
