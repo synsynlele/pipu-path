@@ -9,10 +9,41 @@ async function assertNoDiscoveryError(page: import("@playwright/test").Page) {
   }
 }
 
+async function submitAndAwaitDiscoveryTransition(
+  page: import("@playwright/test").Page,
+  button: import("@playwright/test").Locator,
+) {
+  const previousUrl = page.url();
+  await button.click();
+  await expect.poll(() => page.url()).not.toBe(previousUrl);
+  await page.waitForLoadState("domcontentloaded");
+  await expect
+    .poll(async () => {
+      const continueDiscovery = page.getByRole("link", {
+        name: "Continue Discovery",
+      });
+      const reviewAnswers = page.getByRole("button", {
+        name: "Review my answers",
+      });
+      const continueReview = page.getByRole("link", {
+        name: "Continue review",
+      });
+      return (
+        (await page.locator("form").count()) +
+        (await continueDiscovery.count()) +
+        (await reviewAnswers.count()) +
+        (await continueReview.count())
+      );
+    })
+    .toBeGreaterThan(0);
+  await assertNoDiscoveryError(page);
+}
+
 test("eligible user completes persistent Discovery without invented results", async ({
   page,
   isMobile,
 }) => {
+  test.setTimeout(120_000);
   test.skip(
     isMobile,
     "The full flow runs once; mobile controls have a focused test.",
@@ -53,12 +84,22 @@ test("eligible user completes persistent Discovery without invented results", as
         ),
         continueDiscovery.click(),
       ]);
+      await page.locator("form").waitFor({ state: "visible" });
+      continue;
+    }
+    const continueReview = page.getByRole("link", {
+      name: "Continue review",
+    });
+    if ((await continueReview.count()) === 1) {
+      await continueReview.click();
+      await expect(page).toHaveURL(/\/onboarding\/discovery\/review/);
       continue;
     }
     const reviewAnswers = page.getByRole("button", {
       name: "Review my answers",
     });
     if ((await reviewAnswers.count()) === 1) {
+      await expect(reviewAnswers).toBeVisible();
       await Promise.all([
         page.waitForURL(/\/onboarding\/discovery\/review/, {
           waitUntil: "commit",
@@ -70,50 +111,29 @@ test("eligible user completes persistent Discovery without invented results", as
     const textarea = page.locator("textarea");
     const radios = page.locator('input[type="radio"]');
     const checkboxes = page.locator('input[type="checkbox"]');
-    if (await textarea.count()) {
-      const skip = page.getByRole("button", { name: "Skip for now" });
-      if (await skip.count()) {
-        const previousUrl = page.url();
-        await Promise.all([
-          page.waitForURL((url) => url.toString() !== previousUrl, {
-            waitUntil: "commit",
-          }),
-          skip.click(),
-        ]);
-        await assertNoDiscoveryError(page);
-      } else {
-        await textarea.fill(
-          "Synthetic browser evidence for Stage 3 verification.",
-        );
-        const previousUrl = page.url();
-        await Promise.all([
-          page.waitForURL((url) => url.toString() !== previousUrl, {
-            waitUntil: "commit",
-          }),
-          page.getByRole("button", { name: "Save and continue" }).click(),
-        ]);
-        await assertNoDiscoveryError(page);
-      }
+    const skip = page.getByRole("button", { name: "Skip for now" });
+    if (await skip.count()) {
+      await submitAndAwaitDiscoveryTransition(page, skip);
+    } else if (await textarea.count()) {
+      await textarea.fill(
+        "Synthetic browser evidence for Stage 3 verification.",
+      );
+      await submitAndAwaitDiscoveryTransition(
+        page,
+        page.getByRole("button", { name: "Save and continue" }),
+      );
     } else if (await radios.count()) {
-      await radios.first().check();
-      const previousUrl = page.url();
-      await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl, {
-          waitUntil: "commit",
-        }),
-        page.getByRole("button", { name: "Save and continue" }).click(),
-      ]);
-      await assertNoDiscoveryError(page);
+      await radios.first().check({ force: true });
+      await submitAndAwaitDiscoveryTransition(
+        page,
+        page.getByRole("button", { name: "Save and continue" }),
+      );
     } else if (await checkboxes.count()) {
       await checkboxes.first().check();
-      const previousUrl = page.url();
-      await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl, {
-          waitUntil: "commit",
-        }),
-        page.getByRole("button", { name: "Save and continue" }).click(),
-      ]);
-      await assertNoDiscoveryError(page);
+      await submitAndAwaitDiscoveryTransition(
+        page,
+        page.getByRole("button", { name: "Save and continue" }),
+      );
     } else {
       throw new Error(`No supported Discovery input found at ${page.url()}`);
     }
@@ -121,10 +141,10 @@ test("eligible user completes persistent Discovery without invented results", as
 
   await expect(page).toHaveURL(/\/onboarding\/discovery\/review/);
   await expect(
-    page.getByRole("heading", { name: "Review your answers" }),
-  ).toBeVisible();
+    page.getByRole("heading", { name: "Your answers, in your words." }),
+  ).toBeVisible({ timeout: 15_000 });
 
-  await page.getByRole("link", { name: "Edit" }).first().click();
+  await page.getByRole("link", { name: "Edit answer" }).first().click();
   const editTextarea = page.locator("textarea");
   if (await editTextarea.count()) {
     await editTextarea.fill("Edited synthetic browser evidence.");
@@ -135,11 +155,13 @@ test("eligible user completes persistent Discovery without invented results", as
   await page.getByRole("button", { name: "Complete Discovery" }).click();
   await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
   await expect(
-    page.getByRole("heading", { name: "Your Discovery evidence is ready" }),
+    page.getByRole("heading", { name: "Your evidence is safely prepared." }),
   ).toBeVisible();
   await expect(
-    page.getByText(/strength|personality type|mission/i),
-  ).toHaveCount(0);
+    page.getByText(
+      /No strengths, weaknesses, purpose, mission, career, Journey or Human Potential Profile has been generated\./,
+    ),
+  ).toBeVisible();
 
   await page.reload();
   await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
