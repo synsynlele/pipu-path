@@ -25,10 +25,14 @@ async function submitAndAwaitDiscoveryTransition(
       const reviewAnswers = page.getByRole("button", {
         name: "Review my answers",
       });
+      const continueReview = page.getByRole("link", {
+        name: "Continue review",
+      });
       return (
         (await page.locator("form").count()) +
         (await continueDiscovery.count()) +
-        (await reviewAnswers.count())
+        (await reviewAnswers.count()) +
+        (await continueReview.count())
       );
     })
     .toBeGreaterThan(0);
@@ -80,6 +84,14 @@ test("eligible user completes persistent Discovery without invented results", as
         continueDiscovery.click(),
       ]);
       await page.locator("form").waitFor({ state: "visible" });
+      continue;
+    }
+    const continueReview = page.getByRole("link", {
+      name: "Continue review",
+    });
+    if ((await continueReview.count()) === 1) {
+      await continueReview.click();
+      await expect(page).toHaveURL(/\\/onboarding\\/discovery\\/review/);
       continue;
     }
     const reviewAnswers = page.getByRole("button", {
