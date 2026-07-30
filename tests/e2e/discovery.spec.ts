@@ -86,6 +86,7 @@ test("eligible user completes persistent Discovery without invented results", as
       name: "Review my answers",
     });
     if ((await reviewAnswers.count()) === 1) {
+      await expect(reviewAnswers).toBeVisible();
       await Promise.all([
         page.waitForURL(/\/onboarding\/discovery\/review/, {
           waitUntil: "commit",
