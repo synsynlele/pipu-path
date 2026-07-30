@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   initialDiscoveryFormState,
@@ -29,6 +30,11 @@ export function DiscoveryTransitionForm({
     action,
     initialDiscoveryFormState,
   );
+  const router = useRouter();
+  useEffect(() => {
+    if (state.status === "success" && state.destination)
+      router.replace(state.destination);
+  }, [router, state.destination, state.status]);
   return (
     <form action={formAction}>
       <input type="hidden" name="session_id" value={sessionId} />
