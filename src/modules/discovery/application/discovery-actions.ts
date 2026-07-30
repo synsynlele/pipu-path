@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -105,7 +104,6 @@ export async function saveDiscoveryResponseAction(
     return { status: "error", ...safe };
   }
 
-  revalidatePath("/onboarding/discovery");
   if (parsed.data.return_to === "review") {
     const { error: reviewError } = await client.rpc("open_discovery_review", {
       session_id_input: state.session.id,
@@ -159,7 +157,6 @@ export async function openDiscoveryReviewAction(
     );
     return { status: "error", ...safe };
   }
-  revalidatePath("/onboarding/discovery");
   return { status: "success", destination: "/onboarding/discovery/review" };
 }
 
@@ -193,6 +190,5 @@ export async function completeDiscoveryAction(
     );
     return { status: "error", ...safe };
   }
-  revalidatePath("/onboarding/discovery");
   return { status: "success", destination: "/onboarding/discovery/complete" };
 }
