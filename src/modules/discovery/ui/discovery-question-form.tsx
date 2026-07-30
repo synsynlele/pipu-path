@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { saveDiscoveryResponseAction } from "../application/discovery-actions";
 import { initialDiscoveryFormState } from "../application/discovery-form-state";
@@ -25,6 +26,11 @@ export function DiscoveryQuestionForm({
     saveDiscoveryResponseAction,
     initialDiscoveryFormState,
   );
+  const router = useRouter();
+  useEffect(() => {
+    if (state.status === "success" && state.destination)
+      router.replace(state.destination);
+  }, [router, state.destination, state.status]);
   const descriptionId = `${question.stableKey}-description`;
   const errorId = `${question.stableKey}-error`;
   return (
