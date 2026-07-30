@@ -12,7 +12,11 @@ const input = {
   ageBand: "16_17" as const,
   isMinor: true,
   safeguardingReviewRequired: false,
-  prohibitedInferenceCategories: ["diagnosis", "career_assignment", "purpose_claim"],
+  prohibitedInferenceCategories: [
+    "diagnosis",
+    "career_assignment",
+    "purpose_claim",
+  ],
   evidence: [
     {
       id: "00000000-0000-4000-8000-000000000002",
@@ -50,7 +54,10 @@ function output(overrides: Record<string, unknown> = {}) {
           },
         ],
         uncertainties: [
-          { type: "insufficient_examples", description: "Only one example is available." },
+          {
+            type: "insufficient_examples",
+            description: "Only one example is available.",
+          },
         ],
         confirmationQuestion: "Does this still feel accurate to you?",
         sensitivity: "standard",
@@ -67,10 +74,34 @@ describe("Stage 4.1 interpretation contracts", () => {
   });
 
   it.each([
-    ["unknown evidence", output({ evidence: [{ evidenceId: "00000000-0000-4000-8000-000000000099", supportType: "supporting", explanation: "Unknown", weight: 0.5 }] }), "HPI_OUTPUT_UNKNOWN_EVIDENCE"],
+    [
+      "unknown evidence",
+      output({
+        evidence: [
+          {
+            evidenceId: "00000000-0000-4000-8000-000000000099",
+            supportType: "supporting",
+            explanation: "Unknown",
+            weight: 0.5,
+          },
+        ],
+      }),
+      "HPI_OUTPUT_UNKNOWN_EVIDENCE",
+    ],
     ["missing provenance", output({ evidence: [] }), "HPI_OUTPUT_INVALID"],
-    ["deterministic purpose", output({ summary: "This is definitely your purpose." }), "HPI_OUTPUT_INVALID"],
-    ["minor-unsafe guidance", output({ summary: "Seek an unknown adult relationship.", ageAppropriate: false }), "HPI_SAFEGUARDING_RESTRICTION"],
+    [
+      "deterministic purpose",
+      output({ summary: "This is definitely your purpose." }),
+      "HPI_OUTPUT_INVALID",
+    ],
+    [
+      "minor-unsafe guidance",
+      output({
+        summary: "Seek an unknown adult relationship.",
+        ageAppropriate: false,
+      }),
+      "HPI_SAFEGUARDING_RESTRICTION",
+    ],
   ])("rejects %s", (_name, candidate, code) => {
     const result = validateInterpretationOutput(input, candidate);
     expect(result).toEqual({ ok: false, code: code as HpiDomainErrorCode });
