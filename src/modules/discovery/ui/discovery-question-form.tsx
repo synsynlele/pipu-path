@@ -1,10 +1,7 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { saveDiscoveryResponseAction } from "../application/discovery-actions";
-import { initialDiscoveryFormState } from "../application/discovery-form-state";
+import { saveDiscoveryResponseNavigationAction } from "../application/discovery-actions";
 import type { DiscoveryAnswer, DiscoveryQuestion } from "../domain/discovery";
 
 export function DiscoveryQuestionForm({
@@ -22,26 +19,17 @@ export function DiscoveryQuestionForm({
   previousHref?: string;
   returnTo?: "flow" | "review";
 }) {
-  const [state, action, pending] = useActionState(
-    saveDiscoveryResponseAction,
-    initialDiscoveryFormState,
-  );
-  const router = useRouter();
-  useEffect(() => {
-    if (state.status === "success" && state.destination)
-      router.replace(state.destination);
-  }, [router, state.destination, state.status]);
   const descriptionId = `${question.stableKey}-description`;
   const errorId = `${question.stableKey}-error`;
   return (
-    <form action={action} className="space-y-6">
+    <form action={saveDiscoveryResponseNavigationAction} className="space-y-6">
       <input type="hidden" name="session_id" value={sessionId} />
       <input type="hidden" name="expected_version" value={version} />
       <input type="hidden" name="question_key" value={question.stableKey} />
       <input type="hidden" name="return_to" value={returnTo} />
       <fieldset
         className="space-y-5"
-        aria-describedby={`${descriptionId}${state.message ? ` ${errorId}` : ""}`}
+        aria-describedby={descriptionId}
       >
         <legend className="text-2xl leading-tight font-semibold sm:text-3xl">
           {question.prompt}
@@ -130,15 +118,9 @@ export function DiscoveryQuestionForm({
         ) : null}
       </fieldset>
 
-      {state.message ? (
-        <p id={errorId} role="alert" className="text-[var(--color-danger)]">
-          {state.message}
-        </p>
-      ) : (
-        <p role="status" className="text-muted text-sm">
-          Your answer is saved only after the server confirms it.
-        </p>
-      )}
+      <p id={errorId} role="status" className="text-muted text-sm">
+        Your answer is saved only after the server confirms it.
+      </p>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         <div>
@@ -155,17 +137,13 @@ export function DiscoveryQuestionForm({
               name="intent"
               value="skip"
               variant="secondary"
-              disabled={pending}
+             
             >
               Skip for now
             </Button>
           ) : null}
           <Button type="submit" name="intent" value="save" disabled={pending}>
-            {pending
-              ? "Saving…"
-              : returnTo === "review"
-                ? "Save edit"
-                : "Save and continue"}
+            {returnTo === "review" ? "Save edit" : "Save and continue"}
           </Button>
         </div>
       </div>
