@@ -88,7 +88,7 @@ describe("Stage 4.1 interpretation contracts", () => {
       }),
       "HPI_OUTPUT_UNKNOWN_EVIDENCE",
     ],
-    ["missing provenance", output({ evidence: [] }), "HPI_OUTPUT_INVALID"],
+    ["missing provenance", output({ evidence: [] }), "HPI_OUTPUT_MISSING_PROVENANCE"],
     [
       "deterministic purpose",
       output({ summary: "This is definitely your purpose." }),
