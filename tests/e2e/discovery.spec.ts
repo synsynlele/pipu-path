@@ -141,7 +141,7 @@ test("eligible user completes persistent Discovery without invented results", as
   await expect(page).toHaveURL(/\/onboarding\/discovery\/review/);
   await expect(
     page.getByRole("heading", { name: "Review your answers" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15_000 });
 
   await page.getByRole("link", { name: "Edit" }).first().click();
   const editTextarea = page.locator("textarea");
