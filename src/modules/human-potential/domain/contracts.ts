@@ -167,9 +167,7 @@ export function validateInterpretationOutput(
     if (
       input.isMinor &&
       (!insight.ageAppropriate ||
-        /\b(adult relationship|unknown adult|financial investment|legal action)\b/i.test(
-          prose,
-        ))
+        minorSafeguardingClaim.test(prose))
     )
       return { ok: false, code: "HPI_SAFEGUARDING_RESTRICTION" };
   }
