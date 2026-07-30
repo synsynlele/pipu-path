@@ -140,7 +140,10 @@ export const interpretationOutputSchema = z.object({
 });
 
 const prohibitedClaim =
-  /\b(diagnos(?:e|is|tic)|definitely your purpose|certainly your purpose|you are destined|the perfect career|guaranteed career)\b/i;
+  /\\b(diagnos(?:e|is|tic)|definitely your purpose|certainly your purpose|you are destined|the perfect career|guaranteed career|fixed purpose|your destiny)\\b/i;
+
+const minorSafeguardingClaim =
+  /\\b(adult relationship|unknown adult|contact (?:an )?adult|meet (?:an )?adult|adult employment|adult job|financial investment|invest money|legal action|legal advice|keep (?:this )?secret|don't tell (?:your )?(?:parent|guardian)|hide (?:this )?from (?:your )?(?:parent|guardian))\\b/i;
 
 export function validateInterpretationOutput(
   input: z.infer<typeof interpretationInputSchema>,
