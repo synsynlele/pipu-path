@@ -91,7 +91,7 @@ export const interpretationOutputSchema = z.object({
         confidenceLevel: z.enum(confidenceLevels),
         confidenceScore: z.number().min(0).max(1),
         confidenceFactors: z.array(z.string().min(1).max(160)).min(1).max(8),
-        evidence: z.array(evidenceReferenceSchema).min(1).max(20),
+        evidence: z.array(evidenceReferenceSchema).max(20),
         uncertainties: z
           .array(
             z.object({
