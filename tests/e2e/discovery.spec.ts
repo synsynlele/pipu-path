@@ -16,6 +16,7 @@ async function submitAndAwaitDiscoveryTransition(
   const previousUrl = page.url();
   await button.click();
   await expect.poll(() => page.url()).not.toBe(previousUrl);
+  await page.waitForLoadState("domcontentloaded");
   await assertNoDiscoveryError(page);
 }
 
