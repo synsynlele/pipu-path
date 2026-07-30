@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createHash } from "node:crypto";
 import type { Stage4DiscoveryHandoff } from "@/modules/discovery/domain/discovery";
 import type { z } from "zod";
@@ -55,7 +57,7 @@ export function normalizeCompletedDiscoveryHandoff(
   return handoff.responses
     .filter((response) => !response.skipped && response.value !== null)
     .map((response) => ({
-      sourceId: handoff.sessionId,
+      sourceId: response.sourceId,
       sourceVersion: handoff.questionSet.version,
       sourceKey: response.questionKey,
       category: categoryForQuestion(response.category),
@@ -64,7 +66,7 @@ export function normalizeCompletedDiscoveryHandoff(
       sensitivity: response.sensitivity,
       contentHash: evidenceContentHash({
         userId,
-        sourceId: handoff.sessionId,
+        sourceId: response.sourceId,
         sourceVersion: handoff.questionSet.version,
         sourceKey: response.questionKey,
         responseType: response.responseType,
