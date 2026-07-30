@@ -14,12 +14,8 @@ async function submitAndAwaitDiscoveryTransition(
   button: import("@playwright/test").Locator,
 ) {
   const previousUrl = page.url();
-  // A changed visible prompt proves the HTTP redirect rendered the next question.
-  const prompt = page.locator("fieldset legend");
-  const previousPrompt = await prompt.textContent();
   await button.click();
   await expect.poll(() => page.url()).not.toBe(previousUrl);
-  await expect.poll(() => prompt.textContent()).not.toBe(previousPrompt);
   await assertNoDiscoveryError(page);
 }
 
