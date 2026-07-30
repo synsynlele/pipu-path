@@ -26,10 +26,7 @@ export function DiscoveryQuestionForm({
       <input type="hidden" name="expected_version" value={version} />
       <input type="hidden" name="question_key" value={question.stableKey} />
       <input type="hidden" name="return_to" value={returnTo} />
-      <fieldset
-        className="space-y-5"
-        aria-describedby={descriptionId}
-      >
+      <fieldset className="space-y-5" aria-describedby={descriptionId}>
         <legend className="text-2xl leading-tight font-semibold sm:text-3xl">
           {question.prompt}
         </legend>
@@ -135,8 +132,8 @@ export function DiscoveryQuestionForm({
               type="submit"
               name="intent"
               value="skip"
-              variant="secondary">
-
+              variant="secondary"
+            >
               Skip for now
             </Button>
           ) : null}
