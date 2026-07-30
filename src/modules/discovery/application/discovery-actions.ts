@@ -123,27 +123,9 @@ export async function saveDiscoveryResponseAction(
       destination: "/onboarding/discovery/review",
     };
   }
-  const { data: committedSession, error: cursorError } = await client
-    .from("discovery_sessions")
-    .select("current_question_key")
-    .eq("id", state.session.id)
-    .single();
-  if (cursorError) {
-    const safe = safeDiscoveryError(
-      cursorError.message,
-      "DISCOVERY_SAVE_FAILED",
-    );
-    return { status: "error", ...safe };
-  }
-  const nextQuestion = state.questions.find(
-    (candidate) =>
-      candidate.stableKey === committedSession.current_question_key,
-  );
-  if (!nextQuestion)
-    return { status: "success", destination: "/onboarding/discovery" };
   return {
     status: "success",
-    destination: `/onboarding/discovery/${nextQuestion.sectionKey}?question=${nextQuestion.stableKey}`,
+    destination: "/onboarding/discovery?resume=1",
   };
 }
 
