@@ -158,8 +158,10 @@ test("eligible user completes persistent Discovery without invented results", as
     page.getByRole("heading", { name: "Your evidence is safely prepared." }),
   ).toBeVisible();
   await expect(
-    page.getByText(/strength|personality type|mission/i),
-  ).toHaveCount(0);
+    page.getByText(
+      /No strengths, weaknesses, purpose, mission, career, Journey or Human Potential Profile has been generated\./,
+    ),
+  ).toBeVisible();
 
   await page.reload();
   await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
