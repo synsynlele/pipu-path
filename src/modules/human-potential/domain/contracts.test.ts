@@ -102,6 +102,11 @@ describe("Stage 4.1 interpretation contracts", () => {
       }),
       "HPI_SAFEGUARDING_RESTRICTION",
     ],
+    [
+      "minor secrecy guidance",
+      output({ summary: "Keep this secret from your guardian." }),
+      "HPI_SAFEGUARDING_RESTRICTION",
+    ],
   ])("rejects %s", (_name, candidate, code) => {
     const result = validateInterpretationOutput(input, candidate);
     expect(result).toEqual({ ok: false, code: code as HpiDomainErrorCode });
