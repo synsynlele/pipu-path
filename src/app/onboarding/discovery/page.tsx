@@ -29,7 +29,12 @@ export default async function DiscoveryIntroductionPage({
   const current = state.questions.find(
     (question) => question.stableKey === session?.current_question_key,
   );
-  if (query.resume === "1" && session?.status === "in_progress" && current)
+  if (
+    query.resume === "1" &&
+    session?.status === "in_progress" &&
+    missing.length > 0 &&
+    current
+  )
     redirect(
       `/onboarding/discovery/${current.sectionKey}?question=${current.stableKey}`,
     );
