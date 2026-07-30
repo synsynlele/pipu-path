@@ -118,7 +118,10 @@ export async function saveDiscoveryResponseAction(
       );
       return { status: "error", ...safe };
     }
-    redirect("/onboarding/discovery/review");
+    return {
+      status: "success",
+      destination: "/onboarding/discovery/review",
+    };
   }
   const { data: committedSession, error: cursorError } = await client
     .from("discovery_sessions")
@@ -136,10 +139,12 @@ export async function saveDiscoveryResponseAction(
     (candidate) =>
       candidate.stableKey === committedSession.current_question_key,
   );
-  if (!nextQuestion) redirect("/onboarding/discovery");
-  redirect(
-    `/onboarding/discovery/${nextQuestion.sectionKey}?question=${nextQuestion.stableKey}`,
-  );
+  if (!nextQuestion)
+    return { status: "success", destination: "/onboarding/discovery" };
+  return {
+    status: "success",
+    destination: `/onboarding/discovery/${nextQuestion.sectionKey}?question=${nextQuestion.stableKey}`,
+  };
 }
 
 export async function openDiscoveryReviewAction(
@@ -173,7 +178,7 @@ export async function openDiscoveryReviewAction(
     return { status: "error", ...safe };
   }
   revalidatePath("/onboarding/discovery");
-  redirect("/onboarding/discovery/review");
+  return { status: "success", destination: "/onboarding/discovery/review" };
 }
 
 export async function completeDiscoveryAction(
@@ -207,5 +212,5 @@ export async function completeDiscoveryAction(
     return { status: "error", ...safe };
   }
   revalidatePath("/onboarding/discovery");
-  redirect("/onboarding/discovery/complete");
+  return { status: "success", destination: "/onboarding/discovery/complete" };
 }
