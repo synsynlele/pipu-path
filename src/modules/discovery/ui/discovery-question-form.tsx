@@ -136,13 +136,12 @@ export function DiscoveryQuestionForm({
               type="submit"
               name="intent"
               value="skip"
-              variant="secondary"
-             
-            >
+              variant="secondary">
+
               Skip for now
             </Button>
           ) : null}
-          <Button type="submit" name="intent" value="save" disabled={pending}>
+          <Button type="submit" name="intent" value="save">
             {returnTo === "review" ? "Save edit" : "Save and continue"}
           </Button>
         </div>
