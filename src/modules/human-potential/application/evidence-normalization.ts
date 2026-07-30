@@ -64,7 +64,9 @@ export function normalizeCompletedDiscoveryHandoff(
       sourceKey: response.questionKey,
       category: categoryForQuestion(response.category),
       responseType: response.responseType,
-      value: response.value,
+      // Sensitive source values affect the fingerprint but never leave this
+      // server-side normalization boundary as interpretation content.
+      value: response.sensitivity === "sensitive" ? null : response.value,
       sensitivity: response.sensitivity,
       contentHash: evidenceContentHash({
         userId,
