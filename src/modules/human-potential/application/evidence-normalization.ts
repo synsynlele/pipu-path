@@ -7,7 +7,9 @@ import { normalizedEvidenceSchema } from "../domain/contracts";
 
 export type NormalizedEvidence = z.infer<typeof normalizedEvidenceSchema>;
 
-const categoryForQuestion = (category: string): NormalizedEvidence["category"] => {
+const categoryForQuestion = (
+  category: string,
+): NormalizedEvidence["category"] => {
   const map: Record<string, NormalizedEvidence["category"]> = {
     current_reality: "current_reality",
     what_draws_me: "interest",
