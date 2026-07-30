@@ -172,7 +172,6 @@ Stage 3 gathers and preserves evidence only. It does not interpret answers,
 generate a Human Potential Profile or start Journeys/Quests. Stage 4 is locked
 until the Stage 3 deployment browser matrix passes.
 
-
 ## 2026-07-30 — Stage 3 deployed closure
 
 ### Issues found and repaired
