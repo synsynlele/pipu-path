@@ -17,6 +17,21 @@ async function submitAndAwaitDiscoveryTransition(
   await button.click();
   await expect.poll(() => page.url()).not.toBe(previousUrl);
   await page.waitForLoadState("domcontentloaded");
+  await expect
+    .poll(async () => {
+      const continueDiscovery = page.getByRole("link", {
+        name: "Continue Discovery",
+      });
+      const reviewAnswers = page.getByRole("button", {
+        name: "Review my answers",
+      });
+      return (
+        (await page.locator("form").count()) +
+        (await continueDiscovery.count()) +
+        (await reviewAnswers.count())
+      );
+    })
+    .toBeGreaterThan(0);
   await assertNoDiscoveryError(page);
 }
 
@@ -64,6 +79,7 @@ test("eligible user completes persistent Discovery without invented results", as
         ),
         continueDiscovery.click(),
       ]);
+      await page.locator("form").waitFor({ state: "visible" });
       continue;
     }
     const reviewAnswers = page.getByRole("button", {
