@@ -171,3 +171,35 @@ Implement Stage 3 completely and stop before Stage 4 interpretation.
 Stage 3 gathers and preserves evidence only. It does not interpret answers,
 generate a Human Potential Profile or start Journeys/Quests. Stage 4 is locked
 until the Stage 3 deployment browser matrix passes.
+
+
+## 2026-07-30 — Stage 3 deployed closure
+
+### Issues found and repaired
+
+- Replaced the hanging server-action form transport with a controlled HTTP POST
+  and server-side 303 redirect while retaining the validated application action.
+- Removed a malformed obsolete navigation action introduced during remote repair.
+- Corrected the final-answer resume rule so zero missing required answers exposes
+  the review transition instead of redirecting back to question 15.
+- Made the staging browser test wait for streamed controls, support persisted
+  review state and use the implemented review/completion language.
+- Increased only the full 15-question test budget to 120 seconds.
+
+### Closure evidence
+
+- Confirmed target: disposable non-production Supabase
+  `kvjcswnmhwegpakbtvlh`.
+- Reset exactly one approved synthetic CI fixture session.
+- GitHub Actions run
+  [30546184628](https://github.com/synsynlele/pipu-path/actions/runs/30546184628)
+  passed both `validate` and `staging-e2e`.
+- The browser flow passed login, start, all questions, persistence, resume,
+  review, edit, completion, refresh recovery, anonymous protection and mobile
+  access checks.
+- Production dependencies audit clean with `--omit=dev`; current full-audit
+  findings are confined to the development lint/glob toolchain and remain
+  recorded technical debt.
+
+Status: COMPLETE. Stage 0 through Stage 3 are complete. Work stops at the Stage
+4.1 interpretation-contract boundary.
