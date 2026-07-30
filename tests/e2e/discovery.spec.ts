@@ -13,16 +13,10 @@ async function submitAndAwaitDiscoveryTransition(
   page: import("@playwright/test").Page,
   button: import("@playwright/test").Locator,
 ) {
-  const previousUrl = page.url();
   const versionInput = page.locator('input[name="expected_version"]');
   const previousVersion = await versionInput.inputValue();
 
-  await Promise.all([
-    page.waitForURL((url) => url.toString() !== previousUrl, {
-      waitUntil: "commit",
-    }),
-    button.click(),
-  ]);
+  await button.click();
   await page.waitForFunction((version) => {
     const input = document.querySelector<HTMLInputElement>(
       'input[name="expected_version"]',
