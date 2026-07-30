@@ -79,6 +79,27 @@ test("eligible user completes persistent Discovery without invented results", as
     .toBe("/app");
 
   await page.goto("/onboarding/discovery");
+  const persistedCompletion = page.getByRole("link", {
+    name: "View completion",
+  });
+  if ((await persistedCompletion.count()) === 1) {
+    await persistedCompletion.click();
+    await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
+    await expect(
+      page.getByRole("heading", {
+        name: "Your evidence is safely prepared.",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        /No strengths, weaknesses, purpose, mission, career, Journey or Human Potential Profile has been generated\./,
+      ),
+    ).toBeVisible();
+    await page.reload();
+    await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
+    return;
+  }
+
   const begin = page.getByRole("button", { name: "Begin Discovery" });
   if ((await begin.count()) === 1) {
     await begin.click();
