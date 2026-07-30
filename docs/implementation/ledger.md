@@ -203,7 +203,6 @@ until the Stage 3 deployment browser matrix passes.
 Status: COMPLETE. Stage 0 through Stage 3 are complete. Work stops at the Stage
 4.1 interpretation-contract boundary.
 
-
 ## 2026-07-30 — Stage 4.1 Human Potential provenance foundation
 
 ### Authorized scope
