@@ -14,7 +14,7 @@ async function submitAndAwaitDiscoveryTransition(
   button: import("@playwright/test").Locator,
 ) {
   const previousUrl = page.url();
-  // A changed visible prompt proves the freshly rendered question replaced the prior form.
+  // A changed visible prompt proves the HTTP redirect rendered the next question.
   const prompt = page.locator("fieldset legend");
   const previousPrompt = await prompt.textContent();
   await button.click();
