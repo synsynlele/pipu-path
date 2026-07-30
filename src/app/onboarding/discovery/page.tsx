@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import {
@@ -15,8 +16,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function DiscoveryIntroductionPage() {
-  const state = await getDiscoveryState();
+export default async function DiscoveryIntroductionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ resume?: string }>;
+}) {
+  const [state, query] = await Promise.all([getDiscoveryState(), searchParams]);
   const session = state.session;
   const missing = session
     ? missingRequiredQuestions(state.questions, state.answers)
@@ -24,6 +29,10 @@ export default async function DiscoveryIntroductionPage() {
   const current = state.questions.find(
     (question) => question.stableKey === session?.current_question_key,
   );
+  if (query.resume === "1" && session?.status === "in_progress" && current)
+    redirect(
+      `/onboarding/discovery/${current.sectionKey}?question=${current.stableKey}`,
+    );
 
   return (
     <main
