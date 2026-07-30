@@ -187,10 +187,14 @@ alter table public.insight_user_feedback enable row level security;
 alter table public.human_potential_profile_versions enable row level security;
 alter table public.human_potential_profile_items enable row level security;
 
-revoke all on all tables in schema public from anon;
-revoke all on all tables in schema public from authenticated;
-grant select on public.evidence_records, public.interpretation_requests, public.potential_insights,
-  public.insight_user_feedback, public.human_potential_profile_versions to authenticated;
+revoke all on public.evidence_records, public.interpretation_requests,
+  public.interpretation_request_evidence, public.potential_insights,
+  public.insight_evidence_links, public.insight_uncertainties,
+  public.insight_user_feedback, public.human_potential_profile_versions,
+  public.human_potential_profile_items from anon, authenticated;
+grant select on public.evidence_records, public.interpretation_requests,
+  public.potential_insights, public.insight_user_feedback,
+  public.human_potential_profile_versions to authenticated;
 
 create policy evidence_records_own_select on public.evidence_records for select to authenticated using (user_id = auth.uid());
 create policy interpretation_requests_own_select on public.interpretation_requests for select to authenticated using (user_id = auth.uid());
