@@ -64,11 +64,11 @@ begin
     profile.age_band,
     'eligible'::public.hpi_evidence_status,
     response.updated_at,
-    encode(digest(concat_ws(E'\\000',
+    encode(digest(concat_ws(chr(31),
       actor::text, response.id::text, completed_session.question_set_version::text,
       response.question_key, response.response_type::text,
       coalesce(response.text_response, ''),
-      coalesce(array_to_string(response.selected_options, E'\\001'), ''),
+      coalesce(array_to_string(response.selected_options, chr(30)), ''),
       coalesce(response.numeric_response::text, '')
     ), 'sha256'), 'hex'),
     jsonb_build_object('response_type', response.response_type, 'question_id', response.question_id)
