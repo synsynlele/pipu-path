@@ -127,8 +127,8 @@ export async function saveDiscoveryResponseAction(
   };
 }
 
-export async function saveDiscoveryResponseNavigationAction(formData: FormData) {
-  const result = await saveDiscoveryResponseAction({ status: "idle" }, formData);
+export async function saveDiscoveryResponseNavigationAction(\n  formData: FormData,\n) {
+  const result = await saveDiscoveryResponseAction(\n    { status: "idle" },\n    formData,\n  );
   if (result.status === "success" && result.destination)
     redirect(result.destination);
   redirect("/onboarding/discovery?error=save");
