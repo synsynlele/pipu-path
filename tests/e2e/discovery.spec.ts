@@ -14,8 +14,11 @@ async function submitAndAwaitDiscoveryTransition(
   button: import("@playwright/test").Locator,
 ) {
   const previousUrl = page.url();
+  const versionInput = page.locator('input[name="expected_version"]');
+  const previousVersion = await versionInput.inputValue();
   await button.click();
   await expect.poll(() => page.url()).not.toBe(previousUrl);
+  await expect.poll(() => versionInput.inputValue()).not.toBe(previousVersion);
   await assertNoDiscoveryError(page);
 }
 
