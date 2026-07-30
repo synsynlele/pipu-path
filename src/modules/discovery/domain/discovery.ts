@@ -29,6 +29,7 @@ export type DiscoveryQuestion = {
 };
 
 export type DiscoveryAnswer = {
+  id: string;
   questionId: string;
   questionKey: string;
   text: string | null;
@@ -121,6 +122,7 @@ export type Stage4DiscoveryHandoff = {
   completedAt: string;
   processingStatus: "ready_for_stage_4";
   responses: Array<{
+    sourceId: string;
     category: string;
     questionKey: string;
     responseType: DiscoveryResponseType;
