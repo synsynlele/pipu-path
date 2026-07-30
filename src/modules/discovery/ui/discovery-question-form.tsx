@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, ButtonLink } from "@/components/ui/button";
-import { saveDiscoveryResponseNavigationAction } from "../application/discovery-actions";
 import type { DiscoveryAnswer, DiscoveryQuestion } from "../domain/discovery";
 
 export function DiscoveryQuestionForm({
@@ -22,7 +21,7 @@ export function DiscoveryQuestionForm({
   const descriptionId = `${question.stableKey}-description`;
   const errorId = `${question.stableKey}-error`;
   return (
-    <form action={saveDiscoveryResponseNavigationAction} className="space-y-6">
+    <form action="/api/discovery/save" method="post" className="space-y-6">
       <input type="hidden" name="session_id" value={sessionId} />
       <input type="hidden" name="expected_version" value={version} />
       <input type="hidden" name="question_key" value={question.stableKey} />
