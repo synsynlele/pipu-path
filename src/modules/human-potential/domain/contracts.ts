@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-export const confidenceLevels = ["low", "emerging", "moderate", "strong"] as const;
+export const confidenceLevels = [
+  "low",
+  "emerging",
+  "moderate",
+  "strong",
+] as const;
 export const insightTypes = [
   "strength_pattern",
   "interest_pattern",
@@ -53,8 +58,18 @@ export const normalizedEvidenceSchema = z.object({
     "motivation",
     "readiness",
   ]),
-  responseType: z.enum(["reflection", "single_select", "multi_select", "scale"]),
-  value: z.union([z.string().max(1200), z.array(z.string().max(160)).max(12), z.number(), z.null()]),
+  responseType: z.enum([
+    "reflection",
+    "single_select",
+    "multi_select",
+    "scale",
+  ]),
+  value: z.union([
+    z.string().max(1200),
+    z.array(z.string().max(160)).max(12),
+    z.number(),
+    z.null(),
+  ]),
   sensitivity: z.enum(["standard", "sensitive"]),
   contentHash: z.string().regex(/^[a-f0-9]{64}$/),
 });
@@ -64,7 +79,14 @@ export const interpretationInputSchema = z.object({
   schemaVersion: z.string().min(1).max(64),
   promptVersion: z.string().min(1).max(64),
   questionSetVersion: z.number().int().positive(),
-  ageBand: z.enum(["under_13", "13_15", "16_17", "18_24", "25_plus", "unknown"]),
+  ageBand: z.enum([
+    "under_13",
+    "13_15",
+    "16_17",
+    "18_24",
+    "25_plus",
+    "unknown",
+  ]),
   isMinor: z.boolean(),
   safeguardingReviewRequired: z.boolean(),
   prohibitedInferenceCategories: z.array(z.string()).min(1),
@@ -117,22 +139,35 @@ export const interpretationOutputSchema = z.object({
     .max(20),
 });
 
-const prohibitedClaim = /\b(diagnos(?:e|is|tic)|definitely your purpose|certainly your purpose|you are destined|the perfect career|guaranteed career)\b/i;
+const prohibitedClaim =
+  /\b(diagnos(?:e|is|tic)|definitely your purpose|certainly your purpose|you are destined|the perfect career|guaranteed career)\b/i;
 
 export function validateInterpretationOutput(
   input: z.infer<typeof interpretationInputSchema>,
   output: unknown,
-): { ok: true; value: z.infer<typeof interpretationOutputSchema> } | { ok: false; code: HpiDomainErrorCode } {
+):
+  | { ok: true; value: z.infer<typeof interpretationOutputSchema> }
+  | { ok: false; code: HpiDomainErrorCode } {
   const parsed = interpretationOutputSchema.safeParse(output);
   if (!parsed.success) return { ok: false, code: "HPI_OUTPUT_INVALID" };
   const evidenceIds = new Set(input.evidence.map((evidence) => evidence.id));
   for (const insight of parsed.data.insights) {
-    if (!insight.evidence.length) return { ok: false, code: "HPI_OUTPUT_MISSING_PROVENANCE" };
+    if (!insight.evidence.length)
+      return { ok: false, code: "HPI_OUTPUT_MISSING_PROVENANCE" };
     if (insight.evidence.some((link) => !evidenceIds.has(link.evidenceId)))
       return { ok: false, code: "HPI_OUTPUT_UNKNOWN_EVIDENCE" };
-    const prose = [insight.title, insight.summary, insight.explanation].join(" ");
-    if (prohibitedClaim.test(prose)) return { ok: false, code: "HPI_OUTPUT_INVALID" };
-    if (input.isMinor && (!insight.ageAppropriate || /\b(adult relationship|unknown adult|financial investment|legal action)\b/i.test(prose)))
+    const prose = [insight.title, insight.summary, insight.explanation].join(
+      " ",
+    );
+    if (prohibitedClaim.test(prose))
+      return { ok: false, code: "HPI_OUTPUT_INVALID" };
+    if (
+      input.isMinor &&
+      (!insight.ageAppropriate ||
+        /\b(adult relationship|unknown adult|financial investment|legal action)\b/i.test(
+          prose,
+        ))
+    )
       return { ok: false, code: "HPI_SAFEGUARDING_RESTRICTION" };
   }
   return { ok: true, value: parsed.data };
@@ -140,7 +175,13 @@ export function validateInterpretationOutput(
 
 export interface InterpretationProvider {
   interpret(input: z.infer<typeof interpretationInputSchema>): Promise<unknown>;
-  validateOutput(output: unknown): ReturnType<typeof interpretationOutputSchema.safeParse>;
+  validateOutput(
+    output: unknown,
+  ): ReturnType<typeof interpretationOutputSchema.safeParse>;
   mapProviderError(error: unknown): HpiDomainErrorCode;
-  recordUsage(metadata: { requestId: string; provider: string; model: string | null }): Promise<void>;
+  recordUsage(metadata: {
+    requestId: string;
+    provider: string;
+    model: string | null;
+  }): Promise<void>;
 }
