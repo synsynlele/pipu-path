@@ -166,8 +166,7 @@ export function validateInterpretationOutput(
       return { ok: false, code: "HPI_OUTPUT_INVALID" };
     if (
       input.isMinor &&
-      (!insight.ageAppropriate ||
-        minorSafeguardingClaim.test(prose))
+      (!insight.ageAppropriate || minorSafeguardingClaim.test(prose))
     )
       return { ok: false, code: "HPI_SAFEGUARDING_RESTRICTION" };
   }
