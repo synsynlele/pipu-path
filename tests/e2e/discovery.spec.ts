@@ -14,12 +14,8 @@ async function submitAndAwaitDiscoveryTransition(
   button: import("@playwright/test").Locator,
 ) {
   const previousUrl = page.url();
-  await Promise.all([
-    page.waitForURL((url) => url.toString() !== previousUrl, {
-      waitUntil: "commit",
-    }),
-    button.click(),
-  ]);
+  await button.click();
+  await expect.poll(() => page.url()).not.toBe(previousUrl);
   await assertNoDiscoveryError(page);
 }
 
