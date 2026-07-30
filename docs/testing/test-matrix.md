@@ -39,10 +39,35 @@ No unexecuted test is reported as passed.
 | Concurrency            | Stale version returns stable non-retryable conflict                |
 | Review/completion      | Required denial, review, completion and idempotency pass           |
 | Anonymous browser      | Discovery protected-route redirect covered                         |
-| Authenticated browser  | Pending deployment of this Stage 3 commit                          |
+| Authenticated browser  | Passed on staging; persisted completion is repeatably verified      |
 | Formatting/lint/types  | Passed; lint has zero warnings                                     |
 | Production build       | Passed; four Discovery routes compiled                             |
 | Dependency audit       | Zero vulnerabilities                                               |
 | Secret scan            | No credential values tracked                                       |
 
 No private response content is used or retained by verification fixtures.
+
+
+## Stage 4.1
+
+| Layer                         | Result                                                                  |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| Domain/contract               | Evidence normalization and interpretation contracts pass               |
+| Structural integration        | Repository integration suite passes                                    |
+| Migration                     | `007`–`010` applied in order to disposable staging                    |
+| Generated types               | Regenerated from staging; SHA-256 `bee7a507d78254520dae1811652ae9163f129103367a93a62516dade3b6fbc28` |
+| RLS/authorization             | Anonymous and cross-user access denied; controlled own-root reads only |
+| Provenance integrity          | Active insights require same-request, same-owner evidence              |
+| Evidence lifecycle            | Replaced evidence supersedes older eligible source versions            |
+| Request lifecycle             | Idempotency, duplicate-active denial, consent and safeguarding enforced |
+| Sensitive evidence            | Interpretation projection redacts value; fingerprint preserves change detection |
+| Provider boundary             | Provider-neutral contracts only; no live provider execution            |
+| Authenticated browser         | Repeatable staging login and persisted Discovery boundary pass         |
+| Formatting/lint/types/build   | `npm run validate` passes; lint has zero warnings                       |
+| Production dependency audit   | Zero high-severity production findings                                 |
+| Full dependency audit         | Nine high development-toolchain findings remain recorded debt          |
+
+Verification: GitHub Actions run
+[30570086797](https://github.com/synsynlele/pipu-path/actions/runs/30570086797)
+passed `validate` and `staging-e2e` against the matching Vercel Preview.
+No private evidence content was printed or retained in test output.
