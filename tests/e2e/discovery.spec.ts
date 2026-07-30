@@ -91,7 +91,7 @@ test("eligible user completes persistent Discovery without invented results", as
     });
     if ((await continueReview.count()) === 1) {
       await continueReview.click();
-      await expect(page).toHaveURL(/\\/onboarding\\/discovery\\/review/);
+      await expect(page).toHaveURL(/\/onboarding\/discovery\/review/);
       continue;
     }
     const reviewAnswers = page.getByRole("button", {
