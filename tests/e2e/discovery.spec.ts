@@ -140,10 +140,10 @@ test("eligible user completes persistent Discovery without invented results", as
 
   await expect(page).toHaveURL(/\/onboarding\/discovery\/review/);
   await expect(
-    page.getByRole("heading", { name: "Review your answers" }),
+    page.getByRole("heading", { name: "Your answers, in your words." }),
   ).toBeVisible({ timeout: 15_000 });
 
-  await page.getByRole("link", { name: "Edit" }).first().click();
+  await page.getByRole("link", { name: "Edit answer" }).first().click();
   const editTextarea = page.locator("textarea");
   if (await editTextarea.count()) {
     await editTextarea.fill("Edited synthetic browser evidence.");
