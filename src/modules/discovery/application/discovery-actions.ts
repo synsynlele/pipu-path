@@ -127,6 +127,16 @@ export async function saveDiscoveryResponseAction(
   };
 }
 
+export async function saveDiscoveryResponseNavigationAction(formData: FormData) {
+  const result = await saveDiscoveryResponseAction(
+    { status: "idle" },
+    formData,
+  );
+  if (result.status === "success" && result.destination)
+    redirect(result.destination);
+  redirect("/onboarding/discovery?error=save");
+}
+
 export async function openDiscoveryReviewAction(
   _previous: DiscoveryFormState,
   formData: FormData,
