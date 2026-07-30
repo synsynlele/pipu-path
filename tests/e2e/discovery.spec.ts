@@ -9,6 +9,29 @@ async function assertNoDiscoveryError(page: import("@playwright/test").Page) {
   }
 }
 
+async function submitAndAwaitDiscoveryTransition(
+  page: import("@playwright/test").Page,
+  button: import("@playwright/test").Locator,
+) {
+  const previousUrl = page.url();
+  const versionInput = page.locator('input[name="expected_version"]');
+  const previousVersion = await versionInput.inputValue();
+
+  await Promise.all([
+    page.waitForURL((url) => url.toString() !== previousUrl, {
+      waitUntil: "commit",
+    }),
+    button.click(),
+  ]);
+  await page.waitForFunction((version) => {
+    const input = document.querySelector<HTMLInputElement>(
+      'input[name="expected_version"]',
+    );
+    return !input || input.value !== version;
+  }, previousVersion);
+  await assertNoDiscoveryError(page);
+}
+
 test("eligible user completes persistent Discovery without invented results", async ({
   page,
   isMobile,
@@ -72,46 +95,27 @@ test("eligible user completes persistent Discovery without invented results", as
     const checkboxes = page.locator('input[type="checkbox"]');
     const skip = page.getByRole("button", { name: "Skip for now" });
     if (await skip.count()) {
-      const previousUrl = page.url();
-      await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl, {
-          waitUntil: "commit",
-        }),
-        skip.click(),
-      ]);
-      await assertNoDiscoveryError(page);
+      await submitAndAwaitDiscoveryTransition(page, skip);
     } else if (await textarea.count()) {
       await textarea.fill(
         "Synthetic browser evidence for Stage 3 verification.",
       );
-      const previousUrl = page.url();
-      await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl, {
-          waitUntil: "commit",
-        }),
-        page.getByRole("button", { name: "Save and continue" }).click(),
-      ]);
-      await assertNoDiscoveryError(page);
+      await submitAndAwaitDiscoveryTransition(
+        page,
+        page.getByRole("button", { name: "Save and continue" }),
+      );
     } else if (await radios.count()) {
       await radios.first().check({ force: true });
-      const previousUrl = page.url();
-      await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl, {
-          waitUntil: "commit",
-        }),
-        page.getByRole("button", { name: "Save and continue" }).click(),
-      ]);
-      await assertNoDiscoveryError(page);
+      await submitAndAwaitDiscoveryTransition(
+        page,
+        page.getByRole("button", { name: "Save and continue" }),
+      );
     } else if (await checkboxes.count()) {
       await checkboxes.first().check();
-      const previousUrl = page.url();
-      await Promise.all([
-        page.waitForURL((url) => url.toString() !== previousUrl, {
-          waitUntil: "commit",
-        }),
-        page.getByRole("button", { name: "Save and continue" }).click(),
-      ]);
-      await assertNoDiscoveryError(page);
+      await submitAndAwaitDiscoveryTransition(
+        page,
+        page.getByRole("button", { name: "Save and continue" }),
+      );
     } else {
       throw new Error(`No supported Discovery input found at ${page.url()}`);
     }
