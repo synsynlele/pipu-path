@@ -60,13 +60,11 @@ describe("Stage 3 structural contract", () => {
     expect(dal).not.toContain("service-role");
   });
 
-  it("uses the committed save result for deterministic redirects", () => {
+  it("resumes from a server-authoritative cursor after a committed save", () => {
+    expect(actions).toContain('destination: "/onboarding/discovery?resume=1"');
     expect(actions).toContain("data: savedVersion");
     expect(actions).toContain("expected_version_input: savedVersion");
-    expect(actions).toContain('.select("current_question_key")');
-    expect(actions).toContain(
-      "candidate.stableKey === committedSession.current_question_key",
-    );
+    expect(actions).not.toContain('.select("current_question_key")');
     expect(actions).not.toContain(
       "const refreshed = await getDiscoveryState()",
     );
