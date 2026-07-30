@@ -55,12 +55,10 @@ describe("Stage 4.1 interpretation requests", () => {
   });
 
   it("creates a request only after successful normalization", async () => {
-    rpc
-      .mockResolvedValueOnce({ data: 2, error: null })
-      .mockResolvedValueOnce({
-        data: "00000000-0000-4000-8000-000000000020",
-        error: null,
-      });
+    rpc.mockResolvedValueOnce({ data: 2, error: null }).mockResolvedValueOnce({
+      data: "00000000-0000-4000-8000-000000000020",
+      error: null,
+    });
 
     await expect(createCurrentInterpretationRequest()).resolves.toEqual({
       ok: true,
