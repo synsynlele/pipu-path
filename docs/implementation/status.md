@@ -4,14 +4,14 @@
 **Last verified:** 2026-07-30  
 **Next boundary:** Stage 4.2 — controlled interpretation execution
 
-| Stage                                      | Status      | Evidence                                                                  |
-| ------------------------------------------ | ----------- | ------------------------------------------------------------------------- |
-| 0 — Governance and architecture            | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger      |
-| 1 — Engineering foundation                 | Complete    | Application foundation, shells, design system, config, logging, tests, CI |
-| 2 — Identity and access                    | Complete    | DB/RLS/email/recovery/OAuth and staging browser E2E pass                  |
-| 3 — Discovery                              | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass |
-| 4.1 — HPI contract and provenance          | Complete    | Schema, provenance, lifecycle, RLS, generated types and staging CI pass   |
-| 4.2–9                                      | Not started | No live interpretation or downstream capability exists                    |
+| Stage                             | Status      | Evidence                                                                  |
+| --------------------------------- | ----------- | ------------------------------------------------------------------------- |
+| 0 — Governance and architecture   | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger      |
+| 1 — Engineering foundation        | Complete    | Application foundation, shells, design system, config, logging, tests, CI |
+| 2 — Identity and access           | Complete    | DB/RLS/email/recovery/OAuth and staging browser E2E pass                  |
+| 3 — Discovery                     | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass |
+| 4.1 — HPI contract and provenance | Complete    | Schema, provenance, lifecycle, RLS, generated types and staging CI pass   |
+| 4.2–9                             | Not started | No live interpretation or downstream capability exists                    |
 
 ## Stage 4.1 completion
 
