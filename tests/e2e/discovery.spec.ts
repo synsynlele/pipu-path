@@ -154,7 +154,7 @@ test("eligible user completes persistent Discovery without invented results", as
   await page.getByRole("button", { name: "Complete Discovery" }).click();
   await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
   await expect(
-    page.getByRole("heading", { name: "Your Discovery evidence is ready" }),
+    page.getByRole("heading", { name: "Your evidence is safely prepared." }),
   ).toBeVisible();
   await expect(
     page.getByText(/strength|personality type|mission/i),
