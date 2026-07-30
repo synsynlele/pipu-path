@@ -9,6 +9,17 @@ async function assertNoDiscoveryError(page: import("@playwright/test").Page) {
   }
 }
 
+async function assertNoRuntimeFailure(page: import("@playwright/test").Page) {
+  const runtimeFailure = page.getByRole("heading", {
+    name: "We could not load this page.",
+  });
+  if (await runtimeFailure.isVisible().catch(() => false)) {
+    throw new Error(
+      "Preview runtime failed during authentication. Inspect the matching Vercel POST /login log.",
+    );
+  }
+}
+
 async function submitAndAwaitDiscoveryTransition(
   page: import("@playwright/test").Page,
   button: import("@playwright/test").Locator,
@@ -57,7 +68,15 @@ test("eligible user completes persistent Discovery without invented results", as
   await page.getByLabel("Email address").fill(process.env.E2E_STAGE3_EMAIL!);
   await page.getByLabel("Password").fill(process.env.E2E_STAGE3_PASSWORD!);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL(/\/app$/);
+  await expect
+    .poll(
+      async () => {
+        await assertNoRuntimeFailure(page);
+        return new URL(page.url()).pathname;
+      },
+      { timeout: 15_000 },
+    )
+    .toBe("/app");
 
   await page.goto("/onboarding/discovery");
   const begin = page.getByRole("button", { name: "Begin Discovery" });
