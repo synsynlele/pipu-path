@@ -101,36 +101,36 @@ const evidenceReferenceSchema = z.object({
 });
 
 export const interpretationInsightSchema = z.object({
-        insightType: z.enum(insightTypes),
-        insightKey: z.string().regex(/^[a-z][a-z0-9_]{2,79}$/),
-        title: z.string().min(1).max(120),
-        summary: z.string().min(1).max(320),
-        explanation: z.string().min(1).max(1200),
-        confidenceLevel: z.enum(confidenceLevels),
-        confidenceScore: z.number().min(0).max(1),
-        confidenceFactors: z.array(z.string().min(1).max(160)).min(1).max(8),
-        evidence: z.array(evidenceReferenceSchema).max(20),
-        uncertainties: z
-          .array(
-            z.object({
-              type: z.enum([
-                "insufficient_examples",
-                "conflicting_evidence",
-                "low_response_detail",
-                "age_or_life_stage",
-                "context_specific",
-                "outdated_evidence",
-                "possible_response_bias",
-              ]),
-              description: z.string().min(1).max(400),
-            }),
-          )
-          .min(1)
-          .max(8),
-        confirmationQuestion: z.string().min(1).max(400),
-        sensitivity: z.enum(["standard", "sensitive"]),
-        ageAppropriate: z.boolean(),
-      });
+  insightType: z.enum(insightTypes),
+  insightKey: z.string().regex(/^[a-z][a-z0-9_]{2,79}$/),
+  title: z.string().min(1).max(120),
+  summary: z.string().min(1).max(320),
+  explanation: z.string().min(1).max(1200),
+  confidenceLevel: z.enum(confidenceLevels),
+  confidenceScore: z.number().min(0).max(1),
+  confidenceFactors: z.array(z.string().min(1).max(160)).min(1).max(8),
+  evidence: z.array(evidenceReferenceSchema).max(20),
+  uncertainties: z
+    .array(
+      z.object({
+        type: z.enum([
+          "insufficient_examples",
+          "conflicting_evidence",
+          "low_response_detail",
+          "age_or_life_stage",
+          "context_specific",
+          "outdated_evidence",
+          "possible_response_bias",
+        ]),
+        description: z.string().min(1).max(400),
+      }),
+    )
+    .min(1)
+    .max(8),
+  confirmationQuestion: z.string().min(1).max(400),
+  sensitivity: z.enum(["standard", "sensitive"]),
+  ageAppropriate: z.boolean(),
+});
 
 export const interpretationOutputSchema = z.object({
   schemaVersion: z.string().min(1).max(64),
