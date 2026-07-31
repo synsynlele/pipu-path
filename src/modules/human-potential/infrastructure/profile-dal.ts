@@ -42,7 +42,10 @@ export async function getCurrentHumanPotentialProfile() {
   ]);
 
   const bySection = Object.fromEntries(
-    humanPotentialProfileSectionKeys.map((key) => [key, [] as ProfileInsight[]]),
+    humanPotentialProfileSectionKeys.map((key) => [
+      key,
+      [] as ProfileInsight[],
+    ]),
   ) as Record<HumanPotentialProfileSectionKey, ProfileInsight[]>;
 
   for (const insight of insights ?? []) {
