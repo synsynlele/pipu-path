@@ -110,7 +110,7 @@ begin
   ) values (
     request_row.user_id,
     next_version,
-    'active',
+    'draft',
     request_row.id,
     request_row.interpretation_schema_version,
     jsonb_build_object('summary', left(profile_summary_input, 1200))
@@ -189,6 +189,10 @@ begin
   where user_id = request_row.user_id
     and id <> profile_id
     and status = 'active';
+
+  update public.human_potential_profile_versions
+  set status = 'active', activated_at = now()
+  where id = profile_id and status = 'draft';
 
   update public.interpretation_requests
   set status = 'completed', completed_at = now(), updated_at = now()
