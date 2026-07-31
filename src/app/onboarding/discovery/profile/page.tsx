@@ -33,7 +33,10 @@ export default async function HumanPotentialProfilePage() {
   if (!handoff) redirect("/onboarding/discovery");
 
   return (
-    <main id="main-content" className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16">
+    <main
+      id="main-content"
+      className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16"
+    >
       <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
         Your private Human Potential Profile
       </p>
@@ -55,29 +58,41 @@ export default async function HumanPotentialProfilePage() {
         <>
           <Surface className="mt-10 p-6 sm:p-8">
             <h2 className="text-xl font-semibold">Summary</h2>
-            <p className="text-muted mt-3 max-w-3xl leading-8">{profile.summary}</p>
+            <p className="text-muted mt-3 max-w-3xl leading-8">
+              {profile.summary}
+            </p>
             <p className="text-muted mt-5 text-sm">
-              Saved privately. Generated {new Date(profile.createdAt).toLocaleDateString()}.
+              Saved privately. Generated{" "}
+              {new Date(profile.createdAt).toLocaleDateString()}.
             </p>
           </Surface>
 
           <div className="mt-8 space-y-6">
             {humanPotentialProfileSectionKeys.map((section) => (
               <section key={section} aria-labelledby={section}>
-                <h2 id={section} className="text-2xl font-semibold tracking-tight">
+                <h2
+                  id={section}
+                  className="text-2xl font-semibold tracking-tight"
+                >
                   {sectionCopy[section]}
                 </h2>
                 <div className="mt-4 space-y-4">
                   {profile.sections[section].map((insight) => (
                     <Surface key={insight.id} className="p-6">
                       <div className="flex flex-wrap items-center justify-between gap-3">
-                        <h3 className="text-lg font-semibold">{insight.title}</h3>
+                        <h3 className="text-lg font-semibold">
+                          {insight.title}
+                        </h3>
                         <span className="text-gold text-xs font-semibold uppercase tracking-wide">
                           {insight.confidence} confidence
                         </span>
                       </div>
-                      <p className="text-muted mt-3 leading-7">{insight.summary}</p>
-                      <p className="text-muted mt-3 leading-7">{insight.description}</p>
+                      <p className="text-muted mt-3 leading-7">
+                        {insight.summary}
+                      </p>
+                      <p className="text-muted mt-3 leading-7">
+                        {insight.description}
+                      </p>
                       <ProfileFeedbackForm insightId={insight.id} />
                     </Surface>
                   ))}
@@ -85,7 +100,10 @@ export default async function HumanPotentialProfilePage() {
               </section>
             ))}
           </div>
-          <ButtonLink href="/onboarding/discovery/profile/complete" className="mt-10">
+          <ButtonLink
+            href="/onboarding/discovery/profile/complete"
+            className="mt-10"
+          >
             Continue
           </ButtonLink>
         </>
