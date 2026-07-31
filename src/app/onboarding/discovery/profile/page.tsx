@@ -83,7 +83,7 @@ export default async function HumanPotentialProfilePage() {
                         <h3 className="text-lg font-semibold">
                           {insight.title}
                         </h3>
-                        <span className="text-gold text-xs font-semibold uppercase tracking-wide">
+                        <span className="text-gold text-xs font-semibold tracking-wide uppercase">
                           {insight.confidence} confidence
                         </span>
                       </div>
