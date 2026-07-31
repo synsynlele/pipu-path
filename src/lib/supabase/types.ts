@@ -1068,6 +1068,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      claim_stage4_interpretation_request: {
+        Args: {
+          model_input: string;
+          provider_input: string;
+          request_id_input: string;
+        };
+        Returns: boolean;
+      };
       complete_discovery: {
         Args: { expected_version_input: number; session_id_input: string };
         Returns: undefined;
@@ -1100,7 +1108,24 @@ export type Database = {
         Args: { session_id_input: string };
         Returns: number;
       };
+      fail_stage4_interpretation_request: {
+        Args: {
+          failure_code_input: string;
+          failure_detail_safe_input?: string;
+          request_id_input: string;
+        };
+        Returns: boolean;
+      };
       normalize_stage4_discovery_evidence: { Args: never; Returns: number };
+      persist_stage4_human_potential_profile: {
+        Args: {
+          insights_input: Json;
+          profile_metadata_input: Json;
+          profile_summary_input: string;
+          request_id_input: string;
+        };
+        Returns: string;
+      };
       open_discovery_review: {
         Args: { expected_version_input: number; session_id_input: string };
         Returns: number;
