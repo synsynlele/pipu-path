@@ -17,6 +17,8 @@ const publicSchema = z.object({
 
 const serverSchema = publicSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  GEMINI_API_KEY: z.string().min(1).optional(),
+  GEMINI_MODEL: z.string().min(1).default("gemini-3.6-flash"),
 });
 
 export type PublicEnvironment = z.infer<typeof publicSchema>;
@@ -62,6 +64,8 @@ export function readServerEnvironment(
   source: Record<string, string | undefined> = {
     ...getPublicProcessEnvironment(),
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_MODEL: process.env.GEMINI_MODEL,
   },
 ): ServerEnvironment {
   return serverSchema.parse(source);
