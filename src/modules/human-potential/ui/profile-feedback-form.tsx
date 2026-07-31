@@ -1,13 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { recordProfileFeedbackAction } from "../application/profile-actions";
 
-export function ProfileFeedbackForm({ insightId }: { insightId: string }) {
+type SavedFeedback = {
+  type: "confirmed" | "partly_true" | "not_true";
+  comment: string | null;
+} | null;
+
+const feedbackCopy = {
+  confirmed: "👍 Accurate",
+  partly_true: "😐 Partly accurate",
+  not_true: "👎 Not accurate",
+} as const;
+
+export function ProfileFeedbackForm({
+  insightId,
+  savedFeedback,
+}: {
+  insightId: string;
+  savedFeedback: SavedFeedback;
+}) {
   return (
     <form
       action={recordProfileFeedbackAction}
       className="border-border mt-5 border-t pt-4"
     >
       <input type="hidden" name="insightId" value={insightId} />
+      {savedFeedback ? (
+        <p className="text-gold mb-3 text-sm" role="status">
+          Saved response: {feedbackCopy[savedFeedback.type]}
+          {savedFeedback.comment ? ` — ${savedFeedback.comment}` : ""}
+        </p>
+      ) : null}
       <fieldset>
         <legend className="text-muted text-sm">Does this feel accurate?</legend>
         <div className="mt-3 flex flex-wrap gap-2">
