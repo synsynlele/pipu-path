@@ -4,7 +4,7 @@ import {
   interpretationOutputSchema,
   validateInterpretationOutput,
   type HpiDomainErrorCode,
-  type interpretationInputSchema,
+  interpretationInputSchema,
 } from "./contracts";
 
 export const humanPotentialProfileSectionKeys = [
