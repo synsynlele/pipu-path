@@ -100,11 +100,7 @@ const evidenceReferenceSchema = z.object({
   weight: z.number().gt(0).max(1),
 });
 
-export const interpretationOutputSchema = z.object({
-  schemaVersion: z.string().min(1).max(64),
-  insights: z
-    .array(
-      z.object({
+export const interpretationInsightSchema = z.object({
         insightType: z.enum(insightTypes),
         insightKey: z.string().regex(/^[a-z][a-z0-9_]{2,79}$/),
         title: z.string().min(1).max(120),
@@ -134,9 +130,11 @@ export const interpretationOutputSchema = z.object({
         confirmationQuestion: z.string().min(1).max(400),
         sensitivity: z.enum(["standard", "sensitive"]),
         ageAppropriate: z.boolean(),
-      }),
-    )
-    .max(20),
+      });
+
+export const interpretationOutputSchema = z.object({
+  schemaVersion: z.string().min(1).max(64),
+  insights: z.array(interpretationInsightSchema).max(20),
 });
 
 const prohibitedClaim =
