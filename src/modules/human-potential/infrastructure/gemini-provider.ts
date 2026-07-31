@@ -2,10 +2,9 @@ import "server-only";
 
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
-import type { InterpretationProvider } from "../domain/contracts";
 import type { HumanPotentialProfileSectionKey } from "../domain/profile-contract";
 import type { z } from "zod";
-import type { interpretationInputSchema } from "../domain/contracts";
+import { interpretationInputSchema } from "../domain/contracts";
 
 const logger = createLogger();
 const requestTimeoutMs = 20_000;
@@ -40,7 +39,7 @@ function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
   ].join("\n");
 }
 
-export class GeminiInterpretationProvider implements InterpretationProvider {
+export class GeminiInterpretationProvider {
   async interpret(input: z.infer<typeof interpretationInputSchema>): Promise<unknown> {
     const { apiKey, model } = requireGeminiEnvironment();
     const controller = new AbortController();
