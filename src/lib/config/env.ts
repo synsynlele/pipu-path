@@ -78,7 +78,10 @@ export function requireGeminiEnvironment(
   if (!environment.GEMINI_API_KEY) {
     throw new Error("Gemini server environment is not configured.");
   }
-  return { apiKey: environment.GEMINI_API_KEY, model: environment.GEMINI_MODEL };
+  return {
+    apiKey: environment.GEMINI_API_KEY,
+    model: environment.GEMINI_MODEL,
+  };
 }
 
 export function requireSupabasePublicEnvironment(
