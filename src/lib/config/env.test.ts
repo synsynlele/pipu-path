@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   parseEnvironment,
   readPublicEnvironment,
+  requireGeminiEnvironment,
   requireSupabasePublicEnvironment,
 } from "./env";
 
@@ -55,6 +56,18 @@ describe("parseEnvironment", () => {
     );
     expect(readPublicEnvironment({}).NEXT_PUBLIC_APP_URL).toBe(
       "http://localhost:3000",
+    );
+  });
+
+  it("keeps Gemini configuration server-only and fails safely when missing", () => {
+    expect(
+      requireGeminiEnvironment({
+        GEMINI_API_KEY: "server-secret",
+        GEMINI_MODEL: "gemini-3.6-flash",
+      }),
+    ).toEqual({ apiKey: "server-secret", model: "gemini-3.6-flash" });
+    expect(() => requireGeminiEnvironment({})).toThrow(
+      "Gemini server environment is not configured.",
     );
   });
 
