@@ -14,7 +14,10 @@ export default async function ProfileCompletePage() {
   if (!profile) redirect("/onboarding/discovery/profile");
 
   return (
-    <main id="main-content" className="mx-auto max-w-3xl px-5 py-12 sm:px-8 sm:py-20">
+    <main
+      id="main-content"
+      className="mx-auto max-w-3xl px-5 py-12 sm:px-8 sm:py-20"
+    >
       <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
         Profile saved
       </p>
