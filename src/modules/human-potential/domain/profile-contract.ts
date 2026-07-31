@@ -1,7 +1,6 @@
 import { z } from "zod";
 import {
   interpretationInsightSchema,
-  interpretationOutputSchema,
   validateInterpretationOutput,
   type HpiDomainErrorCode,
   interpretationInputSchema,
