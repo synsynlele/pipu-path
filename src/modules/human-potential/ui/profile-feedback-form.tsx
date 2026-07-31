@@ -5,7 +5,7 @@ export function ProfileFeedbackForm({ insightId }: { insightId: string }) {
   return (
     <form
       action={recordProfileFeedbackAction}
-      className="mt-5 border-t border-border pt-4"
+      className="border-border mt-5 border-t pt-4"
     >
       <input type="hidden" name="insightId" value={insightId} />
       <fieldset>
