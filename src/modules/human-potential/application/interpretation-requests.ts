@@ -59,9 +59,7 @@ export async function createCurrentInterpretationRequest({
 }: {
   schemaVersion?: string;
   promptVersion?: string;
-} = {}): Promise<
-  HpiApplicationResult<{ requestId: string }>
-> {
+} = {}): Promise<HpiApplicationResult<{ requestId: string }>> {
   const normalized = await normalizeCurrentDiscoveryEvidence();
   if (!normalized.ok) return normalized;
   const client = await createServerSupabaseClient();
