@@ -1,7 +1,6 @@
 import "server-only";
 
 import { createLogger } from "@/lib/observability/logger";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
