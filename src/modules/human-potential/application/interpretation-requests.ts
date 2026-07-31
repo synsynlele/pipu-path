@@ -53,7 +53,13 @@ export async function normalizeCurrentDiscoveryEvidence(): Promise<
   };
 }
 
-export async function createCurrentInterpretationRequest({\n  schemaVersion = "hpi-output-v1",\n  promptVersion = "placeholder-v1",\n}: {\n  schemaVersion?: string;\n  promptVersion?: string;\n} = {}): Promise<
+export async function createCurrentInterpretationRequest({
+  schemaVersion = "hpi-output-v1",
+  promptVersion = "placeholder-v1",
+}: {
+  schemaVersion?: string;
+  promptVersion?: string;
+} = {}): Promise<
   HpiApplicationResult<{ requestId: string }>
 > {
   const normalized = await normalizeCurrentDiscoveryEvidence();
