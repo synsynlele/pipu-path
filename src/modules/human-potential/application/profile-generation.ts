@@ -19,7 +19,8 @@ type ProfileExecutionResult =
   | { ok: false; code: string; message: string };
 
 const safeMessages: Record<string, string> = {
-  HPI_DISCOVERY_INCOMPLETE: "Complete Discovery before generating your profile.",
+  HPI_DISCOVERY_INCOMPLETE:
+    "Complete Discovery before generating your profile.",
   HPI_CONSENT_REQUIRED: "Human Potential interpretation requires your consent.",
   HPI_SAFEGUARDING_RESTRICTION:
     "Profile generation is not available for this account at the moment.",
@@ -35,7 +36,9 @@ function failure(code: string): ProfileExecutionResult {
   return {
     ok: false,
     code,
-    message: safeMessages[code] ?? "We could not generate your profile. Please try again.",
+    message:
+      safeMessages[code] ??
+      "We could not generate your profile. Please try again.",
   };
 }
 
@@ -62,19 +65,21 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
   if (claimError || !claimed) return failure("HPI_REQUEST_ALREADY_EXISTS");
 
   try {
-    const [{ data: request, error: requestError }, { data: links, error: linksError }] =
-      await Promise.all([
-        service
-          .from("interpretation_requests")
-          .select("*")
-          .eq("id", requestId)
-          .eq("user_id", user.id)
-          .single(),
-        service
-          .from("interpretation_request_evidence")
-          .select("evidence_record_id")
-          .eq("interpretation_request_id", requestId),
-      ]);
+    const [
+      { data: request, error: requestError },
+      { data: links, error: linksError },
+    ] = await Promise.all([
+      service
+        .from("interpretation_requests")
+        .select("*")
+        .eq("id", requestId)
+        .eq("user_id", user.id)
+        .single(),
+      service
+        .from("interpretation_request_evidence")
+        .select("evidence_record_id")
+        .eq("interpretation_request_id", requestId),
+    ]);
     if (requestError || linksError || !request || !links?.length) {
       throw new Error("HPI_EVIDENCE_SNAPSHOT_FAILED");
     }
@@ -118,7 +123,8 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
           typeof row.metadata.response_type === "string"
             ? row.metadata.response_type
             : "reflection",
-        value: row.sensitivity_level === "sensitive" ? null : row.structured_value,
+        value:
+          row.sensitivity_level === "sensitive" ? null : row.structured_value,
         sensitivity: row.sensitivity_level,
         contentHash: row.content_hash,
       })),
@@ -126,7 +132,10 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
 
     const provider = new GeminiInterpretationProvider();
     const output = await provider.interpret(providerInput);
-    const validated = validateHumanPotentialProfileOutput(providerInput, output);
+    const validated = validateHumanPotentialProfileOutput(
+      providerInput,
+      output,
+    );
     if (!validated.ok) throw new Error(validated.code);
 
     const persistence = profileOutputForPersistence(validated.value);
@@ -151,7 +160,8 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
   } catch (error) {
     const code =
       error instanceof Error && /HPI_[A-Z_]+/.test(error.message)
-        ? error.message.match(/HPI_[A-Z_]+/)?.[0] ?? "HPI_INTERPRETATION_NOT_ALLOWED"
+        ? (error.message.match(/HPI_[A-Z_]+/)?.[0] ??
+          "HPI_INTERPRETATION_NOT_ALLOWED")
         : "HPI_INTERPRETATION_NOT_ALLOWED";
     await service.rpc("fail_stage4_interpretation_request", {
       request_id_input: requestId,
