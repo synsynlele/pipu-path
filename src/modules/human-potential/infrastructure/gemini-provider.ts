@@ -64,10 +64,13 @@ export class GeminiInterpretationProvider {
     const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
         {
           method: "POST",
-          headers: { "content-type": "application/json" },
+          headers: {
+            "content-type": "application/json",
+            "x-goog-api-key": apiKey,
+          },
           signal: controller.signal,
           body: JSON.stringify({
             contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
@@ -94,10 +97,6 @@ export class GeminiInterpretationProvider {
     } finally {
       clearTimeout(timeout);
     }
-  }
-
-  validateOutput(output: unknown) {
-    return { success: true, data: output } as const;
   }
 
   mapProviderError(error: unknown) {
