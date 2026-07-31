@@ -14,11 +14,27 @@ const profileSections: Array<{
   instruction: string;
 }> = [
   { key: "emerging_strengths", instruction: "2 to 4 emerging strengths" },
-  { key: "what_draws_you", instruction: "topics and activities they may naturally enjoy" },
-  { key: "problems_you_care_about", instruction: "problems they appear interested in helping solve" },
-  { key: "how_you_can_contribute", instruction: "practical ways they may create value" },
-  { key: "current_constraints", instruction: "encouraging, non-judgmental current constraints" },
-  { key: "best_next_direction", instruction: "one practical next direction with why it fits and what to try next" },
+  {
+    key: "what_draws_you",
+    instruction: "topics and activities they may naturally enjoy",
+  },
+  {
+    key: "problems_you_care_about",
+    instruction: "problems they appear interested in helping solve",
+  },
+  {
+    key: "how_you_can_contribute",
+    instruction: "practical ways they may create value",
+  },
+  {
+    key: "current_constraints",
+    instruction: "encouraging, non-judgmental current constraints",
+  },
+  {
+    key: "best_next_direction",
+    instruction:
+      "one practical next direction with why it fits and what to try next",
+  },
 ];
 
 function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
@@ -40,7 +56,9 @@ function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
 }
 
 export class GeminiInterpretationProvider {
-  async interpret(input: z.infer<typeof interpretationInputSchema>): Promise<unknown> {
+  async interpret(
+    input: z.infer<typeof interpretationInputSchema>,
+  ): Promise<unknown> {
     const { apiKey, model } = requireGeminiEnvironment();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
@@ -84,7 +102,10 @@ export class GeminiInterpretationProvider {
 
   mapProviderError(error: unknown) {
     const message = error instanceof Error ? error.message : "";
-    if (message === "GEMINI_INVALID_JSON" || message === "GEMINI_EMPTY_RESPONSE") {
+    if (
+      message === "GEMINI_INVALID_JSON" ||
+      message === "GEMINI_EMPTY_RESPONSE"
+    ) {
       return "HPI_OUTPUT_INVALID" as const;
     }
     return "HPI_INTERPRETATION_NOT_ALLOWED" as const;
