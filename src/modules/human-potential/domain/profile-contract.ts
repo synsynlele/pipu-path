@@ -103,7 +103,7 @@ export const profileOutputForPersistence = (
   summary: output.summary,
   metadata: {
     profile_schema_version: output.schemaVersion,
-    sections: humanPotentialProfileSectionKeys,
+    sections: [...humanPotentialProfileSectionKeys],
   },
   insights: output.insights,
 });
