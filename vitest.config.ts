@@ -32,6 +32,9 @@ export default defineConfig({
         "src/modules/discovery/application/discovery-actions.ts",
         "src/modules/discovery/infrastructure/discovery-dal.ts",
         "src/modules/discovery/ui/**",
+        "src/modules/human-potential/application/profile-actions.ts",
+        "src/modules/human-potential/infrastructure/**",
+        "src/modules/human-potential/ui/**",
       ],
       thresholds: {
         lines: 80,
