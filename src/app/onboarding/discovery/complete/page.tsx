@@ -32,7 +32,8 @@ export default async function DiscoveryCompletePage() {
         <h2 className="text-xl font-semibold">Your choice, your profile</h2>
         <p className="text-muted mt-3 leading-7">
           Your profile will be provisional, private and evidence-linked. It will
-          not assign a fixed identity, life purpose, permanent career, Journey or Mission.
+          not assign a fixed identity, life purpose, permanent career, Journey
+          or Mission.
         </p>
       </Surface>
       <ButtonLink href="/onboarding/discovery/profile" className="mt-8">
