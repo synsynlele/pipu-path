@@ -77,7 +77,10 @@ export function validateHumanPotentialProfileOutput(
       insight.explanation,
     ]),
   ].join(" ");
-  if (permanentIdentityClaim.test(prose) || unsafeConstraintLanguage.test(prose)) {
+  if (
+    permanentIdentityClaim.test(prose) ||
+    unsafeConstraintLanguage.test(prose)
+  ) {
     return { ok: false, code: "HPI_OUTPUT_INVALID" };
   }
 
@@ -89,7 +92,9 @@ export function profileSectionsFromOutput(
 ) {
   return humanPotentialProfileSectionKeys.map((key) => ({
     key,
-    insights: output.insights.filter((insight) => insight.profileSection === key),
+    insights: output.insights.filter(
+      (insight) => insight.profileSection === key,
+    ),
   }));
 }
 
