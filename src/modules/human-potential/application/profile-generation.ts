@@ -5,6 +5,7 @@ import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { createCurrentInterpretationRequest } from "./interpretation-requests";
+import { interpretationInputSchema } from "../domain/contracts";
 import {
   profileOutputForPersistence,
   validateHumanPotentialProfileOutput,
@@ -93,7 +94,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
       throw new Error("HPI_EVIDENCE_SNAPSHOT_FAILED");
     }
 
-    const providerInput = {
+    const untrustedProviderInput = {
       requestId,
       schemaVersion: request.interpretation_schema_version,
       promptVersion: request.prompt_version,
@@ -128,6 +129,12 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
         contentHash: row.content_hash,
       })),
     };
+
+    const parsedProviderInput = interpretationInputSchema.safeParse(
+      untrustedProviderInput,
+    );
+    if (!parsedProviderInput.success) throw new Error("HPI_EVIDENCE_INVALID");
+    const providerInput = parsedProviderInput.data;
 
     const provider = new GeminiInterpretationProvider();
     const output = await provider.interpret(providerInput);
