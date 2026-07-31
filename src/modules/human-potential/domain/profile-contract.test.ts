@@ -54,7 +54,8 @@ function insight(
     insightKey: key,
     title: "A possible pattern",
     summary: "Based on your answers, this may be worth exploring.",
-    explanation: "Your supplied Discovery evidence appears to support this possibility.",
+    explanation:
+      "Your supplied Discovery evidence appears to support this possibility.",
     confidenceLevel: "emerging" as const,
     confidenceScore: 0.55,
     confidenceFactors: ["One relevant Discovery response"],
@@ -80,7 +81,8 @@ function insight(
 
 const validOutput = {
   schemaVersion: "hpi-profile-v1" as const,
-  summary: "Based on your answers, several early patterns may be worth testing.",
+  summary:
+    "Based on your answers, several early patterns may be worth testing.",
   insights: [
     insight("emerging_strengths", "strength_one"),
     insight("emerging_strengths", "strength_two"),
@@ -94,11 +96,15 @@ const validOutput = {
 
 describe("Human Potential Profile output validation", () => {
   it("accepts all six evidence-linked sections", () => {
-    expect(validateHumanPotentialProfileOutput(input, validOutput).ok).toBe(true);
+    expect(validateHumanPotentialProfileOutput(input, validOutput).ok).toBe(
+      true,
+    );
   });
 
   it("rejects invalid JSON-shaped provider output", () => {
-    expect(validateHumanPotentialProfileOutput(input, "{not-json").ok).toBe(false);
+    expect(validateHumanPotentialProfileOutput(input, "{not-json").ok).toBe(
+      false,
+    );
   });
 
   it("rejects a profile with a missing required section", () => {
