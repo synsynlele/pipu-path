@@ -56,6 +56,10 @@ completed Discovery → evidence snapshot → ready request → claimed processi
 → feedback → saved profile refresh → Stage 5 boundary
 ```
 
+## Validation note
+
+A fresh CI run must evaluate the final formatted branch head before staging is changed.
+
 ## Consequences
 
 - One provider is implemented, but the domain remains replaceable.
