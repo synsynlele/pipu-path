@@ -8,8 +8,7 @@ import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/
 import { generateCurrentHumanPotentialProfile } from "./profile-generation";
 
 export type ProfileGenerationFormState =
-  | { status: "idle" }
-  | { status: "error"; message: string };
+  { status: "idle" } | { status: "error"; message: string };
 
 export async function generateProfileAction(
   _previous: ProfileGenerationFormState,
