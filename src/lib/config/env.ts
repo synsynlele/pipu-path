@@ -71,6 +71,16 @@ export function readServerEnvironment(
   return serverSchema.parse(source);
 }
 
+export function requireGeminiEnvironment(
+  source: Record<string, string | undefined> = process.env,
+) {
+  const environment = readServerEnvironment(source);
+  if (!environment.GEMINI_API_KEY) {
+    throw new Error("Gemini server environment is not configured.");
+  }
+  return { apiKey: environment.GEMINI_API_KEY, model: environment.GEMINI_MODEL };
+}
+
 export function requireSupabasePublicEnvironment(
   source: Record<string, string | undefined> = process.env,
 ) {
