@@ -14,6 +14,10 @@ type ProfileInsight = {
   summary: string;
   description: string;
   confidence: string;
+  feedback: {
+    type: "confirmed" | "partly_true" | "not_true";
+    comment: string | null;
+  } | null;
 };
 
 export async function getCurrentHumanPotentialProfile() {
@@ -40,6 +44,24 @@ export async function getCurrentHumanPotentialProfile() {
       .order("created_at"),
     client.from("insight_user_feedback").select("*").eq("user_id", user.id),
   ]);
+
+  const feedbackByInsight = new Map<
+    string,
+    {
+      type: "confirmed" | "partly_true" | "not_true";
+      comment: string | null;
+    }
+  >();
+  for (const item of [...(feedback ?? [])].sort((a, b) =>
+    b.created_at.localeCompare(a.created_at),
+  )) {
+    if (!feedbackByInsight.has(item.insight_id)) {
+      feedbackByInsight.set(item.insight_id, {
+        type: item.feedback_type,
+        comment: item.reason,
+      });
+    }
+  }
 
   const bySection = Object.fromEntries(
     humanPotentialProfileSectionKeys.map((key) => [
@@ -68,6 +90,7 @@ export async function getCurrentHumanPotentialProfile() {
       summary: insight.summary,
       description: insight.description,
       confidence: insight.confidence_level,
+      feedback: feedbackByInsight.get(insight.id) ?? null,
     });
   }
 
@@ -85,6 +108,5 @@ export async function getCurrentHumanPotentialProfile() {
     createdAt: profile.created_at,
     summary,
     sections: bySection,
-    feedback: feedback ?? [],
   };
 }
