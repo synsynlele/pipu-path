@@ -13,6 +13,7 @@ export type ProfileGenerationFormState =
 export async function generateProfileAction(
   _previous: ProfileGenerationFormState,
 ): Promise<ProfileGenerationFormState> {
+  void _previous;
   const result = await generateCurrentHumanPotentialProfile();
   if (!result.ok) return { status: "error", message: result.message };
   redirect("/onboarding/discovery/profile");
