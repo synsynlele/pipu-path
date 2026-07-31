@@ -50,6 +50,48 @@ async function submitAndAwaitDiscoveryTransition(
   await assertNoDiscoveryError(page);
 }
 
+async function generateAndVerifyProfile(
+  page: import("@playwright/test").Page,
+) {
+  await page.goto("/onboarding/discovery/profile");
+  const generate = page.getByRole("button", { name: "Generate my profile" });
+  if ((await generate.count()) === 1) {
+    await generate.click();
+    await expect(
+      page.getByText("PipuPath is analysing your Discovery responses…"),
+    ).toBeVisible();
+  }
+
+  await expect(
+    page.getByRole("heading", {
+      name: "A starting point for your next steps.",
+    }),
+  ).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByRole("heading", { name: "Summary" })).toBeVisible();
+  for (const section of [
+    "Emerging Strengths",
+    "What Draws You",
+    "Problems You Care About",
+    "How You Can Contribute",
+    "Current Constraints",
+    "Best Next Direction",
+  ]) {
+    await expect(page.getByRole("heading", { name: section })).toBeVisible();
+  }
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Summary" })).toBeVisible();
+  await page.getByRole("button", { name: "👍 Accurate" }).first().click();
+  await expect(
+    page.getByText(/Saved response: 👍 Accurate/).first(),
+  ).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("link", { name: "Continue" }).click();
+  await expect(page).toHaveURL(/\/onboarding\/discovery\/profile\/complete/);
+  await expect(
+    page.getByRole("heading", { name: "Keep testing what feels true." }),
+  ).toBeVisible();
+}
+
 test("eligible user completes persistent Discovery without invented results", async ({
   page,
   isMobile,
@@ -91,12 +133,11 @@ test("eligible user completes persistent Discovery without invented results", as
       }),
     ).toBeVisible();
     await expect(
-      page.getByText(
-        /No strengths, weaknesses, purpose, mission, career, Journey or Human Potential Profile has been generated\./,
-      ),
+      page.getByText(/private, provisional Human Potential Profile/),
     ).toBeVisible();
     await page.reload();
     await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
+    await generateAndVerifyProfile(page);
     return;
   }
 
@@ -198,11 +239,10 @@ test("eligible user completes persistent Discovery without invented results", as
     page.getByRole("heading", { name: "Your evidence is safely prepared." }),
   ).toBeVisible();
   await expect(
-    page.getByText(
-      /No strengths, weaknesses, purpose, mission, career, Journey or Human Potential Profile has been generated\./,
-    ),
+    page.getByText(/private, provisional Human Potential Profile/),
   ).toBeVisible();
 
   await page.reload();
   await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
+  await generateAndVerifyProfile(page);
 });
