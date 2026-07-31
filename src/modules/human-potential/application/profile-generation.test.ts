@@ -36,9 +36,8 @@ vi.mock("@/lib/observability/logger", () => ({
   createLogger: () => ({ info: vi.fn(), warn: vi.fn() }),
 }));
 
-const { generateCurrentHumanPotentialProfile } = await import(
-  "./profile-generation"
-);
+const { generateCurrentHumanPotentialProfile } =
+  await import("./profile-generation");
 
 function requestQuery() {
   return {
@@ -170,7 +169,8 @@ describe("Stage 4 profile generation orchestration", () => {
     await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
       ok: false,
       code: "HPI_INTERPRETATION_NOT_ALLOWED",
-      message: "Profile generation is temporarily unavailable. Please try again.",
+      message:
+        "Profile generation is temporarily unavailable. Please try again.",
     });
     expect(createCurrentInterpretationRequest).not.toHaveBeenCalled();
   });
