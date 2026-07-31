@@ -50,9 +50,7 @@ async function submitAndAwaitDiscoveryTransition(
   await assertNoDiscoveryError(page);
 }
 
-async function generateAndVerifyProfile(
-  page: import("@playwright/test").Page,
-) {
+async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
   await page.goto("/onboarding/discovery/profile");
   const generate = page.getByRole("button", { name: "Generate my profile" });
   if ((await generate.count()) === 1) {
