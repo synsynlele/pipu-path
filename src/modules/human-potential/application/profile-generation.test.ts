@@ -1,0 +1,177 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("server-only", () => ({}));
+
+const requireAuthenticatedIdentity = vi.fn();
+const createCurrentInterpretationRequest = vi.fn();
+const requireGeminiEnvironment = vi.fn();
+const rpc = vi.fn();
+const from = vi.fn();
+const interpret = vi.fn();
+const recordUsage = vi.fn();
+const validateHumanPotentialProfileOutput = vi.fn();
+const profileOutputForPersistence = vi.fn();
+
+vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
+  requireAuthenticatedIdentity,
+}));
+vi.mock("@/lib/config/env", () => ({ requireGeminiEnvironment }));
+vi.mock("@/lib/supabase/service-role", () => ({
+  createServiceRoleSupabaseClient: () => ({ rpc, from }),
+}));
+vi.mock("./interpretation-requests", () => ({
+  createCurrentInterpretationRequest,
+}));
+vi.mock("../infrastructure/gemini-provider", () => ({
+  GeminiInterpretationProvider: class {
+    interpret = interpret;
+    recordUsage = recordUsage;
+  },
+}));
+vi.mock("../domain/profile-contract", () => ({
+  validateHumanPotentialProfileOutput,
+  profileOutputForPersistence,
+}));
+vi.mock("@/lib/observability/logger", () => ({
+  createLogger: () => ({ info: vi.fn(), warn: vi.fn() }),
+}));
+
+const { generateCurrentHumanPotentialProfile } = await import(
+  "./profile-generation"
+);
+
+function requestQuery() {
+  return {
+    select: () => ({
+      eq: () => ({
+        eq: () => ({
+          single: async () => ({
+            data: {
+              interpretation_schema_version: "hpi-profile-v1",
+              prompt_version: "hpi-gemini-v1",
+              question_set_version: 1,
+              age_band: "18_24",
+              is_minor: false,
+              safeguarding_review_required: false,
+            },
+            error: null,
+          }),
+        }),
+      }),
+    }),
+  };
+}
+
+function linksQuery() {
+  return {
+    select: () => ({
+      eq: async () => ({
+        data: [
+          {
+            evidence_record_id: "11111111-1111-4111-8111-111111111111",
+          },
+        ],
+        error: null,
+      }),
+    }),
+  };
+}
+
+function evidenceQuery() {
+  return {
+    select: () => ({
+      eq: () => ({
+        in: async () => ({
+          data: [
+            {
+              id: "11111111-1111-4111-8111-111111111111",
+              source_id: "22222222-2222-4222-8222-222222222222",
+              source_version: 1,
+              source_key: "discovery_interest",
+              category: "interest",
+              metadata: { response_type: "reflection" },
+              structured_value: "Teaching",
+              sensitivity_level: "standard",
+              content_hash: "a".repeat(64),
+            },
+          ],
+          error: null,
+        }),
+      }),
+    }),
+  };
+}
+
+describe("Stage 4 profile generation orchestration", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    requireAuthenticatedIdentity.mockResolvedValue({
+      user: { id: "33333333-3333-4333-8333-333333333333" },
+    });
+    requireGeminiEnvironment.mockReturnValue({
+      apiKey: "not-used-by-double",
+      model: "gemini-3.6-flash",
+    });
+    createCurrentInterpretationRequest.mockResolvedValue({
+      ok: true,
+      value: { requestId: "44444444-4444-4444-8444-444444444444" },
+    });
+    rpc
+      .mockResolvedValueOnce({ data: true, error: null })
+      .mockResolvedValueOnce({
+        data: "55555555-5555-4555-8555-555555555555",
+        error: null,
+      });
+    from.mockImplementation((table: string) => {
+      if (table === "interpretation_requests") return requestQuery();
+      if (table === "interpretation_request_evidence") return linksQuery();
+      return evidenceQuery();
+    });
+    interpret.mockResolvedValue({ provider: "structured-output" });
+    validateHumanPotentialProfileOutput.mockReturnValue({
+      ok: true,
+      value: { summary: "A provisional profile", insights: [] },
+    });
+    profileOutputForPersistence.mockReturnValue({
+      summary: "A provisional profile",
+      metadata: { profile_schema_version: "hpi-profile-v1" },
+      insights: [],
+    });
+  });
+
+  it("moves authenticated Discovery evidence through AI validation into persistence", async () => {
+    await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
+      ok: true,
+      profileId: "55555555-5555-4555-8555-555555555555",
+    });
+    expect(interpret).toHaveBeenCalledOnce();
+    expect(validateHumanPotentialProfileOutput).toHaveBeenCalledOnce();
+    expect(rpc).toHaveBeenNthCalledWith(
+      2,
+      "persist_stage4_human_potential_profile",
+      expect.objectContaining({
+        profile_summary_input: "A provisional profile",
+      }),
+    );
+  });
+
+  it("does not call Gemini when authentication fails", async () => {
+    requireAuthenticatedIdentity.mockRejectedValue(new Error("AUTH_REQUIRED"));
+    await expect(generateCurrentHumanPotentialProfile()).rejects.toThrow(
+      "AUTH_REQUIRED",
+    );
+    expect(interpret).not.toHaveBeenCalled();
+  });
+
+  it("returns a friendly error before creating a request when Gemini is missing", async () => {
+    requireGeminiEnvironment.mockImplementation(() => {
+      throw new Error("missing");
+    });
+    await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
+      ok: false,
+      code: "HPI_INTERPRETATION_NOT_ALLOWED",
+      message: "Profile generation is temporarily unavailable. Please try again.",
+    });
+    expect(createCurrentInterpretationRequest).not.toHaveBeenCalled();
+  });
+});
