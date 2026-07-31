@@ -3,23 +3,44 @@ import { recordProfileFeedbackAction } from "../application/profile-actions";
 
 export function ProfileFeedbackForm({ insightId }: { insightId: string }) {
   return (
-    <form action={recordProfileFeedbackAction} className="mt-5 border-t border-border pt-4">
+    <form
+      action={recordProfileFeedbackAction}
+      className="mt-5 border-t border-border pt-4"
+    >
       <input type="hidden" name="insightId" value={insightId} />
       <fieldset>
         <legend className="text-muted text-sm">Does this feel accurate?</legend>
         <div className="mt-3 flex flex-wrap gap-2">
-          <Button type="submit" variant="secondary" name="feedback" value="confirmed">
+          <Button
+            type="submit"
+            variant="secondary"
+            name="feedback"
+            value="confirmed"
+          >
             👍 Accurate
           </Button>
-          <Button type="submit" variant="secondary" name="feedback" value="partly_true">
+          <Button
+            type="submit"
+            variant="secondary"
+            name="feedback"
+            value="partly_true"
+          >
             😐 Partly accurate
           </Button>
-          <Button type="submit" variant="secondary" name="feedback" value="not_true">
+          <Button
+            type="submit"
+            variant="secondary"
+            name="feedback"
+            value="not_true"
+          >
             👎 Not accurate
           </Button>
         </div>
       </fieldset>
-      <label className="text-muted mt-4 block text-sm" htmlFor={`comment-${insightId}`}>
+      <label
+        className="text-muted mt-4 block text-sm"
+        htmlFor={`comment-${insightId}`}
+      >
         Optional comment
       </label>
       <textarea
