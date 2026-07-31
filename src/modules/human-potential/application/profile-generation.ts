@@ -44,14 +44,19 @@ function failure(code: string): ProfileExecutionResult {
 
 export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExecutionResult> {
   const { user } = await requireAuthenticatedIdentity();
+  let model: string;
+  try {
+    ({ model } = requireGeminiEnvironment());
+  } catch {
+    return failure("HPI_INTERPRETATION_NOT_ALLOWED");
+  }
+
   const created = await createCurrentInterpretationRequest({
     schemaVersion: "hpi-profile-v1",
     promptVersion: "hpi-gemini-v1",
   });
   if (!created.ok) return failure(created.code);
 
-  const { apiKey: _apiKey, model } = requireGeminiEnvironment();
-  void _apiKey;
   const service = createServiceRoleSupabaseClient();
   const requestId = created.value.requestId;
   const { data: claimed, error: claimError } = await service.rpc(
