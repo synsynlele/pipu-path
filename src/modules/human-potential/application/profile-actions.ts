@@ -38,8 +38,7 @@ export async function recordProfileFeedbackAction(formData: FormData) {
   const { error } = await client.rpc("record_stage4_insight_feedback", {
     insight_id_input: parsed.data.insightId,
     feedback_type_input: parsed.data.feedback,
-    replacement_text_input: null,
-    reason_input: parsed.data.comment ?? null,
+    ...(parsed.data.comment ? { reason_input: parsed.data.comment } : {}),
   });
   if (!error) revalidatePath("/onboarding/discovery/profile");
 }
