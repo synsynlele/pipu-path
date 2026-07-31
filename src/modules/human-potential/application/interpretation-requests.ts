@@ -53,7 +53,7 @@ export async function normalizeCurrentDiscoveryEvidence(): Promise<
   };
 }
 
-export async function createCurrentInterpretationRequest(): Promise<
+export async function createCurrentInterpretationRequest({\n  schemaVersion = "hpi-output-v1",\n  promptVersion = "placeholder-v1",\n}: {\n  schemaVersion?: string;\n  promptVersion?: string;\n} = {}): Promise<
   HpiApplicationResult<{ requestId: string }>
 > {
   const normalized = await normalizeCurrentDiscoveryEvidence();
@@ -63,8 +63,8 @@ export async function createCurrentInterpretationRequest(): Promise<
     "create_stage4_interpretation_request",
     {
       idempotency_key_input: randomUUID(),
-      interpretation_schema_version_input: "hpi-output-v1",
-      prompt_version_input: "placeholder-v1",
+      interpretation_schema_version_input: schemaVersion,
+      prompt_version_input: promptVersion,
     },
   );
   if (error) return safeError(error);
