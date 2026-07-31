@@ -177,7 +177,6 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     await service.rpc("fail_stage4_interpretation_request", {
       request_id_input: requestId,
       failure_code_input: code,
-      failure_detail_safe_input: null,
     });
     logger.warn("hpi_profile_generation_failed", { requestId, code });
     return failure(code);
