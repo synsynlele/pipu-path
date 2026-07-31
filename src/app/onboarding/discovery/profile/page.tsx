@@ -93,7 +93,10 @@ export default async function HumanPotentialProfilePage() {
                       <p className="text-muted mt-3 leading-7">
                         {insight.description}
                       </p>
-                      <ProfileFeedbackForm insightId={insight.id} />
+                      <ProfileFeedbackForm
+                        insightId={insight.id}
+                        savedFeedback={insight.feedback}
+                      />
                     </Surface>
                   ))}
                 </div>
