@@ -207,4 +207,22 @@ describe("Stage 4 profile generation orchestration", () => {
     });
     expect(createCurrentInterpretationRequest).not.toHaveBeenCalled();
   });
+
+  it("persists only a privacy-safe Gemini failure code", async () => {
+    interpret.mockRejectedValue(new Error("GEMINI_HTTP_403"));
+    await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
+      ok: false,
+      code: "HPI_INTERPRETATION_NOT_ALLOWED",
+      message:
+        "Profile generation is temporarily unavailable. Please try again.",
+    });
+    expect(rpc).toHaveBeenNthCalledWith(
+      2,
+      "fail_stage4_interpretation_request",
+      expect.objectContaining({
+        failure_code_input: "HPI_INTERPRETATION_NOT_ALLOWED",
+        failure_detail_safe_input: "GEMINI_HTTP_403",
+      }),
+    );
+  });
 });
