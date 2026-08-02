@@ -90,13 +90,82 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
   await expect(
     page.getByRole("heading", { name: "Keep testing what feels true." }),
   ).toBeVisible();
+  await page.getByRole("link", { name: "Open Mission" }).click();
+  await generateAndVerifyMission(page);
+}
+
+async function generateAndVerifyMission(page: import("@playwright/test").Page) {
+  await expect(page).toHaveURL(/\/mission$/);
+  const active = page.getByText("Active Mission", { exact: true });
+  const generate = page.getByRole("button", { name: "Generate My Mission" });
+  const review = page.getByText("Mission Review", { exact: true });
+  await expect(active.or(generate).or(review)).toBeVisible({ timeout: 15_000 });
+  if ((await active.count()) === 0) {
+    if ((await generate.count()) === 1) {
+      await generate.click();
+      await expect(page.getByRole("status")).toContainText(
+        "PipuPath is shaping a practical mission",
+      );
+      await expect(
+        page.getByText("Mission Review", { exact: true }),
+      ).toBeVisible({
+        timeout: 50_000,
+      });
+    }
+
+    const refine = page.getByRole("button", { name: "Refine Mission" });
+    if (
+      (await refine.count()) === 1 &&
+      (await refine.isEnabled().catch(() => false))
+    ) {
+      const missionId = page.locator('input[name="missionId"]');
+      const sourceMissionId = await missionId.inputValue();
+      await page
+        .getByLabel("Refine this mission")
+        .fill("Make it achievable without spending money");
+      await refine.click();
+      await expect(missionId).not.toHaveValue(sourceMissionId, {
+        timeout: 60_000,
+      });
+      await expect(review).toBeVisible();
+    }
+    const acceptMission = page.getByRole("button", {
+      name: "Accept Mission",
+    });
+    await expect(acceptMission).toBeEnabled({ timeout: 60_000 });
+    await acceptMission.click();
+    await expect(page.getByText("Active Mission", { exact: true })).toBeVisible(
+      {
+        timeout: 15_000,
+      },
+    );
+  }
+
+  await expect(
+    page.getByRole("heading", { name: "Mission Statement" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Who This Helps" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "First Meaningful Outcome" }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Active Mission", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Build My Journey" }).click();
+  await expect(page).toHaveURL(/\/mission\/complete/);
+  await expect(
+    page.getByRole("heading", {
+      name: "Your direction is ready for a Journey.",
+    }),
+  ).toBeVisible();
 }
 
 test("eligible user completes persistent Discovery without invented results", async ({
   page,
   isMobile,
 }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   test.skip(
     isMobile,
     "The full flow runs once; mobile controls have a focused test.",

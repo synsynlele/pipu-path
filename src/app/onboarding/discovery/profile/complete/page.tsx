@@ -26,15 +26,19 @@ export default async function ProfileCompletePage() {
       </h1>
       <Surface className="mt-10 p-6 sm:p-8">
         <p className="text-muted leading-8">
-          Your private profile and feedback are saved. Stage 5, Journeys, has
-          not been built yet, so PipuPath will not pretend you can begin one.
+          Your private profile and feedback are saved. PipuPath can now turn
+          this evidence into one practical mission you can begin exploring.
         </p>
       </Surface>
-      <ButtonLink href="/onboarding/discovery/profile" className="mt-8">
-        Review my profile
+      <ButtonLink href="/mission" className="mt-8">
+        Open Mission
       </ButtonLink>
-      <ButtonLink href="/app" variant="secondary" className="mt-4">
-        Return to dashboard
+      <ButtonLink
+        href="/onboarding/discovery/profile"
+        variant="secondary"
+        className="mt-4"
+      >
+        Review my profile
       </ButtonLink>
     </main>
   );

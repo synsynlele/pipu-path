@@ -1,8 +1,8 @@
 # Implementation status
 
-**Current stage:** Stage 4 — Human Potential Profile MVP  
+**Current stage:** Stage 5 — Practical Mission MVP  
 **Last verified:** 2026-08-02  
-**Next boundary:** Stage 5 — separately authorized work only
+**Next boundary:** Stage 6 Journey — not authorized
 
 | Stage                           | Status      | Evidence                                                                     |
 | ------------------------------- | ----------- | ---------------------------------------------------------------------------- |
@@ -11,7 +11,8 @@
 | 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass               |
 | 3 — Discovery                   | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass    |
 | 4 — Human Potential Profile     | Complete    | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass |
-| 5–9                             | Not started | No Mission or downstream capability has been implemented                     |
+| 5 — Practical Mission           | Complete    | Live Gemini, refinement, activation, refresh, RLS and staging CI pass        |
+| 6–9                             | Not started | Journey and downstream capabilities have not been implemented                |
 
 ## Stage 4 completion
 
@@ -38,8 +39,21 @@ proved login, completed Discovery recovery, Gemini generation, saved profile
 rendering, refresh recovery, feedback persistence, Continue behavior,
 anonymous blocking and narrow-screen access.
 
+## Stage 5 completion
+
+Stage 5 consumes the completed private profile to generate one validated,
+evidence-linked practical mission through the existing server-only Gemini
+configuration. Draft, refinement, regeneration, three-attempt limit, activation,
+history, refresh recovery and one-active-mission enforcement are implemented.
+Migration `202608020013` is applied to disposable staging and its RLS,
+ownership, grants and uniqueness controls are verified. GitHub Actions run
+[30771864073](https://github.com/synsynlele/pipu-path/actions/runs/30771864073)
+passed full validation and authenticated staging E2E, including live Gemini,
+refinement, activation, refresh recovery, anonymous blocking, mobile access and
+the Stage 6 boundary. The repository gate includes 60 unit tests and 30
+structural integration checks.
+
 ## Boundary
 
-Stage 4 is complete. Mission, Journey, Quests, Reflection, Builder Network,
-public profiles, multi-provider AI, advanced analytics, queue systems and
-multi-agent AI have not started.
+Stages 4 and 5 are complete. Stage 6 has not started. Stage 5 stops before Journey,
+Quests, XP, Reflection, Builder Network, public sharing, analytics or queues.

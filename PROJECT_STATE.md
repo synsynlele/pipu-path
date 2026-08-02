@@ -1,16 +1,16 @@
 # PipuPath project state
 
-**Current stage:** Stage 4 — Human Potential Profile MVP
+**Current stage:** Stage 5 — Practical Mission MVP
 
 **Stage status:** COMPLETE
 
-**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4
+**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4, Stage 5
 
-**Current Git baseline:** Stage 4 implementation and closure through `099c59c8c3f954413fd0d2c81de2f96def7ddb3e`
+**Current Git baseline:** Stage 5 implementation and verified closure
 
 **Infrastructure:** disposable non-production Supabase staging
 `kvjcswnmhwegpakbtvlh`; Vercel branch Preview for
-`agent/stage4-1-provenance`
+`agent/stage5-practical-mission`
 
 **Last verified:** 2026-08-02
 
@@ -35,9 +35,22 @@ Vercel Preview. The browser suite proves anonymous protection, login, persisted
 Discovery recovery, live profile rendering, refresh, feedback persistence,
 Continue behavior and narrow-screen access.
 
-## Outstanding blockers
+## Stage 5 completion
 
-None for Stage 4. Stage 5 has not started.
+The Stage 5 source implements a private practical mission contract, the existing
+server-only Gemini adapter path, a three-attempt request lifecycle per profile,
+validated evidence references, refinement/regeneration, one-active-mission
+activation, refresh recovery and an honest Stage 6 boundary. Migration
+`202608020013` is applied to disposable staging (recorded remotely as
+`20260802223224_stage_5_practical_mission`). RLS, ownership policies,
+service-role grants and the one-active-mission indexes are verified.
+
+GitHub Actions run
+[30771864073](https://github.com/synsynlele/pipu-path/actions/runs/30771864073)
+passed full validation and authenticated staging E2E. The live suite proves
+Gemini generation, bounded refinement, persistence, activation, refresh,
+anonymous/mobile protection and the Stage 6 boundary. The repository gate
+includes 60 unit tests and 30 structural integration checks.
 
 ## Security findings
 
@@ -60,9 +73,9 @@ None for Stage 4. Stage 5 has not started.
 
 ## Exact next vertical slice
 
-Stage 5 boundary only. Mission, Journey, Quests, Reflection, Builder Network,
-public profiles, multi-provider execution, analytics and queue infrastructure
-have not started and require separate authorization.
+Stage 6 Journey is the exact next boundary and has not started. Journey, Quests,
+XP, Reflection, Builder Network, public sharing, analytics and queues remain
+outside scope.
 
 ## Reproduction
 
@@ -76,4 +89,4 @@ npm run build
 npm run validate
 ```
 
-Remote proof: GitHub Actions run `30768699971`.
+Remote proof: GitHub Actions run `30771864073`.

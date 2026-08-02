@@ -772,6 +772,91 @@ export type Database = {
           },
         ];
       };
+      mission_generation_requests: {
+        Row: {
+          completed_at: string | null;
+          created_at: string;
+          failed_at: string | null;
+          failure_code: string | null;
+          failure_detail_safe: string | null;
+          generation_kind: Database["public"]["Enums"]["mission_generation_kind"];
+          human_potential_profile_id: string;
+          id: string;
+          model: string | null;
+          prompt_version: string;
+          provider: string | null;
+          refinement_instruction: string | null;
+          requested_at: string;
+          source_mission_id: string | null;
+          started_at: string | null;
+          status: Database["public"]["Enums"]["mission_request_status"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          completed_at?: string | null;
+          created_at?: string;
+          failed_at?: string | null;
+          failure_code?: string | null;
+          failure_detail_safe?: string | null;
+          generation_kind: Database["public"]["Enums"]["mission_generation_kind"];
+          human_potential_profile_id: string;
+          id?: string;
+          model?: string | null;
+          prompt_version: string;
+          provider?: string | null;
+          refinement_instruction?: string | null;
+          requested_at?: string;
+          source_mission_id?: string | null;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["mission_request_status"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          completed_at?: string | null;
+          created_at?: string;
+          failed_at?: string | null;
+          failure_code?: string | null;
+          failure_detail_safe?: string | null;
+          generation_kind?: Database["public"]["Enums"]["mission_generation_kind"];
+          human_potential_profile_id?: string;
+          id?: string;
+          model?: string | null;
+          prompt_version?: string;
+          provider?: string | null;
+          refinement_instruction?: string | null;
+          requested_at?: string;
+          source_mission_id?: string | null;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["mission_request_status"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "mission_generation_requests_human_potential_profile_id_fkey";
+            columns: ["human_potential_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "human_potential_profile_versions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "mission_generation_requests_source_fkey";
+            columns: ["source_mission_id"];
+            isOneToOne: false;
+            referencedRelation: "user_missions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "mission_generation_requests_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       onboarding_checkpoints: {
         Row: {
           completed_at: string | null;
@@ -1022,6 +1107,107 @@ export type Database = {
           },
         ];
       };
+      user_missions: {
+        Row: {
+          activated_at: string | null;
+          completed_at: string | null;
+          created_at: string;
+          current_caution: string;
+          first_meaningful_outcome: string;
+          generation_request_id: string;
+          human_potential_profile_id: string;
+          id: string;
+          mission_statement: string;
+          model: string;
+          profile_evidence_refs: string[];
+          prompt_version: string;
+          replaces_mission_id: string | null;
+          status: Database["public"]["Enums"]["mission_status"];
+          success_signal: string;
+          time_horizon: string;
+          title: string;
+          updated_at: string;
+          user_id: string;
+          who_this_helps: string;
+          why_this_fits: string;
+        };
+        Insert: {
+          activated_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          current_caution: string;
+          first_meaningful_outcome: string;
+          generation_request_id: string;
+          human_potential_profile_id: string;
+          id?: string;
+          mission_statement: string;
+          model: string;
+          profile_evidence_refs: string[];
+          prompt_version: string;
+          replaces_mission_id?: string | null;
+          status?: Database["public"]["Enums"]["mission_status"];
+          success_signal: string;
+          time_horizon: string;
+          title: string;
+          updated_at?: string;
+          user_id: string;
+          who_this_helps: string;
+          why_this_fits: string;
+        };
+        Update: {
+          activated_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          current_caution?: string;
+          first_meaningful_outcome?: string;
+          generation_request_id?: string;
+          human_potential_profile_id?: string;
+          id?: string;
+          mission_statement?: string;
+          model?: string;
+          profile_evidence_refs?: string[];
+          prompt_version?: string;
+          replaces_mission_id?: string | null;
+          status?: Database["public"]["Enums"]["mission_status"];
+          success_signal?: string;
+          time_horizon?: string;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+          who_this_helps?: string;
+          why_this_fits?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_missions_generation_request_id_fkey";
+            columns: ["generation_request_id"];
+            isOneToOne: true;
+            referencedRelation: "mission_generation_requests";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_missions_human_potential_profile_id_fkey";
+            columns: ["human_potential_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "human_potential_profile_versions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_missions_replaces_mission_id_fkey";
+            columns: ["replaces_mission_id"];
+            isOneToOne: false;
+            referencedRelation: "user_missions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "user_missions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       user_preferences: {
         Row: {
           accessibility: Json;
@@ -1068,7 +1254,19 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      activate_stage5_mission: {
+        Args: { mission_id_input: string };
+        Returns: boolean;
+      };
       claim_stage4_interpretation_request: {
+        Args: {
+          model_input: string;
+          provider_input: string;
+          request_id_input: string;
+        };
+        Returns: boolean;
+      };
+      claim_stage5_mission_request: {
         Args: {
           model_input: string;
           provider_input: string;
@@ -1104,6 +1302,16 @@ export type Database = {
         };
         Returns: string;
       };
+      create_stage5_mission_request: {
+        Args: {
+          generation_kind_input: Database["public"]["Enums"]["mission_generation_kind"];
+          profile_id_input: string;
+          prompt_version_input?: string;
+          refinement_instruction_input?: string;
+          source_mission_id_input?: string;
+        };
+        Returns: string;
+      };
       discovery_progress: {
         Args: { session_id_input: string };
         Returns: number;
@@ -1116,7 +1324,23 @@ export type Database = {
         };
         Returns: boolean;
       };
+      fail_stage5_mission_request: {
+        Args: {
+          failure_code_input: string;
+          failure_detail_safe_input?: string;
+          request_id_input: string;
+        };
+        Returns: boolean;
+      };
       normalize_stage4_discovery_evidence: { Args: never; Returns: number };
+      open_discovery_review: {
+        Args: { expected_version_input: number; session_id_input: string };
+        Returns: number;
+      };
+      open_discovery_review_v1_internal: {
+        Args: { expected_version_input: number; session_id_input: string };
+        Returns: number;
+      };
       persist_stage4_human_potential_profile: {
         Args: {
           insights_input: Json;
@@ -1126,13 +1350,9 @@ export type Database = {
         };
         Returns: string;
       };
-      open_discovery_review: {
-        Args: { expected_version_input: number; session_id_input: string };
-        Returns: number;
-      };
-      open_discovery_review_v1_internal: {
-        Args: { expected_version_input: number; session_id_input: string };
-        Returns: number;
+      persist_stage5_mission: {
+        Args: { mission_input: Json; request_id_input: string };
+        Returns: string;
       };
       provision_identity: {
         Args: { target_user_id: string };
@@ -1252,6 +1472,9 @@ export type Database = {
         | "outdated_evidence"
         | "possible_response_bias";
       identity_checkpoint_status: "not_started" | "in_progress" | "completed";
+      mission_generation_kind: "initial" | "regenerate" | "refine";
+      mission_request_status: "ready" | "processing" | "completed" | "failed";
+      mission_status: "draft" | "active" | "paused" | "completed" | "replaced";
       onboarding_status: "identity_required" | "stage_3_ready";
       profile_visibility: "private";
     };
@@ -1468,6 +1691,9 @@ export const Constants = {
         "possible_response_bias",
       ],
       identity_checkpoint_status: ["not_started", "in_progress", "completed"],
+      mission_generation_kind: ["initial", "regenerate", "refine"],
+      mission_request_status: ["ready", "processing", "completed", "failed"],
+      mission_status: ["draft", "active", "paused", "completed", "replaced"],
       onboarding_status: ["identity_required", "stage_3_ready"],
       profile_visibility: ["private"],
     },

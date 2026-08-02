@@ -6,8 +6,11 @@
 | `/onboarding/discovery/[section]?question=…` | Session owner                | One eligible question, previous/save/skip |
 | `/onboarding/discovery/review`               | Session owner in review      | Grouped answer review and edit            |
 | `/onboarding/discovery/complete`             | Owner of completed session   | Honest Stage 4 boundary                   |
+| `/onboarding/discovery/profile`              | Authenticated profile owner  | Generate/review private Stage 4 profile   |
+| `/onboarding/discovery/profile/complete`     | Authenticated profile owner  | Handoff to Practical Mission              |
+| `/mission`                                   | Authenticated profile owner  | Generate, review and activate one mission |
+| `/mission/complete`                          | Active mission owner         | Honest Stage 6 Journey boundary           |
 
 Every route repeats authorization on the server. Middleware is not the sole
-control. Users without the identity checkpoint return to the existing
-onboarding boundary; completed users remain at the completion boundary until
-Stage 4 is authorized.
+control. Mission generation also requires a completed active profile and
+current AI-processing consent. Stage 5 stops before Journey implementation.
