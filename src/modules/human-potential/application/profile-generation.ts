@@ -42,6 +42,20 @@ function failure(code: string): ProfileExecutionResult {
   };
 }
 
+function projectStructuredEvidenceValue(value: unknown) {
+  if (!value || Array.isArray(value) || typeof value !== "object") return value;
+  const structured = value as Record<string, unknown>;
+  if (typeof structured.text === "string") return structured.text;
+  if (
+    Array.isArray(structured.selected_options) &&
+    structured.selected_options.every((option) => typeof option === "string")
+  ) {
+    return structured.selected_options;
+  }
+  if (typeof structured.numeric === "number") return structured.numeric;
+  return null;
+}
+
 export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExecutionResult> {
   const { user } = await requireAuthenticatedIdentity();
   let model: string;
@@ -129,7 +143,9 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
             ? row.metadata.response_type
             : "reflection",
         value:
-          row.sensitivity_level === "sensitive" ? null : row.structured_value,
+          row.sensitivity_level === "sensitive"
+            ? null
+            : projectStructuredEvidenceValue(row.structured_value),
         sensitivity: row.sensitivity_level,
         contentHash: row.content_hash,
       })),
