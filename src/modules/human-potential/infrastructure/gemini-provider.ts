@@ -19,8 +19,10 @@ const unsupportedGeminiSchemaKeywords = new Set([
   "exclusiveMinimum",
 ]);
 const profileResponseJsonSchema = JSON.parse(
-  JSON.stringify(z.toJSONSchema(humanPotentialProfileOutputSchema), (key, value) =>
-    unsupportedGeminiSchemaKeywords.has(key) ? undefined : value,
+  JSON.stringify(
+    z.toJSONSchema(humanPotentialProfileOutputSchema),
+    (key, value) =>
+      unsupportedGeminiSchemaKeywords.has(key) ? undefined : value,
   ),
 ) as Record<string, unknown>;
 
