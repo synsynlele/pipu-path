@@ -328,7 +328,7 @@ refresh state and stop at the Stage 6 Journey boundary.
 - Coverage thresholds and production build pass.
 - Migration `202608020013` is applied to disposable staging; generated remote
   types, RLS, ownership policies, function grants and uniqueness controls pass.
-- GitHub Actions run `30771717930` passes full validation and authenticated
+- GitHub Actions run `30771864073` passes full validation and authenticated
   staging E2E through live Gemini generation, refinement, activation, refresh,
   anonymous/mobile protection and the Stage 6 boundary.
 
