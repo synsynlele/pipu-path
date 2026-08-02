@@ -253,3 +253,51 @@ Do not execute a live AI provider or begin Stage 4.2.
 Status: COMPLETE. Stage 4.1 contains no live provider call, generated user
 conclusion, public Builder projection, Journey or Quest implementation. Work
 stops before Stage 4.2 controlled interpretation execution.
+
+
+## 2026-08-02 — Stage 4 Human Potential Profile MVP closure
+
+### Authorized scope
+
+Complete the private six-section Human Potential Profile using server-only
+Google Gemini. Persist the profile and feedback, verify refresh/mobile/security,
+and stop before Mission or other Stage 5 behavior.
+
+### Implemented
+
+- Server-only Gemini Flash adapter behind the provider-neutral contract
+- Six-section cautious profile prompt and strict post-generation validation
+- Evidence-linked, versioned private profile persistence
+- Truthful processing, duplicate-request prevention, safe retry and timeout
+- Mobile-first profile cards and persistent per-insight feedback
+- Refresh recovery and an explicit Stage 5 boundary
+- Privacy-safe provider failure classification without prompts or response bodies
+
+### Verification and repairs
+
+- Applied Stage 4 execution migration `202607300011` to disposable staging.
+- Applied `202608020012` to include the Supabase `extensions` schema in the
+  evidence-normalization function search path.
+- Verified privileged Stage 4 functions remain executable only by
+  `service_role`; anonymous and ordinary authenticated roles are denied.
+- Reconciled persisted structured evidence with the provider input contract.
+- Seeded only the approved disposable CI identity with the same four active
+  consent records required by normal onboarding.
+- Corrected Preview Gemini environment scope and model configuration.
+- Added bounded timeout handling and allowlisted provider diagnostics.
+- Removed an incompatible Gemini transport-schema option and made every output
+  enum and required provenance field explicit in the prompt; the full server
+  validator remains authoritative.
+- Verified a live Gemini interpretation request completed and persisted.
+- GitHub Actions run
+  [30768699971](https://github.com/synsynlele/pipu-path/actions/runs/30768699971)
+  passed both full `validate` and authenticated `staging-e2e`.
+- Browser E2E passed anonymous protection, login, completed Discovery recovery,
+  live profile rendering, refresh, feedback persistence, Continue and mobile
+  access checks.
+
+### Boundary
+
+Status: COMPLETE. Stage 4 is complete. Mission, Journey, Quests, Reflection,
+Builder Network, public profiles, multi-provider execution, advanced analytics,
+queues and multi-agent AI have not started.
