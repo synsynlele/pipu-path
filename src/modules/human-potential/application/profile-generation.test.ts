@@ -36,8 +36,10 @@ vi.mock("@/lib/observability/logger", () => ({
   createLogger: () => ({ info: vi.fn(), warn: vi.fn() }),
 }));
 
-const { generateCurrentHumanPotentialProfile } =
-  await import("./profile-generation");
+const {
+  generateCurrentHumanPotentialProfile,
+  projectStructuredEvidenceValue,
+} = await import("./profile-generation");
 
 function requestQuery() {
   return {
@@ -103,6 +105,24 @@ function evidenceQuery() {
     }),
   };
 }
+
+describe("persisted evidence projection", () => {
+  it.each([
+    [{ response_type: "reflection", text: "Teaching" }, "Teaching"],
+    [
+      {
+        response_type: "multi_select",
+        selected_options: ["Building", "Leading"],
+      },
+      ["Building", "Leading"],
+    ],
+    [{ response_type: "scale", numeric: 4 }, 4],
+    [{ response_type: "reflection", redacted: true }, null],
+    [null, null],
+  ])("projects %j into the provider value", (stored, expected) => {
+    expect(projectStructuredEvidenceValue(stored)).toEqual(expected);
+  });
+});
 
 describe("Stage 4 profile generation orchestration", () => {
   beforeEach(() => {
