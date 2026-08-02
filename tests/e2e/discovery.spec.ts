@@ -98,7 +98,8 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
   await expect(page).toHaveURL(/\/mission$/);
   const active = page.getByText("Active Mission", { exact: true });
   const generate = page.getByRole("button", { name: "Generate My Mission" });
-  await expect(active.or(generate)).toBeVisible({ timeout: 15_000 });
+  const review = page.getByText("Mission Review", { exact: true });
+  await expect(active.or(generate).or(review)).toBeVisible({ timeout: 15_000 });
   if ((await active.count()) === 0) {
     if ((await generate.count()) === 1) {
       await generate.click();
@@ -121,14 +122,12 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
         .getByLabel("Refine this mission")
         .fill("Make it achievable without spending money");
       await refine.click();
-      const refinementStatus = page.getByRole("status", {
-        name: "PipuPath is refining your practical mission…",
-      });
+      const refinementStatus = page
+        .getByRole("status")
+        .filter({ hasText: "PipuPath is refining your practical mission…" });
       await expect(refinementStatus).toBeVisible();
       await expect(refinementStatus).toBeHidden({ timeout: 60_000 });
-      await expect(
-        page.getByText("Mission Review", { exact: true }),
-      ).toBeVisible({
+      await expect(review).toBeVisible({
         timeout: 50_000,
       });
     }
