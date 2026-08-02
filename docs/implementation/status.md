@@ -47,7 +47,7 @@ configuration. Draft, refinement, regeneration, three-attempt limit, activation,
 history, refresh recovery and one-active-mission enforcement are implemented.
 Migration `202608020013` is applied to disposable staging and its RLS,
 ownership, grants and uniqueness controls are verified. GitHub Actions run
-[30771717930](https://github.com/synsynlele/pipu-path/actions/runs/30771717930)
+[30771864073](https://github.com/synsynlele/pipu-path/actions/runs/30771864073)
 passed full validation and authenticated staging E2E, including live Gemini,
 refinement, activation, refresh recovery, anonymous blocking, mobile access and
 the Stage 6 boundary. The repository gate includes 60 unit tests and 30
