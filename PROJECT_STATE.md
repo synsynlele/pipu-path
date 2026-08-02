@@ -1,8 +1,8 @@
 # PipuPath project state
 
-**Current stage:** Stage 4 — Human Potential Profile MVP
+**Current stage:** Stage 5 — Practical Mission MVP
 
-**Stage status:** COMPLETE
+**Stage status:** IN PROGRESS
 
 **Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4
 
@@ -35,9 +35,20 @@ Vercel Preview. The browser suite proves anonymous protection, login, persisted
 Discovery recovery, live profile rendering, refresh, feedback persistence,
 Continue behavior and narrow-screen access.
 
+## Stage 5 checkpoint
+
+The Stage 5 source implements a private practical mission contract, the existing
+server-only Gemini adapter path, a three-attempt request lifecycle per profile,
+validated evidence references, refinement/regeneration, one-active-mission
+activation, refresh recovery and an honest Stage 6 boundary. Local formatting,
+lint, TypeScript, 60 unit tests, 29 integration checks, coverage and production
+build pass.
+
 ## Outstanding blockers
 
-None for Stage 4. Stage 5 has not started.
+Migration `202608020013` must be applied and verified on disposable staging.
+Live Gemini generation, refinement, activation, refresh, RLS and browser flow
+must pass before Stage 5 is complete.
 
 ## Security findings
 
@@ -60,9 +71,9 @@ None for Stage 4. Stage 5 has not started.
 
 ## Exact next vertical slice
 
-Stage 5 boundary only. Mission, Journey, Quests, Reflection, Builder Network,
-public profiles, multi-provider execution, analytics and queue infrastructure
-have not started and require separate authorization.
+Complete Stage 5 staging verification, then stop at the Stage 6 Journey
+boundary. Journey, Quests, XP, Reflection, Builder Network, public sharing,
+analytics and queues remain outside scope.
 
 ## Reproduction
 
