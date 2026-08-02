@@ -6,7 +6,7 @@
 
 **Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4, Stage 5
 
-**Current Git baseline:** Stage 5 implementation and closure through `fe9440a42e178fd4c51b648b1124c09ab6dc48d9`
+**Current Git baseline:** Stage 5 implementation and verified closure
 
 **Infrastructure:** disposable non-production Supabase staging
 `kvjcswnmhwegpakbtvlh`; Vercel branch Preview for
@@ -46,7 +46,7 @@ activation, refresh recovery and an honest Stage 6 boundary. Migration
 service-role grants and the one-active-mission indexes are verified.
 
 GitHub Actions run
-[30771717930](https://github.com/synsynlele/pipu-path/actions/runs/30771717930)
+[30771864073](https://github.com/synsynlele/pipu-path/actions/runs/30771864073)
 passed full validation and authenticated staging E2E. The live suite proves
 Gemini generation, bounded refinement, persistence, activation, refresh,
 anonymous/mobile protection and the Stage 6 boundary. The repository gate
@@ -89,4 +89,4 @@ npm run build
 npm run validate
 ```
 
-Remote proof: GitHub Actions run `30771717930`.
+Remote proof: GitHub Actions run `30771864073`.
