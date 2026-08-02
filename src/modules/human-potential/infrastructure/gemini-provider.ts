@@ -2,8 +2,11 @@ import "server-only";
 
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
-import type { HumanPotentialProfileSectionKey } from "../domain/profile-contract";
-import type { z } from "zod";
+import {
+  humanPotentialProfileOutputSchema,
+  type HumanPotentialProfileSectionKey,
+} from "../domain/profile-contract";
+import { z } from "zod";
 import { interpretationInputSchema } from "../domain/contracts";
 
 const logger = createLogger();
@@ -76,6 +79,9 @@ export class GeminiInterpretationProvider {
             contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
             generationConfig: {
               responseMimeType: "application/json",
+              responseJsonSchema: z.toJSONSchema(
+                humanPotentialProfileOutputSchema,
+              ),
               maxOutputTokens: 8192,
             },
           }),
