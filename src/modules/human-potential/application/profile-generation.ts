@@ -192,7 +192,9 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
         : "HPI_INTERPRETATION_NOT_ALLOWED";
     const providerFailure =
       error instanceof Error &&
-      /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(error.message)
+      /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
+        error.message,
+      )
         ? error.message
         : null;
     await service.rpc("fail_stage4_interpretation_request", {
