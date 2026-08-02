@@ -1,8 +1,8 @@
 # Implementation status
 
-**Current stage:** Stage 4 — Human Potential Profile MVP  
+**Current stage:** Stage 5 — Practical Mission MVP  
 **Last verified:** 2026-08-02  
-**Next boundary:** Stage 5 — separately authorized work only
+**Next boundary:** Stage 6 Journey — not authorized
 
 | Stage                           | Status      | Evidence                                                                     |
 | ------------------------------- | ----------- | ---------------------------------------------------------------------------- |
@@ -11,7 +11,8 @@
 | 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass               |
 | 3 — Discovery                   | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass    |
 | 4 — Human Potential Profile     | Complete    | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass |
-| 5–9                             | Not started | No Mission or downstream capability has been implemented                     |
+| 5 — Practical Mission           | In progress | Implementation and local quality gates pass; staging verification pending    |
+| 6–9                             | Not started | Journey and downstream capabilities have not been implemented                |
 
 ## Stage 4 completion
 
@@ -38,8 +39,17 @@ proved login, completed Discovery recovery, Gemini generation, saved profile
 rendering, refresh recovery, feedback persistence, Continue behavior,
 anonymous blocking and narrow-screen access.
 
+## Stage 5 implementation checkpoint
+
+Stage 5 consumes the completed private profile to generate one validated,
+evidence-linked practical mission through the existing server-only Gemini
+configuration. Draft, refinement, regeneration, three-attempt limit, activation,
+history, refresh recovery and one-active-mission enforcement are implemented.
+Local formatting, lint, strict TypeScript, 60 unit tests, 29 integration checks,
+coverage and production build pass. Migration `202608020013` and live staging
+browser verification remain required before Stage 5 can be marked complete.
+
 ## Boundary
 
-Stage 4 is complete. Mission, Journey, Quests, Reflection, Builder Network,
-public profiles, multi-provider AI, advanced analytics, queue systems and
-multi-agent AI have not started.
+Stage 4 remains complete. Stage 5 is in progress and stops before Journey,
+Quests, XP, Reflection, Builder Network, public sharing, analytics or queues.
