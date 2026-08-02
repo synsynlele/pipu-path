@@ -300,3 +300,31 @@ and stop before Mission or other Stage 5 behavior.
 Status: COMPLETE. Stage 4 is complete. Mission, Journey, Quests, Reflection,
 Builder Network, public profiles, multi-provider execution, advanced analytics,
 queues and multi-agent AI have not started.
+
+## 2026-08-02 — Stage 5 Practical Mission implementation checkpoint
+
+### Authorized scope
+
+Generate one practical, private mission from the completed Human Potential
+Profile, allow bounded refinement/regeneration, activate one mission, preserve
+refresh state and stop at the Stage 6 Journey boundary.
+
+### Implemented
+
+- Evidence-linked nine-field Practical Mission domain contract
+- Permanent-purpose, inflated-scope, diagnosis and minor-safety validation
+- Existing server-only Gemini configuration with a 45-second bound
+- Three requests per profile version and duplicate-request prevention
+- Private mission history and database-enforced one-active-mission invariant
+- Ready, processing, review, refinement, regeneration and active UI states
+- Controlled activation and service-role-only generated persistence
+- Anonymous/cross-user/direct-write structural and pgTAP coverage
+- Honest Stage 6 boundary without Journey, Quest or XP behavior
+
+### Verification checkpoint
+
+- Formatting, zero-warning lint and strict TypeScript pass.
+- 60 unit tests and 29 structural integration checks pass.
+- Coverage thresholds and production build pass.
+- Migration `202608020013`, generated remote types, advisors and live staging
+  browser/Gemini verification remain required for completion.
