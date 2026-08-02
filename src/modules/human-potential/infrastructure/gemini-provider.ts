@@ -7,7 +7,7 @@ import type { z } from "zod";
 import { interpretationInputSchema } from "../domain/contracts";
 
 const logger = createLogger();
-const requestTimeoutMs = 20_000;
+const requestTimeoutMs = 45_000;
 
 const profileSections: Array<{
   key: HumanPotentialProfileSectionKey;
@@ -94,6 +94,11 @@ export class GeminiInterpretationProvider {
       } catch {
         throw new Error("GEMINI_INVALID_JSON");
       }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error("GEMINI_TIMEOUT");
+      }
+      throw error;
     } finally {
       clearTimeout(timeout);
     }
