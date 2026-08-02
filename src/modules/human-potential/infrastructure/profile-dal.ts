@@ -55,7 +55,14 @@ export async function getCurrentHumanPotentialProfile() {
   for (const item of [...(feedback ?? [])].sort((a, b) =>
     b.created_at.localeCompare(a.created_at),
   )) {
-    if (\n      item.feedback_type !== "confirmed" &&\n      item.feedback_type !== "partly_true" &&\n      item.feedback_type !== "not_true"\n    ) {\n      continue;\n    }\n    if (!feedbackByInsight.has(item.insight_id)) {
+    if (
+      item.feedback_type !== "confirmed" &&
+      item.feedback_type !== "partly_true" &&
+      item.feedback_type !== "not_true"
+    ) {
+      continue;
+    }
+    if (!feedbackByInsight.has(item.insight_id)) {
       feedbackByInsight.set(item.insight_id, {
         type: item.feedback_type,
         comment: item.reason,
