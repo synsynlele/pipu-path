@@ -11,6 +11,18 @@ import { interpretationInputSchema } from "../domain/contracts";
 
 const logger = createLogger();
 const requestTimeoutMs = 45_000;
+const unsupportedGeminiSchemaKeywords = new Set([
+  "$schema",
+  "pattern",
+  "minLength",
+  "maxLength",
+  "exclusiveMinimum",
+]);
+const profileResponseJsonSchema = JSON.parse(
+  JSON.stringify(z.toJSONSchema(humanPotentialProfileOutputSchema), (key, value) =>
+    unsupportedGeminiSchemaKeywords.has(key) ? undefined : value,
+  ),
+) as Record<string, unknown>;
 
 const profileSections: Array<{
   key: HumanPotentialProfileSectionKey;
@@ -79,9 +91,7 @@ export class GeminiInterpretationProvider {
             contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
             generationConfig: {
               responseMimeType: "application/json",
-              responseJsonSchema: z.toJSONSchema(
-                humanPotentialProfileOutputSchema,
-              ),
+              responseJsonSchema: profileResponseJsonSchema,
               maxOutputTokens: 8192,
             },
           }),
