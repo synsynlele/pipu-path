@@ -2,30 +2,12 @@ import "server-only";
 
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
-import {
-  humanPotentialProfileOutputSchema,
-  type HumanPotentialProfileSectionKey,
-} from "../domain/profile-contract";
-import { z } from "zod";
+import type { HumanPotentialProfileSectionKey } from "../domain/profile-contract";
+import type { z } from "zod";
 import { interpretationInputSchema } from "../domain/contracts";
 
 const logger = createLogger();
 const requestTimeoutMs = 45_000;
-const unsupportedGeminiSchemaKeywords = new Set([
-  "$schema",
-  "pattern",
-  "minLength",
-  "maxLength",
-  "exclusiveMinimum",
-]);
-const profileResponseJsonSchema = JSON.parse(
-  JSON.stringify(
-    z.toJSONSchema(humanPotentialProfileOutputSchema),
-    (key, value) =>
-      unsupportedGeminiSchemaKeywords.has(key) ? undefined : value,
-  ),
-) as Record<string, unknown>;
-
 const profileSections: Array<{
   key: HumanPotentialProfileSectionKey;
   instruction: string;
@@ -66,6 +48,11 @@ function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
       profileSections.map((section) => section.key).join(", ") +
       ". Emerging strengths has 2–4 insights; every other section has at least one.",
     "For best_next_direction, include why it fits and one realistic thing to try next in its explanation.",
+    "Allowed insightType values: strength_pattern, interest_pattern, value_pattern, capability_pattern, environmental_preference, problem_orientation, contribution_orientation, growth_need, constraint, motivation_pattern, readiness_pattern.",
+    "Allowed confidenceLevel values: low, emerging, moderate, strong. confidenceScore must be 0 through 1.",
+    "Allowed evidence supportType values: supporting, contradicting, context. Every insight needs at least one evidence item using an exact supplied evidence UUID and weight greater than 0 through 1.",
+    "Allowed uncertainty type values: insufficient_examples, conflicting_evidence, low_response_detail, age_or_life_stage, context_specific, outdated_evidence, possible_response_bias. Every insight needs at least one uncertainty.",
+    "sensitivity must be standard or sensitive. ageAppropriate must be a boolean. Every listed JSON field is required.",
     "JSON shape: {schemaVersion:'hpi-profile-v1',summary:string,insights:[{profileSection,insightType,insightKey,title,summary,explanation,confidenceLevel,confidenceScore,confidenceFactors,evidence:[{evidenceId,supportType,explanation,weight}],uncertainties:[{type,description}],confirmationQuestion,sensitivity,ageAppropriate}]}.",
     "Evidence follows:",
     JSON.stringify(input),
@@ -93,7 +80,6 @@ export class GeminiInterpretationProvider {
             contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
             generationConfig: {
               responseMimeType: "application/json",
-              responseJsonSchema: profileResponseJsonSchema,
               maxOutputTokens: 8192,
             },
           }),
