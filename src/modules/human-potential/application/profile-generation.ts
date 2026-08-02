@@ -42,7 +42,7 @@ function failure(code: string): ProfileExecutionResult {
   };
 }
 
-function projectStructuredEvidenceValue(value: unknown) {
+export function projectStructuredEvidenceValue(value: unknown) {
   if (!value || Array.isArray(value) || typeof value !== "object") return value;
   const structured = value as Record<string, unknown>;
   if (typeof structured.text === "string") return structured.text;
