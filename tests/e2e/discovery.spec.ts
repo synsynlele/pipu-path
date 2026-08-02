@@ -117,13 +117,22 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
         .getByLabel("Refine this mission")
         .fill("Make it achievable without spending money");
       await refine.click();
+      const refinementStatus = page.getByRole("status", {
+        name: "PipuPath is refining your practical mission…",
+      });
+      await expect(refinementStatus).toBeVisible();
+      await expect(refinementStatus).toBeHidden({ timeout: 60_000 });
       await expect(
         page.getByText("Mission Review", { exact: true }),
       ).toBeVisible({
         timeout: 50_000,
       });
     }
-    await page.getByRole("button", { name: "Accept Mission" }).click();
+    const acceptMission = page.getByRole("button", {
+      name: "Accept Mission",
+    });
+    await expect(acceptMission).toBeEnabled();
+    await acceptMission.click();
     await expect(page.getByText("Active Mission", { exact: true })).toBeVisible(
       {
         timeout: 15_000,
