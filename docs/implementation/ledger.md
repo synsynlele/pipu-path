@@ -301,7 +301,7 @@ Status: COMPLETE. Stage 4 is complete. Mission, Journey, Quests, Reflection,
 Builder Network, public profiles, multi-provider execution, advanced analytics,
 queues and multi-agent AI have not started.
 
-## 2026-08-02 — Stage 5 Practical Mission implementation checkpoint
+## 2026-08-02 — Stage 5 Practical Mission closure
 
 ### Authorized scope
 
@@ -321,10 +321,15 @@ refresh state and stop at the Stage 6 Journey boundary.
 - Anonymous/cross-user/direct-write structural and pgTAP coverage
 - Honest Stage 6 boundary without Journey, Quest or XP behavior
 
-### Verification checkpoint
+### Verification
 
 - Formatting, zero-warning lint and strict TypeScript pass.
-- 60 unit tests and 29 structural integration checks pass.
+- 60 unit tests and 30 structural integration checks pass.
 - Coverage thresholds and production build pass.
-- Migration `202608020013`, generated remote types, advisors and live staging
-  browser/Gemini verification remain required for completion.
+- Migration `202608020013` is applied to disposable staging; generated remote
+  types, RLS, ownership policies, function grants and uniqueness controls pass.
+- GitHub Actions run `30771717930` passes full validation and authenticated
+  staging E2E through live Gemini generation, refinement, activation, refresh,
+  anonymous/mobile protection and the Stage 6 boundary.
+
+Status: COMPLETE. Stage 5 is complete. Stage 6 Journey has not started.
