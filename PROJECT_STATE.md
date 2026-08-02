@@ -2,15 +2,15 @@
 
 **Current stage:** Stage 5 — Practical Mission MVP
 
-**Stage status:** IN PROGRESS
+**Stage status:** COMPLETE
 
-**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4
+**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4, Stage 5
 
-**Current Git baseline:** Stage 4 implementation and closure through `099c59c8c3f954413fd0d2c81de2f96def7ddb3e`
+**Current Git baseline:** Stage 5 implementation and closure through `fe9440a42e178fd4c51b648b1124c09ab6dc48d9`
 
 **Infrastructure:** disposable non-production Supabase staging
 `kvjcswnmhwegpakbtvlh`; Vercel branch Preview for
-`agent/stage4-1-provenance`
+`agent/stage5-practical-mission`
 
 **Last verified:** 2026-08-02
 
@@ -35,20 +35,22 @@ Vercel Preview. The browser suite proves anonymous protection, login, persisted
 Discovery recovery, live profile rendering, refresh, feedback persistence,
 Continue behavior and narrow-screen access.
 
-## Stage 5 checkpoint
+## Stage 5 completion
 
 The Stage 5 source implements a private practical mission contract, the existing
 server-only Gemini adapter path, a three-attempt request lifecycle per profile,
 validated evidence references, refinement/regeneration, one-active-mission
-activation, refresh recovery and an honest Stage 6 boundary. Local formatting,
-lint, TypeScript, 60 unit tests, 29 integration checks, coverage and production
-build pass.
+activation, refresh recovery and an honest Stage 6 boundary. Migration
+`202608020013` is applied to disposable staging (recorded remotely as
+`20260802223224_stage_5_practical_mission`). RLS, ownership policies,
+service-role grants and the one-active-mission indexes are verified.
 
-## Outstanding blockers
-
-Migration `202608020013` must be applied and verified on disposable staging.
-Live Gemini generation, refinement, activation, refresh, RLS and browser flow
-must pass before Stage 5 is complete.
+GitHub Actions run
+[30771717930](https://github.com/synsynlele/pipu-path/actions/runs/30771717930)
+passed full validation and authenticated staging E2E. The live suite proves
+Gemini generation, bounded refinement, persistence, activation, refresh,
+anonymous/mobile protection and the Stage 6 boundary. The repository gate
+includes 60 unit tests and 30 structural integration checks.
 
 ## Security findings
 
@@ -71,9 +73,9 @@ must pass before Stage 5 is complete.
 
 ## Exact next vertical slice
 
-Complete Stage 5 staging verification, then stop at the Stage 6 Journey
-boundary. Journey, Quests, XP, Reflection, Builder Network, public sharing,
-analytics and queues remain outside scope.
+Stage 6 Journey is the exact next boundary and has not started. Journey, Quests,
+XP, Reflection, Builder Network, public sharing, analytics and queues remain
+outside scope.
 
 ## Reproduction
 
@@ -87,4 +89,4 @@ npm run build
 npm run validate
 ```
 
-Remote proof: GitHub Actions run `30768699971`.
+Remote proof: GitHub Actions run `30771717930`.
