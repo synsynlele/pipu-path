@@ -35,6 +35,9 @@ export default defineConfig({
         "src/modules/human-potential/application/profile-actions.ts",
         "src/modules/human-potential/infrastructure/**",
         "src/modules/human-potential/ui/**",
+        "src/modules/mission/application/mission-actions.ts",
+        "src/modules/mission/infrastructure/**",
+        "src/modules/mission/ui/**",
       ],
       thresholds: {
         lines: 80,
