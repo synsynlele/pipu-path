@@ -60,9 +60,9 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
     );
   }
 
-  await expect(
-    page.getByRole("heading", { name: "Summary" }),
-  ).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByRole("heading", { name: "Summary" })).toBeVisible({
+    timeout: 45_000,
+  });
   await expect(
     page.getByRole("heading", {
       name: "A starting point for your next steps.",
