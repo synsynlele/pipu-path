@@ -89,7 +89,10 @@ function evidenceQuery() {
               source_key: "discovery_interest",
               category: "interest",
               metadata: { response_type: "reflection" },
-              structured_value: "Teaching",
+              structured_value: {
+                response_type: "reflection",
+                text: "Teaching",
+              },
               sensitivity_level: "standard",
               content_hash: "a".repeat(64),
             },
@@ -144,6 +147,16 @@ describe("Stage 4 profile generation orchestration", () => {
       profileId: "55555555-5555-4555-8555-555555555555",
     });
     expect(interpret).toHaveBeenCalledOnce();
+    expect(interpret).toHaveBeenCalledWith(
+      expect.objectContaining({
+        evidence: [
+          expect.objectContaining({
+            responseType: "reflection",
+            value: "Teaching",
+          }),
+        ],
+      }),
+    );
     expect(validateHumanPotentialProfileOutput).toHaveBeenCalledOnce();
     expect(rpc).toHaveBeenNthCalledWith(
       2,
