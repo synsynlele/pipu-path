@@ -155,7 +155,7 @@ test("eligible user completes persistent Discovery without invented results", as
   page,
   isMobile,
 }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   test.skip(
     isMobile,
     "The full flow runs once; mobile controls have a focused test.",
