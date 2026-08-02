@@ -1,47 +1,45 @@
 # Implementation status
 
-**Current stage:** Stage 4.1 — Human Potential interpretation contract and provenance  
-**Last verified:** 2026-07-30  
-**Next boundary:** Stage 4.2 — controlled interpretation execution
+**Current stage:** Stage 4 — Human Potential Profile MVP  
+**Last verified:** 2026-08-02  
+**Next boundary:** Stage 5 — separately authorized work only
 
-| Stage                             | Status      | Evidence                                                                  |
-| --------------------------------- | ----------- | ------------------------------------------------------------------------- |
-| 0 — Governance and architecture   | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger      |
-| 1 — Engineering foundation        | Complete    | Application foundation, shells, design system, config, logging, tests, CI |
-| 2 — Identity and access           | Complete    | DB/RLS/email/recovery/OAuth and staging browser E2E pass                  |
-| 3 — Discovery                     | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass |
-| 4.1 — HPI contract and provenance | Complete    | Schema, provenance, lifecycle, RLS, generated types and staging CI pass   |
-| 4.2–9                             | Not started | No live interpretation or downstream capability exists                    |
+| Stage                           | Status      | Evidence                                                                    |
+| ------------------------------- | ----------- | --------------------------------------------------------------------------- |
+| 0 — Governance and architecture | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger        |
+| 1 — Engineering foundation      | Complete    | Application foundation, design system, config, logging, tests and CI        |
+| 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass              |
+| 3 — Discovery                   | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass   |
+| 4 — Human Potential Profile     | Complete    | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass |
+| 5–9                             | Not started | No Mission or downstream capability has been implemented                    |
 
-## Stage 4.1 completion
+## Stage 4 completion
 
-Stage 4.1 establishes a private, persistent and provider-neutral Human
-Potential foundation. Completed Discovery responses can be normalized into
-versioned evidence. Interpretation requests snapshot eligible evidence,
-preserve consent and age context, and retain idempotent lifecycle state.
-Potential insights, uncertainty, user feedback and private profile versions
-have explicit provenance and integrity rules.
+Stage 4 activates the provider-neutral Stage 4.1 foundation without redesigning
+it. Completed Discovery evidence is projected through the existing consent,
+safeguarding and provenance boundaries to a server-only Google Gemini adapter.
+The result is validated as exactly six provisional profile sections, persisted
+as a private versioned profile with evidence links and model metadata, and
+rendered in a mobile-first review experience.
 
-Migrations `202607300007`–`010` are applied to disposable staging
-`kvjcswnmhwegpakbtvlh`. Generated TypeScript was regenerated from that
-confirmed schema and reconciled. Anonymous access is denied, users can read
-only approved own-root records, provenance children have no direct browser
-grants, and controlled functions enforce ownership, consent, safeguarding,
-request snapshots and active-insight provenance.
+Each insight accepts Accurate, Partly Accurate or Not Accurate feedback with an
+optional comment. Profile and feedback state survive refresh. Duplicate active
+requests are prevented, processing is truthful, safe retry is available, and
+Continue ends at the Stage 5 boundary.
+
+Migrations `202607300011` and `202608020012` are applied to disposable
+staging `kvjcswnmhwegpakbtvlh`. RLS and privileged function grants were
+verified, including service-role-only execution.
 
 GitHub Actions run
-[30570086797](https://github.com/synsynlele/pipu-path/actions/runs/30570086797)
-passed both `validate` and repeatable authenticated staging E2E against Vercel
-Preview deployment `HvTW1zNiYvBwyTeRHyGWuaKCDLsp`. The E2E fixture now
-handles both fresh Discovery and an already-persisted completion without
-inventing or resetting product state.
-
-Stage 4.1 contains no provider SDK, live model call, generated user conclusion,
-public Builder projection, Journey or Quest behavior.
+[30768699971](https://github.com/synsynlele/pipu-path/actions/runs/30768699971)
+passed full repository validation and authenticated staging E2E. The live suite
+proved login, completed Discovery recovery, Gemini generation, saved profile
+rendering, refresh recovery, feedback persistence, Continue behavior,
+anonymous blocking and narrow-screen access.
 
 ## Boundary
 
-Stage 4.2 may add controlled interpretation execution behind the approved
-provider-neutral contract: explicit consent and safeguarding checks, idempotent
-request lifecycle, validated structured output, evidence-linked persistence and
-safe operational logging. Stage 4.2 has not begun.
+Stage 4 is complete. Mission, Journey, Quests, Reflection, Builder Network,
+public profiles, multi-provider AI, advanced analytics, queue systems and
+multi-agent AI have not started.
