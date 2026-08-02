@@ -55,9 +55,9 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
   const generate = page.getByRole("button", { name: "Generate my profile" });
   if ((await generate.count()) === 1) {
     await generate.click();
-    await expect(
-      page.getByText("PipuPath is analysing your Discovery responses…"),
-    ).toBeVisible();
+    await expect(page.getByRole("status")).toHaveText(
+      "PipuPath is analysing your Discovery responses…",
+    );
   }
 
   await expect(
