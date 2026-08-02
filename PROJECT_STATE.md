@@ -1,87 +1,79 @@
 # PipuPath project state
 
-**Current stage:** Stage 4.1 — Human Potential interpretation contract and evidence provenance
+**Current stage:** Stage 4 — Human Potential Profile MVP
 
 **Stage status:** COMPLETE
 
-**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4.1
+**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4
 
-**Current Git baseline:** Stage 4.1 implementation `e523c5dcc3bdcd767545e6c3f59fedc7c561a964`;
-closure records through `4576bbbdea6c85e1ffd321b49c2259cd12ac3e1e`
+**Current Git baseline:** Stage 4 implementation and closure through `099c59c8c3f954413fd0d2c81de2f96def7ddb3e`
 
 **Infrastructure:** disposable non-production Supabase staging
-`kvjcswnmhwegpakbtvlh`; Vercel branch Preview deployment
-`HvTW1zNiYvBwyTeRHyGWuaKCDLsp`
+`kvjcswnmhwegpakbtvlh`; Vercel branch Preview for
+`agent/stage4-1-provenance`
 
-**Last verified:** 2026-07-30
+**Last verified:** 2026-08-02
 
 ## Verification status
 
-Stage 4.1 migrations `202607300007`–`010` are applied to confirmed staging.
-Generated TypeScript was produced from the remote schema and reconciled
-(SHA-256
-`bee7a507d78254520dae1811652ae9163f129103367a93a62516dade3b6fbc28`).
-RLS, grants, controlled functions, ownership, consent, safeguarding,
-idempotency, evidence lifecycle and provenance guards pass their repository and
-staging verification.
+Stage 4 reuses the Stage 4.1 private evidence, consent, safeguarding,
+provenance, feedback and profile-version structures. Migrations
+`202607300007`–`010`, Stage 4 execution migration `202607300011`, and
+pgcrypto search-path repair `202608020012` are applied to confirmed staging.
+
+Google Gemini runs only on the server. A completed Discovery now generates the
+six-section private Human Potential Profile, persists it with evidence links and
+model metadata, survives refresh, accepts persistent per-insight feedback and
+stops at the Stage 5 boundary. Provider timeouts, unavailable service, invalid
+JSON/output, missing configuration, unauthenticated access and incomplete
+Discovery fail safely.
 
 GitHub Actions run
-[30570086797](https://github.com/synsynlele/pipu-path/actions/runs/30570086797)
-passed both `validate` and the repeatable authenticated staging browser suite
-against the matching Vercel Preview. The browser suite proves anonymous
-protection, login, persisted Discovery boundary, refresh recovery and
-narrow-screen controls without generating an invented profile.
+[30768699971](https://github.com/synsynlele/pipu-path/actions/runs/30768699971)
+passed both full `validate` and authenticated staging E2E against the matching
+Vercel Preview. The browser suite proves anonymous protection, login, persisted
+Discovery recovery, live profile rendering, refresh, feedback persistence,
+Continue behavior and narrow-screen access.
 
 ## Outstanding blockers
 
-None for Stage 4.1. Stage 4.2 has not started.
+None for Stage 4. Stage 5 has not started.
 
 ## Security findings
 
-- Stage 4.1 relations have RLS and deny anonymous access.
-- Authenticated browser reads are limited to explicitly granted own-root data.
-- Provenance children are not directly accessible from browser roles.
-- Ownership is derived from `auth.uid()`; service-role capability remains
-  server-side.
-- Request creation requires completed Discovery, active consent and applicable
-  age/safeguarding state.
-- Active insights require same-request and same-owner evidence provenance.
-- Sensitive evidence is redacted from interpretation projection.
-- No live provider credential, provider SDK or private evidence narrative is
-  present in client output.
+- Profile generation and Gemini credentials remain server-side.
+- Stage 4 relations retain RLS and deny anonymous access.
+- Privileged execution functions remain restricted to `service_role`.
+- Ownership, active consent, completed Discovery and safeguarding eligibility
+  are checked before interpretation.
+- Sensitive evidence remains redacted from provider projection.
+- Persisted insights retain same-owner, same-request evidence provenance.
+- Provider diagnostics persist only allowlisted status codes; prompts, answers,
+  credentials and provider response bodies are not logged.
 
 ## Known technical debt
 
-- Resolve nine high-severity development-only lint/glob dependency advisories
-  when compatible patched dependency lines are available. Production audit is
-  clean.
+- Resolve the recorded development-only dependency advisories when compatible
+  patched dependency lines are available; production dependencies remain clean.
 - Replace the Stage 2 in-process rate limiter before production.
 - Complete legal, privacy, retention and child-safeguarding review.
-- Stage 4.1 creates private drafts only; activation and public projection require
-  separately approved lifecycle work.
-- Provider execution, retry/backoff, cost controls and operational metrics are
-  intentionally deferred to Stage 4.2.
 
 ## Exact next vertical slice
 
-Stage 4.2 — controlled interpretation execution. Implement the first
-replaceable provider adapter behind the approved contract, with explicit consent
-and safeguarding checkpoints, idempotent claim/execute/fail/complete lifecycle,
-validated structured output, evidence-linked persistence, privacy-safe logging,
-cost limits and deterministic provider doubles for tests. Do not expose a public
-profile or begin Journeys/Quests in that slice.
+Stage 5 boundary only. Mission, Journey, Quests, Reflection, Builder Network,
+public profiles, multi-provider execution, analytics and queue infrastructure
+have not started and require separate authorization.
 
 ## Reproduction
 
 ```sh
 npm ci
+npm run lint
+npm run typecheck
+npm run test
+npm run test:e2e
+npm run build
 npm run validate
-npm run verify:remote:read-only
-npx supabase db push --linked
-npx supabase gen types typescript --project-id "$SUPABASE_PROJECT_ID" --schema public
-E2E_BASE_URL=https://pipu-path-git-agent-stage4-1-p-49159a-copyartint-2860s-projects.vercel.app npm run test:e2e
-npm audit --omit=dev --audit-level=high
-npm audit --audit-level=high
 ```
 
-Remote proof: GitHub Actions run `30570086797`.
+Remote proof: GitHub Actions run `30768699971`.
