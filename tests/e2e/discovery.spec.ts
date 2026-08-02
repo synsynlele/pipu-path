@@ -97,8 +97,9 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
 async function generateAndVerifyMission(page: import("@playwright/test").Page) {
   await expect(page).toHaveURL(/\/mission$/);
   const active = page.getByText("Active Mission", { exact: true });
+  const generate = page.getByRole("button", { name: "Generate My Mission" });
+  await expect(active.or(generate)).toBeVisible({ timeout: 15_000 });
   if ((await active.count()) === 0) {
-    const generate = page.getByRole("button", { name: "Generate My Mission" });
     if ((await generate.count()) === 1) {
       await generate.click();
       await expect(page.getByRole("status")).toContainText(
@@ -112,7 +113,10 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
     }
 
     const refine = page.getByRole("button", { name: "Refine Mission" });
-    if (await refine.isEnabled().catch(() => false)) {
+    if (
+      (await refine.count()) === 1 &&
+      (await refine.isEnabled().catch(() => false))
+    ) {
       await page
         .getByLabel("Refine this mission")
         .fill("Make it achievable without spending money");
