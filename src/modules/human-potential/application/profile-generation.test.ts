@@ -36,10 +36,8 @@ vi.mock("@/lib/observability/logger", () => ({
   createLogger: () => ({ info: vi.fn(), warn: vi.fn() }),
 }));
 
-const {
-  generateCurrentHumanPotentialProfile,
-  projectStructuredEvidenceValue,
-} = await import("./profile-generation");
+const { generateCurrentHumanPotentialProfile, projectStructuredEvidenceValue } =
+  await import("./profile-generation");
 
 function requestQuery() {
   return {
