@@ -190,11 +190,23 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
         ? (error.message.match(/HPI_[A-Z_]+/)?.[0] ??
           "HPI_INTERPRETATION_NOT_ALLOWED")
         : "HPI_INTERPRETATION_NOT_ALLOWED";
+    const providerFailure =
+      error instanceof Error &&
+      /^GEMINI_(?:HTTP_\\d{3}|EMPTY_RESPONSE|INVALID_JSON)$/.test(error.message)
+        ? error.message
+        : null;
     await service.rpc("fail_stage4_interpretation_request", {
       request_id_input: requestId,
       failure_code_input: code,
+      ...(providerFailure
+        ? { failure_detail_safe_input: providerFailure }
+        : {}),
     });
-    logger.warn("hpi_profile_generation_failed", { requestId, code });
+    logger.warn("hpi_profile_generation_failed", {
+      requestId,
+      code,
+      providerFailure,
+    });
     return failure(code);
   }
 }
