@@ -4,14 +4,14 @@
 **Last verified:** 2026-08-02  
 **Next boundary:** Stage 5 — separately authorized work only
 
-| Stage                           | Status      | Evidence                                                                    |
-| ------------------------------- | ----------- | --------------------------------------------------------------------------- |
-| 0 — Governance and architecture | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger        |
-| 1 — Engineering foundation      | Complete    | Application foundation, design system, config, logging, tests and CI        |
-| 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass              |
-| 3 — Discovery                   | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass   |
+| Stage                           | Status      | Evidence                                                                     |
+| ------------------------------- | ----------- | ---------------------------------------------------------------------------- |
+| 0 — Governance and architecture | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger         |
+| 1 — Engineering foundation      | Complete    | Application foundation, design system, config, logging, tests and CI         |
+| 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass               |
+| 3 — Discovery                   | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass    |
 | 4 — Human Potential Profile     | Complete    | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass |
-| 5–9                             | Not started | No Mission or downstream capability has been implemented                    |
+| 5–9                             | Not started | No Mission or downstream capability has been implemented                     |
 
 ## Stage 4 completion
 
