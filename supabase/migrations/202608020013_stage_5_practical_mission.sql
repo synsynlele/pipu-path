@@ -240,3 +240,5 @@ revoke all on function public.persist_stage5_mission(uuid, jsonb) from public, a
 grant execute on function public.claim_stage5_mission_request(uuid, text, text) to service_role;
 grant execute on function public.fail_stage5_mission_request(uuid, text, text) to service_role;
 grant execute on function public.persist_stage5_mission(uuid, jsonb) to service_role;
+
+Ÿ®8

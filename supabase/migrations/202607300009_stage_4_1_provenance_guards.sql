@@ -65,3 +65,4 @@ for each row execute function public.assert_hpi_profile_item_integrity();
 
 revoke all on function public.assert_hpi_active_insight_provenance() from public;
 revoke all on function public.assert_hpi_profile_item_integrity() from public;
+

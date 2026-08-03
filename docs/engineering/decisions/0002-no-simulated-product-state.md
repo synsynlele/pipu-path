@@ -13,3 +13,4 @@ projects, networks, or AI results as though those were real.
 
 Stage 1 demonstrates only the platform foundation. Product behavior begins with
 real persistence and authorization in Stage 2.
+Ÿ®8

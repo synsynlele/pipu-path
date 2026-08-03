@@ -147,3 +147,4 @@ $$;
 revoke all on function public.supersede_replaced_hpi_evidence() from public;
 revoke all on function public.create_stage4_interpretation_request(uuid, text, text) from public, anon;
 grant execute on function public.create_stage4_interpretation_request(uuid, text, text) to authenticated;
+

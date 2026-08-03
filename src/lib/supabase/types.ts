@@ -857,6 +857,183 @@ export type Database = {
           },
         ];
       };
+      journey_generation_requests: {
+        Row: {
+          completed_at: string | null;
+          created_at: string;
+          failed_at: string | null;
+          failure_code: string | null;
+          failure_detail_safe: string | null;
+          generation_kind: Database["public"]["Enums"]["journey_generation_kind"];
+          id: string;
+          mission_id: string;
+          model: string | null;
+          prompt_version: string;
+          provider: string | null;
+          refinement_instruction: string | null;
+          requested_at: string;
+          source_journey_id: string | null;
+          started_at: string | null;
+          status: Database["public"]["Enums"]["journey_request_status"];
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          completed_at?: string | null;
+          created_at?: string;
+          failed_at?: string | null;
+          failure_code?: string | null;
+          failure_detail_safe?: string | null;
+          generation_kind: Database["public"]["Enums"]["journey_generation_kind"];
+          id?: string;
+          mission_id: string;
+          model?: string | null;
+          prompt_version: string;
+          provider?: string | null;
+          refinement_instruction?: string | null;
+          requested_at?: string;
+          source_journey_id?: string | null;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["journey_request_status"];
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          completed_at?: string | null;
+          created_at?: string;
+          failed_at?: string | null;
+          failure_code?: string | null;
+          failure_detail_safe?: string | null;
+          generation_kind?: Database["public"]["Enums"]["journey_generation_kind"];
+          id?: string;
+          mission_id?: string;
+          model?: string | null;
+          prompt_version?: string;
+          provider?: string | null;
+          refinement_instruction?: string | null;
+          requested_at?: string;
+          source_journey_id?: string | null;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["journey_request_status"];
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      journey_milestones: {
+        Row: {
+          capabilities_to_develop: string[];
+          completed_at: string | null;
+          completion_signal: string;
+          created_at: string;
+          expected_outcome: string;
+          id: string;
+          journey_id: string;
+          purpose: string;
+          resource_note: string;
+          sequence_order: number;
+          started_at: string | null;
+          status: Database["public"]["Enums"]["journey_milestone_status"];
+          suggested_duration: string;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          capabilities_to_develop: string[];
+          completed_at?: string | null;
+          completion_signal: string;
+          created_at?: string;
+          expected_outcome: string;
+          id?: string;
+          journey_id: string;
+          purpose: string;
+          resource_note: string;
+          sequence_order: number;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["journey_milestone_status"];
+          suggested_duration: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          capabilities_to_develop?: string[];
+          completed_at?: string | null;
+          completion_signal?: string;
+          created_at?: string;
+          expected_outcome?: string;
+          id?: string;
+          journey_id?: string;
+          purpose?: string;
+          resource_note?: string;
+          sequence_order?: number;
+          started_at?: string | null;
+          status?: Database["public"]["Enums"]["journey_milestone_status"];
+          suggested_duration?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_journeys: {
+        Row: {
+          activated_at: string | null;
+          completed_at: string | null;
+          created_at: string;
+          generation_request_id: string;
+          id: string;
+          mission_id: string;
+          model: string;
+          prompt_version: string;
+          replaced_at: string | null;
+          replaces_journey_id: string | null;
+          status: Database["public"]["Enums"]["journey_status"];
+          suggested_duration: string;
+          summary: string;
+          target_outcome: string;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          activated_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          generation_request_id: string;
+          id?: string;
+          mission_id: string;
+          model: string;
+          prompt_version: string;
+          replaced_at?: string | null;
+          replaces_journey_id?: string | null;
+          status?: Database["public"]["Enums"]["journey_status"];
+          suggested_duration: string;
+          summary: string;
+          target_outcome: string;
+          title: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          activated_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          generation_request_id?: string;
+          id?: string;
+          mission_id?: string;
+          model?: string;
+          prompt_version?: string;
+          replaced_at?: string | null;
+          replaces_journey_id?: string | null;
+          status?: Database["public"]["Enums"]["journey_status"];
+          suggested_duration?: string;
+          summary?: string;
+          target_outcome?: string;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       onboarding_checkpoints: {
         Row: {
           completed_at: string | null;
@@ -1254,6 +1431,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      activate_stage6_journey: {
+        Args: { journey_id_input: string };
+        Returns: boolean;
+      };
       activate_stage5_mission: {
         Args: { mission_id_input: string };
         Returns: boolean;
@@ -1267,6 +1448,14 @@ export type Database = {
         Returns: boolean;
       };
       claim_stage5_mission_request: {
+        Args: {
+          model_input: string;
+          provider_input: string;
+          request_id_input: string;
+        };
+        Returns: boolean;
+      };
+      claim_stage6_journey_request: {
         Args: {
           model_input: string;
           provider_input: string;
@@ -1312,6 +1501,16 @@ export type Database = {
         };
         Returns: string;
       };
+      create_stage6_journey_request: {
+        Args: {
+          generation_kind_input: Database["public"]["Enums"]["journey_generation_kind"];
+          mission_id_input: string;
+          prompt_version_input?: string;
+          refinement_instruction_input?: string;
+          source_journey_id_input?: string;
+        };
+        Returns: string;
+      };
       discovery_progress: {
         Args: { session_id_input: string };
         Returns: number;
@@ -1325,6 +1524,14 @@ export type Database = {
         Returns: boolean;
       };
       fail_stage5_mission_request: {
+        Args: {
+          failure_code_input: string;
+          failure_detail_safe_input?: string;
+          request_id_input: string;
+        };
+        Returns: boolean;
+      };
+      fail_stage6_journey_request: {
         Args: {
           failure_code_input: string;
           failure_detail_safe_input?: string;
@@ -1352,6 +1559,10 @@ export type Database = {
       };
       persist_stage5_mission: {
         Args: { mission_input: Json; request_id_input: string };
+        Returns: string;
+      };
+      persist_stage6_journey: {
+        Args: { journey_input: Json; request_id_input: string };
         Returns: string;
       };
       provision_identity: {
@@ -1472,6 +1683,10 @@ export type Database = {
         | "outdated_evidence"
         | "possible_response_bias";
       identity_checkpoint_status: "not_started" | "in_progress" | "completed";
+      journey_generation_kind: "initial" | "regenerate" | "refine";
+      journey_milestone_status: "locked" | "available" | "active" | "completed";
+      journey_request_status: "ready" | "processing" | "completed" | "failed";
+      journey_status: "draft" | "active" | "paused" | "completed" | "replaced";
       mission_generation_kind: "initial" | "regenerate" | "refine";
       mission_request_status: "ready" | "processing" | "completed" | "failed";
       mission_status: "draft" | "active" | "paused" | "completed" | "replaced";

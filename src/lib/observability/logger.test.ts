@@ -65,3 +65,4 @@ describe("createLogger", () => {
     expect(sink).toHaveBeenCalledTimes(4);
   });
 });
+Ÿ®8

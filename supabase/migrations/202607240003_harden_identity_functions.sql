@@ -19,3 +19,4 @@ grant execute on function public.complete_identity_checkpoint(
 ) to authenticated;
 grant execute on function public.withdraw_consent(text, text)
 to authenticated;
+

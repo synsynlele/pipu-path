@@ -38,6 +38,9 @@ export default defineConfig({
         "src/modules/mission/application/mission-actions.ts",
         "src/modules/mission/infrastructure/**",
         "src/modules/mission/ui/**",
+        "src/modules/journey/application/journey-actions.ts",
+        "src/modules/journey/infrastructure/**",
+        "src/modules/journey/ui/**",
       ],
       thresholds: {
         lines: 80,
@@ -48,3 +51,4 @@ export default defineConfig({
     },
   },
 });
+Ÿ®8

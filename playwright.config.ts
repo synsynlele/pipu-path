@@ -25,3 +25,4 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["iPhone 13"] } },
   ],
 });
+Ÿ®8

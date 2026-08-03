@@ -11,3 +11,4 @@ No AI synthesis, score, potential label, Journey recommendation or Human
 Potential Profile mutation is permitted in Stage 3.1. A later slice may derive
 reviewable signals only when it can retain evidence links, method/version
 provenance, uncertainty and user correction.
+Ÿ®8

@@ -26,13 +26,12 @@ export default async function MissionCompletePage() {
       <Surface className="mt-10 p-6 sm:p-8">
         <h2 className="text-xl font-semibold">{state.active.title}</h2>
         <p className="text-muted mt-3 leading-8">
-          Your mission is saved and will survive refresh. Stage 6 Journey
-          milestones and Quests have not been built yet, so PipuPath stops
-          honestly at this boundary.
+          Your mission is saved and will survive refresh. You can now turn it
+          into a flexible Journey of practical milestones.
         </p>
       </Surface>
-      <ButtonLink href="/mission" className="mt-8">
-        Review active mission
+      <ButtonLink href="/journey" className="mt-8">
+        Build My Journey
       </ButtonLink>
       <ButtonLink href="/app" variant="secondary" className="mt-4">
         Return to dashboard

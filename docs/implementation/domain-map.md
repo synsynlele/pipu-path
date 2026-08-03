@@ -11,3 +11,4 @@ Discovery owns `discovery_question_sets`, `discovery_questions`,
 `discovery_sessions`, `discovery_responses` and privacy-safe audit events.
 Identity owns age band, consent and the checkpoint that authorizes entry.
 Stage 4 may consume `Stage4DiscoveryHandoff`; it must not consume raw tables.
+Ÿ®8

@@ -59,3 +59,4 @@ select results_eq($$select count(*)::int from public.user_missions where status=
 
 select * from finish();
 rollback;
+

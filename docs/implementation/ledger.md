@@ -333,3 +333,19 @@ refresh state and stop at the Stage 6 Journey boundary.
   anonymous/mobile protection and the Stage 6 boundary.
 
 Status: COMPLETE. Stage 5 is complete. Stage 6 Journey has not started.
+
+## 2026-08-03 — Stage 6 Practical Builder Journey
+
+- Added a provider-neutral Journey contract with four-to-six ordered milestones,
+  realistic duration, safety, anti-inflation and anti-Quest validation.
+- Added migration `202608030014` for private Journey requests, Journeys and
+  milestones with RLS, ownership reads, consent and three-attempt enforcement,
+  atomic service-only persistence, explicit activation and one active Journey.
+- Added server-only Gemini generation, refinement/regeneration, durable review
+  and active Journey UI, refresh recovery, truthful progress and first-milestone
+  availability.
+- Added deterministic domain/orchestration tests, structural security tests and
+  authenticated staging browser coverage through the Stage 7 boundary.
+
+Status: IMPLEMENTED LOCALLY. Full repository validation passes; staging migration,
+database verification and live Gemini browser proof remain before completion.

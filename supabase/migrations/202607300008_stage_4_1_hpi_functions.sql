@@ -200,3 +200,4 @@ revoke all on function public.record_stage4_insight_feedback(uuid, public.hpi_fe
 grant execute on function public.normalize_stage4_discovery_evidence() to authenticated;
 grant execute on function public.create_stage4_interpretation_request(uuid, text, text) to authenticated;
 grant execute on function public.record_stage4_insight_feedback(uuid, public.hpi_feedback_type, text, text) to authenticated;
+

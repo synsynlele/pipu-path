@@ -31,3 +31,4 @@ export default function GlobalError({
     </main>
   );
 }
+Ÿ®8

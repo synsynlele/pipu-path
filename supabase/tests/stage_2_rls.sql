@@ -45,3 +45,4 @@ select results_eq($$select count(*)::int from public.profiles$$, array[1], 'user
 
 select * from finish();
 rollback;
+
