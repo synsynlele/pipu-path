@@ -1,6 +1,6 @@
 # ADR: Stage 8 Builder Project MVP
 
-**Status:** Accepted  
+**Status:** Accepted and verified  
 **Date:** 2026-08-04  
 **Stage boundary:** Stage 8 only
 
@@ -90,5 +90,13 @@ The Project is evidence-linked and developmentally coherent. The one-active-
 Project rule protects focus. Three milestones create enough structure to prove
 execution without introducing a general-purpose project-management system.
 
-Stage 9 remains locked until the complete Project lifecycle, security boundary,
-responsive experience and authenticated staging E2E are verified.
+## Verification
+
+Migration `202608040018` is applied on authorised disposable staging. GitHub
+Actions run `30935515692` passed full validation and authenticated staging E2E
+against the matching READY Vercel Preview. The live fixture completed one
+Project through three ordered proof updates, and anonymous and narrow-screen
+boundaries passed.
+
+Stage 9 remains locked. Stage 8 does not authorise public presentation,
+collaboration, assessment, opportunity matching or Builder Network behavior.
