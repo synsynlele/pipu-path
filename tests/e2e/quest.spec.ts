@@ -107,7 +107,9 @@ test("authenticated Builder completes Quest 1 with evidence, reflection and exac
     page.getByRole("heading", { name: "Proof created. Progress earned." }),
   ).toBeVisible();
   await expect(page.getByText("+50 XP", { exact: true })).toBeVisible();
-  await expect(page.getByText("Next unlocked action")).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Open Next Quest|Review Quest Path/ }),
+  ).toBeVisible();
 
   await page.reload();
   await expect(
