@@ -47,6 +47,9 @@ export default defineConfig({
         "src/modules/project/application/project-actions.ts",
         "src/modules/project/infrastructure/**",
         "src/modules/project/ui/**",
+        "src/modules/portfolio/application/portfolio-actions.ts",
+        "src/modules/portfolio/infrastructure/**",
+        "src/modules/portfolio/ui/**",
       ],
       thresholds: {
         lines: 80,
