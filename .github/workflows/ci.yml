@@ -39,7 +39,7 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
         env:
-          E2E_BASE_URL: https://pipu-path-git-agent-stage5-pra-61a333-copyartint-2860s-projects.vercel.app
+          E2E_BASE_URL: https://pipu-path-git-codex-stage-6-pr-85edeb-copyartint-2860s-projects.vercel.app
           E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
           E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
       - name: Upload browser traces on failure
