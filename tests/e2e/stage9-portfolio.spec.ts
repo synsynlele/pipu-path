@@ -238,10 +238,13 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
   );
   await signIn(page);
   await page.goto("/portfolio");
+  const mobileNavigation = page.getByRole("navigation", {
+    name: "PipuPath mobile navigation",
+  });
+  await expect(mobileNavigation).toBeVisible();
   await expect(
-    page.getByRole("navigation", { name: "PipuPath mobile navigation" }),
+    mobileNavigation.getByRole("link", { name: "Portfolio", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Portfolio" })).toBeVisible();
   const publicLink = page.getByRole("link", { name: "View Public Proof" });
   await expect(publicLink).toBeVisible();
   await publicLink.click();
