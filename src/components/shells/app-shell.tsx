@@ -8,9 +8,10 @@ const navigation = [
   { label: "Mission", href: "/mission" },
   { label: "Journey", href: "/journey" },
   { label: "HQLS Quests", href: "/quests" },
+  { label: "Projects", href: "/projects" },
 ] as const;
 
-const futureNavigation = ["Projects", "Builders"] as const;
+const futureNavigation = ["Builders"] as const;
 
 function NavigationLinks({ mobile = false }: { mobile?: boolean }) {
   return (
@@ -77,7 +78,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <header className="border-border flex min-h-20 items-center border-b px-5 sm:px-8">
           <div>
             <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-              Discover · Build · Prove · Reflect
+              Discover · Build · Prove · Reflect · Deploy
             </p>
             <p className="text-muted mt-1 text-sm">
               Progress appears only when real action leaves honest evidence.
