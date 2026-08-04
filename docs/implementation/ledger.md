@@ -382,3 +382,81 @@ database verification and live Gemini browser proof remain before completion.
   recorded technical debt and were not introduced by this stage.
 
 Status: COMPLETE. Stage 6 is complete. Work stops at the Stage 7 Quests boundary.
+
+## 2026-08-04 — Stage 7 HQLS Quest Execution closure
+
+### Authorized scope
+
+Turn the active Journey milestone into a complete private HQLS Quest loop:
+generation, action, evidence, Nortnspoil reflection, exactly-once XP and
+truthful Quest/milestone progression. Preserve all completed stages and stop
+at the Stage 8 boundary.
+
+### Implemented
+
+- Exactly three validated ordered Quests per current Journey milestone
+- Existing server-only Gemini configuration and provider-neutral contract
+- Realistic steps, low-resource alternatives, evidence requirements,
+  completion criteria, reflection prompts and age-aware safety guidance
+- One-active-Quest lifecycle with refresh-safe ready, active, evidence,
+  reflection and completed states
+- Private text evidence, optional HTTPS link and optional owner-scoped image
+- Mandatory Nortnspoil reflection before completion
+- Append-only, idempotent 50-XP transaction per completed Quest
+- Automatic next-Quest, next-milestone and final-Journey progression
+- Premium black-and-gold focus, evidence, reflection and completion screens
+- Authenticated Builder shell and focused desktop/mobile browser coverage
+
+### Database and security verification
+
+- Applied migrations `202608040016` and `202608040017` to authorised
+  disposable staging `kvjcswnmhwegpakbtvlh`.
+- Verified RLS and owner-only reads on `quest_generation_requests`,
+  `user_quests`, `quest_evidence`, `quest_reflections` and
+  `builder_xp_transactions`.
+- Verified no direct authenticated browser writes to Stage 7 tables.
+- Verified generated persistence RPCs remain `service_role`-only and
+  lifecycle RPCs validate `auth.uid()`, ownership and valid state.
+- Verified the private `quest-evidence` bucket is owner-folder scoped,
+  image-only and limited to 5 MB.
+- Reconciled generated remote tables, enums, relationships and RPC signatures
+  with the Stage 7 implementation contract.
+
+### Validation and deployed proof
+
+- Matching Vercel Preview deployment
+  `dpl_86KTj6DUaAPJXkPmApTbTcneaNrA` reached READY on the final code head.
+- GitHub Actions run `30930702481` passed `validate` and authenticated
+  `staging-e2e` against the matching Preview.
+- Formatting, zero-warning lint, strict TypeScript, 81 unit tests,
+  53 structural/integration checks, coverage thresholds and production build
+  passed.
+- Playwright passed 13 tests with three intentional duplicate full-flow skips,
+  including anonymous denial and the focused mobile Quest path.
+- The authenticated browser generated a fresh live Gemini pack, started
+  Quest 1, submitted private evidence, completed the Nortnspoil reflection,
+  received exactly 50 XP, unlocked Quest 2 and recovered state after refresh.
+- Vercel logs recorded `quest_pack_generation_completed` on the exact Preview.
+- Database reconciliation confirmed one completed request, exactly three
+  Quests, Quest 1 completed, Quest 2 available, Quest 3 locked, one evidence
+  record, one reflection and one 50-XP transaction.
+
+### Repairs completed during closure
+
+- Updated the inherited Stage 6 boundary test for the authorised Stage 7
+  handoff without weakening Stage 6's first-milestone invariant.
+- Removed cache invalidation before the Quest generation redirect after the
+  live trace proved Gemini and persistence succeeded but the client remained
+  in its pending Server Action state.
+- Serialised shared-fixture browser flows to prevent concurrent mutations of
+  the same disposable user.
+- Wrapped Quest routes in the Builder application shell so desktop and mobile
+  navigation reflect the real completed path.
+- Removed all temporary one-shot formatter and closure workflow files.
+
+### Boundary
+
+Status: COMPLETE. Stage 0 through Stage 7 are complete. Work stops at the
+Stage 8 boundary. Public evidence, portfolios, Projects, mentor assessment,
+team Quests, leaderboards, opportunity matching and Builder Network sharing
+have not started.

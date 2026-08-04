@@ -1,92 +1,80 @@
 # PipuPath project state
 
-**Current stage:** Stage 5 — Practical Mission MVP
+**Current stage:** Stage 7 — HQLS Quest Execution MVP
 
 **Stage status:** COMPLETE
 
-**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4, Stage 5
+**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4,
+Stage 5, Stage 6 and Stage 7
 
-**Current Git baseline:** Stage 5 implementation and verified closure
+**Current Git baseline:** `agent/stage7-hqls-quest-execution` at the
+verified Stage 7 closure, stacked on the proven Stage 6 branch
 
-**Infrastructure:** disposable non-production Supabase staging
-`kvjcswnmhwegpakbtvlh`; Vercel branch Preview for
-`agent/stage5-practical-mission`
+**Review surface:** GitHub pull request #8 (closure review)
 
-**Last verified:** 2026-08-02
+**Infrastructure:** authorised disposable non-production Supabase staging
+`kvjcswnmhwegpakbtvlh`; matching Vercel Preview deployment
+`dpl_86KTj6DUaAPJXkPmApTbTcneaNrA`
 
-## Verification status
+**Last verified:** 2026-08-04
 
-Stage 4 reuses the Stage 4.1 private evidence, consent, safeguarding,
-provenance, feedback and profile-version structures. Migrations
-`202607300007`–`010`, Stage 4 execution migration `202607300011`, and
-pgcrypto search-path repair `202608020012` are applied to confirmed staging.
+## Stage 7 completion
 
-Google Gemini runs only on the server. A completed Discovery now generates the
-six-section private Human Potential Profile, persists it with evidence links and
-model metadata, survives refresh, accepts persistent per-insight feedback and
-stops at the Stage 5 boundary. Provider timeouts, unavailable service, invalid
-JSON/output, missing configuration, unauthenticated access and incomplete
-Discovery fail safely.
+Stage 7 turns the active Journey milestone into a private, evidence-based
+HQLS execution loop. Gemini generates exactly three validated, ordered
+Quests. A Builder starts one Quest, acts in the real world, submits private
+evidence, completes a Nortnspoil reflection and receives exactly 50 XP once.
+The next Quest or milestone unlocks only after valid completion.
 
-GitHub Actions run
-[30768699971](https://github.com/synsynlele/pipu-path/actions/runs/30768699971)
-passed both full `validate` and authenticated staging E2E against the matching
-Vercel Preview. The browser suite proves anonymous protection, login, persisted
-Discovery recovery, live profile rendering, refresh, feedback persistence,
-Continue behavior and narrow-screen access.
+Migrations `202608040016` and `202608040017` are applied and verified on
+disposable staging. The five Stage 7 tables have RLS and owner-only reads;
+generated persistence remains service-role-only. The `quest-evidence`
+Storage bucket is private, owner-folder scoped, image-only and limited to
+5 MB. Controlled RPCs enforce authentication, ownership and lifecycle state.
 
-## Stage 5 completion
+GitHub Actions run `30930702481` passed full `validate` and authenticated
+`staging-e2e` against the matching Stage 7 Preview. The repository gate
+passed formatting, zero-warning lint, strict TypeScript, 81 unit tests,
+53 structural/integration checks, coverage thresholds and production build.
+Playwright passed 13 tests with three intentional duplicate full-flow skips.
 
-The Stage 5 source implements a private practical mission contract, the existing
-server-only Gemini adapter path, a three-attempt request lifecycle per profile,
-validated evidence references, refinement/regeneration, one-active-mission
-activation, refresh recovery and an honest Stage 6 boundary. Migration
-`202608020013` is applied to disposable staging (recorded remotely as
-`20260802223224_stage_5_practical_mission`). RLS, ownership policies,
-service-role grants and the one-active-mission indexes are verified.
-
-GitHub Actions run
-[30771864073](https://github.com/synsynlele/pipu-path/actions/runs/30771864073)
-passed full validation and authenticated staging E2E. The live suite proves
-Gemini generation, bounded refinement, persistence, activation, refresh,
-anonymous/mobile protection and the Stage 6 boundary. The repository gate
-includes 60 unit tests and 30 structural integration checks.
+A fresh live Gemini request completed on the matching Preview. Persisted
+verification confirmed exactly three Quests: Quest 1 completed with one
+evidence record, one Nortnspoil reflection and one 50-XP transaction;
+Quest 2 available; Quest 3 locked. Refresh, anonymous protection and mobile
+usability passed.
 
 ## Security findings
 
-- Profile generation and Gemini credentials remain server-side.
-- Stage 4 relations retain RLS and deny anonymous access.
-- Privileged execution functions remain restricted to `service_role`.
-- Ownership, active consent, completed Discovery and safeguarding eligibility
-  are checked before interpretation.
-- Sensitive evidence remains redacted from provider projection.
-- Persisted insights retain same-owner, same-request evidence provenance.
-- Provider diagnostics persist only allowlisted status codes; prompts, answers,
-  credentials and provider response bodies are not logged.
+- Gemini credentials and generated-record persistence remain server-side.
+- Anonymous access to private Quest routes and Stage 7 relations is denied.
+- Direct browser writes to Quest tables are not granted.
+- Evidence text, links, images and reflections remain private.
+- XP is append-only and idempotent by unique Quest reference.
+- Stage 7 does not infer public credibility from private evidence.
 
 ## Known technical debt
 
-- Resolve the recorded development-only dependency advisories when compatible
-  patched dependency lines are available; production dependencies remain clean.
+- Resolve recorded development-toolchain dependency advisories when
+  compatible patched dependency lines are available; Stage 7 changed no
+  dependency versions.
 - Replace the Stage 2 in-process rate limiter before production.
 - Complete legal, privacy, retention and child-safeguarding review.
+- Optimise CI browser installation and build caching without weakening gates.
 
 ## Exact next vertical slice
 
-Stage 6 Journey is the exact next boundary and has not started. Journey, Quests,
-XP, Reflection, Builder Network, public sharing, analytics and queues remain
-outside scope.
+Stage 8 is the exact next boundary and has not started. Public evidence,
+portfolios, Projects, mentor assessment, team Quests, leaderboards,
+opportunity matching and Builder Network sharing remain outside Stage 7.
 
 ## Reproduction
 
 ```sh
 npm ci
-npm run lint
-npm run typecheck
-npm run test
-npm run test:e2e
-npm run build
 npm run validate
+npm run test:e2e
 ```
 
-Remote proof: GitHub Actions run `30771864073`.
+Remote proof: GitHub Actions run `30930702481` and Vercel deployment
+`dpl_86KTj6DUaAPJXkPmApTbTcneaNrA`.
