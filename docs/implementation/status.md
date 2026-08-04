@@ -4,16 +4,16 @@
 **Last verified:** 2026-08-04  
 **Next boundary:** Stage 7 Quests — not started
 
-| Stage                           | Status      | Evidence                                                                            |
-| ------------------------------- | ----------- | ----------------------------------------------------------------------------------- |
-| 0 — Governance and architecture | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger                |
-| 1 — Engineering foundation      | Complete    | Application foundation, design system, config, logging, tests and CI                |
-| 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass                      |
-| 3 — Discovery                   | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass           |
-| 4 — Human Potential Profile     | Complete    | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass        |
-| 5 — Practical Mission           | Complete    | Live Gemini, refinement, activation, refresh, RLS and staging CI pass               |
-| 6 — Practical Builder Journey   | Complete    | Live Gemini, milestones, refinement, activation, refresh, RLS and staging CI pass   |
-| 7–9                             | Not started | Quests and downstream capabilities have not been implemented                        |
+| Stage                           | Status      | Evidence                                                                          |
+| ------------------------------- | ----------- | --------------------------------------------------------------------------------- |
+| 0 — Governance and architecture | Complete    | Constitution, stage plan, overview, quality attributes, ADRs, ledger              |
+| 1 — Engineering foundation      | Complete    | Application foundation, design system, config, logging, tests and CI              |
+| 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass                    |
+| 3 — Discovery                   | Complete    | Staging migrations, RLS/API verification, validation and browser E2E pass         |
+| 4 — Human Potential Profile     | Complete    | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass      |
+| 5 — Practical Mission           | Complete    | Live Gemini, refinement, activation, refresh, RLS and staging CI pass             |
+| 6 — Practical Builder Journey   | Complete    | Live Gemini, milestones, refinement, activation, refresh, RLS and staging CI pass |
+| 7–9                             | Not started | Quests and downstream capabilities have not been implemented                      |
 
 ## Stage 4 completion
 
