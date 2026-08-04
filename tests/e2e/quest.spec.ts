@@ -106,7 +106,7 @@ test("authenticated Builder completes Quest 1 with evidence, reflection and exac
   await expect(
     page.getByRole("heading", { name: "Proof created. Progress earned." }),
   ).toBeVisible();
-  await expect(page.getByText("+50")).toBeVisible();
+  await expect(page.getByText("+50 XP", { exact: true })).toBeVisible();
   await expect(page.getByText("Next unlocked action")).toBeVisible();
 
   await page.reload();
