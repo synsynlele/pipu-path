@@ -61,4 +61,3 @@ No profile content has been inspected or disclosed.
 
 All mandatory Stage 2.6 gates have passed against confirmed staging. Stage 2 is
 complete. Work stops at the Stage 3 boundary.
-Ÿ®8

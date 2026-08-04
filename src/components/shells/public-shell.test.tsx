@@ -21,4 +21,3 @@ describe("PublicShell", () => {
     ).toHaveAttribute("href", "#main-content");
   });
 });
-Ÿ®8

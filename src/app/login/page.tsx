@@ -25,4 +25,3 @@ export default async function LoginPage({
     </AuthShell>
   );
 }
-Ÿ®8

@@ -43,4 +43,3 @@ describe("identity rules", () => {
     ).toBe("/app");
   });
 });
-Ÿ®8

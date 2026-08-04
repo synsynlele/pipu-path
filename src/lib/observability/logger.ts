@@ -51,4 +51,3 @@ export function createLogger({
       write("error", event, context),
   };
 }
-Ÿ®8

@@ -23,4 +23,3 @@ Non-negotiable rules:
 - Update the implementation ledger and status with every coherent change.
 - Run `npm run validate` before declaring a stage complete.
 - Stop at a stage boundary unless the execution command explicitly authorizes the next stage.
-Ÿ®8

@@ -34,4 +34,3 @@ export function ProfileGenerationForm() {
     </form>
   );
 }
-Ÿ®8

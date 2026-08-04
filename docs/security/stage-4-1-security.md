@@ -43,4 +43,3 @@ operations and identifiers, not private answer narratives.
 Stage 4.1 does not authorize live model execution, public profile projection,
 blanket profile visibility, client-side service credentials, prompt-only
 safeguarding or inference without evidence provenance.
-Ÿ®8

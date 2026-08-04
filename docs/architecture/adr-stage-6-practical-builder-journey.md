@@ -27,4 +27,3 @@ Quest execution, evidence, reflection and XP remain at the Stage 7 boundary.
 - A newer draft safely replaces an older draft for the same active mission.
 - AI cannot silently activate a pathway or invent completed progress.
 - Stage 7 can add Quest execution without changing the Stage 6 Journey contract.
-Ÿ®8

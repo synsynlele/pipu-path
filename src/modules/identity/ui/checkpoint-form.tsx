@@ -99,4 +99,3 @@ function Consent({
     </label>
   );
 }
-Ÿ®8

@@ -74,4 +74,3 @@ export async function createCurrentInterpretationRequest({
   if (error) return safeError(error);
   return { ok: true, value: { requestId: data } };
 }
-Ÿ®8

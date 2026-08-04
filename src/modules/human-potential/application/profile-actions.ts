@@ -42,4 +42,3 @@ export async function recordProfileFeedbackAction(formData: FormData) {
   });
   if (!error) revalidatePath("/onboarding/discovery/profile");
 }
-Ÿ®8

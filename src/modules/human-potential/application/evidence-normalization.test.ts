@@ -93,4 +93,3 @@ describe("Stage 4.1 evidence normalization", () => {
     ).toThrow("HPI_DISCOVERY_INCOMPLETE");
   });
 });
-Ÿ®8

@@ -88,4 +88,3 @@ describe("Stage 4.1 interpretation requests", () => {
     });
   });
 });
-Ÿ®8

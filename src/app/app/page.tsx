@@ -43,4 +43,3 @@ export default async function FoundationPage() {
     </main>
   );
 }
-Ÿ®8

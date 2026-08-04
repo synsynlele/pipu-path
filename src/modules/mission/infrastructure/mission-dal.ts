@@ -98,4 +98,3 @@ export async function getCurrentMissionState(profileId?: string) {
       ) ?? false,
   };
 }
-Ÿ®8

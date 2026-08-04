@@ -47,4 +47,3 @@ export function JourneyGenerationForm({
     </form>
   );
 }
-Ÿ®8
