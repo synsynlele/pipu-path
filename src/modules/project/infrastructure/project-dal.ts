@@ -1,11 +1,11 @@
 import "server-only";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import type {
   BuilderProjectMilestoneStatus,
   BuilderProjectStatus,
 } from "../domain/project-contract";
+import { createProjectServerClient } from "./project-client";
 
 export type BuilderProjectRow = {
   id: string;
@@ -65,7 +65,7 @@ export type EligibleProjectSource = {
 
 async function loadProjectDetails(
   project: BuilderProjectRow,
-  client: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  client: Awaited<ReturnType<typeof createProjectServerClient>>,
   userId: string,
 ) {
   const [{ data: milestones }, { data: updates }, { data: sourceQuest }] =
@@ -100,7 +100,7 @@ async function loadProjectDetails(
 
 export async function getBuilderProjectState() {
   const { user } = await requireAuthenticatedIdentity();
-  const client = await createServerSupabaseClient();
+  const client = await createProjectServerClient();
 
   const [{ data: projectRows }, { data: completedQuestRows }] =
     await Promise.all([
@@ -170,7 +170,7 @@ export async function getBuilderProjectState() {
 
 export async function getBuilderProjectById(projectId: string) {
   const { user } = await requireAuthenticatedIdentity();
-  const client = await createServerSupabaseClient();
+  const client = await createProjectServerClient();
   const { data } = await client
     .from("builder_projects")
     .select("*")
