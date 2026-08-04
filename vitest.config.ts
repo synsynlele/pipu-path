@@ -44,6 +44,9 @@ export default defineConfig({
         "src/modules/quest/application/quest-actions.ts",
         "src/modules/quest/infrastructure/**",
         "src/modules/quest/ui/**",
+        "src/modules/project/application/project-actions.ts",
+        "src/modules/project/infrastructure/**",
+        "src/modules/project/ui/**",
       ],
       thresholds: {
         lines: 80,
