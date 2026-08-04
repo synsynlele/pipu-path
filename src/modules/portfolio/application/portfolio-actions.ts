@@ -162,6 +162,11 @@ export async function withdrawProjectPortfolioAction(
   }
 
   const client = await createPortfolioServerClient();
+  const { data: portfolio } = await client
+    .from("builder_project_portfolios")
+    .select("slug")
+    .eq("id", parsed.data.portfolioId)
+    .maybeSingle();
   const { data, error } = await client.rpc(
     "withdraw_stage9_project_portfolio",
     {
@@ -176,5 +181,8 @@ export async function withdrawProjectPortfolioAction(
 
   revalidatePath("/portfolio");
   revalidatePath(`/portfolio/${parsed.data.projectId}`);
+  if (portfolio?.slug) {
+    revalidatePath(`/proof/${portfolio.slug}`);
+  }
   redirect(`/portfolio/${parsed.data.projectId}`);
 }
