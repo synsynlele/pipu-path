@@ -460,3 +460,72 @@ Status: COMPLETE. Stage 0 through Stage 7 are complete. Work stops at the
 Stage 8 boundary. Public evidence, portfolios, Projects, mentor assessment,
 team Quests, leaderboards, opportunity matching and Builder Network sharing
 have not started.
+
+## 2026-08-04 — Stage 8 Builder Project MVP closure
+
+### Authorized scope
+
+Turn completed private HQLS Quest proof into one focused private Builder
+Project with exactly three execution milestones, append-only progress proof and
+truthful completion. Preserve all completed stages and stop at Stage 9.
+
+### Implemented
+
+- One private active Project per Builder
+- Completed Quest, evidence and Nortnspoil reflection provenance requirement
+- Mission, Journey and Quest references retained on every Project
+- Specific problem, people served, useful outcome, smallest version, success
+  signal and bounded target date
+- Exactly three ordered, measurable execution milestones
+- Append-only progress, proof, optional HTTPS link and next-action records
+- Database-controlled milestone unlocking and final Project completion
+- Premium black-and-gold creation, command-centre and completion experience
+- Complete desktop and narrow-screen Builder OS navigation
+
+### Database and security verification
+
+- Applied migration `202608040018` to authorised disposable staging
+  `kvjcswnmhwegpakbtvlh`.
+- Verified RLS on `builder_projects`, `builder_project_milestones` and
+  `builder_project_updates`, with one owner-read policy per table.
+- Verified no direct authenticated browser writes to Stage 8 tables.
+- Verified `create_stage8_builder_project` and
+  `add_stage8_builder_project_update` are unavailable to `anon` and `PUBLIC`.
+- Verified one active Project per Builder, one Project per source Quest,
+  completed-Quest proof requirements, ordered milestones and unique completion
+  updates are database-enforced.
+- Reconciled live generated tables, relationships, RPC signatures and enums
+  with the Stage 8 implementation contract.
+
+### Validation and deployed proof
+
+- Matching Vercel Preview deployment
+  `dpl_2KU8RfiEgCJ9Uf9K9BqdkvQ5g2tL` reached READY on commit
+  `09f862a1aaee65e8c6d048f548333d60f084fbd0`.
+- GitHub Actions run `30935515692` passed `validate` and authenticated
+  `staging-e2e` against the matching Preview.
+- Validation passed formatting, zero-warning lint, strict TypeScript, 85 unit
+  tests, 65 structural/integration checks, coverage thresholds and production
+  build.
+- Playwright ran 22 tests with one shared approved staging fixture: 17 passed
+  and five duplicate full-flow cases were intentionally skipped.
+- The browser created a fresh evidence-linked Project, completed all three
+  milestones through three proof updates, recovered 100% completion after
+  refresh, denied anonymous access and passed mobile navigation checks.
+- Database reconciliation confirmed one completed Project with three completed
+  milestones, three append-only completion updates and a completion timestamp.
+
+### Repairs completed
+
+- Retargeted CI to the matching Stage 8 Vercel Preview.
+- Applied the repository's exact formatter to Stage 8 source and tests.
+- Repaired a Playwright race that could inspect the next milestone before the
+  durable redirect and page recovery completed.
+- Removed all one-time formatting and closure workflows after use.
+
+### Boundary
+
+Status: COMPLETE. Stage 8 is complete. Stage 9 has not started. Project proof
+remains private; no public portfolio, sharing, collaboration, mentor assessment,
+team Project, leaderboard, opportunity matching or Builder Network discovery
+has been implemented.

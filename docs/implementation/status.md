@@ -15,7 +15,7 @@
 | 6 — Practical Builder Journey   | Complete    | Live Gemini, milestones, activation, refresh, RLS and staging CI pass           |
 | 7 — HQLS Quest Execution        | Complete    | Action, evidence, reflection, XP, progression and staging CI pass               |
 | 8 — Builder Project MVP         | Complete    | Quest-linked Project, milestones, proof updates, completion and staging CI pass |
-| 9                               | Not started | Public presentation and downstream Builder capabilities remain locked          |
+| 9                               | Not started | Public presentation and downstream Builder capabilities remain locked           |
 
 ## Stage 8 completion
 
