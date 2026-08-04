@@ -41,6 +41,9 @@ export default defineConfig({
         "src/modules/journey/application/journey-actions.ts",
         "src/modules/journey/infrastructure/**",
         "src/modules/journey/ui/**",
+        "src/modules/quest/application/quest-actions.ts",
+        "src/modules/quest/infrastructure/**",
+        "src/modules/quest/ui/**",
       ],
       thresholds: {
         lines: 80,
