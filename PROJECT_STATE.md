@@ -7,17 +7,13 @@
 **Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4,
 Stage 5, Stage 6, Stage 7 and Stage 8
 
-**Current Git baseline:** `agent/stage9-selective-project-portfolio` at the
-Stage 9 contract commit, stacked on the verified Stage 8 closure
-`ea129d141458e1916b5eadd129482a6bc3706747`
+**Current Git baseline:** `agent/stage9-selective-project-portfolio`, stacked on
+the verified Stage 8 closure `ea129d141458e1916b5eadd129482a6bc3706747`
 
-**Review surface:** Stage 9 draft pull request #11 against
-`agent/stage8-builder-project-mvp`
+**Review surface:** GitHub pull request #11
 
 **Infrastructure:** authorised disposable non-production Supabase staging
-`kvjcswnmhwegpakbtvlh`; Stage 9 matching Vercel Preview pending
-
-**Implementation packaging:** reviewed Stage 9 vertical slice pending atomic publish
+`kvjcswnmhwegpakbtvlh`; matching Stage 9 Vercel Preview pending
 
 **Last verified:** 2026-08-04
 
@@ -34,24 +30,18 @@ security boundary, private evidence or lifecycle rule may be weakened.
 
 ## Stage 9 contract
 
-Stage 9 introduces one narrow public capability: a Builder may selectively
-publish one completed Project as a truthful public proof of work.
+Stage 9 introduces one narrow public capability: an adult Builder may
+selectively publish one completed Project as a truthful public proof of work.
 
-Publication must be:
+Publication is explicit, previewed, public-safe, version-consented and
+withdrawable. The private Project remains authoritative. Anonymous readers use
+a controlled public-safe projection that excludes internal identifiers, Quest
+evidence, Nortnspoil reflections, raw Project updates, contact details and
+private profile fields.
 
-- available only for an owned completed Project with all three milestones
-  completed;
-- explicit and consent-driven;
-- based only on public-safe fields chosen by the Builder;
-- isolated from private Quest evidence, Nortnspoil reflections and raw Project
-  updates;
-- previewable before publication;
-- addressable through a stable public slug;
-- withdrawable without deleting private Project history; and
-- recoverable after refresh on desktop and mobile.
-
-The Stage 9 ADR is authoritative for the complete data, privacy, experience and
-non-goal boundary.
+Under-18 Builders retain every private Builder capability. Public publication
+for them remains blocked until a dedicated guardian-consent and safeguarding
+workflow exists.
 
 ## Required implementation proof
 
@@ -59,9 +49,10 @@ Stage 9 cannot be marked complete until all of the following pass on the exact
 final branch head:
 
 - database migration and generated-schema reconciliation;
-- owner-only authenticated portfolio lifecycle writes;
+- owner-only authenticated portfolio lifecycle reads and controlled writes;
+- adult-only publication safeguards;
 - anonymous reads limited to currently published public-safe records;
-- publication and withdrawal transition enforcement;
+- draft, preview, publication and withdrawal transition enforcement;
 - no exposure of private evidence, reflections, updates or internal IDs;
 - polished preparation, preview and public proof pages;
 - refresh-safe and narrow-screen behavior;
@@ -85,7 +76,7 @@ Work stops after selective Project publication is fully verified.
 - Replace the Stage 2 in-process rate limiter before production.
 - Complete legal, privacy, retention and child-safeguarding review.
 - Optimise CI browser installation and build caching without weakening gates.
-- Consolidate the isolated Stage 7/8 Supabase adapters into the canonical
+- Consolidate the isolated Stage 7/8/9 Supabase adapters into the canonical
   generated database client during a dedicated maintenance slice.
 
 ## Reproduction baseline
