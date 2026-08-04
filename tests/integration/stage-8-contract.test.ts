@@ -105,9 +105,10 @@ describe("Stage 8 Builder Project structural contract", () => {
     expect(detailPage).toContain("Builder Project · Private");
   });
 
-  it("preserves the Stage 9 public-sharing boundary", () => {
+  it("preserves private Stage 8 proof while allowing the authorised Stage 9 handoff", () => {
     expect(adr).toContain("Stage 9 remains locked");
     expect(adr).toContain("public Projects or evidence portfolios");
-    expect(detailPage).toContain("This Project remains private");
+    expect(detailPage).toContain("Raw evidence, reflections");
+    expect(detailPage).toContain("Prepare Selective Public Proof");
   });
 });
