@@ -6,7 +6,7 @@
 
 | Stage                           | Status      | Evidence                                                                          |
 | ------------------------------- | ----------- | --------------------------------------------------------------------------------- |
-| 0 — Governance and architecture | Complete    | Constitution, stage boundaries, quality attributes, ADRs and ledger              |
+| 0 — Governance and architecture | Complete    | Constitution, stage boundaries, quality attributes, ADRs and ledger               |
 | 1 — Engineering foundation      | Complete    | Application foundation, design system, config, logging, tests and CI              |
 | 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass                    |
 | 3 — Discovery                   | Complete    | Persistent evidence, review, RLS/API verification and browser E2E pass            |
