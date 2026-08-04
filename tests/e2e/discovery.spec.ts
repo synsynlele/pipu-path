@@ -203,9 +203,13 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
   await page.getByRole("link", { name: "Start First Milestone" }).click();
   await expect(page).toHaveURL(/\/journey\/complete/);
   await expect(
-    page.getByRole("heading", { name: "Your first milestone is ready." }),
+    page.getByRole("heading", {
+      name: "Your first milestone is ready for action.",
+    }),
   ).toBeVisible();
-  await expect(page.getByText(/Stage 7 Quests/)).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Begin HQLS Quests" }),
+  ).toBeVisible();
 }
 
 test("eligible user completes persistent Discovery without invented results", async ({
