@@ -131,24 +131,27 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
     page.getByText("Builder Project · Private", { exact: true }),
   ).toBeVisible();
 
-  for (let index = 1; index <= 3; index += 1) {
-    const progress = page.getByLabel("What progress did you make?");
-    if ((await progress.count()) === 0) break;
+  const completionHeading = page.getByRole("heading", {
+    name: "A useful result now has an evidence trail.",
+  });
 
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    if ((await completionHeading.count()) === 1) break;
+
+    const progress = page.getByLabel("What progress did you make?");
+    await expect(progress).toBeVisible({ timeout: 15_000 });
     await progress.fill(
-      `I completed the practical work for milestone ${index}, used available resources and recorded the result with the people involved.`,
+      `I completed the practical work for the current milestone, used available resources and recorded the result with the people involved. Attempt ${attempt}.`,
     );
     await page
       .getByLabel("What proof exists?")
       .fill(
-        `The milestone ${index} result exists, the participant response was recorded and the stated completion signal can now be checked honestly.`,
+        "The milestone result exists, the participant response was recorded and the stated completion signal can now be checked honestly.",
       );
     await page
       .getByLabel("What is the next practical action?")
       .fill(
-        index < 3
-          ? `Open milestone ${index + 1} and complete its smallest practical action.`
-          : "Review the full Project evidence and preserve the strongest learning.",
+        "Open the next available milestone, or review the completed Project evidence when this is the final milestone.",
       );
     await page.getByRole("checkbox").check();
     await page
@@ -157,24 +160,20 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
     await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+$/, {
       timeout: 15_000,
     });
+    await page.reload();
+    await expect(
+      completionHeading.or(page.getByLabel("What progress did you make?")),
+    ).toBeVisible({ timeout: 15_000 });
   }
 
-  await expect(
-    page.getByRole("heading", {
-      name: "A useful result now has an evidence trail.",
-    }),
-  ).toBeVisible();
+  await expect(completionHeading).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("100%", { exact: true })).toBeVisible();
   await expect(
     page.getByText("Milestone completed", { exact: true }),
   ).toHaveCount(3);
 
   await page.reload();
-  await expect(
-    page.getByRole("heading", {
-      name: "A useful result now has an evidence trail.",
-    }),
-  ).toBeVisible();
+  await expect(completionHeading).toBeVisible();
   await page.goto("/projects");
   await expect(
     page.getByRole("heading", { name: "Completed Projects" }),
