@@ -54,9 +54,10 @@ describe("Stage 6 structural contract", () => {
     expect(provider).toContain('"x-goog-api-key"');
     expect(provider).not.toContain("NEXT_PUBLIC_GEMINI");
   });
-  it("activates only the first milestone and stops before Quests", () => {
+  it("activates only the first milestone and hands off without simulating completion", () => {
     expect(migration).toMatch(/sequence_order\s*=\s*1[\s\S]{0,120}'available'/);
-    expect(boundary).toMatch(/Stage[\s\S]{0,20}7 Quests[\s\S]{0,100}built yet/);
+    expect(boundary).toContain("Begin HQLS Quests");
+    expect(boundary).toContain("only the third genuine completion");
     expect(boundary).not.toMatch(/awardXp|completeQuest|submitEvidence/);
   });
   it("covers Stage 6 ownership and replacement foreign keys", () => {
