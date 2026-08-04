@@ -10,6 +10,8 @@ Stage 5, Stage 6 and Stage 7
 **Current Git baseline:** `agent/stage7-hqls-quest-execution` at the
 verified Stage 7 closure, stacked on the proven Stage 6 branch
 
+**Review surface:** GitHub pull request #8
+
 **Infrastructure:** authorised disposable non-production Supabase staging
 `kvjcswnmhwegpakbtvlh`; matching Vercel Preview deployment
 `dpl_86KTj6DUaAPJXkPmApTbTcneaNrA`
