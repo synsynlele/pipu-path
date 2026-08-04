@@ -2,10 +2,7 @@ import "server-only";
 
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { getCurrentJourneyState } from "@/modules/journey/infrastructure/journey-dal";
-import {
-  questContextSchema,
-  type QuestStatus,
-} from "../domain/quest-contract";
+import { questContextSchema, type QuestStatus } from "../domain/quest-contract";
 import { createQuestServerClient } from "./quest-client";
 
 const evidenceBucket = "quest-evidence";

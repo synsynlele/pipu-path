@@ -10,7 +10,10 @@ import {
 const initialState: QuestFormState = { status: "idle" };
 
 export function QuestStartForm({ questId }: { questId: string }) {
-  const [state, action, pending] = useActionState(startQuestAction, initialState);
+  const [state, action, pending] = useActionState(
+    startQuestAction,
+    initialState,
+  );
 
   return (
     <form action={action} aria-busy={pending}>

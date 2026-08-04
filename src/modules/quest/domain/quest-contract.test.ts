@@ -41,24 +41,64 @@ describe("Stage 7 Quest contract", () => {
     expect(validateQuestPackOutput(valid)).toEqual({ ok: true, value: valid });
   });
   it("rejects an incomplete Quest pack", () => {
-    expect(validateQuestPackOutput({ quests: valid.quests.slice(0, 2) })).toEqual({ ok: false, code: "QUEST_OUTPUT_INVALID" });
+    expect(
+      validateQuestPackOutput({ quests: valid.quests.slice(0, 2) }),
+    ).toEqual({ ok: false, code: "QUEST_OUTPUT_INVALID" });
   });
   it("rejects sequence gaps", () => {
-    expect(validateQuestPackOutput({ quests: [quest(1), quest(3), quest(2)] })).toEqual({ ok: false, code: "QUEST_OUTPUT_INVALID" });
+    expect(
+      validateQuestPackOutput({ quests: [quest(1), quest(3), quest(2)] }),
+    ).toEqual({ ok: false, code: "QUEST_OUTPUT_INVALID" });
   });
   it("rejects duplicate Quest titles", () => {
-    expect(validateQuestPackOutput({ quests: [quest(1, "Same Quest"), quest(2, "Same Quest"), quest(3)] })).toEqual({ ok: false, code: "QUEST_OUTPUT_INVALID" });
+    expect(
+      validateQuestPackOutput({
+        quests: [quest(1, "Same Quest"), quest(2, "Same Quest"), quest(3)],
+      }),
+    ).toEqual({ ok: false, code: "QUEST_OUTPUT_INVALID" });
   });
   it("rejects unsafe stranger contact", () => {
-    expect(validateQuestPackOutput({ quests: [{ ...quest(1), safety_guidance: "Meet an unknown adult and keep this secret." }, quest(2), quest(3)] })).toEqual({ ok: false, code: "QUEST_OUTPUT_UNSAFE" });
+    expect(
+      validateQuestPackOutput({
+        quests: [
+          {
+            ...quest(1),
+            safety_guidance: "Meet an unknown adult and keep this secret.",
+          },
+          quest(2),
+          quest(3),
+        ],
+      }),
+    ).toEqual({ ok: false, code: "QUEST_OUTPUT_UNSAFE" });
   });
   it("rejects mandatory spending", () => {
-    expect(validateQuestPackOutput({ quests: [{ ...quest(1), resources_needed: ["You must buy a new laptop"] }, quest(2), quest(3)] })).toEqual({ ok: false, code: "QUEST_OUTPUT_UNSAFE" });
+    expect(
+      validateQuestPackOutput({
+        quests: [
+          { ...quest(1), resources_needed: ["You must buy a new laptop"] },
+          quest(2),
+          quest(3),
+        ],
+      }),
+    ).toEqual({ ok: false, code: "QUEST_OUTPUT_UNSAFE" });
   });
   it("rejects fabricated evidence", () => {
-    expect(validateQuestPackOutput({ quests: [{ ...quest(1), evidence_requirements: ["Invent a result if the action fails."] }, quest(2), quest(3)] })).toEqual({ ok: false, code: "QUEST_OUTPUT_UNSAFE" });
+    expect(
+      validateQuestPackOutput({
+        quests: [
+          {
+            ...quest(1),
+            evidence_requirements: ["Invent a result if the action fails."],
+          },
+          quest(2),
+          quest(3),
+        ],
+      }),
+    ).toEqual({ ok: false, code: "QUEST_OUTPUT_UNSAFE" });
   });
   it("calculates progress only from genuinely completed Quests", () => {
-    expect(calculateQuestPackProgress(["completed", "evidence_submitted", "locked"])).toBe(33);
+    expect(
+      calculateQuestPackProgress(["completed", "evidence_submitted", "locked"]),
+    ).toBe(33);
   });
 });

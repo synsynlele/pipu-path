@@ -43,10 +43,12 @@ const messages: Record<QuestErrorCode, string> = {
   QUEST_NOT_FOUND: "That Quest is no longer available.",
   QUEST_NOT_AVAILABLE: "That Quest is not ready to start yet.",
   QUEST_NOT_ACTIVE: "Start the Quest before submitting evidence.",
-  QUEST_ANOTHER_ACTIVE: "Finish your current active Quest before starting another.",
+  QUEST_ANOTHER_ACTIVE:
+    "Finish your current active Quest before starting another.",
   QUEST_EVIDENCE_INVALID: "Please provide clear, valid evidence.",
   QUEST_EVIDENCE_REQUIRED: "Submit evidence before completing reflection.",
-  QUEST_REFLECTION_INVALID: "Please complete every reflection with enough detail.",
+  QUEST_REFLECTION_INVALID:
+    "Please complete every reflection with enough detail.",
   QUEST_IMAGE_INVALID:
     "Use one JPG, PNG or WebP image no larger than five megabytes.",
   QUEST_IMAGE_UPLOAD_FAILED:

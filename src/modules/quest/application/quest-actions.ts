@@ -10,19 +10,17 @@ import {
   questReflectionInputSchema,
   type QuestErrorCode,
 } from "../domain/quest-contract";
-import { generateCurrentQuestPack, questErrorMessage } from "./quest-generation";
+import {
+  generateCurrentQuestPack,
+  questErrorMessage,
+} from "./quest-generation";
 
 const evidenceBucket = "quest-evidence";
-const acceptedImageTypes = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-]);
+const acceptedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const maximumImageBytes = 5 * 1024 * 1024;
 
 export type QuestFormState =
-  | { status: "idle" }
-  | { status: "error"; message: string };
+  { status: "idle" } | { status: "error"; message: string };
 
 function errorCode(error: unknown, fallback: QuestErrorCode) {
   const match = (error instanceof Error ? error.message : String(error)).match(
@@ -100,10 +98,7 @@ export async function submitQuestEvidenceAction(
   let uploadedPath: string | undefined;
 
   if (image instanceof File && image.size > 0) {
-    if (
-      image.size > maximumImageBytes ||
-      !acceptedImageTypes.has(image.type)
-    ) {
+    if (image.size > maximumImageBytes || !acceptedImageTypes.has(image.type)) {
       return {
         status: "error",
         message: questErrorMessage("QUEST_IMAGE_INVALID"),

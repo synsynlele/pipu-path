@@ -9,10 +9,26 @@ import {
 
 const initialState: QuestFormState = { status: "idle" };
 const fields = [
-  ["whatIDid", "What did you do?", "Describe the action you took in your own words."],
-  ["whatHappened", "What happened?", "Describe the real response, result or difficulty you observed."],
-  ["whatILearned", "What did you learn?", "Name the capability, insight or truth this action revealed."],
-  ["whatIWillChange", "What will you do differently next time?", "Choose one specific improvement for your next Quest."],
+  [
+    "whatIDid",
+    "What did you do?",
+    "Describe the action you took in your own words.",
+  ],
+  [
+    "whatHappened",
+    "What happened?",
+    "Describe the real response, result or difficulty you observed.",
+  ],
+  [
+    "whatILearned",
+    "What did you learn?",
+    "Name the capability, insight or truth this action revealed.",
+  ],
+  [
+    "whatIWillChange",
+    "What will you do differently next time?",
+    "Choose one specific improvement for your next Quest.",
+  ],
 ] as const;
 
 export function QuestReflectionForm({
@@ -50,11 +66,15 @@ export function QuestReflectionForm({
         </div>
       ))}
       <div className="border-gold/20 bg-gold/5 rounded-2xl border p-5">
-        <label htmlFor="nortnspoilReflection" className="text-gold text-sm font-semibold">
+        <label
+          htmlFor="nortnspoilReflection"
+          className="text-gold text-sm font-semibold"
+        >
           Nortnspoil reflection
         </label>
         <p className="text-muted mt-2 text-sm leading-6">
-          What did this Quest prove about your ability to continue, adapt or begin again even when the result was imperfect?
+          What did this Quest prove about your ability to continue, adapt or
+          begin again even when the result was imperfect?
         </p>
         <textarea
           id="nortnspoilReflection"
@@ -76,7 +96,9 @@ export function QuestReflectionForm({
           </p>
         ) : null}
         {state.status === "error" ? (
-          <p role="alert" className="mt-3 text-sm text-red-300">{state.message}</p>
+          <p role="alert" className="mt-3 text-sm text-red-300">
+            {state.message}
+          </p>
         ) : null}
       </div>
     </form>
