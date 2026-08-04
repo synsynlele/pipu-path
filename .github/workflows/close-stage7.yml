@@ -1,0 +1,269 @@
+name: Close Stage 7
+
+on:
+  push:
+    branches:
+      - agent/stage7-hqls-quest-execution
+    paths:
+      - .github/workflows/close-stage7.yml
+
+permissions:
+  contents: write
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage7-hqls-quest-execution
+      - name: Record Stage 7 closure
+        run: |
+          cat > PROJECT_STATE.md <<'EOF'
+          # PipuPath project state
+
+          **Current stage:** Stage 7 — HQLS Quest Execution MVP
+
+          **Stage status:** COMPLETE
+
+          **Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4,
+          Stage 5, Stage 6 and Stage 7
+
+          **Current Git baseline:** `agent/stage7-hqls-quest-execution` at the
+          verified Stage 7 closure, stacked on the proven Stage 6 branch
+
+          **Infrastructure:** authorised disposable non-production Supabase staging
+          `kvjcswnmhwegpakbtvlh`; matching Vercel Preview deployment
+          `dpl_86KTj6DUaAPJXkPmApTbTcneaNrA`
+
+          **Last verified:** 2026-08-04
+
+          ## Stage 7 completion
+
+          Stage 7 turns the active Journey milestone into a private, evidence-based
+          HQLS execution loop. Gemini generates exactly three validated, ordered
+          Quests. A Builder starts one Quest, acts in the real world, submits private
+          evidence, completes a Nortnspoil reflection and receives exactly 50 XP once.
+          The next Quest or milestone unlocks only after valid completion.
+
+          Migrations `202608040016` and `202608040017` are applied and verified on
+          disposable staging. The five Stage 7 tables have RLS and owner-only reads;
+          generated persistence remains service-role-only. The `quest-evidence`
+          Storage bucket is private, owner-folder scoped, image-only and limited to
+          5 MB. Controlled RPCs enforce authentication, ownership and lifecycle state.
+
+          GitHub Actions run `30930702481` passed full `validate` and authenticated
+          `staging-e2e` against the matching Stage 7 Preview. The repository gate
+          passed formatting, zero-warning lint, strict TypeScript, 81 unit tests,
+          53 structural/integration checks, coverage thresholds and production build.
+          Playwright passed 13 tests with three intentional duplicate full-flow skips.
+
+          A fresh live Gemini request completed on the matching Preview. Persisted
+          verification confirmed exactly three Quests: Quest 1 completed with one
+          evidence record, one Nortnspoil reflection and one 50-XP transaction;
+          Quest 2 available; Quest 3 locked. Refresh, anonymous protection and mobile
+          usability passed.
+
+          ## Security findings
+
+          - Gemini credentials and generated-record persistence remain server-side.
+          - Anonymous access to private Quest routes and Stage 7 relations is denied.
+          - Direct browser writes to Quest tables are not granted.
+          - Evidence text, links, images and reflections remain private.
+          - XP is append-only and idempotent by unique Quest reference.
+          - Stage 7 does not infer public credibility from private evidence.
+
+          ## Known technical debt
+
+          - Resolve recorded development-toolchain dependency advisories when
+            compatible patched dependency lines are available; Stage 7 changed no
+            dependency versions.
+          - Replace the Stage 2 in-process rate limiter before production.
+          - Complete legal, privacy, retention and child-safeguarding review.
+          - Optimise CI browser installation and build caching without weakening gates.
+
+          ## Exact next vertical slice
+
+          Stage 8 is the exact next boundary and has not started. Public evidence,
+          portfolios, Projects, mentor assessment, team Quests, leaderboards,
+          opportunity matching and Builder Network sharing remain outside Stage 7.
+
+          ## Reproduction
+
+          ```sh
+          npm ci
+          npm run validate
+          npm run test:e2e
+          ```
+
+          Remote proof: GitHub Actions run `30930702481` and Vercel deployment
+          `dpl_86KTj6DUaAPJXkPmApTbTcneaNrA`.
+          EOF
+
+          cat > docs/implementation/status.md <<'EOF'
+          # Implementation status
+
+          **Current stage:** Stage 7 — HQLS Quest Execution MVP (complete)  
+          **Last verified:** 2026-08-04  
+          **Next boundary:** Stage 8 — not started
+
+          | Stage                           | Status      | Evidence                                                                          |
+          | ------------------------------- | ----------- | --------------------------------------------------------------------------------- |
+          | 0 — Governance and architecture | Complete    | Constitution, stage boundaries, quality attributes, ADRs and ledger              |
+          | 1 — Engineering foundation      | Complete    | Application foundation, design system, config, logging, tests and CI              |
+          | 2 — Identity and access         | Complete    | Database/RLS/email/recovery/OAuth and staging browser E2E pass                    |
+          | 3 — Discovery                   | Complete    | Persistent evidence, review, RLS/API verification and browser E2E pass            |
+          | 4 — Human Potential Profile     | Complete    | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass      |
+          | 5 — Practical Mission           | Complete    | Live Gemini, refinement, activation, refresh, RLS and staging CI pass             |
+          | 6 — Practical Builder Journey   | Complete    | Live Gemini, milestones, activation, refresh, RLS and staging CI pass             |
+          | 7 — HQLS Quest Execution        | Complete    | Live Gemini, action, evidence, reflection, XP, progression and staging CI pass    |
+          | 8–9                             | Not started | Public/downstream Builder capabilities remain outside the completed Stage 7 scope |
+
+          ## Stage 7 completion
+
+          Stage 7 converts the current active Journey milestone into exactly three
+          ordered private HQLS Quests. Quest generation uses the existing server-only
+          Gemini configuration and validates realistic duration, action steps,
+          low-resource alternatives, evidence requirements, safety guidance,
+          completion criteria and reflection prompts before atomic persistence.
+
+          One Quest may be active at a time. Completion requires durable private
+          evidence and a complete Nortnspoil reflection. Each Quest awards exactly
+          50 XP once through an append-only transaction. Completing Quest 1 unlocks
+          Quest 2; completing Quest 3 completes the milestone and unlocks the next
+          milestone. The state survives refresh.
+
+          Migrations `202608040016_stage_7_hqls_quest_execution.sql` and
+          `202608040017_index_stage_7_quest_foreign_keys.sql` are applied and verified
+          on authorised disposable staging. RLS is enabled on all five Stage 7 tables.
+          Authenticated users receive owner-only reads and controlled lifecycle RPCs;
+          generated persistence remains restricted to `service_role`. The private
+          `quest-evidence` bucket accepts only JPG, PNG and WebP images up to 5 MB in
+          the authenticated owner's folder.
+
+          The matching Vercel Preview deployment
+          `dpl_86KTj6DUaAPJXkPmApTbTcneaNrA` is READY. GitHub Actions run
+          `30930702481` passed full `validate` and authenticated `staging-e2e` against
+          that Preview. Validation passed Prettier, zero-warning ESLint, strict
+          TypeScript, 81 unit tests, 53 structural/integration checks, coverage
+          thresholds and the Next.js production build.
+
+          Playwright ran 16 cases with one worker because authenticated flows share one
+          approved disposable fixture: 13 passed and three duplicate full-flow cases
+          were intentionally skipped. The suite proved fresh live Gemini generation,
+          Quest 1 start, evidence submission, Nortnspoil reflection, exactly-once XP,
+          Quest 2 unlocking, refresh recovery, anonymous denial and narrow-screen
+          usability.
+
+          Vercel runtime logs recorded `quest_pack_generation_completed` on the exact
+          Preview. Database reconciliation confirmed a completed Gemini request with
+          three Quests, Quest 1 completed, Quest 2 available, Quest 3 locked, one
+          evidence record, one reflection and one 50-XP transaction.
+
+          ## Repairs completed during closure
+
+          - Removed obsolete Stage 6 boundary assertions after Stage 7 became active.
+          - Removed cache invalidation before the long Quest-generation redirect so
+            the browser completes the 303 transition instead of remaining pending.
+          - Serialised shared-fixture Playwright flows to prevent synthetic-user races.
+          - Placed all Quest routes inside the authenticated Builder application shell,
+            including usable mobile navigation.
+          - Removed temporary formatting and closure workflows after their one-time use.
+          - Reconciled the live remote Stage 7 tables, enums, relationships and RPC
+            signatures with the implementation contract.
+
+          ## Boundary
+
+          Stage 7 is complete. Stage 8 has not started. Evidence and reflections remain
+          private; Stage 7 does not create public portfolios, Projects, mentor scoring,
+          team Quests, leaderboards, opportunity matching or Builder Network sharing.
+          EOF
+
+          cat >> docs/implementation/ledger.md <<'EOF'
+
+          ## 2026-08-04 — Stage 7 HQLS Quest Execution closure
+
+          ### Authorized scope
+
+          Turn the active Journey milestone into a complete private HQLS Quest loop:
+          generation, action, evidence, Nortnspoil reflection, exactly-once XP and
+          truthful Quest/milestone progression. Preserve all completed stages and stop
+          at the Stage 8 boundary.
+
+          ### Implemented
+
+          - Exactly three validated ordered Quests per current Journey milestone
+          - Existing server-only Gemini configuration and provider-neutral contract
+          - Realistic steps, low-resource alternatives, evidence requirements,
+            completion criteria, reflection prompts and age-aware safety guidance
+          - One-active-Quest lifecycle with refresh-safe ready, active, evidence,
+            reflection and completed states
+          - Private text evidence, optional HTTPS link and optional owner-scoped image
+          - Mandatory Nortnspoil reflection before completion
+          - Append-only, idempotent 50-XP transaction per completed Quest
+          - Automatic next-Quest, next-milestone and final-Journey progression
+          - Premium black-and-gold focus, evidence, reflection and completion screens
+          - Authenticated Builder shell and focused desktop/mobile browser coverage
+
+          ### Database and security verification
+
+          - Applied migrations `202608040016` and `202608040017` to authorised
+            disposable staging `kvjcswnmhwegpakbtvlh`.
+          - Verified RLS and owner-only reads on `quest_generation_requests`,
+            `user_quests`, `quest_evidence`, `quest_reflections` and
+            `builder_xp_transactions`.
+          - Verified no direct authenticated browser writes to Stage 7 tables.
+          - Verified generated persistence RPCs remain `service_role`-only and
+            lifecycle RPCs validate `auth.uid()`, ownership and valid state.
+          - Verified the private `quest-evidence` bucket is owner-folder scoped,
+            image-only and limited to 5 MB.
+          - Reconciled generated remote tables, enums, relationships and RPC signatures
+            with the Stage 7 implementation contract.
+
+          ### Validation and deployed proof
+
+          - Matching Vercel Preview deployment
+            `dpl_86KTj6DUaAPJXkPmApTbTcneaNrA` reached READY on the final code head.
+          - GitHub Actions run `30930702481` passed `validate` and authenticated
+            `staging-e2e` against the matching Preview.
+          - Formatting, zero-warning lint, strict TypeScript, 81 unit tests,
+            53 structural/integration checks, coverage thresholds and production build
+            passed.
+          - Playwright passed 13 tests with three intentional duplicate full-flow skips,
+            including anonymous denial and the focused mobile Quest path.
+          - The authenticated browser generated a fresh live Gemini pack, started
+            Quest 1, submitted private evidence, completed the Nortnspoil reflection,
+            received exactly 50 XP, unlocked Quest 2 and recovered state after refresh.
+          - Vercel logs recorded `quest_pack_generation_completed` on the exact Preview.
+          - Database reconciliation confirmed one completed request, exactly three
+            Quests, Quest 1 completed, Quest 2 available, Quest 3 locked, one evidence
+            record, one reflection and one 50-XP transaction.
+
+          ### Repairs completed during closure
+
+          - Updated the inherited Stage 6 boundary test for the authorised Stage 7
+            handoff without weakening Stage 6's first-milestone invariant.
+          - Removed cache invalidation before the Quest generation redirect after the
+            live trace proved Gemini and persistence succeeded but the client remained
+            in its pending Server Action state.
+          - Serialised shared-fixture browser flows to prevent concurrent mutations of
+            the same disposable user.
+          - Wrapped Quest routes in the Builder application shell so desktop and mobile
+            navigation reflect the real completed path.
+          - Removed all temporary one-shot formatter and closure workflow files.
+
+          ### Boundary
+
+          Status: COMPLETE. Stage 0 through Stage 7 are complete. Work stops at the
+          Stage 8 boundary. Public evidence, portfolios, Projects, mentor assessment,
+          team Quests, leaderboards, opportunity matching and Builder Network sharing
+          have not started.
+          EOF
+
+          rm .github/workflows/close-stage7.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECT_STATE.md docs/implementation/status.md docs/implementation/ledger.md .github/workflows/close-stage7.yml
+          git commit -m "docs(stage7): record verified closure"
+          git push origin HEAD:agent/stage7-hqls-quest-execution
