@@ -22,7 +22,9 @@ export const projectCreateInputSchema = z.object({
   desiredOutcome: conciseText("Desired outcome", 20, 800),
   smallestUsefulVersion: conciseText("Smallest useful version", 20, 800),
   successSignal: conciseText("Success signal", 10, 500),
-  targetDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a valid target date."),
+  targetDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a valid target date."),
   milestones: z
     .array(projectMilestoneInputSchema)
     .length(3, "A Builder Project needs exactly three milestones.")
@@ -59,10 +61,7 @@ export type ProjectCreateInput = z.infer<typeof projectCreateInputSchema>;
 export type ProjectUpdateInput = z.infer<typeof projectUpdateInputSchema>;
 export type BuilderProjectStatus = "active" | "completed" | "archived";
 export type BuilderProjectMilestoneStatus =
-  | "locked"
-  | "available"
-  | "active"
-  | "completed";
+  "locked" | "available" | "active" | "completed";
 
 export type ProjectErrorCode =
   | "PROJECT_ACCESS_DENIED"

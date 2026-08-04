@@ -93,7 +93,10 @@ export default async function ProjectDetailPage({
                 ["Smallest useful version", project.smallest_useful_version],
                 ["Success signal", project.success_signal],
               ].map(([label, value]) => (
-                <div key={label} className="border-border rounded-2xl border p-4">
+                <div
+                  key={label}
+                  className="border-border rounded-2xl border p-4"
+                >
                   <dt className="text-muted text-xs tracking-wide uppercase">
                     {label}
                   </dt>
@@ -114,7 +117,8 @@ export default async function ProjectDetailPage({
                 </h2>
               </div>
               <span className="text-muted text-sm">
-                Target {new Date(`${project.target_date}T00:00:00`).toLocaleDateString(
+                Target{" "}
+                {new Date(`${project.target_date}T00:00:00`).toLocaleDateString(
                   "en",
                   { dateStyle: "medium" },
                 )}
@@ -167,7 +171,8 @@ export default async function ProjectDetailPage({
               </h2>
               <p className="text-muted mt-3 max-w-2xl leading-7">
                 Record progress even when the milestone is not finished. Mark it
-                complete only when the stated completion signal is genuinely true.
+                complete only when the stated completion signal is genuinely
+                true.
               </p>
               <ProjectUpdateForm
                 projectId={project.id}
@@ -227,15 +232,20 @@ export default async function ProjectDetailPage({
                           {milestone?.title ?? "Project milestone"}
                         </p>
                         <span className="text-muted text-[0.7rem]">
-                          {new Date(update.created_at).toLocaleDateString("en", {
-                            dateStyle: "medium",
-                          })}
+                          {new Date(update.created_at).toLocaleDateString(
+                            "en",
+                            {
+                              dateStyle: "medium",
+                            },
+                          )}
                         </span>
                       </div>
                       <p className="text-muted mt-2 text-sm leading-6">
                         {update.progress_note}
                       </p>
-                      <p className="mt-2 text-sm leading-6">{update.proof_text}</p>
+                      <p className="mt-2 text-sm leading-6">
+                        {update.proof_text}
+                      </p>
                       {update.proof_link ? (
                         <a
                           href={update.proof_link}

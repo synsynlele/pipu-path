@@ -34,7 +34,10 @@ export function ProjectCreateForm({
         <p className="text-gold text-xs font-semibold tracking-wide uppercase">
           Proof foundation
         </p>
-        <label htmlFor="sourceQuestId" className="mt-4 block text-sm font-semibold">
+        <label
+          htmlFor="sourceQuestId"
+          className="mt-4 block text-sm font-semibold"
+        >
           Completed Quest proof
         </label>
         <select
@@ -114,7 +117,10 @@ export function ProjectCreateForm({
           />
         </div>
         <div>
-          <label htmlFor="smallestUsefulVersion" className="text-sm font-semibold">
+          <label
+            htmlFor="smallestUsefulVersion"
+            className="text-sm font-semibold"
+          >
             What is the smallest useful version?
           </label>
           <textarea

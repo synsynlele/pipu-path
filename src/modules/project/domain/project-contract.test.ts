@@ -21,20 +21,24 @@ const validProject = {
   milestones: [
     {
       title: "Understand the need",
-      intendedOutcome: "Confirm the reading challenge with learners or caregivers.",
+      intendedOutcome:
+        "Confirm the reading challenge with learners or caregivers.",
       completionSignal: "Three short conversations are recorded honestly.",
       sequenceOrder: 1,
     },
     {
       title: "Build the smallest version",
-      intendedOutcome: "Prepare one usable reading session with available materials.",
+      intendedOutcome:
+        "Prepare one usable reading session with available materials.",
       completionSignal: "The complete session can be used by one learner.",
       sequenceOrder: 2,
     },
     {
       title: "Test and improve",
-      intendedOutcome: "Run the session, collect feedback and improve one weak point.",
-      completionSignal: "A real test and one evidence-based improvement are recorded.",
+      intendedOutcome:
+        "Run the session, collect feedback and improve one weak point.",
+      completionSignal:
+        "A real test and one evidence-based improvement are recorded.",
       sequenceOrder: 3,
     },
   ],
@@ -79,14 +83,12 @@ describe("Stage 8 Builder Project contract", () => {
 
   it("calculates progress from completed milestones only", () => {
     expect(calculateProjectProgress([])).toBe(0);
-    expect(calculateProjectProgress(["available", "locked", "locked"])).toBe(
-      0,
-    );
+    expect(calculateProjectProgress(["available", "locked", "locked"])).toBe(0);
     expect(calculateProjectProgress(["completed", "available", "locked"])).toBe(
       33,
     );
-    expect(calculateProjectProgress(["completed", "completed", "completed"])).toBe(
-      100,
-    );
+    expect(
+      calculateProjectProgress(["completed", "completed", "completed"]),
+    ).toBe(100);
   });
 });

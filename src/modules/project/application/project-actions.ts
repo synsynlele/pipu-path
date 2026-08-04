@@ -11,8 +11,7 @@ import {
 import { createProjectServerClient } from "../infrastructure/project-client";
 
 export type ProjectFormState =
-  | { status: "idle" }
-  | { status: "error"; message: string };
+  { status: "idle" } | { status: "error"; message: string };
 
 function projectErrorMessage(code: ProjectErrorCode) {
   const messages: Record<ProjectErrorCode, string> = {

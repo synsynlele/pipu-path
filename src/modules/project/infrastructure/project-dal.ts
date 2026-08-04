@@ -120,7 +120,9 @@ export async function getBuilderProjectState() {
   const projects = (projectRows ?? []) as BuilderProjectRow[];
   const activeProject = projects.find((project) => project.status === "active");
   const history = projects.filter((project) => project.status !== "active");
-  const usedSourceIds = new Set(projects.map((project) => project.source_quest_id));
+  const usedSourceIds = new Set(
+    projects.map((project) => project.source_quest_id),
+  );
   const candidateQuestIds = (completedQuestRows ?? [])
     .filter((quest) => !usedSourceIds.has(quest.id))
     .map((quest) => quest.id);
@@ -144,7 +146,9 @@ export async function getBuilderProjectState() {
     eligibleSources = (completedQuestRows ?? []).flatMap((quest) => {
       if (usedSourceIds.has(quest.id)) return [];
       const evidence = evidenceRows?.find((row) => row.quest_id === quest.id);
-      const reflection = reflectionRows?.find((row) => row.quest_id === quest.id);
+      const reflection = reflectionRows?.find(
+        (row) => row.quest_id === quest.id,
+      );
       if (!evidence || !reflection) return [];
       return [
         {

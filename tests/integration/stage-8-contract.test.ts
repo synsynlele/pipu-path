@@ -71,7 +71,9 @@ describe("Stage 8 Builder Project structural contract", () => {
   });
 
   it("unlocks milestones only through ordered completion", () => {
-    expect(migration).toContain("sequence_order < milestone_row.sequence_order");
+    expect(migration).toContain(
+      "sequence_order < milestone_row.sequence_order",
+    );
     expect(migration).toContain("status <> 'completed'");
     expect(migration).toContain(
       "sequence_order = milestone_row.sequence_order + 1",

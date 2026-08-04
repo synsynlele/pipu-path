@@ -95,7 +95,9 @@ export function ProjectUpdateForm({
           className="mt-1 h-4 w-4"
         />
         <span>
-          <strong className="block">This milestone is genuinely complete</strong>
+          <strong className="block">
+            This milestone is genuinely complete
+          </strong>
           <span className="text-muted mt-1 block leading-6">
             Select this only when the completion signal above is true. Otherwise
             this update will preserve progress and keep the milestone active.

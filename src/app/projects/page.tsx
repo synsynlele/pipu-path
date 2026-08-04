@@ -16,7 +16,9 @@ export default async function ProjectsPage() {
   const state = await getBuilderProjectState();
   const active = state.active;
   const progress = active
-    ? calculateProjectProgress(active.milestones.map((milestone) => milestone.status))
+    ? calculateProjectProgress(
+        active.milestones.map((milestone) => milestone.status),
+      )
     : 0;
 
   return (
@@ -72,10 +74,9 @@ export default async function ProjectsPage() {
                 Target date
               </p>
               <p className="mt-2 text-lg font-semibold">
-                {new Date(`${active.project.target_date}T00:00:00`).toLocaleDateString(
-                  "en",
-                  { dateStyle: "medium" },
-                )}
+                {new Date(
+                  `${active.project.target_date}T00:00:00`,
+                ).toLocaleDateString("en", { dateStyle: "medium" })}
               </p>
               <p className="text-muted mt-2 text-xs">
                 A direction, not invented completion
@@ -103,7 +104,9 @@ export default async function ProjectsPage() {
               </p>
               <div className="mt-6">
                 <div className="flex justify-between gap-4 text-xs">
-                  <span className="text-muted">Verified milestone progress</span>
+                  <span className="text-muted">
+                    Verified milestone progress
+                  </span>
                   <span className="font-semibold">{progress}%</span>
                 </div>
                 <div className="bg-background mt-2 h-2 overflow-hidden rounded-full">
@@ -142,7 +145,10 @@ export default async function ProjectsPage() {
                   </li>
                 ))}
               </ol>
-              <ButtonLink href={`/projects/${active.project.id}`} className="mt-6">
+              <ButtonLink
+                href={`/projects/${active.project.id}`}
+                className="mt-6"
+              >
                 Open Project Command Centre
               </ButtonLink>
             </Surface>
