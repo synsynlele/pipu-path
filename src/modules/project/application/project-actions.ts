@@ -2,13 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import {
   projectCreateInputSchema,
   projectUpdateInputSchema,
   type ProjectErrorCode,
 } from "../domain/project-contract";
+import { createProjectServerClient } from "../infrastructure/project-client";
 
 export type ProjectFormState =
   | { status: "idle" }
@@ -87,7 +87,7 @@ export async function createBuilderProjectAction(
     };
   }
 
-  const client = await createServerSupabaseClient();
+  const client = await createProjectServerClient();
   const { data, error } = await client.rpc("create_stage8_builder_project", {
     source_quest_id_input: parsed.data.sourceQuestId,
     title_input: parsed.data.title,
@@ -140,7 +140,7 @@ export async function addBuilderProjectUpdateAction(
     };
   }
 
-  const client = await createServerSupabaseClient();
+  const client = await createProjectServerClient();
   const { data, error } = await client.rpc(
     "add_stage8_builder_project_update",
     {
