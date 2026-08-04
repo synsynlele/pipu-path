@@ -26,13 +26,13 @@ jobs:
       - run: npm ci
       - name: Archive source and installed dependencies
         run: >-
-          tar -I 'zstd -T0 -3' -cf pipupath-stage9-workspace.tar.zst
+          tar -I 'zstd -T0 -3' -cf /tmp/pipupath-stage9-workspace.tar.zst
           --exclude=.git --exclude=.next --exclude=test-results
           --exclude=playwright-report .
       - uses: actions/upload-artifact@v4
         with:
           name: pipupath-stage9-workspace
-          path: pipupath-stage9-workspace.tar.zst
+          path: /tmp/pipupath-stage9-workspace.tar.zst
           compression-level: 0
           retention-days: 1
 
