@@ -4,7 +4,10 @@ const email = process.env.E2E_STAGE3_EMAIL;
 const password = process.env.E2E_STAGE3_PASSWORD;
 
 async function signIn(page: import("@playwright/test").Page) {
-  test.skip(!email || !password, "Authenticated staging fixture is not configured.");
+  test.skip(
+    !email || !password,
+    "Authenticated staging fixture is not configured.",
+  );
   await page.goto("/login");
   await page.getByLabel("Email address").fill(email!);
   await page.getByLabel("Password").fill(password!);
