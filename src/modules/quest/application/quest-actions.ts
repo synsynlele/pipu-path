@@ -39,7 +39,6 @@ export async function generateQuestPackAction(
   const result = await generateCurrentQuestPack();
   if (!result.ok) return { status: "error", message: result.message };
 
-  revalidatePath("/quests");
   redirect("/quests");
 }
 
