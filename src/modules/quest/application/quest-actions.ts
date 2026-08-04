@@ -4,12 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
+import { createQuestServerClient } from "../infrastructure/quest-client";
 import {
   questEvidenceInputSchema,
   questReflectionInputSchema,
   type QuestErrorCode,
 } from "../domain/quest-contract";
-import { createQuestServerClient } from "../infrastructure/quest-client";
 import { generateCurrentQuestPack, questErrorMessage } from "./quest-generation";
 
 const evidenceBucket = "quest-evidence";
