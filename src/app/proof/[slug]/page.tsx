@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { getPublicPortfolioBySlug } from "@/modules/portfolio/infrastructure/portfolio-dal";
 import { PublicProofView } from "@/modules/portfolio/ui/public-proof-view";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateMetadata({
   params,
 }: {
