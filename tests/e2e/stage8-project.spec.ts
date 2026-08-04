@@ -38,7 +38,9 @@ async function openOrCreateProject(page: import("@playwright/test").Page) {
       }),
     ).toBeVisible();
 
-    await page.getByLabel("Project title").fill("Neighbourhood Reading Starter");
+    await page
+      .getByLabel("Project title")
+      .fill("Neighbourhood Reading Starter");
     await page
       .getByLabel("What problem will this Project address?")
       .fill(
@@ -87,12 +89,8 @@ async function openOrCreateProject(page: import("@playwright/test").Page) {
 
     for (const [index, milestone] of milestoneContent.entries()) {
       const number = index + 1;
-      await page
-        .locator(`#milestone${number}Outcome`)
-        .fill(milestone.outcome);
-      await page
-        .locator(`#milestone${number}Signal`)
-        .fill(milestone.signal);
+      await page.locator(`#milestone${number}Outcome`).fill(milestone.outcome);
+      await page.locator(`#milestone${number}Signal`).fill(milestone.signal);
     }
 
     await page
@@ -122,7 +120,10 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
   isMobile,
 }) => {
   test.setTimeout(180_000);
-  test.skip(isMobile, "The complete Project mutation flow runs once on desktop.");
+  test.skip(
+    isMobile,
+    "The complete Project mutation flow runs once on desktop.",
+  );
   await signIn(page);
   await openOrCreateProject(page);
 
@@ -147,7 +148,7 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
       .fill(
         index < 3
           ? `Open milestone ${index + 1} and complete its smallest practical action.`
-          : "Review the full Project evidence and preserve the strongest learning." ,
+          : "Review the full Project evidence and preserve the strongest learning.",
       );
     await page.getByRole("checkbox").check();
     await page
@@ -164,9 +165,9 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
     }),
   ).toBeVisible();
   await expect(page.getByText("100%", { exact: true })).toBeVisible();
-  await expect(page.getByText("Milestone completed", { exact: true })).toHaveCount(
-    3,
-  );
+  await expect(
+    page.getByText("Milestone completed", { exact: true }),
+  ).toHaveCount(3);
 
   await page.reload();
   await expect(
@@ -175,8 +176,12 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
     }),
   ).toBeVisible();
   await page.goto("/projects");
-  await expect(page.getByRole("heading", { name: "Completed Projects" })).toBeVisible();
-  await expect(page.getByText("Neighbourhood Reading Starter", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Completed Projects" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Neighbourhood Reading Starter", { exact: true }),
+  ).toBeVisible();
 });
 
 test("anonymous users cannot access private Projects", async ({ page }) => {
@@ -188,7 +193,10 @@ test("Project command centre remains usable on a narrow screen", async ({
   page,
   isMobile,
 }) => {
-  test.skip(!isMobile, "Focused narrow-screen Project coverage runs on mobile only.");
+  test.skip(
+    !isMobile,
+    "Focused narrow-screen Project coverage runs on mobile only.",
+  );
   await signIn(page);
   await page.goto("/projects");
   await expect(
