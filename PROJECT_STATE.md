@@ -11,11 +11,13 @@ Stage 5, Stage 6, Stage 7 and Stage 8
 Stage 9 contract commit, stacked on the verified Stage 8 closure
 `ea129d141458e1916b5eadd129482a6bc3706747`
 
-**Review surface:** Stage 9 draft pull request to be opened against
+**Review surface:** Stage 9 draft pull request #11 against
 `agent/stage8-builder-project-mvp`
 
 **Infrastructure:** authorised disposable non-production Supabase staging
 `kvjcswnmhwegpakbtvlh`; Stage 9 matching Vercel Preview pending
+
+**Implementation packaging:** reviewed Stage 9 vertical slice pending atomic publish
 
 **Last verified:** 2026-08-04
 
