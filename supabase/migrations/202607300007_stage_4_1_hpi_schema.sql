@@ -204,3 +204,4 @@ create policy profile_versions_own_select on public.human_potential_profile_vers
 
 -- Keep provenance links private: browser clients do not receive direct table access.
 -- Controlled functions in the next migration enforce same-user and same-request links.
+

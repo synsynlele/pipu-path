@@ -114,3 +114,4 @@ $$;
 revoke all on function public.start_or_resume_discovery()
 from public, anon, authenticated, service_role;
 grant execute on function public.start_or_resume_discovery() to authenticated;
+

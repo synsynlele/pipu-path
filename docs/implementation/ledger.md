@@ -333,3 +333,52 @@ refresh state and stop at the Stage 6 Journey boundary.
   anonymous/mobile protection and the Stage 6 boundary.
 
 Status: COMPLETE. Stage 5 is complete. Stage 6 Journey has not started.
+
+## 2026-08-03 — Stage 6 Practical Builder Journey
+
+- Added a provider-neutral Journey contract with four-to-six ordered milestones,
+  realistic duration, safety, anti-inflation and anti-Quest validation.
+- Added migration `202608030014` for private Journey requests, Journeys and
+  milestones with RLS, ownership reads, consent and three-attempt enforcement,
+  atomic service-only persistence, explicit activation and one active Journey.
+- Added server-only Gemini generation, refinement/regeneration, durable review
+  and active Journey UI, refresh recovery, truthful progress and first-milestone
+  availability.
+- Added deterministic domain/orchestration tests, structural security tests and
+  authenticated staging browser coverage through the Stage 7 boundary.
+
+Status: IMPLEMENTED LOCALLY. Full repository validation passes; staging migration,
+database verification and live Gemini browser proof remain before completion.
+
+### Stage 6 deployed closure — 2026-08-04
+
+- Confirmed migrations `202608030014` and `202608030015` are applied and verified
+  on authorised disposable staging, including Journey tables, ownership, RLS,
+  RPC permissions, foreign-key indexes, consent checks, lifecycle invariants and
+  service-role-only generated persistence.
+- Repaired inherited invalid file suffixes that prevented CI from parsing the
+  Prettier and Playwright configuration without changing Stage 6 behavior.
+- Published and verified Vercel Preview deployment
+  `dpl_CL6igtitZf2ay2bAiUoP6Bzdm25A` for the Stage 6 branch.
+- GitHub Actions run
+  [30921147078](https://github.com/synsynlele/pipu-path/actions/runs/30921147078)
+  passed full `validate` and authenticated `staging-e2e` against the matching
+  Stage 6 Preview.
+- The repository gate passed formatting, zero-warning lint, strict TypeScript,
+  70 unit tests, 39 structural/integration checks, coverage thresholds and the
+  production build.
+- The authenticated browser flow passed Profile → Mission → Journey, initial
+  live Gemini Journey generation, live Gemini refinement, explicit activation,
+  refresh recovery, milestone-one access and the honest Stage 7 boundary.
+- Vercel runtime logs recorded `journey_generation_completed` for both `initial`
+  and `refine` requests, proving the flow did not merely recover old persisted
+  Journey state.
+- Anonymous private-route protection and focused narrow-screen authentication,
+  Discovery and Mission access checks passed. The duplicate mobile full-flow
+  test remained intentionally skipped because the complete flow ran once in
+  Chromium and mobile controls have focused coverage.
+- Stage 6 changed no dependency versions; its `package-lock.json` diff was only
+  a final newline. Full-audit development-toolchain findings remain previously
+  recorded technical debt and were not introduced by this stage.
+
+Status: COMPLETE. Stage 6 is complete. Work stops at the Stage 7 Quests boundary.

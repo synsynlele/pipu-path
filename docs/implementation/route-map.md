@@ -10,7 +10,10 @@
 | `/onboarding/discovery/profile/complete`     | Authenticated profile owner  | Handoff to Practical Mission              |
 | `/mission`                                   | Authenticated profile owner  | Generate, review and activate one mission |
 | `/mission/complete`                          | Active mission owner         | Honest Stage 6 Journey boundary           |
+| `/journey`                                   | Active mission owner         | Generate, review and activate Journey     |
+| `/journey/complete`                          | Active Journey owner         | Honest Stage 7 Quest boundary             |
 
 Every route repeats authorization on the server. Middleware is not the sole
-control. Mission generation also requires a completed active profile and
-current AI-processing consent. Stage 5 stops before Journey implementation.
+control. Mission generation requires a completed active profile; Journey
+generation requires an active mission. Both require current AI-processing
+consent. Stage 6 stops before Quest execution.

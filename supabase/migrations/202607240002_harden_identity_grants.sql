@@ -15,3 +15,4 @@ grant update (
 grant update (
   interface, accessibility, communication, magicpen, notifications
 ) on public.user_preferences to authenticated;
+

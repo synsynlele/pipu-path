@@ -216,3 +216,4 @@ revoke all on function public.persist_stage4_human_potential_profile(uuid, text,
 grant execute on function public.claim_stage4_interpretation_request(uuid, text, text) to service_role;
 grant execute on function public.fail_stage4_interpretation_request(uuid, text, text) to service_role;
 grant execute on function public.persist_stage4_human_potential_profile(uuid, text, jsonb, jsonb) to service_role;
+

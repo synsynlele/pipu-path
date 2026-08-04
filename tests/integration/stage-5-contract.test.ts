@@ -69,10 +69,9 @@ describe("Stage 5 structural contract", () => {
     expect(provider).not.toContain("NEXT_PUBLIC_GEMINI");
   });
 
-  it("stops honestly at the Stage 6 boundary", () => {
-    expect(boundary).toMatch(
-      /Stage 6 Journey[\s\S]{0,30}milestones and Quests have not been built yet/,
-    );
-    expect(boundary).not.toMatch(/createJourney|generateQuest|awardXp/);
+  it("hands the completed mission into the authorized Stage 6 Journey", () => {
+    expect(boundary).toContain('href="/journey"');
+    expect(boundary).toMatch(/flexible Journey of practical milestones/);
+    expect(boundary).not.toMatch(/generateQuest|awardXp/);
   });
 });
