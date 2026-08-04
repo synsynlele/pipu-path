@@ -113,6 +113,15 @@ describe("Stage 9 selective Project portfolio structural contract", () => {
     expect(withdrawForm).toContain("Withdraw Public Proof");
   });
 
+  it("rechecks live publication state and invalidates the withdrawn slug", () => {
+    expect(publicPage).toContain('export const dynamic = "force-dynamic"');
+    expect(publicPage).toContain("export const revalidate = 0");
+    expect(actions).toContain(
+      'client.from("builder_project_portfolios").select("slug")',
+    );
+    expect(actions).toContain("revalidatePath(`/proof/${portfolio.slug}`)");
+  });
+
   it("keeps private source proof out of public presentation", () => {
     expect(publicView).toContain("Quest evidence, reflections");
     expect(publicView).toContain("raw Project updates");
