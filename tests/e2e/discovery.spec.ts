@@ -9,6 +9,17 @@ async function assertNoDiscoveryError(page: import("@playwright/test").Page) {
   }
 }
 
+async function assertNoRuntimeFailure(page: import("@playwright/test").Page) {
+  const runtimeFailure = page.getByRole("heading", {
+    name: "We could not load this page.",
+  });
+  if (await runtimeFailure.isVisible().catch(() => false)) {
+    throw new Error(
+      "Preview runtime failed during authentication. Inspect the matching Vercel POST /login log.",
+    );
+  }
+}
+
 async function submitAndAwaitDiscoveryTransition(
   page: import("@playwright/test").Page,
   button: import("@playwright/test").Locator,
@@ -39,11 +50,173 @@ async function submitAndAwaitDiscoveryTransition(
   await assertNoDiscoveryError(page);
 }
 
+async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
+  await page.goto("/onboarding/discovery/profile");
+  const generate = page.getByRole("button", { name: "Generate my profile" });
+  if ((await generate.count()) === 1) {
+    await generate.click();
+    await expect(page.getByRole("status")).toHaveText(
+      "PipuPath is analysing your Discovery responses…",
+    );
+  }
+
+  await expect(page.getByRole("heading", { name: "Summary" })).toBeVisible({
+    timeout: 45_000,
+  });
+  await expect(
+    page.getByRole("heading", {
+      name: "A starting point for your next steps.",
+    }),
+  ).toBeVisible();
+  for (const section of [
+    "Emerging Strengths",
+    "What Draws You",
+    "Problems You Care About",
+    "How You Can Contribute",
+    "Current Constraints",
+    "Best Next Direction",
+  ]) {
+    await expect(page.getByRole("heading", { name: section })).toBeVisible();
+  }
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Summary" })).toBeVisible();
+  await page.getByRole("button", { name: "👍 Accurate" }).first().click();
+  await expect(
+    page.getByText(/Saved response: 👍 Accurate/).first(),
+  ).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("link", { name: "Continue" }).click();
+  await expect(page).toHaveURL(/\/onboarding\/discovery\/profile\/complete/);
+  await expect(
+    page.getByRole("heading", { name: "Keep testing what feels true." }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Open Mission" }).click();
+  await generateAndVerifyMission(page);
+}
+
+async function generateAndVerifyMission(page: import("@playwright/test").Page) {
+  await expect(page).toHaveURL(/\/mission$/);
+  const active = page.getByText("Active Mission", { exact: true });
+  const generate = page.getByRole("button", { name: "Generate My Mission" });
+  const review = page.getByText("Mission Review", { exact: true });
+  await expect(active.or(generate).or(review)).toBeVisible({ timeout: 15_000 });
+  if ((await active.count()) === 0) {
+    if ((await generate.count()) === 1) {
+      await generate.click();
+      await expect(page.getByRole("status")).toContainText(
+        "PipuPath is shaping a practical mission",
+      );
+      await expect(
+        page.getByText("Mission Review", { exact: true }),
+      ).toBeVisible({
+        timeout: 50_000,
+      });
+    }
+
+    const refine = page.getByRole("button", { name: "Refine Mission" });
+    if (
+      (await refine.count()) === 1 &&
+      (await refine.isEnabled().catch(() => false))
+    ) {
+      const missionId = page.locator('input[name="missionId"]');
+      const sourceMissionId = await missionId.inputValue();
+      await page
+        .getByLabel("Refine this mission")
+        .fill("Make it achievable without spending money");
+      await refine.click();
+      await expect(missionId).not.toHaveValue(sourceMissionId, {
+        timeout: 60_000,
+      });
+      await expect(review).toBeVisible();
+    }
+    const acceptMission = page.getByRole("button", {
+      name: "Accept Mission",
+    });
+    await expect(acceptMission).toBeEnabled({ timeout: 60_000 });
+    await acceptMission.click();
+    await expect(page.getByText("Active Mission", { exact: true })).toBeVisible(
+      {
+        timeout: 15_000,
+      },
+    );
+  }
+
+  await expect(
+    page.getByRole("heading", { name: "Mission Statement" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Who This Helps" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "First Meaningful Outcome" }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Active Mission", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Build My Journey" }).click();
+  await expect(page).toHaveURL(/\/mission\/complete/);
+  await expect(
+    page.getByRole("heading", {
+      name: "Your direction is ready for a Journey.",
+    }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Build My Journey" }).click();
+  await generateAndVerifyJourney(page);
+}
+
+async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
+  await expect(page).toHaveURL(/\/journey$/);
+  const active = page.getByText("Active Journey", { exact: true });
+  const generate = page.getByRole("button", { name: "Generate My Journey" });
+  const review = page.getByText("Journey Review", { exact: true });
+  await expect(active.or(generate).or(review)).toBeVisible({ timeout: 15_000 });
+  if ((await active.count()) === 0) {
+    if ((await generate.count()) === 1) {
+      await generate.click();
+      await expect(page.getByRole("status")).toContainText(
+        "PipuPath is shaping milestones",
+      );
+      await expect(review).toBeVisible({ timeout: 55_000 });
+    }
+    const refine = page.getByRole("button", { name: "Refine Journey" });
+    if (
+      (await refine.count()) === 1 &&
+      (await refine.isEnabled().catch(() => false))
+    ) {
+      const journeyId = page.locator('input[name="journeyId"]');
+      const sourceJourneyId = await journeyId.inputValue();
+      await page
+        .getByLabel("Refine this Journey")
+        .fill("Make every milestone possible without spending money");
+      await refine.click();
+      await expect(journeyId).not.toHaveValue(sourceJourneyId, {
+        timeout: 60_000,
+      });
+    }
+    const accept = page.getByRole("button", { name: "Accept Journey" });
+    await expect(accept).toBeEnabled({ timeout: 60_000 });
+    await accept.click();
+    await expect(active).toBeVisible({ timeout: 15_000 });
+  }
+  await expect(page.getByText("Milestone 1", { exact: false })).toBeVisible();
+  await page.reload();
+  await expect(active).toBeVisible();
+  await page.getByRole("link", { name: "Start First Milestone" }).click();
+  await expect(page).toHaveURL(/\/journey\/complete/);
+  await expect(
+    page.getByRole("heading", {
+      name: "Your first milestone is ready for action.",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Begin HQLS Quests" }),
+  ).toBeVisible();
+}
+
 test("eligible user completes persistent Discovery without invented results", async ({
   page,
   isMobile,
 }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(240_000);
   test.skip(
     isMobile,
     "The full flow runs once; mobile controls have a focused test.",
@@ -57,9 +230,38 @@ test("eligible user completes persistent Discovery without invented results", as
   await page.getByLabel("Email address").fill(process.env.E2E_STAGE3_EMAIL!);
   await page.getByLabel("Password").fill(process.env.E2E_STAGE3_PASSWORD!);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL(/\/app$/);
+  await expect
+    .poll(
+      async () => {
+        await assertNoRuntimeFailure(page);
+        return new URL(page.url()).pathname;
+      },
+      { timeout: 15_000 },
+    )
+    .not.toBe("/login");
 
   await page.goto("/onboarding/discovery");
+  await page.locator("#main-content").waitFor({ state: "visible" });
+  const persistedCompletion = page.getByRole("link", {
+    name: "View completion",
+  });
+  if ((await persistedCompletion.count()) === 1) {
+    await persistedCompletion.click();
+    await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
+    await expect(
+      page.getByRole("heading", {
+        name: "Your evidence is safely prepared.",
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/private, provisional Human Potential Profile/),
+    ).toBeVisible();
+    await page.reload();
+    await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
+    await generateAndVerifyProfile(page);
+    return;
+  }
+
   const begin = page.getByRole("button", { name: "Begin Discovery" });
   if ((await begin.count()) === 1) {
     await begin.click();
@@ -158,11 +360,10 @@ test("eligible user completes persistent Discovery without invented results", as
     page.getByRole("heading", { name: "Your evidence is safely prepared." }),
   ).toBeVisible();
   await expect(
-    page.getByText(
-      /No strengths, weaknesses, purpose, mission, career, Journey or Human Potential Profile has been generated\./,
-    ),
+    page.getByText(/private, provisional Human Potential Profile/),
   ).toBeVisible();
 
   await page.reload();
   await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
+  await generateAndVerifyProfile(page);
 });

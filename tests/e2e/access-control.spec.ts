@@ -32,3 +32,14 @@ test("anonymous Discovery access is denied without rendering private data", asyn
   ).toBeVisible();
   await expect(page.getByText("Your answers, in your words.")).toHaveCount(0);
 });
+
+test("anonymous Mission access is denied without rendering private mission data", async ({
+  page,
+}) => {
+  await page.goto("/mission");
+  await expect(page).toHaveURL(/\/login/);
+  await expect(
+    page.getByRole("heading", { name: "Welcome back" }),
+  ).toBeVisible();
+  await expect(page.getByText("Your practical Builder Mission")).toHaveCount(0);
+});

@@ -329,3 +329,4 @@ grant update (
 
 revoke all on public.profiles, public.user_preferences, public.user_consents,
   public.onboarding_checkpoints, public.identity_audit_events from anon;
+

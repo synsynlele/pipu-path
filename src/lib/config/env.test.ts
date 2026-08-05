@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   parseEnvironment,
   readPublicEnvironment,
+  requireGeminiEnvironment,
+  requireOpenAIEnvironment,
   requireSupabasePublicEnvironment,
 } from "./env";
 
@@ -55,6 +57,30 @@ describe("parseEnvironment", () => {
     );
     expect(readPublicEnvironment({}).NEXT_PUBLIC_APP_URL).toBe(
       "http://localhost:3000",
+    );
+  });
+
+  it("keeps OpenAI configuration server-only and fails safely when missing", () => {
+    expect(
+      requireOpenAIEnvironment({
+        OPENAI_API_KEY: "server-secret",
+        OPENAI_MODEL: "gpt-5-mini",
+      }),
+    ).toEqual({ apiKey: "server-secret", model: "gpt-5-mini" });
+    expect(() => requireOpenAIEnvironment({})).toThrow(
+      "OpenAI server environment is not configured.",
+    );
+  });
+
+  it("retains Gemini as an inactive server-only rollback configuration", () => {
+    expect(
+      requireGeminiEnvironment({
+        GEMINI_API_KEY: "server-secret",
+        GEMINI_MODEL: "gemini-3.6-flash",
+      }),
+    ).toEqual({ apiKey: "server-secret", model: "gemini-3.6-flash" });
+    expect(() => requireGeminiEnvironment({})).toThrow(
+      "Gemini server environment is not configured.",
     );
   });
 

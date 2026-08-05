@@ -58,6 +58,7 @@ describe("Discovery domain", () => {
     const second = { ...question, id: "question-2", stableKey: "values" };
     const answers: DiscoveryAnswer[] = [
       {
+        id: "response-1",
         questionId: question.id,
         questionKey: question.stableKey,
         text: null,

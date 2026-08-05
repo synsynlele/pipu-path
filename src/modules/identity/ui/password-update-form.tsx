@@ -20,7 +20,7 @@ export function PasswordUpdateForm() {
           type="password"
           minLength={10}
           autoComplete="new-password"
-          className="border-border bg-panel-raised mt-2 min-h-12 w-full rounded-xl border px-3"
+          className="border-border focus:border-primary mt-2 min-h-12 w-full rounded-xl border bg-white px-3 shadow-sm transition-colors"
         />
       </label>
       {state.message ? (

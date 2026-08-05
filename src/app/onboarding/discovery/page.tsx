@@ -68,7 +68,7 @@ export default async function DiscoveryIntroductionPage({
             <form action={startDiscoveryAction} className="mt-7">
               <button
                 type="submit"
-                className="bg-gold hover:bg-gold-light inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-[#100f0c]"
+                className="bg-primary hover:bg-primary-light inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
               >
                 Begin Discovery
               </button>

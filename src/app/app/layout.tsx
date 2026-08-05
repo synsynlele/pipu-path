@@ -3,7 +3,7 @@ import { AppShell } from "@/components/shells/app-shell";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 
 export const metadata: Metadata = {
-  title: "Foundation",
+  title: "Home",
   robots: {
     index: false,
     follow: false,

@@ -28,13 +28,13 @@ export function AuthForm({
           name="email"
           type="email"
           autoComplete="email"
-          className="border-border bg-panel-raised mt-2 min-h-12 w-full rounded-xl border px-3"
+          className="border-border focus:border-primary mt-2 min-h-12 w-full rounded-xl border bg-white px-3 shadow-sm transition-colors"
           aria-describedby={
             state.fieldErrors?.email ? "email-error" : undefined
           }
         />
         {state.fieldErrors?.email ? (
-          <span id="email-error" className="text-sm text-red-300">
+          <span id="email-error" className="text-error text-sm">
             Enter a valid email address.
           </span>
         ) : null}
@@ -48,7 +48,7 @@ export function AuthForm({
             type="password"
             minLength={10}
             autoComplete="current-password"
-            className="border-border bg-panel-raised mt-2 min-h-12 w-full rounded-xl border px-3"
+            className="border-border focus:border-primary mt-2 min-h-12 w-full rounded-xl border bg-white px-3 shadow-sm transition-colors"
           />
           <span className="text-muted mt-1 block text-xs">
             Use at least 10 characters.
@@ -58,7 +58,7 @@ export function AuthForm({
       {state.message ? (
         <p
           role={state.status === "error" ? "alert" : "status"}
-          className={state.status === "error" ? "text-red-300" : "text-gold"}
+          className={state.status === "error" ? "text-error" : "text-success"}
         >
           {state.message}
         </p>

@@ -1,37 +1,35 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
+import { PIPUPATH_FAVICON_DATA_URI } from "@/components/brand/brand-assets";
+
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
-    default: "PipuPath — Build what you can become",
+    default: "PipuPath — The University for Human Potential",
     template: "%s | PipuPath",
   },
   description:
-    "A human-development operating system for turning potential into evidence, capability, contribution, and impact.",
+    "Discover who you are, develop what you carry and deploy it through real-world action.",
   applicationName: "PipuPath",
-  metadataBase: new URL("https://pipupath.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  ),
+  icons: {
+    icon: [{ url: PIPUPATH_FAVICON_DATA_URI, type: "image/png" }],
+    shortcut: PIPUPATH_FAVICON_DATA_URI,
+  },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
 };
 
 export const viewport: Viewport = {
   colorScheme: "dark",
-  themeColor: "#100f0c",
+  themeColor: "#020817",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -40,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

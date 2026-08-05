@@ -1,0 +1,207 @@
+import "server-only";
+
+import { requireOpenAIEnvironment } from "@/lib/config/env";
+import { createLogger } from "@/lib/observability/logger";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
+import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
+import {
+  refinementInstructionSchema,
+  validateMissionOutput,
+  type MissionErrorCode,
+  type MissionOutput,
+} from "../domain/mission-contract";
+import { OpenAIMissionProvider } from "../infrastructure/openai-mission-provider";
+import {
+  getCurrentMissionState,
+  getMissionProfileContext,
+} from "../infrastructure/mission-dal";
+import { buildEvidenceBasedMission } from "./mission-fallback";
+
+const logger = createLogger();
+// OpenAI enriches the result, but validated profile evidence guarantees completion.
+const messages: Record<MissionErrorCode, string> = {
+  MISSION_PROFILE_REQUIRED: "Complete your Human Potential Profile first.",
+  MISSION_CONSENT_REQUIRED:
+    "Mission generation requires current AI processing consent.",
+  MISSION_GENERATION_DISABLED: "Your active mission is already saved.",
+  MISSION_REQUEST_ALREADY_RUNNING:
+    "Your mission is already being shaped. Please wait and refresh.",
+  MISSION_GENERATION_LIMIT_REACHED:
+    "You have used the three mission attempts available for this profile.",
+  MISSION_PROVIDER_UNAVAILABLE:
+    "Mission generation is temporarily unavailable. Please try again.",
+  MISSION_PROVIDER_TIMEOUT:
+    "Mission generation took too long. Please try again safely.",
+  MISSION_OUTPUT_INVALID:
+    "PipuPath could not safely shape that mission. Please try again.",
+  MISSION_OUTPUT_UNSAFE:
+    "That mission did not meet PipuPath's safety rules. Please try again.",
+  MISSION_SAVE_FAILED: "Your mission could not be saved. Please try again.",
+  MISSION_NOT_FOUND: "That mission is no longer available.",
+  MISSION_ACCESS_DENIED: "You cannot access that mission.",
+};
+
+type Result =
+  | { ok: true; missionId: string }
+  | { ok: false; code: MissionErrorCode; message: string };
+
+function fail(code: MissionErrorCode): Result {
+  return { ok: false, code, message: messages[code] };
+}
+
+function extractMissionCode(error: unknown): MissionErrorCode {
+  const message = error instanceof Error ? error.message : String(error);
+  const matched = message.match(/MISSION_[A-Z_]+/)?.[0] as
+    MissionErrorCode | undefined;
+  return matched && matched in messages
+    ? matched
+    : "MISSION_GENERATION_DISABLED";
+}
+
+function safeProviderFailure(error: unknown) {
+  if (!(error instanceof Error)) return null;
+  return /^OPENAI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT|REFUSAL|INCOMPLETE_RESPONSE|FAILED_RESPONSE)$/.test(
+    error.message,
+  )
+    ? error.message
+    : null;
+}
+
+export async function generateCurrentMission(input: {
+  kind: "initial" | "regenerate" | "refine";
+  sourceMissionId?: string;
+  refinementInstruction?: string;
+}): Promise<Result> {
+  await requireAuthenticatedIdentity();
+  const context = await getMissionProfileContext();
+  if (!context) return fail("MISSION_PROFILE_REQUIRED");
+
+  let model = "evidence-fallback-v1";
+  let openAIAvailable = true;
+  try {
+    ({ model } = requireOpenAIEnvironment());
+  } catch {
+    openAIAvailable = false;
+  }
+
+  const current = await getCurrentMissionState(context.profileId);
+  let currentMission: MissionOutput | undefined;
+  let refinementInstruction: string | undefined;
+  if (input.kind === "refine") {
+    const parsed = refinementInstructionSchema.safeParse(
+      input.refinementInstruction,
+    );
+    if (
+      !parsed.success ||
+      !current.draft ||
+      current.draft.id !== input.sourceMissionId
+    ) {
+      return fail("MISSION_OUTPUT_INVALID");
+    }
+    refinementInstruction = parsed.data;
+    currentMission = {
+      title: current.draft.title,
+      mission_statement: current.draft.mission_statement,
+      why_this_fits: current.draft.why_this_fits,
+      who_this_helps: current.draft.who_this_helps,
+      first_meaningful_outcome: current.draft.first_meaningful_outcome,
+      time_horizon: current.draft.time_horizon,
+      success_signal: current.draft.success_signal,
+      current_caution: current.draft.current_caution,
+      profile_evidence_refs: current.draft.profile_evidence_refs,
+    };
+  }
+
+  const browser = await createServerSupabaseClient();
+  const { data: requestId, error: createError } = await browser.rpc(
+    "create_stage5_mission_request",
+    {
+      profile_id_input: context.profileId,
+      generation_kind_input: input.kind,
+      ...(input.sourceMissionId
+        ? { source_mission_id_input: input.sourceMissionId }
+        : {}),
+      ...(refinementInstruction
+        ? { refinement_instruction_input: refinementInstruction }
+        : {}),
+      prompt_version_input: "mission-openai-v1",
+    },
+  );
+  if (createError || !requestId) return fail(extractMissionCode(createError));
+
+  const service = createServiceRoleSupabaseClient();
+  const { data: claimed, error: claimError } = await service.rpc(
+    "claim_stage5_mission_request",
+    {
+      request_id_input: requestId,
+      provider_input: openAIAvailable ? "openai" : "evidence_fallback",
+      model_input: model,
+    },
+  );
+  if (claimError || !claimed) return fail("MISSION_REQUEST_ALREADY_RUNNING");
+
+  try {
+    let generationMode: "openai" | "evidence_fallback" = "openai";
+    let fallbackReason: string | null = null;
+    let output: unknown;
+
+    if (openAIAvailable) {
+      try {
+        output = await new OpenAIMissionProvider().generate({
+          context,
+          currentMission,
+          refinementInstruction,
+        });
+      } catch (error) {
+        generationMode = "evidence_fallback";
+        fallbackReason =
+          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
+        output = buildEvidenceBasedMission({ context, currentMission });
+      }
+    } else {
+      generationMode = "evidence_fallback";
+      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      output = buildEvidenceBasedMission({ context, currentMission });
+    }
+
+    let validated = validateMissionOutput(context, output);
+    if (!validated.ok) {
+      generationMode = "evidence_fallback";
+      fallbackReason = validated.code;
+      output = buildEvidenceBasedMission({ context, currentMission });
+      validated = validateMissionOutput(context, output);
+    }
+    if (!validated.ok) throw new Error(validated.code);
+
+    const { data: missionId, error: saveError } = await service.rpc(
+      "persist_stage5_mission",
+      { request_id_input: requestId, mission_input: validated.value },
+    );
+    if (saveError || !missionId) throw new Error("MISSION_SAVE_FAILED");
+    logger.info("mission_generation_completed", {
+      requestId,
+      missionId,
+      kind: input.kind,
+      generationMode,
+      fallbackReason,
+    });
+    return { ok: true, missionId };
+  } catch (error) {
+    const raw = error instanceof Error ? error.message : "";
+    const code: MissionErrorCode =
+      raw === "OPENAI_TIMEOUT"
+        ? "MISSION_PROVIDER_TIMEOUT"
+        : /^OPENAI_/.test(raw)
+          ? "MISSION_PROVIDER_UNAVAILABLE"
+          : extractMissionCode(error);
+    const safeDetail = safeProviderFailure(error) ?? undefined;
+    await service.rpc("fail_stage5_mission_request", {
+      request_id_input: requestId,
+      failure_code_input: code,
+      ...(safeDetail ? { failure_detail_safe_input: safeDetail } : {}),
+    });
+    logger.warn("mission_generation_failed", { requestId, code, safeDetail });
+    return fail(code);
+  }
+}

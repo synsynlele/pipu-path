@@ -1,12 +1,17 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AuthShell } from "@/components/shells/auth-shell";
 import { getIdentityState } from "@/modules/identity/infrastructure/identity-dal";
 import { CheckpointForm } from "@/modules/identity/ui/checkpoint-form";
+export const metadata: Metadata = {
+  title: "Identity setup",
+  robots: { index: false, follow: false },
+};
 
 export default async function IdentityCheckpointPage() {
   const state = await getIdentityState();
   if (!state.user) redirect("/login?next=/onboarding/identity");
-  if (state.checkpoint?.status === "completed") redirect("/app");
+  if (state.checkpoint?.status === "completed") redirect("/continue");
   return (
     <AuthShell
       title="Your identity checkpoint"

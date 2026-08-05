@@ -71,6 +71,7 @@ export async function getDiscoveryState() {
     sensitivity: row.sensitivity,
   }));
   const answers: DiscoveryAnswer[] = (responseRows ?? []).map((row) => ({
+    id: row.id,
     questionId: row.question_id,
     questionKey: row.question_key,
     text: row.text_response,
@@ -116,6 +117,7 @@ export async function getStage4DiscoveryHandoff(): Promise<Stage4DiscoveryHandof
       const value =
         answer.text ?? answer.selectedOptions ?? answer.numeric ?? null;
       return {
+        sourceId: answer.id,
         category: question?.sectionKey ?? "unknown",
         questionKey: answer.questionKey,
         responseType: question?.responseType ?? "reflection",

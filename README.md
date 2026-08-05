@@ -1,16 +1,18 @@
 # PipuPath
 
-PipuPath is a human-development operating system that connects discovery,
-development, evidence, collaboration, deployment, and impact.
+**PipuPath is the University for Human Potential.** It helps people discover who
+they are, develop what they carry and deploy it through real-world action.
 
-This repository currently contains the completed Stage 0–1 engineering
-foundation. It intentionally contains no simulated users, journeys, quests,
-profiles, projects, recommendations, or impact records.
+The MVP includes private Identity and consent, 15-question Discovery, a Human
+Potential Profile, Practical Mission, Builder Journey, HQLS Quests with evidence
+and Nortnspoil reflection, one Builder Project and a selective adult public
+Portfolio. Stage 10 hardens and integrates this complete loop for launch; it
+does not add social, marketplace or opportunity features.
 
-## Prerequisites
+## Stack
 
-- Node.js 24.x
-- npm 11.x
+Next.js App Router, TypeScript, Tailwind CSS, Supabase Auth/Postgres/Storage,
+server-only Google Gemini, Playwright, Vitest, GitHub Actions and Vercel.
 
 ## Local development
 
@@ -20,24 +22,34 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:3000`. Supabase and Gemini values are required for the
+corresponding live flows. Read `docs/runbooks/google-oauth.md` before testing
+Google authentication.
 
 ## Quality gates
 
 ```bash
 npm run validate
+npm run db:test
+npm run test:e2e
 ```
 
-The validation pipeline checks formatting, linting, types, unit/component test
-coverage, and the production build.
+`npm run validate` checks formatting, zero-warning lint, strict TypeScript,
+coverage, structural integration and the production build. Database and browser
+gates require the authorised local/staging environment and are never reported as
+passed when skipped.
 
-## Repository map
+## Release
 
-- `docs/engineering` — Constitution, stage plan, and decision records
-- `docs/architecture` — system boundaries and dependency rules
-- `docs/implementation` — current status and append-only implementation ledger
-- `src/app` — route composition and application entry points
-- `src/components` — application shells and design-system primitives
-- `src/lib` — environment and logging foundations
+Read:
 
-Read `AGENTS.md` before implementing a new stage.
+- `AGENTS.md`
+- `PROJECT_STATE.md`
+- `docs/engineering/constitution.md`
+- `docs/architecture/adr-stage-10-mvp-launch-readiness.md`
+- `docs/release/stage-10-release-checklist.md`
+- `docs/release/stage-10-rollback-plan.md`
+- `docs/release/stage-10-known-debt.md`
+
+Production is not changed until an exact Preview and matching staging matrix are
+approved.

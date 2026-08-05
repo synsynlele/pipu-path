@@ -6,9 +6,11 @@ import { z } from "zod";
 import { requireSupabasePublicEnvironment } from "@/lib/config/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { publicAuthError } from "./errors";
+import { resolveTrustedRequestOrigin } from "./request-origin";
 import type { FormState } from "./form-state";
-import { safeNextPath } from "./redirects";
-import { allowAttempt } from "../infrastructure/rate-limit";
+import { postAuthDestination, safeNextPath } from "./redirects";
+import { allowAuthAttempt } from "../infrastructure/rate-limit";
+import { getAuthenticatedHomeState } from "../infrastructure/progress-dal";
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -23,25 +25,35 @@ function invalid(state: z.ZodError): FormState {
   };
 }
 
-async function requestKey(action: string) {
-  const values = await headers();
-  return `${action}:${values.get("x-forwarded-for") ?? "local"}`;
+async function requestHeaders() {
+  return headers();
+}
+
+async function requestIdentity() {
+  const values = await requestHeaders();
+  const forwarded = values.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return forwarded || values.get("x-real-ip") || "local";
+}
+
+async function requestOrigin() {
+  const { appUrl } = requireSupabasePublicEnvironment();
+  return resolveTrustedRequestOrigin(await requestHeaders(), appUrl);
 }
 
 export async function signUpAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  if (!allowAttempt(await requestKey("signup")))
+  if (!(await allowAuthAttempt("signup", await requestIdentity())))
     return { status: "error", message: publicAuthError("rate") };
   const parsed = credentialsSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return invalid(parsed.error);
   const client = await createServerSupabaseClient();
-  const { appUrl } = requireSupabasePublicEnvironment();
+  const origin = await requestOrigin();
   const { error } = await client.auth.signUp({
     ...parsed.data,
     options: {
-      emailRedirectTo: `${appUrl}/auth/callback?next=/onboarding/identity`,
+      emailRedirectTo: `${origin}/auth/callback?next=/onboarding/identity`,
     },
   });
   if (error)
@@ -56,7 +68,7 @@ export async function signInAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  if (!allowAttempt(await requestKey("signin")))
+  if (!(await allowAuthAttempt("signin", await requestIdentity())))
     return { status: "error", message: publicAuthError("rate") };
   const parsed = credentialsSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return invalid(parsed.error);
@@ -64,13 +76,18 @@ export async function signInAction(
   const { error } = await client.auth.signInWithPassword(parsed.data);
   if (error)
     return { status: "error", message: publicAuthError(error.message) };
-  redirect(safeNextPath(formData.get("next")?.toString()));
+  const state = await getAuthenticatedHomeState(client);
+  redirect(
+    postAuthDestination(
+      state?.destination.path ?? "/app",
+      formData.get("next")?.toString(),
+    ),
+  );
 }
 
 export async function signInWithGoogleAction(next = "/app") {
   const client = await createServerSupabaseClient();
-  const { appUrl } = requireSupabasePublicEnvironment();
-  const callbackUrl = new URL("/auth/callback", appUrl);
+  const callbackUrl = new URL("/auth/callback", await requestOrigin());
   callbackUrl.searchParams.set("next", safeNextPath(next));
 
   const { data, error } = await client.auth.signInWithOAuth({
@@ -86,16 +103,16 @@ export async function requestPasswordResetAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  if (!allowAttempt(await requestKey("recovery")))
+  if (!(await allowAuthAttempt("recovery", await requestIdentity())))
     return { status: "error", message: publicAuthError("rate") };
   const parsed = z
     .object({ email: z.email() })
     .safeParse(Object.fromEntries(formData));
   if (parsed.success) {
     const client = await createServerSupabaseClient();
-    const { appUrl } = requireSupabasePublicEnvironment();
+    const origin = await requestOrigin();
     await client.auth.resetPasswordForEmail(parsed.data.email, {
-      redirectTo: `${appUrl}/auth/callback?next=/reset-password`,
+      redirectTo: `${origin}/auth/callback?next=/reset-password`,
     });
   }
   return {

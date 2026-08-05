@@ -25,17 +25,21 @@ export default async function DiscoveryCompletePage() {
       </h1>
       <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
         PipuPath has preserved your Discovery answers and their question-set
-        version. The next stage can begin interpreting this evidence only when
-        Stage 4 is implemented.
+        version. You can now choose to generate a private, provisional Human
+        Potential Profile from that evidence.
       </p>
       <Surface className="mt-10 p-6 sm:p-8">
-        <h2 className="text-xl font-semibold">Honest Stage 4 boundary</h2>
+        <h2 className="text-xl font-semibold">Your choice, your profile</h2>
         <p className="text-muted mt-3 leading-7">
-          No strengths, weaknesses, purpose, mission, career, Journey or Human
-          Potential Profile has been generated.
+          Your profile will be provisional, private and evidence-linked. It will
+          not assign a fixed identity, life purpose, permanent career, Journey
+          or Mission.
         </p>
       </Surface>
-      <ButtonLink href="/app" className="mt-8">
+      <ButtonLink href="/onboarding/discovery/profile" className="mt-8">
+        Generate my profile
+      </ButtonLink>
+      <ButtonLink href="/app" variant="secondary" className="mt-4">
         Return to dashboard
       </ButtonLink>
     </main>

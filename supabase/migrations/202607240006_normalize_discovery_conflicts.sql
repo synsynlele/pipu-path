@@ -115,3 +115,4 @@ grant execute on function public.open_discovery_review(uuid, integer)
 to authenticated;
 grant execute on function public.complete_discovery(uuid, integer)
 to authenticated;
+
