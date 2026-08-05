@@ -1,0 +1,38 @@
+name: Format OpenAI migration
+
+on:
+  push:
+    branches:
+      - agent/stage10-mvp-launch-readiness
+    paths:
+      - .github/workflows/format-openai-migration.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage10-mvp-launch-readiness
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format OpenAI migration
+        run: npx prettier --write src/lib/ai src/lib/config/env.ts src/lib/config/env.test.ts src/modules/human-potential/application/profile-generation.ts src/modules/human-potential/application/profile-generation.test.ts src/modules/human-potential/infrastructure/openai-provider.ts src/modules/mission/application/mission-generation.ts src/modules/mission/application/mission-generation.test.ts src/modules/mission/infrastructure/openai-mission-provider.ts src/modules/journey/application/journey-generation.ts src/modules/journey/application/journey-generation.test.ts src/modules/journey/infrastructure/openai-journey-provider.ts src/modules/quest/application/quest-generation.ts src/modules/quest/application/quest-generation.test.ts src/modules/quest/infrastructure/openai-quest-provider.ts .env.example
+      - name: Commit formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "style(ai): format OpenAI provider migration"
+          git push origin HEAD:agent/stage10-mvp-launch-readiness
