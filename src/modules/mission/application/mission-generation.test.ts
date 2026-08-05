@@ -69,11 +69,28 @@ const output = {
     "Your profile connects organising with an interest in helping students learn.",
   who_this_helps: "Three students",
   first_meaningful_outcome: "Test one useful study guide with three students.",
-  time_horizon: "four_weeks",
+  time_horizon: "four_weeks" as const,
   success_signal: "Three students use it and give feedback.",
   current_caution: "Start small and use resources already available.",
   profile_evidence_refs: insightIds,
 };
+const draft = {
+  id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  profileId: context.profileId,
+  ...output,
+  status: "draft" as const,
+  createdAt: "2026-08-05T12:00:00.000Z",
+};
+
+function useDefaultServiceRpc() {
+  mocks.serviceRpc.mockImplementation(async (name: string) => {
+    if (name === "claim_stage5_mission_request")
+      return { data: true, error: null };
+    if (name === "persist_stage5_mission")
+      return { data: "mission-1", error: null };
+    return { data: true, error: null };
+  });
+}
 
 describe("mission generation orchestration", () => {
   beforeEach(() => {
@@ -88,13 +105,7 @@ describe("mission generation orchestration", () => {
       requestRunning: false,
     });
     mocks.browserRpc.mockResolvedValue({ data: "request-1", error: null });
-    mocks.serviceRpc.mockImplementation(async (name: string) => {
-      if (name === "claim_stage5_mission_request")
-        return { data: true, error: null };
-      if (name === "persist_stage5_mission")
-        return { data: "mission-1", error: null };
-      return { data: true, error: null };
-    });
+    useDefaultServiceRpc();
     mocks.generate.mockResolvedValue(output);
   });
 
@@ -153,6 +164,21 @@ describe("mission generation orchestration", () => {
     );
   });
 
+  it("uses the fallback for a non-standard provider failure", async () => {
+    mocks.generate.mockRejectedValue(new Error("network disconnected"));
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: true,
+      missionId: "mission-1",
+    });
+    expect(mocks.info).toHaveBeenCalledWith(
+      "mission_generation_completed",
+      expect.objectContaining({
+        generationMode: "evidence_fallback",
+        fallbackReason: "GEMINI_PROVIDER_FAILURE",
+      }),
+    );
+  });
+
   it("uses the fallback when Gemini configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
       throw new Error("missing");
@@ -167,6 +193,139 @@ describe("mission generation orchestration", () => {
       expect.objectContaining({
         provider_input: "evidence_fallback",
         model_input: "evidence-fallback-v1",
+      }),
+    );
+  });
+
+  it("requires a completed profile before creating a request", async () => {
+    mocks.getContext.mockResolvedValue(null);
+
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: false,
+      code: "MISSION_PROFILE_REQUIRED",
+      message: "Complete your Human Potential Profile first.",
+    });
+    expect(mocks.env).not.toHaveBeenCalled();
+    expect(mocks.browserRpc).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid refinement before creating a request", async () => {
+    await expect(
+      generateCurrentMission({
+        kind: "refine",
+        sourceMissionId: draft.id,
+        refinementInstruction: "{}",
+      }),
+    ).resolves.toMatchObject({
+      ok: false,
+      code: "MISSION_OUTPUT_INVALID",
+    });
+    expect(mocks.browserRpc).not.toHaveBeenCalled();
+  });
+
+  it("preserves a valid draft when refinement falls back", async () => {
+    mocks.getState.mockResolvedValue({
+      active: null,
+      draft,
+      attempts: 1,
+      requestRunning: false,
+    });
+    mocks.generate.mockRejectedValue(new Error("GEMINI_HTTP_429"));
+
+    await expect(
+      generateCurrentMission({
+        kind: "refine",
+        sourceMissionId: draft.id,
+        refinementInstruction: "Keep it practical and smaller",
+      }),
+    ).resolves.toEqual({ ok: true, missionId: "mission-1" });
+    expect(mocks.browserRpc).toHaveBeenCalledWith(
+      "create_stage5_mission_request",
+      expect.objectContaining({
+        source_mission_id_input: draft.id,
+        refinement_instruction_input: "Keep it practical and smaller",
+      }),
+    );
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "persist_stage5_mission",
+      expect.objectContaining({
+        mission_input: expect.objectContaining({
+          title: draft.title,
+          current_caution:
+            "Keep the scope small, use resources already available and confirm the next step through real feedback.",
+        }),
+      }),
+    );
+  });
+
+  it("returns the database request limit error", async () => {
+    mocks.browserRpc.mockResolvedValue({
+      data: null,
+      error: new Error("MISSION_GENERATION_LIMIT_REACHED"),
+    });
+
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: false,
+      code: "MISSION_GENERATION_LIMIT_REACHED",
+      message: "You have used the three mission attempts available for this profile.",
+    });
+    expect(mocks.serviceRpc).not.toHaveBeenCalled();
+  });
+
+  it("stops when the generation request cannot be claimed", async () => {
+    mocks.serviceRpc.mockResolvedValue({ data: false, error: null });
+
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: false,
+      code: "MISSION_REQUEST_ALREADY_RUNNING",
+      message: "Your mission is already being shaped. Please wait and refresh.",
+    });
+    expect(mocks.generate).not.toHaveBeenCalled();
+  });
+
+  it("records a safe save failure when persistence fails", async () => {
+    mocks.serviceRpc.mockImplementation(async (name: string) => {
+      if (name === "claim_stage5_mission_request")
+        return { data: true, error: null };
+      if (name === "persist_stage5_mission")
+        return { data: null, error: new Error("database failure") };
+      return { data: true, error: null };
+    });
+
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: false,
+      code: "MISSION_SAVE_FAILED",
+      message: "Your mission could not be saved. Please try again.",
+    });
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "fail_stage5_mission_request",
+      expect.objectContaining({
+        failure_code_input: "MISSION_SAVE_FAILED",
+      }),
+    );
+  });
+
+  it("records profile insufficiency when no valid fallback can be built", async () => {
+    mocks.getContext.mockResolvedValue({
+      ...context,
+      sections: [
+        {
+          key: "emerging_strengths",
+          insights: [context.sections[0].insights[0]],
+        },
+      ],
+    });
+    mocks.generate.mockRejectedValue(new Error("GEMINI_HTTP_429"));
+
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: false,
+      code: "MISSION_PROFILE_REQUIRED",
+      message: "Complete your Human Potential Profile first.",
+    });
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "fail_stage5_mission_request",
+      expect.objectContaining({
+        failure_code_input: "MISSION_PROFILE_REQUIRED",
       }),
     );
   });
