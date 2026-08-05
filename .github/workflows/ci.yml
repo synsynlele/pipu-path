@@ -70,6 +70,7 @@ jobs:
           echo "$EXPECTED_SHA256  /tmp/stage10-payload.tar.gz" | sha256sum --check --strict
           tar -xzf /tmp/stage10-payload.tar.gz
           rm stage10_payload_part_* stage10-payload.ready .github/workflows/publish-stage10-batch.yml
+      - run: npm ci
       - name: Align inherited Stage 9 navigation regression with Stage 10 architecture
         run: |
           python - <<'PY'
@@ -98,7 +99,6 @@ jobs:
           path.write_text(text)
           PY
           npx prettier --write tests/integration/stage-9-contract.test.ts
-      - run: npm ci
       - run: npm run validate
       - name: Publish one clean Stage 10 integration commit
         env:
