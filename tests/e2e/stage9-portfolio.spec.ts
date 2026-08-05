@@ -251,31 +251,44 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
   await expect(
     mobileNavigation.getByRole("link", { name: "Portfolio", exact: true }),
   ).toBeVisible();
+
   let publicLink = page.getByRole("link", {
     name: "View Public Proof",
     exact: true,
   });
-  if ((await publicLink.count()) === 0) {
+  if (!(await publicLink.isVisible())) {
     await page
       .getByRole("link", {
         name: /Continue Portfolio Studio|Manage Public Proof/,
       })
       .first()
       .click();
-    const previewExisting = page.getByRole("link", {
-      name: "Preview Existing Draft",
+
+    const openPublished = page.getByRole("link", {
+      name: "Open Public Proof",
     });
-    await expect(previewExisting).toBeVisible();
-    await previewExisting.click();
-    await publishFromPreview(page);
+    if (await openPublished.isVisible()) {
+      const href = await openPublished.getAttribute("href");
+      expect(href).toMatch(/^\/proof\/[a-z0-9-]+$/);
+      await page.goto(href!);
+    } else {
+      await saveDraftWhenNeeded(page);
+      await publishFromPreview(page);
+    }
+  } else {
+    await publicLink.click();
+  }
+
+  if (!/\/proof\/[a-z0-9-]+$/.test(new URL(page.url()).pathname)) {
     await page.goto("/portfolio");
     publicLink = page.getByRole("link", {
       name: "View Public Proof",
       exact: true,
     });
+    await expect(publicLink).toBeVisible();
+    await publicLink.click();
   }
-  await expect(publicLink).toBeVisible();
-  await publicLink.click();
+
   await expect(
     page.getByRole("heading", { name: publicCopy.title }),
   ).toBeVisible();
