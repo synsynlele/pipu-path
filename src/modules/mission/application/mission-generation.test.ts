@@ -16,7 +16,7 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
   requireAuthenticatedIdentity: mocks.auth,
 }));
-vi.mock("@/lib/config/env", () => ({ requireGeminiEnvironment: mocks.env }));
+vi.mock("@/lib/config/env", () => ({ requireOpenAIEnvironment: mocks.env }));
 vi.mock("../infrastructure/mission-dal", () => ({
   getMissionProfileContext: mocks.getContext,
   getCurrentMissionState: mocks.getState,
@@ -27,8 +27,8 @@ vi.mock("@/lib/supabase/server", () => ({
 vi.mock("@/lib/supabase/service-role", () => ({
   createServiceRoleSupabaseClient: vi.fn(() => ({ rpc: mocks.serviceRpc })),
 }));
-vi.mock("../infrastructure/gemini-mission-provider", () => ({
-  GeminiMissionProvider: class {
+vi.mock("../infrastructure/openai-mission-provider", () => ({
+  OpenAIMissionProvider: class {
     generate = mocks.generate;
   },
 }));
@@ -96,7 +96,7 @@ describe("mission generation orchestration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.auth.mockResolvedValue({ user: { id: "user-1" } });
-    mocks.env.mockReturnValue({ model: "gemini-flash", apiKey: "hidden" });
+    mocks.env.mockReturnValue({ model: "gpt-5-mini", apiKey: "hidden" });
     mocks.getContext.mockResolvedValue(context);
     mocks.getState.mockResolvedValue({
       active: null,
@@ -109,14 +109,24 @@ describe("mission generation orchestration", () => {
     mocks.generate.mockResolvedValue(output);
   });
 
-  it("runs profile to Gemini to persisted draft mission", async () => {
+  it("runs profile to OpenAI to persisted draft mission", async () => {
     await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
       ok: true,
       missionId: "mission-1",
     });
     expect(mocks.browserRpc).toHaveBeenCalledWith(
       "create_stage5_mission_request",
-      expect.objectContaining({ profile_id_input: context.profileId }),
+      expect.objectContaining({
+        profile_id_input: context.profileId,
+        prompt_version_input: "mission-openai-v1",
+      }),
+    );
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "claim_stage5_mission_request",
+      expect.objectContaining({
+        provider_input: "openai",
+        model_input: "gpt-5-mini",
+      }),
     );
     expect(mocks.generate).toHaveBeenCalledWith(
       expect.objectContaining({ context }),
@@ -148,8 +158,8 @@ describe("mission generation orchestration", () => {
     );
   });
 
-  it("uses the fallback when Gemini times out", async () => {
-    mocks.generate.mockRejectedValue(new Error("GEMINI_TIMEOUT"));
+  it("uses the fallback when OpenAI times out", async () => {
+    mocks.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
     await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
       ok: true,
       missionId: "mission-1",
@@ -174,12 +184,12 @@ describe("mission generation orchestration", () => {
       "mission_generation_completed",
       expect.objectContaining({
         generationMode: "evidence_fallback",
-        fallbackReason: "GEMINI_PROVIDER_FAILURE",
+        fallbackReason: "OPENAI_PROVIDER_FAILURE",
       }),
     );
   });
 
-  it("uses the fallback when Gemini configuration is unavailable", async () => {
+  it("uses the fallback when OpenAI configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
       throw new Error("missing");
     });
@@ -230,7 +240,7 @@ describe("mission generation orchestration", () => {
       attempts: 1,
       requestRunning: false,
     });
-    mocks.generate.mockRejectedValue(new Error("GEMINI_HTTP_429"));
+    mocks.generate.mockRejectedValue(new Error("OPENAI_HTTP_429"));
 
     await expect(
       generateCurrentMission({
@@ -316,7 +326,7 @@ describe("mission generation orchestration", () => {
         },
       ],
     });
-    mocks.generate.mockRejectedValue(new Error("GEMINI_HTTP_429"));
+    mocks.generate.mockRejectedValue(new Error("OPENAI_HTTP_429"));
 
     await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
       ok: false,
