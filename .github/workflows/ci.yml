@@ -97,6 +97,7 @@ jobs:
               raise SystemExit("Stage 9 navigation regression patch did not apply")
           path.write_text(text)
           PY
+          npx prettier --write tests/integration/stage-9-contract.test.ts
       - run: npm ci
       - run: npm run validate
       - name: Publish one clean Stage 10 integration commit
