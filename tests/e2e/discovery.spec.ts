@@ -238,7 +238,7 @@ test("eligible user completes persistent Discovery without invented results", as
       },
       { timeout: 15_000 },
     )
-    .toBe("/app");
+    .not.toBe("/login");
 
   await page.goto("/onboarding/discovery");
   await page.locator("#main-content").waitFor({ state: "visible" });

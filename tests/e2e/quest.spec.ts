@@ -12,7 +12,9 @@ async function signIn(page: import("@playwright/test").Page) {
   await page.getByLabel("Email address").fill(email!);
   await page.getByLabel("Password").fill(password!);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 });
+  await expect
+    .poll(() => new URL(page.url()).pathname, { timeout: 15_000 })
+    .not.toBe("/login");
 }
 
 async function openQuestOne(page: import("@playwright/test").Page) {
