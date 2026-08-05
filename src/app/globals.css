@@ -2,26 +2,26 @@
 
 :root {
   --color-white: #ffffff;
-  --color-soft: #f6f9ff;
-  --color-soft-blue-grey: #eaf1fb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-500: #3b82f6;
-  --color-primary-100: #dbeafe;
-  --color-navy: #0f172a;
-  --color-text: #172033;
-  --color-muted: #64748b;
-  --color-gold-400: #d4a72c;
-  --color-gold-300: #e8c65b;
-  --color-success: #16a34a;
-  --color-danger: #dc2626;
-  --background: var(--color-white);
+  --color-soft: #071229;
+  --color-soft-blue-grey: #0d1d3d;
+  --color-primary-700: #4f7cff;
+  --color-primary-500: #79a8ff;
+  --color-primary-100: #132b5c;
+  --color-navy: #020817;
+  --color-text: #f8fafc;
+  --color-muted: #9fb0cf;
+  --color-gold-400: #c9a54d;
+  --color-gold-300: #e5c96f;
+  --color-success: #4ade80;
+  --color-danger: #fb7185;
+  --background: #020817;
   --foreground: var(--color-text);
   --muted: var(--color-muted);
-  --border: #d9e4f2;
+  --border: #1a2d55;
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.5rem;
-  --shadow-focus: 0 0 0 4px rgb(59 130 246 / 22%);
+  --shadow-focus: 0 0 0 4px rgb(79 124 255 / 28%);
 }
 
 @theme inline {
@@ -34,8 +34,8 @@
   --color-navy: var(--color-navy);
   --color-gold: var(--color-gold-400);
   --color-gold-light: var(--color-gold-300);
-  --color-panel: var(--color-white);
-  --color-panel-raised: var(--color-soft);
+  --color-panel: #07142f;
+  --color-panel-raised: #0c1c3c;
   --color-soft: var(--color-soft);
   --color-soft-blue: var(--color-soft-blue-grey);
   --color-border: var(--border);
@@ -54,7 +54,7 @@
 
 html {
   background: var(--background);
-  color-scheme: light;
+  color-scheme: dark;
   scroll-behavior: smooth;
 }
 
@@ -62,9 +62,10 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 8% 0%, rgb(59 130 246 / 10%), transparent 28rem),
-    radial-gradient(circle at 92% 5%, rgb(212 167 44 / 9%), transparent 24rem),
-    linear-gradient(180deg, #ffffff 0%, #fbfdff 48%, #f6f9ff 100%);
+    radial-gradient(circle at 50% -8%, rgb(201 165 77 / 12%), transparent 28rem),
+    radial-gradient(circle at 8% 0%, rgb(79 124 255 / 14%), transparent 32rem),
+    radial-gradient(circle at 92% 4%, rgb(121 168 255 / 9%), transparent 28rem),
+    linear-gradient(180deg, #030919 0%, #020817 52%, #030b20 100%);
   color: var(--foreground);
   font-family:
     ui-sans-serif,
@@ -104,7 +105,7 @@ textarea {
 
 ::selection {
   background: var(--color-primary-100);
-  color: var(--color-navy);
+  color: var(--foreground);
 }
 
 input,
@@ -115,7 +116,7 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #94a3b8;
+  color: #7183a8;
 }
 
 @media (prefers-reduced-motion: reduce) {
