@@ -187,7 +187,12 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(routeMap).toContain("/proof/[slug]");
     expect(oauthRunbook).toContain("approved staging Google account");
     expect(oauthRunbook).toContain("Supabase Auth URL Configuration");
-    expect(releaseChecklist).toContain("Live Google OAuth passes");
+    expect(releaseChecklist).toContain(
+      "Live Supabase → Google handoff uses the exact environment callback",
+    );
+    expect(releaseChecklist).toContain(
+      "Approved user completes Google account selection and callback session",
+    );
     expect(rollback).toContain("9d0071273654a89d14fe6f60b03a13dc65532ba1");
     expect(debt).toContain("Fixed before launch");
     expect(debt).toContain("Blocks broad public launch");
