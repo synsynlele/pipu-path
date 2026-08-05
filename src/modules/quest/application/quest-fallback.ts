@@ -87,10 +87,7 @@ export function buildEvidenceBasedQuestPack(
           "Rewrite the plan with the chosen improvement and realistic boundaries.",
           "State the first action and the evidence that will show progress.",
         ],
-        resources_needed:
-          capabilities.length > 0
-            ? ["Original plan", "Review notes", ...capabilities]
-            : ["Original plan", "Review notes"],
+        resources_needed: ["Original plan", "Review notes", ...capabilities],
         low_resource_alternative:
           "Revise the same paper or phone note rather than creating new materials or adding unnecessary tools.",
         evidence_requirements: [
