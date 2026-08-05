@@ -70,6 +70,33 @@ jobs:
           echo "$EXPECTED_SHA256  /tmp/stage10-payload.tar.gz" | sha256sum --check --strict
           tar -xzf /tmp/stage10-payload.tar.gz
           rm stage10_payload_part_* stage10-payload.ready .github/workflows/publish-stage10-batch.yml
+      - name: Align inherited Stage 9 navigation regression with Stage 10 architecture
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("tests/integration/stage-9-contract.test.ts")
+          text = path.read_text()
+          original = text
+          text = text.replace(
+              'const shell = readFileSync("src/components/shells/app-shell.tsx", "utf8");\n',
+              'const shell = readFileSync("src/components/shells/app-shell.tsx", "utf8");\n'
+              'const navigation = readFileSync(\n'
+              '  "src/components/navigation/app-navigation.tsx",\n'
+              '  "utf8",\n'
+              ');\n',
+          )
+          text = text.replace(
+              '    expect(shell).toContain(\'{ label: "Portfolio", href: "/portfolio" }\');\n',
+              '    expect(shell).toContain("<AppNavigation />");\n'
+              '    expect(navigation).toContain(\n'
+              '      \'{ label: "Portfolio", href: "/portfolio" }\',\n'
+              '    );\n',
+          )
+          if text == original:
+              raise SystemExit("Stage 9 navigation regression patch did not apply")
+          path.write_text(text)
+          PY
       - run: npm ci
       - run: npm run validate
       - name: Publish one clean Stage 10 integration commit
