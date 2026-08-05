@@ -2,64 +2,67 @@
 
 **Current stage:** Stage 9 — Selective Project Portfolio
 
-**Stage status:** IN PROGRESS
+**Stage status:** COMPLETE
 
 **Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4,
-Stage 5, Stage 6, Stage 7 and Stage 8
+Stage 5, Stage 6, Stage 7, Stage 8 and Stage 9
 
 **Current Git baseline:** `agent/stage9-selective-project-portfolio`, stacked on
 the verified Stage 8 closure `ea129d141458e1916b5eadd129482a6bc3706747`
 
+**Verified implementation commit:**
+`4627036f03844237c28011268c413906f4180bf5`
+
 **Review surface:** GitHub pull request #11
 
 **Infrastructure:** authorised disposable non-production Supabase staging
-`kvjcswnmhwegpakbtvlh`; matching Stage 9 Vercel Preview pending
+`kvjcswnmhwegpakbtvlh`; matching Vercel Preview deployment
+`dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`
 
-**Last verified:** 2026-08-04
+**Last verified:** 2026-08-05
 
-## Verified starting point
+## Stage 9 completion
 
-Stage 8 is complete. It turns one completed, evidence-backed HQLS Quest into
-one private Builder Project with exactly three ordered milestones and
-append-only proof updates. The verified Stage 8 branch passed formatting,
-zero-warning lint, strict TypeScript, 85 unit tests, 65 structural/integration
-checks, coverage thresholds, production build and authenticated staging E2E.
+Stage 9 converts one owned completed private Project into one selective public
+proof of work. The Builder prepares public-safe copy in a private Portfolio
+Studio, reviews an exact preview, explicitly consents to publication and may
+withdraw or republish the same stable public slug.
 
-Stage 9 starts from the exact Stage 8 closure commit. No Stage 8 data,
-security boundary, private evidence or lifecycle rule may be weakened.
+Publishing is adult-only in this MVP and blocked for safeguarding-flagged
+accounts. Under-18 Builders retain every private PipuPath capability; their
+public publication remains locked until a dedicated guardian-consent and
+safeguarding workflow exists.
 
-## Stage 9 contract
+The public projection contains only approved presentation fields. Private Quest
+evidence, Nortnspoil reflections, raw Project updates, contact information,
+private profile fields and internal identifiers remain excluded.
 
-Stage 9 introduces one narrow public capability: an adult Builder may
-selectively publish one completed Project as a truthful public proof of work.
+## Verification evidence
 
-Publication is explicit, previewed, public-safe, version-consented and
-withdrawable. The private Project remains authoritative. Anonymous readers use
-a controlled public-safe projection that excludes internal identifiers, Quest
-evidence, Nortnspoil reflections, raw Project updates, contact details and
-private profile fields.
-
-Under-18 Builders retain every private Builder capability. Public publication
-for them remains blocked until a dedicated guardian-consent and safeguarding
-workflow exists.
-
-## Required implementation proof
-
-Stage 9 cannot be marked complete until all of the following pass on the exact
-final branch head:
-
-- database migration and generated-schema reconciliation;
-- owner-only authenticated portfolio lifecycle reads and controlled writes;
-- adult-only publication safeguards;
-- anonymous reads limited to currently published public-safe records;
-- draft, preview, publication and withdrawal transition enforcement;
-- no exposure of private evidence, reflections, updates or internal IDs;
-- polished preparation, preview and public proof pages;
-- refresh-safe and narrow-screen behavior;
-- structural security and domain tests;
-- strict repository validation and production build;
-- matching Vercel Preview; and
-- authenticated staging E2E covering publish, anonymous read and withdrawal.
+- Migration `202608040019_stage_9_selective_project_portfolio.sql` is applied
+  and verified on authorised disposable staging.
+- `builder_project_portfolios` has RLS and one owner-read policy.
+- Authenticated users receive SELECT only; all lifecycle mutations use
+  controlled ownership-checking RPCs.
+- Anonymous access is limited to an eleven-field public-safe RPC projection.
+- Unknown or withdrawn proof slugs are rejected before React streaming and
+  return a transport-level HTTP 404.
+- GitHub Actions run `30993330779` passed both `validate` and `staging-e2e`.
+- Repository validation passed formatting, zero-warning lint, strict
+  TypeScript, 91 unit tests, 77 structural/integration checks, coverage
+  thresholds and production build.
+- Authenticated staging E2E passed 21 tests with 7 intentional duplicate-flow
+  skips across Chromium and mobile coverage.
+- The browser matrix proved private draft recovery, exact preview, explicit
+  publication, anonymous safe viewing, withdrawal to HTTP 404, republishing on
+  the same slug, refresh recovery, anonymous private-route denial and mobile
+  usability.
+- Vercel runtime logs on deployment `dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`
+  recorded the same stable proof slug transitioning `200 → 404 → 200`.
+- Final staging reconciliation confirmed the proof is published again through
+  the stable slug `neighbourhood-reading-proof-1dd2ebd1` and the public RPC
+  returns only the approved eleven fields.
+- Production resources were not touched.
 
 ## Explicit boundary
 
@@ -67,7 +70,8 @@ Stage 9 does not introduce Builder directories, search, follows, likes,
 comments, messaging, rankings, collaboration, mentor assessment, team Projects,
 opportunity matching, funding, employment or marketplace behavior.
 
-Work stops after selective Project publication is fully verified.
+Stage 10 has not started. Its scope must be locked through an accepted ADR before
+implementation begins.
 
 ## Known technical debt carried forward
 
