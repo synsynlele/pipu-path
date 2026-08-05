@@ -112,12 +112,13 @@ test("authenticated Builder completes the current actionable Quest with evidence
     await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+\/complete$/);
   }
 
+  const awardedXp = page.getByText("+50", { exact: true });
   await expect(completed).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByText("+50 XP", { exact: true })).toBeVisible();
+  await expect(awardedXp).toBeVisible();
 
   await page.reload();
   await expect(completed).toBeVisible();
-  await expect(page.getByText("+50 XP", { exact: true })).toBeVisible();
+  await expect(awardedXp).toBeVisible();
   await page.goto("/quests");
   await expect(page.getByText("Verified XP", { exact: true })).toBeVisible();
 });
