@@ -160,7 +160,11 @@ async function verifyAnonymousUnavailable(browser: Browser, path: string) {
   const page = await context.newPage();
   const response = await page.goto(path);
   expect(response?.status()).toBe(404);
-  await expect(page.getByRole("heading", { name: /not found/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "This Project proof is not public.",
+    }),
+  ).toBeVisible();
   await context.close();
 }
 
