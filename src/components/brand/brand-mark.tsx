@@ -19,7 +19,7 @@ export function BrandMark({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center gap-3 rounded-xl ${className}`}
+      className={`inline-flex min-w-0 items-center gap-2.5 rounded-xl ${className}`}
       aria-label="PipuPath home"
     >
       <span
@@ -37,10 +37,17 @@ export function BrandMark({
         />
       </span>
       {!compact && (
-        <span
-          className={`${inverse ? "text-white" : "text-navy"} text-sm font-bold tracking-[0.13em] uppercase`}
-        >
-          PipuPath
+        <span className="min-w-0 leading-none">
+          <span
+            className={`${inverse ? "text-white" : "text-foreground"} block text-sm font-bold tracking-[0.02em]`}
+          >
+            PipuPath
+          </span>
+          <span
+            className={`${inverse ? "text-blue-100" : "text-muted"} mt-1 hidden whitespace-nowrap text-[0.65rem] leading-none font-medium tracking-[0.035em] sm:block`}
+          >
+            University for Human Potential
+          </span>
         </span>
       )}
     </Link>
