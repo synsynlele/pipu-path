@@ -3,7 +3,7 @@ name: Publish Stage 10 batch
 on:
   push:
     branches: [agent/stage10-builder-discovery-mvp]
-    paths: [stage10-payload.b64]
+    paths: [stage10-payload.ready]
 
 permissions:
   contents: write
@@ -24,10 +24,10 @@ jobs:
         env:
           EXPECTED_SHA256: 7b4de6adf95a24c3f33aa796a73fff4aa09c2507afecabc8eed98d09947e429b
         run: |
-          base64 --decode stage10-payload.b64 > /tmp/stage10-payload.tar.gz
+          cat stage10_payload_part_* | base64 --decode > /tmp/stage10-payload.tar.gz
           echo "$EXPECTED_SHA256  /tmp/stage10-payload.tar.gz" | sha256sum --check --strict
           tar -xzf /tmp/stage10-payload.tar.gz
-          rm stage10-payload.b64 .github/workflows/publish-stage10-batch.yml
+          rm stage10_payload_part_* stage10-payload.ready .github/workflows/publish-stage10-batch.yml
       - run: npm ci
       - run: npm run validate
       - name: Publish one clean Stage 10 integration commit
