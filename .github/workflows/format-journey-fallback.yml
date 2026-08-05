@@ -1,0 +1,43 @@
+name: Format Journey fallback
+
+on:
+  push:
+    branches:
+      - agent/stage10-mvp-launch-readiness
+    paths:
+      - .github/workflows/format-journey-fallback.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage10-mvp-launch-readiness
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format Journey fallback files
+        run: |
+          npx prettier --write \
+            src/modules/journey/application/journey-fallback.ts \
+            src/modules/journey/application/journey-fallback.test.ts
+      - name: Commit formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/modules/journey/application/journey-fallback.ts \
+            src/modules/journey/application/journey-fallback.test.ts
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "style(journey): format fallback implementation"
+          git push origin HEAD:agent/stage10-mvp-launch-readiness
