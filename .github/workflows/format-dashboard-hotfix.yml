@@ -1,0 +1,27 @@
+name: Format dashboard hotfix
+
+on:
+  push:
+    branches:
+      - fix/www-auth-domain-alignment
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Print formatted dashboard source
+        run: |
+          npx prettier src/app/app/page.tsx > /tmp/page.tsx
+          echo 'FORMATTED_PAGE_START'
+          base64 -w 0 /tmp/page.tsx
+          echo
+          echo 'FORMATTED_PAGE_END'
