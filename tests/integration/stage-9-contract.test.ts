@@ -23,6 +23,11 @@ const previewPage = readFileSync(
   "utf8",
 );
 const publicPage = readFileSync("src/app/proof/[slug]/page.tsx", "utf8");
+const publicUnavailablePage = readFileSync(
+  "src/app/proof-unavailable/page.tsx",
+  "utf8",
+);
+const proxy = readFileSync("src/proxy.ts", "utf8");
 const publicView = readFileSync(
   "src/modules/portfolio/ui/public-proof-view.tsx",
   "utf8",
@@ -119,6 +124,13 @@ describe("Stage 9 selective Project portfolio structural contract", () => {
     expect(actions).toContain('.from("builder_project_portfolios")');
     expect(actions).toContain('.select("slug")');
     expect(actions).toContain("revalidatePath(`/proof/${portfolio.slug}`)");
+    expect(proxy).toContain("get_stage9_public_portfolio");
+    expect(proxy).toContain(
+      "NextResponse.rewrite(destination, { status: 404 })",
+    );
+    expect(publicUnavailablePage).toContain(
+      "This Project proof is not public.",
+    );
   });
 
   it("keeps private source proof out of public presentation", () => {

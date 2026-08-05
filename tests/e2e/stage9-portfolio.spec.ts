@@ -245,7 +245,29 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
   await expect(
     mobileNavigation.getByRole("link", { name: "Portfolio", exact: true }),
   ).toBeVisible();
-  const publicLink = page.getByRole("link", { name: "View Public Proof" });
+  let publicLink = page.getByRole("link", {
+    name: "View Public Proof",
+    exact: true,
+  });
+  if ((await publicLink.count()) === 0) {
+    await page
+      .getByRole("link", {
+        name: /Continue Portfolio Studio|Manage Public Proof/,
+      })
+      .first()
+      .click();
+    const previewExisting = page.getByRole("link", {
+      name: "Preview Existing Draft",
+    });
+    await expect(previewExisting).toBeVisible();
+    await previewExisting.click();
+    await publishFromPreview(page);
+    await page.goto("/portfolio");
+    publicLink = page.getByRole("link", {
+      name: "View Public Proof",
+      exact: true,
+    });
+  }
   await expect(publicLink).toBeVisible();
   await publicLink.click();
   await expect(

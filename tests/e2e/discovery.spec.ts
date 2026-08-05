@@ -241,6 +241,7 @@ test("eligible user completes persistent Discovery without invented results", as
     .toBe("/app");
 
   await page.goto("/onboarding/discovery");
+  await page.locator("#main-content").waitFor({ state: "visible" });
   const persistedCompletion = page.getByRole("link", {
     name: "View completion",
   });
