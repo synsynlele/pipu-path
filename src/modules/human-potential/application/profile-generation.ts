@@ -1,6 +1,6 @@
 import "server-only";
 
-import { requireGeminiEnvironment } from "@/lib/config/env";
+import { requireOpenAIEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
@@ -9,7 +9,7 @@ import {
   profileOutputForPersistence,
   validateHumanPotentialProfileOutput,
 } from "../domain/profile-contract";
-import { GeminiInterpretationProvider } from "../infrastructure/gemini-provider";
+import { OpenAIInterpretationProvider } from "../infrastructure/openai-provider";
 import { buildEvidenceBasedFallbackProfile } from "./evidence-profile-fallback";
 import { createCurrentInterpretationRequest } from "./interpretation-requests";
 
@@ -45,7 +45,7 @@ function failure(code: string): ProfileExecutionResult {
 
 function safeProviderFailure(error: unknown) {
   if (!(error instanceof Error)) return null;
-  return /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
+  return /^OPENAI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT|REFUSAL|INCOMPLETE_RESPONSE|FAILED_RESPONSE)$/.test(
     error.message,
   )
     ? error.message
@@ -70,16 +70,16 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
   const { user } = await requireAuthenticatedIdentity();
 
   let model = "evidence-fallback-v1";
-  let geminiAvailable = true;
+  let openAIAvailable = true;
   try {
-    ({ model } = requireGeminiEnvironment());
+    ({ model } = requireOpenAIEnvironment());
   } catch {
-    geminiAvailable = false;
+    openAIAvailable = false;
   }
 
   const created = await createCurrentInterpretationRequest({
     schemaVersion: "hpi-profile-v1",
-    promptVersion: "hpi-gemini-v1",
+    promptVersion: "hpi-openai-v1",
   });
   if (!created.ok) return failure(created.code);
 
@@ -89,7 +89,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     "claim_stage4_interpretation_request",
     {
       request_id_input: requestId,
-      provider_input: "google_gemini",
+      provider_input: openAIAvailable ? "openai" : "evidence_fallback",
       model_input: model,
     },
   );
@@ -169,23 +169,23 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     if (!parsedProviderInput.success) throw new Error("HPI_EVIDENCE_INVALID");
     const providerInput = parsedProviderInput.data;
 
-    const provider = new GeminiInterpretationProvider();
-    let generationMode: "gemini" | "evidence_fallback" = "gemini";
+    const provider = new OpenAIInterpretationProvider();
+    let generationMode: "openai" | "evidence_fallback" = "openai";
     let fallbackReason: string | null = null;
     let output: unknown;
 
-    if (geminiAvailable) {
+    if (openAIAvailable) {
       try {
         output = await provider.interpret(providerInput);
       } catch (error) {
         generationMode = "evidence_fallback";
         fallbackReason =
-          safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
         output = buildEvidenceBasedFallbackProfile(providerInput);
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = "GEMINI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedFallbackProfile(providerInput);
     }
 
@@ -214,10 +214,10 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     );
     if (persistError || !profileId) throw new Error("HPI_OUTPUT_INVALID");
 
-    if (generationMode === "gemini") {
+    if (generationMode === "openai") {
       await provider.recordUsage({
         requestId,
-        provider: "google_gemini",
+        provider: "openai",
         model,
       });
     }
