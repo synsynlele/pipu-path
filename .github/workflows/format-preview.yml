@@ -1,0 +1,21 @@
+name: Format preview
+
+on:
+  push:
+    branches:
+      - agent/stage10-mvp-launch-readiness
+
+jobs:
+  format-preview:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Print formatter changes
+        run: |
+          npx prettier --write src/app/globals.css src/components/brand/brand-mark.tsx src/modules/discovery/ui/discovery-question-form.tsx
+          git diff -- src/app/globals.css src/components/brand/brand-mark.tsx src/modules/discovery/ui/discovery-question-form.tsx
