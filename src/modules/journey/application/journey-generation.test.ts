@@ -90,6 +90,7 @@ describe("Journey generation orchestration", () => {
     );
     mocks.generate.mockResolvedValue(output);
   });
+
   it("runs active mission to Gemini to persisted draft Journey", async () => {
     await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
       ok: true,
@@ -104,28 +105,62 @@ describe("Journey generation orchestration", () => {
       expect.objectContaining({ journey_input: output }),
     );
   });
-  it("rejects malformed output and records a safe failure", async () => {
+
+  it("replaces invalid provider output with a validated fallback Journey", async () => {
     mocks.generate.mockResolvedValue({ title: "Incomplete" });
-    await expect(
-      generateCurrentJourney({ kind: "initial" }),
-    ).resolves.toMatchObject({ ok: false, code: "JOURNEY_OUTPUT_INVALID" });
-    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
+    await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
+      ok: true,
+      journeyId: "journey-1",
+    });
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
       "persist_stage6_journey",
+      expect.objectContaining({
+        journey_input: expect.objectContaining({
+          title: "Build Evidence Through One Practical Test",
+          milestones: expect.arrayContaining([
+            expect.objectContaining({ sequence_order: 1 }),
+            expect.objectContaining({ sequence_order: 4 }),
+          ]),
+        }),
+      }),
+    );
+    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
+      "fail_stage6_journey_request",
       expect.anything(),
     );
+  });
+
+  it("uses the fallback when Gemini times out", async () => {
+    mocks.generate.mockRejectedValue(new Error("GEMINI_TIMEOUT"));
+    await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
+      ok: true,
+      journeyId: "journey-1",
+    });
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "fail_stage6_journey_request",
-      expect.objectContaining({ failure_code_input: "JOURNEY_OUTPUT_INVALID" }),
+      "persist_stage6_journey",
+      expect.objectContaining({
+        journey_input: expect.objectContaining({
+          title: "Build Evidence Through One Practical Test",
+        }),
+      }),
     );
   });
-  it("classifies provider timeouts without exposing content", async () => {
-    mocks.generate.mockRejectedValue(new Error("GEMINI_TIMEOUT"));
-    await expect(
-      generateCurrentJourney({ kind: "initial" }),
-    ).resolves.toMatchObject({ ok: false, code: "JOURNEY_PROVIDER_TIMEOUT" });
+
+  it("uses the fallback when Gemini configuration is unavailable", async () => {
+    mocks.env.mockImplementation(() => {
+      throw new Error("missing");
+    });
+    await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
+      ok: true,
+      journeyId: "journey-1",
+    });
+    expect(mocks.generate).not.toHaveBeenCalled();
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "fail_stage6_journey_request",
-      expect.objectContaining({ failure_detail_safe_input: "GEMINI_TIMEOUT" }),
+      "claim_stage6_journey_request",
+      expect.objectContaining({
+        provider_input: "evidence_fallback",
+        model_input: "evidence-fallback-v1",
+      }),
     );
   });
 });
