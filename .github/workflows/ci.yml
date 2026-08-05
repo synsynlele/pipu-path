@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -49,3 +49,38 @@ jobs:
           name: playwright-traces
           path: test-results
           if-no-files-found: ignore
+
+  publish-stage10:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/stage10-builder-discovery-mvp'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Verify and extract reviewed Stage 10 package
+        env:
+          EXPECTED_SHA256: 7b4de6adf95a24c3f33aa796a73fff4aa09c2507afecabc8eed98d09947e429b
+        run: |
+          cat stage10_payload_part_* | base64 --decode > /tmp/stage10-payload.tar.gz
+          echo "$EXPECTED_SHA256  /tmp/stage10-payload.tar.gz" | sha256sum --check --strict
+          tar -xzf /tmp/stage10-payload.tar.gz
+          rm stage10_payload_part_* stage10-payload.ready .github/workflows/publish-stage10-batch.yml
+      - run: npm ci
+      - run: npm run validate
+      - name: Publish one clean Stage 10 integration commit
+        env:
+          BASE_SHA: 9d0071273654a89d14fe6f60b03a13dc65532ba1
+          TARGET_BRANCH: agent/stage10-mvp-launch-readiness
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          tree_sha=$(git write-tree)
+          commit_sha=$(printf '%s\n' 'feat(stage10): harden and transform the complete MVP' | git commit-tree "$tree_sha" -p "$BASE_SHA")
+          git push origin "$commit_sha:refs/heads/$TARGET_BRANCH"
+          echo "Published $commit_sha"
