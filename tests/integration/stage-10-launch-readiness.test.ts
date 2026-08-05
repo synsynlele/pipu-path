@@ -150,7 +150,8 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(navigation).toContain('aria-current={active ? "page"');
     expect(css).toContain(":focus-visible");
     expect(css).toContain("prefers-reduced-motion");
-    expect(css).toContain("--color-primary-700: #1d4ed8");
+    expect(css).toContain("--color-primary-700: #4f7cff");
+    expect(css).toContain("--color-gold-400: #c9a54d");
   });
 
   it("removes external font build dependencies", () => {
