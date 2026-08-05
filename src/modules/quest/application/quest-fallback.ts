@@ -20,7 +20,10 @@ export function buildEvidenceBasedQuestPack(
           "Describe the smallest useful result the test should produce.",
           "List what is outside the scope of this first attempt.",
         ],
-        resources_needed: ["Notebook or phone note", "Active milestone details"],
+        resources_needed: [
+          "Notebook or phone note",
+          "Active milestone details",
+        ],
         low_resource_alternative:
           "Use one sheet of paper and complete the plan with information already available to you.",
         evidence_requirements: [
