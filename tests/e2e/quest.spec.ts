@@ -23,6 +23,11 @@ async function openCurrentQuestForVerification(page: Page) {
     page.getByRole("heading", { name: "Build proof, not just plans." }),
   ).toBeVisible();
 
+  const anyQuestAction = page
+    .getByRole("link", {
+      name: /Complete Reflection|Continue Quest|Open Quest|Review Quest/,
+    })
+    .first();
   const generate = page.getByRole("button", {
     name: "Generate My First Quests",
   });
@@ -31,6 +36,7 @@ async function openCurrentQuestForVerification(page: Page) {
     await expect(page.getByRole("status")).toContainText(
       "creating three practical HQLS Quests",
     );
+    await expect(anyQuestAction).toBeVisible({ timeout: 60_000 });
   }
 
   for (const label of [
