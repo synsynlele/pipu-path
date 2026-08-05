@@ -5,19 +5,22 @@ export function PageLoading({
 }) {
   return (
     <main
-      className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:px-10"
+      className="grid min-h-[70vh] place-items-center px-5 py-12"
       aria-busy="true"
     >
-      <div className="animate-pulse space-y-6" role="status" aria-live="polite">
-        <span className="sr-only">{label}…</span>
-        <div className="bg-primary-soft h-4 w-32 rounded-full" />
-        <div className="bg-soft-blue h-12 max-w-xl rounded-2xl" />
-        <div className="bg-soft-blue h-5 max-w-2xl rounded-xl" />
-        <div className="grid gap-5 md:grid-cols-3">
-          <div className="border-border h-44 rounded-3xl border bg-white" />
-          <div className="border-border h-44 rounded-3xl border bg-white" />
-          <div className="border-border h-44 rounded-3xl border bg-white" />
-        </div>
+      <div
+        className="flex max-w-md flex-col items-center rounded-3xl border border-border bg-panel px-8 py-10 text-center shadow-2xl"
+        role="status"
+        aria-live="polite"
+      >
+        <span
+          aria-hidden="true"
+          className="size-12 animate-spin rounded-full border-4 border-primary-soft border-t-primary"
+        />
+        <p className="text-navy mt-5 text-lg font-semibold">{label}…</p>
+        <p className="text-muted mt-2 text-sm">
+          PipuPath is preparing the next step.
+        </p>
       </div>
     </main>
   );

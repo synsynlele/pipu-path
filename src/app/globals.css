@@ -131,8 +131,17 @@ textarea::placeholder {
   color: #7183a8;
 }
 
+select option {
+  background: #07142f;
+  color: var(--foreground);
+}
+
 .text-navy {
   color: var(--foreground);
+}
+
+.bg-white {
+  background-color: #07142f;
 }
 
 @media (prefers-reduced-motion: reduce) {

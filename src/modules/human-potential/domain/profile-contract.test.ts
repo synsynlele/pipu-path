@@ -101,6 +101,22 @@ describe("Human Potential Profile output validation", () => {
     );
   });
 
+  it("accepts cautious constraint language about fear of failure", () => {
+    const cautious = {
+      ...validOutput,
+      insights: validOutput.insights.map((item) =>
+        item.profileSection === "current_constraints"
+          ? {
+              ...item,
+              explanation:
+                "Fear of failure may sometimes make it harder to test a new idea.",
+            }
+          : item,
+      ),
+    };
+    expect(validateHumanPotentialProfileOutput(input, cautious).ok).toBe(true);
+  });
+
   it("rejects invalid JSON-shaped provider output", () => {
     expect(validateHumanPotentialProfileOutput(input, "{not-json").ok).toBe(
       false,
@@ -121,6 +137,14 @@ describe("Human Potential Profile output validation", () => {
     const unsafe = {
       ...validOutput,
       summary: "Your purpose is to teach.",
+    };
+    expect(validateHumanPotentialProfileOutput(input, unsafe).ok).toBe(false);
+  });
+
+  it("rejects categorical identity language", () => {
+    const unsafe = {
+      ...validOutput,
+      summary: "You definitely are a teacher.",
     };
     expect(validateHumanPotentialProfileOutput(input, unsafe).ok).toBe(false);
   });

@@ -152,6 +152,7 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(css).toContain("prefers-reduced-motion");
     expect(css).toContain("--color-primary-700: #4f7cff");
     expect(css).toContain("--color-gold-400: #c9a54d");
+    expect(css).toContain(".bg-white");
   });
 
   it("removes external font build dependencies", () => {
@@ -175,12 +176,14 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(authActions).toContain("allowAuthAttempt");
   });
 
-  it("ships browser security headers without blocking OAuth popups", () => {
+  it("ships browser security headers without blocking OAuth or Preview tools", () => {
     expect(config).toContain("Content-Security-Policy");
     expect(config).toContain("frame-ancestors 'none'");
     expect(config).toContain("same-origin-allow-popups");
     expect(config).toContain("Strict-Transport-Security");
     expect(config).toContain("camera=(self)");
+    expect(config).toContain("https://vercel.live");
+    expect(config).toContain("wss://ws-us3.pusher.com");
   });
 
   it("documents every route, OAuth setup and exact release recovery", () => {

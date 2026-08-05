@@ -29,10 +29,10 @@ export const humanPotentialProfileOutputSchema = z.object({
 });
 
 const permanentIdentityClaim =
-  /\b(you (?:definitely|certainly|are) (?:a|an)|your (?:purpose|destiny) is|you were born to|always will be|never will be|permanent career)\b/i;
+  /\b(?:you (?:definitely|certainly) are (?:a|an)|your (?:purpose|destiny) is|you were born to|always will be|never will be|permanent career)\b/i;
 
 const unsafeConstraintLanguage =
-  /\b(lazy|broken|failure|deficient|you should be ashamed|nothing is wrong with you)\b/i;
+  /\b(lazy|broken|deficient|you should be ashamed)\b/i;
 
 export function validateHumanPotentialProfileOutput(
   input: z.infer<typeof interpretationInputSchema>,
