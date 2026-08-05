@@ -1,13 +1,13 @@
 import "server-only";
 
-import { requireGeminiEnvironment } from "@/lib/config/env";
+import { requireOpenAIEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import {
   validateQuestPackForContext,
   type QuestErrorCode,
 } from "../domain/quest-contract";
-import { GeminiQuestProvider } from "../infrastructure/gemini-quest-provider";
+import { OpenAIQuestProvider } from "../infrastructure/openai-quest-provider";
 import {
   createQuestServerClient,
   createQuestServiceClient,
@@ -76,7 +76,7 @@ function extractCode(error: unknown): QuestErrorCode {
 
 function safeProviderFailure(error: unknown) {
   if (!(error instanceof Error)) return null;
-  return /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
+  return /^OPENAI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT|REFUSAL|INCOMPLETE_RESPONSE|FAILED_RESPONSE)$/.test(
     error.message,
   )
     ? error.message
@@ -88,13 +88,13 @@ export async function generateCurrentQuestPack(): Promise<Result> {
   const context = await getQuestContext();
   if (!context) return fail("QUEST_MILESTONE_REQUIRED");
 
-  // Gemini is preferred, while the validated fallback guarantees availability.
+  // OpenAI is primary, while the validated fallback guarantees availability.
   let model = "evidence-fallback-v1";
-  let geminiAvailable = true;
+  let openAIAvailable = true;
   try {
-    ({ model } = requireGeminiEnvironment());
+    ({ model } = requireOpenAIEnvironment());
   } catch {
-    geminiAvailable = false;
+    openAIAvailable = false;
   }
 
   const current = await getCurrentQuestState(context.milestoneId);
@@ -105,7 +105,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
     "create_stage7_quest_request",
     {
       milestone_id_input: context.milestoneId,
-      prompt_version_input: "quest-gemini-v1",
+      prompt_version_input: "quest-openai-v1",
     },
   );
 
@@ -116,7 +116,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
     "claim_stage7_quest_request",
     {
       request_id_input: requestId,
-      provider_input: geminiAvailable ? "google_gemini" : "evidence_fallback",
+      provider_input: openAIAvailable ? "openai" : "evidence_fallback",
       model_input: model,
     },
   );
@@ -124,22 +124,22 @@ export async function generateCurrentQuestPack(): Promise<Result> {
   if (claimError || !claimed) return fail("QUEST_REQUEST_ALREADY_RUNNING");
 
   try {
-    let generationMode: "gemini" | "evidence_fallback" = "gemini";
+    let generationMode: "openai" | "evidence_fallback" = "openai";
     let fallbackReason: string | null = null;
     let output: unknown;
 
-    if (geminiAvailable) {
+    if (openAIAvailable) {
       try {
-        output = await new GeminiQuestProvider().generate({ context });
+        output = await new OpenAIQuestProvider().generate({ context });
       } catch (error) {
         generationMode = "evidence_fallback";
         fallbackReason =
-          safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
         output = buildEvidenceBasedQuestPack(context);
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = "GEMINI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedQuestPack(context);
     }
 
@@ -174,9 +174,9 @@ export async function generateCurrentQuestPack(): Promise<Result> {
   } catch (error) {
     const raw = error instanceof Error ? error.message : "";
     const code: QuestErrorCode =
-      raw === "GEMINI_TIMEOUT"
+      raw === "OPENAI_TIMEOUT"
         ? "QUEST_PROVIDER_TIMEOUT"
-        : /^GEMINI_/.test(raw)
+        : /^OPENAI_/.test(raw)
           ? "QUEST_PROVIDER_UNAVAILABLE"
           : extractCode(error);
     const safeDetail = safeProviderFailure(error) ?? undefined;
