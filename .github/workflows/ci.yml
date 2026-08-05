@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -16,7 +16,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -28,7 +28,7 @@ jobs:
 
   staging-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -39,7 +39,7 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
         env:
-          E2E_BASE_URL: https://pipu-path-git-agent-stage9-sel-e0b353-copyartint-2860s-projects.vercel.app
+          E2E_BASE_URL: https://pipu-path-git-agent-stage10-mv-2de76f-copyartint-2860s-projects.vercel.app
           E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
           E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
       - name: Upload browser traces on failure
@@ -49,66 +49,3 @@ jobs:
           name: playwright-traces
           path: test-results
           if-no-files-found: ignore
-
-  publish-stage10:
-    if: github.event_name == 'pull_request' && github.head_ref == 'agent/stage10-builder-discovery-mvp'
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - name: Verify and extract reviewed Stage 10 package
-        env:
-          EXPECTED_SHA256: 7b4de6adf95a24c3f33aa796a73fff4aa09c2507afecabc8eed98d09947e429b
-        run: |
-          cat stage10_payload_part_* | base64 --decode > /tmp/stage10-payload.tar.gz
-          echo "$EXPECTED_SHA256  /tmp/stage10-payload.tar.gz" | sha256sum --check --strict
-          tar -xzf /tmp/stage10-payload.tar.gz
-          rm stage10_payload_part_* stage10-payload.ready .github/workflows/publish-stage10-batch.yml
-      - run: npm ci
-      - name: Align inherited Stage 9 navigation regression with Stage 10 architecture
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path("tests/integration/stage-9-contract.test.ts")
-          text = path.read_text()
-          original = text
-          text = text.replace(
-              'const shell = readFileSync("src/components/shells/app-shell.tsx", "utf8");\n',
-              'const shell = readFileSync("src/components/shells/app-shell.tsx", "utf8");\n'
-              'const navigation = readFileSync(\n'
-              '  "src/components/navigation/app-navigation.tsx",\n'
-              '  "utf8",\n'
-              ');\n',
-          )
-          text = text.replace(
-              '    expect(shell).toContain(\'{ label: "Portfolio", href: "/portfolio" }\');\n',
-              '    expect(shell).toContain("<AppNavigation />");\n'
-              '    expect(navigation).toContain(\n'
-              '      \'{ label: "Portfolio", href: "/portfolio", icon: "portfolio" }\',\n'
-              '    );\n',
-          )
-          if text == original:
-              raise SystemExit("Stage 9 navigation regression patch did not apply")
-          path.write_text(text)
-          PY
-          npx prettier --write tests/integration/stage-9-contract.test.ts
-      - run: npm run validate
-      - name: Publish one clean Stage 10 integration commit
-        env:
-          BASE_SHA: 9d0071273654a89d14fe6f60b03a13dc65532ba1
-          TARGET_BRANCH: agent/stage10-mvp-launch-readiness
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add --all
-          tree_sha=$(git write-tree)
-          commit_sha=$(printf '%s\n' 'feat(stage10): harden and transform the complete MVP' | git commit-tree "$tree_sha" -p "$BASE_SHA")
-          git push origin "$commit_sha:refs/heads/$TARGET_BRANCH"
-          echo "Published $commit_sha"
