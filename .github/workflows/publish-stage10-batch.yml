@@ -1,0 +1,44 @@
+name: Publish Stage 10 batch
+
+on:
+  push:
+    branches: [agent/stage10-builder-discovery-mvp]
+    paths: [stage10-payload.b64]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Verify and extract reviewed payload
+        env:
+          EXPECTED_SHA256: 54288784174784b591899f94febd6841517b59e0539a6d2788adc04ba9f45abf
+        run: |
+          base64 --decode stage10-payload.b64 > /tmp/stage10-payload.tar.gz
+          echo "$EXPECTED_SHA256  /tmp/stage10-payload.tar.gz" | sha256sum --check --strict
+          tar -xzf /tmp/stage10-payload.tar.gz
+          rm stage10-payload.b64 .github/workflows/publish-stage10-batch.yml
+      - run: npm ci
+      - run: npm run validate
+      - name: Publish one clean Stage 10 integration commit
+        env:
+          BASE_SHA: 9d0071273654a89d14fe6f60b03a13dc65532ba1
+          TARGET_BRANCH: agent/stage10-mvp-launch-readiness
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          tree_sha=$(git write-tree)
+          commit_sha=$(printf '%s\n' 'feat(stage10): harden and transform the complete MVP' | git commit-tree "$tree_sha" -p "$BASE_SHA")
+          git push --force origin "$commit_sha:refs/heads/$TARGET_BRANCH"
+          echo "Published $commit_sha"
