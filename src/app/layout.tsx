@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 
-const productionUrl = new URL("https://pipupath.name.ng");
+const productionUrl = new URL("https://www.pipupath.name.ng");
 
 export const metadata: Metadata = {
   title: {
