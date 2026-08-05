@@ -115,27 +115,64 @@ describe("Stage 7 Quest generation orchestration", () => {
     );
   });
 
-  it("rejects malformed model output and records a safe failure", async () => {
+  it("replaces malformed model output with a validated fallback", async () => {
     mocks.generate.mockResolvedValue({ quests: [] });
-    await expect(generateCurrentQuestPack()).resolves.toMatchObject({
-      ok: false,
-      code: "QUEST_OUTPUT_INVALID",
+
+    await expect(generateCurrentQuestPack()).resolves.toEqual({
+      ok: true,
+      firstQuestId: "quest-1",
     });
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "persist_stage7_quest_pack",
+      expect.objectContaining({
+        quest_pack_input: expect.objectContaining({
+          quests: expect.arrayContaining([
+            expect.objectContaining({ sequence_order: 1 }),
+            expect.objectContaining({ sequence_order: 2 }),
+            expect.objectContaining({ sequence_order: 3 }),
+          ]),
+        }),
+      }),
+    );
+    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
       "fail_stage7_quest_request",
-      expect.objectContaining({ failure_code_input: "QUEST_OUTPUT_INVALID" }),
+      expect.anything(),
     );
   });
 
-  it("classifies provider timeouts without exposing content", async () => {
+  it("uses the fallback when Gemini times out", async () => {
     mocks.generate.mockRejectedValue(new Error("GEMINI_TIMEOUT"));
-    await expect(generateCurrentQuestPack()).resolves.toMatchObject({
-      ok: false,
-      code: "QUEST_PROVIDER_TIMEOUT",
+
+    await expect(generateCurrentQuestPack()).resolves.toEqual({
+      ok: true,
+      firstQuestId: "quest-1",
     });
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "fail_stage7_quest_request",
-      expect.objectContaining({ failure_detail_safe_input: "GEMINI_TIMEOUT" }),
+      "persist_stage7_quest_pack",
+      expect.objectContaining({
+        quest_pack_input: expect.objectContaining({
+          quests: expect.any(Array),
+        }),
+      }),
+    );
+  });
+
+  it("uses the fallback when Gemini configuration is unavailable", async () => {
+    mocks.env.mockImplementation(() => {
+      throw new Error("missing environment");
+    });
+
+    await expect(generateCurrentQuestPack()).resolves.toEqual({
+      ok: true,
+      firstQuestId: "quest-1",
+    });
+    expect(mocks.generate).not.toHaveBeenCalled();
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "claim_stage7_quest_request",
+      expect.objectContaining({
+        provider_input: "evidence_fallback",
+        model_input: "evidence-fallback-v1",
+      }),
     );
   });
 });
