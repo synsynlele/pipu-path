@@ -22,7 +22,7 @@ jobs:
           cache: npm
       - name: Verify and extract reviewed payload
         env:
-          EXPECTED_SHA256: 54288784174784b591899f94febd6841517b59e0539a6d2788adc04ba9f45abf
+          EXPECTED_SHA256: 7b4de6adf95a24c3f33aa796a73fff4aa09c2507afecabc8eed98d09947e429b
         run: |
           base64 --decode stage10-payload.b64 > /tmp/stage10-payload.tar.gz
           echo "$EXPECTED_SHA256  /tmp/stage10-payload.tar.gz" | sha256sum --check --strict
