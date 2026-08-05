@@ -116,35 +116,58 @@ describe("mission generation orchestration", () => {
     );
   });
 
-  it("does not persist invalid provider output and records a safe failure", async () => {
+  it("replaces invalid provider output with a validated fallback mission", async () => {
     mocks.generate.mockResolvedValue({ title: "Incomplete" });
-    await expect(
-      generateCurrentMission({ kind: "initial" }),
-    ).resolves.toMatchObject({
-      ok: false,
-      code: "MISSION_OUTPUT_INVALID",
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: true,
+      missionId: "mission-1",
     });
-    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
-      "persist_stage5_mission",
-      expect.anything(),
-    );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "persist_stage5_mission",
+      expect.objectContaining({
+        mission_input: expect.objectContaining({
+          title: "Test One Useful Improvement",
+          profile_evidence_refs: insightIds,
+        }),
+      }),
+    );
+    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
       "fail_stage5_mission_request",
-      expect.objectContaining({ failure_code_input: "MISSION_OUTPUT_INVALID" }),
+      expect.anything(),
     );
   });
 
-  it("classifies timeout without exposing provider content", async () => {
+  it("uses the fallback when Gemini times out", async () => {
     mocks.generate.mockRejectedValue(new Error("GEMINI_TIMEOUT"));
-    await expect(
-      generateCurrentMission({ kind: "initial" }),
-    ).resolves.toMatchObject({
-      ok: false,
-      code: "MISSION_PROVIDER_TIMEOUT",
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: true,
+      missionId: "mission-1",
     });
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "fail_stage5_mission_request",
-      expect.objectContaining({ failure_detail_safe_input: "GEMINI_TIMEOUT" }),
+      "persist_stage5_mission",
+      expect.objectContaining({
+        mission_input: expect.objectContaining({
+          title: "Test One Useful Improvement",
+        }),
+      }),
+    );
+  });
+
+  it("uses the fallback when Gemini configuration is unavailable", async () => {
+    mocks.env.mockImplementation(() => {
+      throw new Error("missing");
+    });
+    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+      ok: true,
+      missionId: "mission-1",
+    });
+    expect(mocks.generate).not.toHaveBeenCalled();
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "claim_stage5_mission_request",
+      expect.objectContaining({
+        provider_input: "evidence_fallback",
+        model_input: "evidence-fallback-v1",
+      }),
     );
   });
 });
