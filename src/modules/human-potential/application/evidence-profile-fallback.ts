@@ -77,7 +77,8 @@ function createInsight({
     title,
     summary,
     explanation,
-    confidenceLevel: confidenceScore >= 0.68 ? ("moderate" as const) : ("emerging" as const),
+    confidenceLevel:
+      confidenceScore >= 0.68 ? ("moderate" as const) : ("emerging" as const),
     confidenceScore,
     confidenceFactors: [
       "The pattern is grounded in a completed Discovery response.",
@@ -126,11 +127,7 @@ export function buildEvidenceBasedFallbackProfile(input: ProviderInput) {
     ["capability", "experience", "readiness"],
     4,
   );
-  const constraint = pickEvidence(
-    input,
-    ["constraint", "current_reality"],
-    5,
-  );
+  const constraint = pickEvidence(input, ["constraint", "current_reality"], 5);
   const direction = pickEvidence(
     input,
     ["readiness", "motivation", "interest", "capability"],

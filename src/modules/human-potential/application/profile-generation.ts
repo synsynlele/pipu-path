@@ -179,7 +179,8 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
         output = await provider.interpret(providerInput);
       } catch (error) {
         generationMode = "evidence_fallback";
-        fallbackReason = safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+        fallbackReason =
+          safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
         output = buildEvidenceBasedFallbackProfile(providerInput);
       }
     } else {

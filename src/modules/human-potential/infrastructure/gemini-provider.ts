@@ -269,7 +269,11 @@ export class GeminiInterpretationProvider {
     const models = [...new Set([model, "gemini-3.5-flash-lite"])];
     let lastError: unknown = new Error("GEMINI_HTTP_503");
 
-    modelLoop: for (let modelIndex = 0; modelIndex < models.length; modelIndex += 1) {
+    modelLoop: for (
+      let modelIndex = 0;
+      modelIndex < models.length;
+      modelIndex += 1
+    ) {
       const candidateModel = models[modelIndex];
       for (const includeSchema of [true, false]) {
         for (let attempt = 0; attempt < 2; attempt += 1) {
