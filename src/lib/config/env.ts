@@ -17,6 +17,8 @@ const publicSchema = z.object({
 
 const serverSchema = publicSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  OPENAI_API_KEY: z.string().min(1).optional(),
+  OPENAI_MODEL: z.string().min(1).default("gpt-5-mini"),
   GEMINI_API_KEY: z.string().min(1).optional(),
   GEMINI_MODEL: z.string().min(1).default("gemini-3.6-flash"),
 });
@@ -64,11 +66,26 @@ export function readServerEnvironment(
   source: Record<string, string | undefined> = {
     ...getPublicProcessEnvironment(),
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENAI_MODEL: process.env.OPENAI_MODEL,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     GEMINI_MODEL: process.env.GEMINI_MODEL,
   },
 ): ServerEnvironment {
   return serverSchema.parse(source);
+}
+
+export function requireOpenAIEnvironment(
+  source: Record<string, string | undefined> = process.env,
+) {
+  const environment = readServerEnvironment(source);
+  if (!environment.OPENAI_API_KEY) {
+    throw new Error("OpenAI server environment is not configured.");
+  }
+  return {
+    apiKey: environment.OPENAI_API_KEY,
+    model: environment.OPENAI_MODEL,
+  };
 }
 
 export function requireGeminiEnvironment(
