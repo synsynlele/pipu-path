@@ -24,11 +24,6 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Show exact OpenAI test formatting diff
-        run: |
-          npx prettier --write src/lib/ai/openai-structured-output.test.ts
-          git diff -- src/lib/ai/openai-structured-output.test.ts
-          exit 1
       - run: npm run validate
 
   staging-e2e:
