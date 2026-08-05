@@ -91,7 +91,7 @@ jobs:
               '    expect(shell).toContain(\'{ label: "Portfolio", href: "/portfolio" }\');\n',
               '    expect(shell).toContain("<AppNavigation />");\n'
               '    expect(navigation).toContain(\n'
-              '      \'{ label: "Portfolio", href: "/portfolio" }\',\n'
+              '      \'{ label: "Portfolio", href: "/portfolio", icon: "portfolio" }\',\n'
               '    );\n',
           )
           if text == original:
