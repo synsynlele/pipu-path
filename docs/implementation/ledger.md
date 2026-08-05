@@ -529,3 +529,55 @@ Status: COMPLETE. Stage 8 is complete. Stage 9 has not started. Project proof
 remains private; no public portfolio, sharing, collaboration, mentor assessment,
 team Project, leaderboard, opportunity matching or Builder Network discovery
 has been implemented.
+
+## 2026-08-05 — Stage 9 Selective Project Portfolio closure
+
+### Authorized scope
+
+Convert one owned completed private Project into one selective,
+consent-driven public proof of work. Preserve private evidence and stop
+before Builder discovery, social, collaboration or opportunity mechanics.
+
+### Implemented
+
+- Private Portfolio Studio with public-safe preparation and exact preview
+- Adult-only publication for eligible non-flagged Builders
+- Explicit versioned publication consent and stable public slug
+- Eleven-field anonymous public-safe RPC projection
+- Withdrawal without deletion and republishing on the same slug
+- Pre-stream public authorization returning HTTP 404 for withdrawn or
+  unknown proof slugs
+- Desktop and mobile Portfolio navigation and recovery
+- RLS, owner-only reads and controlled lifecycle RPCs
+
+### Verification evidence
+
+- Migration `202608040019_stage_9_selective_project_portfolio.sql` applied
+  and verified on authorised disposable staging `kvjcswnmhwegpakbtvlh`.
+- Verified implementation commit:
+  `4627036f03844237c28011268c413906f4180bf5`.
+- GitHub Actions run
+  [30993330779](https://github.com/synsynlele/pipu-path/actions/runs/30993330779)
+  passed full `validate` and authenticated `staging-e2e`.
+- Repository validation passed formatting, zero-warning lint, strict
+  TypeScript, 91 unit tests, 77 structural/integration checks, coverage
+  thresholds and the production build.
+- Authenticated browser coverage passed 21 tests with 7 intentional
+  duplicate-flow skips across Chromium and mobile.
+- Matching Vercel Preview deployment:
+  `dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`.
+- The live flow proved publication, anonymous safe reading, withdrawal to
+  transport-level HTTP 404, republishing on the same slug, refresh
+  recovery, anonymous private-route denial and mobile usability.
+- Vercel runtime logs recorded the stable slug
+  `neighbourhood-reading-proof-1dd2ebd1` transitioning `200 → 404 → 200`.
+- Final staging reconciliation confirmed one published portfolio and an
+  anonymous projection containing only the approved eleven fields.
+- Production resources were not touched.
+
+### Boundary
+
+Status: COMPLETE. Stage 0 through Stage 9 are complete. Stage 10 has not
+started. Builder discovery, search, social mechanics, collaboration,
+mentor assessment, opportunity matching, funding, employment and
+marketplace behavior remain outside this closure.

@@ -188,10 +188,13 @@ export default async function ProjectDetailPage({
                 A useful result now has an evidence trail.
               </h2>
               <p className="text-muted mt-4 max-w-2xl leading-7">
-                This Project remains private. Stage 9 may later introduce a
-                controlled way to present selected proof, but PipuPath will not
-                publish or inflate it automatically.
+                This completed Project remains private until you intentionally
+                prepare a public-safe portfolio draft. Raw evidence, reflections
+                and private updates are never published automatically.
               </p>
+              <ButtonLink href={`/portfolio/${project.id}`} className="mt-6">
+                Prepare Selective Public Proof
+              </ButtonLink>
             </Surface>
           )}
         </div>

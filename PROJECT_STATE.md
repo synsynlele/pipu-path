@@ -1,94 +1,92 @@
 # PipuPath project state
 
-**Current stage:** Stage 8 — Builder Project MVP
+**Current stage:** Stage 9 — Selective Project Portfolio
 
 **Stage status:** COMPLETE
 
 **Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4,
-Stage 5, Stage 6, Stage 7 and Stage 8
+Stage 5, Stage 6, Stage 7, Stage 8 and Stage 9
 
-**Current Git baseline:** `agent/stage8-builder-project-mvp` at the
-verified Stage 8 closure, stacked on the proven Stage 7 branch
+**Current Git baseline:** `agent/stage9-selective-project-portfolio`, stacked on
+the verified Stage 8 closure `ea129d141458e1916b5eadd129482a6bc3706747`
 
-**Review surface:** GitHub pull request #9 (closure review)
+**Verified implementation commit:**
+`4627036f03844237c28011268c413906f4180bf5`
+
+**Review surface:** GitHub pull request #11
 
 **Infrastructure:** authorised disposable non-production Supabase staging
 `kvjcswnmhwegpakbtvlh`; matching Vercel Preview deployment
-`dpl_2KU8RfiEgCJ9Uf9K9BqdkvQ5g2tL`
+`dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`
 
-**Last verified:** 2026-08-04
+**Last verified:** 2026-08-05
 
-## Stage 8 completion
+## Stage 9 completion
 
-Stage 8 turns one completed, evidence-backed HQLS Quest into one private
-Builder Project. The Project preserves its Mission, Journey and Quest
-provenance; defines one reachable useful outcome; and advances through exactly
-three ordered execution milestones.
+Stage 9 converts one owned completed private Project into one selective public
+proof of work. The Builder prepares public-safe copy in a private Portfolio
+Studio, reviews an exact preview, explicitly consents to publication and may
+withdraw or republish the same stable public slug.
 
-Every Project update is append-only and records real progress, proof and the
-next practical action. A milestone completes only through a valid proof update.
-Completing a milestone unlocks the next one, and completing the third milestone
-completes the Project. PipuPath allows one active Project per Builder.
+Publishing is adult-only in this MVP and blocked for safeguarding-flagged
+accounts. Under-18 Builders retain every private PipuPath capability; their
+public publication remains locked until a dedicated guardian-consent and
+safeguarding workflow exists.
 
-Migration `202608040018` is applied and verified on disposable staging. The
-three Stage 8 tables have RLS with owner-only authenticated reads. Direct
-browser table writes are not granted. The two controlled lifecycle RPCs enforce
-authentication, ownership, completed-Quest evidence/reflection provenance,
-one-active-Project focus, ordered milestone progression and valid state.
+The public projection contains only approved presentation fields. Private Quest
+evidence, Nortnspoil reflections, raw Project updates, contact information,
+private profile fields and internal identifiers remain excluded.
 
-GitHub Actions run `30935515692` passed full `validate` and authenticated
-`staging-e2e` against the matching Stage 8 Preview. The repository gate passed
-formatting, zero-warning lint, strict TypeScript, 85 unit tests, 65
-structural/integration checks, coverage thresholds and production build.
-Playwright ran 22 cases with one shared approved fixture: 17 passed and five
-duplicate full-flow cases were intentionally skipped.
+## Verification evidence
 
-The browser flow created a fresh private Project from completed Quest proof,
-completed all three milestones through three durable proof updates, recovered
-100% completion after refresh, denied anonymous access and verified the mobile
-Project navigation. Database reconciliation confirmed one completed Project,
-three completed milestones, three append-only updates and a completion
-timestamp.
+- Migration `202608040019_stage_9_selective_project_portfolio.sql` is applied
+  and verified on authorised disposable staging.
+- `builder_project_portfolios` has RLS and one owner-read policy.
+- Authenticated users receive SELECT only; all lifecycle mutations use
+  controlled ownership-checking RPCs.
+- Anonymous access is limited to an eleven-field public-safe RPC projection.
+- Unknown or withdrawn proof slugs are rejected before React streaming and
+  return a transport-level HTTP 404.
+- GitHub Actions run `30993330779` passed both `validate` and `staging-e2e`.
+- Repository validation passed formatting, zero-warning lint, strict
+  TypeScript, 91 unit tests, 77 structural/integration checks, coverage
+  thresholds and production build.
+- Authenticated staging E2E passed 21 tests with 7 intentional duplicate-flow
+  skips across Chromium and mobile coverage.
+- The browser matrix proved private draft recovery, exact preview, explicit
+  publication, anonymous safe viewing, withdrawal to HTTP 404, republishing on
+  the same slug, refresh recovery, anonymous private-route denial and mobile
+  usability.
+- Vercel runtime logs on deployment `dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`
+  recorded the same stable proof slug transitioning `200 → 404 → 200`.
+- Final staging reconciliation confirmed the proof is published again through
+  the stable slug `neighbourhood-reading-proof-1dd2ebd1` and the public RPC
+  returns only the approved eleven fields.
+- Production resources were not touched.
 
-## Security findings
+## Explicit boundary
 
-- Project creation requires an owned completed Quest with evidence and
-  Nortnspoil reflection.
-- Project records, milestones and updates remain private and owner-readable.
-- Anonymous and direct browser table writes are denied.
-- Only authenticated, service-role and database-owner roles can execute Stage 8
-  lifecycle RPCs.
-- One completed Quest may seed only one Project.
-- One active Project per Builder and ordered milestone progression are enforced
-  in the database.
-- Stage 8 creates no public credibility claim from private proof.
+Stage 9 does not introduce Builder directories, search, follows, likes,
+comments, messaging, rankings, collaboration, mentor assessment, team Projects,
+opportunity matching, funding, employment or marketplace behavior.
 
-## Known technical debt
+Stage 10 has not started. Its scope must be locked through an accepted ADR before
+implementation begins.
+
+## Known technical debt carried forward
 
 - Resolve recorded development-toolchain dependency advisories when compatible
-  patched dependency lines are available; Stage 8 changed no dependency
-  versions.
+  patched dependency lines are available.
 - Replace the Stage 2 in-process rate limiter before production.
 - Complete legal, privacy, retention and child-safeguarding review.
 - Optimise CI browser installation and build caching without weakening gates.
-- Consolidate the isolated Stage 7/8 Supabase adapters into the canonical
-  generated database client during a dedicated type-generation maintenance
-  slice.
+- Consolidate the isolated Stage 7/8/9 Supabase adapters into the canonical
+  generated database client during a dedicated maintenance slice.
 
-## Exact next vertical slice
-
-Stage 9 is the exact next boundary and has not started. Public Project
-presentation, selective portfolio publishing, Builder discovery, collaboration,
-mentor assessment, team Projects, leaderboards, opportunity matching and
-external deployment remain outside Stage 8.
-
-## Reproduction
+## Reproduction baseline
 
 ```sh
 npm ci
 npm run validate
 npm run test:e2e
 ```
-
-Remote proof: GitHub Actions run `30935515692` and Vercel deployment
-`dpl_2KU8RfiEgCJ9Uf9K9BqdkvQ5g2tL`.
