@@ -252,11 +252,16 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
     mobileNavigation.getByRole("link", { name: "Portfolio", exact: true }),
   ).toBeVisible();
 
-  let publicLink = page.getByRole("link", {
+  const publicLink = page.getByRole("link", {
     name: "View Public Proof",
     exact: true,
   });
-  if (!(await publicLink.isVisible())) {
+  if (await publicLink.isVisible()) {
+    await publicLink.click();
+    await expect(page).toHaveURL(/\/proof\/[a-z0-9-]+$/, {
+      timeout: 15_000,
+    });
+  } else {
     await page
       .getByRole("link", {
         name: /Continue Portfolio Studio|Manage Public Proof/,
@@ -268,25 +273,20 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
       name: "Open Public Proof",
     });
     if (await openPublished.isVisible()) {
-      const href = await openPublished.getAttribute("href");
-      expect(href).toMatch(/^\/proof\/[a-z0-9-]+$/);
-      await page.goto(href!);
+      await openPublished.click();
+      await expect(page).toHaveURL(/\/proof\/[a-z0-9-]+$/, {
+        timeout: 15_000,
+      });
     } else {
       await saveDraftWhenNeeded(page);
-      await publishFromPreview(page);
+      const proofPath = await publishFromPreview(page);
+      if (!/\/proof\/[a-z0-9-]+$/.test(new URL(page.url()).pathname)) {
+        await page.goto(proofPath);
+      }
+      await expect(page).toHaveURL(/\/proof\/[a-z0-9-]+$/, {
+        timeout: 15_000,
+      });
     }
-  } else {
-    await publicLink.click();
-  }
-
-  if (!/\/proof\/[a-z0-9-]+$/.test(new URL(page.url()).pathname)) {
-    await page.goto("/portfolio");
-    publicLink = page.getByRole("link", {
-      name: "View Public Proof",
-      exact: true,
-    });
-    await expect(publicLink).toBeVisible();
-    await publicLink.click();
   }
 
   await expect(
