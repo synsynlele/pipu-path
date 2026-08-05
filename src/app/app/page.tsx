@@ -155,7 +155,8 @@ export default async function HomePage() {
               </span>
             </div>
             <p className="text-muted mt-4 text-sm leading-6">
-              XP appears only after completed Quests with evidence and reflection.
+              XP appears only after completed Quests with evidence and
+              reflection.
             </p>
             {state.recentAchievement ? (
               <div className="border-gold/25 bg-gold/8 mt-6 rounded-2xl border p-4">
@@ -193,7 +194,9 @@ export default async function HomePage() {
           <StatusCard
             label="Next Builder action"
             title={
-              state.quest?.title ?? state.project?.title ?? "No active build yet"
+              state.quest?.title ??
+              state.project?.title ??
+              "No active build yet"
             }
             detail={
               state.quest
