@@ -1,6 +1,6 @@
 import "server-only";
 
-import { requireGeminiEnvironment } from "@/lib/config/env";
+import { requireOpenAIEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
@@ -11,7 +11,7 @@ import {
   type MissionErrorCode,
   type MissionOutput,
 } from "../domain/mission-contract";
-import { GeminiMissionProvider } from "../infrastructure/gemini-mission-provider";
+import { OpenAIMissionProvider } from "../infrastructure/openai-mission-provider";
 import {
   getCurrentMissionState,
   getMissionProfileContext,
@@ -19,7 +19,7 @@ import {
 import { buildEvidenceBasedMission } from "./mission-fallback";
 
 const logger = createLogger();
-// Gemini enriches the result, but validated profile evidence guarantees completion.
+// OpenAI enriches the result, but validated profile evidence guarantees completion.
 const messages: Record<MissionErrorCode, string> = {
   MISSION_PROFILE_REQUIRED: "Complete your Human Potential Profile first.",
   MISSION_CONSENT_REQUIRED:
@@ -61,7 +61,7 @@ function extractMissionCode(error: unknown): MissionErrorCode {
 
 function safeProviderFailure(error: unknown) {
   if (!(error instanceof Error)) return null;
-  return /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
+  return /^OPENAI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT|REFUSAL|INCOMPLETE_RESPONSE|FAILED_RESPONSE)$/.test(
     error.message,
   )
     ? error.message
@@ -78,11 +78,11 @@ export async function generateCurrentMission(input: {
   if (!context) return fail("MISSION_PROFILE_REQUIRED");
 
   let model = "evidence-fallback-v1";
-  let geminiAvailable = true;
+  let openAIAvailable = true;
   try {
-    ({ model } = requireGeminiEnvironment());
+    ({ model } = requireOpenAIEnvironment());
   } catch {
-    geminiAvailable = false;
+    openAIAvailable = false;
   }
 
   const current = await getCurrentMissionState(context.profileId);
@@ -125,7 +125,7 @@ export async function generateCurrentMission(input: {
       ...(refinementInstruction
         ? { refinement_instruction_input: refinementInstruction }
         : {}),
-      prompt_version_input: "mission-gemini-v1",
+      prompt_version_input: "mission-openai-v1",
     },
   );
   if (createError || !requestId) return fail(extractMissionCode(createError));
@@ -135,20 +135,20 @@ export async function generateCurrentMission(input: {
     "claim_stage5_mission_request",
     {
       request_id_input: requestId,
-      provider_input: geminiAvailable ? "google_gemini" : "evidence_fallback",
+      provider_input: openAIAvailable ? "openai" : "evidence_fallback",
       model_input: model,
     },
   );
   if (claimError || !claimed) return fail("MISSION_REQUEST_ALREADY_RUNNING");
 
   try {
-    let generationMode: "gemini" | "evidence_fallback" = "gemini";
+    let generationMode: "openai" | "evidence_fallback" = "openai";
     let fallbackReason: string | null = null;
     let output: unknown;
 
-    if (geminiAvailable) {
+    if (openAIAvailable) {
       try {
-        output = await new GeminiMissionProvider().generate({
+        output = await new OpenAIMissionProvider().generate({
           context,
           currentMission,
           refinementInstruction,
@@ -156,12 +156,12 @@ export async function generateCurrentMission(input: {
       } catch (error) {
         generationMode = "evidence_fallback";
         fallbackReason =
-          safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
         output = buildEvidenceBasedMission({ context, currentMission });
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = "GEMINI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedMission({ context, currentMission });
     }
 
@@ -190,9 +190,9 @@ export async function generateCurrentMission(input: {
   } catch (error) {
     const raw = error instanceof Error ? error.message : "";
     const code: MissionErrorCode =
-      raw === "GEMINI_TIMEOUT"
+      raw === "OPENAI_TIMEOUT"
         ? "MISSION_PROVIDER_TIMEOUT"
-        : /^GEMINI_/.test(raw)
+        : /^OPENAI_/.test(raw)
           ? "MISSION_PROVIDER_UNAVAILABLE"
           : extractMissionCode(error);
     const safeDetail = safeProviderFailure(error) ?? undefined;
