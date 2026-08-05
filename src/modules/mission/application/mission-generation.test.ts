@@ -267,7 +267,8 @@ describe("mission generation orchestration", () => {
     await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
       ok: false,
       code: "MISSION_GENERATION_LIMIT_REACHED",
-      message: "You have used the three mission attempts available for this profile.",
+      message:
+        "You have used the three mission attempts available for this profile.",
     });
     expect(mocks.serviceRpc).not.toHaveBeenCalled();
   });
