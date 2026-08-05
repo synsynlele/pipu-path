@@ -88,7 +88,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
   const context = await getQuestContext();
   if (!context) return fail("QUEST_MILESTONE_REQUIRED");
 
-  // Gemini is preferred, but Quest availability must not depend on provider uptime.
+  // Gemini is preferred, while the validated fallback guarantees availability.
   let model = "evidence-fallback-v1";
   let geminiAvailable = true;
   try {
