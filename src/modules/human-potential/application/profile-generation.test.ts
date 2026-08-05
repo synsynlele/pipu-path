@@ -4,7 +4,7 @@ vi.mock("server-only", () => ({}));
 
 const requireAuthenticatedIdentity = vi.fn();
 const createCurrentInterpretationRequest = vi.fn();
-const requireGeminiEnvironment = vi.fn();
+const requireOpenAIEnvironment = vi.fn();
 const rpc = vi.fn();
 const from = vi.fn();
 const interpret = vi.fn();
@@ -15,15 +15,15 @@ const profileOutputForPersistence = vi.fn();
 vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
   requireAuthenticatedIdentity,
 }));
-vi.mock("@/lib/config/env", () => ({ requireGeminiEnvironment }));
+vi.mock("@/lib/config/env", () => ({ requireOpenAIEnvironment }));
 vi.mock("@/lib/supabase/service-role", () => ({
   createServiceRoleSupabaseClient: () => ({ rpc, from }),
 }));
 vi.mock("./interpretation-requests", () => ({
   createCurrentInterpretationRequest,
 }));
-vi.mock("../infrastructure/gemini-provider", () => ({
-  GeminiInterpretationProvider: class {
+vi.mock("../infrastructure/openai-provider", () => ({
+  OpenAIInterpretationProvider: class {
     interpret = interpret;
     recordUsage = recordUsage;
   },
@@ -47,7 +47,7 @@ function requestQuery() {
           single: async () => ({
             data: {
               interpretation_schema_version: "hpi-profile-v1",
-              prompt_version: "hpi-gemini-v1",
+              prompt_version: "hpi-openai-v1",
               question_set_version: 1,
               age_band: "18_24",
               is_minor: false,
@@ -128,9 +128,9 @@ describe("Stage 4 profile generation orchestration", () => {
     requireAuthenticatedIdentity.mockResolvedValue({
       user: { id: "33333333-3333-4333-8333-333333333333" },
     });
-    requireGeminiEnvironment.mockReturnValue({
+    requireOpenAIEnvironment.mockReturnValue({
       apiKey: "not-used-by-double",
-      model: "gemini-3.6-flash",
+      model: "gpt-5-mini",
     });
     createCurrentInterpretationRequest.mockResolvedValue({
       ok: true,
@@ -159,11 +159,23 @@ describe("Stage 4 profile generation orchestration", () => {
     });
   });
 
-  it("moves authenticated Discovery evidence through AI validation into persistence", async () => {
+  it("moves authenticated Discovery evidence through OpenAI validation into persistence", async () => {
     await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
       ok: true,
       profileId: "55555555-5555-4555-8555-555555555555",
     });
+    expect(createCurrentInterpretationRequest).toHaveBeenCalledWith({
+      schemaVersion: "hpi-profile-v1",
+      promptVersion: "hpi-openai-v1",
+    });
+    expect(rpc).toHaveBeenNthCalledWith(
+      1,
+      "claim_stage4_interpretation_request",
+      expect.objectContaining({
+        provider_input: "openai",
+        model_input: "gpt-5-mini",
+      }),
+    );
     expect(interpret).toHaveBeenCalledOnce();
     expect(interpret).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -183,9 +195,14 @@ describe("Stage 4 profile generation orchestration", () => {
         profile_summary_input: "A provisional profile",
       }),
     );
+    expect(recordUsage).toHaveBeenCalledWith({
+      requestId: "44444444-4444-4444-8444-444444444444",
+      provider: "openai",
+      model: "gpt-5-mini",
+    });
   });
 
-  it("does not call Gemini when authentication fails", async () => {
+  it("does not call OpenAI when authentication fails", async () => {
     requireAuthenticatedIdentity.mockRejectedValue(new Error("AUTH_REQUIRED"));
     await expect(generateCurrentHumanPotentialProfile()).rejects.toThrow(
       "AUTH_REQUIRED",
@@ -193,8 +210,8 @@ describe("Stage 4 profile generation orchestration", () => {
     expect(interpret).not.toHaveBeenCalled();
   });
 
-  it("generates a validated fallback when Gemini configuration is missing", async () => {
-    requireGeminiEnvironment.mockImplementation(() => {
+  it("generates a validated fallback when OpenAI configuration is missing", async () => {
+    requireOpenAIEnvironment.mockImplementation(() => {
       throw new Error("missing");
     });
 
@@ -205,19 +222,27 @@ describe("Stage 4 profile generation orchestration", () => {
     expect(createCurrentInterpretationRequest).toHaveBeenCalledOnce();
     expect(interpret).not.toHaveBeenCalled();
     expect(rpc).toHaveBeenNthCalledWith(
+      1,
+      "claim_stage4_interpretation_request",
+      expect.objectContaining({
+        provider_input: "evidence_fallback",
+        model_input: "evidence-fallback-v1",
+      }),
+    );
+    expect(rpc).toHaveBeenNthCalledWith(
       2,
       "persist_stage4_human_potential_profile",
       expect.objectContaining({
         profile_metadata_input: expect.objectContaining({
           generation_mode: "evidence_fallback",
-          fallback_reason: "GEMINI_ENVIRONMENT_UNAVAILABLE",
+          fallback_reason: "OPENAI_ENVIRONMENT_UNAVAILABLE",
         }),
       }),
     );
   });
 
-  it("generates a validated fallback after a privacy-safe Gemini failure", async () => {
-    interpret.mockRejectedValue(new Error("GEMINI_HTTP_403"));
+  it("generates a validated fallback after a privacy-safe OpenAI failure", async () => {
+    interpret.mockRejectedValue(new Error("OPENAI_HTTP_403"));
 
     await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
       ok: true,
@@ -229,7 +254,7 @@ describe("Stage 4 profile generation orchestration", () => {
       expect.objectContaining({
         profile_metadata_input: expect.objectContaining({
           generation_mode: "evidence_fallback",
-          fallback_reason: "GEMINI_HTTP_403",
+          fallback_reason: "OPENAI_HTTP_403",
         }),
       }),
     );
