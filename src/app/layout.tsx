@@ -1,4 +1,7 @@
 import type { Metadata, Viewport } from "next";
+
+import { PIPUPATH_FAVICON_DATA_URI } from "@/components/brand/brand-assets";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,6 +15,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
+  icons: {
+    icon: [{ url: PIPUPATH_FAVICON_DATA_URI, type: "image/png" }],
+    shortcut: PIPUPATH_FAVICON_DATA_URI,
+  },
   robots: {
     index: true,
     follow: true,
