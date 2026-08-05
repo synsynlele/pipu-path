@@ -173,7 +173,7 @@ export function buildEvidenceBasedFallbackProfile(input: ProviderInput) {
         title: "A direction that holds your attention",
         summary:
           "Your answers point toward a topic or activity that may hold your attention long enough for deeper learning.",
-        explanation: `One useful clue is ${describeEvidence(interest)}. Rather than treating this as a permanent career choice, use it as a direction for small experiments, conversations and projects that reveal what part of the interest is most energising.`,
+        explanation: `One useful clue is ${describeEvidence(interest)}. Rather than treating this as one fixed lifelong direction, use it as a direction for small experiments, conversations and projects that reveal what part of the interest is most energising.`,
         confirmationQuestion:
           "What part of this interest would you still enjoy exploring even without immediate recognition?",
         confidenceScore: 0.66,
