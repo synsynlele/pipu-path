@@ -6,7 +6,7 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/lib/config/env", () => ({ requireOpenAIEnvironment }));
 
 const { requestOpenAIStructuredOutput } = await import(
-  "./openai-structured-output"
+  "./openai-structured-output",
 );
 
 const schema = {
@@ -38,20 +38,21 @@ describe("OpenAI structured output client", () => {
   });
 
   it("sends a private strict schema request and parses output text", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(
-        response({
-          status: "completed",
-          output: [
-            {
-              content: [
-                { type: "output_text", text: JSON.stringify({ result: "ok" }) },
-              ],
-            },
-          ],
-        }),
-      );
+    const fetchMock = vi.fn().mockResolvedValue(
+      response({
+        status: "completed",
+        output: [
+          {
+            content: [
+              {
+                type: "output_text",
+                text: JSON.stringify({ result: "ok" }),
+              },
+            ],
+          },
+        ],
+      }),
+    );
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(
