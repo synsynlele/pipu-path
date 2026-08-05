@@ -139,8 +139,11 @@ test("Quest path remains usable on a narrow screen", async ({
   await expect(
     page.getByRole("heading", { name: "Build proof, not just plans." }),
   ).toBeVisible();
+  const mobileNavigation = page.getByRole("navigation", {
+    name: "PipuPath mobile navigation",
+  });
+  await expect(mobileNavigation).toBeVisible();
   await expect(
-    page.getByRole("navigation", { name: "PipuPath mobile navigation" }),
+    mobileNavigation.getByRole("link", { name: "Build", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "HQLS Quests" })).toBeVisible();
 });
