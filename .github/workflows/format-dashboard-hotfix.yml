@@ -1,9 +1,9 @@
 name: Format dashboard hotfix
 
 on:
-  push:
+  pull_request:
     branches:
-      - fix/www-auth-domain-alignment
+      - main
 
 permissions:
   contents: read
