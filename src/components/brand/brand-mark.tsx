@@ -1,4 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
+
+import { PIPUPATH_LOGO_DATA_URI } from "@/components/brand/brand-assets";
 
 type BrandMarkProps = {
   compact?: boolean;
@@ -21,10 +24,17 @@ export function BrandMark({
     >
       <span
         aria-hidden="true"
-        className="from-primary to-primary-light shadow-primary/20 relative grid size-10 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br text-sm font-bold text-white shadow-lg"
+        className="relative grid size-10 shrink-0 place-items-center"
       >
-        P
-        <span className="bg-gold absolute right-1.5 bottom-1.5 size-2 rounded-full" />
+        <Image
+          src={PIPUPATH_LOGO_DATA_URI}
+          alt=""
+          width={96}
+          height={96}
+          unoptimized
+          priority
+          className="size-10 object-contain"
+        />
       </span>
       {!compact && (
         <span
