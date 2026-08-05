@@ -234,7 +234,7 @@ test("anonymous users cannot access the private Portfolio Studio", async ({
   await expect(page).toHaveURL(/\/login/);
 });
 
-test("Portfolio and public proof remain usable on a narrow screen", async ({
+test("Portfolio remains usable on a narrow screen without duplicating publication mutations", async ({
   page,
   isMobile,
 }) => {
@@ -251,6 +251,11 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
   await expect(
     mobileNavigation.getByRole("link", { name: "Portfolio", exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Present proof without surrendering privacy.",
+    }),
+  ).toBeVisible();
 
   const publicLink = page.getByRole("link", {
     name: "View Public Proof",
@@ -261,41 +266,28 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
     await expect(page).toHaveURL(/\/proof\/[a-z0-9-]+$/, {
       timeout: 15_000,
     });
-  } else {
-    await page
-      .getByRole("link", {
-        name: /Prepare Public Proof|Continue Portfolio Studio|Manage Public Proof/,
-      })
-      .first()
-      .click();
     await expect(
-      page.getByText("Private Portfolio Studio", { exact: true }),
-    ).toBeVisible({ timeout: 15_000 });
-
-    const openPublished = page.getByRole("link", {
-      name: "Open Public Proof",
-    });
-    if (await openPublished.isVisible()) {
-      await openPublished.click();
-      await expect(page).toHaveURL(/\/proof\/[a-z0-9-]+$/, {
-        timeout: 15_000,
-      });
-    } else {
-      await saveDraftWhenNeeded(page);
-      const proofPath = await publishFromPreview(page);
-      if (!/\/proof\/[a-z0-9-]+$/.test(new URL(page.url()).pathname)) {
-        await page.goto(proofPath);
-      }
-      await expect(page).toHaveURL(/\/proof\/[a-z0-9-]+$/, {
-        timeout: 15_000,
-      });
-    }
+      page.getByText("Verified Project Proof", { exact: true }),
+    ).toBeVisible();
+    return;
   }
 
+  const studioLink = page
+    .getByRole("link", {
+      name: /Prepare Public Proof|Continue Portfolio Studio|Manage Public Proof/,
+    })
+    .first();
+  await expect(studioLink).toBeVisible();
+  await studioLink.click();
   await expect(
-    page.getByRole("heading", { name: publicCopy.title }),
-  ).toBeVisible();
+    page.getByText("Private Portfolio Studio", { exact: true }),
+  ).toBeVisible({ timeout: 15_000 });
   await expect(
-    page.getByText("Verified Project Proof", { exact: true }),
+    page
+      .getByRole("link", {
+        name: /Open Public Proof|Preview Existing Draft/,
+      })
+      .or(page.getByRole("button", { name: "Save and Preview Public Proof" }))
+      .or(page.getByText(/Public now|Private draft|Withdrawn/, { exact: true })),
   ).toBeVisible();
 });
