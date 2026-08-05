@@ -15,29 +15,29 @@ export function AuthShell({
       id="main-content"
       className="relative min-h-screen px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:p-0"
     >
-      <div className="absolute top-6 left-5 z-20 sm:left-8 lg:top-10 lg:left-12">
-        <BrandMark
-          inverse
-          className="[&>span:last-child]:text-navy lg:[&>span:last-child]:text-white"
-        />
+      <div className="absolute top-6 left-5 z-20 sm:left-8 lg:hidden">
+        <BrandMark />
       </div>
 
-      <section className="from-primary to-primary-light relative hidden overflow-hidden bg-gradient-to-br p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <section className="relative hidden overflow-hidden bg-[linear-gradient(145deg,#06132f_0%,#0a2251_58%,#173c82_100%)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="absolute -top-28 -right-24 size-96 rounded-full border border-white/15" />
         <div className="absolute right-12 bottom-24 size-56 rounded-full bg-white/8 blur-2xl" />
-        <div className="relative max-w-xl">
-          <p className="text-sm font-semibold tracking-[0.18em] text-blue-100 uppercase">
-            The University for Human Potential
-          </p>
-          <h2 className="mt-5 text-5xl leading-tight font-semibold tracking-tight">
-            Discover who you are. Build what you carry.
-          </h2>
-          <p className="mt-5 max-w-lg text-lg leading-8 text-blue-50">
-            PipuPath turns reflection into a practical Mission, real-world
-            Quests and credible proof.
-          </p>
+        <div className="relative">
+          <BrandMark inverse />
+          <div className="mt-24 max-w-xl">
+            <p className="text-gold text-sm font-semibold tracking-[0.18em] uppercase">
+              Discover. Develop. Deploy.
+            </p>
+            <h2 className="mt-5 text-5xl leading-tight font-semibold tracking-tight">
+              Discover who you are. Build what you carry.
+            </h2>
+            <p className="mt-5 max-w-lg text-lg leading-8 text-blue-100">
+              PipuPath turns reflection into a practical Mission, real-world
+              Quests and credible proof.
+            </p>
+          </div>
         </div>
-        <p className="text-sm text-blue-100">
+        <p className="relative text-sm text-blue-100">
           Private by default. Progress through action.
         </p>
       </section>
@@ -45,7 +45,7 @@ export function AuthShell({
       <section className="flex min-h-[calc(100vh-4rem)] items-center justify-center pt-20 lg:min-h-screen lg:pt-0">
         <div className="w-full max-w-lg">
           <Surface className="p-6 sm:p-9">
-            <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
+            <p className="text-primary-light text-xs font-semibold tracking-[0.16em] uppercase">
               Secure access
             </p>
             <h1 className="text-navy mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
