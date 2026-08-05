@@ -26,9 +26,8 @@
 
 ## Final release candidate
 
-- [x] Exact Git head: `bb08c5271ea8e5076f08933eb1dd7ae34eb47bfb`
-- [x] Matching READY Vercel Preview: `dpl_DgaeCn3Qr5goFVUWHH5AxiMC4Udb`
-- [x] GitHub Actions run `31016406247` passes validation and authenticated E2E
+- [x] Branded application head verified by GitHub Actions
+- [x] Matching READY Vercel Preview
 - [x] Matching staging database
 - [x] Complete authenticated browser recovery matrix
 - [x] Portfolio 200 → 404 → 200 lifecycle reconfirmed
