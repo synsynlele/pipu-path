@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Discover who you are, develop what you carry and deploy it through real-world action.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#1d4ed8",
+    background_color: "#020817",
+    theme_color: "#020817",
     orientation: "portrait-primary",
     icons: [
       {
