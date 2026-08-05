@@ -5,11 +5,11 @@ const variants = {
   primary:
     "border border-primary bg-primary text-white shadow-sm shadow-primary/20 hover:border-primary-light hover:bg-primary-light",
   secondary:
-    "border border-border bg-white text-navy shadow-sm hover:border-primary/35 hover:bg-primary-soft/50",
+    "border border-border bg-panel-raised text-foreground shadow-sm hover:border-primary/35 hover:bg-primary-soft/50",
   ghost:
-    "border border-transparent bg-transparent text-muted hover:bg-primary-soft/60 hover:text-primary",
+    "border border-transparent bg-transparent text-muted hover:bg-primary-soft/60 hover:text-primary-light",
   premium:
-    "border border-gold bg-gold text-navy shadow-sm shadow-gold/20 hover:bg-gold-light",
+    "border border-gold bg-gold text-[#061027] shadow-sm shadow-gold/20 hover:bg-gold-light",
 } as const;
 
 type ButtonLinkProps = ComponentProps<typeof Link> & {
