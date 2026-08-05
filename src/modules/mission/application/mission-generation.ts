@@ -16,6 +16,7 @@ import {
   getCurrentMissionState,
   getMissionProfileContext,
 } from "../infrastructure/mission-dal";
+import { buildEvidenceBasedMission } from "./mission-fallback";
 
 const logger = createLogger();
 const messages: Record<MissionErrorCode, string> = {
@@ -51,10 +52,20 @@ function fail(code: MissionErrorCode): Result {
 function extractMissionCode(error: unknown): MissionErrorCode {
   const message = error instanceof Error ? error.message : String(error);
   const matched = message.match(/MISSION_[A-Z_]+/)?.[0] as
-    MissionErrorCode | undefined;
+    | MissionErrorCode
+    | undefined;
   return matched && matched in messages
     ? matched
     : "MISSION_GENERATION_DISABLED";
+}
+
+function safeProviderFailure(error: unknown) {
+  if (!(error instanceof Error)) return null;
+  return /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
+    error.message,
+  )
+    ? error.message
+    : null;
 }
 
 export async function generateCurrentMission(input: {
@@ -65,11 +76,13 @@ export async function generateCurrentMission(input: {
   await requireAuthenticatedIdentity();
   const context = await getMissionProfileContext();
   if (!context) return fail("MISSION_PROFILE_REQUIRED");
-  let model: string;
+
+  let model = "evidence-fallback-v1";
+  let geminiAvailable = true;
   try {
     ({ model } = requireGeminiEnvironment());
   } catch {
-    return fail("MISSION_GENERATION_DISABLED");
+    geminiAvailable = false;
   }
 
   const current = await getCurrentMissionState(context.profileId);
@@ -122,20 +135,44 @@ export async function generateCurrentMission(input: {
     "claim_stage5_mission_request",
     {
       request_id_input: requestId,
-      provider_input: "google_gemini",
+      provider_input: geminiAvailable ? "google_gemini" : "evidence_fallback",
       model_input: model,
     },
   );
   if (claimError || !claimed) return fail("MISSION_REQUEST_ALREADY_RUNNING");
 
   try {
-    const output = await new GeminiMissionProvider().generate({
-      context,
-      currentMission,
-      refinementInstruction,
-    });
-    const validated = validateMissionOutput(context, output);
+    let generationMode: "gemini" | "evidence_fallback" = "gemini";
+    let fallbackReason: string | null = null;
+    let output: unknown;
+
+    if (geminiAvailable) {
+      try {
+        output = await new GeminiMissionProvider().generate({
+          context,
+          currentMission,
+          refinementInstruction,
+        });
+      } catch (error) {
+        generationMode = "evidence_fallback";
+        fallbackReason = safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+        output = buildEvidenceBasedMission({ context, currentMission });
+      }
+    } else {
+      generationMode = "evidence_fallback";
+      fallbackReason = "GEMINI_ENVIRONMENT_UNAVAILABLE";
+      output = buildEvidenceBasedMission({ context, currentMission });
+    }
+
+    let validated = validateMissionOutput(context, output);
+    if (!validated.ok) {
+      generationMode = "evidence_fallback";
+      fallbackReason = validated.code;
+      output = buildEvidenceBasedMission({ context, currentMission });
+      validated = validateMissionOutput(context, output);
+    }
     if (!validated.ok) throw new Error(validated.code);
+
     const { data: missionId, error: saveError } = await service.rpc(
       "persist_stage5_mission",
       { request_id_input: requestId, mission_input: validated.value },
@@ -145,6 +182,8 @@ export async function generateCurrentMission(input: {
       requestId,
       missionId,
       kind: input.kind,
+      generationMode,
+      fallbackReason,
     });
     return { ok: true, missionId };
   } catch (error) {
@@ -155,10 +194,7 @@ export async function generateCurrentMission(input: {
         : /^GEMINI_/.test(raw)
           ? "MISSION_PROVIDER_UNAVAILABLE"
           : extractMissionCode(error);
-    const safeDetail =
-      /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(raw)
-        ? raw
-        : undefined;
+    const safeDetail = safeProviderFailure(error) ?? undefined;
     await service.rpc("fail_stage5_mission_request", {
       request_id_input: requestId,
       failure_code_input: code,
