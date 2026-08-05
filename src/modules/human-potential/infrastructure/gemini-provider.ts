@@ -14,7 +14,8 @@ import {
 } from "../domain/contracts";
 
 const logger = createLogger();
-const requestTimeoutMs = 45_000;
+const requestTimeoutMs = 40_000;
+const retryableStatuses = new Set([429, 500, 502, 503, 504]);
 const profileSections: Array<{
   key: HumanPotentialProfileSectionKey;
   instruction: string;
@@ -157,6 +158,12 @@ const profileResponseJsonSchema = {
   },
 } as const;
 
+class GeminiHttpError extends Error {
+  constructor(readonly status: number) {
+    super(`GEMINI_HTTP_${status}`);
+  }
+}
+
 function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
   return [
     "You create a private, provisional Human Potential Profile from supplied Discovery evidence.",
@@ -184,56 +191,120 @@ function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
   ].join("\n");
 }
 
+function wait(milliseconds: number) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function parseGeminiPayload(payload: unknown) {
+  const response = payload as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  };
+  const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("GEMINI_EMPTY_RESPONSE");
+  const normalized = text
+    .trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "");
+  try {
+    return JSON.parse(normalized) as unknown;
+  } catch {
+    throw new Error("GEMINI_INVALID_JSON");
+  }
+}
+
+async function requestGemini({
+  apiKey,
+  model,
+  prompt,
+  includeSchema,
+}: {
+  apiKey: string;
+  model: string;
+  prompt: string;
+  includeSchema: boolean;
+}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        signal: controller.signal,
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            ...(includeSchema
+              ? { responseJsonSchema: profileResponseJsonSchema }
+              : {}),
+            candidateCount: 1,
+            maxOutputTokens: 8192,
+          },
+        }),
+      },
+    );
+    if (!response.ok) throw new GeminiHttpError(response.status);
+    return parseGeminiPayload(await response.json());
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("GEMINI_TIMEOUT");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export class GeminiInterpretationProvider {
   async interpret(
     input: z.infer<typeof interpretationInputSchema>,
   ): Promise<unknown> {
     const { apiKey, model } = requireGeminiEnvironment();
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
-        {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "x-goog-api-key": apiKey,
-          },
-          signal: controller.signal,
-          body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: buildPrompt(input) }] }],
-            generationConfig: {
-              responseMimeType: "application/json",
-              responseJsonSchema: profileResponseJsonSchema,
-              candidateCount: 1,
-              temperature: 0.2,
-              maxOutputTokens: 8192,
-            },
-          }),
-        },
-      );
-      if (!response.ok) {
-        throw new Error(`GEMINI_HTTP_${response.status}`);
+    const prompt = buildPrompt(input);
+    const models = [...new Set([model, "gemini-3.5-flash-lite"])];
+    let lastError: unknown = new Error("GEMINI_HTTP_503");
+
+    modelLoop: for (let modelIndex = 0; modelIndex < models.length; modelIndex += 1) {
+      const candidateModel = models[modelIndex];
+      for (const includeSchema of [true, false]) {
+        for (let attempt = 0; attempt < 2; attempt += 1) {
+          try {
+            return await requestGemini({
+              apiKey,
+              model: candidateModel,
+              prompt,
+              includeSchema,
+            });
+          } catch (error) {
+            lastError = error;
+            if (!(error instanceof GeminiHttpError)) throw error;
+
+            if (error.status === 400 && includeSchema) break;
+
+            if (retryableStatuses.has(error.status) && attempt === 0) {
+              await wait(error.status === 429 ? 2500 : 1200);
+              continue;
+            }
+
+            if (
+              (retryableStatuses.has(error.status) || error.status === 404) &&
+              modelIndex < models.length - 1
+            ) {
+              continue modelLoop;
+            }
+
+            throw error;
+          }
+        }
       }
-      const payload = (await response.json()) as {
-        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-      };
-      const text = payload.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) throw new Error("GEMINI_EMPTY_RESPONSE");
-      try {
-        return JSON.parse(text) as unknown;
-      } catch {
-        throw new Error("GEMINI_INVALID_JSON");
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        throw new Error("GEMINI_TIMEOUT");
-      }
-      throw error;
-    } finally {
-      clearTimeout(timeout);
     }
+
+    throw lastError;
   }
 
   mapProviderError(error: unknown) {
