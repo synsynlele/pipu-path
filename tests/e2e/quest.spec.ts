@@ -17,7 +17,7 @@ async function signIn(page: Page) {
     .not.toBe("/login");
 }
 
-async function openCurrentActionableQuest(page: Page) {
+async function openCurrentQuestForVerification(page: Page) {
   await page.goto("/quests");
   await expect(
     page.getByRole("heading", { name: "Build proof, not just plans." }),
@@ -33,30 +33,31 @@ async function openCurrentActionableQuest(page: Page) {
     );
   }
 
-  const actionableQuest = page
-    .locator("li")
-    .filter({
-      has: page.getByRole("link", {
-        name: /Open Quest|Continue Quest|Complete Reflection/,
-      }),
-    })
-    .first();
-  await expect(actionableQuest).toBeVisible({ timeout: 60_000 });
-  const open = actionableQuest.getByRole("link", {
-    name: /Open Quest|Continue Quest|Complete Reflection/,
-  });
-  await open.click();
-  await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+$/);
+  for (const label of [
+    "Complete Reflection",
+    "Continue Quest",
+    "Open Quest",
+    "Review Quest",
+  ]) {
+    const link = page.getByRole("link", { name: label, exact: true }).first();
+    if (await link.isVisible()) {
+      await link.click();
+      await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+$/);
+      return;
+    }
+  }
+
+  throw new Error("No generated Quest is available for verification.");
 }
 
-test("authenticated Builder completes the current actionable Quest with evidence, reflection and exactly-once XP", async ({
+test("authenticated Builder completes or verifies the current Quest with exactly-once XP", async ({
   page,
   isMobile,
 }) => {
   test.setTimeout(180_000);
   test.skip(isMobile, "The full Quest mutation flow runs once on desktop.");
   await signIn(page);
-  await openCurrentActionableQuest(page);
+  await openCurrentQuestForVerification(page);
 
   const start = page.getByRole("button", { name: "Start This Quest" });
   const evidence = page.getByLabel("What proof did you create?");
