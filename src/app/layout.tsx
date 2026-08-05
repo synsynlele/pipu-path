@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 
+const productionUrl = new URL("https://pipupath.name.ng");
+
 export const metadata: Metadata = {
   title: {
     default: "PipuPath — The University for Human Potential",
@@ -10,9 +12,7 @@ export const metadata: Metadata = {
   description:
     "Discover who you are, develop what you carry and deploy it through real-world action.",
   applicationName: "PipuPath",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "https://pipupath.name.ng",
-  ),
+  metadataBase: productionUrl,
   alternates: {
     canonical: "/",
   },
