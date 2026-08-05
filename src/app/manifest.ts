@@ -18,7 +18,7 @@ export default function manifest(): MetadataRoute.Manifest {
         src: PIPUPATH_LOGO_DATA_URI,
         sizes: "96x96",
         type: "image/webp",
-        purpose: "any maskable",
+        purpose: "any",
       },
     ],
   };
