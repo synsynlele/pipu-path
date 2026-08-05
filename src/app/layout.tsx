@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 
+// Keep all environments canonical to the public apex domain.
 const productionUrl = new URL("https://pipupath.name.ng");
 
 export const metadata: Metadata = {
