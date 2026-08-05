@@ -119,6 +119,10 @@ textarea::placeholder {
   color: #7183a8;
 }
 
+.text-navy {
+  color: var(--foreground);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
