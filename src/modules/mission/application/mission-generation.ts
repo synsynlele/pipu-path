@@ -52,8 +52,7 @@ function fail(code: MissionErrorCode): Result {
 function extractMissionCode(error: unknown): MissionErrorCode {
   const message = error instanceof Error ? error.message : String(error);
   const matched = message.match(/MISSION_[A-Z_]+/)?.[0] as
-    | MissionErrorCode
-    | undefined;
+    MissionErrorCode | undefined;
   return matched && matched in messages
     ? matched
     : "MISSION_GENERATION_DISABLED";
@@ -135,7 +134,9 @@ export async function generateCurrentMission(input: {
     "claim_stage5_mission_request",
     {
       request_id_input: requestId,
-      provider_input: geminiAvailable ? "google_gemini" : "evidence_fallback",
+      provider_input: geminiAvailable
+        ? "google_gemini"
+        : "evidence_fallback",
       model_input: model,
     },
   );
@@ -155,7 +156,8 @@ export async function generateCurrentMission(input: {
         });
       } catch (error) {
         generationMode = "evidence_fallback";
-        fallbackReason = safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+        fallbackReason =
+          safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
         output = buildEvidenceBasedMission({ context, currentMission });
       }
     } else {
