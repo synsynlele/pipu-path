@@ -22,7 +22,10 @@ const updateForm = readFileSync(
   "src/modules/project/ui/project-update-form.tsx",
   "utf8",
 );
-const shell = readFileSync("src/components/shells/app-shell.tsx", "utf8");
+const navigation = readFileSync(
+  "src/components/navigation/app-navigation.tsx",
+  "utf8",
+);
 const adr = readFileSync(
   "docs/architecture/adr-stage-8-builder-project-mvp.md",
   "utf8",
@@ -100,12 +103,15 @@ describe("Stage 8 Builder Project structural contract", () => {
   });
 
   it("integrates Projects into the complete Builder shell", () => {
-    expect(shell).toContain('{ label: "Projects", href: "/projects" }');
+    expect(navigation).toContain('label: "Build"');
+    expect(navigation).toContain('href: "/build"');
+    expect(navigation).toContain('pathname.startsWith("/quests")');
+    expect(navigation).toContain('pathname.startsWith("/projects")');
     expect(projectPage).toContain("Turn proof into something useful.");
     expect(detailPage).toContain("Builder Project · Private");
   });
 
-  it("preserves private Stage 8 proof while allowing the authorised Stage 9 handoff", () => {
+  it("preserves private Stage 8 proof while allowing the authorised Portfolio handoff", () => {
     expect(adr).toContain("Stage 9 remains locked");
     expect(adr).toContain("public Projects or evidence portfolios");
     expect(detailPage).toContain("Raw evidence, reflections");

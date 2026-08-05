@@ -28,7 +28,7 @@ export function CheckpointForm() {
           name="preferred_name"
           maxLength={80}
           autoComplete="nickname"
-          className="border-border bg-panel-raised mt-2 min-h-12 w-full rounded-xl border px-3"
+          className="border-border focus:border-primary mt-2 min-h-12 w-full rounded-xl border bg-white px-3 shadow-sm transition-colors"
         />
       </label>
       <label className="block">
@@ -40,7 +40,7 @@ export function CheckpointForm() {
           maxLength={30}
           pattern="[A-Za-z][A-Za-z0-9_]{2,29}"
           autoComplete="username"
-          className="border-border bg-panel-raised mt-2 min-h-12 w-full rounded-xl border px-3"
+          className="border-border focus:border-primary mt-2 min-h-12 w-full rounded-xl border bg-white px-3 shadow-sm transition-colors"
         />
       </label>
       <label className="block">
@@ -49,7 +49,7 @@ export function CheckpointForm() {
           required
           name="age_band"
           defaultValue=""
-          className="border-border bg-panel-raised mt-2 min-h-12 w-full rounded-xl border px-3"
+          className="border-border focus:border-primary mt-2 min-h-12 w-full rounded-xl border bg-white px-3 shadow-sm transition-colors"
         >
           <option value="" disabled>
             Select an age band
@@ -74,7 +74,7 @@ export function CheckpointForm() {
         </Consent>
       </fieldset>
       {state.message ? (
-        <p role="alert" className="text-red-300">
+        <p role="alert" className="text-error">
           {state.message}
         </p>
       ) : null}

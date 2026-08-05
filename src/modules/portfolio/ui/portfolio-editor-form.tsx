@@ -14,9 +14,9 @@ import type {
 
 const initialState: PortfolioFormState = { status: "idle" };
 const inputClass =
-  "border-border bg-background mt-2 min-h-11 w-full rounded-xl border px-3 text-sm";
+  "border-border bg-white mt-2 min-h-12 w-full rounded-xl border px-3 text-sm shadow-sm transition-colors focus:border-primary";
 const textareaClass =
-  "border-border bg-background mt-2 min-h-28 w-full rounded-2xl border p-4 text-sm leading-6";
+  "border-border bg-white mt-2 min-h-28 w-full rounded-2xl border p-4 text-sm leading-6 shadow-sm transition-colors focus:border-primary";
 
 export function PortfolioEditorForm({
   project,
@@ -38,11 +38,11 @@ export function PortfolioEditorForm({
     <form action={action} aria-busy={pending} className="grid gap-8">
       <input type="hidden" name="projectId" value={project.id} />
 
-      <section className="border-gold/20 bg-gold/5 rounded-2xl border p-5 sm:p-6">
+      <section className="border-gold/25 bg-gold/8 rounded-2xl border p-5 sm:p-6">
         <p className="text-gold text-xs font-semibold tracking-wide uppercase">
           Public-safe boundary
         </p>
-        <h2 className="mt-3 text-xl font-semibold">
+        <h2 className="text-navy mt-3 text-xl font-semibold">
           Rewrite for the public. Do not copy private evidence.
         </h2>
         <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
@@ -54,7 +54,10 @@ export function PortfolioEditorForm({
 
       <section className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="builderName" className="text-sm font-semibold">
+          <label
+            htmlFor="builderName"
+            className="text-navy text-sm font-semibold"
+          >
             Public Builder name
           </label>
           <p className="text-muted mt-1 text-xs">
@@ -71,7 +74,10 @@ export function PortfolioEditorForm({
           />
         </div>
         <div>
-          <label htmlFor="publicTitle" className="text-sm font-semibold">
+          <label
+            htmlFor="publicTitle"
+            className="text-navy text-sm font-semibold"
+          >
             Public Project title
           </label>
           <input
@@ -85,7 +91,10 @@ export function PortfolioEditorForm({
           />
         </div>
         <div className="sm:col-span-2">
-          <label htmlFor="publicSummary" className="text-sm font-semibold">
+          <label
+            htmlFor="publicSummary"
+            className="text-navy text-sm font-semibold"
+          >
             Public summary
           </label>
           <textarea
@@ -100,7 +109,10 @@ export function PortfolioEditorForm({
           />
         </div>
         <div>
-          <label htmlFor="publicProblem" className="text-sm font-semibold">
+          <label
+            htmlFor="publicProblem"
+            className="text-navy text-sm font-semibold"
+          >
             Problem addressed
           </label>
           <textarea
@@ -116,7 +128,10 @@ export function PortfolioEditorForm({
           />
         </div>
         <div>
-          <label htmlFor="publicAudience" className="text-sm font-semibold">
+          <label
+            htmlFor="publicAudience"
+            className="text-navy text-sm font-semibold"
+          >
             People or community served
           </label>
           <textarea
@@ -131,7 +146,10 @@ export function PortfolioEditorForm({
           />
         </div>
         <div>
-          <label htmlFor="publicOutcome" className="text-sm font-semibold">
+          <label
+            htmlFor="publicOutcome"
+            className="text-navy text-sm font-semibold"
+          >
             Useful outcome achieved
           </label>
           <textarea
@@ -145,7 +163,10 @@ export function PortfolioEditorForm({
           />
         </div>
         <div>
-          <label htmlFor="impactSignal" className="text-sm font-semibold">
+          <label
+            htmlFor="impactSignal"
+            className="text-navy text-sm font-semibold"
+          >
             Truthful impact signal
           </label>
           <textarea
@@ -162,24 +183,24 @@ export function PortfolioEditorForm({
       </section>
 
       <section>
-        <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+        <p className="text-primary text-xs font-semibold tracking-wide uppercase">
           Public execution story
         </p>
-        <h2 className="mt-3 text-2xl font-semibold">
+        <h2 className="text-navy mt-3 text-2xl font-semibold">
           Summarise the three milestones safely.
         </h2>
         <div className="mt-5 grid gap-5">
           {milestones.map((milestone, index) => (
             <div
               key={milestone.id}
-              className="border-border bg-background/30 rounded-2xl border p-5"
+              className="border-border bg-soft/55 rounded-2xl border p-5"
             >
-              <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+              <p className="text-primary text-xs font-semibold tracking-wide uppercase">
                 Milestone {index + 1} · {milestone.title}
               </p>
               <label
                 htmlFor={`milestoneSummary${index + 1}`}
-                className="mt-3 block text-sm font-semibold"
+                className="text-navy mt-3 block text-sm font-semibold"
               >
                 Public-safe summary
               </label>
@@ -201,7 +222,7 @@ export function PortfolioEditorForm({
       </section>
 
       <section>
-        <label htmlFor="proofLink" className="text-sm font-semibold">
+        <label htmlFor="proofLink" className="text-navy text-sm font-semibold">
           Public proof link <span className="text-muted">(optional)</span>
         </label>
         <p className="text-muted mt-1 max-w-2xl text-xs leading-5">
@@ -232,7 +253,7 @@ export function PortfolioEditorForm({
           </p>
         ) : null}
         {state.status === "error" ? (
-          <p role="alert" className="mt-3 text-sm text-red-300">
+          <p role="alert" className="text-error mt-3 text-sm">
             {state.message}
           </p>
         ) : null}

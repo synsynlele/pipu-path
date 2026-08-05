@@ -26,15 +26,15 @@ export function PortfolioPublishForm({
       <input type="hidden" name="portfolioId" value={portfolioId} />
       <input type="hidden" name="projectId" value={projectId} />
       <input type="hidden" name="consentVersion" value="project-portfolio-v1" />
-      <label className="border-gold/30 bg-gold/5 flex items-start gap-3 rounded-2xl border p-4 text-sm">
+      <label className="border-gold/30 bg-gold/8 flex items-start gap-3 rounded-2xl border p-4 text-sm">
         <input
           name="consentConfirmed"
           type="checkbox"
           required
-          className="mt-1 h-4 w-4"
+          className="accent-primary mt-1 h-5 w-5"
         />
         <span>
-          <strong className="block">
+          <strong className="text-navy block">
             I choose to publish this exact proof
           </strong>
           <span className="text-muted mt-1 block leading-6">
@@ -53,7 +53,7 @@ export function PortfolioPublishForm({
         </p>
       ) : null}
       {state.status === "error" ? (
-        <p role="alert" className="mt-3 text-sm text-red-300">
+        <p role="alert" className="text-error mt-3 text-sm">
           {state.message}
         </p>
       ) : null}

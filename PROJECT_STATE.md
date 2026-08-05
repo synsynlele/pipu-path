@@ -1,92 +1,73 @@
 # PipuPath project state
 
-**Current stage:** Stage 9 — Selective Project Portfolio
+**Current stage:** Stage 10 — MVP Launch Readiness
 
-**Stage status:** COMPLETE
+**Stage status:** IN PROGRESS
 
 **Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4,
 Stage 5, Stage 6, Stage 7, Stage 8 and Stage 9
 
-**Current Git baseline:** `agent/stage9-selective-project-portfolio`, stacked on
-the verified Stage 8 closure `ea129d141458e1916b5eadd129482a6bc3706747`
+**Current Git baseline:** `agent/stage10-mvp-launch-readiness`, created from
+verified Stage 9 head `9d0071273654a89d14fe6f60b03a13dc65532ba1`
 
-**Verified implementation commit:**
+**Verified Stage 9 implementation:**
 `4627036f03844237c28011268c413906f4180bf5`
 
-**Review surface:** GitHub pull request #11
+**Stage 9 review surface:** GitHub pull request #11, ready and unmerged
 
 **Infrastructure:** authorised disposable non-production Supabase staging
-`kvjcswnmhwegpakbtvlh`; matching Vercel Preview deployment
-`dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`
+`kvjcswnmhwegpakbtvlh`; production untouched
 
-**Last verified:** 2026-08-05
+**Last local verification:** 2026-08-05
 
-## Stage 9 completion
+## Stage 10 objective
 
-Stage 9 converts one owned completed private Project into one selective public
-proof of work. The Builder prepares public-safe copy in a private Portfolio
-Studio, reviews an exact preview, explicitly consents to publication and may
-withdraw or republish the same stable public slug.
+Stage 10 is the final MVP stage. It hardens and integrates the complete Stage
+0–9 Builder loop; it does not expand the product.
 
-Publishing is adult-only in this MVP and blocked for safeguarding-flagged
-accounts. Under-18 Builders retain every private PipuPath capability; their
-public publication remains locked until a dedicated guardian-consent and
-safeguarding workflow exists.
+The current integration candidate includes:
 
-The public projection contains only approved presentation fields. Private Quest
-evidence, Nortnspoil reflections, raw Project updates, contact information,
-private profile fields and internal identifiers remain excluded.
+- one shared first-incomplete progression resolver for Google OAuth, email login
+  and returning users;
+- PKCE callback exchange with session cookies copied to the redirect response;
+- trusted Preview origins, safe internal redirects and password-recovery routing;
+- a new University for Human Potential landing page;
+- white, royal-blue, navy and restrained-gold shared design primitives;
+- five-item authenticated navigation: Home, Journey, Build, Portfolio, Profile;
+- a real-data Home and contextual Build route;
+- complete shared loading, safe error, retry and not-found experiences;
+- accessible focus, reduced-motion and mobile bottom-navigation behavior;
+- deterministic system-font builds with no Google Font network dependency;
+- security headers, robots and application manifest;
+- an atomic Supabase authentication limiter suitable for Vercel scaling; and
+- route, service, domain, security, OAuth, release, rollback and debt records.
 
-## Verification evidence
+Migrations `202608050020` and `202608050021` are applied on authorised staging.
+The rate-limit table has RLS and no browser table privileges. The narrow consume
+RPC accepts only allow-listed actions and SHA-256 keys. Staging verification
+proved attempts one through three are allowed, attempt four is denied, and
+invalid actions or raw keys are rejected.
 
-- Migration `202608040019_stage_9_selective_project_portfolio.sql` is applied
-  and verified on authorised disposable staging.
-- `builder_project_portfolios` has RLS and one owner-read policy.
-- Authenticated users receive SELECT only; all lifecycle mutations use
-  controlled ownership-checking RPCs.
-- Anonymous access is limited to an eleven-field public-safe RPC projection.
-- Unknown or withdrawn proof slugs are rejected before React streaming and
-  return a transport-level HTTP 404.
-- GitHub Actions run `30993330779` passed both `validate` and `staging-e2e`.
-- Repository validation passed formatting, zero-warning lint, strict
-  TypeScript, 91 unit tests, 77 structural/integration checks, coverage
-  thresholds and production build.
-- Authenticated staging E2E passed 21 tests with 7 intentional duplicate-flow
-  skips across Chromium and mobile coverage.
-- The browser matrix proved private draft recovery, exact preview, explicit
-  publication, anonymous safe viewing, withdrawal to HTTP 404, republishing on
-  the same slug, refresh recovery, anonymous private-route denial and mobile
-  usability.
-- Vercel runtime logs on deployment `dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`
-  recorded the same stable proof slug transitioning `200 → 404 → 200`.
-- Final staging reconciliation confirmed the proof is published again through
-  the stable slug `neighbourhood-reading-proof-1dd2ebd1` and the public RPC
-  returns only the approved eleven fields.
-- Production resources were not touched.
+Local validation passes formatting, zero-warning lint, strict TypeScript, 106
+unit tests, coverage thresholds, 80 structural/integration checks and the
+Next.js production build.
 
-## Explicit boundary
+## Remaining Stage 10 gates
 
-Stage 9 does not introduce Builder directories, search, follows, likes,
-comments, messaging, rankings, collaboration, mentor assessment, team Projects,
-opportunity matching, funding, employment or marketplace behavior.
+- Publish the coherent integration candidate on the Stage 10 branch.
+- Build the first matching Vercel Preview and run visual/browser review.
+- Verify email authentication and live Google OAuth separately on configured
+  staging.
+- Run fresh-user, returning-user, refresh, mobile, accessibility, RLS and full
+  Portfolio lifecycle matrices.
+- Repair every discovered issue in one controlled batch, avoiding unnecessary
+  Preview deployments.
+- Reconcile runtime logs, staging state and final dependency/debt disposition.
+- Prepare one exact release candidate with checklist and rollback evidence.
 
-Stage 10 has not started. Its scope must be locked through an accepted ADR before
-implementation begins.
+## Boundary
 
-## Known technical debt carried forward
-
-- Resolve recorded development-toolchain dependency advisories when compatible
-  patched dependency lines are available.
-- Replace the Stage 2 in-process rate limiter before production.
-- Complete legal, privacy, retention and child-safeguarding review.
-- Optimise CI browser installation and build caching without weakening gates.
-- Consolidate the isolated Stage 7/8/9 Supabase adapters into the canonical
-  generated database client during a dedicated maintenance slice.
-
-## Reproduction baseline
-
-```sh
-npm ci
-npm run validate
-npm run test:e2e
-```
+Do not add Builder directories, search, messaging, followers, likes, comments,
+rankings, communities, mentors, team Projects, opportunities, employment,
+funding, payments, marketplaces, new AI providers, native apps or enterprise
+analytics. Stage 10 finishes the MVP.

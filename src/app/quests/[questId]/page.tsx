@@ -265,7 +265,7 @@ export default async function QuestFocusPage({
                   Proof created. Progress earned.
                 </h2>
               </div>
-              <span className="bg-gold rounded-full px-4 py-2 text-sm font-semibold text-[#100f0c]">
+              <span className="bg-gold text-navy rounded-full px-4 py-2 text-sm font-semibold">
                 +{xpAwarded} XP
               </span>
             </div>

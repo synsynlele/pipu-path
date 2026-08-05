@@ -1,39 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --color-ink-950: #100f0c;
-  --color-ink-900: #191712;
-  --color-ink-800: #242018;
-  --color-ink-700: #332d22;
-  --color-sand-50: #fbf9f3;
-  --color-sand-100: #f4efe3;
-  --color-sand-200: #e8deca;
-  --color-gold-300: #e6c976;
-  --color-gold-400: #d4ad45;
-  --color-gold-500: #b98d27;
-  --color-success: #69a77c;
-  --color-danger: #d56a61;
-  --background: var(--color-ink-950);
-  --foreground: var(--color-sand-50);
-  --muted: #b9b09d;
-  --border: rgb(230 201 118 / 20%);
+  --color-white: #ffffff;
+  --color-soft: #f6f9ff;
+  --color-soft-blue-grey: #eaf1fb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-500: #3b82f6;
+  --color-primary-100: #dbeafe;
+  --color-navy: #0f172a;
+  --color-text: #172033;
+  --color-muted: #64748b;
+  --color-gold-400: #d4a72c;
+  --color-gold-300: #e8c65b;
+  --color-success: #16a34a;
+  --color-danger: #dc2626;
+  --background: var(--color-white);
+  --foreground: var(--color-text);
+  --muted: var(--color-muted);
+  --border: #d9e4f2;
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.5rem;
-  --shadow-focus: 0 0 0 3px rgb(230 201 118 / 35%);
+  --shadow-focus: 0 0 0 4px rgb(59 130 246 / 22%);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
+  --color-primary: var(--color-primary-700);
+  --color-primary-light: var(--color-primary-500);
+  --color-primary-soft: var(--color-primary-100);
+  --color-navy: var(--color-navy);
   --color-gold: var(--color-gold-400);
   --color-gold-light: var(--color-gold-300);
-  --color-panel: var(--color-ink-900);
-  --color-panel-raised: var(--color-ink-800);
+  --color-panel: var(--color-white);
+  --color-panel-raised: var(--color-soft);
+  --color-soft: var(--color-soft);
+  --color-soft-blue: var(--color-soft-blue-grey);
   --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-success: var(--color-success);
+  --color-error: var(--color-danger);
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono:
+    ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 * {
@@ -42,7 +54,7 @@
 
 html {
   background: var(--background);
-  color-scheme: dark;
+  color-scheme: light;
   scroll-behavior: smooth;
 }
 
@@ -50,14 +62,17 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(
-      circle at 85% -15%,
-      rgb(212 173 69 / 12%),
-      transparent 34rem
-    ),
-    var(--background);
+    radial-gradient(circle at 8% 0%, rgb(59 130 246 / 10%), transparent 28rem),
+    radial-gradient(circle at 92% 5%, rgb(212 167 44 / 9%), transparent 24rem),
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 48%, #f6f9ff 100%);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -66,19 +81,41 @@ a {
 }
 
 button,
-a {
+a,
+input,
+select,
+textarea {
   -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 :focus-visible {
   border-radius: var(--radius-sm);
-  outline: 2px solid var(--color-gold-300);
+  outline: 2px solid var(--color-primary-500);
   outline-offset: 3px;
+  box-shadow: var(--shadow-focus);
 }
 
 ::selection {
-  background: var(--color-gold-400);
-  color: var(--color-ink-950);
+  background: var(--color-primary-100);
+  color: var(--color-navy);
+}
+
+input,
+select,
+textarea {
+  color: var(--foreground);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
 }
 
 @media (prefers-reduced-motion: reduce) {

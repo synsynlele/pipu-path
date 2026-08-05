@@ -1,72 +1,18 @@
-# Stage 2 test matrix
+# MVP test matrix
 
-| Layer                            | Current result                                               |
-| -------------------------------- | ------------------------------------------------------------ |
-| Unit/component                   | 21 passed; 94.20% statements and 94.02% lines                |
-| Structural integration           | 11 passed                                                    |
-| Migration clean replay           | Three migrations passed from an empty transactional schema   |
-| Remote generated types           | Generated and TypeScript reconciled                          |
-| pgTAP RLS                        | 19/19 passed                                                 |
-| Anonymous API                    | Tables and controlled RPCs denied with `42501`               |
-| Authenticated API/RLS            | 19/19 passed across users A/B and service role               |
-| Email signup/confirmation/login  | Passed with two approved inbox aliases                       |
-| Duplicate/invalid/logout/refresh | Passed                                                       |
-| Recovery token/update/invalid    | Passed using an Admin-generated recovery link                |
-| Recovery email delivery          | Passed with approved staging inbox                           |
-| Google OAuth initiation/config   | Passed; redirects to `accounts.google.com`                   |
-| Google OAuth completion          | Passed with approved Google test account                     |
-| Browser E2E                      | 4/4 desktop/mobile staging tests passed in GitHub Actions    |
-| Deployed anonymous browser       | Public routes and protected-route redirects passed           |
-| Deployed OAuth client config     | Repaired and verified                                        |
-| HTTP route smoke                 | Public `200`; protected `307`; invalid callback fails closed |
-| Production build                 | Passed                                                       |
-| Dependency audit                 | Zero vulnerabilities                                         |
-| Secret scan                      | Server secrets absent from Git files and browser bundle      |
+No unexecuted critical flow is reported as passed.
 
-No unexecuted test is reported as passed.
-
-## Stage 3
-
-| Layer                  | Result                                                             |
-| ---------------------- | ------------------------------------------------------------------ |
-| Domain/unit            | 4 Discovery tests; 25 repository tests pass                        |
-| Structural integration | 21/21 repository assertions pass                                   |
-| Migration              | `004`, `005`, `006` dry-run and apply passed on disposable staging |
-| Generated types        | Management API generation exactly matches committed types          |
-| pgTAP/RLS              | 24/24 passed                                                       |
-| Staging API            | 12/12 passed with two deterministic users and cleanup              |
-| Age variants           | Youth-safe/adult-only filtering enforced server-side               |
-| Concurrency            | Stale version returns stable non-retryable conflict                |
-| Review/completion      | Required denial, review, completion and idempotency pass           |
-| Anonymous browser      | Discovery protected-route redirect covered                         |
-| Authenticated browser  | Passed on staging; persisted completion is repeatably verified     |
-| Formatting/lint/types  | Passed; lint has zero warnings                                     |
-| Production build       | Passed; four Discovery routes compiled                             |
-| Dependency audit       | Zero vulnerabilities                                               |
-| Secret scan            | No credential values tracked                                       |
-
-No private response content is used or retained by verification fixtures.
-
-## Stage 4.1
-
-| Layer                       | Result                                                                                               |
-| --------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Domain/contract             | Evidence normalization and interpretation contracts pass                                             |
-| Structural integration      | Repository integration suite passes                                                                  |
-| Migration                   | `007`–`010` applied in order to disposable staging                                                   |
-| Generated types             | Regenerated from staging; SHA-256 `bee7a507d78254520dae1811652ae9163f129103367a93a62516dade3b6fbc28` |
-| RLS/authorization           | Anonymous and cross-user access denied; controlled own-root reads only                               |
-| Provenance integrity        | Active insights require same-request, same-owner evidence                                            |
-| Evidence lifecycle          | Replaced evidence supersedes older eligible source versions                                          |
-| Request lifecycle           | Idempotency, duplicate-active denial, consent and safeguarding enforced                              |
-| Sensitive evidence          | Interpretation projection redacts value; fingerprint preserves change detection                      |
-| Provider boundary           | Provider-neutral contracts only; no live provider execution                                          |
-| Authenticated browser       | Repeatable staging login and persisted Discovery boundary pass                                       |
-| Formatting/lint/types/build | `npm run validate` passes; lint has zero warnings                                                    |
-| Production dependency audit | Zero high-severity production findings                                                               |
-| Full dependency audit       | Nine high development-toolchain findings remain recorded debt                                        |
-
-Verification: GitHub Actions run
-[30570086797](https://github.com/synsynlele/pipu-path/actions/runs/30570086797)
-passed `validate` and `staging-e2e` against the matching Vercel Preview.
-No private evidence content was printed or retained in test output.
+| Layer                  | Stage 10 requirement                                                                                                               |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Unit/component         | Progress precedence, OAuth origin/redirect safety, navigation, UI states and rate-limit fingerprint                                |
+| Structural integration | Stages 2–10 contracts, route inventory, security headers, no banned Stage 10 features and release documentation                    |
+| Database/RLS           | All existing RLS plus Stage 10 private rate-limit table and controlled RPC                                                         |
+| Email authentication   | Signup/login, incomplete routing, completed-user Home, sign-out and recovery                                                       |
+| Google OAuth           | Provider initiation, approved account completion, callback cookie persistence and correct next incomplete route                    |
+| Fresh-user browser     | Landing through Identity, Discovery, Profile, Mission, Journey, Quests, Project and Portfolio lifecycle                            |
+| Returning-user browser | Correct destination at each major persisted checkpoint and refresh recovery                                                        |
+| Portfolio browser      | Publish 200, withdraw 404, same-slug republish 200 and no private content                                                          |
+| Viewports              | Narrow mobile, tablet and desktop; fixed bottom navigation does not cover actions                                                  |
+| Accessibility          | Labels, keyboard focus, status announcements, reduced motion and non-colour status meaning                                         |
+| Build/runtime          | Formatting, zero-warning lint, strict TypeScript, coverage, integration, database tests, production build and console/runtime logs |
+| Release                | Exact Git head, matching Preview/staging, checklist, rollback and debt disposition                                                 |

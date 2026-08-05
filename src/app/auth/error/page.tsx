@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { AuthShell } from "@/components/shells/auth-shell";
 import { ButtonLink } from "@/components/ui/button";
+export const metadata: Metadata = {
+  title: "Authentication interrupted",
+  robots: { index: false, follow: false },
+};
 
 export default function AuthErrorPage() {
   return (

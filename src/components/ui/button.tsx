@@ -3,9 +3,13 @@ import type { ComponentProps } from "react";
 
 const variants = {
   primary:
-    "bg-gold text-[#100f0c] hover:bg-gold-light border border-transparent",
+    "border border-primary bg-primary text-white shadow-sm shadow-primary/20 hover:border-primary-light hover:bg-primary-light",
   secondary:
-    "border border-border bg-transparent text-foreground hover:border-gold/50 hover:bg-gold/5",
+    "border border-border bg-white text-navy shadow-sm hover:border-primary/35 hover:bg-primary-soft/50",
+  ghost:
+    "border border-transparent bg-transparent text-muted hover:bg-primary-soft/60 hover:text-primary",
+  premium:
+    "border border-gold bg-gold text-navy shadow-sm shadow-gold/20 hover:bg-gold-light",
 } as const;
 
 type ButtonLinkProps = ComponentProps<typeof Link> & {
@@ -19,7 +23,7 @@ export function ButtonLink({
 }: ButtonLinkProps) {
   return (
     <Link
-      className={`inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-200 hover:-translate-y-0.5 ${variants[variant]} ${className}`}
       {...props}
     />
   );
@@ -38,7 +42,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={`inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0 ${variants[variant]} ${className}`}
       {...props}
     />
   );

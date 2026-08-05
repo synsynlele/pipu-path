@@ -1,38 +1,29 @@
-# Stage 2 security boundaries
+# Security boundaries
 
 1. Browser code receives only the Supabase URL and anonymous key.
-2. The service-role key is server-only and bypasses RLS only for authorised
-   recovery/administrative operations.
-3. Server actions derive identity from `auth.getUser()`, never form user IDs.
-4. Every private identity table has RLS.
-5. Anonymous roles have no table privileges or security-definer execution.
-6. Authenticated users read only their own private records.
-7. Protected ownership, status, safeguarding and onboarding columns are not
-   directly updateable.
-8. Consent is append-only and checkpoint completion is a controlled RPC.
-9. Private identity is not public Builder discovery.
-10. Age is stored only as a band; minor status is database-derived.
-11. OAuth initiation, PKCE state creation and callback exchange execute on the
-    server; the browser receives only the provider redirect.
-
-Staging verification found and repaired inherited Supabase default table and
-function grants in migrations `202607240002` and `202607240003`.
-
-## Stage 3 Discovery boundaries
-
-1. Anonymous users receive no Discovery table or function access.
-2. Published definitions are limited to authenticated, eligible age bands;
-   draft and retired definitions remain hidden.
-3. Users read only their own sessions and responses and cannot mutate tables
-   directly.
-4. Controlled functions derive `auth.uid()`, validate the Stage 2 checkpoint,
-   session ownership, question eligibility, response shape and valid state.
-5. Progress, ownership, completion, processing status and sensitivity are
-   server-managed.
-6. Sensitive answers remain private and are never copied into audit metadata.
-7. Optimistic version checks reject stale tabs without database retry loops.
-8. Internal migrated function implementations have all execution revoked;
-   only stable controlled wrappers are granted to `authenticated`.
-9. The normal application path never uses service-role credentials.
-10. The Stage 4 handoff is a completed-only normalized projection, not raw
-    records and not an interpretation.
+2. Service-role and Gemini credentials remain server-only.
+3. Private tables retain RLS, owner policies and controlled transition RPCs.
+4. Server actions derive identity from `auth.getUser()`, never submitted user IDs.
+5. OAuth uses PKCE, exchanges the code server-side and copies session cookies to
+   the redirect response.
+6. OAuth and post-auth redirects reject external or protocol-relative targets.
+7. Trusted callback origins are limited to the configured app, localhost and
+   Vercel Preview hostnames; non-local HTTP origins are rejected.
+8. Password recovery retains its explicit reset route.
+9. Authenticated users cannot be routed back to the public landing, login or
+   signup experience.
+10. Authentication attempts use an atomic Supabase rate-limit bucket. Only a
+    SHA-256 fingerprint is stored; raw addresses and submitted credentials are
+    not retained.
+11. The rate-limit table has RLS and no browser table grants. Anonymous access is
+    limited to the validated consume RPC.
+12. Public Project proof is adult-only, consented, reversible and limited to the
+    Stage 9 eleven-field projection.
+13. Unknown or withdrawn proof slugs return HTTP 404 before private data can
+    render.
+14. Security headers deny framing, MIME sniffing and unnecessary browser
+    capabilities and restrict resource origins.
+15. Error states never expose SQL, provider payloads, stack traces, secrets or
+    internal identifiers.
+16. Production infrastructure is unchanged until exact Preview and staging
+    verification pass.

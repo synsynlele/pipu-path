@@ -37,6 +37,10 @@ const withdrawForm = readFileSync(
   "utf8",
 );
 const shell = readFileSync("src/components/shells/app-shell.tsx", "utf8");
+const navigation = readFileSync(
+  "src/components/navigation/app-navigation.tsx",
+  "utf8",
+);
 const adr = readFileSync(
   "docs/architecture/adr-stage-9-selective-project-portfolio.md",
   "utf8",
@@ -142,7 +146,10 @@ describe("Stage 9 selective Project portfolio structural contract", () => {
   });
 
   it("integrates Portfolio into the complete Builder shell", () => {
-    expect(shell).toContain('{ label: "Portfolio", href: "/portfolio" }');
+    expect(shell).toContain("<AppNavigation />");
+    expect(navigation).toContain(
+      '{ label: "Portfolio", href: "/portfolio", icon: "portfolio" }',
+    );
     expect(portfolioPage).toContain(
       "Present proof without surrendering privacy.",
     );

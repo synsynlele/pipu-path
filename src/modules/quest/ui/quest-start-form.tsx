@@ -22,7 +22,7 @@ export function QuestStartForm({ questId }: { questId: string }) {
         {pending ? "Opening focus mode…" : "Start This Quest"}
       </Button>
       {state.status === "error" ? (
-        <p role="alert" className="mt-4 text-sm text-red-300">
+        <p role="alert" className="text-error mt-4 text-sm">
           {state.message}
         </p>
       ) : null}

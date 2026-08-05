@@ -1,14 +1,21 @@
 # Service map
 
-| Operation          | Boundary                    | Guarantees                                                                |
-| ------------------ | --------------------------- | ------------------------------------------------------------------------- |
-| Start/resume       | `start_or_resume_discovery` | Server identity, age eligibility, idempotent active/completed session     |
-| Load               | Discovery DAL               | Own session, eligible published questions, own responses                  |
-| Save/skip          | `save_discovery_response`   | Ownership, type/constraint checks, server sensitivity, optimistic version |
-| Progress           | `discovery_progress`        | Derived from eligible questions and saved responses                       |
-| Review             | `open_discovery_review`     | Required answers present, valid transition                                |
-| Complete           | `complete_discovery`        | Review state, idempotency, timestamp, checkpoint and handoff status       |
-| Stage 4 projection | `getStage4DiscoveryHandoff` | Completed-only normalized typed input                                     |
+| Capability         | Server boundary                    | Core guarantee                                                                |
+| ------------------ | ---------------------------------- | ----------------------------------------------------------------------------- |
+| Authentication     | Supabase Auth server actions       | Email and Google use server-owned redirects and privacy-safe errors           |
+| OAuth callback     | `/auth/callback` + callback client | PKCE exchange, response-cookie persistence, trusted origin and safe next path |
+| Progress routing   | Identity progress DAL/domain       | One canonical first-incomplete destination for OAuth, email and returners     |
+| Identity/consent   | Controlled identity RPCs           | Ownership, age band, consent and safeguarding checkpoint                      |
+| Discovery          | Discovery DAL and RPCs             | Owner evidence, optimistic versioning, review and completion                  |
+| Potential Profile  | Server-only Gemini provider        | Validated private synthesis with provenance and feedback                      |
+| Mission            | Mission actions/provider/RPCs      | One practical active Mission, refinement and recovery                         |
+| Journey            | Journey actions/provider/RPCs      | Ordered realistic milestones and explicit activation                          |
+| Quests             | Quest actions/provider/RPCs        | Action, evidence, reflection, exactly-once XP and progression                 |
+| Projects           | Project actions/RPCs               | Quest provenance, three milestones and append-only proof updates              |
+| Portfolio          | Portfolio actions/RPCs             | Adult safeguarding, explicit consent, narrow public projection and withdrawal |
+| Auth rate limiting | `consume_stage10_auth_rate_limit`  | Atomic cross-instance limits using SHA-256 request fingerprints               |
+| Home               | Authenticated progress DAL         | Current data only and one contextual next action                              |
 
-All browser writes pass through server actions and controlled functions.
-Service-role credentials are not used by the application flow.
+Gemini keys and service-role credentials remain server-only. Browser writes use
+server actions and controlled database functions rather than direct private
+writes.

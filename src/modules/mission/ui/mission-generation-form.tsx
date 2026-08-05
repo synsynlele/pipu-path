@@ -43,7 +43,7 @@ export function MissionGenerationForm({
         {attemptsRemaining} of 3 generation attempts remaining.
       </p>
       {state.status === "error" ? (
-        <p className="mt-4 text-sm leading-6 text-red-300" role="alert">
+        <p className="text-error mt-4 text-sm leading-6" role="alert">
           {state.message}
         </p>
       ) : null}

@@ -33,7 +33,7 @@ export function QuestGenerationForm({
         {attemptsRemaining} of 3 safe generation attempts remaining.
       </p>
       {state.status === "error" ? (
-        <p role="alert" className="mt-4 text-sm text-red-300">
+        <p role="alert" className="text-error mt-4 text-sm">
           {state.message}
         </p>
       ) : null}

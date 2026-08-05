@@ -4,7 +4,17 @@ import { requireSupabasePublicEnvironment } from "@/lib/config/env";
 import { refreshSupabaseSession } from "@/lib/supabase/proxy";
 
 const authRoutes = ["/login", "/signup"];
-const protectedPrefixes = ["/app", "/onboarding"];
+const protectedPrefixes = [
+  "/app",
+  "/build",
+  "/continue",
+  "/onboarding",
+  "/mission",
+  "/journey",
+  "/quests",
+  "/projects",
+  "/portfolio",
+];
 const publicProofPattern = /^\/proof\/([a-z0-9-]+)$/;
 
 async function hasPublishedProjectProof(slug: string) {
@@ -45,12 +55,14 @@ export async function proxy(request: NextRequest) {
     destination.searchParams.set("next", path);
     return NextResponse.redirect(destination);
   }
-  if (user && authRoutes.includes(path)) {
+
+  if (user && (path === "/" || authRoutes.includes(path))) {
     const destination = request.nextUrl.clone();
-    destination.pathname = "/app";
+    destination.pathname = "/continue";
     destination.search = "";
     return NextResponse.redirect(destination);
   }
+
   return response;
 }
 

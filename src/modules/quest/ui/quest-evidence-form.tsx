@@ -99,7 +99,7 @@ export function QuestEvidenceForm({
           name="evidenceImage"
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          className="border-border bg-background file:bg-gold mt-2 block w-full rounded-xl border p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:px-3 file:py-2 file:font-semibold file:text-[#100f0c]"
+          className="border-border bg-background file:bg-gold file:text-navy mt-2 block w-full rounded-xl border p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:px-3 file:py-2 file:font-semibold"
         />
       </div>
       <div>
@@ -112,7 +112,7 @@ export function QuestEvidenceForm({
           </p>
         ) : null}
         {state.status === "error" ? (
-          <p role="alert" className="mt-3 text-sm text-red-300">
+          <p role="alert" className="text-error mt-3 text-sm">
             {state.message}
           </p>
         ) : null}

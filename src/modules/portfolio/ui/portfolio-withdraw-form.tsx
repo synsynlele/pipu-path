@@ -29,7 +29,7 @@ export function PortfolioWithdrawForm({
         {pending ? "Removing public access…" : "Withdraw Public Proof"}
       </Button>
       {state.status === "error" ? (
-        <p role="alert" className="mt-3 text-sm text-red-300">
+        <p role="alert" className="text-error mt-3 text-sm">
           {state.message}
         </p>
       ) : null}
