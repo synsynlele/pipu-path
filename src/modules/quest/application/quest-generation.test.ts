@@ -16,7 +16,7 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
   requireAuthenticatedIdentity: mocks.auth,
 }));
-vi.mock("@/lib/config/env", () => ({ requireGeminiEnvironment: mocks.env }));
+vi.mock("@/lib/config/env", () => ({ requireOpenAIEnvironment: mocks.env }));
 vi.mock("../infrastructure/quest-dal", () => ({
   getQuestContext: mocks.getContext,
   getCurrentQuestState: mocks.getState,
@@ -25,8 +25,8 @@ vi.mock("../infrastructure/quest-client", () => ({
   createQuestServerClient: vi.fn(async () => ({ rpc: mocks.browserRpc })),
   createQuestServiceClient: vi.fn(() => ({ rpc: mocks.serviceRpc })),
 }));
-vi.mock("../infrastructure/gemini-quest-provider", () => ({
-  GeminiQuestProvider: class {
+vi.mock("../infrastructure/openai-quest-provider", () => ({
+  OpenAIQuestProvider: class {
     generate = mocks.generate;
   },
 }));
@@ -81,7 +81,7 @@ describe("Stage 7 Quest generation orchestration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.auth.mockResolvedValue({ user: { id: "user-1" } });
-    mocks.env.mockReturnValue({ model: "gemini-flash", apiKey: "hidden" });
+    mocks.env.mockReturnValue({ model: "gpt-5-mini", apiKey: "hidden" });
     mocks.getContext.mockResolvedValue(context);
     mocks.getState.mockResolvedValue({
       quests: [],
@@ -100,14 +100,24 @@ describe("Stage 7 Quest generation orchestration", () => {
     mocks.generate.mockResolvedValue(output);
   });
 
-  it("turns an available milestone into a persisted Quest pack", async () => {
+  it("turns an available milestone into an OpenAI-generated Quest pack", async () => {
     await expect(generateCurrentQuestPack()).resolves.toEqual({
       ok: true,
       firstQuestId: "quest-1",
     });
     expect(mocks.browserRpc).toHaveBeenCalledWith(
       "create_stage7_quest_request",
-      expect.objectContaining({ milestone_id_input: context.milestoneId }),
+      expect.objectContaining({
+        milestone_id_input: context.milestoneId,
+        prompt_version_input: "quest-openai-v1",
+      }),
+    );
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "claim_stage7_quest_request",
+      expect.objectContaining({
+        provider_input: "openai",
+        model_input: "gpt-5-mini",
+      }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
       "persist_stage7_quest_pack",
@@ -191,8 +201,8 @@ describe("Stage 7 Quest generation orchestration", () => {
     );
   });
 
-  it("uses the fallback when Gemini times out", async () => {
-    mocks.generate.mockRejectedValue(new Error("GEMINI_TIMEOUT"));
+  it("uses the fallback when OpenAI times out", async () => {
+    mocks.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
 
     await expect(generateCurrentQuestPack()).resolves.toEqual({
       ok: true,
@@ -221,7 +231,7 @@ describe("Stage 7 Quest generation orchestration", () => {
     );
   });
 
-  it("uses the fallback when Gemini configuration is unavailable", async () => {
+  it("uses the fallback when OpenAI configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
       throw new Error("missing environment");
     });
