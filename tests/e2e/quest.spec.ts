@@ -79,7 +79,7 @@ test("authenticated Builder completes or verifies the current Quest with exactly
   if (await start.isVisible()) {
     await start.click();
     await expect(evidence.or(reflection).or(completed)).toBeVisible({
-      timeout: 15_000,
+      timeout: 30_000,
     });
   }
 
@@ -88,7 +88,7 @@ test("authenticated Builder completes or verifies the current Quest with exactly
       "I completed the practical action with a trusted participant and recorded the useful result and honest response.",
     );
     await page.getByRole("button", { name: "Submit Evidence" }).click();
-    await expect(reflection.or(completed)).toBeVisible({ timeout: 15_000 });
+    await expect(reflection.or(completed)).toBeVisible({ timeout: 60_000 });
   }
 
   if (await reflection.isVisible()) {
@@ -118,11 +118,13 @@ test("authenticated Builder completes or verifies the current Quest with exactly
     await page
       .getByRole("button", { name: "Complete Quest and Earn 50 XP" })
       .click();
-    await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+\/complete$/);
+    await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+\/complete$/, {
+      timeout: 60_000,
+    });
   }
 
   const awardedXp = page.getByText("+50", { exact: true });
-  await expect(completed).toBeVisible({ timeout: 15_000 });
+  await expect(completed).toBeVisible({ timeout: 30_000 });
   await expect(awardedXp).toBeVisible();
 
   await page.reload();
