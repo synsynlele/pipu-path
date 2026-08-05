@@ -15,7 +15,7 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
   requireAuthenticatedIdentity: mocks.auth,
 }));
-vi.mock("@/lib/config/env", () => ({ requireGeminiEnvironment: mocks.env }));
+vi.mock("@/lib/config/env", () => ({ requireOpenAIEnvironment: mocks.env }));
 vi.mock("../infrastructure/journey-dal", () => ({
   getJourneyContext: mocks.getContext,
   getCurrentJourneyState: mocks.getState,
@@ -26,8 +26,8 @@ vi.mock("@/lib/supabase/server", () => ({
 vi.mock("@/lib/supabase/service-role", () => ({
   createServiceRoleSupabaseClient: vi.fn(() => ({ rpc: mocks.serviceRpc })),
 }));
-vi.mock("../infrastructure/gemini-journey-provider", () => ({
-  GeminiJourneyProvider: class {
+vi.mock("../infrastructure/openai-journey-provider", () => ({
+  OpenAIJourneyProvider: class {
     generate = mocks.generate;
   },
 }));
@@ -72,7 +72,7 @@ describe("Journey generation orchestration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.auth.mockResolvedValue({ user: { id: "user-1" } });
-    mocks.env.mockReturnValue({ model: "gemini-flash", apiKey: "hidden" });
+    mocks.env.mockReturnValue({ model: "gpt-5-mini", apiKey: "hidden" });
     mocks.getContext.mockResolvedValue(context);
     mocks.getState.mockResolvedValue({
       active: null,
@@ -91,14 +91,24 @@ describe("Journey generation orchestration", () => {
     mocks.generate.mockResolvedValue(output);
   });
 
-  it("runs active mission to Gemini to persisted draft Journey", async () => {
+  it("runs active mission to OpenAI to persisted draft Journey", async () => {
     await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
       ok: true,
       journeyId: "journey-1",
     });
     expect(mocks.browserRpc).toHaveBeenCalledWith(
       "create_stage6_journey_request",
-      expect.objectContaining({ mission_id_input: context.missionId }),
+      expect.objectContaining({
+        mission_id_input: context.missionId,
+        prompt_version_input: "journey-openai-v1",
+      }),
+    );
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "claim_stage6_journey_request",
+      expect.objectContaining({
+        provider_input: "openai",
+        model_input: "gpt-5-mini",
+      }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
       "persist_stage6_journey",
@@ -130,8 +140,8 @@ describe("Journey generation orchestration", () => {
     );
   });
 
-  it("uses the fallback when Gemini times out", async () => {
-    mocks.generate.mockRejectedValue(new Error("GEMINI_TIMEOUT"));
+  it("uses the fallback when OpenAI times out", async () => {
+    mocks.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
     await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
       ok: true,
       journeyId: "journey-1",
@@ -146,7 +156,7 @@ describe("Journey generation orchestration", () => {
     );
   });
 
-  it("uses the fallback when Gemini configuration is unavailable", async () => {
+  it("uses the fallback when OpenAI configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
       throw new Error("missing");
     });
