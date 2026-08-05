@@ -288,6 +288,8 @@ test("Portfolio remains usable on a narrow screen without duplicating publicatio
         name: /Open Public Proof|Preview Existing Draft/,
       })
       .or(page.getByRole("button", { name: "Save and Preview Public Proof" }))
-      .or(page.getByText(/Public now|Private draft|Withdrawn/, { exact: true })),
+      .or(
+        page.getByText(/Public now|Private draft|Withdrawn/, { exact: true }),
+      ),
   ).toBeVisible();
 });
