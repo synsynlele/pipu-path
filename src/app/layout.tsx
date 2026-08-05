@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "https://pipupath.name.ng",
   ),
+  alternates: {
+    canonical: "/",
+  },
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml", sizes: "any" }],
     shortcut: "/icon.svg",
