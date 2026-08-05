@@ -69,6 +69,12 @@ RPC that returns only the approved public-safe columns for a currently
 published slug. The public return shape excludes portfolio, Project, Quest,
 Mission, Journey and user identifiers.
 
+A public proof request is checked through that same narrow RPC in the request
+proxy before React begins streaming. Unknown or withdrawn slugs are rewritten
+to a dedicated HTTP 404 response. The public page repeats the live-state check
+and withdrawal invalidates the exact slug, providing defence in depth without
+broadening anonymous database access.
+
 ## Privacy boundary
 
 The public surface must not expose:
