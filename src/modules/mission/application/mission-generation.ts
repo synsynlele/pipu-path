@@ -134,9 +134,7 @@ export async function generateCurrentMission(input: {
     "claim_stage5_mission_request",
     {
       request_id_input: requestId,
-      provider_input: geminiAvailable
-        ? "google_gemini"
-        : "evidence_fallback",
+      provider_input: geminiAvailable ? "google_gemini" : "evidence_fallback",
       model_input: model,
     },
   );
