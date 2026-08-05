@@ -1,54 +1,64 @@
 # Implementation status
 
-**Current stage:** Stage 9 — Selective Project Portfolio (final verification)  
+**Current stage:** Stage 9 — Selective Project Portfolio complete  
 **Last verified:** 2026-08-05  
-**Next boundary:** Stage 10 — locked until Stage 9 closure
+**Next boundary:** Stage 10 — not started
 
-| Stage                           | Status             | Evidence                                                                        |
-| ------------------------------- | ------------------ | ------------------------------------------------------------------------------- |
-| 0 — Governance and architecture | Complete           | Constitution, stage boundaries, quality attributes, ADRs and ledger             |
-| 1 — Engineering foundation      | Complete           | Application foundation, design system, config, logging, tests and CI            |
-| 2 — Identity and access         | Complete           | Database/RLS/email/recovery/OAuth and staging browser E2E pass                  |
-| 3 — Discovery                   | Complete           | Persistent evidence, review, RLS/API verification and browser E2E pass          |
-| 4 — Human Potential Profile     | Complete           | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass    |
-| 5 — Practical Mission           | Complete           | Live Gemini, refinement, activation, refresh, RLS and staging CI pass           |
-| 6 — Practical Builder Journey   | Complete           | Live Gemini, milestones, activation, refresh, RLS and staging CI pass           |
-| 7 — HQLS Quest Execution        | Complete           | Action, evidence, reflection, XP, progression and staging CI pass               |
-| 8 — Builder Project MVP         | Complete           | Quest-linked Project, milestones, proof updates, completion and staging CI pass |
-| 9 — Selective Project Portfolio | Final verification | Private studio, safe projection, consent, publish/withdraw and public proof     |
+| Stage                           | Status   | Evidence                                                                        |
+| ------------------------------- | -------- | ------------------------------------------------------------------------------- |
+| 0 — Governance and architecture | Complete | Constitution, stage boundaries, quality attributes, ADRs and ledger             |
+| 1 — Engineering foundation      | Complete | Application foundation, design system, config, logging, tests and CI            |
+| 2 — Identity and access         | Complete | Database/RLS/email/recovery/OAuth and staging browser E2E pass                  |
+| 3 — Discovery                   | Complete | Persistent evidence, review, RLS/API verification and browser E2E pass          |
+| 4 — Human Potential Profile     | Complete | Live Gemini, private persistence, feedback, refresh, RLS and staging CI pass    |
+| 5 — Practical Mission           | Complete | Live Gemini, refinement, activation, refresh, RLS and staging CI pass           |
+| 6 — Practical Builder Journey   | Complete | Live Gemini, milestones, activation, refresh, RLS and staging CI pass           |
+| 7 — HQLS Quest Execution        | Complete | Action, evidence, reflection, XP, progression and staging CI pass               |
+| 8 — Builder Project MVP         | Complete | Quest-linked Project, milestones, proof updates, completion and staging CI pass |
+| 9 — Selective Project Portfolio | Complete | Consent, safe projection, publish, HTTP 404 withdrawal, republish and E2E pass  |
 
-## Stage 9 verification state
+## Stage 9 completion
 
-Stage 9 is implemented on draft PR #11. It converts one completed private
-Project into one selective public proof while keeping Quest evidence,
-Nortnspoil reflections, raw Project updates, contact information and internal
-identifiers private.
+Stage 9 converts one completed private Project into one selective public proof
+while preserving PipuPath's evidence and safeguarding boundaries.
+
+The Builder uses a private Portfolio Studio to prepare public-safe copy, review
+an exact preview, explicitly consent to publication, publish through a stable
+slug, withdraw the proof and republish the same record. Publishing is adult-only
+in this MVP and unavailable to safeguarding-flagged accounts.
 
 Migration `202608040019_stage_9_selective_project_portfolio.sql` is applied and
-verified on authorised disposable staging. The portfolio table has RLS and an
-owner-read policy. Authenticated users receive SELECT only; all mutations use
-controlled RPCs. Anonymous access is limited to an eleven-field public-safe RPC
-projection. Publishing is adult-only in this MVP, requires explicit versioned
-consent, uses a stable slug and can be withdrawn without deleting private
-history.
+verified on authorised disposable staging. The private table has RLS and an
+owner-read policy. Authenticated users receive SELECT only and lifecycle writes
+use controlled RPCs. Anonymous access is limited to an eleven-field public-safe
+projection that excludes Quest evidence, Nortnspoil reflections, raw Project
+updates, contact information, private profile fields and internal identifiers.
 
-Repository validation has passed formatting, zero-warning ESLint, strict
-TypeScript, 91 unit tests, 77 structural/integration checks, coverage thresholds
-and the Next.js production build.
+Unknown or withdrawn public slugs are checked before React streaming and return
+a real HTTP 404. The public page repeats the live-state check and withdrawal
+invalidates the exact slug as defence in depth.
 
-The first live browser run proved private draft creation, exact preview,
-publication, anonymous safe access and successful database withdrawal. It
-identified that React's streamed not-found boundary rendered the correct 404
-content after withdrawal but could not change the already-started HTTP response
-from 200. The final repair now checks the public projection in the request proxy
-and rewrites withdrawn or unknown proof slugs to a dedicated HTTP 404 before
-React streaming begins. The page-level live-state check and exact slug
-invalidation remain as defence in depth.
+## Final verification
 
-Vercel deployment capacity has been restored and exact-head Preview verification
-resumed on 2026-08-05. Stage 9 remains open until the repaired flow proves:
-publish, anonymous view, withdrawal to 404, republish on the same slug, mobile
-recovery, runtime reconciliation and durable database state.
+- Verified implementation commit:
+  `4627036f03844237c28011268c413906f4180bf5`
+- GitHub Actions run `30993330779`: `validate` passed and `staging-e2e` passed.
+- Repository gate: formatting, zero-warning ESLint, strict TypeScript, 91 unit
+  tests, 77 structural/integration checks, coverage thresholds and production
+  build passed.
+- Browser matrix: 21 passed, 7 intentional duplicate-flow skips.
+- Matching Vercel Preview:
+  `dpl_EP4S38KVbzmf6oG1T15At7XsUXZ3`.
+- Live flow: publish → anonymous 200 → withdraw → anonymous 404 → republish the
+  same slug → anonymous 200.
+- Runtime logs recorded the stable slug transitioning `200 → 404 → 200` with
+  cache misses on the published responses and middleware-level 404 enforcement
+  while withdrawn.
+- Final staging reconciliation confirmed the portfolio is published and the
+  public RPC returns only the approved eleven fields.
+- Anonymous private Portfolio access and mobile Portfolio/public-proof behavior
+  passed.
+- Production resources were not touched.
 
 ## Stage 8 completion
 
@@ -71,7 +81,7 @@ completion updates.
 
 ## Boundary
 
-Stage 9 does not introduce Builder discovery, search, social mechanics,
+Stage 9 introduced no Builder directory, discovery search, social mechanics,
 collaboration, mentor assessment, opportunity matching, employment, funding or
-marketplace behavior. Stage 10 remains locked until Stage 9 passes its exact
-Preview and authenticated E2E closure gates.
+marketplace behavior. Stage 10 has not started and requires an accepted scope
+before implementation.
