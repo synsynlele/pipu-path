@@ -85,6 +85,64 @@ a {
   color: inherit;
 }
 
+.pp-button-primary,
+.pp-button-secondary,
+.pp-button-ghost,
+.pp-button-premium {
+  -webkit-text-fill-color: currentColor;
+}
+
+.pp-button-primary {
+  border-color: #4f7cff;
+  background-color: #4f7cff;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgb(79 124 255 / 20%);
+}
+
+.pp-button-primary:hover {
+  border-color: #79a8ff;
+  background-color: #79a8ff;
+  color: #020817;
+}
+
+.pp-button-secondary {
+  border-color: #1a2d55;
+  background-color: #0c1c3c;
+  color: #f8fafc;
+  box-shadow: 0 1px 3px rgb(2 8 23 / 35%);
+}
+
+.pp-button-secondary:hover {
+  border-color: rgb(79 124 255 / 55%);
+  background-color: #132b5c;
+  color: #ffffff;
+}
+
+.pp-button-ghost {
+  border-color: transparent;
+  background-color: transparent;
+  color: #dbeafe;
+}
+
+.pp-button-ghost:hover {
+  border-color: rgb(79 124 255 / 35%);
+  background-color: rgb(19 43 92 / 72%);
+  color: #ffffff;
+}
+
+.pp-button-premium {
+  border-color: #c9a54d;
+  background-color: #c9a54d;
+  color: #061027;
+  box-shadow: 0 1px 3px rgb(201 165 77 / 20%);
+}
+
+.pp-button-premium:hover {
+  border-color: #e5c96f;
+  background-color: #e5c96f;
+  color: #020817;
+}
+
 button,
 a,
 input,
