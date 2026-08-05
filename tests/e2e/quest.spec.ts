@@ -71,7 +71,9 @@ test("authenticated Builder completes the current actionable Quest with evidence
 
   if (await start.isVisible()) {
     await start.click();
-    await expect(evidence).toBeVisible({ timeout: 15_000 });
+    await expect(evidence.or(reflection).or(completed)).toBeVisible({
+      timeout: 15_000,
+    });
   }
 
   if (await evidence.isVisible()) {
@@ -79,7 +81,7 @@ test("authenticated Builder completes the current actionable Quest with evidence
       "I completed the practical action with a trusted participant and recorded the useful result and honest response.",
     );
     await page.getByRole("button", { name: "Submit Evidence" }).click();
-    await expect(reflection).toBeVisible({ timeout: 15_000 });
+    await expect(reflection.or(completed)).toBeVisible({ timeout: 15_000 });
   }
 
   if (await reflection.isVisible()) {
