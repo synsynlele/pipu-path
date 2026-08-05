@@ -10,7 +10,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       >
         Skip to content
       </a>
-      <header className="border-border sticky top-0 z-40 border-b bg-white/90 backdrop-blur-xl">
+      <header className="border-border bg-panel/90 sticky top-0 z-40 border-b backdrop-blur-xl">
         <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
           <BrandMark />
           <div className="flex items-center gap-2 sm:gap-3">
@@ -24,7 +24,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       {children}
-      <footer className="border-border border-t bg-white">
+      <footer className="border-border bg-panel border-t">
         <div className="text-muted mx-auto flex max-w-7xl flex-col gap-5 px-5 py-10 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <div>
             <p className="text-navy font-semibold">
@@ -33,10 +33,10 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             <p className="mt-1">© {new Date().getFullYear()} PipuPath</p>
           </div>
           <div className="flex gap-5">
-            <a href="/privacy" className="hover:text-primary">
+            <a href="/privacy" className="hover:text-primary-light">
               Privacy
             </a>
-            <a href="/terms" className="hover:text-primary">
+            <a href="/terms" className="hover:text-primary-light">
               Terms
             </a>
           </div>
