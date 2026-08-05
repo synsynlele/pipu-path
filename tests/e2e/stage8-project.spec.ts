@@ -177,11 +177,16 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
   await page.reload();
   await expect(completionHeading).toBeVisible();
   await page.goto("/projects");
+  const completedProjects = page
+    .getByRole("heading", { name: "Completed Projects" })
+    .locator("..");
   await expect(
     page.getByRole("heading", { name: "Completed Projects" }),
   ).toBeVisible();
   await expect(
-    page.getByText("Neighbourhood Reading Starter", { exact: true }),
+    completedProjects
+      .getByRole("heading", { name: "Neighbourhood Reading Starter" })
+      .first(),
   ).toBeVisible();
 });
 
