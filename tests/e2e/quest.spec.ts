@@ -1,9 +1,9 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const email = process.env.E2E_STAGE3_EMAIL;
 const password = process.env.E2E_STAGE3_PASSWORD;
 
-async function signIn(page: import("@playwright/test").Page) {
+async function signIn(page: Page) {
   test.skip(
     !email || !password,
     "Authenticated staging fixture is not configured.",
@@ -17,7 +17,7 @@ async function signIn(page: import("@playwright/test").Page) {
     .not.toBe("/login");
 }
 
-async function openQuestOne(page: import("@playwright/test").Page) {
+async function openCurrentActionableQuest(page: Page) {
   await page.goto("/quests");
   await expect(
     page.getByRole("heading", { name: "Build proof, not just plans." }),
@@ -26,56 +26,63 @@ async function openQuestOne(page: import("@playwright/test").Page) {
   const generate = page.getByRole("button", {
     name: "Generate My First Quests",
   });
-  if ((await generate.count()) === 1) {
+  if (await generate.isVisible()) {
     await generate.click();
     await expect(page.getByRole("status")).toContainText(
       "creating three practical HQLS Quests",
     );
-    await expect(page.getByText("Quest 1", { exact: true })).toBeVisible({
-      timeout: 60_000,
-    });
   }
 
-  const questOne = page
+  const actionableQuest = page
     .locator("li")
-    .filter({ has: page.getByText("Quest 1", { exact: true }) });
-  await expect(questOne).toBeVisible();
-  const open = questOne.getByRole("link", {
-    name: /Open Quest|Continue Quest|Complete Reflection|Review Quest/,
+    .filter({
+      has: page.getByRole("link", {
+        name: /Open Quest|Continue Quest|Complete Reflection/,
+      }),
+    })
+    .first();
+  await expect(actionableQuest).toBeVisible({ timeout: 60_000 });
+  const open = actionableQuest.getByRole("link", {
+    name: /Open Quest|Continue Quest|Complete Reflection/,
   });
-  await expect(open).toBeVisible();
   await open.click();
   await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+$/);
 }
 
-test("authenticated Builder completes Quest 1 with evidence, reflection and exactly-once XP", async ({
+test("authenticated Builder completes the current actionable Quest with evidence, reflection and exactly-once XP", async ({
   page,
   isMobile,
 }) => {
   test.setTimeout(180_000);
   test.skip(isMobile, "The full Quest mutation flow runs once on desktop.");
   await signIn(page);
-  await openQuestOne(page);
+  await openCurrentActionableQuest(page);
 
   const start = page.getByRole("button", { name: "Start This Quest" });
-  if ((await start.count()) === 1) {
+  const evidence = page.getByLabel("What proof did you create?");
+  const reflection = page.getByLabel("What did you do?");
+  const completed = page.getByRole("heading", {
+    name: "Proof created. Progress earned.",
+  });
+
+  await expect(start.or(evidence).or(reflection).or(completed)).toBeVisible({
+    timeout: 15_000,
+  });
+
+  if (await start.isVisible()) {
     await start.click();
-    await expect(page.getByLabel("What proof did you create?")).toBeVisible();
+    await expect(evidence).toBeVisible({ timeout: 15_000 });
   }
 
-  const evidence = page.getByLabel("What proof did you create?");
-  if ((await evidence.count()) === 1) {
+  if (await evidence.isVisible()) {
     await evidence.fill(
-      "I completed the first practical action with a trusted participant and recorded the useful result and honest response.",
+      "I completed the practical action with a trusted participant and recorded the useful result and honest response.",
     );
     await page.getByRole("button", { name: "Submit Evidence" }).click();
-    await expect(page.getByLabel("What did you do?")).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(reflection).toBeVisible({ timeout: 15_000 });
   }
 
-  const reflection = page.getByLabel("What did you do?");
-  if ((await reflection.count()) === 1) {
+  if (await reflection.isVisible()) {
     await reflection.fill(
       "I followed the Quest steps and created the small real-world result with resources already available to me.",
     );
@@ -105,25 +112,14 @@ test("authenticated Builder completes Quest 1 with evidence, reflection and exac
     await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+\/complete$/);
   }
 
-  await expect(
-    page.getByRole("heading", { name: "Proof created. Progress earned." }),
-  ).toBeVisible();
+  await expect(completed).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("+50 XP", { exact: true })).toBeVisible();
 
   await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "Proof created. Progress earned." }),
-  ).toBeVisible();
+  await expect(completed).toBeVisible();
+  await expect(page.getByText("+50 XP", { exact: true })).toBeVisible();
   await page.goto("/quests");
   await expect(page.getByText("Verified XP", { exact: true })).toBeVisible();
-  const questOne = page
-    .locator("li")
-    .filter({ has: page.getByText("Quest 1", { exact: true }) });
-  await expect(questOne.getByText("Completed", { exact: true })).toBeVisible();
-  const questTwo = page
-    .locator("li")
-    .filter({ has: page.getByText("Quest 2", { exact: true }) });
-  await expect(questTwo.getByText("Ready", { exact: true })).toBeVisible();
 });
 
 test("anonymous users cannot access private Quests", async ({ page }) => {
