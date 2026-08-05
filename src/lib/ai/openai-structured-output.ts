@@ -80,6 +80,7 @@ async function requestOnce(input: {
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
 
   try {
+    // This server-only boundary keeps provider credentials and private prompts out of browser bundles.
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
       headers: {
