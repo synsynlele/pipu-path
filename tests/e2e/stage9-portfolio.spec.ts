@@ -264,10 +264,13 @@ test("Portfolio and public proof remain usable on a narrow screen", async ({
   } else {
     await page
       .getByRole("link", {
-        name: /Continue Portfolio Studio|Manage Public Proof/,
+        name: /Prepare Public Proof|Continue Portfolio Studio|Manage Public Proof/,
       })
       .first()
       .click();
+    await expect(
+      page.getByText("Private Portfolio Studio", { exact: true }),
+    ).toBeVisible({ timeout: 15_000 });
 
     const openPublished = page.getByRole("link", {
       name: "Open Public Proof",
