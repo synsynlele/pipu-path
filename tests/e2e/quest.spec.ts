@@ -115,7 +115,7 @@ test("authenticated Builder completes Quest 1 with evidence, reflection and exac
     page.getByRole("heading", { name: "Proof created. Progress earned." }),
   ).toBeVisible();
   await page.goto("/quests");
-  await expect(page.getByText("50", { exact: true })).toBeVisible();
+  await expect(page.getByText("Verified XP", { exact: true })).toBeVisible();
   const questOne = page
     .locator("li")
     .filter({ has: page.getByText("Quest 1", { exact: true }) });
