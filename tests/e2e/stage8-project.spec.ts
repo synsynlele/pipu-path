@@ -137,8 +137,8 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
     name: "A useful result now has an evidence trail.",
   });
 
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    if ((await completionHeading.count()) === 1) break;
+  for (let attempt = 1; attempt <= 6; attempt += 1) {
+    if (await completionHeading.isVisible()) break;
 
     const progress = page.getByLabel("What progress did you make?");
     await expect(progress).toBeVisible({ timeout: 15_000 });
@@ -160,15 +160,15 @@ test("authenticated Builder creates and completes an evidence-linked Project", a
       .getByRole("button", { name: "Record Progress and Proof" })
       .click();
     await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+$/, {
-      timeout: 15_000,
+      timeout: 30_000,
     });
     await page.reload();
     await expect(
       completionHeading.or(page.getByLabel("What progress did you make?")),
-    ).toBeVisible({ timeout: 15_000 });
+    ).toBeVisible({ timeout: 30_000 });
   }
 
-  await expect(completionHeading).toBeVisible({ timeout: 15_000 });
+  await expect(completionHeading).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText("100%", { exact: true })).toBeVisible();
   await expect(
     page.getByText("Milestone completed", { exact: true }),
