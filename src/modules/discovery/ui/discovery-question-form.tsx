@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import type { DiscoveryAnswer, DiscoveryQuestion } from "../domain/discovery";
 
@@ -20,6 +21,31 @@ export function DiscoveryQuestionForm({
 }) {
   const descriptionId = `${question.stableKey}-description`;
   const errorId = `${question.stableKey}-error`;
+  const minimumSelections = question.minSelections ?? 1;
+  const maximumSelections = question.maxSelections ?? question.options.length;
+  const [selectedCount, setSelectedCount] = useState(
+    answer?.selectedOptions?.length ?? 0,
+  );
+  const multiSelectReady =
+    question.responseType !== "multi_select" ||
+    (selectedCount >= minimumSelections && selectedCount <= maximumSelections);
+
+  function handleSelectionChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (question.responseType !== "multi_select") return;
+    const form = event.currentTarget.form;
+    const selected = form
+      ? form.querySelectorAll<HTMLInputElement>(
+          'input[name="selected_options"]:checked',
+        ).length
+      : 0;
+    if (selected > maximumSelections) {
+      event.currentTarget.checked = false;
+      setSelectedCount(maximumSelections);
+      return;
+    }
+    setSelectedCount(selected);
+  }
+
   return (
     <form action="/api/discovery/save" method="post" className="space-y-6">
       <input type="hidden" name="session_id" value={sessionId} />
@@ -63,7 +89,7 @@ export function DiscoveryQuestionForm({
               return (
                 <label
                   key={option}
-                  className="border-border bg-panel-raised flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border p-4"
+                  className="border-border bg-panel-raised has-checked:border-primary/60 has-checked:bg-primary-soft/70 flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors hover:border-primary/40"
                 >
                   <input
                     name="selected_options"
@@ -74,6 +100,7 @@ export function DiscoveryQuestionForm({
                     }
                     value={option}
                     defaultChecked={selected}
+                    onChange={handleSelectionChange}
                     required={
                       question.required &&
                       question.responseType === "single_select"
@@ -84,6 +111,14 @@ export function DiscoveryQuestionForm({
                 </label>
               );
             })}
+            {question.responseType === "multi_select" ? (
+              <p className="text-muted text-sm" role="status">
+                {selectedCount} selected. Choose{" "}
+                {minimumSelections === maximumSelections
+                  ? minimumSelections
+                  : `${minimumSelections}–${maximumSelections}`}.
+              </p>
+            ) : null}
           </div>
         ) : null}
 
@@ -97,7 +132,7 @@ export function DiscoveryQuestionForm({
             ).map((value) => (
               <label
                 key={value}
-                className="border-border bg-panel-raised flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-xl border"
+                className="border-border bg-panel-raised has-checked:border-primary/60 has-checked:bg-primary-soft/70 flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-xl border"
               >
                 <input
                   className="sr-only"
@@ -137,7 +172,12 @@ export function DiscoveryQuestionForm({
               Skip for now
             </Button>
           ) : null}
-          <Button type="submit" name="intent" value="save">
+          <Button
+            type="submit"
+            name="intent"
+            value="save"
+            disabled={!multiSelectReady}
+          >
             {returnTo === "review" ? "Save edit" : "Save and continue"}
           </Button>
         </div>
