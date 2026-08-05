@@ -18,10 +18,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Print formatted dashboard source
-        run: |
-          npx prettier src/app/app/page.tsx > /tmp/page.tsx
-          echo 'FORMATTED_PAGE_START'
-          base64 -w 0 /tmp/page.tsx
-          echo
-          echo 'FORMATTED_PAGE_END'
+      - name: Format dashboard source
+        run: npx prettier src/app/app/page.tsx > /tmp/page.tsx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: formatted-dashboard
+          path: /tmp/page.tsx
+          if-no-files-found: error
