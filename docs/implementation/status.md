@@ -38,10 +38,12 @@ and the Next.js production build.
 
 The first live browser run proved private draft creation, exact preview,
 publication, anonymous safe access and successful database withdrawal. It
-identified one stale public response after withdrawal. The repaired source now
-forces `/proof/[slug]` to check live state, disables route revalidation caching,
-invalidates the exact slug during withdrawal and includes permanent regression
-checks.
+identified that React's streamed not-found boundary rendered the correct 404
+content after withdrawal but could not change the already-started HTTP response
+from 200. The final repair now checks the public projection in the request proxy
+and rewrites withdrawn or unknown proof slugs to a dedicated HTTP 404 before
+React streaming begins. The page-level live-state check and exact slug
+invalidation remain as defence in depth.
 
 Vercel deployment capacity has been restored and exact-head Preview verification
 resumed on 2026-08-05. Stage 9 remains open until the repaired flow proves:
