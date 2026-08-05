@@ -1,7 +1,4 @@
-import type {
-  JourneyContext,
-  JourneyOutput,
-} from "../domain/journey-contract";
+import type { JourneyContext, JourneyOutput } from "../domain/journey-contract";
 
 function shorten(value: string, maximum: number) {
   const trimmed = value.trim();

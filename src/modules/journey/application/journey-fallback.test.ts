@@ -35,8 +35,8 @@ describe("evidence-based Journey fallback", () => {
 
     expect(result.ok).toBe(true);
     expect(output.title).toBe(currentJourney.title);
-    expect(output.milestones.every((item) => item.resource_note.length > 10)).toBe(
-      true,
-    );
+    expect(
+      output.milestones.every((item) => item.resource_note.length > 10),
+    ).toBe(true);
   });
 });
