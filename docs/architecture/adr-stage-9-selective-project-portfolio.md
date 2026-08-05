@@ -2,7 +2,8 @@
 
 **Status:** Accepted  
 **Date:** 2026-08-04  
-**Stage boundary:** Stage 9 only
+**Stage boundary:** Stage 9 only  
+**Verification:** Complete on 2026-08-05
 
 ## Context
 
@@ -127,7 +128,7 @@ The Builder can convert verified private execution into a controlled public
 proof of work while preserving privacy and developmental integrity. The public
 surface remains deliberately narrow, adult-only, consent-driven and reversible.
 
-Stage 9 is complete only after draft preparation, private preview, publication,
-anonymous public reading, withdrawal, refresh recovery, mobile usability,
-RLS/grant verification and matching staging E2E pass. Work stops before Builder
-discovery or opportunity matching.
+The required draft, preview, publication, anonymous reading, withdrawal to HTTP
+404, same-slug republishing, refresh recovery, mobile usability, RLS/grant
+verification and matching staging E2E gates passed on 2026-08-05. Work stops
+before Builder discovery or opportunity matching.
