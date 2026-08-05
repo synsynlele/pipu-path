@@ -19,6 +19,7 @@ import {
 import { buildEvidenceBasedMission } from "./mission-fallback";
 
 const logger = createLogger();
+// Gemini enriches the result, but validated profile evidence guarantees completion.
 const messages: Record<MissionErrorCode, string> = {
   MISSION_PROFILE_REQUIRED: "Complete your Human Potential Profile first.",
   MISSION_CONSENT_REQUIRED:
