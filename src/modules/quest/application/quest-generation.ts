@@ -16,6 +16,7 @@ import {
   getCurrentQuestState,
   getQuestContext,
 } from "../infrastructure/quest-dal";
+import { buildEvidenceBasedQuestPack } from "./quest-fallback";
 
 const logger = createLogger();
 
@@ -73,16 +74,26 @@ function extractCode(error: unknown): QuestErrorCode {
   return match && match in messages ? match : "QUEST_GENERATION_DISABLED";
 }
 
+function safeProviderFailure(error: unknown) {
+  if (!(error instanceof Error)) return null;
+  return /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
+    error.message,
+  )
+    ? error.message
+    : null;
+}
+
 export async function generateCurrentQuestPack(): Promise<Result> {
   await requireAuthenticatedIdentity();
   const context = await getQuestContext();
   if (!context) return fail("QUEST_MILESTONE_REQUIRED");
 
-  let model: string;
+  let model = "evidence-fallback-v1";
+  let geminiAvailable = true;
   try {
     ({ model } = requireGeminiEnvironment());
   } catch {
-    return fail("QUEST_GENERATION_DISABLED");
+    geminiAvailable = false;
   }
 
   const current = await getCurrentQuestState(context.milestoneId);
@@ -104,7 +115,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
     "claim_stage7_quest_request",
     {
       request_id_input: requestId,
-      provider_input: "google_gemini",
+      provider_input: geminiAvailable ? "google_gemini" : "evidence_fallback",
       model_input: model,
     },
   );
@@ -112,8 +123,32 @@ export async function generateCurrentQuestPack(): Promise<Result> {
   if (claimError || !claimed) return fail("QUEST_REQUEST_ALREADY_RUNNING");
 
   try {
-    const output = await new GeminiQuestProvider().generate({ context });
-    const validated = validateQuestPackForContext(context, output);
+    let generationMode: "gemini" | "evidence_fallback" = "gemini";
+    let fallbackReason: string | null = null;
+    let output: unknown;
+
+    if (geminiAvailable) {
+      try {
+        output = await new GeminiQuestProvider().generate({ context });
+      } catch (error) {
+        generationMode = "evidence_fallback";
+        fallbackReason =
+          safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+        output = buildEvidenceBasedQuestPack(context);
+      }
+    } else {
+      generationMode = "evidence_fallback";
+      fallbackReason = "GEMINI_ENVIRONMENT_UNAVAILABLE";
+      output = buildEvidenceBasedQuestPack(context);
+    }
+
+    let validated = validateQuestPackForContext(context, output);
+    if (!validated.ok) {
+      generationMode = "evidence_fallback";
+      fallbackReason = validated.code;
+      output = buildEvidenceBasedQuestPack(context);
+      validated = validateQuestPackForContext(context, output);
+    }
     if (!validated.ok) throw new Error(validated.code);
 
     const { data: firstQuestId, error: saveError } = await service.rpc(
@@ -130,6 +165,8 @@ export async function generateCurrentQuestPack(): Promise<Result> {
       requestId,
       firstQuestId,
       milestoneId: context.milestoneId,
+      generationMode,
+      fallbackReason,
     });
 
     return { ok: true, firstQuestId };
@@ -141,10 +178,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
         : /^GEMINI_/.test(raw)
           ? "QUEST_PROVIDER_UNAVAILABLE"
           : extractCode(error);
-    const safeDetail =
-      /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(raw)
-        ? raw
-        : undefined;
+    const safeDetail = safeProviderFailure(error) ?? undefined;
 
     await service.rpc("fail_stage7_quest_request", {
       request_id_input: requestId,
