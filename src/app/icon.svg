@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="PipuPath">
+  <!-- PipuPath browser and installed-app icon -->
   <rect width="64" height="64" rx="14" fill="#020817"/>
   <path
     d="M19 48V18h17c8.5 0 14 4.9 14 12.4S44.5 43 36 43H27"
