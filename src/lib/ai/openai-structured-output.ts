@@ -105,6 +105,7 @@ async function requestOnce(input: {
     });
 
     if (!response.ok) throw new OpenAIHttpError(response.status);
+    // Module-specific domain validators still treat this parsed JSON as untrusted.
     return parseStructuredOutput(
       (await response.json()) as OpenAIResponsePayload,
     );
