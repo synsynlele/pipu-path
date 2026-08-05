@@ -115,6 +115,57 @@ describe("Stage 7 Quest generation orchestration", () => {
     );
   });
 
+  it("requires an available Journey milestone", async () => {
+    mocks.getContext.mockResolvedValue(null);
+
+    await expect(generateCurrentQuestPack()).resolves.toMatchObject({
+      ok: false,
+      code: "QUEST_MILESTONE_REQUIRED",
+    });
+    expect(mocks.getState).not.toHaveBeenCalled();
+  });
+
+  it("does not replace an existing Quest pack", async () => {
+    mocks.getState.mockResolvedValue({
+      quests: [{ id: "existing-quest" }],
+      attempts: 1,
+      requestRunning: false,
+      totalXp: 0,
+    });
+
+    await expect(generateCurrentQuestPack()).resolves.toMatchObject({
+      ok: false,
+      code: "QUEST_GENERATION_DISABLED",
+    });
+    expect(mocks.browserRpc).not.toHaveBeenCalled();
+  });
+
+  it("returns the safe request error raised by the database", async () => {
+    mocks.browserRpc.mockResolvedValue({
+      data: null,
+      error: new Error("QUEST_CONSENT_REQUIRED"),
+    });
+
+    await expect(generateCurrentQuestPack()).resolves.toMatchObject({
+      ok: false,
+      code: "QUEST_CONSENT_REQUIRED",
+    });
+    expect(mocks.serviceRpc).not.toHaveBeenCalled();
+  });
+
+  it("stops when the generation request cannot be claimed", async () => {
+    mocks.serviceRpc.mockResolvedValueOnce({
+      data: false,
+      error: new Error("claim failed"),
+    });
+
+    await expect(generateCurrentQuestPack()).resolves.toMatchObject({
+      ok: false,
+      code: "QUEST_REQUEST_ALREADY_RUNNING",
+    });
+    expect(mocks.generate).not.toHaveBeenCalled();
+  });
+
   it("replaces malformed model output with a validated fallback", async () => {
     mocks.generate.mockResolvedValue({ quests: [] });
 
@@ -157,6 +208,19 @@ describe("Stage 7 Quest generation orchestration", () => {
     );
   });
 
+  it("uses the fallback after an unclassified provider failure", async () => {
+    mocks.generate.mockRejectedValue(new Error("network disconnected"));
+
+    await expect(generateCurrentQuestPack()).resolves.toEqual({
+      ok: true,
+      firstQuestId: "quest-1",
+    });
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "persist_stage7_quest_pack",
+      expect.anything(),
+    );
+  });
+
   it("uses the fallback when Gemini configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
       throw new Error("missing environment");
@@ -173,6 +237,25 @@ describe("Stage 7 Quest generation orchestration", () => {
         provider_input: "evidence_fallback",
         model_input: "evidence-fallback-v1",
       }),
+    );
+  });
+
+  it("records a safe failure when persistence fails", async () => {
+    mocks.serviceRpc.mockImplementation(async (name: string) =>
+      name === "claim_stage7_quest_request"
+        ? { data: true, error: null }
+        : name === "persist_stage7_quest_pack"
+          ? { data: null, error: new Error("save failed") }
+          : { data: true, error: null },
+    );
+
+    await expect(generateCurrentQuestPack()).resolves.toMatchObject({
+      ok: false,
+      code: "QUEST_SAVE_FAILED",
+    });
+    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+      "fail_stage7_quest_request",
+      expect.objectContaining({ failure_code_input: "QUEST_SAVE_FAILED" }),
     );
   });
 });
