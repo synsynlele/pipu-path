@@ -47,7 +47,7 @@ export function BrandMark({
             PipuPath
           </span>
           <span
-            className={`${subtitleTone} mt-1 hidden whitespace-nowrap text-[0.65rem] leading-none font-medium tracking-[0.035em] sm:block`}
+            className={`${subtitleTone} mt-1 hidden text-[0.65rem] leading-none font-medium tracking-[0.035em] whitespace-nowrap sm:block`}
           >
             University for Human Potential
           </span>

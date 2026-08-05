@@ -9,13 +9,13 @@ export function PageLoading({
       aria-busy="true"
     >
       <div
-        className="flex max-w-md flex-col items-center rounded-3xl border border-border bg-panel px-8 py-10 text-center shadow-2xl"
+        className="border-border bg-panel flex max-w-md flex-col items-center rounded-3xl border px-8 py-10 text-center shadow-2xl"
         role="status"
         aria-live="polite"
       >
         <span
           aria-hidden="true"
-          className="size-12 animate-spin rounded-full border-4 border-primary-soft border-t-primary"
+          className="border-primary-soft border-t-primary size-12 animate-spin rounded-full border-4"
         />
         <p className="text-navy mt-5 text-lg font-semibold">{label}…</p>
         <p className="text-muted mt-2 text-sm">

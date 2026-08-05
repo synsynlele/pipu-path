@@ -116,12 +116,7 @@ const profileResponseJsonSchema = {
             items: {
               type: "object",
               additionalProperties: false,
-              required: [
-                "evidenceId",
-                "supportType",
-                "explanation",
-                "weight",
-              ],
+              required: ["evidenceId", "supportType", "explanation", "weight"],
               properties: {
                 evidenceId: {
                   type: "string",

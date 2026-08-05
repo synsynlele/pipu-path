@@ -81,7 +81,7 @@ export function DiscoveryQuestionForm({
                 maxLength={question.maxTextLength ?? 1200}
                 defaultValue={answer?.text ?? ""}
                 rows={7}
-                className="min-h-40 w-full resize-y rounded-xl border border-border bg-panel-raised p-4 leading-7"
+                className="border-border bg-panel-raised min-h-40 w-full resize-y rounded-xl border p-4 leading-7"
               />
               <p className="text-muted mt-2 text-sm">
                 Up to {question.maxTextLength ?? 1200} characters.
@@ -97,7 +97,7 @@ export function DiscoveryQuestionForm({
                 return (
                   <label
                     key={option}
-                    className="flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border border-border bg-panel-raised p-4 transition-colors has-checked:border-primary/60 has-checked:bg-primary-soft/70 hover:border-primary/40"
+                    className="border-border bg-panel-raised has-checked:border-primary/60 has-checked:bg-primary-soft/70 hover:border-primary/40 flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors"
                   >
                     <input
                       name="selected_options"
@@ -124,7 +124,8 @@ export function DiscoveryQuestionForm({
                   {selectedCount} selected. Choose{" "}
                   {minimumSelections === maximumSelections
                     ? minimumSelections
-                    : `${minimumSelections}–${maximumSelections}`}.
+                    : `${minimumSelections}–${maximumSelections}`}
+                  .
                 </p>
               ) : null}
             </div>
@@ -141,7 +142,7 @@ export function DiscoveryQuestionForm({
               ).map((value) => (
                 <label
                   key={value}
-                  className="flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-xl border border-border bg-panel-raised has-checked:border-primary/60 has-checked:bg-primary-soft/70"
+                  className="border-border bg-panel-raised has-checked:border-primary/60 has-checked:bg-primary-soft/70 flex min-h-14 cursor-pointer flex-col items-center justify-center rounded-xl border"
                 >
                   <input
                     className="sr-only"
@@ -209,14 +210,14 @@ export function DiscoveryQuestionForm({
 
       {submitting ? (
         <div
-          className="fixed inset-0 z-[100] grid place-items-center bg-background/85 px-5 backdrop-blur-sm"
+          className="bg-background/85 fixed inset-0 z-[100] grid place-items-center px-5 backdrop-blur-sm"
           role="status"
           aria-live="polite"
         >
-          <div className="flex max-w-md items-center gap-4 rounded-2xl border border-border bg-panel px-6 py-5 shadow-2xl">
+          <div className="border-border bg-panel flex max-w-md items-center gap-4 rounded-2xl border px-6 py-5 shadow-2xl">
             <span
               aria-hidden="true"
-              className="size-7 animate-spin rounded-full border-2 border-primary-soft border-t-primary"
+              className="border-primary-soft border-t-primary size-7 animate-spin rounded-full border-2"
             />
             <p className="font-semibold">
               Saving your answer and opening the next step…

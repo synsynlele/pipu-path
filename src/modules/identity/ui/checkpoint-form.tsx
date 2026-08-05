@@ -29,7 +29,7 @@ export function CheckpointForm() {
             name="preferred_name"
             maxLength={80}
             autoComplete="nickname"
-            className="mt-2 min-h-12 w-full rounded-xl border border-border bg-panel-raised px-3 shadow-sm transition-colors focus:border-primary"
+            className="border-border bg-panel-raised focus:border-primary mt-2 min-h-12 w-full rounded-xl border px-3 shadow-sm transition-colors"
           />
         </label>
         <label className="block">
@@ -41,7 +41,7 @@ export function CheckpointForm() {
             maxLength={30}
             pattern="[A-Za-z][A-Za-z0-9_]{2,29}"
             autoComplete="username"
-            className="mt-2 min-h-12 w-full rounded-xl border border-border bg-panel-raised px-3 shadow-sm transition-colors focus:border-primary"
+            className="border-border bg-panel-raised focus:border-primary mt-2 min-h-12 w-full rounded-xl border px-3 shadow-sm transition-colors"
           />
         </label>
         <label className="block">
@@ -50,7 +50,7 @@ export function CheckpointForm() {
             required
             name="age_band"
             defaultValue=""
-            className="mt-2 min-h-12 w-full rounded-xl border border-border bg-panel-raised px-3 shadow-sm transition-colors focus:border-primary"
+            className="border-border bg-panel-raised focus:border-primary mt-2 min-h-12 w-full rounded-xl border px-3 shadow-sm transition-colors"
           >
             <option value="" disabled>
               Select an age band
@@ -96,14 +96,14 @@ export function CheckpointForm() {
 
       {pending ? (
         <div
-          className="fixed inset-0 z-[100] grid place-items-center bg-background/85 px-5 backdrop-blur-sm"
+          className="bg-background/85 fixed inset-0 z-[100] grid place-items-center px-5 backdrop-blur-sm"
           role="status"
           aria-live="polite"
         >
-          <div className="flex max-w-md items-center gap-4 rounded-2xl border border-border bg-panel px-6 py-5 shadow-2xl">
+          <div className="border-border bg-panel flex max-w-md items-center gap-4 rounded-2xl border px-6 py-5 shadow-2xl">
             <span
               aria-hidden="true"
-              className="size-7 animate-spin rounded-full border-2 border-primary-soft border-t-primary"
+              className="border-primary-soft border-t-primary size-7 animate-spin rounded-full border-2"
             />
             <p className="font-semibold">
               Saving your identity and preparing Discovery…

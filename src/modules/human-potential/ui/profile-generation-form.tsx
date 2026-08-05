@@ -45,14 +45,14 @@ export function ProfileGenerationForm() {
 
       {pending ? (
         <div
-          className="fixed inset-0 z-[100] grid place-items-center bg-background/85 px-5 backdrop-blur-sm"
+          className="bg-background/85 fixed inset-0 z-[100] grid place-items-center px-5 backdrop-blur-sm"
           role="status"
           aria-live="polite"
         >
-          <div className="max-w-md rounded-3xl border border-border bg-panel px-7 py-8 text-center shadow-2xl">
+          <div className="border-border bg-panel max-w-md rounded-3xl border px-7 py-8 text-center shadow-2xl">
             <span
               aria-hidden="true"
-              className="mx-auto block size-12 animate-spin rounded-full border-4 border-primary-soft border-t-primary"
+              className="border-primary-soft border-t-primary mx-auto block size-12 animate-spin rounded-full border-4"
             />
             <p className="text-navy mt-5 text-lg font-semibold">
               Building your Human Potential Profile…

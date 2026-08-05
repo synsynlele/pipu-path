@@ -67,16 +67,8 @@ body {
       rgb(201 165 77 / 12%),
       transparent 28rem
     ),
-    radial-gradient(
-      circle at 8% 0%,
-      rgb(79 124 255 / 14%),
-      transparent 32rem
-    ),
-    radial-gradient(
-      circle at 92% 4%,
-      rgb(121 168 255 / 9%),
-      transparent 28rem
-    ),
+    radial-gradient(circle at 8% 0%, rgb(79 124 255 / 14%), transparent 32rem),
+    radial-gradient(circle at 92% 4%, rgb(121 168 255 / 9%), transparent 28rem),
     linear-gradient(180deg, #030919 0%, #020817 52%, #030b20 100%);
   color: var(--foreground);
   font-family:
