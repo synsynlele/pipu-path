@@ -5,9 +5,8 @@ const requireOpenAIEnvironment = vi.fn();
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/config/env", () => ({ requireOpenAIEnvironment }));
 
-const { requestOpenAIStructuredOutput } = await import(
-  "./openai-structured-output",
-);
+const { requestOpenAIStructuredOutput } =
+  await import("./openai-structured-output");
 
 const schema = {
   type: "object",
