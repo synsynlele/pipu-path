@@ -193,34 +193,49 @@ describe("Stage 4 profile generation orchestration", () => {
     expect(interpret).not.toHaveBeenCalled();
   });
 
-  it("returns a friendly error before creating a request when Gemini is missing", async () => {
+  it("generates a validated fallback when Gemini configuration is missing", async () => {
     requireGeminiEnvironment.mockImplementation(() => {
       throw new Error("missing");
     });
+
     await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
-      ok: false,
-      code: "HPI_INTERPRETATION_NOT_ALLOWED",
-      message:
-        "Profile generation is temporarily unavailable. Please try again.",
+      ok: true,
+      profileId: "55555555-5555-4555-8555-555555555555",
     });
-    expect(createCurrentInterpretationRequest).not.toHaveBeenCalled();
+    expect(createCurrentInterpretationRequest).toHaveBeenCalledOnce();
+    expect(interpret).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenNthCalledWith(
+      2,
+      "persist_stage4_human_potential_profile",
+      expect.objectContaining({
+        profile_metadata_input: expect.objectContaining({
+          generation_mode: "evidence_fallback",
+          fallback_reason: "GEMINI_ENVIRONMENT_UNAVAILABLE",
+        }),
+      }),
+    );
   });
 
-  it("persists only a privacy-safe Gemini failure code", async () => {
+  it("generates a validated fallback after a privacy-safe Gemini failure", async () => {
     interpret.mockRejectedValue(new Error("GEMINI_HTTP_403"));
+
     await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
-      ok: false,
-      code: "HPI_INTERPRETATION_NOT_ALLOWED",
-      message:
-        "Profile generation is temporarily unavailable. Please try again.",
+      ok: true,
+      profileId: "55555555-5555-4555-8555-555555555555",
     });
     expect(rpc).toHaveBeenNthCalledWith(
       2,
-      "fail_stage4_interpretation_request",
+      "persist_stage4_human_potential_profile",
       expect.objectContaining({
-        failure_code_input: "HPI_INTERPRETATION_NOT_ALLOWED",
-        failure_detail_safe_input: "GEMINI_HTTP_403",
+        profile_metadata_input: expect.objectContaining({
+          generation_mode: "evidence_fallback",
+          fallback_reason: "GEMINI_HTTP_403",
+        }),
       }),
+    );
+    expect(rpc).not.toHaveBeenCalledWith(
+      "fail_stage4_interpretation_request",
+      expect.anything(),
     );
   });
 });
