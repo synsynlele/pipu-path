@@ -1,0 +1,28 @@
+name: Package release source
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Package exact source tree
+        run: |
+          tar \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=.next \
+            --exclude=coverage \
+            --exclude=test-results \
+            -czf /tmp/pipupath-main-source.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pipupath-main-source
+          path: /tmp/pipupath-main-source.tar.gz
+          if-no-files-found: error
