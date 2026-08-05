@@ -1,16 +1,17 @@
 import "server-only";
 
+import { requireGeminiEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
-import { requireGeminiEnvironment } from "@/lib/config/env";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
-import { createCurrentInterpretationRequest } from "./interpretation-requests";
 import { interpretationInputSchema } from "../domain/contracts";
 import {
   profileOutputForPersistence,
   validateHumanPotentialProfileOutput,
 } from "../domain/profile-contract";
 import { GeminiInterpretationProvider } from "../infrastructure/gemini-provider";
+import { buildEvidenceBasedFallbackProfile } from "./evidence-profile-fallback";
+import { createCurrentInterpretationRequest } from "./interpretation-requests";
 
 const logger = createLogger();
 
@@ -42,6 +43,15 @@ function failure(code: string): ProfileExecutionResult {
   };
 }
 
+function safeProviderFailure(error: unknown) {
+  if (!(error instanceof Error)) return null;
+  return /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
+    error.message,
+  )
+    ? error.message
+    : null;
+}
+
 export function projectStructuredEvidenceValue(value: unknown) {
   if (!value || Array.isArray(value) || typeof value !== "object") return value;
   const structured = value as Record<string, unknown>;
@@ -58,11 +68,13 @@ export function projectStructuredEvidenceValue(value: unknown) {
 
 export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExecutionResult> {
   const { user } = await requireAuthenticatedIdentity();
-  let model: string;
+
+  let model = "evidence-fallback-v1";
+  let geminiAvailable = true;
   try {
     ({ model } = requireGeminiEnvironment());
   } catch {
-    return failure("HPI_INTERPRETATION_NOT_ALLOWED");
+    geminiAvailable = false;
   }
 
   const created = await createCurrentInterpretationRequest({
@@ -158,11 +170,31 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     const providerInput = parsedProviderInput.data;
 
     const provider = new GeminiInterpretationProvider();
-    const output = await provider.interpret(providerInput);
-    const validated = validateHumanPotentialProfileOutput(
-      providerInput,
-      output,
-    );
+    let generationMode: "gemini" | "evidence_fallback" = "gemini";
+    let fallbackReason: string | null = null;
+    let output: unknown;
+
+    if (geminiAvailable) {
+      try {
+        output = await provider.interpret(providerInput);
+      } catch (error) {
+        generationMode = "evidence_fallback";
+        fallbackReason = safeProviderFailure(error) ?? "GEMINI_PROVIDER_FAILURE";
+        output = buildEvidenceBasedFallbackProfile(providerInput);
+      }
+    } else {
+      generationMode = "evidence_fallback";
+      fallbackReason = "GEMINI_ENVIRONMENT_UNAVAILABLE";
+      output = buildEvidenceBasedFallbackProfile(providerInput);
+    }
+
+    let validated = validateHumanPotentialProfileOutput(providerInput, output);
+    if (!validated.ok) {
+      generationMode = "evidence_fallback";
+      fallbackReason = validated.code;
+      output = buildEvidenceBasedFallbackProfile(providerInput);
+      validated = validateHumanPotentialProfileOutput(providerInput, output);
+    }
     if (!validated.ok) throw new Error(validated.code);
 
     const persistence = profileOutputForPersistence(validated.value);
@@ -171,18 +203,29 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
       {
         request_id_input: requestId,
         profile_summary_input: persistence.summary,
-        profile_metadata_input: persistence.metadata,
+        profile_metadata_input: {
+          ...persistence.metadata,
+          generation_mode: generationMode,
+          ...(fallbackReason ? { fallback_reason: fallbackReason } : {}),
+        },
         insights_input: persistence.insights,
       },
     );
     if (persistError || !profileId) throw new Error("HPI_OUTPUT_INVALID");
 
-    await provider.recordUsage({
+    if (generationMode === "gemini") {
+      await provider.recordUsage({
+        requestId,
+        provider: "google_gemini",
+        model,
+      });
+    }
+    logger.info("hpi_profile_generation_completed", {
       requestId,
-      provider: "google_gemini",
-      model,
+      profileId,
+      generationMode,
+      fallbackReason,
     });
-    logger.info("hpi_profile_generation_completed", { requestId, profileId });
     return { ok: true, profileId };
   } catch (error) {
     const code =
@@ -190,13 +233,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
         ? (error.message.match(/HPI_[A-Z_]+/)?.[0] ??
           "HPI_INTERPRETATION_NOT_ALLOWED")
         : "HPI_INTERPRETATION_NOT_ALLOWED";
-    const providerFailure =
-      error instanceof Error &&
-      /^GEMINI_(?:HTTP_\d{3}|EMPTY_RESPONSE|INVALID_JSON|TIMEOUT)$/.test(
-        error.message,
-      )
-        ? error.message
-        : null;
+    const providerFailure = safeProviderFailure(error);
     await service.rpc("fail_stage4_interpretation_request", {
       request_id_input: requestId,
       failure_code_input: code,
