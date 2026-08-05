@@ -16,6 +16,9 @@ export function BrandMark({
   inverse = false,
   className = "",
 }: BrandMarkProps) {
+  const titleTone = inverse ? "text-white" : "text-foreground";
+  const subtitleTone = inverse ? "text-blue-100" : "text-muted";
+
   return (
     <Link
       href={href}
@@ -39,12 +42,12 @@ export function BrandMark({
       {!compact && (
         <span className="min-w-0 leading-none">
           <span
-            className={`${inverse ? "text-white" : "text-foreground"} block text-sm font-bold tracking-[0.02em]`}
+            className={`${titleTone} block text-sm font-bold tracking-[0.02em]`}
           >
             PipuPath
           </span>
           <span
-            className={`${inverse ? "text-blue-100" : "text-muted"} mt-1 hidden whitespace-nowrap text-[0.65rem] leading-none font-medium tracking-[0.035em] sm:block`}
+            className={`${subtitleTone} mt-1 hidden whitespace-nowrap text-[0.65rem] leading-none font-medium tracking-[0.035em] sm:block`}
           >
             University for Human Potential
           </span>
