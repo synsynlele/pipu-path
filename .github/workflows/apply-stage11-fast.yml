@@ -1,0 +1,49 @@
+name: Apply Stage 11 source
+
+on:
+  push:
+    branches: [agent/stage11-builder-connect]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stage11-fast-source
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.event.head_commit.message == 'chore(stage11): reconstruct final source'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruct verified Stage 11 source
+        run: |
+          cat \
+            .stage11-fast/p-00 \
+            .stage11-fast/q-00 \
+            .stage11-fast/r-00 \
+            .stage11-fast/r-01 \
+            .stage11-fast/r-02 \
+            .stage11-fast/r-03 \
+            .stage11-fast/r-04 \
+            .stage11-fast/r-05 \
+            .stage11-fast/r-06 \
+            | base64 --decode > /tmp/stage11-overlay.tar.gz
+          echo '508faf8c794693e3bb8531f2520f83a89ebfceb4c8ca41b7742bbb4d8725a431  /tmp/stage11-overlay.tar.gz' | sha256sum --check
+          tar -xzf /tmp/stage11-overlay.tar.gz -C .
+          rm -rf .stage11-fast
+          rm -f .github/workflows/apply-stage11-fast.yml
+          rm -f .github/workflows/package-stage11-source.yml
+          git diff --check
+
+      - name: Publish Stage 11 source
+        run: |
+          git config user.name 'pipu-path-release-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(stage11): builder connect and renewable growth cycles'
+          git push origin HEAD:agent/stage11-builder-connect
