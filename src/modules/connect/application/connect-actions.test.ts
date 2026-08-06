@@ -115,10 +115,9 @@ describe("Connect server actions", () => {
     await expect(
       sendConnectionRequestAction(form({ targetUserId })),
     ).rejects.toThrow("REDIRECT:/connect?updated=request-sent");
-    expect(mocks.rpc).toHaveBeenCalledWith(
-      "send_stage11_connection_request",
-      { target_user_id_input: targetUserId },
-    );
+    expect(mocks.rpc).toHaveBeenCalledWith("send_stage11_connection_request", {
+      target_user_id_input: targetUserId,
+    });
   });
 
   it("rejects invalid connection request input", async () => {
@@ -129,9 +128,7 @@ describe("Connect server actions", () => {
 
   it("accepts or declines an incoming request", async () => {
     await expect(
-      respondConnectionRequestAction(
-        form({ connectionId, action: "accept" }),
-      ),
+      respondConnectionRequestAction(form({ connectionId, action: "accept" })),
     ).rejects.toThrow("REDIRECT:/connect?updated=network");
     expect(mocks.rpc).toHaveBeenCalledWith(
       "respond_stage11_connection_request",
@@ -141,9 +138,7 @@ describe("Connect server actions", () => {
 
   it("cancels or removes through the close RPC", async () => {
     await expect(
-      respondConnectionRequestAction(
-        form({ connectionId, action: "remove" }),
-      ),
+      respondConnectionRequestAction(form({ connectionId, action: "remove" })),
     ).rejects.toThrow("REDIRECT:/connect?updated=network");
     expect(mocks.rpc).toHaveBeenCalledWith("close_stage11_connection", {
       connection_id_input: connectionId,
