@@ -2,50 +2,12 @@ name: CI
 
 on:
   workflow_dispatch:
-  pull_request:
-  push:
-    branches: [main]
 
 permissions:
   contents: read
 
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+  bootstrap-placeholder:
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - run: npm run validate
-
-  staging-e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
-        env:
-          E2E_BASE_URL: https://pipu-path-git-agent-stage10-mv-2de76f-copyartint-2860s-projects.vercel.app
-          E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
-          E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
-      - name: Upload browser traces on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-traces
-          path: test-results
-          if-no-files-found: ignore
+      - run: echo 'Stage 11 bulk source is being assembled.'

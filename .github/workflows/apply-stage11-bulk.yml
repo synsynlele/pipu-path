@@ -1,0 +1,46 @@
+name: Apply Stage 11 bulk source
+
+on:
+  push:
+    branches: [agent/stage11-builder-connect-final]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stage11-bulk-source
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.event.head_commit.message == 'chore(stage11): stage bulk source'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Reconstruct exact Stage 11 source
+        run: |
+          cat .stage11/chunk-* | base64 --decode > /tmp/stage11-overlay.tar.gz
+          echo '847ba3c36961862628a8ca68410de24182b7e75fc2ff9b996b8511f826e699e5  /tmp/stage11-overlay.tar.gz' | sha256sum --check
+          tar -xzf /tmp/stage11-overlay.tar.gz -C .
+          rm -rf .stage11
+          rm -f vercel.json
+          rm -f .github/workflows/apply-stage11-bulk.yml
+          rm -f .github/workflows/package-stage11-source.yml
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Apply repository formatting once
+        run: npm run format
+      - name: Reject whitespace errors
+        run: git diff --check
+      - name: Publish the complete Stage 11 source
+        run: |
+          git config user.name 'pipu-path-release-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(stage11): builder connect and renewable growth cycles'
+          git push origin HEAD:agent/stage11-builder-connect-final

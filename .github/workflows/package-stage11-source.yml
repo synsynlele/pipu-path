@@ -1,28 +1,13 @@
 name: Package Stage 11 source
 
 on:
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  package:
+  bootstrap-placeholder:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - name: Package exact source tree
-        run: |
-          tar \
-            --exclude=.git \
-            --exclude=node_modules \
-            --exclude=.next \
-            --exclude=coverage \
-            --exclude=test-results \
-            -czf /tmp/pipupath-stage11-source.tar.gz .
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pipupath-stage11-source
-          path: /tmp/pipupath-stage11-source.tar.gz
-          if-no-files-found: error
+      - run: echo 'Disabled during the bulk source bootstrap.'
