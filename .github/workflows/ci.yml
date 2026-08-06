@@ -31,7 +31,10 @@ jobs:
           3d024e3ff06bf174c41d7bec14af888156ae33fe874d45f613dd1bae448f07f7  .stage11-fast/r-03
           69dec124405fd8666585817e42d4ba8fe07ebf943b16683638d0e3cfffd7e6c1  .stage11-fast/r-04
           6ac05692e4b8b867b57225d1c1a19d2b4bb6d3b84dab3a64f15f58af32ee04a9  .stage11-fast/r-05
-          907f79e59caf25987f64016d6bd0fc53faa42fe08214aebcdb5076e18686abde  .stage11-fast/r-06
+          81e8fb39407784a0c44a9f394aab3cd96abdbb0b27f01576c12a318ed5401c33  .stage11-fast/s-00
+          3672a2628f1ab0ae35efe0299cc35d40218160dc95921d9bde280423fb16fa49  .stage11-fast/s-01
+          5ba8d71c8c5a9680880deba6a7f5badd86a696ffd03370d7fd2e438e83d98e94  .stage11-fast/s-02
+          81f7f9bc762fee188524124147729e9fcbf21d28d236e827bd4dfde50fb0a0c8  .stage11-fast/s-03
           EOF
           sha256sum --check /tmp/stage11-fragments.sha256
           cat \
@@ -43,7 +46,10 @@ jobs:
             .stage11-fast/r-03 \
             .stage11-fast/r-04 \
             .stage11-fast/r-05 \
-            .stage11-fast/r-06 \
+            .stage11-fast/s-00 \
+            .stage11-fast/s-01 \
+            .stage11-fast/s-02 \
+            .stage11-fast/s-03 \
             | base64 --decode > /tmp/stage11-overlay.tar.gz
           echo '508faf8c794693e3bb8531f2520f83a89ebfceb4c8ca41b7742bbb4d8725a431  /tmp/stage11-overlay.tar.gz' | sha256sum --check
           tar -xzf /tmp/stage11-overlay.tar.gz -C .
