@@ -7,6 +7,7 @@ const items = [
   { label: "Home", href: "/app", icon: "home" },
   { label: "Journey", href: "/journey", icon: "path" },
   { label: "Build", href: "/build", icon: "build" },
+  { label: "Connect", href: "/connect", icon: "connect" },
   { label: "Portfolio", href: "/portfolio", icon: "portfolio" },
   {
     label: "Profile",
@@ -41,7 +42,7 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
       <ul
         className={
           mobile
-            ? "grid grid-cols-5"
+            ? "grid grid-cols-6"
             : "border-border flex items-center gap-1 rounded-2xl border bg-white/90 p-1 shadow-sm"
         }
       >
@@ -54,10 +55,10 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 aria-current={active ? "page" : undefined}
                 className={
                   mobile
-                    ? `flex min-h-16 flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${
+                    ? `flex min-h-16 flex-col items-center justify-center gap-1 px-0.5 text-[0.6rem] font-semibold transition-colors ${
                         active ? "text-primary" : "text-muted"
                       }`
-                    : `inline-flex min-h-10 items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${
+                    : `inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition-colors ${
                         active
                           ? "bg-primary-soft text-primary"
                           : "text-muted hover:bg-soft hover:text-navy"
@@ -115,6 +116,16 @@ function NavigationIcon({
     return (
       <svg {...common}>
         <path d="M14.7 6.3a4 4 0 0 0-5 5L3 18v3h3l6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-3-3z" />
+      </svg>
+    );
+  }
+  if (name === "connect") {
+    return (
+      <svg {...common}>
+        <circle cx="8" cy="8" r="3" />
+        <circle cx="17" cy="9" r="2.5" />
+        <path d="M2.5 20a5.5 5.5 0 0 1 11 0" />
+        <path d="M14 20a4 4 0 0 1 7.5-2" />
       </svg>
     );
   }
