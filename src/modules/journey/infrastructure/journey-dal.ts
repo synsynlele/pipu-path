@@ -41,8 +41,16 @@ function mapJourney(
     suggested_duration:
       row.suggested_duration as JourneyOutput["suggested_duration"],
     status: row.status as
-      "draft" | "active" | "paused" | "completed" | "replaced",
+      | "draft"
+      | "active"
+      | "paused"
+      | "completed"
+      | "replaced",
+    cycleNumber: (row.cycle_number as number | undefined) ?? 1,
+    continuationOfJourneyId:
+      (row.continuation_of_journey_id as string | null | undefined) ?? null,
     createdAt: row.created_at as string,
+    completedAt: (row.completed_at as string | null | undefined) ?? null,
     milestones: milestones.map((item) => ({
       id: item.id as string,
       title: item.title as string,
@@ -58,6 +66,18 @@ function mapJourney(
   };
 }
 
+async function loadMilestones(
+  client: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  journeyId: string,
+) {
+  const { data } = await client
+    .from("journey_milestones")
+    .select("*")
+    .eq("journey_id", journeyId)
+    .order("sequence_order");
+  return (data ?? []) as Record<string, unknown>[];
+}
+
 export async function getCurrentJourneyState(missionId?: string) {
   const { user } = await requireAuthenticatedIdentity();
   const client = await createServerSupabaseClient();
@@ -67,7 +87,7 @@ export async function getCurrentJourneyState(missionId?: string) {
     .eq("user_id", user.id);
   const requests = client
     .from("journey_generation_requests")
-    .select("status,mission_id")
+    .select("status,mission_id,source_journey_id,request_purpose")
     .eq("user_id", user.id);
   if (missionId) {
     journeys.eq("mission_id", missionId);
@@ -77,24 +97,35 @@ export async function getCurrentJourneyState(missionId?: string) {
     journeys,
     requests,
   ]);
-  const activeRow = rows?.find((row) => row.status === "active");
-  const draftRow = rows
-    ?.filter((row) => row.status === "draft")
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+  const orderedRows = [...(rows ?? [])].sort((a, b) =>
+    b.created_at.localeCompare(a.created_at),
+  );
+  const activeRow = orderedRows.find((row) => row.status === "active");
+  const draftRow = orderedRows.find((row) => row.status === "draft");
+  const completedRow = orderedRows.find((row) => row.status === "completed");
   const selected = activeRow ?? draftRow;
-  let milestoneRows: Record<string, unknown>[] = [];
-  if (selected) {
-    const { data } = await client
-      .from("journey_milestones")
-      .select("*")
-      .eq("journey_id", selected.id)
-      .order("sequence_order");
-    milestoneRows = data ?? [];
-  }
+  const selectedMilestones = selected
+    ? await loadMilestones(client, selected.id)
+    : [];
+  const completedMilestones = completedRow
+    ? await loadMilestones(client, completedRow.id)
+    : [];
+  const continuationAttempts = completedRow
+    ? (requestRows ?? []).filter(
+        (row) =>
+          row.source_journey_id === completedRow.id &&
+          row.request_purpose === "continuation",
+      ).length
+    : 0;
+
   return {
-    active: activeRow ? mapJourney(activeRow, milestoneRows) : null,
-    draft: draftRow ? mapJourney(draftRow, milestoneRows) : null,
+    active: activeRow ? mapJourney(activeRow, selectedMilestones) : null,
+    draft: draftRow ? mapJourney(draftRow, selectedMilestones) : null,
+    latestCompleted: completedRow
+      ? mapJourney(completedRow, completedMilestones)
+      : null,
     attempts: requestRows?.length ?? 0,
+    continuationAttempts,
     requestRunning:
       requestRows?.some(
         (row) => row.status === "ready" || row.status === "processing",
