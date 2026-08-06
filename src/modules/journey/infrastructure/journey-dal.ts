@@ -41,11 +41,7 @@ function mapJourney(
     suggested_duration:
       row.suggested_duration as JourneyOutput["suggested_duration"],
     status: row.status as
-      | "draft"
-      | "active"
-      | "paused"
-      | "completed"
-      | "replaced",
+      "draft" | "active" | "paused" | "completed" | "replaced",
     cycleNumber: (row.cycle_number as number | undefined) ?? 1,
     continuesJourneyId:
       (row.continues_journey_id as string | null | undefined) ?? null,
@@ -101,7 +97,10 @@ export async function getCurrentJourneyState(missionId?: string) {
       .select("id,journey_id,status")
       .eq("user_id", user.id),
   ]);
-  const rows = (journeyResult.data ?? []) as unknown as Record<string, unknown>[];
+  const rows = (journeyResult.data ?? []) as unknown as Record<
+    string,
+    unknown
+  >[];
   const requestRows = (requestResult.data ?? []) as unknown as Record<
     string,
     unknown
