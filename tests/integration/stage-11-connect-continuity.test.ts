@@ -40,16 +40,17 @@ describe("Stage 11 Builder Connect and Journey continuity", () => {
       "builder_reports",
       "builder_contact_shares",
     ]) {
+      expect(schema).toContain(`create table public.${table}`);
       expect(schema).toContain(
         `alter table public.${table} enable row level security`,
       );
     }
-    expect(schema).toContain(
-      "revoke all on public.builder_connect_profiles, public.builder_connections",
+    expect(schema).toMatch(
+      /revoke all on public\.builder_connect_profiles,[\s\S]*from public, anon, authenticated;/,
     );
-    expect(schema).not.toMatch(
-      /grant (insert|update|delete)[\s\S]{0,300}builder_connect_profiles[\s\S]{0,60}to authenticated/i,
-    );
+    expect(schema).not.toContain("for insert to authenticated");
+    expect(schema).not.toContain("for update to authenticated");
+    expect(schema).not.toContain("for delete to authenticated");
   });
 
   it("limits discovery to consenting adults and excludes blocked pairs", () => {
