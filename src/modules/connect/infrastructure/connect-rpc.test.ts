@@ -29,24 +29,29 @@ describe("Stage 11 Connect RPC clients", () => {
       url: "https://project.supabase.co",
       anonKey: "anon-key",
     });
-    mocks.serverEnv.mockReturnValue({ SUPABASE_SERVICE_ROLE_KEY: "service-key" });
+    mocks.serverEnv.mockReturnValue({
+      SUPABASE_SERVICE_ROLE_KEY: "service-key",
+    });
     mocks.getSession.mockResolvedValue({
       data: { session: { access_token: "user-token" } },
     });
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () =>
-        new Response(JSON.stringify({ ok: true }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }),
       ),
     );
   });
 
   it("posts authenticated RPCs with the user's access token", async () => {
     await expect(
-      callAuthenticatedConnectRpc("search_stage11_builders", { limit_input: 5 }),
+      callAuthenticatedConnectRpc("search_stage11_builders", {
+        limit_input: 5,
+      }),
     ).resolves.toEqual({ ok: true });
     expect(fetch).toHaveBeenCalledWith(
       "https://project.supabase.co/rest/v1/rpc/search_stage11_builders",

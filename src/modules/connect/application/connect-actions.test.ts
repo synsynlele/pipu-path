@@ -48,8 +48,7 @@ describe("Connect server actions", () => {
       "REDIRECT:/connect?updated=profile",
     );
     expect(mocks.rpc).toHaveBeenCalledWith("save_stage11_network_profile", {
-      headline_input:
-        "I help young people build practical learning projects.",
+      headline_input: "I help young people build practical learning projects.",
       can_help_with_input: ["Teaching", "Planning"],
       needs_help_with_input: ["Design", "Research"],
       interests_input: ["Education", "Technology"],
@@ -81,9 +80,7 @@ describe("Connect server actions", () => {
   ])("maps protected RPC failure %s to %s", async (message, code) => {
     mocks.rpc.mockRejectedValue(new Error(message));
     await expect(
-      sendConnectionRequestAction(
-        form({ recipientId, reason: "collaborate" }),
-      ),
+      sendConnectionRequestAction(form({ recipientId, reason: "collaborate" })),
     ).rejects.toThrow(`REDIRECT:/connect?error=${code}`);
   });
 
@@ -91,10 +88,10 @@ describe("Connect server actions", () => {
     await expect(
       sendConnectionRequestAction(form({ recipientId, reason: "learn" })),
     ).rejects.toThrow("REDIRECT:/connect?updated=request-sent");
-    expect(mocks.rpc).toHaveBeenCalledWith(
-      "send_stage11_connection_request",
-      { recipient_id_input: recipientId, reason_input: "learn" },
-    );
+    expect(mocks.rpc).toHaveBeenCalledWith("send_stage11_connection_request", {
+      recipient_id_input: recipientId,
+      reason_input: "learn",
+    });
   });
 
   it("rejects invalid connection request input", async () => {
@@ -107,9 +104,7 @@ describe("Connect server actions", () => {
 
   it("responds to pending and accepted connection states", async () => {
     await expect(
-      respondConnectionRequestAction(
-        form({ requestId, action: "accept" }),
-      ),
+      respondConnectionRequestAction(form({ requestId, action: "accept" })),
     ).rejects.toThrow("REDIRECT:/connect?updated=network");
     expect(mocks.rpc).toHaveBeenCalledWith(
       "respond_stage11_connection_request",
