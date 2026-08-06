@@ -18,17 +18,25 @@ test("Stage 11 Connect and Journey continuity routes are integrated", async ({
   await signIn(page);
 
   await page.goto("/connect");
-  await expect(page.getByRole("heading", { name: /find people who can help/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /find people who can help/i }),
+  ).toBeVisible();
   await expect(page.getByRole("link", { name: "Connect" })).toHaveAttribute(
     "aria-current",
     "page",
   );
-  await expect(page.getByText(/contact details are never exposed automatically/i)).toBeVisible();
+  await expect(
+    page.getByText(/contact details are never exposed automatically/i),
+  ).toBeVisible();
 
   await page.goto("/journey");
-  await expect(page.getByRole("heading", { name: /continuing cycles of action/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /continuing cycles of action/i }),
+  ).toBeVisible();
   const completedCycle = page.getByText(/Journey Cycle \d+ complete/i);
   if (await completedCycle.count()) {
-    await expect(page.getByRole("button", { name: /Create Journey Cycle/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /Create Journey Cycle/i }),
+    ).toBeVisible();
   }
 });
