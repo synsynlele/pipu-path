@@ -478,8 +478,9 @@ export default async function ConnectPage({
             ) : (
               <Surface className="mt-6 p-6">
                 <p className="text-muted">
-                  Accepted connections will appear here. PipuPath has no
-                  unrestricted private messaging.
+                  {
+                    "Accepted connections will appear here. PipuPath has no unrestricted private messaging."
+                  }
                 </p>
               </Surface>
             )}
