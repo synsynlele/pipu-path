@@ -188,8 +188,9 @@ export default async function JourneyPage() {
               {state.latestCompleted.title}
             </h2>
             <p className="text-muted mt-4 leading-7">
-              This cycle remains part of your private history. Continue only when
-              you are ready to deepen the same Mission through a stronger test.
+              This cycle remains part of your private history. Continue only
+              when you are ready to deepen the same Mission through a stronger
+              test.
             </p>
             <JourneyDetails journey={state.latestCompleted} />
           </Surface>
@@ -201,8 +202,9 @@ export default async function JourneyPage() {
               Build Journey Cycle {state.latestCompleted.cycleNumber + 1}
             </h2>
             <p className="text-muted mt-3 max-w-2xl leading-7">
-              PipuPath will use your active Mission and completed Journey evidence
-              to create a new cycle without erasing or repeating the previous one.
+              PipuPath will use your active Mission and completed Journey
+              evidence to create a new cycle without erasing or repeating the
+              previous one.
             </p>
             <div className="mt-6">
               <JourneyContinuationForm

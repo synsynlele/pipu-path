@@ -59,9 +59,7 @@ export async function getConnectHomeState(search?: string) {
       "search_stage11_builders",
       { search_input: search?.trim() || null, limit_input: 24 },
     ),
-    callAuthenticatedConnectRpc<BuilderNetworkRow[]>(
-      "get_stage11_my_network",
-    ),
+    callAuthenticatedConnectRpc<BuilderNetworkRow[]>("get_stage11_my_network"),
   ]);
 
   return {

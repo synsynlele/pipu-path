@@ -41,11 +41,7 @@ function mapJourney(
     suggested_duration:
       row.suggested_duration as JourneyOutput["suggested_duration"],
     status: row.status as
-      | "draft"
-      | "active"
-      | "paused"
-      | "completed"
-      | "replaced",
+      "draft" | "active" | "paused" | "completed" | "replaced",
     cycleNumber: (row.cycle_number as number | undefined) ?? 1,
     continuationOfJourneyId:
       (row.continuation_of_journey_id as string | null | undefined) ?? null,

@@ -1,6 +1,9 @@
 import "server-only";
 
-import { readServerEnvironment, requireSupabasePublicEnvironment } from "@/lib/config/env";
+import {
+  readServerEnvironment,
+  requireSupabasePublicEnvironment,
+} from "@/lib/config/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 async function parseRpcResponse<T>(response: Response): Promise<T> {

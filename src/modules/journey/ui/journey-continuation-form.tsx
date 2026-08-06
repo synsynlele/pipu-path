@@ -32,7 +32,8 @@ export function JourneyContinuationForm({
       </Button>
       {pending ? (
         <p role="status" className="text-muted mt-4 text-sm">
-          PipuPath is using your completed evidence to create a stronger next cycle.
+          PipuPath is using your completed evidence to create a stronger next
+          cycle.
         </p>
       ) : null}
       <p className="text-muted mt-3 text-xs">

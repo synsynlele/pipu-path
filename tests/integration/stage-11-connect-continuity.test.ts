@@ -59,8 +59,12 @@ describe("Stage 11 Builder Connect and Journey continuity", () => {
   });
 
   it("does not introduce unrestricted messages or contact exposure", () => {
-    expect(migration).not.toMatch(/create table public\.(messages|conversations)/i);
-    expect(connectPage).toContain("contact details are never exposed automatically");
+    expect(migration).not.toMatch(
+      /create table public\.(messages|conversations)/i,
+    );
+    expect(connectPage).toContain(
+      "contact details are never exposed automatically",
+    );
   });
 
   it("adds Connect to desktop and mobile navigation", () => {
@@ -73,9 +77,7 @@ describe("Stage 11 Builder Connect and Journey continuity", () => {
   it("preserves completed Journeys and creates numbered continuation cycles", () => {
     expect(migration).toContain("cycle_number smallint not null default 1");
     expect(migration).toContain("continuation_of_journey_id");
-    expect(migration).toContain(
-      "create_stage11_journey_continuation_request",
-    );
+    expect(migration).toContain("create_stage11_journey_continuation_request");
     expect(migration).toContain("persist_stage11_journey_continuation");
     expect(journeyPage).toContain("Continue moving");
     expect(journeyPage).toContain("JourneyContinuationForm");

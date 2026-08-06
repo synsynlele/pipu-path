@@ -7,9 +7,10 @@ import {
 
 describe("Builder Connect contracts", () => {
   it("normalizes unique comma-separated capabilities", () => {
-    expect(
-      parseCommaSeparatedList("Teaching, planning, Teaching"),
-    ).toEqual(["Teaching", "planning"]);
+    expect(parseCommaSeparatedList("Teaching, planning, Teaching")).toEqual([
+      "Teaching",
+      "planning",
+    ]);
   });
 
   it("requires a complete bounded discovery profile", () => {

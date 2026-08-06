@@ -6,7 +6,10 @@ import {
   callAuthenticatedConnectRpc,
   callServiceRoleStage11Rpc,
 } from "@/modules/connect/infrastructure/connect-rpc";
-import { validateJourneyForContext, type JourneyOutput } from "../domain/journey-contract";
+import {
+  validateJourneyForContext,
+  type JourneyOutput,
+} from "../domain/journey-contract";
 import { OpenAIJourneyProvider } from "../infrastructure/openai-journey-provider";
 import {
   getCurrentJourneyState,
@@ -17,20 +20,25 @@ import { buildContinuingEvidenceJourney } from "./journey-fallback";
 const logger = createLogger();
 
 type ContinuationResult =
-  | { ok: true; journeyId: string }
-  | { ok: false; message: string };
+  { ok: true; journeyId: string } | { ok: false; message: string };
 
-function sourceOutput(source: NonNullable<Awaited<ReturnType<typeof getCurrentJourneyState>>["latestCompleted"]>): JourneyOutput {
+function sourceOutput(
+  source: NonNullable<
+    Awaited<ReturnType<typeof getCurrentJourneyState>>["latestCompleted"]
+  >,
+): JourneyOutput {
   return {
     title: source.title,
     summary: source.summary,
     target_outcome: source.target_outcome,
     suggested_duration: source.suggested_duration,
-    milestones: source.milestones.map(({ id: _id, status: _status, ...milestone }) => {
-      void _id;
-      void _status;
-      return milestone;
-    }),
+    milestones: source.milestones.map(
+      ({ id: _id, status: _status, ...milestone }) => {
+        void _id;
+        void _status;
+        return milestone;
+      },
+    ),
   };
 }
 
@@ -38,14 +46,21 @@ export async function generateContinuingJourney(
   sourceJourneyId: string,
 ): Promise<ContinuationResult> {
   const context = await getJourneyContext();
-  if (!context) return { ok: false, message: "Your active Mission is required." };
+  if (!context)
+    return { ok: false, message: "Your active Mission is required." };
   const state = await getCurrentJourneyState(context.missionId);
   const source = state.latestCompleted;
   if (!source || source.id !== sourceJourneyId) {
-    return { ok: false, message: "That completed Journey is no longer available." };
+    return {
+      ok: false,
+      message: "That completed Journey is no longer available.",
+    };
   }
   if (state.active || state.draft) {
-    return { ok: false, message: "Your next Journey cycle is already available." };
+    return {
+      ok: false,
+      message: "Your next Journey cycle is already available.",
+    };
   }
 
   const completedJourney = sourceOutput(source);
@@ -99,7 +114,8 @@ export async function generateContinuingJourney(
         });
       } catch (error) {
         generationMode = "evidence_fallback";
-        fallbackReason = error instanceof Error ? error.message : "OPENAI_PROVIDER_FAILURE";
+        fallbackReason =
+          error instanceof Error ? error.message : "OPENAI_PROVIDER_FAILURE";
         output = buildContinuingEvidenceJourney({ context, completedJourney });
       }
     } else {
@@ -137,7 +153,9 @@ export async function generateContinuingJourney(
       request_id_input: requestId,
       failure_code_input: "JOURNEY_SAVE_FAILED",
       failure_detail_safe_input:
-        error instanceof Error ? error.message.slice(0, 120) : "continuation_failed",
+        error instanceof Error
+          ? error.message.slice(0, 120)
+          : "continuation_failed",
     });
     logger.warn("journey_continuation_failed", { requestId });
     return {

@@ -5,8 +5,7 @@ import { z } from "zod";
 import { generateContinuingJourney } from "./journey-continuation";
 
 export type JourneyContinuationState =
-  | { status: "idle" }
-  | { status: "error"; message: string };
+  { status: "idle" } | { status: "error"; message: string };
 
 export async function continueJourneyAction(
   _previous: JourneyContinuationState,

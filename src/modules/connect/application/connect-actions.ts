@@ -32,17 +32,14 @@ export async function saveNetworkProfileAction(formData: FormData) {
   });
   if (!parsed.success) redirect("/connect?error=profile-invalid");
   try {
-    await callAuthenticatedConnectRpc<boolean>(
-      "save_stage11_network_profile",
-      {
-        headline_input: parsed.data.headline,
-        can_help_with_input: parsed.data.canHelpWith,
-        needs_help_with_input: parsed.data.needsHelpWith,
-        interests_input: parsed.data.interests,
-        discoverable_input: parsed.data.discoverable,
-        consent_version_input: "builder-connect-v1",
-      },
-    );
+    await callAuthenticatedConnectRpc<boolean>("save_stage11_network_profile", {
+      headline_input: parsed.data.headline,
+      can_help_with_input: parsed.data.canHelpWith,
+      needs_help_with_input: parsed.data.needsHelpWith,
+      interests_input: parsed.data.interests,
+      discoverable_input: parsed.data.discoverable,
+      consent_version_input: "builder-connect-v1",
+    });
   } catch (error) {
     redirect(connectFailurePath(error));
   }
