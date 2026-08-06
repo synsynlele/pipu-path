@@ -2,12 +2,12 @@
 
 import { RouteError } from "@/components/feedback/route-error";
 
-export default function ConnectError({ reset }: { reset: () => void }) {
-  return (
-    <RouteError
-      title="Builder Connect could not load"
-      description="Your private Journey and network data remain safe. Retry the page when ready."
-      onRetry={reset}
-    />
-  );
+export default function ConnectError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return <RouteError error={error} reset={reset} />;
 }
