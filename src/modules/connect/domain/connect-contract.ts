@@ -1,11 +1,5 @@
 import { z } from "zod";
 
-export const connectionReasons = [
-  "collaborate",
-  "learn",
-  "support",
-  "share_resources",
-] as const;
 export const connectionActions = [
   "accept",
   "decline",
@@ -13,35 +7,40 @@ export const connectionActions = [
   "remove",
 ] as const;
 export const reportReasons = [
-  "unsafe_contact",
+  "spam",
   "harassment",
-  "false_identity",
-  "inappropriate_content",
+  "unsafe_contact",
+  "impersonation",
   "other",
 ] as const;
 
 const listItemSchema = z.string().trim().min(2).max(80);
 
 export const networkProfileInputSchema = z.object({
-  headline: z.string().trim().min(10).max(160),
-  canHelpWith: z.array(listItemSchema).min(1).max(6),
-  needsHelpWith: z.array(listItemSchema).min(1).max(6),
-  interests: z.array(listItemSchema).min(1).max(8),
+  interests: z.array(listItemSchema).max(8),
+  capabilities: z.array(listItemSchema).max(8),
+  canHelpWith: z.string().trim().max(320),
+  needsHelpWith: z.string().trim().max(320),
+  contactEmail: z.union([z.email().max(254), z.literal("")]),
+  contactWhatsapp: z.union([
+    z.string().trim().min(7).max(32),
+    z.literal(""),
+  ]),
   discoverable: z.boolean(),
 });
 
 export const connectionRequestInputSchema = z.object({
-  recipientId: z.uuid(),
-  reason: z.enum(connectionReasons),
+  targetUserId: z.uuid(),
 });
 
 export const connectionResponseInputSchema = z.object({
-  requestId: z.uuid(),
+  connectionId: z.uuid(),
   action: z.enum(connectionActions),
 });
 
 export const builderSafetyActionSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("block"), userId: z.uuid() }),
+  z.object({ action: z.literal("unblock"), userId: z.uuid() }),
   z.object({
     action: z.literal("report"),
     userId: z.uuid(),
@@ -49,29 +48,76 @@ export const builderSafetyActionSchema = z.discriminatedUnion("action", [
   }),
 ]);
 
-export type BuilderDirectoryRow = {
-  user_id: string;
-  username: string;
-  display_name: string;
-  headline: string;
-  can_help_with: string[];
-  needs_help_with: string[];
+export const contactShareInputSchema = z.object({
+  connectionId: z.uuid(),
+  shareEmail: z.boolean(),
+  shareWhatsapp: z.boolean(),
+});
+
+export type ConnectProfile = {
   interests: string[];
-  portfolio_slug: string | null;
-  portfolio_title: string | null;
-  relationship_status: string;
+  capabilities: string[];
+  canHelpWith: string;
+  needsHelpWith: string;
+  contactEmail: string | null;
+  contactWhatsapp: string | null;
+  visibility: "private" | "discoverable";
 };
 
-export type BuilderNetworkRow = {
-  request_id: string;
-  other_user_id: string;
+export type DiscoverableBuilder = {
+  userId: string;
   username: string;
-  display_name: string;
-  headline: string | null;
-  relationship_status: "pending" | "accepted";
-  direction: "incoming" | "outgoing";
-  reason: (typeof connectionReasons)[number];
-  created_at: string;
+  preferredName: string;
+  missionTitle: string | null;
+  missionStatement: string | null;
+  interests: string[];
+  capabilities: string[];
+  canHelpWith: string;
+  needsHelpWith: string;
+  relationship: "none" | "pending" | "accepted" | "declined" | "cancelled" | "removed";
+};
+
+export type BuilderDetail = DiscoverableBuilder & {
+  connectionId: string | null;
+  requesterId: string | null;
+};
+
+export type ConnectionRequest = {
+  connectionId: string;
+  userId: string;
+  username: string;
+  preferredName: string;
+  status: "pending";
+  updatedAt: string;
+};
+
+export type AcceptedConnection = {
+  connectionId: string;
+  userId: string;
+  username: string;
+  preferredName: string;
+  status: "accepted";
+  updatedAt: string;
+  sharedEmail: string | null;
+  sharedWhatsapp: string | null;
+  myShareEmail: boolean;
+  myShareWhatsapp: boolean;
+};
+
+export type BlockedBuilder = {
+  userId: string;
+  username: string;
+  preferredName: string;
+};
+
+export type ConnectState = {
+  eligible: boolean;
+  profile: ConnectProfile | null;
+  discover: DiscoverableBuilder[];
+  incoming: ConnectionRequest[];
+  sent: ConnectionRequest[];
+  connections: AcceptedConnection[];
+  blocked: BlockedBuilder[];
 };
 
 export function parseCommaSeparatedList(value: FormDataEntryValue | null) {
@@ -83,15 +129,4 @@ export function parseCommaSeparatedList(value: FormDataEntryValue | null) {
         .filter(Boolean),
     ),
   );
-}
-
-export function connectionReasonLabel(
-  reason: (typeof connectionReasons)[number],
-) {
-  return {
-    collaborate: "Collaborate on a practical build",
-    learn: "Learn from this Builder",
-    support: "Offer or receive support",
-    share_resources: "Share useful resources",
-  }[reason];
 }
