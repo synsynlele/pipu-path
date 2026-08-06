@@ -45,7 +45,13 @@ export default async function HomePage() {
           : state.destination.stage,
     ),
   );
-  const progress = Math.round((currentIndex / (stageOrder.length - 1)) * 100);
+  const completedGrowthCycle = Boolean(
+    state.snapshot.completedProjectId &&
+      state.snapshot.journeyStatus === "completed",
+  );
+  const progress = completedGrowthCycle
+    ? 100
+    : Math.round((currentIndex / (stageOrder.length - 1)) * 100);
 
   return (
     <div
@@ -95,7 +101,9 @@ export default async function HomePage() {
                   Current stage
                 </p>
                 <h2 className="text-navy mt-3 text-3xl font-semibold tracking-tight">
-                  {stageLabels[stageOrder[currentIndex]]}
+                  {completedGrowthCycle
+                    ? "Next Growth Cycle"
+                    : stageLabels[stageOrder[currentIndex]]}
                 </h2>
               </div>
               <span className="border-primary/20 bg-primary-soft text-primary rounded-full border px-3 py-1.5 text-sm font-semibold">
@@ -119,9 +127,11 @@ export default async function HomePage() {
             <ol className="mt-7 grid gap-3 sm:grid-cols-4 lg:grid-cols-8">
               {stageOrder.slice(1).map((stage, index) => {
                 const completed =
+                  completedGrowthCycle ||
                   index + 1 < currentIndex ||
                   state.destination.stage === "complete";
                 const active =
+                  !completedGrowthCycle &&
                   index + 1 === currentIndex &&
                   state.destination.stage !== "complete";
                 return (
@@ -171,7 +181,7 @@ export default async function HomePage() {
           </Surface>
         </section>
 
-        <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
           <StatusCard
             label="Active Mission"
             title={state.mission?.title ?? "Not chosen yet"}
@@ -216,6 +226,12 @@ export default async function HomePage() {
                 : "Choose what becomes public only after completing a Project."
             }
             href="/portfolio"
+          />
+          <StatusCard
+            label="Connect"
+            title="Builder Network"
+            detail="Discover opt-in adult Builders, exchange requests and share contact details only by explicit consent."
+            href="/connect"
           />
         </section>
       </main>

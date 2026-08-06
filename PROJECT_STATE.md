@@ -1,86 +1,69 @@
 # PipuPath project state
 
-**Current stage:** Stage 10 — MVP Launch Readiness
+**Current stage:** Stage 11 — Builder Connect and Renewable Growth Cycles
 
-**Stage status:** RELEASE CANDIDATE READY — MANUAL GOOGLE OAUTH COMPLETION PENDING
+**Stage status:** IMPLEMENTATION CANDIDATE — DATABASE, CI AND PREVIEW VERIFICATION PENDING
 
-**Completed stages:** Stage 0, Stage 1, Stage 2, Stage 3, Stage 4,
-Stage 5, Stage 6, Stage 7, Stage 8 and Stage 9
+**Completed stages:** Stage 0 through Stage 10
 
-**Current Git baseline:** `agent/stage10-mvp-launch-readiness`, created from
-verified Stage 9 head `9d0071273654a89d14fe6f60b03a13dc65532ba1`
+**Current Git baseline:** `main` at
+`00a03b670b8125cdffcb65f0570119380a355040`
 
-**Review surface:** GitHub pull request #13, draft and unmerged
+**Review surface:** GitHub pull request #19 on
+`agent/stage11-builder-connect`
 
-**Infrastructure:** authorised disposable non-production Supabase staging
-`kvjcswnmhwegpakbtvlh`; production untouched
+**Infrastructure:** authorised Supabase staging
+`kvjcswnmhwegpakbtvlh`; production changes remain gated behind an exact
+Preview and critical-path verification
 
-**Last verified:** 2026-08-05
+**Last updated:** 2026-08-06
 
-## Stage 10 release candidate
+## Stage 11 product decision
 
-Stage 10 is the final MVP stage. It hardens and integrates the complete Stage
-0–9 Builder loop without expanding the product.
+Stage 11 restores the Network part of the original PipuPath operating system
+and removes the completed-Project dead end. It is one bulk vertical slice, not a
+sequence of disconnected releases.
 
-The release candidate includes:
+The implementation candidate includes:
 
-- one shared first-incomplete progression resolver for Google OAuth, email login
-  and returning users;
-- PKCE callback exchange with session cookies copied to the redirect response;
-- trusted Preview origins, safe internal redirects and password-recovery routing;
-- a University for Human Potential landing page;
-- white, royal-blue, navy and restrained-gold shared design primitives;
-- five-item authenticated navigation: Home, Journey, Build, Portfolio, Profile;
-- a real-data Home and contextual Build route;
-- shared loading, safe error, retry and not-found experiences;
-- accessible focus, reduced-motion and mobile bottom-navigation behavior;
-- deterministic system-font builds with no Google Font network dependency;
-- security headers, robots and application manifest;
-- an atomic Supabase authentication limiter suitable for Vercel scaling; and
-- route, service, domain, security, OAuth, release, rollback and debt records.
+- a sixth authenticated destination, Connect, on desktop and mobile;
+- adult-only, deliberate opt-in Builder discovery;
+- allow-listed Builder cards and authenticated Builder details;
+- incoming, sent and accepted connection workflows;
+- cancel, accept, decline and remove transitions;
+- blocking, reporting and privacy controls;
+- explicit per-connection contact sharing, with no unrestricted messaging;
+- database-enforced age, safeguarding, visibility and blocking rules; and
+- renewable Builder growth cycles after a Journey and its Project are both
+  completed.
 
-## Verified release evidence
+## Renewable growth loop
 
-- Stage 10 migrations `202608050020` and `202608050021` are recorded on
-  authorised staging.
-- `auth_rate_limit_buckets` has RLS, no client policies and no direct browser
-  table grants.
-- The bounded limiter RPC allows attempts one and two, denies attempt three for
-  a two-attempt test window, rejects invalid inputs and stores only SHA-256
-  bucket keys.
-- GitHub Actions run `31007512086` passed the complete repository validator and
-  authenticated desktop/mobile staging E2E on application head
-  `1cd75350086d39fbbc8ea8211e56e6f05349f8de`.
-- Repository validation passed formatting, zero-warning lint, strict
-  TypeScript, 109 unit tests, 92 structural/integration checks, coverage
-  thresholds and the Next.js production build.
-- The authenticated browser matrix passed Stage 0–9 recovery, email login,
-  anonymous denial, simplified mobile navigation and the public Portfolio
-  lifecycle against the exact branch Preview.
-- Matching READY Preview deployment:
-  `dpl_3rb1Qz2Kf2xoFUiBqmxZnzQdAvzu`.
-- The exact Preview emitted no warning, error or fatal runtime logs during the
-  verification window.
-- Supabase contains two Google identities, proving the configured staging
-  provider has completed real Google sign-in historically. The final release
-  candidate also includes a live browser assertion that the Google handoff
-  reaches Google with the exact environment callback URL.
-- Production resources were not touched.
+A completed Project no longer means the Builder has finished PipuPath. The
+progression becomes:
 
-## Remaining launch gate
+`Journey → Quests → Project → proof/reflection → next Journey cycle`
 
-A human must complete Google account selection once on the final release
-candidate and confirm that the callback establishes a session and routes the
-account to identity setup, its next incomplete stage or authenticated Home.
-PipuPath cannot automate or impersonate this credential-controlled step.
+A continuation Journey is permitted only after the prior Journey and its
+Project are completed. It receives a new cycle number and a fresh bounded
+generation budget, while retaining a link to the prior Journey. Portfolio
+publication remains optional and adult-only; it does not block continued growth.
 
-Stage 10 must remain a release candidate—not COMPLETE—until that manual result is
-recorded in PR #13. After it passes, no additional product build is expected;
-the release candidate may be approved for deliberate production promotion.
+## Stage boundary
 
-## Boundary
+Stage 11 does not add chat, direct messages, feeds, followers, likes, comments,
+rankings, open contact exposure, minors' discovery, teams, opportunities,
+payments, employment or marketplace behavior.
 
-Do not add Builder directories, search, messaging, followers, likes, comments,
-rankings, communities, mentors, team Projects, opportunities, employment,
-funding, payments, marketplaces, new AI providers, native apps or enterprise
-analytics. Stage 10 finishes the MVP.
+## Release gate
+
+Stage 11 is complete only when:
+
+1. migrations `202608060022` and `202608060023` are applied and structurally
+   verified on the authorised database;
+2. RLS, grants, function execution boundaries and safeguarding predicates pass;
+3. formatting, lint, strict TypeScript, targeted unit/integration tests and the
+   production build pass on the exact application head;
+4. the matching Vercel Preview is READY;
+5. critical authenticated Connect and next-Journey paths pass; and
+6. the exact verified release is merged and production deployment is healthy.

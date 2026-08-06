@@ -61,3 +61,16 @@ without moving domain rules into route files.
 The web application is a single deployable unit in early stages. External
 services are introduced only by the stage that needs them and behind ports.
 CI is the authoritative merge gate.
+
+## Stage 11 composition
+
+`src/modules/connect` owns the adult-safe discovery, relationship, blocking,
+reporting and contact-consent contracts. Routes compose those use cases but do
+not authorize cross-user state themselves. Supabase RLS and controlled RPCs
+remain authoritative.
+
+Journey continuity stays inside the Journey boundary. Cycle lineage is stored on
+generation requests and Journeys, while completed Project state is read as the
+proof gate. Connect and Journey do not share persistence or mutate each other;
+they compound through the authenticated Home and progression resolver.
+

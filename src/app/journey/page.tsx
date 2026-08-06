@@ -135,7 +135,7 @@ export default async function JourneyPage() {
       ) : state.active ? (
         <Surface className="mt-10 p-6 sm:p-8">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Active Journey
+            Active Journey · Cycle {state.active.cycleNumber}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
             {state.active.title}
@@ -148,7 +148,7 @@ export default async function JourneyPage() {
       ) : state.draft ? (
         <Surface className="mt-10 p-6 sm:p-8">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Journey Review
+            Journey Review · Cycle {state.draft.cycleNumber}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
             {state.draft.title}
@@ -168,6 +168,49 @@ export default async function JourneyPage() {
             journeyId={state.draft.id}
             attemptsRemaining={attemptsRemaining}
           />
+        </Surface>
+      ) : state.completed ? (
+        <Surface className="mt-10 p-6 sm:p-8">
+          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+            Completed Journey · Cycle {state.completed.cycleNumber}
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+            {state.completed.title}
+          </h2>
+          <p className="text-muted mt-4 max-w-2xl leading-7">
+            This Journey is now evidence, not an ending. Your next cycle should
+            deepen what worked, correct what failed and convert learning into a
+            stronger repeatable result.
+          </p>
+          {state.continuationAvailable ? (
+            <div className="border-gold/30 bg-gold/5 mt-7 rounded-2xl border p-5">
+              <h3 className="text-xl font-semibold">
+                Build growth cycle {state.nextCycleNumber}
+              </h3>
+              <p className="text-muted mt-2 leading-7">
+                Your completed Project unlocks a fresh three-attempt Journey
+                budget. The new Journey will build on the previous cycle rather
+                than restart your development.
+              </p>
+              <div className="mt-5">
+                <JourneyGenerationForm
+                  kind="continue"
+                  attemptsRemaining={attemptsRemaining}
+                  sourceJourneyId={state.completed.id}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="mt-7">
+              <p className="text-muted leading-7">
+                Complete one Builder Project from this Journey before opening
+                the next growth cycle.
+              </p>
+              <ButtonLink href="/projects" className="mt-5">
+                Continue Builder Project
+              </ButtonLink>
+            </div>
+          )}
         </Surface>
       ) : (
         <Surface className="mt-10 p-6 sm:p-8">

@@ -16,7 +16,7 @@ export async function generateJourneyAction(
   void _previous;
   const parsed = z
     .object({
-      kind: z.enum(["initial", "regenerate", "refine"]),
+      kind: z.enum(["initial", "regenerate", "refine", "continue"]),
       sourceJourneyId: z.uuid().optional(),
       refinementInstruction: z.string().optional(),
     })

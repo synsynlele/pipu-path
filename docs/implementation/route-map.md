@@ -1,6 +1,6 @@
 # Route map
 
-Stage 10 classifies every application route. Server authorization is repeated
+Stage 11 classifies every application route. Server authorization is repeated
 inside each private data boundary; middleware is navigation defence, not the
 sole authorization control.
 
@@ -29,6 +29,8 @@ sole authorization control.
 | `/projects`                              | Auth-only owner                                                   | Project list, eligibility and current work                              |
 | `/projects/new`                          | Eligible completed-Quest owner                                    | Create one private Project                                              |
 | `/projects/[projectId]`                  | Project owner                                                     | Execute evidence-backed milestones                                      |
+| `/connect`                              | Auth-only; eligible adults                                      | Private profile, Discover Builders and My Network                       |
+| `/connect/builders/[username]`          | Auth-only; eligible adults and allow-listed relationship access | Safe Builder detail, relationship controls, block and report            |
 | `/portfolio`                             | Auth-only owner                                                   | Portfolio status and completed Project selection                        |
 | `/portfolio/[projectId]`                 | Eligible adult Project owner                                      | Prepare or manage public-safe proof                                     |
 | `/portfolio/[projectId]/preview`         | Eligible adult Project owner                                      | Exact private preview and publication consent                           |

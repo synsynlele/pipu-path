@@ -41,6 +41,7 @@ type QuestSummary = {
 type ProjectSummary = {
   id: string;
   title: string;
+  journey_id: string;
   status: "active" | "completed" | "archived";
 };
 
@@ -139,7 +140,6 @@ export async function getAuthenticatedHomeState(
     { data: mission },
     { data: journey },
     { data: activeProject },
-    { data: completedProject },
     { data: portfolio },
     { data: xpRows },
     { data: completedQuest },
@@ -177,18 +177,10 @@ export async function getAuthenticatedHomeState(
       .maybeSingle(),
     client
       .from("builder_projects")
-      .select("id,title,status")
+      .select("id,title,journey_id,status")
       .eq("user_id", user.id)
       .eq("status", "active")
       .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    client
-      .from("builder_projects")
-      .select("id,title,status")
-      .eq("user_id", user.id)
-      .eq("status", "completed")
-      .order("completed_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
     client
@@ -211,6 +203,21 @@ export async function getAuthenticatedHomeState(
       .limit(1)
       .maybeSingle(),
   ]);
+
+  let completedProject: ProjectSummary | null = null;
+  if (journey?.id && journey.status === "completed") {
+    const { data: completedProjectRow } = await client
+      .from("builder_projects")
+      .select("id,title,journey_id,status")
+      .eq("user_id", user.id)
+      .eq("journey_id", journey.id)
+      .eq("status", "completed")
+      .order("completed_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    completedProject =
+      (completedProjectRow as ProjectSummary | null) ?? null;
+  }
 
   const snapshot: AuthenticatedProgressSnapshot = {
     authenticated: true,

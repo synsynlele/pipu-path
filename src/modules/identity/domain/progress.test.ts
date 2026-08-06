@@ -12,15 +12,16 @@ const complete: AuthenticatedProgressSnapshot = {
   missionStatus: "active",
   journeyStatus: "completed",
   activeProjectId: null,
-  completedProjectId: "project-1",
+  completedProjectId: "11111111-1111-4111-8111-111111111111",
   portfolioStatus: "published",
 };
 
-describe("authenticated progress destination", () => {
-  it("routes a new Google or email user to identity setup", () => {
+describe("authenticated progression", () => {
+  it("routes anonymous users to sign in", () => {
     expect(
       progressDestination({
         ...complete,
+        authenticated: false,
         identityComplete: false,
         discoveryStatus: null,
         hasHumanPotentialProfile: false,
@@ -29,13 +30,25 @@ describe("authenticated progress destination", () => {
         completedProjectId: null,
         portfolioStatus: null,
       }).path,
-    ).toBe("/onboarding/identity");
+    ).toBe("/login");
   });
 
-  it("routes a Discovery review session to review rather than restarting", () => {
+  it("keeps discovery review explicit", () => {
     expect(
       progressDestination({ ...complete, discoveryStatus: "review" }).path,
     ).toBe("/onboarding/discovery/review");
+  });
+
+  it("prioritizes an active Project over an active Journey", () => {
+    expect(
+      progressDestination({
+        ...complete,
+        journeyStatus: "active",
+        activeProjectId: "22222222-2222-4222-8222-222222222222",
+        completedProjectId: null,
+        portfolioStatus: null,
+      }).path,
+    ).toBe("/projects/22222222-2222-4222-8222-222222222222");
   });
 
   it("routes an active Journey to Quests", () => {
@@ -43,35 +56,23 @@ describe("authenticated progress destination", () => {
       progressDestination({
         ...complete,
         journeyStatus: "active",
+        activeProjectId: null,
         completedProjectId: null,
         portfolioStatus: null,
       }).path,
     ).toBe("/quests");
   });
 
-  it("routes an active Project directly to its command centre", () => {
+  it("opens a fresh Journey cycle after a completed Project", () => {
     expect(
       progressDestination({
         ...complete,
-        journeyStatus: "active",
-        activeProjectId: "project-active",
-        completedProjectId: null,
         portfolioStatus: null,
-      }).path,
-    ).toBe("/projects/project-active");
+      }),
+    ).toMatchObject({ stage: "journey", path: "/journey" });
   });
 
-  it("routes a completed Project without a publication to Portfolio", () => {
-    expect(
-      progressDestination({
-        ...complete,
-        journeyStatus: "active",
-        portfolioStatus: "withdrawn",
-      }).path,
-    ).toBe("/portfolio");
-  });
-
-  it("routes a completed MVP user to authenticated Home", () => {
-    expect(progressDestination(complete).path).toBe("/app");
+  it("keeps Portfolio optional after publication", () => {
+    expect(progressDestination(complete).path).toBe("/journey");
   });
 });

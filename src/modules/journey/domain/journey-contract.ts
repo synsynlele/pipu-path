@@ -11,6 +11,7 @@ export const journeyGenerationKinds = [
   "initial",
   "regenerate",
   "refine",
+  "continue",
 ] as const;
 
 export const journeyMilestoneSchema = z.object({
@@ -59,6 +60,7 @@ export type JourneyErrorCode =
   | "JOURNEY_GENERATION_DISABLED"
   | "JOURNEY_REQUEST_ALREADY_RUNNING"
   | "JOURNEY_GENERATION_LIMIT_REACHED"
+  | "JOURNEY_PROJECT_REQUIRED"
   | "JOURNEY_PROVIDER_UNAVAILABLE"
   | "JOURNEY_PROVIDER_TIMEOUT"
   | "JOURNEY_OUTPUT_INVALID"
