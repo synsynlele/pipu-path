@@ -51,7 +51,7 @@ function buildContinuationJourney(context: JourneyContext): JourneyOutput {
         capabilities_to_develop: ["Delivery", "Observation"],
         completion_signal: context.successSignal,
         resource_note:
-          "Keep participation voluntary and use trusted, already reachable channels. Do not contact strangers or expose private information.",
+          "Keep participation voluntary, use trusted and already reachable channels, and protect private information.",
         sequence_order: 3,
       },
       {
