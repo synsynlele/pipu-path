@@ -41,10 +41,14 @@ function mapJourney(
     suggested_duration:
       row.suggested_duration as JourneyOutput["suggested_duration"],
     status: row.status as
-      "draft" | "active" | "paused" | "completed" | "replaced",
+      | "draft"
+      | "active"
+      | "paused"
+      | "completed"
+      | "replaced",
     cycleNumber: (row.cycle_number as number | undefined) ?? 1,
-    continuationOfJourneyId:
-      (row.continuation_of_journey_id as string | null | undefined) ?? null,
+    continuesJourneyId:
+      (row.continues_journey_id as string | null | undefined) ?? null,
     createdAt: row.created_at as string,
     completedAt: (row.completed_at as string | null | undefined) ?? null,
     milestones: milestones.map((item) => ({
@@ -83,34 +87,55 @@ export async function getCurrentJourneyState(missionId?: string) {
     .eq("user_id", user.id);
   const requests = client
     .from("journey_generation_requests")
-    .select("status,mission_id,source_journey_id")
+    .select("*")
     .eq("user_id", user.id);
   if (missionId) {
     journeys.eq("mission_id", missionId);
     requests.eq("mission_id", missionId);
   }
-  const [{ data: rows }, { data: requestRows }] = await Promise.all([
+  const [journeyResult, requestResult, projectResult] = await Promise.all([
     journeys,
     requests,
+    client
+      .from("builder_projects")
+      .select("id,journey_id,status")
+      .eq("user_id", user.id),
   ]);
-  const orderedRows = [...(rows ?? [])].sort((a, b) =>
-    b.created_at.localeCompare(a.created_at),
+  const rows = (journeyResult.data ?? []) as unknown as Record<string, unknown>[];
+  const requestRows = (requestResult.data ?? []) as unknown as Record<
+    string,
+    unknown
+  >[];
+  const projectRows = projectResult.data ?? [];
+  const orderedRows = [...rows].sort((a, b) =>
+    String(b.created_at).localeCompare(String(a.created_at)),
   );
   const activeRow = orderedRows.find((row) => row.status === "active");
   const draftRow = orderedRows.find((row) => row.status === "draft");
   const completedRow = orderedRows.find((row) => row.status === "completed");
   const selected = activeRow ?? draftRow;
   const selectedMilestones = selected
-    ? await loadMilestones(client, selected.id)
+    ? await loadMilestones(client, selected.id as string)
     : [];
   const completedMilestones = completedRow
-    ? await loadMilestones(client, completedRow.id)
+    ? await loadMilestones(client, completedRow.id as string)
     : [];
-  const continuationAttempts = completedRow
-    ? (requestRows ?? []).filter(
-        (row) => row.source_journey_id === completedRow.id,
+  const completedJourneyId = completedRow?.id as string | undefined;
+  const continuationAttempts = completedJourneyId
+    ? requestRows.filter(
+        (row) => row.continues_journey_id === completedJourneyId,
       ).length
     : 0;
+  const completedProjectExists = completedJourneyId
+    ? projectRows.some(
+        (project) =>
+          project.journey_id === completedJourneyId &&
+          project.status === "completed",
+      )
+    : false;
+  const activeProjectExists = projectRows.some(
+    (project) => project.status === "active",
+  );
 
   return {
     active: activeRow ? mapJourney(activeRow, selectedMilestones) : null,
@@ -118,11 +143,16 @@ export async function getCurrentJourneyState(missionId?: string) {
     latestCompleted: completedRow
       ? mapJourney(completedRow, completedMilestones)
       : null,
-    attempts: requestRows?.length ?? 0,
+    attempts: requestRows.length,
     continuationAttempts,
-    requestRunning:
-      requestRows?.some(
-        (row) => row.status === "ready" || row.status === "processing",
-      ) ?? false,
+    continuationEligible: completedProjectExists && !activeProjectExists,
+    continuationBlocker: activeProjectExists
+      ? ("active-project" as const)
+      : completedJourneyId && !completedProjectExists
+        ? ("project-required" as const)
+        : null,
+    requestRunning: requestRows.some(
+      (row) => row.status === "ready" || row.status === "processing",
+    ),
   };
 }
