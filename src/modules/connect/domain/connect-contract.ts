@@ -22,10 +22,7 @@ export const networkProfileInputSchema = z.object({
   canHelpWith: z.string().trim().max(320),
   needsHelpWith: z.string().trim().max(320),
   contactEmail: z.union([z.email().max(254), z.literal("")]),
-  contactWhatsapp: z.union([
-    z.string().trim().min(7).max(32),
-    z.literal(""),
-  ]),
+  contactWhatsapp: z.union([z.string().trim().min(7).max(32), z.literal("")]),
   discoverable: z.boolean(),
 });
 
@@ -74,7 +71,8 @@ export type DiscoverableBuilder = {
   capabilities: string[];
   canHelpWith: string;
   needsHelpWith: string;
-  relationship: "none" | "pending" | "accepted" | "declined" | "cancelled" | "removed";
+  relationship:
+    "none" | "pending" | "accepted" | "declined" | "cancelled" | "removed";
 };
 
 export type BuilderDetail = DiscoverableBuilder & {
