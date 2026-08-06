@@ -19,8 +19,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="hidden lg:block">
             <AppNavigation />
           </div>
-          <form action={signOutAction} className="hidden sm:block">
-            <Button type="submit" variant="ghost" className="min-h-10 px-3.5">
+          <form action={signOutAction}>
+            <Button
+              type="submit"
+              variant="ghost"
+              className="min-h-10 whitespace-nowrap px-3 sm:px-3.5"
+            >
               Sign out
             </Button>
           </form>
