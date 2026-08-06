@@ -27,7 +27,7 @@ jobs:
       - run: npm run validate
 
   staging-e2e:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -38,15 +38,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
+      - run: npx playwright test tests/e2e/stage11-connect.spec.ts
         env:
-          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+          E2E_BASE_URL: https://pipu-path-git-agent-stage11-bu-5e27a0-copyartint-2860s-projects.vercel.app
           E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
           E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
       - name: Upload browser traces on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-traces
+          name: stage11-playwright-traces
           path: test-results
           if-no-files-found: ignore
