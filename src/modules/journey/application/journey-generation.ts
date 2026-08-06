@@ -28,7 +28,9 @@ const messages: Record<JourneyErrorCode, string> = {
   JOURNEY_REQUEST_ALREADY_RUNNING:
     "Your Journey is already being shaped. Please wait and refresh.",
   JOURNEY_GENERATION_LIMIT_REACHED:
-    "You have used the three Journey attempts available for this mission.",
+    "You have used the three Journey attempts available for this growth cycle.",
+  JOURNEY_PROJECT_REQUIRED:
+    "Complete the Project from your current Journey before starting the next growth cycle.",
   JOURNEY_PROVIDER_UNAVAILABLE:
     "Journey generation is temporarily unavailable. Please try again.",
   JOURNEY_PROVIDER_TIMEOUT:
@@ -44,6 +46,11 @@ const messages: Record<JourneyErrorCode, string> = {
 type Result =
   | { ok: true; journeyId: string }
   | { ok: false; code: JourneyErrorCode; message: string };
+type UntypedRpcResult = { data: unknown; error: unknown };
+type UntypedRpc = (
+  functionName: string,
+  args?: Record<string, unknown>,
+) => PromiseLike<UntypedRpcResult>;
 const fail = (code: JourneyErrorCode): Result => ({
   ok: false,
   code,
@@ -65,7 +72,7 @@ function safeProviderFailure(error: unknown) {
 }
 
 export async function generateCurrentJourney(input: {
-  kind: "initial" | "regenerate" | "refine";
+  kind: "initial" | "regenerate" | "refine" | "continue";
   sourceJourneyId?: string;
   refinementInstruction?: string;
 }): Promise<Result> {
@@ -107,8 +114,30 @@ export async function generateCurrentJourney(input: {
       ),
     };
   }
+  if (input.kind === "continue") {
+    if (
+      !current.continuationAvailable ||
+      !current.completed ||
+      current.completed.id !== input.sourceJourneyId
+    )
+      return fail("JOURNEY_PROJECT_REQUIRED");
+    currentJourney = {
+      title: current.completed.title,
+      summary: current.completed.summary,
+      target_outcome: current.completed.target_outcome,
+      suggested_duration: current.completed.suggested_duration,
+      milestones: current.completed.milestones.map(
+        ({ id: _id, status: _status, ...milestone }) => {
+          void _id;
+          void _status;
+          return milestone;
+        },
+      ),
+    };
+  }
   const browser = await createServerSupabaseClient();
-  const { data: requestId, error: createError } = await browser.rpc(
+  const browserRpc = browser.rpc.bind(browser) as unknown as UntypedRpc;
+  const { data: requestData, error: createError } = await browserRpc(
     "create_stage6_journey_request",
     {
       mission_id_input: context.missionId,
@@ -119,9 +148,10 @@ export async function generateCurrentJourney(input: {
       ...(refinementInstruction
         ? { refinement_instruction_input: refinementInstruction }
         : {}),
-      prompt_version_input: "journey-openai-v1",
+      prompt_version_input: "journey-openai-v2",
     },
   );
+  const requestId = typeof requestData === "string" ? requestData : null;
   if (createError || !requestId) return fail(extractCode(createError));
   const service = createServiceRoleSupabaseClient();
   const { data: claimed, error: claimError } = await service.rpc(
@@ -144,24 +174,37 @@ export async function generateCurrentJourney(input: {
           context,
           currentJourney,
           refinementInstruction,
+          continuation: input.kind === "continue",
         });
       } catch (error) {
         generationMode = "evidence_fallback";
         fallbackReason =
           safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
-        output = buildEvidenceBasedJourney({ context, currentJourney });
+        output = buildEvidenceBasedJourney({
+          context,
+          currentJourney,
+          continuation: input.kind === "continue",
+        });
       }
     } else {
       generationMode = "evidence_fallback";
       fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
-      output = buildEvidenceBasedJourney({ context, currentJourney });
+      output = buildEvidenceBasedJourney({
+        context,
+        currentJourney,
+        continuation: input.kind === "continue",
+      });
     }
 
     let validated = validateJourneyForContext(context, output);
     if (!validated.ok) {
       generationMode = "evidence_fallback";
       fallbackReason = validated.code;
-      output = buildEvidenceBasedJourney({ context, currentJourney });
+      output = buildEvidenceBasedJourney({
+        context,
+        currentJourney,
+        continuation: input.kind === "continue",
+      });
       validated = validateJourneyForContext(context, output);
     }
     if (!validated.ok) throw new Error(validated.code);

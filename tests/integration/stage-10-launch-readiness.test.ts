@@ -98,6 +98,7 @@ describe("Stage 10 MVP launch-readiness contract", () => {
       "/quests",
       "/projects",
       "/portfolio",
+      "/connect",
     ]) {
       expect(proxy).toContain(`"${prefix}"`);
     }
@@ -114,11 +115,18 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 
-  it("uses the exact five-item launch navigation", () => {
-    for (const label of ["Home", "Journey", "Build", "Portfolio", "Profile"]) {
+  it("preserves the Stage 10 navigation while Stage 11 adds Connect", () => {
+    for (const label of [
+      "Home",
+      "Journey",
+      "Build",
+      "Portfolio",
+      "Connect",
+      "Profile",
+    ]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
-    expect(navigation.match(/label: "/g)).toHaveLength(5);
+    expect(navigation.match(/label: "/g)).toHaveLength(6);
     expect(navigation).not.toContain("Builders");
     expect(navigation).not.toContain("Discovery");
     expect(navigation).toContain("PipuPath mobile navigation");

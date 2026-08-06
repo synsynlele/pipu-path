@@ -77,6 +77,10 @@ describe("Journey generation orchestration", () => {
     mocks.getState.mockResolvedValue({
       active: null,
       draft: null,
+      completed: null,
+      completedProject: null,
+      continuationAvailable: false,
+      nextCycleNumber: null,
       attempts: 0,
       requestRunning: false,
     });
@@ -100,7 +104,7 @@ describe("Journey generation orchestration", () => {
       "create_stage6_journey_request",
       expect.objectContaining({
         mission_id_input: context.missionId,
-        prompt_version_input: "journey-openai-v1",
+        prompt_version_input: "journey-openai-v2",
       }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(

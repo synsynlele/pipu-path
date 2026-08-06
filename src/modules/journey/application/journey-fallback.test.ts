@@ -39,4 +39,17 @@ describe("evidence-based Journey fallback", () => {
       output.milestones.every((item) => item.resource_note.length > 10),
     ).toBe(true);
   });
+  it("creates a distinct valid continuation cycle from completed evidence", () => {
+    const currentJourney = buildEvidenceBasedJourney({ context });
+    const output = buildEvidenceBasedJourney({
+      context,
+      currentJourney,
+      continuation: true,
+    });
+    const result = validateJourneyForContext(context, output);
+
+    expect(result.ok).toBe(true);
+    expect(output.title).not.toBe(currentJourney.title);
+    expect(output.milestones[0]?.title).toBe("Extract the Strongest Evidence");
+  });
 });

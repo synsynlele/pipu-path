@@ -135,28 +135,22 @@ export function progressDestination(
     };
   }
 
-  if (snapshot.completedProjectId) {
-    if (snapshot.portfolioStatus !== "published") {
-      return {
-        stage: "portfolio",
-        path: "/portfolio",
-        label:
-          snapshot.portfolioStatus === "draft"
-            ? "Finish your Portfolio proof"
-            : snapshot.portfolioStatus === "withdrawn"
-              ? "Review your withdrawn proof"
-              : "Prepare selective public proof",
-        description:
-          "Choose exactly what is safe and truthful to present publicly.",
-      };
-    }
+  if (snapshot.completedProjectId && snapshot.journeyStatus === "completed") {
+    return {
+      stage: "journey",
+      path: "/journey",
+      label: "Build your next Journey",
+      description:
+        "Use completed Project evidence to open the next growth cycle. Public Portfolio proof remains optional.",
+    };
+  }
 
+  if (snapshot.completedProjectId) {
     return {
       stage: "complete",
       path: "/app",
       label: "Open your Home",
-      description:
-        "Your complete Builder loop is available from one clear home.",
+      description: "Your Builder evidence is available from one clear home.",
     };
   }
 

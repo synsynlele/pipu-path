@@ -27,3 +27,14 @@
     internal identifiers.
 16. Production infrastructure is unchanged until exact Preview and staging
     verification pass.
+17. Builder Connect is authenticated, adult-only and private by default.
+18. Discovery requires deliberate opt-in and returns only allow-listed fields;
+    contact details and private evidence are excluded.
+19. Every Connect mutation uses an authenticated RPC deriving the actor from
+    `auth.uid()`; helper predicates live in a non-exposed schema.
+20. Blocking is bidirectional for discovery and closes active relationship
+    state. Reports remain private to the reporter and operations.
+21. Contact details are visible only after acceptance and explicit channel-level
+    consent by their owner. PipuPath has no unrestricted private messaging.
+22. Journey continuation requires a completed prior Journey and completed
+    Project; clients cannot force a new cycle through submitted ownership IDs.

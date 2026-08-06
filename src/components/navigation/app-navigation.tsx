@@ -8,6 +8,7 @@ const items = [
   { label: "Journey", href: "/journey", icon: "path" },
   { label: "Build", href: "/build", icon: "build" },
   { label: "Portfolio", href: "/portfolio", icon: "portfolio" },
+  { label: "Connect", href: "/connect", icon: "connect" },
   {
     label: "Profile",
     href: "/onboarding/discovery/profile",
@@ -41,7 +42,7 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
       <ul
         className={
           mobile
-            ? "grid grid-cols-5"
+            ? "grid grid-cols-6"
             : "border-border flex items-center gap-1 rounded-2xl border bg-white/90 p-1 shadow-sm"
         }
       >
@@ -124,6 +125,16 @@ function NavigationIcon({
         <rect x="3" y="6" width="18" height="14" rx="2" />
         <path d="M8 6V4h8v2" />
         <path d="M3 11h18" />
+      </svg>
+    );
+  }
+  if (name === "connect") {
+    return (
+      <svg {...common}>
+        <circle cx="8" cy="8" r="3" />
+        <circle cx="17" cy="9" r="2.5" />
+        <path d="M2.5 20a5.5 5.5 0 0 1 11 0" />
+        <path d="M13 19a4.5 4.5 0 0 1 8.5-2" />
       </svg>
     );
   }

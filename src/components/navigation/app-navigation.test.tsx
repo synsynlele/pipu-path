@@ -5,9 +5,9 @@ import { AppNavigation } from "./app-navigation";
 vi.mock("next/navigation", () => ({ usePathname: () => "/projects/active" }));
 
 describe("AppNavigation", () => {
-  it("exposes the five MVP destinations and identifies Build as current", () => {
+  it("exposes the six Builder destinations and identifies Build as current", () => {
     render(<AppNavigation />);
-    expect(screen.getAllByRole("link")).toHaveLength(5);
+    expect(screen.getAllByRole("link")).toHaveLength(6);
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
       "href",
       "/app",
@@ -23,6 +23,10 @@ describe("AppNavigation", () => {
     expect(screen.getByRole("link", { name: "Portfolio" })).toHaveAttribute(
       "href",
       "/portfolio",
+    );
+    expect(screen.getByRole("link", { name: "Connect" })).toHaveAttribute(
+      "href",
+      "/connect",
     );
     expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute(
       "href",
