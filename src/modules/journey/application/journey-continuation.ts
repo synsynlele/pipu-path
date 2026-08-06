@@ -20,8 +20,7 @@ import { buildContinuingEvidenceJourney } from "./journey-fallback";
 const logger = createLogger();
 
 type ContinuationResult =
-  | { ok: true; journeyId: string }
-  | { ok: false; message: string };
+  { ok: true; journeyId: string } | { ok: false; message: string };
 
 function sourceOutput(
   source: NonNullable<
