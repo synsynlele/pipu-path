@@ -3,6 +3,7 @@ import "server-only";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { getCurrentMissionState } from "@/modules/mission/infrastructure/mission-dal";
+import { createProjectServerClient } from "@/modules/project/infrastructure/project-client";
 import {
   journeyContextSchema,
   type JourneyOutput,
@@ -111,7 +112,8 @@ export async function getCurrentJourneyState(missionId?: string) {
 
   let completedProject = null;
   if (completedRow?.id) {
-    const { data } = await client
+    const projectClient = await createProjectServerClient();
+    const { data } = await projectClient
       .from("builder_projects")
       .select("id,title,completed_at")
       .eq("user_id", user.id)
