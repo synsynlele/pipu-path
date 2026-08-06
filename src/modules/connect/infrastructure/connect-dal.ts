@@ -1,6 +1,5 @@
 import "server-only";
 
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import type {
   BuilderDirectoryRow,
@@ -33,7 +32,7 @@ export function isConnectEligible(profile: {
 }
 
 export async function getConnectHomeState(search?: string) {
-  const { user, profile } = await requireAuthenticatedIdentity();
+  const { profile } = await requireAuthenticatedIdentity();
   const eligible = isConnectEligible(profile);
   if (!eligible) {
     return {
@@ -44,17 +43,10 @@ export async function getConnectHomeState(search?: string) {
     };
   }
 
-  const client = await createServerSupabaseClient();
-  // Stage 11 migration is deployed in the same release; generated types refresh follows migration verification.
-  // @ts-expect-error Stage 11 table is not present in the pre-migration generated type snapshot.
-  const ownProfileQuery = client
-    .from("builder_network_profiles")
-    .select("*")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  const [ownProfileResult, builders, network] = await Promise.all([
-    ownProfileQuery,
+  const [ownProfileRows, builders, network] = await Promise.all([
+    callAuthenticatedConnectRpc<OwnNetworkProfile[]>(
+      "get_stage11_own_network_profile",
+    ),
     callAuthenticatedConnectRpc<BuilderDirectoryRow[]>(
       "search_stage11_builders",
       { search_input: search?.trim() || null, limit_input: 24 },
@@ -64,7 +56,7 @@ export async function getConnectHomeState(search?: string) {
 
   return {
     eligible: true as const,
-    profile: (ownProfileResult.data as OwnNetworkProfile | null) ?? null,
+    profile: ownProfileRows[0] ?? null,
     builders,
     network,
   };
