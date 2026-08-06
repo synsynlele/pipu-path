@@ -7,6 +7,7 @@ import {
   getCurrentJourneyState,
   getJourneyContext,
 } from "@/modules/journey/infrastructure/journey-dal";
+import { JourneyContinuationForm } from "@/modules/journey/ui/journey-continuation-form";
 import { JourneyGenerationForm } from "@/modules/journey/ui/journey-generation-form";
 import { JourneyRefinementForm } from "@/modules/journey/ui/journey-refinement-form";
 
@@ -53,7 +54,7 @@ function JourneyDetails({ journey }: { journey: DisplayJourney }) {
         </h3>
         <p className="text-muted mt-2 leading-7">{journey.summary}</p>
       </div>
-      {journey.status === "active" ? (
+      {journey.status === "active" || journey.status === "completed" ? (
         <p className="mt-5 text-sm font-semibold">Progress: {progress}%</p>
       ) : null}
       <ol className="mt-8 grid gap-5">
@@ -105,6 +106,10 @@ export default async function JourneyPage() {
   const context = await getJourneyContext();
   const state = await getCurrentJourneyState(context?.missionId);
   const attemptsRemaining = Math.max(0, 3 - state.attempts);
+  const continuationAttemptsRemaining = Math.max(
+    0,
+    3 - state.continuationAttempts,
+  );
   return (
     <main
       id="main-content"
@@ -114,11 +119,11 @@ export default async function JourneyPage() {
         Your practical Builder Journey
       </p>
       <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
-        Turn your mission into milestones.
+        Turn your mission into continuing cycles of action.
       </h1>
       <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
-        Your Journey is a flexible pathway, not a fixed future. It shows the
-        major milestones to test your direction with real action.
+        A Journey is not a one-time course. Each completed cycle remains in your
+        history, and the next cycle builds on evidence from the one before it.
       </p>
       {!context ? (
         <Surface className="mt-10 p-6 sm:p-8">
@@ -135,20 +140,20 @@ export default async function JourneyPage() {
       ) : state.active ? (
         <Surface className="mt-10 p-6 sm:p-8">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Active Journey
+            Active Journey · Cycle {state.active.cycleNumber}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
             {state.active.title}
           </h2>
           <JourneyDetails journey={state.active} />
           <ButtonLink href="/journey/complete" className="mt-8">
-            Start First Milestone
+            Continue Current Milestone
           </ButtonLink>
         </Surface>
       ) : state.draft ? (
         <Surface className="mt-10 p-6 sm:p-8">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Journey Review
+            Journey Review · Cycle {state.draft.cycleNumber}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
             {state.draft.title}
@@ -159,16 +164,81 @@ export default async function JourneyPage() {
               <input type="hidden" name="journeyId" value={state.draft.id} />
               <Button type="submit">Accept Journey</Button>
             </form>
-            <JourneyGenerationForm
-              kind="regenerate"
+            {state.draft.cycleNumber === 1 ? (
+              <JourneyGenerationForm
+                kind="regenerate"
+                attemptsRemaining={attemptsRemaining}
+              />
+            ) : null}
+          </div>
+          {state.draft.cycleNumber === 1 ? (
+            <JourneyRefinementForm
+              journeyId={state.draft.id}
               attemptsRemaining={attemptsRemaining}
             />
-          </div>
-          <JourneyRefinementForm
-            journeyId={state.draft.id}
-            attemptsRemaining={attemptsRemaining}
-          />
+          ) : null}
         </Surface>
+      ) : state.latestCompleted ? (
+        <>
+          <Surface className="mt-10 p-6 sm:p-8">
+            <p className="text-success text-xs font-semibold tracking-wide uppercase">
+              Journey Cycle {state.latestCompleted.cycleNumber} complete
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+              {state.latestCompleted.title}
+            </h2>
+            <p className="text-muted mt-4 leading-7">
+              This cycle remains part of your private history. Your next cycle
+              unlocks after the Journey produces one completed Builder Project.
+            </p>
+            <JourneyDetails journey={state.latestCompleted} />
+          </Surface>
+          <Surface className="mt-6 p-6 sm:p-8">
+            <p className="text-gold text-xs font-semibold uppercase">
+              Continue moving
+            </p>
+            <h2 className="mt-3 text-2xl font-semibold">
+              Build Journey Cycle {state.latestCompleted.cycleNumber + 1}
+            </h2>
+            {state.continuationEligible ? (
+              <>
+                <p className="text-muted mt-3 max-w-2xl leading-7">
+                  PipuPath will use your active Mission, completed Journey and
+                  completed Project evidence to create a stronger new cycle
+                  without erasing the previous one.
+                </p>
+                <div className="mt-6">
+                  <JourneyContinuationForm
+                    sourceJourneyId={state.latestCompleted.id}
+                    nextCycleNumber={state.latestCompleted.cycleNumber + 1}
+                    attemptsRemaining={continuationAttemptsRemaining}
+                  />
+                </div>
+              </>
+            ) : state.continuationBlocker === "active-project" ? (
+              <>
+                <p className="text-muted mt-3 max-w-2xl leading-7">
+                  Finish your active Builder Project first. Its real-world
+                  evidence becomes the foundation for the next Journey cycle.
+                </p>
+                <ButtonLink href="/projects/active" className="mt-6">
+                  Continue Active Project
+                </ButtonLink>
+              </>
+            ) : (
+              <>
+                <p className="text-muted mt-3 max-w-2xl leading-7">
+                  Turn one completed Quest from this Journey into a Builder
+                  Project and complete it. That proof unlocks the next Journey
+                  cycle.
+                </p>
+                <ButtonLink href="/build" className="mt-6">
+                  Build a Project
+                </ButtonLink>
+              </>
+            )}
+          </Surface>
+        </>
       ) : (
         <Surface className="mt-10 p-6 sm:p-8">
           <h2 className="text-xl font-semibold">

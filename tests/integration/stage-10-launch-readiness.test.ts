@@ -114,11 +114,18 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 
-  it("uses the exact five-item launch navigation", () => {
-    for (const label of ["Home", "Journey", "Build", "Portfolio", "Profile"]) {
+  it("preserves the five launch destinations and adds Connect", () => {
+    for (const label of [
+      "Home",
+      "Journey",
+      "Build",
+      "Connect",
+      "Portfolio",
+      "Profile",
+    ]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
-    expect(navigation.match(/label: "/g)).toHaveLength(5);
+    expect(navigation.match(/label: "/g)).toHaveLength(6);
     expect(navigation).not.toContain("Builders");
     expect(navigation).not.toContain("Discovery");
     expect(navigation).toContain("PipuPath mobile navigation");
