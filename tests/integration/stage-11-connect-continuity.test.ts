@@ -87,7 +87,9 @@ describe("Stage 11 Builder Connect and Journey continuity", () => {
     expect(connectPage).toContain(
       "contact details appear only after an accepted connection and an explicit sharing choice",
     );
-    expect(schema).not.toMatch(/create table public\.(messages|conversations)/i);
+    expect(schema).not.toMatch(
+      /create table public\.(messages|conversations)/i,
+    );
   });
 
   it("adds and protects Connect on desktop and mobile", () => {
@@ -105,7 +107,9 @@ describe("Stage 11 Builder Connect and Journey continuity", () => {
     expect(continuityMigration).toContain(
       "builder_projects where user_id=actor and journey_id=source_row.id and status='completed'",
     );
-    expect(continuityMigration).toContain("target_cycle := source_row.cycle_number + 1");
+    expect(continuityMigration).toContain(
+      "target_cycle := source_row.cycle_number + 1",
+    );
     expect(continuityMigration).toContain("persist_stage6_journey");
     expect(journeyPage).toContain("Continue moving");
     expect(journeyPage).toContain("continuationEligible");
