@@ -78,7 +78,8 @@ export default async function BuilderConnectPage({
       <Surface className="mt-6 p-6">
         <h2 className="text-lg font-semibold">Safety controls</h2>
         <p className="text-muted mt-2 text-sm leading-6">
-          Blocking removes network access. Reports are private and do not notify the reported Builder.
+          Blocking removes network access. Reports are private and do not notify
+          the reported Builder.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <form action={builderSafetyAction}>
