@@ -1,75 +1,52 @@
 name: CI
 
 on:
+  workflow_dispatch:
   pull_request:
+  push:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: stage11-reconstruct-${{ github.event.pull_request.number }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  reconstruct-stage11:
-    if: github.head_ref == 'agent/stage11-builder-connect'
-    runs-on: ubuntu-24.04
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          ref: agent/stage11-builder-connect
-          fetch-depth: 0
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run validate
 
-      - name: Verify and reconstruct Stage 11 source
-        run: |
-          cat > /tmp/stage11-fragments.sha256 <<'EOF'
-          ead4a17bbfb147b47fae2be729a36b140f5c2f60096538f1ad0b6041c549b1b8  .stage11-fast/p-00
-          98f032559745fcb524d2523e7955b2c1b606f1c7073185aadb3e1559fa80e9d9  .stage11-fast/q-00
-          7d066cf6ede993f3fcfbe889969d8498c67a62f657f28207fd30b3fa3aba76ee  .stage11-fast/r-00
-          e291221bfad1ecbb477b77ee1f05604d5d27fd11e656b210db87110e6d5ce3bd  .stage11-fast/r-01
-          1a67fcad02743ada528d2b475f825ea60a7cdc9f11247fb79b161f95ffd3e726  .stage11-fast/r-02
-          3d024e3ff06bf174c41d7bec14af888156ae33fe874d45f613dd1bae448f07f7  .stage11-fast/r-03
-          69dec124405fd8666585817e42d4ba8fe07ebf943b16683638d0e3cfffd7e6c1  .stage11-fast/r-04
-          6ac05692e4b8b867b57225d1c1a19d2b4bb6d3b84dab3a64f15f58af32ee04a9  .stage11-fast/r-05
-          81e8fb39407784a0c44a9f394aab3cd96abdbb0b27f01576c12a318ed5401c33  .stage11-fast/s-00
-          f8361b293a918ec3da8d7fb3a5d0f753a7d54234dcf9477a2359c5245b77969b  .stage11-fast/t-00
-          713779a1ff215456bf5899d3f3c136536d8e5986ca5681ca55bce4a47e75b1dc  .stage11-fast/t-01
-          e4af3e37224b4e9faaf8afe6b72d6a14ea9a32d40778a81fb1faae403c46e6ac  .stage11-fast/t-02
-          22eb322691b907f8fcca9af32fdcc73446526d00ac7b8ca56af1654203cbc5cc  .stage11-fast/t-03
-          5ba8d71c8c5a9680880deba6a7f5badd86a696ffd03370d7fd2e438e83d98e94  .stage11-fast/s-02
-          81f7f9bc762fee188524124147729e9fcbf21d28d236e827bd4dfde50fb0a0c8  .stage11-fast/s-03
-          EOF
-          sha256sum --check /tmp/stage11-fragments.sha256
-          cat \
-            .stage11-fast/p-00 \
-            .stage11-fast/q-00 \
-            .stage11-fast/r-00 \
-            .stage11-fast/r-01 \
-            .stage11-fast/r-02 \
-            .stage11-fast/r-03 \
-            .stage11-fast/r-04 \
-            .stage11-fast/r-05 \
-            .stage11-fast/s-00 \
-            .stage11-fast/t-00 \
-            .stage11-fast/t-01 \
-            .stage11-fast/t-02 \
-            .stage11-fast/t-03 \
-            .stage11-fast/s-02 \
-            .stage11-fast/s-03 \
-            | base64 --decode > /tmp/stage11-overlay.tar.gz
-          echo '508faf8c794693e3bb8531f2520f83a89ebfceb4c8ca41b7742bbb4d8725a431  /tmp/stage11-overlay.tar.gz' | sha256sum --check
-          tar -xzf /tmp/stage11-overlay.tar.gz -C .
-          rm -rf .stage11-fast
-          git checkout HEAD -- \
-            .github/workflows/ci.yml \
-            .github/workflows/apply-stage11-fast.yml \
-            .github/workflows/package-stage11-source.yml
-
-      - name: Publish application source only
-        run: |
-          git config user.name 'pipu-path-release-bot'
-          git config user.email 'actions@users.noreply.github.com'
-          git add -A
-          git commit -m 'feat(stage11): builder connect and renewable growth cycles'
-          git push origin HEAD:agent/stage11-builder-connect
+  staging-e2e:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:e2e
+        env:
+          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+          E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
+          E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results
+          if-no-files-found: ignore
