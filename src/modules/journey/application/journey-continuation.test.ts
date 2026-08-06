@@ -67,7 +67,7 @@ const completed = {
   suggested_duration: "four_weeks" as const,
   status: "completed" as const,
   cycleNumber: 1,
-  continuationOfJourneyId: null,
+  continuesJourneyId: null,
   createdAt: "2026-08-01T00:00:00.000Z",
   completedAt: "2026-08-05T00:00:00.000Z",
   milestones: [1, 2, 3, 4].map(milestone),
@@ -99,6 +99,8 @@ function state(overrides: Record<string, unknown> = {}) {
     latestCompleted: completed,
     attempts: 1,
     continuationAttempts: 0,
+    continuationEligible: true,
+    continuationBlocker: null,
     requestRunning: false,
     ...overrides,
   };
@@ -113,7 +115,7 @@ describe("Journey continuation orchestration", () => {
     mocks.authenticatedRpc.mockResolvedValue("request-2");
     mocks.serviceRpc.mockImplementation(async (name: string) => {
       if (name === "claim_stage6_journey_request") return true;
-      if (name === "persist_stage11_journey_continuation") return "journey-2";
+      if (name === "persist_stage6_journey") return "journey-2";
       return true;
     });
     mocks.generate.mockResolvedValue(output);
@@ -125,16 +127,20 @@ describe("Journey continuation orchestration", () => {
       journeyId: "journey-2",
     });
     expect(mocks.authenticatedRpc).toHaveBeenCalledWith(
-      "create_stage11_journey_continuation_request",
-      expect.objectContaining({
+      "create_stage6_journey_request",
+      {
+        mission_id_input: context.missionId,
+        generation_kind_input: "continue",
         source_journey_id_input: sourceJourneyId,
-      }),
+        refinement_instruction_input: null,
+        prompt_version_input: "journey-continuity-openai-v1",
+      },
     );
     expect(mocks.generate).toHaveBeenCalledWith(
       expect.objectContaining({ continuation: true }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "persist_stage11_journey_continuation",
+      "persist_stage6_journey",
       expect.objectContaining({ journey_input: output }),
     );
     expect(mocks.info).toHaveBeenCalledWith(
@@ -180,6 +186,34 @@ describe("Journey continuation orchestration", () => {
     });
   });
 
+  it("requires a completed Project from the source Journey", async () => {
+    mocks.getState.mockResolvedValue(
+      state({
+        continuationEligible: false,
+        continuationBlocker: "project-required",
+      }),
+    );
+    await expect(generateContinuingJourney(sourceJourneyId)).resolves.toEqual({
+      ok: false,
+      message:
+        "Complete one Builder Project from this Journey before creating the next cycle.",
+    });
+  });
+
+  it("requires the current active Project to finish", async () => {
+    mocks.getState.mockResolvedValue(
+      state({
+        continuationEligible: false,
+        continuationBlocker: "active-project",
+      }),
+    );
+    await expect(generateContinuingJourney(sourceJourneyId)).resolves.toEqual({
+      ok: false,
+      message:
+        "Complete your active Builder Project before creating the next Journey cycle.",
+    });
+  });
+
   it("returns a safe retry message when request creation fails", async () => {
     mocks.authenticatedRpc.mockRejectedValue(new Error("database unavailable"));
     await expect(generateContinuingJourney(sourceJourneyId)).resolves.toEqual({
@@ -204,7 +238,7 @@ describe("Journey continuation orchestration", () => {
       journeyId: "journey-2",
     });
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "persist_stage11_journey_continuation",
+      "persist_stage6_journey",
       expect.objectContaining({
         journey_input: expect.objectContaining({
           title: "Deepen the Mission Through a Stronger Second Test",
@@ -245,7 +279,7 @@ describe("Journey continuation orchestration", () => {
       journeyId: "journey-2",
     });
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "persist_stage11_journey_continuation",
+      "persist_stage6_journey",
       expect.objectContaining({
         journey_input: expect.objectContaining({
           title: "Deepen the Mission Through a Stronger Second Test",
@@ -257,8 +291,7 @@ describe("Journey continuation orchestration", () => {
   it("marks the request failed when persistence throws", async () => {
     mocks.serviceRpc.mockImplementation(async (name: string) => {
       if (name === "claim_stage6_journey_request") return true;
-      if (name === "persist_stage11_journey_continuation")
-        throw new Error("persist failed");
+      if (name === "persist_stage6_journey") throw new Error("persist failed");
       return true;
     });
     await expect(generateContinuingJourney(sourceJourneyId)).resolves.toEqual({
