@@ -18,6 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: agent/stage11-builder-connect
           fetch-depth: 0
 
       - name: Verify and reconstruct Stage 11 source
@@ -60,10 +61,12 @@ jobs:
           echo '508faf8c794693e3bb8531f2520f83a89ebfceb4c8ca41b7742bbb4d8725a431  /tmp/stage11-overlay.tar.gz' | sha256sum --check
           tar -xzf /tmp/stage11-overlay.tar.gz -C .
           rm -rf .stage11-fast
-          rm -f .github/workflows/apply-stage11-fast.yml
-          rm -f .github/workflows/package-stage11-source.yml
+          git checkout HEAD -- \
+            .github/workflows/ci.yml \
+            .github/workflows/apply-stage11-fast.yml \
+            .github/workflows/package-stage11-source.yml
 
-      - name: Publish complete Stage 11 source
+      - name: Publish application source only
         run: |
           git config user.name 'pipu-path-release-bot'
           git config user.email 'actions@users.noreply.github.com'
