@@ -188,9 +188,8 @@ export default async function JourneyPage() {
               {state.latestCompleted.title}
             </h2>
             <p className="text-muted mt-4 leading-7">
-              This cycle remains part of your private history. Continue only
-              when you are ready to deepen the same Mission through a stronger
-              test.
+              This cycle remains part of your private history. Your next cycle
+              unlocks after the Journey produces one completed Builder Project.
             </p>
             <JourneyDetails journey={state.latestCompleted} />
           </Surface>
@@ -201,18 +200,43 @@ export default async function JourneyPage() {
             <h2 className="mt-3 text-2xl font-semibold">
               Build Journey Cycle {state.latestCompleted.cycleNumber + 1}
             </h2>
-            <p className="text-muted mt-3 max-w-2xl leading-7">
-              PipuPath will use your active Mission and completed Journey
-              evidence to create a new cycle without erasing or repeating the
-              previous one.
-            </p>
-            <div className="mt-6">
-              <JourneyContinuationForm
-                sourceJourneyId={state.latestCompleted.id}
-                nextCycleNumber={state.latestCompleted.cycleNumber + 1}
-                attemptsRemaining={continuationAttemptsRemaining}
-              />
-            </div>
+            {state.continuationEligible ? (
+              <>
+                <p className="text-muted mt-3 max-w-2xl leading-7">
+                  PipuPath will use your active Mission, completed Journey and
+                  completed Project evidence to create a stronger new cycle
+                  without erasing the previous one.
+                </p>
+                <div className="mt-6">
+                  <JourneyContinuationForm
+                    sourceJourneyId={state.latestCompleted.id}
+                    nextCycleNumber={state.latestCompleted.cycleNumber + 1}
+                    attemptsRemaining={continuationAttemptsRemaining}
+                  />
+                </div>
+              </>
+            ) : state.continuationBlocker === "active-project" ? (
+              <>
+                <p className="text-muted mt-3 max-w-2xl leading-7">
+                  Finish your active Builder Project first. Its real-world
+                  evidence becomes the foundation for the next Journey cycle.
+                </p>
+                <ButtonLink href="/projects/active" className="mt-6">
+                  Continue Active Project
+                </ButtonLink>
+              </>
+            ) : (
+              <>
+                <p className="text-muted mt-3 max-w-2xl leading-7">
+                  Turn one completed Quest from this Journey into a Builder
+                  Project and complete it. That proof unlocks the next Journey
+                  cycle.
+                </p>
+                <ButtonLink href="/build" className="mt-6">
+                  Build a Project
+                </ButtonLink>
+              </>
+            )}
           </Surface>
         </>
       ) : (
