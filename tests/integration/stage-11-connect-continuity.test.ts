@@ -102,8 +102,12 @@ describe("Stage 11 Builder Connect and Journey continuity", () => {
   });
 
   it("preserves completed Journeys and creates Project-gated cycles", () => {
-    expect(schema).toContain("cycle_number integer not null default 1");
-    expect(schema).toContain("continues_journey_id");
+    expect(schema).toMatch(
+      /add column if not exists cycle_number\s+integer not null default 1/,
+    );
+    expect(schema).toMatch(
+      /add column if not exists continues_journey_id\s+uuid references public\.user_journeys/,
+    );
     expect(continuityMigration).toContain("generation_kind_input='continue'");
     expect(continuityMigration).toContain(
       "builder_projects where user_id=actor and journey_id=source_row.id and status='completed'",
