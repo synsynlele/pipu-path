@@ -32,7 +32,10 @@ jobs:
           69dec124405fd8666585817e42d4ba8fe07ebf943b16683638d0e3cfffd7e6c1  .stage11-fast/r-04
           6ac05692e4b8b867b57225d1c1a19d2b4bb6d3b84dab3a64f15f58af32ee04a9  .stage11-fast/r-05
           81e8fb39407784a0c44a9f394aab3cd96abdbb0b27f01576c12a318ed5401c33  .stage11-fast/s-00
-          3672a2628f1ab0ae35efe0299cc35d40218160dc95921d9bde280423fb16fa49  .stage11-fast/s-01
+          f8361b293a918ec3da8d7fb3a5d0f753a7d54234dcf9477a2359c5245b77969b  .stage11-fast/t-00
+          713779a1ff215456bf5899d3f3c136536d8e5986ca5681ca55bce4a47e75b1dc  .stage11-fast/t-01
+          e4af3e37224b4e9faaf8afe6b72d6a14ea9a32d40778a81fb1faae403c46e6ac  .stage11-fast/t-02
+          22eb322691b907f8fcca9af32fdcc73446526d00ac7b8ca56af1654203cbc5cc  .stage11-fast/t-03
           5ba8d71c8c5a9680880deba6a7f5badd86a696ffd03370d7fd2e438e83d98e94  .stage11-fast/s-02
           81f7f9bc762fee188524124147729e9fcbf21d28d236e827bd4dfde50fb0a0c8  .stage11-fast/s-03
           EOF
@@ -47,7 +50,10 @@ jobs:
             .stage11-fast/r-04 \
             .stage11-fast/r-05 \
             .stage11-fast/s-00 \
-            .stage11-fast/s-01 \
+            .stage11-fast/t-00 \
+            .stage11-fast/t-01 \
+            .stage11-fast/t-02 \
+            .stage11-fast/t-03 \
             .stage11-fast/s-02 \
             .stage11-fast/s-03 \
             | base64 --decode > /tmp/stage11-overlay.tar.gz
