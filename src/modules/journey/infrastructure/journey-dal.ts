@@ -3,6 +3,7 @@ import "server-only";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { getCurrentMissionState } from "@/modules/mission/infrastructure/mission-dal";
+import { createProjectServerClient } from "@/modules/project/infrastructure/project-client";
 import {
   journeyContextSchema,
   type JourneyOutput,
@@ -76,7 +77,10 @@ async function loadMilestones(
 
 export async function getCurrentJourneyState(missionId?: string) {
   const { user } = await requireAuthenticatedIdentity();
-  const client = await createServerSupabaseClient();
+  const [client, projectClient] = await Promise.all([
+    createServerSupabaseClient(),
+    createProjectServerClient(),
+  ]);
   const journeys = client
     .from("user_journeys")
     .select("*")
@@ -92,7 +96,7 @@ export async function getCurrentJourneyState(missionId?: string) {
   const [journeyResult, requestResult, projectResult] = await Promise.all([
     journeys,
     requests,
-    client
+    projectClient
       .from("builder_projects")
       .select("id,journey_id,status")
       .eq("user_id", user.id),
@@ -105,7 +109,11 @@ export async function getCurrentJourneyState(missionId?: string) {
     string,
     unknown
   >[];
-  const projectRows = projectResult.data ?? [];
+  const projectRows = (projectResult.data ?? []) as Array<{
+    id: string;
+    journey_id: string;
+    status: string;
+  }>;
   const orderedRows = [...rows].sort((a, b) =>
     String(b.created_at).localeCompare(String(a.created_at)),
   );
