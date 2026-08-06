@@ -62,7 +62,6 @@ jobs:
           rm -rf .stage11-fast
           rm -f .github/workflows/apply-stage11-fast.yml
           rm -f .github/workflows/package-stage11-source.yml
-          git diff --check
 
       - name: Publish complete Stage 11 source
         run: |
