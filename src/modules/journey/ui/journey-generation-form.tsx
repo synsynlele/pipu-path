@@ -40,7 +40,8 @@ export function JourneyGenerationForm({
       </Button>
       {pending ? (
         <p role="status" className="text-muted mt-4 text-sm">
-          PipuPath is shaping the next evidence-based milestones from your mission…
+          PipuPath is shaping the next evidence-based milestones from your
+          mission…
         </p>
       ) : null}
       <p className="text-muted mt-3 text-xs">

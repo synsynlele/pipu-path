@@ -8,16 +8,16 @@ boundaries.
 | ----- | -------------------------------------- | -------- |
 | 0     | Governance and executable architecture | Complete |
 | 1     | Engineering and experience foundation  | Complete |
-| 2     | Identity and access                     | Complete |
-| 3     | Discovery                               | Complete |
-| 4     | Human Potential Profile                 | Complete |
-| 5     | Practical Mission                       | Complete |
-| 6     | Practical Builder Journey               | Complete |
-| 7     | HQLS Quest execution                    | Complete |
-| 8     | Builder Project                         | Complete |
-| 9     | Selective Project Portfolio             | Complete |
-| 10    | MVP launch readiness                    | Complete |
-| 11    | Builder Connect + renewable growth      | Active   |
+| 2     | Identity and access                    | Complete |
+| 3     | Discovery                              | Complete |
+| 4     | Human Potential Profile                | Complete |
+| 5     | Practical Mission                      | Complete |
+| 6     | Practical Builder Journey              | Complete |
+| 7     | HQLS Quest execution                   | Complete |
+| 8     | Builder Project                        | Complete |
+| 9     | Selective Project Portfolio            | Complete |
+| 10    | MVP launch readiness                   | Complete |
+| 11    | Builder Connect + renewable growth     | Active   |
 
 ## Stage 11 outcome
 

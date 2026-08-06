@@ -3,20 +3,20 @@
 **Current stage:** Stage 11 — implementation candidate  
 **Last updated:** 2026-08-06
 
-| Stage                           | Status                   | Evidence                                                                      |
-| ------------------------------- | ------------------------ | ----------------------------------------------------------------------------- |
-| 0 — Governance and architecture | Complete                 | Constitution, boundaries, ADRs and ledger                                     |
-| 1 — Engineering foundation      | Complete                 | Runtime, design system, config, logging, tests and CI                         |
-| 2 — Identity and access         | Complete                 | Auth, private identity, consent, recovery and RLS                             |
-| 3 — Discovery                   | Complete                 | Fifteen-question evidence, review and persistence                             |
-| 4 — Human Potential Profile     | Complete                 | Private synthesis, feedback and provenance                                    |
-| 5 — Practical Mission           | Complete                 | Generation, refinement, activation and recovery                               |
-| 6 — Practical Builder Journey   | Complete                 | Ordered milestones, activation and recovery                                   |
-| 7 — HQLS Quest Execution        | Complete                 | Action, evidence, reflection, XP and progression                              |
-| 8 — Builder Project MVP         | Complete                 | Quest-linked Project and proof-backed milestones                              |
-| 9 — Selective Project Portfolio | Complete                 | Consent, safe projection, publish, withdraw and republish                     |
-| 10 — MVP Launch Readiness       | Complete                 | Production-aligned application shell, OAuth hardening and release operations  |
-| 11 — Connect + Growth Cycles    | Database verified        | Migrations 022–031 and critical rollback-only database behaviours pass; CI/Preview pending |
+| Stage                           | Status            | Evidence                                                                                   |
+| ------------------------------- | ----------------- | ------------------------------------------------------------------------------------------ |
+| 0 — Governance and architecture | Complete          | Constitution, boundaries, ADRs and ledger                                                  |
+| 1 — Engineering foundation      | Complete          | Runtime, design system, config, logging, tests and CI                                      |
+| 2 — Identity and access         | Complete          | Auth, private identity, consent, recovery and RLS                                          |
+| 3 — Discovery                   | Complete          | Fifteen-question evidence, review and persistence                                          |
+| 4 — Human Potential Profile     | Complete          | Private synthesis, feedback and provenance                                                 |
+| 5 — Practical Mission           | Complete          | Generation, refinement, activation and recovery                                            |
+| 6 — Practical Builder Journey   | Complete          | Ordered milestones, activation and recovery                                                |
+| 7 — HQLS Quest Execution        | Complete          | Action, evidence, reflection, XP and progression                                           |
+| 8 — Builder Project MVP         | Complete          | Quest-linked Project and proof-backed milestones                                           |
+| 9 — Selective Project Portfolio | Complete          | Consent, safe projection, publish, withdraw and republish                                  |
+| 10 — MVP Launch Readiness       | Complete          | Production-aligned application shell, OAuth hardening and release operations               |
+| 11 — Connect + Growth Cycles    | Database verified | Migrations 022–031 and critical rollback-only database behaviours pass; CI/Preview pending |
 
 ## Stage 11 implementation candidate
 

@@ -215,8 +215,7 @@ export async function getAuthenticatedHomeState(
       .order("completed_at", { ascending: false })
       .limit(1)
       .maybeSingle();
-    completedProject =
-      (completedProjectRow as ProjectSummary | null) ?? null;
+    completedProject = (completedProjectRow as ProjectSummary | null) ?? null;
   }
 
   const snapshot: AuthenticatedProgressSnapshot = {

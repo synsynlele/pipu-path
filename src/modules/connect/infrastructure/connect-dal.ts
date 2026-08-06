@@ -6,12 +6,7 @@ import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/
 
 export type ConnectVisibility = "private" | "discoverable";
 export type ConnectRelationship =
-  | "none"
-  | "pending"
-  | "accepted"
-  | "declined"
-  | "cancelled"
-  | "removed";
+  "none" | "pending" | "accepted" | "declined" | "cancelled" | "removed";
 
 export type ConnectProfile = {
   interests: string[];
@@ -102,10 +97,9 @@ export async function getConnectState(): Promise<ConnectState> {
 
 export async function getBuilderDetail(username: string) {
   await requireAuthenticatedIdentity();
-  const { data, error } = await invokeConnectRpc(
-    "get_stage11_builder_detail",
-    { username_input: username },
-  );
+  const { data, error } = await invokeConnectRpc("get_stage11_builder_detail", {
+    username_input: username,
+  });
   if (error || !data || typeof data !== "object") notFound();
   return data as BuilderDetail;
 }

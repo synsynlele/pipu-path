@@ -40,5 +40,12 @@ export const reportBuilderInputSchema = z.object({
 
 export function commaSeparatedValues(value: FormDataEntryValue | null) {
   if (typeof value !== "string") return [];
-  return [...new Set(value.split(",").map((item) => item.trim()).filter(Boolean))];
+  return [
+    ...new Set(
+      value
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  ];
 }

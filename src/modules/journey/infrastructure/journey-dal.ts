@@ -43,11 +43,7 @@ function mapJourney(
     suggested_duration:
       row.suggested_duration as JourneyOutput["suggested_duration"],
     status: row.status as
-      | "draft"
-      | "active"
-      | "paused"
-      | "completed"
-      | "replaced",
+      "draft" | "active" | "paused" | "completed" | "replaced",
     createdAt: row.created_at as string,
     milestones: milestones.map((item) => ({
       id: item.id as string,
@@ -106,7 +102,10 @@ export async function getCurrentJourneyState(missionId?: string) {
   const draftRow = rows.find((row) => row.status === "draft");
   const completedRow = rows.find((row) => row.status === "completed");
   const [selectedMilestones, completedMilestones] = await Promise.all([
-    loadMilestones(client, (activeRow?.id ?? draftRow?.id) as string | undefined),
+    loadMilestones(
+      client,
+      (activeRow?.id ?? draftRow?.id) as string | undefined,
+    ),
     loadMilestones(client, completedRow?.id as string | undefined),
   ]);
 
@@ -124,9 +123,7 @@ export async function getCurrentJourneyState(missionId?: string) {
     completedProject = data;
   }
 
-  const active = activeRow
-    ? mapJourney(activeRow, selectedMilestones)
-    : null;
+  const active = activeRow ? mapJourney(activeRow, selectedMilestones) : null;
   const draft = draftRow ? mapJourney(draftRow, selectedMilestones) : null;
   const completed = completedRow
     ? mapJourney(completedRow, completedMilestones)
@@ -134,11 +131,12 @@ export async function getCurrentJourneyState(missionId?: string) {
   const continuationAvailable = Boolean(
     completed && completedProject && !active && !draft,
   );
-  const targetCycle = active?.cycleNumber ??
+  const targetCycle =
+    active?.cycleNumber ??
     draft?.cycleNumber ??
     (continuationAvailable && completed
       ? completed.cycleNumber + 1
-      : completed?.cycleNumber ?? 1);
+      : (completed?.cycleNumber ?? 1));
 
   return {
     active,

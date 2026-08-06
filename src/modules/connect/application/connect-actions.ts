@@ -18,10 +18,7 @@ function destination(formData: FormData) {
     : "/connect";
 }
 
-function finish(
-  path: string,
-  status: "saved" | "updated" | "error",
-): never {
+function finish(path: string, status: "saved" | "updated" | "error"): never {
   revalidatePath("/connect");
   redirect(`${path}${path.includes("?") ? "&" : "?"}status=${status}`);
 }
@@ -68,12 +65,18 @@ export async function manageConnectionAction(formData: FormData) {
     result = await runConnectRpc("send_stage11_connection_request", {
       target_user_id_input: parsed.data.targetUserId,
     });
-  } else if (parsed.data.action === "accept" || parsed.data.action === "decline") {
+  } else if (
+    parsed.data.action === "accept" ||
+    parsed.data.action === "decline"
+  ) {
     result = await runConnectRpc("respond_stage11_connection_request", {
       connection_id_input: parsed.data.connectionId,
       accept_input: parsed.data.action === "accept",
     });
-  } else if (parsed.data.action === "cancel" || parsed.data.action === "remove") {
+  } else if (
+    parsed.data.action === "cancel" ||
+    parsed.data.action === "remove"
+  ) {
     result = await runConnectRpc("close_stage11_connection", {
       connection_id_input: parsed.data.connectionId,
       action_input: parsed.data.action,

@@ -73,4 +73,3 @@ Journey continuity stays inside the Journey boundary. Cycle lineage is stored on
 generation requests and Journeys, while completed Project state is read as the
 proof gate. Connect and Journey do not share persistence or mutate each other;
 they compound through the authenticated Home and progression resolver.
-

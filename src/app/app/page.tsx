@@ -47,7 +47,7 @@ export default async function HomePage() {
   );
   const completedGrowthCycle = Boolean(
     state.snapshot.completedProjectId &&
-      state.snapshot.journeyStatus === "completed",
+    state.snapshot.journeyStatus === "completed",
   );
   const progress = completedGrowthCycle
     ? 100

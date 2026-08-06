@@ -52,5 +52,4 @@ describe("evidence-based Journey fallback", () => {
     expect(output.title).not.toBe(currentJourney.title);
     expect(output.milestones[0]?.title).toBe("Extract the Strongest Evidence");
   });
-
 });

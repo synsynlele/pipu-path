@@ -38,4 +38,3 @@
     consent by their owner. PipuPath has no unrestricted private messaging.
 22. Journey continuation requires a completed prior Journey and completed
     Project; clients cannot force a new cycle through submitted ownership IDs.
-

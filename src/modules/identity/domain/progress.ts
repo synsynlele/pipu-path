@@ -150,8 +150,7 @@ export function progressDestination(
       stage: "complete",
       path: "/app",
       label: "Open your Home",
-      description:
-        "Your Builder evidence is available from one clear home.",
+      description: "Your Builder evidence is available from one clear home.",
     };
   }
 

@@ -24,9 +24,7 @@ const connectPage = read("src/app/connect/page.tsx");
 const detailPage = read("src/app/connect/builders/[username]/page.tsx");
 const journeyPage = read("src/app/journey/page.tsx");
 const progress = read("src/modules/identity/domain/progress.ts");
-const progressDal = read(
-  "src/modules/identity/infrastructure/progress-dal.ts",
-);
+const progressDal = read("src/modules/identity/infrastructure/progress-dal.ts");
 const generation = read(
   "src/modules/journey/application/journey-generation.ts",
 );
@@ -56,12 +54,22 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
 
   it("keeps every Connect table RLS-protected and directly read-only", () => {
     for (const table of connectTables) {
-      expect(migration).toContain(`alter table public.${table} enable row level security`);
+      expect(migration).toContain(
+        `alter table public.${table} enable row level security`,
+      );
     }
-    expect(migration).toContain("revoke all on public.builder_connect_profiles");
-    expect(migration).toContain("grant select on public.builder_connect_profiles");
-    expect(migration).not.toContain("grant insert on public.builder_connections");
-    expect(migration).not.toContain("grant update on public.builder_connections");
+    expect(migration).toContain(
+      "revoke all on public.builder_connect_profiles",
+    );
+    expect(migration).toContain(
+      "grant select on public.builder_connect_profiles",
+    );
+    expect(migration).not.toContain(
+      "grant insert on public.builder_connections",
+    );
+    expect(migration).not.toContain(
+      "grant update on public.builder_connections",
+    );
   });
 
   it("enforces adult eligibility, blocking and allow-listed discovery", () => {
@@ -73,7 +81,9 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     expect(detailPage).toContain("Block Builder");
     expect(detailPage).toContain("Submit Report");
     expect(detailPage).toContain("Decline");
-    expect(migration).toContain("private.stage11_builder_connect_eligible(other_profile.id)");
+    expect(migration).toContain(
+      "private.stage11_builder_connect_eligible(other_profile.id)",
+    );
     expect(migration).toContain("CONNECT_ADULT_REQUIRED");
   });
 
@@ -86,7 +96,9 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     ]) {
       expect(migration).toContain(functionName);
     }
-    expect(connectPage).toContain("PipuPath has no unrestricted private messaging");
+    expect(connectPage).toContain(
+      "PipuPath has no unrestricted private messaging",
+    );
     expect(migration).not.toContain("message_body");
     expect(migration).not.toContain("chat_message");
     expect(migration).toContain("::public.builder_connection_status");
@@ -96,7 +108,9 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     expect(enumMigration).toContain("add value if not exists 'continue'");
     expect(migration).toContain("cycle_number");
     expect(migration).toContain("JOURNEY_PROJECT_REQUIRED");
-    expect(generation).toContain('kind: "initial" | "regenerate" | "refine" | "continue"');
+    expect(generation).toContain(
+      'kind: "initial" | "regenerate" | "refine" | "continue"',
+    );
     expect(journeyPage).toContain("Build growth cycle");
     expect(progress).toContain('label: "Build your next Journey"');
     expect(progressDal).toContain('.eq("journey_id", journey.id)');

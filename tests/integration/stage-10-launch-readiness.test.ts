@@ -116,7 +116,14 @@ describe("Stage 10 MVP launch-readiness contract", () => {
   });
 
   it("preserves the Stage 10 navigation while Stage 11 adds Connect", () => {
-    for (const label of ["Home", "Journey", "Build", "Portfolio", "Connect", "Profile"]) {
+    for (const label of [
+      "Home",
+      "Journey",
+      "Build",
+      "Portfolio",
+      "Connect",
+      "Profile",
+    ]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
     expect(navigation.match(/label: "/g)).toHaveLength(6);
