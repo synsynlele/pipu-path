@@ -3,6 +3,11 @@ import { expect, test } from "@playwright/test";
 const email = process.env.E2E_STAGE3_EMAIL;
 const password = process.env.E2E_STAGE3_PASSWORD;
 
+test.skip(
+  process.env.E2E_STAGE11 !== "1",
+  "Stage 11 browser proof runs only against the matching Preview.",
+);
+
 async function signIn(page: import("@playwright/test").Page) {
   if (!email || !password) test.skip(true, "Stage 11 credentials are required");
   await page.goto("/login");
