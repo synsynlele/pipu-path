@@ -6,10 +6,7 @@ function shorten(value: string, maximum: number) {
   return `${trimmed.slice(0, maximum - 1).trimEnd()}.`;
 }
 
-function buildContinuationJourney(
-  context: JourneyContext,
-  previous: JourneyOutput,
-): JourneyOutput {
+function buildContinuationJourney(context: JourneyContext): JourneyOutput {
   return {
     title: "Deepen the Mission Through a Stronger Second Cycle",
     summary:
@@ -81,7 +78,7 @@ export function buildEvidenceBasedJourney(input: {
   continuation?: boolean;
 }): JourneyOutput {
   if (input.continuation && input.currentJourney) {
-    return buildContinuationJourney(input.context, input.currentJourney);
+    return buildContinuationJourney(input.context);
   }
 
   if (input.currentJourney) {
