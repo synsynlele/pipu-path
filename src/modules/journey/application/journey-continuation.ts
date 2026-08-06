@@ -20,7 +20,8 @@ import { buildContinuingEvidenceJourney } from "./journey-fallback";
 const logger = createLogger();
 
 type ContinuationResult =
-  { ok: true; journeyId: string } | { ok: false; message: string };
+  | { ok: true; journeyId: string }
+  | { ok: false; message: string };
 
 function sourceOutput(
   source: NonNullable<
@@ -62,6 +63,15 @@ export async function generateContinuingJourney(
       message: "Your next Journey cycle is already available.",
     };
   }
+  if (!state.continuationEligible) {
+    return {
+      ok: false,
+      message:
+        state.continuationBlocker === "active-project"
+          ? "Complete your active Builder Project before creating the next Journey cycle."
+          : "Complete one Builder Project from this Journey before creating the next cycle.",
+    };
+  }
 
   const completedJourney = sourceOutput(source);
   let model = "evidence-fallback-v1";
@@ -75,9 +85,12 @@ export async function generateContinuingJourney(
   let requestId: string;
   try {
     requestId = await callAuthenticatedConnectRpc<string>(
-      "create_stage11_journey_continuation_request",
+      "create_stage6_journey_request",
       {
+        mission_id_input: context.missionId,
+        generation_kind_input: "continue",
         source_journey_id_input: source.id,
+        refinement_instruction_input: null,
         prompt_version_input: "journey-continuity-openai-v1",
       },
     );
@@ -136,7 +149,7 @@ export async function generateContinuingJourney(
     if (!validated.ok) throw new Error(validated.code);
 
     const journeyId = await callServiceRoleStage11Rpc<string>(
-      "persist_stage11_journey_continuation",
+      "persist_stage6_journey",
       { request_id_input: requestId, journey_input: validated.value },
     );
     logger.info("journey_continuation_completed", {
