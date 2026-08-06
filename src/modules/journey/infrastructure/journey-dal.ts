@@ -41,7 +41,11 @@ function mapJourney(
     suggested_duration:
       row.suggested_duration as JourneyOutput["suggested_duration"],
     status: row.status as
-      "draft" | "active" | "paused" | "completed" | "replaced",
+      | "draft"
+      | "active"
+      | "paused"
+      | "completed"
+      | "replaced",
     cycleNumber: (row.cycle_number as number | undefined) ?? 1,
     continuationOfJourneyId:
       (row.continuation_of_journey_id as string | null | undefined) ?? null,
@@ -83,7 +87,7 @@ export async function getCurrentJourneyState(missionId?: string) {
     .eq("user_id", user.id);
   const requests = client
     .from("journey_generation_requests")
-    .select("status,mission_id,source_journey_id,request_purpose")
+    .select("status,mission_id,source_journey_id")
     .eq("user_id", user.id);
   if (missionId) {
     journeys.eq("mission_id", missionId);
@@ -108,9 +112,7 @@ export async function getCurrentJourneyState(missionId?: string) {
     : [];
   const continuationAttempts = completedRow
     ? (requestRows ?? []).filter(
-        (row) =>
-          row.source_journey_id === completedRow.id &&
-          row.request_purpose === "continuation",
+        (row) => row.source_journey_id === completedRow.id,
       ).length
     : 0;
 
