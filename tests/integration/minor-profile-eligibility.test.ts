@@ -7,21 +7,21 @@ const migration = readFileSync(
 );
 
 describe("minor profile eligibility", () => {
-  it("does not treat minor age as an automatic safeguarding restriction", () => {
+  it("keeps minor age separate from safeguarding", () => {
     expect(migration).not.toContain(
       "safeguarding_review_required = age_band_input in",
     );
     expect(migration).toContain("age_band = age_band_input");
   });
 
-  it("still blocks profile generation for an explicit safeguarding restriction", () => {
+  it("blocks explicit safeguarding restrictions", () => {
     expect(migration).toContain(
       "if coalesce(profile_row.safeguarding_review_required, false) then",
     );
     expect(migration).toContain("HPI_SAFEGUARDING_RESTRICTION");
   });
 
-  it("repairs only completed minor accounts created under the legacy age rule", () => {
+  it("repairs only legacy minor flags", () => {
     expect(migration).toContain(
       "p.age_band in ('under_13', '13_15', '16_17')",
     );
