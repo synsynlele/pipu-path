@@ -23,7 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Button
               type="submit"
               variant="ghost"
-              className="min-h-10 whitespace-nowrap px-3 sm:px-3.5"
+              className="min-h-10 px-3 whitespace-nowrap sm:px-3.5"
             >
               Sign out
             </Button>
