@@ -9,6 +9,11 @@ import {
   type JourneyOutput,
 } from "../domain/journey-contract";
 
+function toJourneyResourceConstraint(value: string) {
+  const trimmed = value.trim();
+  return trimmed.length <= 320 ? trimmed : trimmed.slice(0, 320).trimEnd();
+}
+
 export async function getJourneyContext() {
   const [{ profile }, missionState] = await Promise.all([
     requireAuthenticatedIdentity(),
@@ -25,7 +30,9 @@ export async function getJourneyContext() {
     currentCaution: missionState.active.current_caution,
     ageBand: profile.age_band,
     isMinor: profile.is_minor ?? false,
-    generalResourceConstraints: [missionState.active.current_caution],
+    generalResourceConstraints: [
+      toJourneyResourceConstraint(missionState.active.current_caution),
+    ],
   });
 }
 
