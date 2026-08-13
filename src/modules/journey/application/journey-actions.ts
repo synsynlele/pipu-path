@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  getCurrentEconomicPathwayState,
+  recordProductEventForUser,
+} from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { generateCurrentJourney } from "./journey-generation";
 
@@ -32,14 +36,22 @@ export async function generateJourneyAction(
   redirect("/journey");
 }
 export async function activateJourneyAction(formData: FormData) {
-  await requireAuthenticatedIdentity();
+  const { user } = await requireAuthenticatedIdentity();
   const journeyId = z.uuid().safeParse(formData.get("journeyId"));
   if (!journeyId.success) return;
+  const pathways = await getCurrentEconomicPathwayState();
   const client = await createServerSupabaseClient();
   const { data, error } = await client.rpc("activate_stage6_journey", {
     journey_id_input: journeyId.data,
   });
   if (error || !data) return;
+  if (pathways?.selectedPath) {
+    await recordProductEventForUser(user.id, "pathway_started", {
+      journeyId: journeyId.data,
+      recommendationId: pathways.id,
+      pathKey: pathways.selectedPath.key,
+    });
+  }
   revalidatePath("/journey");
   redirect("/journey");
 }
