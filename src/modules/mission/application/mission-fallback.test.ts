@@ -167,7 +167,9 @@ describe("evidence-based mission fallback", () => {
     const mission = buildEvidenceBasedMission({ context });
 
     expect(validateMissionOutput(context, mission).ok).toBe(true);
-    expect(mission.title).toContain("Test Communication Through Useful Service");
+    expect(mission.title).toContain(
+      "Test Communication Through Useful Service",
+    );
     expect(mission.time_horizon).toBe("four_weeks");
     expect(mission.first_meaningful_outcome).toBe(selectedPath.howToTest);
     expect(mission.success_signal).toBe(selectedPath.evidenceNeeded);

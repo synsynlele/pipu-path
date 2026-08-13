@@ -101,7 +101,9 @@ describe("evidence-based Journey fallback", () => {
       "Week 3 — Build a Useful Sample",
       "Week 4 — Test With Real Feedback",
     ]);
-    expect(output.milestones[3]?.resource_note).toContain("paid trial is optional");
+    expect(output.milestones[3]?.resource_note).toContain(
+      "paid trial is optional",
+    );
   });
 
   it("keeps a minor selected path supervised and learning-first", () => {
@@ -109,14 +111,20 @@ describe("evidence-based Journey fallback", () => {
     const output = buildEvidenceBasedJourney({ context: selectedContext });
 
     expect(validateJourneyForContext(selectedContext, output).ok).toBe(true);
-    expect(output.milestones[0]?.resource_note).toContain("parent, guardian, teacher");
+    expect(output.milestones[0]?.resource_note).toContain(
+      "parent, guardian, teacher",
+    );
     expect(output.milestones[3]?.resource_note).toContain("supervised school");
-    expect(output.milestones[3]?.resource_note).toContain("Earning is optional");
+    expect(output.milestones[3]?.resource_note).toContain(
+      "Earning is optional",
+    );
   });
 
   it("creates the next selected-path cycle from prior evidence", () => {
     const selectedContext = pathwayContext(false);
-    const currentJourney = buildEvidenceBasedJourney({ context: selectedContext });
+    const currentJourney = buildEvidenceBasedJourney({
+      context: selectedContext,
+    });
     const output = buildEvidenceBasedJourney({
       context: selectedContext,
       currentJourney,

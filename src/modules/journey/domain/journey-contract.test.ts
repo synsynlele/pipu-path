@@ -145,7 +145,10 @@ describe("Journey contract", () => {
     expect(
       validateJourneyForContext(pathwayContext, {
         ...validPathway,
-        milestones: [...validPathway.milestones, milestone(5, "Week 5 — Reflect")],
+        milestones: [
+          ...validPathway.milestones,
+          milestone(5, "Week 5 — Reflect"),
+        ],
       }),
     ).toEqual({ ok: false, code: "JOURNEY_OUTPUT_INVALID" });
   });
