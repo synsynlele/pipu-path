@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { possiblePathSchema } from "@/modules/economic-pathways/domain/economic-pathway-contract";
 
 export const missionTimeHorizons = [
   "two_weeks",
@@ -39,6 +40,7 @@ export const missionProfileContextSchema = z.object({
   lifeStage: z.string().trim().max(120).nullable(),
   isMinor: z.boolean(),
   generalResourceConstraints: z.array(z.string().max(320)).max(8),
+  selectedPath: possiblePathSchema.nullable().optional(),
   sections: z.array(
     z.object({
       key: z.enum([
@@ -85,6 +87,8 @@ const inflatedScope =
 const unsafeMinorAdvice =
   /\b(meet (?:an )?unknown adult|contact strangers?|keep (?:this )?secret|hide (?:this )?from (?:your )?(?:parent|guardian)|invest money|borrow money|adult job)\b/i;
 const diagnosis = /\b(diagnos(?:e|is|tic)|disorder|mental illness)\b/i;
+const moneyPromise =
+  /\b(get rich|quick money|guaranteed income|guaranteed earnings|fixed earnings|make millions)\b/i;
 
 export function validateMissionOutput(
   context: MissionProfileContext,
@@ -117,7 +121,11 @@ export function validateMissionOutput(
     parsed.data.current_caution,
   ].join(" ");
 
-  if (permanentPurposeClaim.test(prose) || inflatedScope.test(prose)) {
+  if (
+    permanentPurposeClaim.test(prose) ||
+    inflatedScope.test(prose) ||
+    moneyPromise.test(prose)
+  ) {
     return { ok: false, code: "MISSION_OUTPUT_INVALID" };
   }
   if (
