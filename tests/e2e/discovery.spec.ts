@@ -200,20 +200,37 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
   const activePathway = page.getByText("Active Pathway", { exact: false });
   const active = activeJourney.or(activePathway);
   const generate = page.getByRole("button", { name: "Generate My Journey" });
+  const continueJourney = page.getByRole("button", {
+    name: "Build My Next Journey",
+  });
+  const completedJourney = page.getByText("Completed Journey", { exact: false });
+  const completedPathway = page.getByText("Completed Pathway", { exact: false });
+  const completed = completedJourney.or(completedPathway);
   const legacyReview = page.getByText("Journey Review", { exact: false });
   const pathwayReview = page.getByText("30-Day Pathway Review", {
     exact: false,
   });
   const review = legacyReview.or(pathwayReview);
-  await expect(active.or(generate).or(review)).toBeVisible({ timeout: 15_000 });
+  await expect(
+    active.or(generate).or(continueJourney).or(completed).or(review),
+  ).toBeVisible({ timeout: 15_000 });
+
   if ((await active.count()) === 0) {
-    if ((await generate.count()) === 1) {
+    if ((await continueJourney.count()) === 1) {
+      await expect(continueJourney).toBeEnabled();
+      await continueJourney.click();
+      await expect(page.getByRole("status")).toContainText(
+        "PipuPath is shaping your Journey",
+      );
+      await expect(review).toBeVisible({ timeout: 60_000 });
+    } else if ((await generate.count()) === 1) {
       await generate.click();
       await expect(page.getByRole("status")).toContainText(
         "PipuPath is shaping milestones",
       );
       await expect(review).toBeVisible({ timeout: 55_000 });
     }
+
     const refine = page.getByRole("button", { name: "Refine Journey" });
     if (
       (await refine.count()) === 1 &&
@@ -229,6 +246,7 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
         timeout: 60_000,
       });
     }
+
     const startPathway = page.getByRole("button", {
       name: "Start 30-Day Pathway",
     });
