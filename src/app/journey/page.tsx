@@ -72,7 +72,7 @@ function JourneyDetails({
             <p className="text-gold text-xs font-semibold tracking-wide uppercase">
               {isThirtyDayPathway
                 ? `Week ${milestone.sequence_order} · ${pathwayPhases[milestone.sequence_order - 1] ?? "Build"}`
-                : `Milestone ${milestone.sequence_order}`} {" "}
+                : `Milestone ${milestone.sequence_order}`}{" "}
               · {milestone.status}
             </p>
             <h3 className="mt-2 text-xl font-semibold">{milestone.title}</h3>

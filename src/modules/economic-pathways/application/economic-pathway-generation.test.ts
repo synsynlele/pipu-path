@@ -82,7 +82,8 @@ const context: EconomicPathwayContext = {
         {
           id: "00000000-0000-4000-8000-000000000001",
           title: "Clear Communication",
-          summary: "You often make ideas easier for other people to understand.",
+          summary:
+            "You often make ideas easier for other people to understand.",
           description:
             "Several responses point toward explaining, organising and communicating ideas clearly in practical settings.",
         },
@@ -101,7 +102,8 @@ const context: EconomicPathwayContext = {
         {
           id: "00000000-0000-4000-8000-000000000003",
           title: "Creative Communication",
-          summary: "You are drawn toward media, explanation and useful creative work.",
+          summary:
+            "You are drawn toward media, explanation and useful creative work.",
           description:
             "Your interests repeatedly combine communication, creativity and making information useful to other people.",
         },
@@ -113,7 +115,8 @@ const context: EconomicPathwayContext = {
         {
           id: "00000000-0000-4000-8000-000000000004",
           title: "Test Communication Through Service",
-          summary: "A useful next step is to test communication through real service.",
+          summary:
+            "A useful next step is to test communication through real service.",
           description:
             "A small real-world test can show whether your communication capability is enjoyable, useful and worth developing further.",
         },
@@ -252,13 +255,17 @@ describe("economic pathway generation", () => {
     await expect(generateCurrentEconomicPathways()).resolves.toEqual({
       ok: false,
       code: "ECONOMIC_PATHWAYS_UNAVAILABLE",
-      message: "Possible Paths are not available for this account at the moment.",
+      message:
+        "Possible Paths are not available for this account at the moment.",
     });
     expect(mocks.consent).not.toHaveBeenCalled();
   });
 
   it("returns a safe error when persistence fails", async () => {
-    mocks.single.mockResolvedValue({ data: null, error: { message: "failed" } });
+    mocks.single.mockResolvedValue({
+      data: null,
+      error: { message: "failed" },
+    });
 
     await expect(generateCurrentEconomicPathways()).resolves.toEqual({
       ok: false,

@@ -187,7 +187,9 @@ export default async function HumanPotentialProfilePage() {
                         </dd>
                       </div>
                       <div>
-                        <dt className="font-semibold">Possible Interpretation</dt>
+                        <dt className="font-semibold">
+                          Possible Interpretation
+                        </dt>
                         <dd className="text-muted mt-2 leading-7">
                           {path.possibleInterpretation}
                         </dd>
@@ -280,7 +282,9 @@ export default async function HumanPotentialProfilePage() {
                         </dd>
                       </div>
                       <div>
-                        <dt className="font-semibold">A small first experiment</dt>
+                        <dt className="font-semibold">
+                          A small first experiment
+                        </dt>
                         <dd className="text-muted mt-1 leading-7">
                           {item.firstExperiment}
                         </dd>

@@ -27,8 +27,16 @@ export function PathSelectionForm({
     <form action={action} className="mt-5" aria-busy={pending}>
       <input type="hidden" name="recommendationId" value={recommendationId} />
       <input type="hidden" name="pathKey" value={pathKey} />
-      <Button type="submit" disabled={pending || selected} variant={selected ? "secondary" : "primary"}>
-        {selected ? "Selected Path" : pending ? "Saving path…" : "Choose This Path"}
+      <Button
+        type="submit"
+        disabled={pending || selected}
+        variant={selected ? "secondary" : "primary"}
+      >
+        {selected
+          ? "Selected Path"
+          : pending
+            ? "Saving path…"
+            : "Choose This Path"}
       </Button>
       {state.status === "error" ? (
         <p role="alert" className="text-error mt-3 text-sm">

@@ -70,9 +70,9 @@ export default async function MissionPage() {
       </h1>
       <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
         A mission turns one Possible Path into a small experiment. The aim is to
-        learn what you can do, whether somebody finds it useful and what evidence
-        should shape your next step. It is not a permanent career decision or an
-        income promise.
+        learn what you can do, whether somebody finds it useful and what
+        evidence should shape your next step. It is not a permanent career
+        decision or an income promise.
       </p>
 
       {context?.selectedPath ? (

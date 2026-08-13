@@ -42,7 +42,9 @@ export type EconomicPathwayGenerationResult =
   | { ok: true; recommendationId: string }
   | { ok: false; code: EconomicPathwayErrorCode; message: string };
 
-const fail = (code: EconomicPathwayErrorCode): EconomicPathwayGenerationResult => ({
+const fail = (
+  code: EconomicPathwayErrorCode,
+): EconomicPathwayGenerationResult => ({
   ok: false,
   code,
   message: messages[code],
@@ -88,7 +90,8 @@ export async function generateCurrentEconomicPathways(): Promise<EconomicPathway
       output = await new OpenAIEconomicPathwayProvider().generate(context);
     } catch (error) {
       generationMode = "evidence_fallback";
-      fallbackReason = error instanceof Error ? error.message : "OPENAI_PROVIDER_FAILURE";
+      fallbackReason =
+        error instanceof Error ? error.message : "OPENAI_PROVIDER_FAILURE";
       output = buildEvidenceBasedEconomicPathways(context);
     }
   } else {

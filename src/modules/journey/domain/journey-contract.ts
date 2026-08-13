@@ -123,7 +123,8 @@ export function validateJourneyForContext(
     const phasesMatch = validated.value.milestones.every((milestone, index) => {
       const title = milestone.title.toLowerCase();
       return (
-        title.includes(`week ${index + 1}`) && title.includes(economicPhases[index])
+        title.includes(`week ${index + 1}`) &&
+        title.includes(economicPhases[index])
       );
     });
     if (!phasesMatch) return { ok: false, code: "JOURNEY_OUTPUT_INVALID" };

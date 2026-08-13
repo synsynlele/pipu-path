@@ -22,7 +22,8 @@ function firstInsight(
 
 function strengthRefs(context: EconomicPathwayContext) {
   return (
-    context.sections.find((item) => item.key === "emerging_strengths")?.insights ?? []
+    context.sections.find((item) => item.key === "emerging_strengths")
+      ?.insights ?? []
   ).map((insight) => insight.id);
 }
 
@@ -60,7 +61,8 @@ function buildPath(
     howToTest: input.test,
     valueOrIncome,
     evidenceNeeded: input.evidence,
-    profileEvidenceRefs: refs.length >= 2 ? refs : strengthRefs(context).slice(0, 2),
+    profileEvidenceRefs:
+      refs.length >= 2 ? refs : strengthRefs(context).slice(0, 2),
   };
 }
 
@@ -68,7 +70,8 @@ export function buildEvidenceBasedEconomicPathways(
   context: EconomicPathwayContext,
 ): EconomicPathwayOutput {
   const strengths =
-    context.sections.find((item) => item.key === "emerging_strengths")?.insights ?? [];
+    context.sections.find((item) => item.key === "emerging_strengths")
+      ?.insights ?? [];
   const interest = firstInsight(context, "what_draws_you");
   const contribution = firstInsight(context, "how_you_can_contribute");
   const direction = firstInsight(context, "best_next_direction");
@@ -88,9 +91,13 @@ export function buildEvidenceBasedEconomicPathways(
       interpretation:
         "This pattern may fit work where you turn an existing capability into a useful result for a specific person or group.",
       fit: primary.description,
-      skills: ["Practical delivery", "Communication", "Feedback", "Reliability"],
-      test:
-        "Choose one small problem connected to this direction, create the simplest useful response and show it to one or two trusted people for feedback.",
+      skills: [
+        "Practical delivery",
+        "Communication",
+        "Feedback",
+        "Reliability",
+      ],
+      test: "Choose one small problem connected to this direction, create the simplest useful response and show it to one or two trusted people for feedback.",
       evidence:
         "A useful sample, specific feedback and a clear note about what became easier or better would show whether this path deserves more practice.",
       refs: [primary.id, secondary.id],
@@ -102,9 +109,13 @@ export function buildEvidenceBasedEconomicPathways(
       interpretation:
         "This may be worth testing as a capability that can support teaching, service, creative work, leadership or problem-solving depending on the setting.",
       fit: secondary.description,
-      skills: ["Skill practice", "Clear explanation", "Quality improvement", "Self-review"],
-      test:
-        "Create one concrete sample that uses this strength, ask a trusted person to use or review it, then improve one weak point they identify.",
+      skills: [
+        "Skill practice",
+        "Clear explanation",
+        "Quality improvement",
+        "Self-review",
+      ],
+      test: "Create one concrete sample that uses this strength, ask a trusted person to use or review it, then improve one weak point they identify.",
       evidence:
         "Two versions of the work plus feedback showing a specific improvement would demonstrate growing capability more strongly than a self-rating alone.",
       refs: [secondary.id, primary.id],
@@ -117,8 +128,7 @@ export function buildEvidenceBasedEconomicPathways(
         "Interest alone does not prove a fit, but it is a strong enough signal to justify a low-risk experiment that tests enjoyment, capability and usefulness together.",
       fit: tertiary.description,
       skills: ["Research", "Practice", "Problem framing", "Reflection"],
-      test:
-        "Spend a short learning period on the basics, make one small output and test it with people already reachable through school, family, work or community channels.",
+      test: "Spend a short learning period on the basics, make one small output and test it with people already reachable through school, family, work or community channels.",
       evidence:
         "Record whether you enjoyed the work, which parts came naturally, where you struggled and whether another person found the output useful.",
       refs: [tertiary.id, primary.id],

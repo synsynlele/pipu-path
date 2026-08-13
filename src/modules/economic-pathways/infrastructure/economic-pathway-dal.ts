@@ -63,7 +63,9 @@ export async function getEconomicPathwayContext(): Promise<EconomicPathwayContex
 export type EconomicPathwayState = {
   id: string;
   profileId: string;
-  possiblePaths: ReturnType<typeof economicPathwayOutputSchema.parse>["possiblePaths"];
+  possiblePaths: ReturnType<
+    typeof economicPathwayOutputSchema.parse
+  >["possiblePaths"];
   earnFromStrengths: ReturnType<
     typeof economicPathwayOutputSchema.parse
   >["earnFromStrengths"];
@@ -104,9 +106,12 @@ export async function getCurrentEconomicPathwayState(
     earnFromStrengths: parsed.data.earnFromStrengths,
     selectedPathKey,
     selectedPath:
-      parsed.data.possiblePaths.find((path) => path.key === selectedPathKey) ?? null,
+      parsed.data.possiblePaths.find((path) => path.key === selectedPathKey) ??
+      null,
     generatedAt:
-      typeof row.generated_at === "string" ? row.generated_at : String(row.created_at),
+      typeof row.generated_at === "string"
+        ? row.generated_at
+        : String(row.created_at),
   };
 }
 

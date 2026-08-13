@@ -112,9 +112,11 @@ describe("Economic Pathways contract", () => {
     expect(validated.ok).toBe(true);
     expect(output.possiblePaths).toHaveLength(3);
     expect(output.earnFromStrengths).toHaveLength(3);
-    expect(output.possiblePaths.every((path) => path.profileEvidenceRefs.length >= 2)).toBe(
-      true,
-    );
+    expect(
+      output.possiblePaths.every(
+        (path) => path.profileEvidenceRefs.length >= 2,
+      ),
+    ).toBe(true);
     expect(JSON.stringify(output)).toContain("trusted adult");
   });
 
@@ -125,7 +127,9 @@ describe("Economic Pathways contract", () => {
 
     expect(validated.ok).toBe(true);
     expect(JSON.stringify(output)).toContain("starter service");
-    expect(JSON.stringify(output)).not.toMatch(/guaranteed income|quick money/i);
+    expect(JSON.stringify(output)).not.toMatch(
+      /guaranteed income|quick money/i,
+    );
   });
 
   it("rejects invented profile evidence", () => {

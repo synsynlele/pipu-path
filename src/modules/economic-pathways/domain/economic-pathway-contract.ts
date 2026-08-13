@@ -68,7 +68,9 @@ export const economicPathwayContextSchema = z.object({
 export type PossiblePath = z.infer<typeof possiblePathSchema>;
 export type EarnFromStrength = z.infer<typeof earnFromStrengthSchema>;
 export type EconomicPathwayOutput = z.infer<typeof economicPathwayOutputSchema>;
-export type EconomicPathwayContext = z.infer<typeof economicPathwayContextSchema>;
+export type EconomicPathwayContext = z.infer<
+  typeof economicPathwayContextSchema
+>;
 
 export type EconomicPathwayErrorCode =
   | "ECONOMIC_PATHWAYS_PROFILE_REQUIRED"
@@ -100,7 +102,8 @@ export function validateEconomicPathwayOutput(
   | { ok: true; value: EconomicPathwayOutput }
   | {
       ok: false;
-      code: "ECONOMIC_PATHWAYS_OUTPUT_INVALID" | "ECONOMIC_PATHWAYS_OUTPUT_UNSAFE";
+      code:
+        "ECONOMIC_PATHWAYS_OUTPUT_INVALID" | "ECONOMIC_PATHWAYS_OUTPUT_UNSAFE";
     } {
   const parsedContext = economicPathwayContextSchema.safeParse(context);
   const parsed = economicPathwayOutputSchema.safeParse(output);
@@ -122,14 +125,20 @@ export function validateEconomicPathwayOutput(
   );
   const refs = [
     ...parsed.data.possiblePaths.flatMap((path) => path.profileEvidenceRefs),
-    ...parsed.data.earnFromStrengths.flatMap((item) => item.profileEvidenceRefs),
+    ...parsed.data.earnFromStrengths.flatMap(
+      (item) => item.profileEvidenceRefs,
+    ),
   ];
   if (refs.some((reference) => !allowedEvidence.has(reference))) {
     return { ok: false, code: "ECONOMIC_PATHWAYS_OUTPUT_INVALID" };
   }
 
   const prose = JSON.stringify(parsed.data);
-  if (fixedIdentity.test(prose) || moneyPromise.test(prose) || riskyMoney.test(prose)) {
+  if (
+    fixedIdentity.test(prose) ||
+    moneyPromise.test(prose) ||
+    riskyMoney.test(prose)
+  ) {
     return { ok: false, code: "ECONOMIC_PATHWAYS_OUTPUT_UNSAFE" };
   }
   if (parsedContext.data.isMinor && unsafeMinorActivity.test(prose)) {

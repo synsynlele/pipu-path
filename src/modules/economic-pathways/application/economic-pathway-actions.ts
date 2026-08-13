@@ -14,8 +14,7 @@ import {
 import { generateCurrentEconomicPathways } from "./economic-pathway-generation";
 
 export type EconomicPathwayFormState =
-  | { status: "idle" }
-  | { status: "error"; message: string };
+  { status: "idle" } | { status: "error"; message: string };
 
 export async function generateEconomicPathwaysAction(
   _previous: EconomicPathwayFormState,
@@ -45,7 +44,10 @@ export async function selectEconomicPathAction(
   const { user } = await requireAuthenticatedIdentity();
   const state = await getCurrentEconomicPathwayState();
   if (!state || state.id !== parsed.data.recommendationId) {
-    return { status: "error", message: "Those possible paths are no longer available." };
+    return {
+      status: "error",
+      message: "Those possible paths are no longer available.",
+    };
   }
   if (!state.possiblePaths.some((path) => path.key === parsed.data.pathKey)) {
     return { status: "error", message: "Choose one of your available paths." };
@@ -83,7 +85,10 @@ export async function selectEconomicPathAction(
     .select("id")
     .single();
   if (error || !data) {
-    return { status: "error", message: "Your selected path could not be saved." };
+    return {
+      status: "error",
+      message: "Your selected path could not be saved.",
+    };
   }
 
   await recordProductEventForUser(
