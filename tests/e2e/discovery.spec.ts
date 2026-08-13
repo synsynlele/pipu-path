@@ -215,9 +215,17 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
     exact: false,
   });
   const review = legacyReview.or(pathwayReview);
-  await expect(
-    active.or(generate).or(continueJourney).or(completed).or(review),
-  ).toBeVisible({ timeout: 15_000 });
+  await expect
+    .poll(
+      async () =>
+        (await active.count()) +
+        (await generate.count()) +
+        (await continueJourney.count()) +
+        (await completed.count()) +
+        (await review.count()),
+      { timeout: 15_000 },
+    )
+    .toBeGreaterThan(0);
 
   if ((await active.count()) === 0) {
     if ((await continueJourney.count()) === 1) {
