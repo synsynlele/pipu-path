@@ -111,10 +111,9 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
   const choosePath = page.getByRole("button", { name: "Choose This Path" });
   if ((await choosePath.count()) > 0) {
     await choosePath.first().click();
-    await expect(page).toHaveURL(
-      /\/onboarding\/discovery\/profile\/complete/,
-      { timeout: 20_000 },
-    );
+    await expect(page).toHaveURL(/\/onboarding\/discovery\/profile\/complete/, {
+      timeout: 20_000,
+    });
   } else {
     const continueWithPath = page.getByRole("link", {
       name: /^Continue With /,
@@ -125,7 +124,9 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
   }
 
   await expect(
-    page.getByRole("heading", { name: "Test the path. Let evidence teach you." }),
+    page.getByRole("heading", {
+      name: "Test the path. Let evidence teach you.",
+    }),
   ).toBeVisible();
   await page.getByRole("link", { name: "Build My Practical Mission" }).click();
   await generateAndVerifyMission(page);
@@ -231,7 +232,9 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
       name: "Start 30-Day Pathway",
     });
     const acceptJourney = page.getByRole("button", { name: "Accept Journey" });
-    await expect(startPathway.or(acceptJourney)).toBeEnabled({ timeout: 60_000 });
+    await expect(startPathway.or(acceptJourney)).toBeEnabled({
+      timeout: 60_000,
+    });
     if ((await startPathway.count()) === 1) {
       await startPathway.click();
     } else {
