@@ -36,9 +36,9 @@ test("selected economic pathways remain usable on mobile", async ({
     });
     await page.goto("/onboarding/discovery/profile");
   }
-  await expect(
-    page.getByRole("button", { name: "Selected Path" }),
-  ).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole("button", { name: "Selected Path" })).toBeVisible(
+    { timeout: 20_000 },
+  );
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,
