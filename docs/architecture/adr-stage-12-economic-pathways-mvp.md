@@ -1,6 +1,6 @@
 # ADR — Stage 12 Economic Pathways MVP
 
-**Status:** Proposed implementation  
+**Status:** Accepted — released  
 **Stage:** 12  
 **Date:** 2026-08-13
 
