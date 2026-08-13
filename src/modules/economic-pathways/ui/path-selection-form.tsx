@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   selectEconomicPathAction,
@@ -22,9 +22,23 @@ export function PathSelectionForm({
     selectEconomicPathAction,
     initialState,
   );
+  const [hasSelection, setHasSelection] = useState(selected);
+
+  useEffect(() => {
+    setHasSelection(
+      Boolean(
+        document.querySelector('form[data-economic-path-selected="true"]'),
+      ),
+    );
+  }, []);
 
   return (
-    <form action={action} className="mt-5" aria-busy={pending}>
+    <form
+      action={action}
+      className="mt-5"
+      aria-busy={pending}
+      data-economic-path-selected={selected ? "true" : "false"}
+    >
       <input type="hidden" name="recommendationId" value={recommendationId} />
       <input type="hidden" name="pathKey" value={pathKey} />
       <Button
@@ -36,7 +50,9 @@ export function PathSelectionForm({
           ? "Selected Path"
           : pending
             ? "Saving path…"
-            : "Choose This Path"}
+            : hasSelection
+              ? "Change to This Path"
+              : "Choose This Path"}
       </Button>
       {state.status === "error" ? (
         <p role="alert" className="text-error mt-3 text-sm">
