@@ -97,7 +97,8 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
     await expect(
       page
         .getByRole("button", { name: "Choose This Path" })
-        .or(page.getByRole("button", { name: "Selected Path" })),
+        .or(page.getByRole("button", { name: "Selected Path" }))
+        .first(),
     ).toBeVisible({ timeout: 60_000 });
   }
 
