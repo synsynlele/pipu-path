@@ -1,8 +1,9 @@
 import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
+import { getCurrentEconomicPathwayState } from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { getCurrentHumanPotentialProfile } from "@/modules/human-potential/infrastructure/profile-dal";
+import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import {
   missionProfileContextSchema,
   type MissionOutput,
@@ -14,6 +15,7 @@ export async function getMissionProfileContext() {
     getCurrentHumanPotentialProfile(),
   ]);
   if (!profile) return null;
+  const pathways = await getCurrentEconomicPathwayState(profile.id);
   const constraints = profile.sections.current_constraints.map(
     (insight) => insight.summary,
   );
@@ -24,6 +26,7 @@ export async function getMissionProfileContext() {
     lifeStage: identityProfile.life_stage,
     isMinor: identityProfile.is_minor,
     generalResourceConstraints: constraints,
+    selectedPath: pathways?.selectedPath ?? null,
     sections: Object.entries(profile.sections).map(([key, insights]) => ({
       key,
       insights: insights.map((insight) => ({
