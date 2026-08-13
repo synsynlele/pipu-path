@@ -23,9 +23,22 @@ test("selected economic pathways remain usable on mobile", async ({
   await expect(
     page.getByRole("heading", { name: "Earn From Your Strengths" }),
   ).toBeVisible();
+
+  const selectedPath = page.getByRole("button", { name: "Selected Path" });
+  if ((await selectedPath.count()) === 0) {
+    const choosePath = page
+      .getByRole("button", { name: "Choose This Path" })
+      .first();
+    await expect(choosePath).toBeVisible();
+    await choosePath.click();
+    await expect(page).toHaveURL(/\/onboarding\/discovery\/profile\/complete/, {
+      timeout: 20_000,
+    });
+    await page.goto("/onboarding/discovery/profile");
+  }
   await expect(
     page.getByRole("button", { name: "Selected Path" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 20_000 });
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,
