@@ -10,9 +10,12 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/server", () => ({
   createServerSupabaseClient: vi.fn(),
 }));
-vi.mock("@/modules/economic-pathways/infrastructure/economic-pathway-dal", () => ({
-  getCurrentEconomicPathwayState: mocks.pathwayState,
-}));
+vi.mock(
+  "@/modules/economic-pathways/infrastructure/economic-pathway-dal",
+  () => ({
+    getCurrentEconomicPathwayState: mocks.pathwayState,
+  }),
+);
 vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
   requireAuthenticatedIdentity: mocks.identity,
 }));
@@ -43,6 +46,7 @@ describe("getJourneyContext", () => {
         title: "Support student study",
         mission_statement: "Test a useful study support idea with students.",
         who_this_helps: "Students",
+        first_meaning_outcome: "Create and test one useful study guide.",
         first_meaningful_outcome: "Create and test one useful study guide.",
         success_signal: "Students use it and respond with useful feedback.",
         current_caution: currentCaution,
