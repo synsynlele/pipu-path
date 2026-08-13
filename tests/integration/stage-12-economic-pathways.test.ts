@@ -9,6 +9,10 @@ const profilePage = readFileSync(
   "src/app/onboarding/discovery/profile/page.tsx",
   "utf8",
 );
+const pathSelection = readFileSync(
+  "src/modules/economic-pathways/ui/path-selection-form.tsx",
+  "utf8",
+);
 const pathwayContract = readFileSync(
   "src/modules/economic-pathways/domain/economic-pathway-contract.ts",
   "utf8",
@@ -87,7 +91,7 @@ describe("Stage 12 Economic Pathways structural contract", () => {
     expect(profilePage).toContain("Observed Pattern");
     expect(profilePage).toContain("Possible Interpretation");
     expect(profilePage).toContain("Evidence Needed");
-    expect(profilePage).toContain("Choose This Path");
+    expect(pathSelection).toContain("Choose This Path");
   });
 
   it("blocks quick-money, risky finance and unsafe minor recommendations in code and prompt", () => {
