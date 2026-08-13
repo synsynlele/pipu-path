@@ -232,7 +232,7 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
       await expect(continueJourney).toBeEnabled();
       await continueJourney.click();
       await expect(page.getByRole("status")).toContainText(
-        "PipuPath is shaping your Journey",
+        "PipuPath is shaping the next evidence-based milestones from your mission",
       );
       await expect(review).toBeVisible({ timeout: 60_000 });
     } else if ((await generate.count()) === 1) {
