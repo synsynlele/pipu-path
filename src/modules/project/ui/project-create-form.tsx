@@ -18,21 +18,39 @@ export function ProjectCreateForm({
   sources,
   today,
   maximumDate,
+  selectedPathName,
 }: {
   sources: EligibleProjectSource[];
   today: string;
   maximumDate: string;
+  selectedPathName: string | null;
 }) {
   const [state, action, pending] = useActionState(
     createBuilderProjectAction,
     initialState,
   );
+  const firstValueChallenge = Boolean(selectedPathName);
 
   return (
     <form action={action} aria-busy={pending} className="grid gap-8">
+      {firstValueChallenge ? (
+        <section className="border-gold/30 bg-gold/5 rounded-2xl border p-5 sm:p-6">
+          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+            Selected path
+          </p>
+          <h2 className="mt-2 text-xl font-semibold">{selectedPathName}</h2>
+          <p className="text-muted mt-2 leading-7">
+            This challenge is about creating value first. Identify a small real
+            problem, help one reachable person or group, deliver the smallest
+            useful solution and collect honest feedback. If payment happens, you
+            may record it in your proof, but payment is not required to succeed.
+          </p>
+        </section>
+      ) : null}
+
       <section className="border-border rounded-2xl border p-5 sm:p-6">
         <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-          Proof foundation
+          Evidence foundation
         </p>
         <label
           htmlFor="sourceQuestId"
@@ -62,7 +80,7 @@ export function ProjectCreateForm({
       <section className="grid gap-5 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label htmlFor="title" className="text-sm font-semibold">
-            Project title
+            {firstValueChallenge ? "Challenge title" : "Project title"}
           </label>
           <input
             id="title"
@@ -71,12 +89,16 @@ export function ProjectCreateForm({
             minLength={3}
             maxLength={100}
             className={inputClass}
-            placeholder="A clear name for the useful thing you will build"
+            placeholder={
+              firstValueChallenge
+                ? "A clear name for the small useful result you will test"
+                : "A clear name for the useful thing you will build"
+            }
           />
         </div>
         <div className="sm:col-span-2">
           <label htmlFor="problemStatement" className="text-sm font-semibold">
-            What problem will this Project address?
+            What small real problem will you solve?
           </label>
           <textarea
             id="problemStatement"
@@ -85,12 +107,12 @@ export function ProjectCreateForm({
             minLength={20}
             maxLength={800}
             className={textareaClass}
-            placeholder="Describe the real situation, not a broad global problem."
+            placeholder="Describe a specific situation you can realistically influence, not a broad global problem."
           />
         </div>
         <div>
           <label htmlFor="peopleServed" className="text-sm font-semibold">
-            Who should benefit?
+            Who may need this solution?
           </label>
           <textarea
             id="peopleServed"
@@ -99,12 +121,12 @@ export function ProjectCreateForm({
             minLength={10}
             maxLength={400}
             className={textareaClass}
-            placeholder="Name a specific, reachable group of people."
+            placeholder="Name one specific, safely reachable person or group."
           />
         </div>
         <div>
           <label htmlFor="desiredOutcome" className="text-sm font-semibold">
-            What practical outcome should exist?
+            What useful outcome should they receive?
           </label>
           <textarea
             id="desiredOutcome"
@@ -113,7 +135,7 @@ export function ProjectCreateForm({
             minLength={20}
             maxLength={800}
             className={textareaClass}
-            placeholder="Describe what will be different when the Project works."
+            placeholder="Describe what should become easier, better, clearer or more useful."
           />
         </div>
         <div>
@@ -121,7 +143,7 @@ export function ProjectCreateForm({
             htmlFor="smallestUsefulVersion"
             className="text-sm font-semibold"
           >
-            What is the smallest useful version?
+            What is your smallest useful offer or solution?
           </label>
           <textarea
             id="smallestUsefulVersion"
@@ -130,12 +152,12 @@ export function ProjectCreateForm({
             minLength={20}
             maxLength={800}
             className={textareaClass}
-            placeholder="Choose something you can genuinely build and test."
+            placeholder="Choose the simplest version you can genuinely deliver and test."
           />
         </div>
         <div>
           <label htmlFor="successSignal" className="text-sm font-semibold">
-            What will prove it worked?
+            What evidence will show that somebody found it useful?
           </label>
           <textarea
             id="successSignal"
@@ -144,7 +166,7 @@ export function ProjectCreateForm({
             minLength={10}
             maxLength={500}
             className={textareaClass}
-            placeholder="Use one observable result, response or behaviour."
+            placeholder="Use feedback, behaviour, a completed result or another observable signal—not income alone."
           />
         </div>
         <div>
@@ -167,7 +189,9 @@ export function ProjectCreateForm({
       <section>
         <div className="max-w-2xl">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Three-step execution path
+            {firstValueChallenge
+              ? "Three-step value experiment"
+              : "Three-step execution path"}
           </p>
           <h2 className="mt-3 text-2xl font-semibold">
             Make each milestone observable.
@@ -201,11 +225,17 @@ export function ProjectCreateForm({
                     minLength={3}
                     maxLength={100}
                     defaultValue={
-                      number === 1
-                        ? "Understand and define"
-                        : number === 2
-                          ? "Build the smallest useful version"
-                          : "Test, learn and improve"
+                      firstValueChallenge
+                        ? number === 1
+                          ? "Find the problem and shape the offer"
+                          : number === 2
+                            ? "Deliver the smallest useful version"
+                            : "Collect feedback, reflect and improve"
+                        : number === 1
+                          ? "Understand and define"
+                          : number === 2
+                            ? "Build the smallest useful version"
+                            : "Test, learn and improve"
                     }
                     className={inputClass}
                   />
@@ -252,7 +282,13 @@ export function ProjectCreateForm({
 
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? "Creating private Project…" : "Create My Builder Project"}
+          {pending
+            ? firstValueChallenge
+              ? "Starting First Value Challenge…"
+              : "Creating private Project…"
+            : firstValueChallenge
+              ? "Start My First Value Challenge"
+              : "Create My Builder Project"}
         </Button>
         {pending ? (
           <p role="status" className="text-muted mt-3 text-sm">
