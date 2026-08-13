@@ -203,8 +203,12 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
   const continueJourney = page.getByRole("button", {
     name: "Build My Next Journey",
   });
-  const completedJourney = page.getByText("Completed Journey", { exact: false });
-  const completedPathway = page.getByText("Completed Pathway", { exact: false });
+  const completedJourney = page.getByText("Completed Journey", {
+    exact: false,
+  });
+  const completedPathway = page.getByText("Completed Pathway", {
+    exact: false,
+  });
   const completed = completedJourney.or(completedPathway);
   const legacyReview = page.getByText("Journey Review", { exact: false });
   const pathwayReview = page.getByText("30-Day Pathway Review", {
