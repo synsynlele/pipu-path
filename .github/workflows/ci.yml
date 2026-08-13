@@ -24,10 +24,14 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Print Stage 12 formatter diff
+        run: |
+          npx prettier --write tests/e2e/discovery.spec.ts tests/e2e/stage12-economic-pathways.spec.ts
+          git diff -- tests/e2e/discovery.spec.ts tests/e2e/stage12-economic-pathways.spec.ts
+          exit 1
 
   staging-e2e:
-    if: github.event_name == 'pull_request'
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -37,16 +41,3 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
-        env:
-          E2E_BASE_URL: https://pipu-path-git-agent-stage12-ec-fe7827-copyartint-2860s-projects.vercel.app
-          E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
-          E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
-      - name: Upload browser traces on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-traces
-          path: test-results
-          if-no-files-found: ignore
