@@ -6,32 +6,29 @@ on:
       - agent/stage12-economic-pathways-mvp
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: agent/stage12-economic-pathways-mvp
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
       - run: npm run format
-      - uses: actions/upload-artifact@v4
-        with:
-          name: stage12-formatted-files
-          path: |
-            src/app/journey/page.tsx
-            src/app/mission/page.tsx
-            src/app/onboarding/discovery/profile/page.tsx
-            src/modules/economic-pathways/application/economic-pathway-actions.ts
-            src/modules/economic-pathways/application/economic-pathway-fallback.ts
-            src/modules/economic-pathways/application/economic-pathway-generation.test.ts
-            src/modules/economic-pathways/application/economic-pathway-generation.ts
-            src/modules/economic-pathways/domain/economic-pathway-contract.test.ts
-            src/modules/economic-pathways/domain/economic-pathway-contract.ts
-            src/modules/economic-pathways/infrastructure/economic-pathway-dal.ts
-            src/modules/economic-pathways/ui/path-selection-form.tsx
-            src/modules/journey/domain/journey-contract.ts
+      - name: Commit canonical formatting and remove temporary workflow
+        run: |
+          rm .github/workflows/stage12-format.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "style(stage12): apply canonical formatting"
+          git push origin HEAD:agent/stage12-economic-pathways-mvp
