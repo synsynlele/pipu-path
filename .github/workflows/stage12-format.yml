@@ -1,0 +1,37 @@
+name: Stage 12 format patch
+
+on:
+  push:
+    branches:
+      - agent/stage12-economic-pathways-mvp
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stage12-formatted-files
+          path: |
+            src/app/journey/page.tsx
+            src/app/mission/page.tsx
+            src/app/onboarding/discovery/profile/page.tsx
+            src/modules/economic-pathways/application/economic-pathway-actions.ts
+            src/modules/economic-pathways/application/economic-pathway-fallback.ts
+            src/modules/economic-pathways/application/economic-pathway-generation.test.ts
+            src/modules/economic-pathways/application/economic-pathway-generation.ts
+            src/modules/economic-pathways/domain/economic-pathway-contract.test.ts
+            src/modules/economic-pathways/domain/economic-pathway-contract.ts
+            src/modules/economic-pathways/infrastructure/economic-pathway-dal.ts
+            src/modules/economic-pathways/ui/path-selection-form.tsx
+            src/modules/journey/domain/journey-contract.ts
