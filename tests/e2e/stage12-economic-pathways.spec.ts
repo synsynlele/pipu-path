@@ -23,7 +23,9 @@ test("selected economic pathways remain usable on mobile", async ({
   await expect(
     page.getByRole("heading", { name: "Earn From Your Strengths" }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Selected Path" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Selected Path" }),
+  ).toBeVisible();
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,
