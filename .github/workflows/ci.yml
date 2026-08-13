@@ -24,7 +24,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Print Stage 12 formatter diff
+        run: |
+          npx prettier --write tests/e2e/discovery.spec.ts
+          git diff -- tests/e2e/discovery.spec.ts
+          exit 1
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
