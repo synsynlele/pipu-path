@@ -50,12 +50,29 @@ function buildPrompt(input: {
   currentMission?: MissionOutput;
   refinementInstruction?: string;
 }) {
+  const pathDirection = input.context.selectedPath
+    ? [
+        `The user deliberately selected this Possible Path to test: ${JSON.stringify(input.context.selectedPath)}.`,
+        "The mission must be a small practical experiment of that selected path, not a generic mission and not a promise that the path is correct.",
+        "Prefer an outcome that builds one capability, creates something useful for a reachable person or group and produces evidence that can later guide the 30-Day Pathway.",
+        "Create value first. Income may occur later, but do not make earning the success criterion and never promise money.",
+      ]
+    : [
+        "No selected Possible Path is available, so preserve the legacy profile-grounded mission behaviour.",
+      ];
+  const minorDirection = input.context.isMinor
+    ? "For a minor, keep all testing within trusted, supervised family, school or community channels and avoid unsupervised commercial contact."
+    : "For an adult, a small commercial test may be appropriate, but evidence of usefulness should come before expansion.";
+
   return [
     "Create one private, provisional Builder Mission from the approved Human Potential Profile context.",
     "The mission is a practical direction to explore, not a career, identity, destiny, life purpose, slogan or prediction.",
     "Keep it small, achievable with current resources, age-appropriate and useful to a clearly named person or group.",
     "Do not diagnose, stereotype, invent evidence, require spending, encourage unsafe contact or imply certainty.",
+    "Do not promise income, quick money or financial success. Do not recommend gambling, speculative trading, borrowing or shortcuts.",
     "Use only supplied profile insight IDs in profile_evidence_refs and cite at least two.",
+    ...pathDirection,
+    minorDirection,
     input.currentMission
       ? `Current draft mission: ${JSON.stringify(input.currentMission)}`
       : "There is no current draft mission.",
@@ -74,7 +91,7 @@ export class OpenAIMissionProvider {
   }): Promise<unknown> {
     return requestOpenAIStructuredOutput({
       instructions:
-        "You create safe, evidence-grounded Builder Missions for PipuPath. Follow the supplied schema exactly and never invent evidence.",
+        "You create safe, evidence-grounded Builder Missions for PipuPath. Follow the supplied schema exactly, respect the user's selected Possible Path and never invent evidence or promise income.",
       prompt: buildPrompt(input),
       schemaName: "pipupath_mission_v1",
       schema: missionResponseSchema,

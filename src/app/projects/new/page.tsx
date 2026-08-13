@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
+import { getCurrentEconomicPathwayState } from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { getBuilderProjectState } from "@/modules/project/infrastructure/project-dal";
 import { ProjectCreateForm } from "@/modules/project/ui/project-create-form";
 
 export const metadata: Metadata = {
-  title: "Create Builder Project",
+  title: "First Value Challenge",
   robots: { index: false, follow: false },
 };
 
 export default async function NewProjectPage() {
-  const state = await getBuilderProjectState();
+  const [state, pathways] = await Promise.all([
+    getBuilderProjectState(),
+    getCurrentEconomicPathwayState(),
+  ]);
   if (state.active) redirect(`/projects/${state.active.project.id}`);
 
   const todayDate = new Date();
@@ -19,6 +23,7 @@ export default async function NewProjectPage() {
   maximumDate.setUTCDate(maximumDate.getUTCDate() + 365);
   const today = todayDate.toISOString().slice(0, 10);
   const maximum = maximumDate.toISOString().slice(0, 10);
+  const selectedPath = pathways?.selectedPath ?? null;
 
   return (
     <main
@@ -35,14 +40,17 @@ export default async function NewProjectPage() {
         />
         <div className="relative">
           <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
-            Project definition
+            {selectedPath ? "First Value Challenge" : "Project definition"}
           </p>
           <h1 className="mt-4 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-            Build from what you have already proved.
+            {selectedPath
+              ? "Create value first. Test whether somebody finds it useful."
+              : "Build from what you have already proved."}
           </h1>
           <p className="text-muted mt-4 max-w-2xl text-lg leading-8">
-            Keep the Project small enough to execute, useful enough to matter
-            and clear enough that evidence can show whether it worked.
+            {selectedPath
+              ? `Use evidence from your ${selectedPath.pathName} pathway to solve one small problem for a reachable person or group. Payment is optional; useful delivery, feedback and learning are the real proof.`
+              : "Keep the Project small enough to execute, useful enough to matter and clear enough that evidence can show whether it worked."}
           </p>
         </div>
       </section>
@@ -69,6 +77,7 @@ export default async function NewProjectPage() {
             sources={state.eligibleSources}
             today={today}
             maximumDate={maximum}
+            selectedPathName={selectedPath?.pathName ?? null}
           />
         </Surface>
       )}

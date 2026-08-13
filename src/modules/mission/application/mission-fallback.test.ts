@@ -14,6 +14,26 @@ const ids = {
   direction: "55555555-5555-4555-8555-555555555555",
 };
 
+const selectedPath = {
+  key: "communication_service",
+  pathName: "Communication Through Useful Service",
+  observedPattern:
+    "Your profile repeatedly shows that you explain ideas clearly and move toward practical action.",
+  possibleInterpretation:
+    "This may fit work where communication turns a real problem into a useful result for other people.",
+  whyItFits:
+    "The profile combines communication, initiative and learning through practical feedback rather than theory alone.",
+  skillsNeeded: ["Clear explanation", "Feedback"],
+  howToTest:
+    "Create one small explanation for a reachable person, let them use it and ask what became clearer.",
+  valueOrIncome: [
+    "A useful explanation can later become a service after evidence shows that people value it.",
+  ],
+  evidenceNeeded:
+    "Keep the finished sample, specific feedback and one improved version that responds to the user's needs.",
+  profileEvidenceRefs: [ids.direction, ids.contribution],
+};
+
 function contextWithSections(): MissionProfileContext {
   return {
     profileId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
@@ -140,5 +160,34 @@ describe("evidence-based mission fallback", () => {
     expect(() => buildEvidenceBasedMission({ context })).toThrow(
       "MISSION_PROFILE_REQUIRED",
     );
+  });
+
+  it("turns an adult selected path into a four-week value test", () => {
+    const context = { ...contextWithSections(), selectedPath };
+    const mission = buildEvidenceBasedMission({ context });
+
+    expect(validateMissionOutput(context, mission).ok).toBe(true);
+    expect(mission.title).toContain(
+      "Test Communication Through Useful Service",
+    );
+    expect(mission.time_horizon).toBe("four_weeks");
+    expect(mission.first_meaningful_outcome).toBe(selectedPath.howToTest);
+    expect(mission.success_signal).toBe(selectedPath.evidenceNeeded);
+    expect(mission.current_caution).toContain("Create value first");
+  });
+
+  it("keeps a minor selected-path mission inside trusted channels", () => {
+    const context: MissionProfileContext = {
+      ...contextWithSections(),
+      ageBand: "16_17",
+      isMinor: true,
+      selectedPath,
+    };
+    const mission = buildEvidenceBasedMission({ context });
+
+    expect(validateMissionOutput(context, mission).ok).toBe(true);
+    expect(mission.who_this_helps).toContain("trusted adult");
+    expect(mission.current_caution).toContain("supervised");
+    expect(mission.current_caution).toContain("payment");
   });
 });

@@ -72,14 +72,31 @@ function buildPrompt(input: {
   refinementInstruction?: string;
   continuation?: boolean;
 }) {
+  const economicPathwayRules = input.context.selectedPath
+    ? [
+        `Selected Possible Path: ${JSON.stringify(input.context.selectedPath)}.`,
+        "This Journey is the user's personalised 30-Day Pathway for that selected path.",
+        "Return exactly four milestones and suggested_duration must be four_weeks.",
+        'Milestone 1 title must begin with "Week 1" and contain "Learn". Use it to understand the basic skill or field and identify the minimum knowledge needed.',
+        'Milestone 2 title must begin with "Week 2" and contain "Practice". Use it for small practical exercises that build one or two capabilities.',
+        'Milestone 3 title must begin with "Week 3" and contain "Build". Use it to create a sample, portfolio piece, mini-project, prototype or simple service.',
+        'Milestone 4 title must begin with "Week 4" and contain "Test". Use it to show the work to real but safely reachable people, collect feedback and test usefulness. A small sale may be attempted only when age-appropriate.',
+        "Every milestone must produce evidence. Income is optional and must never be the completion criterion.",
+        "For minors, testing must use supervised or trusted family, school or community channels and must not require contact with strangers or adult-only platforms.",
+      ]
+    : [
+        "No selected Possible Path is available, so preserve the legacy four-to-six milestone Journey behaviour.",
+      ];
+
   return [
     input.continuation
       ? "Create the next private Builder Journey cycle. It must build on completed evidence without repeating the previous milestones."
-      : "Create one private, provisional Builder Journey that turns the active mission into four to six ordered milestones.",
+      : "Create one private, provisional Builder Journey that turns the active mission into ordered milestones.",
     "A Journey is a milestone-level development pathway, not daily tasks, Quests, XP, a career promise or a permanent identity.",
     "Make every milestone realistic in Nigeria or another low-resource setting, age-appropriate, safe and possible with little or no money.",
-    "Do not invent evidence, require purchases, encourage contact with strangers, guarantee success or include day-by-day tasks.",
+    "Do not invent evidence, require purchases, encourage contact with strangers, guarantee success, promise income or include day-by-day tasks.",
     "Use sequence_order values starting at 1 without gaps and give every milestone a distinct title.",
+    ...economicPathwayRules,
     input.currentJourney
       ? `${input.continuation ? "Completed previous Journey" : "Current draft Journey"}: ${JSON.stringify(input.currentJourney)}`
       : "There is no current Journey supplied.",
@@ -99,7 +116,7 @@ export class OpenAIJourneyProvider {
   }): Promise<unknown> {
     return requestOpenAIStructuredOutput({
       instructions:
-        "You create safe, practical Builder Journeys for PipuPath. Follow the supplied schema exactly and keep every milestone grounded in the approved mission context.",
+        "You create safe, practical Builder Journeys for PipuPath. When a Possible Path is selected, create exactly the four-week Learn → Practice → Build → Test pathway required by the context.",
       prompt: buildPrompt(input),
       schemaName: "pipupath_journey_v1",
       schema: journeyResponseSchema,

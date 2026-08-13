@@ -2,6 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  getCurrentEconomicPathwayState,
+  recordProductEventForUser,
+} from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import {
   projectCreateInputSchema,
@@ -56,7 +60,8 @@ export async function createBuilderProjectAction(
   formData: FormData,
 ): Promise<ProjectFormState> {
   void _previous;
-  await requireAuthenticatedIdentity();
+  const { user } = await requireAuthenticatedIdentity();
+  const pathways = await getCurrentEconomicPathwayState();
 
   const milestones = [1, 2, 3].map((sequenceOrder) => ({
     title: formData.get(`milestone${sequenceOrder}Title`),
@@ -109,6 +114,13 @@ export async function createBuilderProjectAction(
     return { status: "error", message: projectErrorMessage(code) };
   }
 
+  if (pathways?.selectedPath) {
+    await recordProductEventForUser(user.id, "first_value_challenge_started", {
+      projectId: data,
+      pathKey: pathways.selectedPath.key,
+      recommendationId: pathways.id,
+    });
+  }
   revalidatePath("/projects");
   redirect(`/projects/${data}`);
 }
@@ -118,7 +130,7 @@ export async function addBuilderProjectUpdateAction(
   formData: FormData,
 ): Promise<ProjectFormState> {
   void _previous;
-  await requireAuthenticatedIdentity();
+  const { user } = await requireAuthenticatedIdentity();
 
   const parsed = projectUpdateInputSchema.safeParse({
     projectId: formData.get("projectId"),
@@ -156,6 +168,29 @@ export async function addBuilderProjectUpdateAction(
   if (error || !data) {
     const code = errorCode(error, "PROJECT_UPDATE_INVALID");
     return { status: "error", message: projectErrorMessage(code) };
+  }
+
+  if (parsed.data.marksMilestoneComplete) {
+    const { data: project } = await client
+      .from("builder_projects")
+      .select("status")
+      .eq("id", parsed.data.projectId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (project?.status === "completed") {
+      const pathways = await getCurrentEconomicPathwayState();
+      if (pathways?.selectedPath) {
+        await recordProductEventForUser(
+          user.id,
+          "first_value_challenge_completed",
+          {
+            projectId: parsed.data.projectId,
+            pathKey: pathways.selectedPath.key,
+            recommendationId: pathways.id,
+          },
+        );
+      }
+    }
   }
 
   revalidatePath("/projects");

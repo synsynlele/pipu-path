@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getCurrentEconomicPathwayState } from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { getCurrentMissionState } from "@/modules/mission/infrastructure/mission-dal";
 import { createProjectServerClient } from "@/modules/project/infrastructure/project-client";
@@ -20,6 +21,9 @@ export async function getJourneyContext() {
     getCurrentMissionState(),
   ]);
   if (!missionState.active) return null;
+  const pathways = await getCurrentEconomicPathwayState(
+    missionState.active.profileId,
+  );
   return journeyContextSchema.parse({
     missionId: missionState.active.id,
     title: missionState.active.title,
@@ -33,6 +37,7 @@ export async function getJourneyContext() {
     generalResourceConstraints: [
       toJourneyResourceConstraint(missionState.active.current_caution),
     ],
+    selectedPath: pathways?.selectedPath ?? null,
   });
 }
 

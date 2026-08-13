@@ -21,11 +21,35 @@ const durationLabels = {
   eight_weeks: "Eight weeks",
   twelve_weeks: "Twelve weeks",
 };
+const pathwayPhases = ["Learn", "Practice", "Build", "Test"] as const;
 type DisplayJourney = NonNullable<
   Awaited<ReturnType<typeof getCurrentJourneyState>>["draft"]
 >;
 
-function JourneyDetails({ journey }: { journey: DisplayJourney }) {
+function isThirtyDayJourney(journey: DisplayJourney | null) {
+  if (!journey) return false;
+  if (
+    journey.suggested_duration !== "four_weeks" ||
+    journey.milestones.length !== 4
+  ) {
+    return false;
+  }
+  return journey.milestones.every((milestone, index) => {
+    const title = milestone.title.toLowerCase();
+    return (
+      title.includes(`week ${index + 1}`) &&
+      title.includes(pathwayPhases[index].toLowerCase())
+    );
+  });
+}
+
+function JourneyDetails({
+  journey,
+  isThirtyDayPathway,
+}: {
+  journey: DisplayJourney;
+  isThirtyDayPathway: boolean;
+}) {
   const progress = calculateJourneyProgress(
     journey.milestones.map((milestone) => milestone.status),
   );
@@ -49,7 +73,7 @@ function JourneyDetails({ journey }: { journey: DisplayJourney }) {
       </div>
       <div className="mt-5">
         <h3 className="text-gold text-xs font-semibold tracking-wide uppercase">
-          Journey Summary
+          {isThirtyDayPathway ? "30-Day Pathway Summary" : "Journey Summary"}
         </h3>
         <p className="text-muted mt-2 leading-7">{journey.summary}</p>
       </div>
@@ -63,7 +87,10 @@ function JourneyDetails({ journey }: { journey: DisplayJourney }) {
             className="border-border rounded-2xl border p-5"
           >
             <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-              Milestone {milestone.sequence_order} · {milestone.status}
+              {isThirtyDayPathway
+                ? `Week ${milestone.sequence_order} · ${pathwayPhases[milestone.sequence_order - 1] ?? "Build"}`
+                : `Milestone ${milestone.sequence_order}`}{" "}
+              · {milestone.status}
             </p>
             <h3 className="mt-2 text-xl font-semibold">{milestone.title}</h3>
             <p className="text-muted mt-3 leading-7">{milestone.purpose}</p>
@@ -105,20 +132,29 @@ export default async function JourneyPage() {
   const context = await getJourneyContext();
   const state = await getCurrentJourneyState(context?.missionId);
   const attemptsRemaining = Math.max(0, 3 - state.attempts);
+  const existingJourney = state.active ?? state.draft ?? state.completed;
+  const isThirtyDayPathway = existingJourney
+    ? isThirtyDayJourney(existingJourney)
+    : Boolean(context?.selectedPath);
   return (
     <main
       id="main-content"
       className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16"
     >
       <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
-        Your practical Builder Journey
+        {isThirtyDayPathway
+          ? "Your personalised 30-Day Pathway"
+          : "Your practical Builder Journey"}
       </p>
       <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
-        Turn your mission into milestones.
+        {isThirtyDayPathway
+          ? "Learn. Practice. Build. Test."
+          : "Turn your mission into milestones."}
       </h1>
       <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
-        Your Journey is a flexible pathway, not a fixed future. It shows the
-        major milestones to test your direction with real action.
+        {isThirtyDayPathway
+          ? `Use four focused weeks to test ${context?.selectedPath?.pathName ?? "your selected path"}. The goal is to build capability and evidence about what fits you—not to prove a permanent career or guarantee income.`
+          : "Your Journey is a flexible pathway, not a fixed future. It shows the major milestones to test your direction with real action."}
       </p>
       {!context ? (
         <Surface className="mt-10 p-6 sm:p-8">
@@ -135,29 +171,39 @@ export default async function JourneyPage() {
       ) : state.active ? (
         <Surface className="mt-10 p-6 sm:p-8">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Active Journey · Cycle {state.active.cycleNumber}
+            {isThirtyDayPathway ? "Active Pathway" : "Active Journey"} · Cycle{" "}
+            {state.active.cycleNumber}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
             {state.active.title}
           </h2>
-          <JourneyDetails journey={state.active} />
+          <JourneyDetails
+            journey={state.active}
+            isThirtyDayPathway={isThirtyDayPathway}
+          />
           <ButtonLink href="/journey/complete" className="mt-8">
-            Start First Milestone
+            {isThirtyDayPathway ? "Start Week 1" : "Start First Milestone"}
           </ButtonLink>
         </Surface>
       ) : state.draft ? (
         <Surface className="mt-10 p-6 sm:p-8">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Journey Review · Cycle {state.draft.cycleNumber}
+            {isThirtyDayPathway ? "30-Day Pathway Review" : "Journey Review"} ·
+            Cycle {state.draft.cycleNumber}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
             {state.draft.title}
           </h2>
-          <JourneyDetails journey={state.draft} />
+          <JourneyDetails
+            journey={state.draft}
+            isThirtyDayPathway={isThirtyDayPathway}
+          />
           <div className="mt-8 flex flex-wrap gap-3">
             <form action={activateJourneyAction}>
               <input type="hidden" name="journeyId" value={state.draft.id} />
-              <Button type="submit">Accept Journey</Button>
+              <Button type="submit">
+                {isThirtyDayPathway ? "Start 30-Day Pathway" : "Accept Journey"}
+              </Button>
             </form>
             <JourneyGenerationForm
               kind="regenerate"
@@ -172,25 +218,27 @@ export default async function JourneyPage() {
       ) : state.completed ? (
         <Surface className="mt-10 p-6 sm:p-8">
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Completed Journey · Cycle {state.completed.cycleNumber}
+            Completed {isThirtyDayPathway ? "Pathway" : "Journey"} · Cycle{" "}
+            {state.completed.cycleNumber}
           </p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight">
             {state.completed.title}
           </h2>
           <p className="text-muted mt-4 max-w-2xl leading-7">
-            This Journey is now evidence, not an ending. Your next cycle should
-            deepen what worked, correct what failed and convert learning into a
-            stronger repeatable result.
+            This completed work is evidence, not an ending. Your next cycle
+            should deepen what worked, correct what failed and convert learning
+            into a stronger useful result.
           </p>
           {state.continuationAvailable ? (
             <div className="border-gold/30 bg-gold/5 mt-7 rounded-2xl border p-5">
               <h3 className="text-xl font-semibold">
-                Build growth cycle {state.nextCycleNumber}
+                Build {isThirtyDayPathway ? "30-Day" : "growth"} cycle{" "}
+                {state.nextCycleNumber}
               </h3>
               <p className="text-muted mt-2 leading-7">
-                Your completed Project unlocks a fresh three-attempt Journey
-                budget. The new Journey will build on the previous cycle rather
-                than restart your development.
+                Your completed Project unlocks a fresh three-attempt cycle. The
+                new pathway will build on real evidence rather than restart your
+                development.
               </p>
               <div className="mt-5">
                 <JourneyGenerationForm
@@ -215,11 +263,14 @@ export default async function JourneyPage() {
       ) : (
         <Surface className="mt-10 p-6 sm:p-8">
           <h2 className="text-xl font-semibold">
-            Your mission is ready for a pathway
+            {isThirtyDayPathway
+              ? `Build your 30-Day ${context.selectedPath?.pathName ?? "Path"} Pathway`
+              : "Your mission is ready for a pathway"}
           </h2>
           <p className="text-muted mt-3 max-w-2xl leading-7">
-            PipuPath can shape four to six practical milestones from your active
-            mission.
+            {isThirtyDayPathway
+              ? "PipuPath will organise this mission into four evidence-based weeks: Learn, Practice, Build and Test."
+              : "PipuPath can shape four to six practical milestones from your active mission."}
           </p>
           <div className="mt-7">
             <JourneyGenerationForm

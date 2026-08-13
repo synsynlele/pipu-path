@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { possiblePathSchema } from "@/modules/economic-pathways/domain/economic-pathway-contract";
 
 export const journeyDurations = [
   "two_weeks",
@@ -47,6 +48,7 @@ export const journeyContextSchema = z.object({
   ageBand: z.string().max(40),
   isMinor: z.boolean(),
   generalResourceConstraints: z.array(z.string().max(320)).max(8),
+  selectedPath: possiblePathSchema.nullable().optional(),
 });
 
 export const refinementInstructionSchema = z.string().trim().min(3).max(240);
@@ -72,8 +74,9 @@ export type JourneyErrorCode =
 const unsafe =
   /\b(meet (?:an )?unknown adult|contact strangers?|keep (?:this )?secret|borrow money|dangerous|illegal)\b/i;
 const inflated =
-  /\b(transform (?:the )?(?:world|africa)|millions of people|guarantee success|perfect path)\b/i;
+  /\b(transform (?:the )?(?:world|africa)|millions of people|guarantee success|perfect path|get rich|guaranteed income|quick money)\b/i;
 const questLanguage = /\b(day [1-9]|daily task|earn xp|quest [1-9])\b/i;
+const economicPhases = ["learn", "practice", "build", "test"] as const;
 
 export function validateJourneyOutput(
   input: unknown,
@@ -107,7 +110,27 @@ export function validateJourneyForContext(
   if (!journeyContextSchema.safeParse(context).success) {
     return { ok: false, code: "JOURNEY_OUTPUT_INVALID" };
   }
-  return validateJourneyOutput(input);
+  const validated = validateJourneyOutput(input);
+  if (!validated.ok) return validated;
+
+  if (context.selectedPath) {
+    if (
+      validated.value.suggested_duration !== "four_weeks" ||
+      validated.value.milestones.length !== 4
+    ) {
+      return { ok: false, code: "JOURNEY_OUTPUT_INVALID" };
+    }
+    const phasesMatch = validated.value.milestones.every((milestone, index) => {
+      const title = milestone.title.toLowerCase();
+      return (
+        title.includes(`week ${index + 1}`) &&
+        title.includes(economicPhases[index])
+      );
+    });
+    if (!phasesMatch) return { ok: false, code: "JOURNEY_OUTPUT_INVALID" };
+  }
+
+  return validated;
 }
 
 export function calculateJourneyProgress(

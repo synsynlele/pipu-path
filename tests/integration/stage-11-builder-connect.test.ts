@@ -111,7 +111,9 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     expect(generation).toContain(
       'kind: "initial" | "regenerate" | "refine" | "continue"',
     );
-    expect(journeyPage).toContain("Build growth cycle");
+    expect(journeyPage).toContain(
+      'Build {isThirtyDayPathway ? "30-Day" : "growth"} cycle',
+    );
     expect(progress).toContain('label: "Build your next Journey"');
     expect(progressDal).toContain('.eq("journey_id", journey.id)');
   });
