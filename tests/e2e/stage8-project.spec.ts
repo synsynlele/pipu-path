@@ -36,37 +36,35 @@ async function openOrCreateProject(page: import("@playwright/test").Page) {
     await create.click();
     await expect(
       page.getByRole("heading", {
-        name: "Build from what you have already proved.",
+        name: /Build from what you have already proved\.|Create value first\. Test whether somebody finds it useful\./,
       }),
     ).toBeVisible();
 
+    await page.locator("#title").fill("Neighbourhood Reading Starter");
     await page
-      .getByLabel("Project title")
-      .fill("Neighbourhood Reading Starter");
-    await page
-      .getByLabel("What problem will this Project address?")
+      .locator("#problemStatement")
       .fill(
         "Younger learners nearby have few simple opportunities to practise reading aloud with useful feedback.",
       );
     await page
-      .getByLabel("Who should benefit?")
+      .locator("#peopleServed")
       .fill("Five nearby primary-school learners and their caregivers.");
     await page
-      .getByLabel("What practical outcome should exist?")
+      .locator("#desiredOutcome")
       .fill(
         "Create and test one small reading activity that learners can use confidently with available materials.",
       );
     await page
-      .getByLabel("What is the smallest useful version?")
+      .locator("#smallestUsefulVersion")
       .fill(
         "One thirty-minute reading session with a short story, three questions and caregiver feedback.",
       );
     await page
-      .getByLabel("What will prove it worked?")
+      .locator("#successSignal")
       .fill(
         "At least three learners finish the session and one caregiver confirms that it was useful.",
       );
-    await page.getByLabel("Target date").fill(targetDate());
+    await page.locator("#targetDate").fill(targetDate());
 
     const milestoneContent = [
       {
@@ -96,7 +94,9 @@ async function openOrCreateProject(page: import("@playwright/test").Page) {
     }
 
     await page
-      .getByRole("button", { name: "Create My Builder Project" })
+      .getByRole("button", {
+        name: /Create My Builder Project|Start My First Value Challenge/,
+      })
       .click();
     await expect(page).toHaveURL(/\/projects\/[0-9a-f-]+$/, {
       timeout: 15_000,
