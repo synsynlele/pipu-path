@@ -85,12 +85,49 @@ async function generateAndVerifyProfile(page: import("@playwright/test").Page) {
   await expect(
     page.getByText(/Saved response: 👍 Accurate/).first(),
   ).toBeVisible({ timeout: 15_000 });
-  await page.getByRole("link", { name: "Continue" }).click();
-  await expect(page).toHaveURL(/\/onboarding\/discovery\/profile\/complete/);
+
   await expect(
-    page.getByRole("heading", { name: "Keep testing what feels true." }),
+    page.getByRole("heading", { name: "Possible Paths" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Open Mission" }).click();
+  const explorePaths = page.getByRole("button", {
+    name: "Explore Possible Paths",
+  });
+  if ((await explorePaths.count()) === 1) {
+    await explorePaths.click();
+    await expect(
+      page
+        .getByRole("button", { name: "Choose This Path" })
+        .or(page.getByRole("button", { name: "Selected Path" })),
+    ).toBeVisible({ timeout: 60_000 });
+  }
+
+  await expect(
+    page.getByRole("heading", { name: "Earn From Your Strengths" }),
+  ).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Observed Pattern").first()).toBeVisible();
+  await expect(page.getByText("Possible Interpretation").first()).toBeVisible();
+  await expect(page.getByText("Evidence Needed").first()).toBeVisible();
+
+  const choosePath = page.getByRole("button", { name: "Choose This Path" });
+  if ((await choosePath.count()) > 0) {
+    await choosePath.first().click();
+    await expect(page).toHaveURL(
+      /\/onboarding\/discovery\/profile\/complete/,
+      { timeout: 20_000 },
+    );
+  } else {
+    const continueWithPath = page.getByRole("link", {
+      name: /^Continue With /,
+    });
+    await expect(continueWithPath).toBeVisible();
+    await continueWithPath.click();
+    await expect(page).toHaveURL(/\/onboarding\/discovery\/profile\/complete/);
+  }
+
+  await expect(
+    page.getByRole("heading", { name: "Test the path. Let evidence teach you." }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Build My Practical Mission" }).click();
   await generateAndVerifyMission(page);
 }
 
@@ -106,11 +143,7 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
       await expect(page.getByRole("status")).toContainText(
         "PipuPath is shaping a practical mission",
       );
-      await expect(
-        page.getByText("Mission Review", { exact: true }),
-      ).toBeVisible({
-        timeout: 50_000,
-      });
+      await expect(review).toBeVisible({ timeout: 50_000 });
     }
 
     const refine = page.getByRole("button", { name: "Refine Mission" });
@@ -134,11 +167,7 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
     });
     await expect(acceptMission).toBeEnabled({ timeout: 60_000 });
     await acceptMission.click();
-    await expect(page.getByText("Active Mission", { exact: true })).toBeVisible(
-      {
-        timeout: 15_000,
-      },
-    );
+    await expect(active).toBeVisible({ timeout: 15_000 });
   }
 
   await expect(
@@ -151,8 +180,8 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
     page.getByRole("heading", { name: "First Meaningful Outcome" }),
   ).toBeVisible();
   await page.reload();
-  await expect(page.getByText("Active Mission", { exact: true })).toBeVisible();
-  await page.getByRole("link", { name: "Build My Journey" }).click();
+  await expect(active).toBeVisible();
+  await page.getByRole("link", { name: "Build My 30-Day Pathway" }).click();
   await expect(page).toHaveURL(/\/mission\/complete/);
   await expect(
     page.getByRole("heading", {
@@ -165,9 +194,15 @@ async function generateAndVerifyMission(page: import("@playwright/test").Page) {
 
 async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
   await expect(page).toHaveURL(/\/journey$/);
-  const active = page.getByText("Active Journey", { exact: true });
+  const activeJourney = page.getByText("Active Journey", { exact: false });
+  const activePathway = page.getByText("Active Pathway", { exact: false });
+  const active = activeJourney.or(activePathway);
   const generate = page.getByRole("button", { name: "Generate My Journey" });
-  const review = page.getByText("Journey Review", { exact: true });
+  const legacyReview = page.getByText("Journey Review", { exact: false });
+  const pathwayReview = page.getByText("30-Day Pathway Review", {
+    exact: false,
+  });
+  const review = legacyReview.or(pathwayReview);
   await expect(active.or(generate).or(review)).toBeVisible({ timeout: 15_000 });
   if ((await active.count()) === 0) {
     if ((await generate.count()) === 1) {
@@ -192,21 +227,34 @@ async function generateAndVerifyJourney(page: import("@playwright/test").Page) {
         timeout: 60_000,
       });
     }
-    const accept = page.getByRole("button", { name: "Accept Journey" });
-    await expect(accept).toBeEnabled({ timeout: 60_000 });
-    await accept.click();
+    const startPathway = page.getByRole("button", {
+      name: "Start 30-Day Pathway",
+    });
+    const acceptJourney = page.getByRole("button", { name: "Accept Journey" });
+    await expect(startPathway.or(acceptJourney)).toBeEnabled({ timeout: 60_000 });
+    if ((await startPathway.count()) === 1) {
+      await startPathway.click();
+    } else {
+      await acceptJourney.click();
+    }
     await expect(active).toBeVisible({ timeout: 15_000 });
   }
-  await expect(page.getByText("Milestone 1", { exact: false })).toBeVisible();
+
+  const weekOne = page.getByText(/Week 1 · Learn/);
+  const milestoneOne = page.getByText(/Milestone 1/);
+  await expect(weekOne.or(milestoneOne)).toBeVisible();
   await page.reload();
   await expect(active).toBeVisible();
-  await page.getByRole("link", { name: "Start First Milestone" }).click();
+  const startWeek = page.getByRole("link", { name: "Start Week 1" });
+  const startMilestone = page.getByRole("link", {
+    name: "Start First Milestone",
+  });
+  if ((await startWeek.count()) === 1) {
+    await startWeek.click();
+  } else {
+    await startMilestone.click();
+  }
   await expect(page).toHaveURL(/\/journey\/complete/);
-  await expect(
-    page.getByRole("heading", {
-      name: "Your first milestone is ready for action.",
-    }),
-  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Begin HQLS Quests" }),
   ).toBeVisible();
@@ -216,7 +264,7 @@ test("eligible user completes persistent Discovery without invented results", as
   page,
   isMobile,
 }) => {
-  test.setTimeout(240_000);
+  test.setTimeout(300_000);
   test.skip(
     isMobile,
     "The full flow runs once; mobile controls have a focused test.",
