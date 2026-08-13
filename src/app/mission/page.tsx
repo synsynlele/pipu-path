@@ -66,13 +66,28 @@ export default async function MissionPage() {
         Your practical Builder Mission
       </p>
       <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
-        Turn what you know into useful action.
+        Test a path by creating real value.
       </h1>
       <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
-        This mission is a practical direction to explore. It is not a permanent
-        decision. Start small, learn from real action and refine it as you learn
-        more.
+        A mission turns one Possible Path into a small experiment. The aim is to
+        learn what you can do, whether somebody finds it useful and what evidence
+        should shape your next step. It is not a permanent career decision or an
+        income promise.
       </p>
+
+      {context?.selectedPath ? (
+        <Surface className="border-gold/30 bg-gold/5 mt-8 p-5 sm:p-6">
+          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+            Selected Possible Path
+          </p>
+          <h2 className="mt-2 text-xl font-semibold">
+            {context.selectedPath.pathName}
+          </h2>
+          <p className="text-muted mt-2 leading-7">
+            {context.selectedPath.possibleInterpretation}
+          </p>
+        </Surface>
+      ) : null}
 
       {!context ? (
         <Surface className="mt-10 p-6 sm:p-8">
@@ -95,7 +110,7 @@ export default async function MissionPage() {
           </h2>
           <MissionDetails mission={state.active} />
           <ButtonLink href="/mission/complete" className="mt-8">
-            Build My Journey
+            Build My 30-Day Pathway
           </ButtonLink>
         </Surface>
       ) : state.draft ? (
@@ -122,14 +137,27 @@ export default async function MissionPage() {
             attemptsRemaining={attemptsRemaining}
           />
         </Surface>
+      ) : !context.selectedPath ? (
+        <Surface className="mt-10 p-6 sm:p-8">
+          <h2 className="text-xl font-semibold">Choose a path to test first</h2>
+          <p className="text-muted mt-3 max-w-2xl leading-7">
+            Your profile can now show several realistic Possible Paths. Choose
+            one before PipuPath creates a mission so the next steps remain
+            connected to a direction you deliberately selected.
+          </p>
+          <ButtonLink href="/onboarding/discovery/profile" className="mt-6">
+            Explore Possible Paths
+          </ButtonLink>
+        </Surface>
       ) : (
         <Surface className="mt-10 p-6 sm:p-8">
           <h2 className="text-xl font-semibold">
-            Your profile shows possible directions
+            Turn {context.selectedPath.pathName} into one practical test
           </h2>
           <p className="text-muted mt-3 max-w-2xl leading-7">
-            PipuPath can now turn your completed Human Potential Profile into
-            one practical mission you can begin exploring.
+            PipuPath will use your profile evidence and selected path to create
+            one small mission that develops capability, creates value and gives
+            you evidence before you commit more time or resources.
           </p>
           <div className="mt-7">
             <MissionGenerationForm
