@@ -56,21 +56,23 @@ export async function selectEconomicPathAction(
     redirect("/onboarding/discovery/profile/complete");
   }
 
-  const browser = await createServerSupabaseClient();
-  const { data: currentMission } = await browser
-    .from("user_missions")
-    .select("id,status")
-    .eq("user_id", user.id)
-    .in("status", ["draft", "active", "paused"])
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (currentMission) {
-    return {
-      status: "error",
-      message:
-        "Your current mission already uses the path you selected. Complete that mission cycle before changing paths.",
-    };
+  if (state.selectedPathKey) {
+    const browser = await createServerSupabaseClient();
+    const { data: currentMission } = await browser
+      .from("user_missions")
+      .select("id,status")
+      .eq("user_id", user.id)
+      .in("status", ["draft", "active", "paused"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (currentMission) {
+      return {
+        status: "error",
+        message:
+          "Finish or replace your current mission before changing the path it is built from.",
+      };
+    }
   }
 
   const service = asEconomicPathwayClient(createServiceRoleSupabaseClient());
@@ -102,5 +104,6 @@ export async function selectEconomicPathAction(
   );
   revalidatePath("/onboarding/discovery/profile");
   revalidatePath("/mission");
+  revalidatePath("/journey");
   redirect("/onboarding/discovery/profile/complete");
 }
