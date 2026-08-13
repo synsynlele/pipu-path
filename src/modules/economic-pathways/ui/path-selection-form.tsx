@@ -25,11 +25,14 @@ export function PathSelectionForm({
   const [hasSelection, setHasSelection] = useState(selected);
 
   useEffect(() => {
-    setHasSelection(
-      Boolean(
-        document.querySelector('form[data-economic-path-selected="true"]'),
-      ),
-    );
+    const frame = window.requestAnimationFrame(() => {
+      setHasSelection(
+        Boolean(
+          document.querySelector('form[data-economic-path-selected="true"]'),
+        ),
+      );
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   return (
