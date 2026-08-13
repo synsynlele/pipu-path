@@ -26,6 +26,23 @@ type DisplayJourney = NonNullable<
   Awaited<ReturnType<typeof getCurrentJourneyState>>["draft"]
 >;
 
+function isThirtyDayJourney(journey: DisplayJourney | null) {
+  if (!journey) return false;
+  if (
+    journey.suggested_duration !== "four_weeks" ||
+    journey.milestones.length !== 4
+  ) {
+    return false;
+  }
+  return journey.milestones.every((milestone, index) => {
+    const title = milestone.title.toLowerCase();
+    return (
+      title.includes(`week ${index + 1}`) &&
+      title.includes(pathwayPhases[index].toLowerCase())
+    );
+  });
+}
+
 function JourneyDetails({
   journey,
   isThirtyDayPathway,
@@ -115,7 +132,10 @@ export default async function JourneyPage() {
   const context = await getJourneyContext();
   const state = await getCurrentJourneyState(context?.missionId);
   const attemptsRemaining = Math.max(0, 3 - state.attempts);
-  const isThirtyDayPathway = Boolean(context?.selectedPath);
+  const existingJourney = state.active ?? state.draft ?? state.completed;
+  const isThirtyDayPathway = existingJourney
+    ? isThirtyDayJourney(existingJourney)
+    : Boolean(context?.selectedPath);
   return (
     <main
       id="main-content"
