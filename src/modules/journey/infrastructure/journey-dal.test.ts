@@ -46,7 +46,6 @@ describe("getJourneyContext", () => {
         title: "Support student study",
         mission_statement: "Test a useful study support idea with students.",
         who_this_helps: "Students",
-        first_meaning_outcome: "Create and test one useful study guide.",
         first_meaningful_outcome: "Create and test one useful study guide.",
         success_signal: "Students use it and respond with useful feedback.",
         current_caution: currentCaution,
