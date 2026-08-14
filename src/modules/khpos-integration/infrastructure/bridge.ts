@@ -17,7 +17,10 @@ const KHPOS_RECEIVER_URL =
   "https://www.kshc.name.ng/api/khpos/integrations/pipupath/receive";
 
 export class KhposBridgeError extends Error {
-  constructor(message: string, public readonly status = 400) {
+  constructor(
+    message: string,
+    public readonly status = 400,
+  ) {
     super(message);
     this.name = "KhposBridgeError";
   }
@@ -33,7 +36,10 @@ function ninetyDayWindow() {
   return { start, end };
 }
 
-function signal(externalCohortId: string, aggregate: CohortAggregate): KhposSignalPayload {
+function signal(
+  externalCohortId: string,
+  aggregate: CohortAggregate,
+): KhposSignalPayload {
   const { start, end } = ninetyDayWindow();
   return {
     contractVersion: KHPOS_CONTRACT_VERSION,
@@ -56,7 +62,10 @@ async function postReceiver(body: Record<string, unknown>) {
       signal: AbortSignal.timeout(15_000),
     });
   } catch {
-    throw new KhposBridgeError("KHP-OS could not be reached. No institutional connection was created.", 502);
+    throw new KhposBridgeError(
+      "KHP-OS could not be reached. No institutional connection was created.",
+      502,
+    );
   }
   const result = (await response.json().catch(() => ({}))) as {
     ok?: boolean;
@@ -64,7 +73,10 @@ async function postReceiver(body: Record<string, unknown>) {
     organisationId?: string;
   };
   if (!response.ok || !result.ok) {
-    throw new KhposBridgeError(result.error ?? "KHP-OS rejected the institutional connection.", response.status || 502);
+    throw new KhposBridgeError(
+      result.error ?? "KHP-OS rejected the institutional connection.",
+      response.status || 502,
+    );
   }
   return result;
 }
@@ -86,8 +98,15 @@ export async function bootstrapKhposSchoolCohort(input: {
     signal: signal(cohortId, suppressedAggregate()),
   });
   const organisationId = response.organisationId ?? "";
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(organisationId)) {
-    throw new KhposBridgeError("KHP-OS returned an invalid organisation binding.", 502);
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      organisationId,
+    )
+  ) {
+    throw new KhposBridgeError(
+      "KHP-OS returned an invalid organisation binding.",
+      502,
+    );
   }
 
   const client = service();
@@ -101,7 +120,10 @@ export async function bootstrapKhposSchoolCohort(input: {
     status: "active",
   });
   if (error) {
-    throw new KhposBridgeError("The PipuPath school cohort could not be persisted. Reconnect from KHP-OS to retry safely.", 500);
+    throw new KhposBridgeError(
+      "The PipuPath school cohort could not be persisted. Reconnect from KHP-OS to retry safely.",
+      500,
+    );
   }
   return { cohortId };
 }
@@ -118,7 +140,8 @@ function mapAggregate(row: Record<string, unknown>): CohortAggregate {
     activeProfileCount: row.active_profile_count,
     pathSelectedCount: row.path_selected_count,
     questParticipantCount: row.quest_participant_count,
-    evidenceBackedQuestParticipantCount: row.evidence_backed_quest_participant_count,
+    evidenceBackedQuestParticipantCount:
+      row.evidence_backed_quest_participant_count,
     projectParticipantCount: row.project_participant_count,
     projectCompletionParticipantCount: row.project_completion_participant_count,
     continuationEligibleCount: row.continuation_eligible_count,
@@ -137,17 +160,24 @@ export async function syncKhposSchoolCohort(input: {
     .eq("id", input.externalCohortId)
     .eq("status", "active")
     .maybeSingle();
-  if (cohortError || !cohort) throw new KhposBridgeError("PipuPath school cohort was not found.", 404);
+  if (cohortError || !cohort)
+    throw new KhposBridgeError("PipuPath school cohort was not found.", 404);
 
   const { start, end } = ninetyDayWindow();
-  const { data, error } = await client.rpc("get_stage13_khpos_cohort_aggregate_server", {
-    cohort_id_input: input.externalCohortId,
-    window_start_input: start.toISOString(),
-    window_end_input: end.toISOString(),
-  });
+  const { data, error } = await client.rpc(
+    "get_stage13_khpos_cohort_aggregate_server",
+    {
+      cohort_id_input: input.externalCohortId,
+      window_start_input: start.toISOString(),
+      window_end_input: end.toISOString(),
+    },
+  );
   const row = Array.isArray(data) ? data[0] : data;
   if (error || !row || typeof row !== "object") {
-    throw new KhposBridgeError("PipuPath could not calculate the privacy-safe cohort aggregate.", 500);
+    throw new KhposBridgeError(
+      "PipuPath could not calculate the privacy-safe cohort aggregate.",
+      500,
+    );
   }
   const aggregate = mapAggregate(row as Record<string, unknown>);
   const payload: KhposSignalPayload = {
@@ -158,7 +188,14 @@ export async function syncKhposSchoolCohort(input: {
     windowEnd: end.toISOString(),
     ...aggregate,
   };
-  await postReceiver({ action: "sync", syncToken: input.syncToken, signal: payload });
-  await client.from("khpos_school_cohorts").update({ last_synced_at: new Date().toISOString() }).eq("id", input.externalCohortId);
+  await postReceiver({
+    action: "sync",
+    syncToken: input.syncToken,
+    signal: payload,
+  });
+  await client
+    .from("khpos_school_cohorts")
+    .update({ last_synced_at: new Date().toISOString() })
+    .eq("id", input.externalCohortId);
   return aggregate;
 }
