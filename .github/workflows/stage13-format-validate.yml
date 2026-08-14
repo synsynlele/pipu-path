@@ -1,0 +1,64 @@
+name: Stage 13 format and validate
+
+on:
+  push:
+    branches:
+      - agent/stage-13-khpos-cohort-bridge
+
+permissions:
+  contents: write
+
+jobs:
+  format-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v5
+        with:
+          ref: agent/stage-13-khpos-cohort-bridge
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Format Stage 13 files
+        run: >-
+          npx prettier --write
+          src/app/api/integrations/khpos/bootstrap/route.ts
+          src/app/api/integrations/khpos/cohort/route.ts
+          src/app/api/integrations/khpos/sync/route.ts
+          src/app/integrations/khpos/page.tsx
+          src/modules/khpos-integration/domain/contract.test.ts
+          src/modules/khpos-integration/domain/contract.ts
+          src/modules/khpos-integration/infrastructure/bridge.ts
+          tests/integration/stage-13-khpos-cohort-bridge.test.ts
+
+      - name: Full PipuPath validation
+        run: npm run validate
+
+      - name: Commit formatted tree and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm .github/workflows/stage13-format-validate.yml
+          git add \
+            src/app/api/integrations/khpos/bootstrap/route.ts \
+            src/app/api/integrations/khpos/cohort/route.ts \
+            src/app/api/integrations/khpos/sync/route.ts \
+            src/app/integrations/khpos/page.tsx \
+            src/modules/khpos-integration/domain/contract.test.ts \
+            src/modules/khpos-integration/domain/contract.ts \
+            src/modules/khpos-integration/infrastructure/bridge.ts \
+            tests/integration/stage-13-khpos-cohort-bridge.test.ts \
+            .github/workflows/stage13-format-validate.yml
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(stage13): apply validated formatting"
+          git push origin HEAD:agent/stage-13-khpos-cohort-bridge
