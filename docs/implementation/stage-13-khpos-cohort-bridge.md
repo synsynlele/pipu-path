@@ -1,6 +1,6 @@
 # Stage 13 — Institutional Cohort Bridge
 
-Status: **candidate implementation on branch; not released until PipuPath database migration and live pairing are verified.**
+Status: **live PipuPath database verified; cross-product pairing remains before release.**
 
 ## Purpose
 
@@ -52,12 +52,24 @@ These support four KHP-OS institutional signals: potential direction, capability
 
 PipuPath signals are contextual institutional intelligence. They cannot resolve a KSHC priority, change reassessment state or declare Verified Institutional Improvement.
 
-## Validation required before release
+## Live database verification — 14 August 2026
 
-1. Apply `20260814211700_stage_13_khpos_school_cohort_bridge.sql` to the authorised PipuPath Supabase project.
-2. Regenerate/check linked database types if the project workflow requires it.
-3. Run full `npm run validate` and migration/database checks.
-4. Perform one real KHP-OS → PipuPath pairing using a test institution.
-5. Confirm fewer-than-five suppression and five-member aggregate behaviour against the real database.
-6. Confirm withdrawal removes the learner from future aggregate counts.
-7. Confirm no learner-level payload appears in KHP-OS or application logs.
+Applied migration: `20260814205826_stage_13_khpos_school_cohort_bridge.sql`.
+
+Verified against the authorised PipuPath Supabase project:
+
+- Stage 13 tables and functions are live with RLS enabled and direct table access revoked from `anon` and `authenticated`.
+- The aggregate function is executable by `service_role` only.
+- Four active cohort members produce `reportingEligible=false` and zero across every detailed counter.
+- Five active cohort members make reporting eligible.
+- Withdrawing one learner immediately drops the cohort below the threshold and restores full suppression.
+- Join and withdrawal are authenticated learner operations tied to `auth.uid()`.
+- All transaction-scoped test records were rolled back; the live database contains zero Stage 13 cohorts and zero memberships after verification.
+
+## Remaining release gate
+
+1. Perform one real KHP-OS → PipuPath pairing using a controlled test institution.
+2. Confirm the paired PipuPath aggregate is accepted by KHP-OS without any learner-level payload crossing the boundary.
+3. Confirm application/runtime logs contain no learner-level integration payload.
+
+The current Supabase connection exposes the PipuPath/KSI organisation but not the separate KHP/KSHC Supabase project, so this final cross-product handshake must wait until both sides are addressable in the same execution context.
