@@ -35,5 +35,11 @@ describe("Stage 14 profile evolution contract", () => {
       total: 0,
       ready: false,
     });
+    expect(summarizeProfileEvolutionEvidence([])).toEqual({
+      completedProjects: 0,
+      profileFeedback: 0,
+      total: 0,
+      ready: false,
+    });
   });
 });
