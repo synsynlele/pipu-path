@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  getCurrentHumanPotentialProfile,
+  getHumanPotentialProfileEvolutionReadiness,
+} from "@/modules/human-potential/infrastructure/profile-dal";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { generateCurrentHumanPotentialProfile } from "./profile-generation";
 
@@ -15,6 +19,36 @@ export async function generateProfileAction(
 ): Promise<ProfileGenerationFormState> {
   void _previous;
   const result = await generateCurrentHumanPotentialProfile();
+  if (!result.ok) return { status: "error", message: result.message };
+  redirect("/onboarding/discovery/profile");
+}
+
+export async function evolveProfileAction(
+  _previous: ProfileGenerationFormState,
+): Promise<ProfileGenerationFormState> {
+  void _previous;
+  const profile = await getCurrentHumanPotentialProfile();
+  if (!profile) {
+    return {
+      status: "error",
+      message: "Generate your first Human Potential Profile before evolving it.",
+    };
+  }
+
+  const readiness = await getHumanPotentialProfileEvolutionReadiness(
+    profile.createdAt,
+  );
+  if (!readiness.ready) {
+    return {
+      status: "error",
+      message:
+        "Your profile is already up to date. Complete a new Builder Project or add new profile feedback first.",
+    };
+  }
+
+  const result = await generateCurrentHumanPotentialProfile({
+    context: "evolution",
+  });
   if (!result.ok) return { status: "error", message: result.message };
   redirect("/onboarding/discovery/profile");
 }

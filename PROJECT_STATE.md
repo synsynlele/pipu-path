@@ -1,64 +1,77 @@
 # PipuPath project state
 
-**Current stage:** Stage 12 — Economic Pathways MVP
+**Current stage:** Stage 14 — Living Human Potential Profile
 
-**Stage status:** COMPLETE — RELEASED TO `main`
+**Stage status:** IMPLEMENTATION CANDIDATE — VALIDATION PENDING
 
-**Completed stages:** Stage 0 through Stage 12
+**Completed stages:** Stage 0 through Stage 13
 
-**Release merge:** `7f3185aae4370d4ad59c035d0741fde025940f9b`
+**Last released `main`:** `f8029400d3f20e3d0c89febafe572818ecfb9d23`
 
-**Review surface:** GitHub pull request #24, squash-merged on 2026-08-13
+**Current implementation branch:** `agent/stage14-living-profile`
 
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`; Stage 12 migrations are applied and verified. The merged `main` release passed push CI and the Vercel GitHub integration reported a successful Production deployment.
+**Last updated:** 2026-08-16
 
-**Last updated:** 2026-08-13
+## Released foundation through Stage 13
 
-## Stage 12 delivered
+PipuPath now has a complete individual Builder loop plus the first network and institutional bridges:
 
-Stage 12 extends PipuPath from self-understanding into practical path exploration and value creation without replacing the existing execution engine.
+- Identity, consent and safeguarding;
+- 15-question Discovery;
+- private evidence-grounded Human Potential Profile;
+- Practical Mission;
+- renewable Builder Journeys;
+- HQLS Quests, evidence, reflection, XP and progression;
+- evidence-backed Builder Projects;
+- selective public Project Portfolio;
+- Stage 10 launch hardening;
+- Stage 11 Builder Connect with adult-only opt-in discovery, connection lifecycle, block/report and explicit contact sharing;
+- Stage 12 Economic Pathways with Possible Paths, Earn From Your Strengths, path selection and the First Value Challenge; and
+- Stage 13 KHP-OS Institutional Cohort Bridge with explicit learner participation and privacy-thresholded aggregate reporting.
 
-The released vertical slice includes:
-
-- private, profile-linked **Possible Paths** grounded in Human Potential Profile evidence;
-- explicit separation of observed pattern, possible interpretation, path to test and evidence needed;
-- **Earn From Your Strengths** guidance framed around creating useful value before income;
-- deliberate path selection, with protected path changes while active work exists;
-- selected-path context in the existing Practical Mission;
-- the existing Journey presented as a strict **30-Day Pathway** only when it is actually path-aware and structured as Learn → Practice → Build → Test;
-- the existing Builder Project reused as the **First Value Challenge**;
-- private product analytics for the Economic Pathways funnel;
-- deterministic evidence-grounded fallback when the AI provider is unavailable; and
-- learning-first safeguards for minors, including rejection of guaranteed income, quick-money framing, gambling, speculative trading, borrowing and unsafe contact.
-
-## Compatibility and continuity
-
-Stage 12 preserves prior Builder evidence instead of restarting users:
-
-- an existing Builder may make a first path selection without destroying a legacy active Mission or Journey;
-- changing an already-selected path is protected while current work is active;
-- legacy Journeys remain truthfully labelled and are not retroactively presented as 30-Day Pathways;
-- a completed legacy Journey with completed linked Project evidence can continue into the next Journey cycle; and
-- Journey, Quest, Project, reflection and Portfolio lineage remain the existing persistence and execution mechanisms.
-
-The operating loop is now:
+The released development loop is now:
 
 `Discovery → Human Potential Profile → Possible Paths → Choose a Path → Practical Mission → 30-Day Pathway → HQLS Quests + Evidence → First Value Challenge → reflection → next Journey cycle`
 
-## Release evidence
+## Stage 14 implementation candidate
 
-- Stage 12 migrations `20260813084234_stage_12_economic_pathways_mvp` and `20260813093000_index_stage_12_economic_pathway_profile_foreign_key` applied and verified.
-- Recommendation RLS and owner-read boundaries verified; browser mutation remains closed; product events remain private/server-managed.
-- Final release-candidate head `f1a8123b1ca687e131ab3568034a1c5696905fe3` passed the complete repository validator.
-- Matching authenticated Vercel Preview verification passed **25 tests**, with **9 expected skips** and **0 failures**, across desktop and mobile coverage.
-- Live staging proved: Possible Paths generation/view → path selection → path-aware Journey continuation → active Journey Cycle 2 → fresh Quest generation and exactly-once advancement → First Value Challenge creation and completion.
-- Product events verified for `possible_paths_generated`, `possible_paths_viewed`, `path_selected`, `pathway_started`, `first_value_challenge_started` and `first_value_challenge_completed`.
-- Pull request #24 was squash-merged into `main` as `7f3185aae4370d4ad59c035d0741fde025940f9b`.
-- The merged `main` push CI run completed successfully.
-- Vercel's GitHub deployment integration reported the Stage 12 `main` deployment successful in the Production environment.
+Stage 14 closes the missing compounding loop:
+
+`real-world action + explicit Builder feedback → new private evidence → evolved Human Potential Profile`
+
+The candidate implementation:
+
+- adds `builder_project` and `profile_feedback` as Human Potential evidence source types;
+- automatically captures bounded private evidence when a Builder Project is completed;
+- automatically captures explicit Builder feedback on prior profile insights, excluding `unsure`;
+- backfills existing completed Projects and qualifying feedback without requiring user re-entry;
+- preserves the original Discovery evidence baseline while adding the newest longitudinal evidence;
+- caps each interpretation snapshot at 100 evidence records;
+- keeps the existing immutable Human Potential Profile versioning and provenance model;
+- adds a deliberate **Evolve my profile** action only when new evidence exists since the active profile version; and
+- gives the AI evolution pass explicit rules for weighing observed project evidence versus first-person feedback.
+
+## Privacy and architecture boundary
+
+Stage 14 does not create a public capability score, a second profile store, a new Journey/Project engine, an institution-facing learner profile, open messaging, opportunity matching or an AI personal agent.
+
+The Human Potential Profile remains private and provisional. Existing AI-processing consent and safeguarding rules remain authoritative.
+
+## Validation required before Stage 14 can be called complete
+
+1. Pass formatting, zero-warning lint and strict TypeScript.
+2. Pass unit, integration and coverage gates.
+3. Pass the production build.
+4. Apply and verify Stage 14 migrations on the authorised Supabase environment without weakening RLS or browser-write boundaries.
+5. Verify a completed Builder Project creates exactly one private evidence record.
+6. Verify explicit profile feedback creates private evidence and `unsure` does not.
+7. Verify a Builder with new evidence can evolve the profile into a new immutable version.
+8. Verify a Builder with no new evidence cannot trigger redundant evolution.
+9. Verify the matching authenticated Vercel Preview on desktop and mobile.
+10. Merge only the exact verified branch head.
 
 ## Stage boundary
 
-Stage 12 does not add a marketplace, automated opportunity matching, income estimates or guarantees, separate Opportunity Readiness persistence, a separate Capability Portfolio persistence layer, payments, unrestricted messaging, or duplicate Mission/Journey/Quest/Project engines.
+Do not add unrestricted private messaging, a social feed, follower/like counts, an open opportunity marketplace, payments, income predictions, mentor marketplace, public capability rankings, Builder Passport/API or automated opportunity matching in Stage 14.
 
-Those remain future candidates only after real product evidence justifies them.
+Those remain future candidates after the longitudinal evidence loop is proven.

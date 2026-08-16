@@ -6,6 +6,10 @@ import {
   humanPotentialProfileSectionKeys,
   type HumanPotentialProfileSectionKey,
 } from "../domain/profile-contract";
+import {
+  profileEvolutionEvidenceSourceKeys,
+  summarizeProfileEvolutionEvidence,
+} from "../domain/profile-evolution";
 
 type ProfileInsight = {
   id: string;
@@ -112,8 +116,36 @@ export async function getCurrentHumanPotentialProfile() {
 
   return {
     id: profile.id,
+    version: profile.version,
     createdAt: profile.created_at,
     summary,
     sections: bySection,
   };
+}
+
+export async function getHumanPotentialProfileEvolutionReadiness(
+  profileCreatedAt: string,
+) {
+  const { user } = await requireAuthenticatedIdentity();
+  const client = await createServerSupabaseClient();
+  const { data, error } = await client
+    .from("evidence_records")
+    .select("source_key")
+    .eq("user_id", user.id)
+    .eq("evidence_status", "eligible")
+    .in("source_key", [...profileEvolutionEvidenceSourceKeys])
+    .gt("captured_at", profileCreatedAt);
+
+  if (error) {
+    return {
+      ready: false,
+      completedProjects: 0,
+      profileFeedback: 0,
+      total: 0,
+    };
+  }
+
+  return summarizeProfileEvolutionEvidence(
+    (data ?? []).map((item) => item.source_key),
+  );
 }

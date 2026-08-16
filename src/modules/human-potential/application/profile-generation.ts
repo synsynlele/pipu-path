@@ -9,6 +9,10 @@ import {
   profileOutputForPersistence,
   validateHumanPotentialProfileOutput,
 } from "../domain/profile-contract";
+import {
+  promptVersionForProfileContext,
+  type ProfileGenerationContext,
+} from "../domain/profile-evolution";
 import { OpenAIInterpretationProvider } from "../infrastructure/openai-provider";
 import { buildEvidenceBasedFallbackProfile } from "./evidence-profile-fallback";
 import { createCurrentInterpretationRequest } from "./interpretation-requests";
@@ -66,7 +70,11 @@ export function projectStructuredEvidenceValue(value: unknown) {
   return null;
 }
 
-export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExecutionResult> {
+export async function generateCurrentHumanPotentialProfile({
+  context = "initial",
+}: {
+  context?: ProfileGenerationContext;
+} = {}): Promise<ProfileExecutionResult> {
   const { user } = await requireAuthenticatedIdentity();
 
   let model = "evidence-fallback-v1";
@@ -79,7 +87,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
 
   const created = await createCurrentInterpretationRequest({
     schemaVersion: "hpi-profile-v1",
-    promptVersion: "hpi-openai-v1",
+    promptVersion: promptVersionForProfileContext(context),
   });
   if (!created.ok) return failure(created.code);
 
@@ -206,6 +214,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
         profile_summary_input: persistence.summary,
         profile_metadata_input: {
           ...persistence.metadata,
+          generation_context: context,
           generation_mode: generationMode,
           ...(fallbackReason ? { fallback_reason: fallbackReason } : {}),
         },
@@ -224,6 +233,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     logger.info("hpi_profile_generation_completed", {
       requestId,
       profileId,
+      context,
       generationMode,
       fallbackReason,
     });
@@ -245,6 +255,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     logger.warn("hpi_profile_generation_failed", {
       requestId,
       code,
+      context,
       providerFailure,
     });
     return failure(code);
