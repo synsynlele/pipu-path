@@ -13,7 +13,11 @@ import {
   humanPotentialProfileSectionKeys,
   type HumanPotentialProfileSectionKey,
 } from "@/modules/human-potential/domain/profile-contract";
-import { getCurrentHumanPotentialProfile } from "@/modules/human-potential/infrastructure/profile-dal";
+import {
+  getCurrentHumanPotentialProfile,
+  getHumanPotentialProfileEvolutionReadiness,
+} from "@/modules/human-potential/infrastructure/profile-dal";
+import { ProfileEvolutionForm } from "@/modules/human-potential/ui/profile-evolution-form";
 import { ProfileFeedbackForm } from "@/modules/human-potential/ui/profile-feedback-form";
 import { ProfileGenerationForm } from "@/modules/human-potential/ui/profile-generation-form";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
@@ -43,6 +47,10 @@ export default async function HumanPotentialProfilePage() {
   const pathways = profile
     ? await getCurrentEconomicPathwayState(profile.id)
     : null;
+  const profileEvolution = profile
+    ? await getHumanPotentialProfileEvolutionReadiness(profile.createdAt)
+    : null;
+
   if (pathways) {
     await recordProductEventForUser(user.id, "possible_paths_viewed", {
       recommendationId: pathways.id,
@@ -75,15 +83,43 @@ export default async function HumanPotentialProfilePage() {
       ) : (
         <>
           <Surface className="mt-10 p-6 sm:p-8">
-            <h2 className="text-xl font-semibold">Summary</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-xl font-semibold">Summary</h2>
+              <span className="border-border text-muted rounded-full border px-3 py-1 text-xs font-semibold uppercase">
+                Version {profile.version}
+              </span>
+            </div>
             <p className="text-muted mt-3 max-w-3xl leading-8">
               {profile.summary}
             </p>
             <p className="text-muted mt-5 text-sm">
-              Saved privately. Generated{" "}
+              Saved privately. Updated{" "}
               {new Date(profile.createdAt).toLocaleDateString()}.
             </p>
           </Surface>
+
+          {profileEvolution?.ready ? (
+            <Surface className="border-gold/40 bg-gold/5 mt-6 p-6 sm:p-8">
+              <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
+                Your profile can evolve
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight">
+                New real-world evidence is ready.
+              </h2>
+              <p className="text-muted mt-3 max-w-3xl leading-7">
+                Since this version, PipuPath has captured{" "}
+                {profileEvolution.completedProjects} completed Builder Project
+                {profileEvolution.completedProjects === 1 ? "" : "s"} and{" "}
+                {profileEvolution.profileFeedback} new profile feedback item
+                {profileEvolution.profileFeedback === 1 ? "" : "s"}. You can ask
+                PipuPath to reconnect that evidence with your original Discovery
+                answers. The result remains private and provisional.
+              </p>
+              <div className="mt-6">
+                <ProfileEvolutionForm />
+              </div>
+            </Surface>
+          ) : null}
 
           <div className="mt-8 space-y-6">
             {humanPotentialProfileSectionKeys.map((section) => (

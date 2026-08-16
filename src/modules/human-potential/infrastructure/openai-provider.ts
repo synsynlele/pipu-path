@@ -147,10 +147,23 @@ const profileResponseSchema = {
 } as const;
 
 function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
+  const evolutionInstructions =
+    input.promptVersion === "hpi-openai-v2-builder-evidence"
+      ? [
+          "This is a profile evolution pass. The evidence can include the Builder's original Discovery answers, explicit feedback on prior profile insights and completed real-world Builder Projects.",
+          "Treat sourceKey completed_builder_project as observed behaviour and proof of attempted contribution, but do not infer strong capability from a single project alone.",
+          "Treat sourceKey profile_feedback as explicit first-person correction or confirmation. When it conflicts with an older Discovery inference, acknowledge the conflict and prefer cautious wording rather than defending the old interpretation.",
+          "The new profile may confirm, weaken or revise earlier patterns. It must remain provisional and evidence-grounded.",
+        ]
+      : [
+          "This is the initial profile pass. Evidence is primarily the Builder's completed Discovery responses.",
+        ];
+
   return [
-    "Create a private, provisional Human Potential Profile from supplied Discovery evidence.",
+    "Create a private, provisional Human Potential Profile from the supplied evidence.",
+    ...evolutionInstructions,
     "Do not diagnose, predict the future, assign a fixed personality, life purpose, destiny, permanent career or certainty.",
-    'Use cautious wording such as "Based on your answers..." or "You may...". Never invent evidence.',
+    'Use cautious wording such as "Based on the evidence..." or "You may...". Never invent evidence.',
     "Current constraints must be respectful and encouraging. Do not label the person lazy, broken, deficient or a failure.",
     "Do not provide unsafe, legal, medical, investment or adult-contact advice.",
     "Every insight must cite one or more exact supplied evidence IDs.",
