@@ -31,7 +31,8 @@ export async function evolveProfileAction(
   if (!profile) {
     return {
       status: "error",
-      message: "Generate your first Human Potential Profile before evolving it.",
+      message:
+        "Generate your first Human Potential Profile before evolving it.",
     };
   }
 

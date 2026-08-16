@@ -4,23 +4,23 @@
 **Status:** implementation candidate; validation pending  
 **Last updated:** 2026-08-16
 
-| Stage | Status | Evidence |
-| --- | --- | --- |
-| 0 — Governance and architecture | Complete | Constitution, boundaries, ADRs and ledger |
-| 1 — Engineering foundation | Complete | Runtime, design system, config, logging, tests and CI |
-| 2 — Identity and access | Complete | Auth, private identity, consent, recovery and RLS |
-| 3 — Discovery | Complete | Fifteen-question evidence, review and persistence |
-| 4 — Human Potential Profile | Complete | Private synthesis, feedback, provenance and immutable versions |
-| 5 — Practical Mission | Complete | Generation, refinement, activation and recovery |
-| 6 — Practical Builder Journey | Complete | Ordered milestones, activation and recovery |
-| 7 — HQLS Quest Execution | Complete | Action, evidence, reflection, XP and progression |
-| 8 — Builder Project MVP | Complete | Quest-linked Project and proof-backed milestones |
-| 9 — Selective Project Portfolio | Complete | Consent, safe projection, publish, withdraw and republish |
-| 10 — MVP Launch Readiness | Complete | Production-aligned application shell, OAuth hardening and release operations |
-| 11 — Builder Connect + Growth Cycles | Complete | Adult opt-in discovery, connection lifecycle, safety controls, explicit contact sharing and renewable Journeys |
-| 12 — Economic Pathways MVP | Complete | Possible Paths, value/income exploration, explicit path selection and First Value Challenge |
+| Stage                                   | Status                    | Evidence                                                                                                                                |
+| --------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 — Governance and architecture         | Complete                  | Constitution, boundaries, ADRs and ledger                                                                                               |
+| 1 — Engineering foundation              | Complete                  | Runtime, design system, config, logging, tests and CI                                                                                   |
+| 2 — Identity and access                 | Complete                  | Auth, private identity, consent, recovery and RLS                                                                                       |
+| 3 — Discovery                           | Complete                  | Fifteen-question evidence, review and persistence                                                                                       |
+| 4 — Human Potential Profile             | Complete                  | Private synthesis, feedback, provenance and immutable versions                                                                          |
+| 5 — Practical Mission                   | Complete                  | Generation, refinement, activation and recovery                                                                                         |
+| 6 — Practical Builder Journey           | Complete                  | Ordered milestones, activation and recovery                                                                                             |
+| 7 — HQLS Quest Execution                | Complete                  | Action, evidence, reflection, XP and progression                                                                                        |
+| 8 — Builder Project MVP                 | Complete                  | Quest-linked Project and proof-backed milestones                                                                                        |
+| 9 — Selective Project Portfolio         | Complete                  | Consent, safe projection, publish, withdraw and republish                                                                               |
+| 10 — MVP Launch Readiness               | Complete                  | Production-aligned application shell, OAuth hardening and release operations                                                            |
+| 11 — Builder Connect + Growth Cycles    | Complete                  | Adult opt-in discovery, connection lifecycle, safety controls, explicit contact sharing and renewable Journeys                          |
+| 12 — Economic Pathways MVP              | Complete                  | Possible Paths, value/income exploration, explicit path selection and First Value Challenge                                             |
 | 13 — KHP-OS Institutional Cohort Bridge | Complete on PipuPath side | Consent-based cohort membership and privacy-thresholded aggregate bridge; cross-product operational pairing remains an integration gate |
-| 14 — Living Human Potential Profile | Implementation candidate | Completed Builder work + explicit feedback become private longitudinal evidence; deliberate profile evolution |
+| 14 — Living Human Potential Profile     | Implementation candidate  | Completed Builder work + explicit feedback become private longitudinal evidence; deliberate profile evolution                           |
 
 ## Stage 11 delivered
 

@@ -44,9 +44,7 @@ describe("Stage 14 Living Human Potential Profile structure", () => {
     expect(livingProfileMigration).toContain(
       "stage14_builder_project_evidence_on_complete",
     );
-    expect(livingProfileMigration).toContain(
-      "and new.status = 'completed'",
-    );
+    expect(livingProfileMigration).toContain("and new.status = 'completed'");
     expect(livingProfileMigration).toContain(
       "stage14_profile_feedback_evidence_on_insert",
     );

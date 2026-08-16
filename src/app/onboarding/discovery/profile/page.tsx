@@ -111,9 +111,9 @@ export default async function HumanPotentialProfilePage() {
                 {profileEvolution.completedProjects} completed Builder Project
                 {profileEvolution.completedProjects === 1 ? "" : "s"} and{" "}
                 {profileEvolution.profileFeedback} new profile feedback item
-                {profileEvolution.profileFeedback === 1 ? "" : "s"}. You can
-                ask PipuPath to reconnect that evidence with your original
-                Discovery answers. The result remains private and provisional.
+                {profileEvolution.profileFeedback === 1 ? "" : "s"}. You can ask
+                PipuPath to reconnect that evidence with your original Discovery
+                answers. The result remains private and provisional.
               </p>
               <div className="mt-6">
                 <ProfileEvolutionForm />
