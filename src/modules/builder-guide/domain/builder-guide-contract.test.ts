@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   validateBuilderGuideOutput,
   type BuilderGuideContext,
+  type BuilderGuideOutput,
 } from "./builder-guide-contract";
 
 const claimId = "11111111-1111-4111-8111-111111111111";
@@ -51,7 +52,7 @@ function context(overrides: Partial<BuilderGuideContext> = {}): BuilderGuideCont
   };
 }
 
-function output() {
+function output(): BuilderGuideOutput {
   return {
     schemaVersion: "builder-guide-v1",
     intent: "next_move",
