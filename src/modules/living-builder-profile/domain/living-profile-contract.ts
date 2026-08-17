@@ -16,12 +16,9 @@ export type BuilderCapabilityFeedbackType =
   (typeof builderCapabilityFeedbackTypes)[number];
 
 export type BuilderCapabilityEvidenceSource =
-  | "quest"
-  | "project"
-  | "collaboration";
+  "quest" | "project" | "collaboration";
 export type BuilderCapabilityVerification =
-  | "pipupath_action"
-  | "mutual_collaboration";
+  "pipupath_action" | "mutual_collaboration";
 
 export function deriveCapabilityLevel(
   totalStrength: number,

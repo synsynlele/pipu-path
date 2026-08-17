@@ -38,7 +38,15 @@ describe("ProductTelemetry", () => {
     navigation.pathname = pathname;
     render(<ProductTelemetry />);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
-    expect(fetchMock).toHaveBeenCalledWith("/api/product-events/feature-view", expect.objectContaining({ method: "POST", credentials: "same-origin", body: JSON.stringify({ featureKey }), keepalive: true }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/product-events/feature-view",
+      expect.objectContaining({
+        method: "POST",
+        credentials: "same-origin",
+        body: JSON.stringify({ featureKey }),
+        keepalive: true,
+      }),
+    );
   });
 
   it("does not record public or unrelated routes", async () => {
@@ -60,7 +68,10 @@ describe("ProductTelemetry", () => {
 
   it("records again after the path marker is stale", async () => {
     navigation.pathname = "/app";
-    sessionStorage.setItem("pipupath:feature-view:/app", String(Date.now() - 60_001));
+    sessionStorage.setItem(
+      "pipupath:feature-view:/app",
+      String(Date.now() - 60_001),
+    );
     render(<ProductTelemetry />);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
   });
@@ -69,6 +80,10 @@ describe("ProductTelemetry", () => {
     navigation.pathname = "/connect";
     fetchMock.mockRejectedValueOnce(new Error("offline"));
     render(<ProductTelemetry />);
-    await waitFor(() => expect(sessionStorage.getItem("pipupath:feature-view:/connect")).toBeNull());
+    await waitFor(() =>
+      expect(
+        sessionStorage.getItem("pipupath:feature-view:/connect"),
+      ).toBeNull(),
+    );
   });
 });

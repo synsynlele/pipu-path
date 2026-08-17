@@ -23,7 +23,12 @@ export async function recordLivingBuilderCapabilityFeedbackAction(
   const feedbackType = String(formData.get("feedback_type") ?? "");
   const contextNote = String(formData.get("context_note") ?? "").trim();
 
-  if (!claimId || !builderCapabilityFeedbackTypes.includes(feedbackType as BuilderCapabilityFeedbackType)) {
+  if (
+    !claimId ||
+    !builderCapabilityFeedbackTypes.includes(
+      feedbackType as BuilderCapabilityFeedbackType,
+    )
+  ) {
     throw new Error("BUILDER_PROFILE_FEEDBACK_INVALID");
   }
 
@@ -32,6 +37,7 @@ export async function recordLivingBuilderCapabilityFeedbackAction(
     feedbackType as BuilderCapabilityFeedbackType,
     contextNote || null,
   );
-  if (error) throw new Error(error.message ?? "BUILDER_PROFILE_FEEDBACK_FAILED");
+  if (error)
+    throw new Error(error.message ?? "BUILDER_PROFILE_FEEDBACK_FAILED");
   revalidatePath("/profile");
 }
