@@ -1,0 +1,37 @@
+name: Stage18 browser proof
+
+on:
+  push:
+    branches:
+      - preview/stage18-proof-exact
+    paths:
+      - .github/workflows/stage18-browser-proof.yml
+
+permissions:
+  contents: read
+
+jobs:
+  browser-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/e2e/stage18-opportunity-mvp.spec.ts --project=chromium
+        env:
+          E2E_BASE_URL: https://pipu-path-n9thpfkyq-copyartint-2860s-projects.vercel.app
+          E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
+          E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
+          E2E_STAGE18_OPPORTUNITY_TITLE: Stage18 Browser Proof Opportunity
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage18-browser-proof-traces
+          path: test-results
+          if-no-files-found: ignore
