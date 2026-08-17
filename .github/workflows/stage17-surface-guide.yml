@@ -1,0 +1,64 @@
+name: Stage 17 surface Builder Guide
+
+on:
+  push:
+    branches:
+      - agent/stage-17-ai-personal-builder-guide
+    paths:
+      - ".github/workflows/stage17-surface-guide.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-17-ai-personal-builder-guide
+      - name: Add Guide entry points
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          home_path = Path("src/app/app/page.tsx")
+          home = home_path.read_text()
+          home = home.replace("xl:grid-cols-5", "xl:grid-cols-6")
+          connect = '''          <StatusCard
+            label="Connect"
+            title="Builder Network"
+            detail="Discover opt-in adult Builders, exchange requests and share contact details only by explicit consent."
+            href="/connect"
+          />'''
+          guide = connect + '''
+          <StatusCard
+            label="Builder Guide"
+            title="Ask what matters next"
+            detail="Get private guidance grounded in your Living Builder Profile and current development evidence."
+            href="/guide"
+          />'''
+          if connect not in home:
+              raise SystemExit("Home Connect card anchor not found")
+          home_path.write_text(home.replace(connect, guide, 1))
+
+          profile_path = Path("src/app/profile/page.tsx")
+          profile = profile_path.read_text()
+          anchor = '''                View Discovery baseline
+              </ButtonLink>'''
+          addition = anchor + '''
+              <ButtonLink href="/guide" variant="secondary">
+                Open Builder Guide
+              </ButtonLink>'''
+          if anchor not in profile:
+              raise SystemExit("Profile baseline button anchor not found")
+          profile_path.write_text(profile.replace(anchor, addition, 1))
+          PY
+          npx prettier --write src/app/app/page.tsx src/app/profile/page.tsx
+          rm .github/workflows/stage17-surface-guide.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/app/app/page.tsx src/app/profile/page.tsx .github/workflows/stage17-surface-guide.yml
+          git commit -m "feat(stage17): surface Personal Builder Guide"
+          git push origin HEAD:agent/stage-17-ai-personal-builder-guide
