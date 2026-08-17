@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 17 — AI Personal Builder Guide
 
-**Stage status:** RELEASE CANDIDATE — ALL PRE-MERGE GATES VERIFIED
+**Stage status:** RELEASE CANDIDATE — STAGING + AUTHENTICATED PREVIEW VERIFIED; EXACT FINAL-HEAD VERCEL GATE QUOTA-BLOCKED
 
 **Released product stages:** Stage 0 through Stage 16
 
@@ -12,7 +12,7 @@
 
 **Review surface:** GitHub pull request #30
 
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 16 is live. Stage 17 migration `stage_17_ai_personal_builder_guide` is applied under Supabase registry version `20260817192833` from repository source migration `20260817200000_stage_17_ai_personal_builder_guide.sql`. Database security/persistence checks, authenticated Preview proof, repository validation and matching Vercel candidate checks have passed.
+**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 16 is live. Stage 17 migration `stage_17_ai_personal_builder_guide` is applied under Supabase registry version `20260817192833` from repository source migration `20260817200000_stage_17_ai_personal_builder_guide.sql`. Database security/persistence checks, repository validation and authenticated Preview proof have passed. A cleaned Stage 17 candidate received a successful matching Vercel check, but the subsequent documentation-only final head is currently blocked by Vercel's Free-plan daily deployment limit.
 
 **Last updated:** 2026-08-17
 
@@ -53,7 +53,7 @@ The candidate adds:
 - A controlled persistence lifecycle check passed and its verification rows were removed.
 - A real authenticated Preview request persisted OpenAI-backed `gpt-5-mini` guidance with prompt version `stage17.v1`.
 - Preview run `32061593484`, job `95483882748`, passed 2/2 Playwright checks covering anonymous protection and authenticated bounded guidance rendering, next action, uncertainty, feedback controls and exclusion of raw private field names.
-- Cleanup candidate `42792fe25bbf8326a733783eb2d7514a1eaa5dfc` received a successful matching Vercel deployment check after the earlier account quota limit cleared.
+- Cleanup candidate `42792fe25bbf8326a733783eb2d7514a1eaa5dfc` received a successful matching Vercel deployment check. The next documentation-only head was then rejected by Vercel's daily Free-plan deployment quota rather than by an application build failure.
 - The permanent Stage 17 E2E regression spec remains in the repository; the one-time Preview workflow is removed after proof.
 
 ## Stage 17 privacy boundary
@@ -70,8 +70,9 @@ Stage 17 does not add unrestricted chat, psychological diagnosis, therapy, mento
 
 Stage 17 must not be called released until:
 
-1. PR #30 is merged intentionally;
-2. merged-main CI passes; and
-3. the production Vercel deployment is confirmed healthy.
+1. the exact final PR head receives a successful matching Vercel deployment check after the daily limit clears;
+2. PR #30 is merged intentionally;
+3. merged-main CI passes; and
+4. the production Vercel deployment is confirmed healthy.
 
-All implementation, database, authenticated Preview and pre-merge deployment gates have passed. Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
+The current Vercel blocker is `api-deployments-free-per-day`, not a Stage 17 application-build failure. Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
