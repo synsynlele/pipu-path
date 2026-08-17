@@ -1,0 +1,32 @@
+name: Stage 17 Next docs inspection
+
+on:
+  push:
+    branches:
+      - agent/stage-17-ai-personal-builder-guide
+    paths:
+      - ".github/workflows/stage17-next-docs-inspection.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Read relevant Next.js 16.2.11 guides
+        run: |
+          echo '--- Relevant docs ---'
+          find node_modules/next/dist/docs -type f \( -iname '*server*action*' -o -iname '*form*' -o -iname '*route*handler*' -o -iname '*server*component*' \) | sort | head -40
+          echo '--- Server Actions / Functions guide excerpts ---'
+          for file in $(find node_modules/next/dist/docs -type f | grep -E '(server-actions|server-functions|forms|route-handlers)' | head -8); do
+            echo "### $file"
+            sed -n '1,220p' "$file"
+          done
