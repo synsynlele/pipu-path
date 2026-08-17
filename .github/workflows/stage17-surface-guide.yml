@@ -22,38 +22,40 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           home_path = Path("src/app/app/page.tsx")
-          home = home_path.read_text()
-          home = home.replace("xl:grid-cols-5", "xl:grid-cols-6")
-          connect = '''          <StatusCard
-            label="Connect"
-            title="Builder Network"
-            detail="Discover opt-in adult Builders, exchange requests and share contact details only by explicit consent."
-            href="/connect"
-          />'''
-          guide = connect + '''
+          home = home_path.read_text().replace("xl:grid-cols-5", "xl:grid-cols-6")
+          pattern = r'(\s*<StatusCard\s+label="Connect"[\s\S]*?href="/connect"\s*/>)'
+          match = re.search(pattern, home)
+          if not match:
+              raise SystemExit("Home Connect card anchor not found")
+          guide = '''
           <StatusCard
             label="Builder Guide"
             title="Ask what matters next"
             detail="Get private guidance grounded in your Living Builder Profile and current development evidence."
             href="/guide"
           />'''
-          if connect not in home:
-              raise SystemExit("Home Connect card anchor not found")
-          home_path.write_text(home.replace(connect, guide, 1))
+          home = home[:match.end()] + guide + home[match.end():]
+          home_path.write_text(home)
 
           profile_path = Path("src/app/profile/page.tsx")
           profile = profile_path.read_text()
-          anchor = '''                View Discovery baseline
-              </ButtonLink>'''
-          addition = anchor + '''
+          anchor = "View Discovery baseline"
+          position = profile.find(anchor)
+          if position < 0:
+              raise SystemExit("Profile baseline button anchor not found")
+          close = profile.find("</ButtonLink>", position)
+          if close < 0:
+              raise SystemExit("Profile baseline button close not found")
+          close += len("</ButtonLink>")
+          addition = '''
               <ButtonLink href="/guide" variant="secondary">
                 Open Builder Guide
               </ButtonLink>'''
-          if anchor not in profile:
-              raise SystemExit("Profile baseline button anchor not found")
-          profile_path.write_text(profile.replace(anchor, addition, 1))
+          profile = profile[:close] + addition + profile[close:]
+          profile_path.write_text(profile)
           PY
           npx prettier --write src/app/app/page.tsx src/app/profile/page.tsx
           rm .github/workflows/stage17-surface-guide.yml
