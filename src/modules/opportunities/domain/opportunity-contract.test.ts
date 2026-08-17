@@ -29,8 +29,8 @@ function opportunity(
     deliveryMode: "hybrid",
     pathwayTags: ["community", "design"],
     capabilityTags: ["project execution", "communication"],
-    officialUrl: "https://example.org/challenge",
     deadlineDate: "2026-10-30",
+    isActive: true,
     state: {
       savedAt: null,
       appliedAt: null,
@@ -65,6 +65,10 @@ describe("Stage 18 Opportunity matching", () => {
     expect(match?.matchedPathwayTags).toContain("design");
     expect(match?.matchedCapabilityTags).toContain("project execution");
     expect(match?.reasons.join(" ")).toMatch(/selected path/i);
+  });
+
+  it("does not recommend an inactive opportunity kept only for outcome tracking", () => {
+    expect(matchOpportunity(context(), opportunity({ isActive: false }))).toBeNull();
   });
 
   it("does not surface a definite country mismatch", () => {
