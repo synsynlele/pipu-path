@@ -22,7 +22,7 @@
 | 13 — KHP-OS Institutional Cohort Bridge | Database + PipuPath boundary verified | Privacy-thresholded cohort bridge live in PipuPath; final cross-product KHP-OS pairing remains outstanding                                       |
 | 14 — Retention Intelligence Foundation  | Release candidate                     | Mission Control, private feature telemetry, admin authorization/audit, aggregate analytics, staging verification and authenticated Preview proof |
 
-## Stage 14 implementation candidate
+## Stage 14 release candidate
 
 The Stage 14 branch adds one product-intelligence boundary rather than a second analytics stack.
 
