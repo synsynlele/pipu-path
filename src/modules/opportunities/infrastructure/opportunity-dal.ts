@@ -67,11 +67,15 @@ export async function getOpportunityWorkspace() {
       return match ? [match] : [];
     }),
   );
+  const trackedApplications = parsedCatalog.data.filter(
+    (opportunity) => !opportunity.isActive && opportunity.state.appliedAt,
+  );
 
   return {
     context,
     selectedPathName: pathway?.selectedPath?.pathName ?? null,
     matches,
+    trackedApplications,
   };
 }
 
