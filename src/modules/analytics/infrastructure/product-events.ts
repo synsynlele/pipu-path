@@ -93,7 +93,7 @@ export async function recordCurrentUserFeatureView(
   return recordProductEventForUser(
     userId,
     "feature_viewed",
-    { telemetryVersion: "stage17-v1" },
+    { telemetryVersion: "stage14-v1" },
     featureKey,
   );
 }
