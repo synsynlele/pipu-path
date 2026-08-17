@@ -24,6 +24,8 @@ export default defineConfig({
         "src/components/shells/app-shell.tsx",
         "src/components/shells/auth-shell.tsx",
         "src/lib/supabase/**",
+        "src/modules/admin/infrastructure/**",
+        "src/modules/analytics/infrastructure/**",
         "src/modules/identity/application/auth-actions.ts",
         "src/modules/identity/application/checkpoint-actions.ts",
         "src/modules/identity/application/form-state.ts",
