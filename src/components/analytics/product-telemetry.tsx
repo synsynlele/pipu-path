@@ -4,7 +4,14 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 type FeatureKey =
-  "home" | "profile" | "journey" | "build" | "portfolio" | "connect";
+  | "home"
+  | "profile"
+  | "journey"
+  | "build"
+  | "portfolio"
+  | "connect"
+  | "guide"
+  | "opportunities";
 
 function featureForPath(pathname: string): FeatureKey | null {
   if (pathname === "/app") return "home";
@@ -23,6 +30,8 @@ function featureForPath(pathname: string): FeatureKey | null {
     return "build";
   if (pathname.startsWith("/portfolio")) return "portfolio";
   if (pathname.startsWith("/connect")) return "connect";
+  if (pathname.startsWith("/guide")) return "guide";
+  if (pathname.startsWith("/opportunities")) return "opportunities";
   return null;
 }
 
