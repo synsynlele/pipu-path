@@ -30,11 +30,17 @@ test("authenticated non-admin cannot enter Opportunity Supply", async ({
   page,
 }) => {
   await signIn(page);
-  const response = await page.goto("/admin/opportunities");
-  expect(response?.status()).toBe(404);
+  await page.goto("/admin/opportunities");
+  await expect(
+    page.getByRole("heading", { name: "This path is not available." }),
+  ).toBeVisible();
   await expect(
     page.getByText("Mission Control · Opportunity Supply", { exact: true }),
   ).toHaveCount(0);
+  await expect(
+    page.getByText("Create vetted supply candidate", { exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByText(proofTitle, { exact: true })).toHaveCount(0);
 });
 
 test("authenticated Builder can evaluate and self-track a vetted opportunity", async ({
