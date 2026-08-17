@@ -18,6 +18,18 @@ async function signIn(page: Page) {
     .not.toBe("/login");
 }
 
+async function ensureEvidenceSnapshot(page: Page) {
+  const buildButton = page.getByRole("button", { name: "Build from my evidence" });
+  if (await buildButton.isVisible().catch(() => false)) {
+    await buildButton.click();
+  }
+  await expect(
+    page.getByRole("heading", {
+      name: "What your completed work currently supports.",
+    }),
+  ).toBeVisible({ timeout: 15_000 });
+}
+
 test("anonymous users cannot enter the Living Builder Profile", async ({ page }) => {
   await page.goto("/profile");
   await expect(page).toHaveURL(/\/login/);
@@ -38,10 +50,11 @@ test("authenticated Builder sees a private evidence-backed Living Builder Profil
   await expect(
     page.getByRole("link", { name: "View Discovery baseline" }),
   ).toHaveAttribute("href", "/onboarding/discovery/profile");
+
+  await ensureEvidenceSnapshot(page);
   await expect(
-    page.getByRole("heading", { name: "What your completed work currently supports." }),
+    page.getByText("Project execution", { exact: true }).first(),
   ).toBeVisible();
-  await expect(page.getByText("Project execution", { exact: true }).first()).toBeVisible();
   await expect(
     page.getByText(/PipuPath action evidence/i).first(),
   ).toBeVisible();
@@ -52,11 +65,16 @@ test("Living Builder Profile exposes safe evidence links without raw private nar
 }) => {
   await signIn(page);
   await page.goto("/profile");
+  await ensureEvidenceSnapshot(page);
 
   const projectEvidence = page.locator('a[href^="/projects/"]').first();
   await expect(projectEvidence).toBeVisible();
-  await expect(page.getByRole("button", { name: "Accurate" }).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: "Needs context" }).first()).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Accurate" }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Needs context" }).first(),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Not representative" }).first(),
   ).toBeVisible();
