@@ -59,6 +59,26 @@ The dashboard labels repeat usage truthfully. It does not call a metric "retenti
 - Private narrative fields are excluded by design and covered by structural tests.
 - Admin authorization failures do not reveal the administrator registry.
 
+## Authorised staging database verification
+
+The Stage 14 migration is applied to the authorised PipuPath staging project as
+`20260817162335_stage_14_retention_intelligence_foundation`.
+
+Verified on 17 August 2026:
+
+- `platform_admins`, `admin_audit_events` and `product_events` have RLS enabled;
+- `anon` and `authenticated` have no direct table privileges on the Stage 14
+  administration or telemetry boundaries;
+- both Stage 14 aggregate functions are executable by `service_role` only;
+- the dashboard aggregate returned coherent counts across the existing Builder
+  funnel without selecting private narrative fields; and
+- the initial owner administrator membership was bootstrapped through the
+  server-owned registry and recorded in the administrator audit boundary.
+
+Generated Supabase types confirm the new tables, enums and aggregate RPCs are
+present in the live schema. Application CI and authenticated Preview verification
+remain release gates.
+
 ## Deferred
 
 Stage 14 does not yet add:
