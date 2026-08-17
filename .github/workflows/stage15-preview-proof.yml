@@ -1,0 +1,49 @@
+name: Stage 15 authenticated Preview proof
+
+on:
+  push:
+    branches:
+      - agent/stage-15-builder-collaboration-mvp
+    paths:
+      - ".github/workflows/stage15-preview-proof.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  preview-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      E2E_BASE_URL: https://pipu-path-lo39d5eb9-copyartint-2860s-projects.vercel.app
+      E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
+      E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-15-builder-collaboration-mvp
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Wait for Stage 15 Preview
+        run: |
+          for attempt in {1..36}; do
+            if curl --fail --silent --show-error "$E2E_BASE_URL/api/health" >/dev/null; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Stage 15 Preview did not become healthy in time." >&2
+          exit 1
+      - name: Verify Stage 15 Collaboration
+        run: npx playwright test tests/e2e/stage15-collaboration.spec.ts --project=chromium
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage15-preview-traces
+          path: test-results
+          if-no-files-found: ignore
