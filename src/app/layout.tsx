@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ProductTelemetry } from "@/components/analytics/product-telemetry";
 
 import "./globals.css";
 
@@ -41,7 +42,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ProductTelemetry />
+        {children}
+      </body>
     </html>
   );
 }
