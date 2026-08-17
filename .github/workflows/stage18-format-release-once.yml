@@ -1,0 +1,36 @@
+name: Stage18 release formatter once
+
+on:
+  push:
+    branches:
+      - agent/stage-18-opportunity-mvp
+    paths:
+      - .github/workflows/stage18-format-release-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-18-opportunity-mvp-release
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write PROJECT_STATE.md docs/implementation/status.md
+      - name: Commit formatting only if needed
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add PROJECT_STATE.md docs/implementation/status.md
+          git commit -m "style(stage18): format release documentation"
+          git push origin HEAD:agent/stage-18-opportunity-mvp-release
