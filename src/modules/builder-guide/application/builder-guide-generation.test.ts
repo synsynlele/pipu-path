@@ -109,7 +109,13 @@ const context: BuilderGuideContext = {
     project: null,
     nextStage: "quests",
   },
-  availableDestinations: ["profile", "journey", "current_quest", "build", "connect"],
+  availableDestinations: [
+    "profile",
+    "journey",
+    "current_quest",
+    "build",
+    "connect",
+  ],
 };
 
 const validOutput = buildEvidenceBasedBuilderGuide(context, "next_move");
@@ -267,7 +273,16 @@ describe("Stage 17 Builder Guide generation", () => {
   });
 
   it("falls back when provider output cannot be grounded in current evidence", async () => {
-    mocks.generate.mockResolvedValue({ ...validOutput, evidenceObservations: [{ claimId: "77777777-7777-4777-8777-777777777777", observation: "Unknown evidence should be rejected and replaced safely." }] });
+    mocks.generate.mockResolvedValue({
+      ...validOutput,
+      evidenceObservations: [
+        {
+          claimId: "77777777-7777-4777-8777-777777777777",
+          observation:
+            "Unknown evidence should be rejected and replaced safely.",
+        },
+      ],
+    });
     await expect(generateBuilderGuide("next_move")).resolves.toMatchObject({
       ok: true,
       runId: "run-1",
