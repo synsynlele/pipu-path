@@ -1,0 +1,112 @@
+import { describe, expect, it } from "vitest";
+import type { BuilderGuideContext } from "../domain/builder-guide-contract";
+import { buildEvidenceBasedBuilderGuide } from "./builder-guide-fallback";
+
+const context: BuilderGuideContext = {
+  preferredName: "Builder",
+  ageBand: "18_24",
+  isMinor: false,
+  safeguardingReviewRequired: false,
+  baseline: {
+    id: "11111111-1111-4111-8111-111111111111",
+    summary: "A practical Builder exploring problems through completed action.",
+  },
+  livingProfile: {
+    id: "22222222-2222-4222-8222-222222222222",
+    version: 3,
+    capabilities: [
+      {
+        id: "33333333-3333-4333-8333-333333333333",
+        label: "Project execution",
+        level: "demonstrated",
+        evidenceCount: 2,
+        totalStrength: 4,
+        feedbackType: null,
+        evidence: [
+          {
+            sourceTitle: "Useful project",
+            summary: "Completed project proof is recorded.",
+            href: "/projects/44444444-4444-4444-8444-444444444444",
+          },
+        ],
+      },
+      {
+        id: "55555555-5555-4555-8555-555555555555",
+        label: "Communication",
+        level: "practicing",
+        evidenceCount: 1,
+        totalStrength: 1,
+        feedbackType: null,
+        evidence: [],
+      },
+    ],
+  },
+  selectedPath: {
+    recommendationId: "66666666-6666-4666-8666-666666666666",
+    key: "community_builder",
+    name: "Community Builder",
+    whyItFits: "Your recorded evidence points to practical community problem solving.",
+    evidenceNeeded:
+      "Complete another small project that creates value for a real group of people.",
+  },
+  current: {
+    mission: {
+      id: "77777777-7777-4777-8777-777777777777",
+      title: "Improve a local experience",
+      status: "active",
+    },
+    journey: {
+      id: "88888888-8888-4888-8888-888888888888",
+      title: "30-Day Builder Journey",
+      status: "active",
+    },
+    milestone: {
+      id: "99999999-9999-4999-8999-999999999999",
+      title: "Practice",
+      status: "active",
+    },
+    quest: {
+      id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      title: "Interview three users",
+      status: "active",
+    },
+    project: null,
+    nextStage: "quests",
+  },
+  availableDestinations: [
+    "profile",
+    "journey",
+    "current_quest",
+    "build",
+    "connect",
+  ],
+};
+
+describe("Stage 17 evidence fallback", () => {
+  it.each([
+    "next_move",
+    "improvement",
+    "missing_evidence",
+    "weekly_focus",
+  ] as const)("returns bounded %s guidance", (intent) => {
+    const result = buildEvidenceBasedBuilderGuide(context, intent);
+    expect(result.schemaVersion).toBe("builder-guide-v1");
+    expect(result.intent).toBe(intent);
+    expect(result.uncertainty.length).toBeGreaterThan(10);
+    expect(context.availableDestinations).toContain(
+      result.nextAction.destination,
+    );
+  });
+
+  it("prioritises the active Quest for the next action", () => {
+    const result = buildEvidenceBasedBuilderGuide(context, "next_move");
+    expect(result.nextAction.destination).toBe("current_quest");
+    expect(result.nextAction.instruction).toContain("Interview three users");
+  });
+
+  it("treats weak capability evidence as something to test, not an absent skill", () => {
+    const result = buildEvidenceBasedBuilderGuide(context, "missing_evidence");
+    expect(result.title).toContain("Communication");
+    expect(result.uncertainty).toMatch(/does not mean the capability is absent/i);
+  });
+});
