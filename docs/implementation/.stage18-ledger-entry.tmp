@@ -1,0 +1,41 @@
+
+## 2026-08-17 — Stage 18 Curated Opportunity MVP verified candidate
+
+### Implemented
+
+- Added curated administrator-controlled opportunity supply with separate review
+  and publication state.
+- Added deterministic Strong Match / Possible Match / Eligibility Check guidance
+  from known Builder age/country, selected Economic Pathway and Living Builder
+  Profile capability labels without AI scoring or inferred missing eligibility.
+- Added private save, self-reported application and self-reported outcome state.
+- Kept official URLs behind an authenticated tracked redirect and out of the
+  Builder catalog payload.
+- Kept primary navigation unchanged and reused the central product-event stream.
+- Added database-authoritative unsafe-copy, country-code and tag validation.
+
+### Verification evidence
+
+- Full repository validation passed including formatting, zero-warning lint,
+  strict TypeScript, 233 unit tests, integration checks, coverage thresholds and
+  production build.
+- Stage 18 migrations plus the append-only review-enum correction are live on
+  authorised Supabase staging `kvjcswnmhwegpakbtvlh`.
+- RLS, browser table-grant denial, authenticated RPC grants and admin audit
+  behavior were verified directly.
+- Rollback lifecycle proof passed unsafe-copy rejection, normalisation, create →
+  review → publish → save → apply → outcome, material-edit review reset, closed
+  application outcome continuity and cleanup.
+- One deliberate Vercel Preview was built from a Git tree identical to the
+  verified Stage 18 application candidate.
+- Permanent Chromium browser proof passed 3/3: anonymous opportunity denial,
+  authenticated non-admin Opportunity Supply denial and authenticated Builder
+  evaluate/save/apply/self-reported-outcome flow.
+- Temporary browser fixture and cascading Builder state were deleted and zero
+  verification fixture rows remain.
+
+### Boundary
+
+Status: VERIFIED STACKED RELEASE CANDIDATE. Stage 18 is not released and must not
+merge before Stage 17 completes its release sequence. Automatic Vercel deployment
+remains disabled for the Stage 18 development branch.
