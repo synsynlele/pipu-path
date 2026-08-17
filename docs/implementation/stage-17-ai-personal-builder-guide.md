@@ -55,7 +55,7 @@ Guide recommendation bodies are not copied into general product telemetry. Telem
 
 ## Validation discipline
 
-Generation orchestration is covered with focused unit tests, while server-only persistence and provider adapters remain behind the same infrastructure boundaries used elsewhere in PipuPath and are verified through structural checks plus staging and Preview proof before release.
+Generation orchestration is covered with focused unit tests, and the deterministic fallback has explicit branch coverage for Quest, Project, Journey, Build and Profile destinations plus sparse-evidence behavior. Server-only persistence and provider adapters remain behind the same infrastructure boundaries used elsewhere in PipuPath and are verified through structural checks plus staging and Preview proof before release.
 
 ## Explicit non-goals
 
