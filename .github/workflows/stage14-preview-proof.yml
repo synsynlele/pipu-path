@@ -1,0 +1,49 @@
+name: Stage 14 authenticated preview proof
+
+on:
+  push:
+    branches:
+      - agent/stage-14-retention-intelligence-foundation
+    paths:
+      - ".github/workflows/stage14-preview-proof.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  preview-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      E2E_BASE_URL: https://pipu-path-git-agent-stage-14-r-a692c4-copyartint-2860s-projects.vercel.app
+      E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
+      E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-14-retention-intelligence-foundation
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Wait for the Stage 14 Preview
+        run: |
+          for attempt in {1..36}; do
+            if curl --fail --silent --show-error "$E2E_BASE_URL/api/health" >/dev/null; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Stage 14 Preview did not become healthy in time." >&2
+          exit 1
+      - name: Verify Stage 14 Mission Control and telemetry
+        run: npx playwright test tests/e2e/stage14-mission-control.spec.ts --project=chromium
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage14-preview-traces
+          path: test-results
+          if-no-files-found: ignore
