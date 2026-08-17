@@ -1,4 +1,4 @@
-name: Stage 17 surface Builder Guide
+name: Stage 17 finalise candidate formatting
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Add Guide entry points
+      - name: Surface and format Stage 17
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -31,41 +31,52 @@ jobs:
 
           home_path = Path("src/app/app/page.tsx")
           home = home_path.read_text().replace("xl:grid-cols-5", "xl:grid-cols-6")
-          pattern = r'(\s*<StatusCard\s+label="Connect"[\s\S]*?href="/connect"\s*/>)'
-          match = re.search(pattern, home)
-          if not match:
-              raise SystemExit("Home Connect card anchor not found")
-          guide = '''
+          if 'href="/guide"' not in home:
+              pattern = r'(\s*<StatusCard\s+label="Connect"[\s\S]*?href="/connect"\s*/>)'
+              match = re.search(pattern, home)
+              if not match:
+                  raise SystemExit("Home Connect card anchor not found")
+              guide = '''
           <StatusCard
             label="Builder Guide"
             title="Ask what matters next"
             detail="Get private guidance grounded in your Living Builder Profile and current development evidence."
             href="/guide"
           />'''
-          home = home[:match.end()] + guide + home[match.end():]
+              home = home[:match.end()] + guide + home[match.end():]
           home_path.write_text(home)
 
           profile_path = Path("src/app/profile/page.tsx")
           profile = profile_path.read_text()
-          anchor = "View Discovery baseline"
-          position = profile.find(anchor)
-          if position < 0:
-              raise SystemExit("Profile baseline button anchor not found")
-          close = profile.find("</ButtonLink>", position)
-          if close < 0:
-              raise SystemExit("Profile baseline button close not found")
-          close += len("</ButtonLink>")
-          addition = '''
+          if 'Open Builder Guide' not in profile:
+              anchor = "View Discovery baseline"
+              position = profile.find(anchor)
+              if position < 0:
+                  raise SystemExit("Profile baseline button anchor not found")
+              close = profile.find("</ButtonLink>", position)
+              if close < 0:
+                  raise SystemExit("Profile baseline button close not found")
+              close += len("</ButtonLink>")
+              addition = '''
               <ButtonLink href="/guide" variant="secondary">
                 Open Builder Guide
               </ButtonLink>'''
-          profile = profile[:close] + addition + profile[close:]
+              profile = profile[:close] + addition + profile[close:]
           profile_path.write_text(profile)
           PY
-          npx prettier --write src/app/app/page.tsx src/app/profile/page.tsx
+          npx prettier --write \
+            src/app/app/page.tsx \
+            src/app/profile/page.tsx \
+            src/app/guide/page.tsx \
+            src/modules/builder-guide/application/builder-guide-actions.ts \
+            src/modules/builder-guide/application/builder-guide-fallback.test.ts \
+            src/modules/builder-guide/application/builder-guide-fallback.ts \
+            src/modules/builder-guide/domain/builder-guide-contract.test.ts \
+            src/modules/builder-guide/infrastructure/builder-guide-dal.ts \
+            tests/integration/stage-17-ai-personal-builder-guide.test.ts
           rm .github/workflows/stage17-surface-guide.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/app/app/page.tsx src/app/profile/page.tsx .github/workflows/stage17-surface-guide.yml
-          git commit -m "feat(stage17): surface Personal Builder Guide"
+          git add -A
+          git commit -m "feat(stage17): surface and format Personal Builder Guide"
           git push origin HEAD:agent/stage-17-ai-personal-builder-guide
