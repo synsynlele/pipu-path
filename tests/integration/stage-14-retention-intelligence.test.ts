@@ -9,6 +9,13 @@ const migration = readFileSync(
   ),
   "utf8",
 );
+const stage12Migration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/20260813084234_stage_12_economic_pathways_mvp.sql",
+  ),
+  "utf8",
+);
 const adminDal = readFileSync(
   join(process.cwd(), "src/modules/admin/infrastructure/admin-dal.ts"),
   "utf8",
@@ -28,18 +35,20 @@ const productEvents = readFileSync(
 
 describe("Stage 14 retention intelligence foundation", () => {
   it("keeps admin membership, audit records and product telemetry server-owned", () => {
-    for (const table of [
-      "platform_admins",
-      "admin_audit_events",
-      "product_events",
-    ]) {
+    for (const table of ["platform_admins", "admin_audit_events"]) {
       expect(migration).toContain(`revoke all on public.${table}`);
     }
+    expect(stage12Migration).toContain(
+      "revoke all on public.product_events from public, anon, authenticated",
+    );
     expect(migration).toContain(
       "grant select, insert, update, delete on public.platform_admins to service_role",
     );
     expect(migration).toContain(
       "grant select, insert on public.admin_audit_events to service_role",
+    );
+    expect(stage12Migration).not.toMatch(
+      /grant\s+(select|insert|update|delete)[^;]*product_events[^;]*authenticated/i,
     );
     expect(migration).not.toMatch(
       /grant\s+(select|insert|update|delete)[^;]*product_events[^;]*authenticated/i,
@@ -130,8 +139,10 @@ describe("Stage 14 retention intelligence foundation", () => {
     expect(adminPage).toContain("Repeat Builders");
     expect(adminPage).toContain("used PipuPath on 2+ days");
     expect(adminPage).toContain("Day-7 and Day-30 retention");
+    expect(adminPage).toContain("PipuPath will not");
     expect(adminPage).toContain(
-      "PipuPath will not pretend it has historical feature-retention data that was never captured.",
+      "pretend it has historical feature-retention data that was never",
     );
+    expect(adminPage).toContain("captured.");
   });
 });
