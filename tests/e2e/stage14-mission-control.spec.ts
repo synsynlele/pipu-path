@@ -41,7 +41,9 @@ test("authorised operator can read aggregate Mission Control without private nar
     page.getByText("PipuPath Mission Control", { exact: true }),
   ).toBeVisible();
   await expect(page.getByText("Total Builders", { exact: true })).toBeVisible();
-  await expect(page.getByText("Repeat Builders", { exact: true })).toBeVisible();
+  await expect(
+    page.locator("p").filter({ hasText: /^Repeat Builders$/ }),
+  ).toBeVisible();
   await expect(
     page.getByText("Developmental funnel", { exact: true }),
   ).toBeVisible();
