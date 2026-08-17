@@ -24,6 +24,18 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Repair lint-safe collaboration copy
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("src/app/connect/collaborations/[collaborationId]/page.tsx")
+          text = path.read_text()
+          text = text.replace(
+              "either Builder's private development data.",
+              "private development data belonging to either Builder.",
+          )
+          path.write_text(text)
+          PY
       - run: npm run format
       - run: npm run validate
       - name: Commit validated formatting and remove workflow
