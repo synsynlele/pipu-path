@@ -50,7 +50,7 @@ export async function getOpportunityWorkspace() {
 
   const context: OpportunityMatchContext = {
     ageBand: profile.age_band,
-    isMinor: profile.is_minor,
+    isMinor: Boolean(profile.is_minor),
     countryCode: profile.country_code,
     selectedPathName: pathway?.selectedPath?.pathName ?? null,
     selectedPathSkills: pathway?.selectedPath?.skillsNeeded ?? [],
