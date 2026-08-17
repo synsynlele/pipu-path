@@ -1,7 +1,6 @@
 import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { getCurrentHumanPotentialProfile } from "@/modules/human-potential/infrastructure/profile-dal";
 import {
@@ -10,6 +9,12 @@ import {
   type EconomicPathwayContext,
   type PossiblePath,
 } from "../domain/economic-pathway-contract";
+
+export {
+  productEventNames,
+  recordProductEventForUser,
+  type ProductEventName,
+} from "@/modules/analytics/infrastructure/product-events";
 
 type QueryError = { message?: string } | null;
 type QueryResult = { data: unknown; error: QueryError };
@@ -113,29 +118,4 @@ export async function getCurrentEconomicPathwayState(
         ? row.generated_at
         : String(row.created_at),
   };
-}
-
-export const productEventNames = [
-  "possible_paths_generated",
-  "possible_paths_viewed",
-  "path_selected",
-  "path_changed",
-  "pathway_started",
-  "first_value_challenge_started",
-  "first_value_challenge_completed",
-] as const;
-export type ProductEventName = (typeof productEventNames)[number];
-
-export async function recordProductEventForUser(
-  userId: string,
-  eventName: ProductEventName,
-  metadata: Record<string, unknown> = {},
-) {
-  const service = asEconomicPathwayClient(createServiceRoleSupabaseClient());
-  const { error } = await service
-    .from("product_events")
-    .insert({ user_id: userId, event_name: eventName, metadata })
-    .select("id")
-    .single();
-  return !error;
 }
