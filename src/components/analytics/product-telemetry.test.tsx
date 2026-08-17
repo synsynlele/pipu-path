@@ -21,10 +21,7 @@ const featurePaths = [
 ] as const;
 
 describe("ProductTelemetry", () => {
-  const fetchMock = vi.fn<
-    Parameters<typeof fetch>,
-    ReturnType<typeof fetch>
-  >();
+  const fetchMock = vi.fn<Parameters<typeof fetch>, ReturnType<typeof fetch>>();
 
   beforeEach(() => {
     sessionStorage.clear();
