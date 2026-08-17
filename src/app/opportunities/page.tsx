@@ -81,7 +81,9 @@ function MatchCard({ match }: { match: OpportunityMatch }) {
           <dt className="text-muted text-xs font-semibold uppercase">
             Eligibility
           </dt>
-          <dd className="text-navy mt-2 leading-6">{item.eligibilitySummary}</dd>
+          <dd className="text-navy mt-2 leading-6">
+            {item.eligibilitySummary}
+          </dd>
         </div>
         <div className="border-border rounded-2xl border p-4">
           <dt className="text-muted text-xs font-semibold uppercase">
@@ -251,7 +253,9 @@ export default async function OpportunitiesPage({
 
       {errorMessage ? (
         <Surface className="mt-6 border-amber-500/40 p-5" role="alert">
-          <p className="font-semibold">That opportunity action did not finish.</p>
+          <p className="font-semibold">
+            That opportunity action did not finish.
+          </p>
           <p className="text-muted mt-2 text-sm">{errorMessage}</p>
         </Surface>
       ) : null}

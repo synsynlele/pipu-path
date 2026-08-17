@@ -72,7 +72,10 @@ export const opportunityCatalogItemSchema = z.object({
   deliveryMode: opportunityDeliveryModeSchema,
   pathwayTags: z.array(tagSchema).max(12),
   capabilityTags: z.array(tagSchema).max(12),
-  officialUrl: z.string().url().refine((value) => value.startsWith("https://")),
+  officialUrl: z
+    .string()
+    .url()
+    .refine((value) => value.startsWith("https://")),
   deadlineDate: dateSchema.nullable(),
   state: opportunityBuilderStateSchema,
 });
@@ -142,29 +145,24 @@ export const opportunityAdminInputSchema = z
       context.addIssue({
         code: "custom",
         path: ["countryCodes"],
-        message: "Country or region opportunities need at least one country code.",
+        message:
+          "Country or region opportunities need at least one country code.",
       });
     }
   });
 
-export type OpportunityCatalogItem = z.infer<typeof opportunityCatalogItemSchema>;
+export type OpportunityCatalogItem = z.infer<
+  typeof opportunityCatalogItemSchema
+>;
 export type OpportunityAdminInput = z.infer<typeof opportunityAdminInputSchema>;
 export type OpportunityAdminState = z.infer<typeof opportunityAdminStateSchema>;
 export type OpportunityOutcome = z.infer<typeof opportunityOutcomeSchema>;
 
 export type OpportunityMatchTier =
-  | "strong_match"
-  | "possible_match"
-  | "eligibility_check";
+  "strong_match" | "possible_match" | "eligibility_check";
 
 export type OpportunityMatchContext = {
-  ageBand:
-    | "under_13"
-    | "13_15"
-    | "16_17"
-    | "18_24"
-    | "25_plus"
-    | "unknown";
+  ageBand: "under_13" | "13_15" | "16_17" | "18_24" | "25_plus" | "unknown";
   isMinor: boolean;
   countryCode: string | null;
   selectedPathName: string | null;
@@ -341,7 +339,8 @@ export function matchOpportunity(
     );
   }
 
-  const hasEligibilityCheck = age.status === "check" || geography.status === "check";
+  const hasEligibilityCheck =
+    age.status === "check" || geography.status === "check";
   const hasDevelopmentMatch =
     matchedPathwayTags.length > 0 || matchedCapabilityTags.length > 0;
 

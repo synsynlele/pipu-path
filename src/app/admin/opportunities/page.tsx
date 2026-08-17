@@ -31,11 +31,19 @@ function readable(value: string) {
 
 function OpportunityForm({ item }: { item?: AdminOpportunity }) {
   return (
-    <form action={saveOpportunityAdminAction} className="grid gap-4 lg:grid-cols-2">
+    <form
+      action={saveOpportunityAdminAction}
+      className="grid gap-4 lg:grid-cols-2"
+    >
       {item ? <input type="hidden" name="id" value={item.id} /> : null}
       <label className="text-sm font-semibold">
         Title
-        <input className={inputClass} name="title" required defaultValue={item?.title ?? ""} />
+        <input
+          className={inputClass}
+          name="title"
+          required
+          defaultValue={item?.title ?? ""}
+        />
       </label>
       <label className="text-sm font-semibold">
         Provider
@@ -48,7 +56,12 @@ function OpportunityForm({ item }: { item?: AdminOpportunity }) {
       </label>
       <label className="text-sm font-semibold">
         Category
-        <select className={inputClass} name="category" required defaultValue={item?.category ?? "challenge"}>
+        <select
+          className={inputClass}
+          name="category"
+          required
+          defaultValue={item?.category ?? "challenge"}
+        >
           {opportunityCategories.map((category) => (
             <option key={category} value={category}>
               {readable(category)}
@@ -196,7 +209,9 @@ function OpportunityForm({ item }: { item?: AdminOpportunity }) {
         />
       </label>
       <div className="lg:col-span-2">
-        <Button type="submit">{item ? "Save changes for re-review" : "Create draft opportunity"}</Button>
+        <Button type="submit">
+          {item ? "Save changes for re-review" : "Create draft opportunity"}
+        </Button>
       </div>
     </form>
   );
@@ -218,46 +233,73 @@ export default async function AdminOpportunitiesPage({
   const error = typeof params.error === "string" ? params.error : null;
 
   return (
-    <main id="main-content" className="mx-auto max-w-7xl px-5 py-10 text-slate-100 sm:px-8 lg:px-10">
+    <main
+      id="main-content"
+      className="mx-auto max-w-7xl px-5 py-10 text-slate-100 sm:px-8 lg:px-10"
+    >
       <section className="rounded-[2rem] border border-white/10 bg-[#061027] p-6 sm:p-9">
         <p className="text-xs font-semibold tracking-[0.16em] text-amber-300 uppercase">
           Mission Control · Opportunity Supply
         </p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight">Curate real-world opportunities without opening an unvetted marketplace.</h1>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight">
+          Curate real-world opportunities without opening an unvetted
+          marketplace.
+        </h1>
         <p className="mt-4 max-w-4xl leading-7 text-slate-300">
-          Role: {workspace.role}. Review and publication are separate. Editing a reviewed item resets it to draft so changed eligibility, deadlines or URLs must be deliberately reviewed again.
+          Role: {workspace.role}. Review and publication are separate. Editing a
+          reviewed item resets it to draft so changed eligibility, deadlines or
+          URLs must be deliberately reviewed again.
         </p>
       </section>
 
       {error ? (
         <Surface className="mt-6 border-amber-500/40 p-5" role="alert">
-          <p className="font-semibold">The opportunity operation did not finish.</p>
-          <p className="text-muted mt-2 text-sm">Error code: {error.replaceAll("_", " ")}</p>
+          <p className="font-semibold">
+            The opportunity operation did not finish.
+          </p>
+          <p className="text-muted mt-2 text-sm">
+            Error code: {error.replaceAll("_", " ")}
+          </p>
         </Surface>
       ) : null}
 
       {canEdit ? (
         <Surface className="mt-8 p-6 sm:p-8">
-          <h2 className="text-navy text-2xl font-semibold">Create vetted supply candidate</h2>
+          <h2 className="text-navy text-2xl font-semibold">
+            Create vetted supply candidate
+          </h2>
           <p className="text-muted mt-2 text-sm leading-6">
-            Creation produces a draft pending review. Publishing is impossible until an owner/operator explicitly approves it.
+            Creation produces a draft pending review. Publishing is impossible
+            until an owner/operator explicitly approves it.
           </p>
-          <div className="mt-6"><OpportunityForm /></div>
+          <div className="mt-6">
+            <OpportunityForm />
+          </div>
         </Surface>
       ) : (
         <Surface className="mt-8 p-6">
           <p className="font-semibold">Read-only opportunity access</p>
-          <p className="text-muted mt-2 text-sm">Moderator and analyst roles can inspect supply but cannot create, review, publish or withdraw it in Stage 18.</p>
+          <p className="text-muted mt-2 text-sm">
+            Moderator and analyst roles can inspect supply but cannot create,
+            review, publish or withdraw it in Stage 18.
+          </p>
         </Surface>
       )}
 
       <section className="mt-10" aria-labelledby="supply-heading">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold tracking-[0.16em] text-amber-300 uppercase">Supply registry</p>
-            <h2 id="supply-heading" className="mt-2 text-3xl font-semibold">{workspace.items.length} opportunities</h2>
+            <p className="text-xs font-semibold tracking-[0.16em] text-amber-300 uppercase">
+              Supply registry
+            </p>
+            <h2 id="supply-heading" className="mt-2 text-3xl font-semibold">
+              {workspace.items.length} opportunities
+            </h2>
           </div>
-          <p className="max-w-lg text-sm leading-6 text-slate-400">Published items appear to Builders only while approved and not past deadline. Private Builder matching data never appears here.</p>
+          <p className="max-w-lg text-sm leading-6 text-slate-400">
+            Published items appear to Builders only while approved and not past
+            deadline. Private Builder matching data never appears here.
+          </p>
         </div>
 
         <div className="mt-6 grid gap-5">
@@ -265,28 +307,58 @@ export default async function AdminOpportunitiesPage({
             <Surface key={item.id} className="p-6 sm:p-7">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-primary text-xs font-semibold uppercase">{readable(item.category)} · {item.providerName}</p>
-                  <h3 className="text-navy mt-2 text-2xl font-semibold">{item.title}</h3>
-                  <p className="text-muted mt-2 max-w-4xl text-sm leading-6">{item.summary}</p>
+                  <p className="text-primary text-xs font-semibold uppercase">
+                    {readable(item.category)} · {item.providerName}
+                  </p>
+                  <h3 className="text-navy mt-2 text-2xl font-semibold">
+                    {item.title}
+                  </h3>
+                  <p className="text-muted mt-2 max-w-4xl text-sm leading-6">
+                    {item.summary}
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                  <span className="border-border rounded-full border px-3 py-1.5">Review: {item.reviewStatus}</span>
-                  <span className="border-border rounded-full border px-3 py-1.5">Publication: {item.publicationStatus}</span>
+                  <span className="border-border rounded-full border px-3 py-1.5">
+                    Review: {item.reviewStatus}
+                  </span>
+                  <span className="border-border rounded-full border px-3 py-1.5">
+                    Publication: {item.publicationStatus}
+                  </span>
                 </div>
               </div>
 
               <div className="mt-5 grid gap-3 text-sm md:grid-cols-3">
-                <p><strong>Geography:</strong> <span className="text-muted">{item.geographyLabel}</span></p>
-                <p><strong>Deadline:</strong> <span className="text-muted">{item.deadlineDate ?? "None published"}</span></p>
-                <p><strong>URL:</strong> <span className="text-muted break-all">{item.officialUrl}</span></p>
+                <p>
+                  <strong>Geography:</strong>{" "}
+                  <span className="text-muted">{item.geographyLabel}</span>
+                </p>
+                <p>
+                  <strong>Deadline:</strong>{" "}
+                  <span className="text-muted">
+                    {item.deadlineDate ?? "None published"}
+                  </span>
+                </p>
+                <p>
+                  <strong>URL:</strong>{" "}
+                  <span className="text-muted break-all">
+                    {item.officialUrl}
+                  </span>
+                </p>
               </div>
 
               {canEdit ? (
                 <div className="border-border mt-6 grid gap-5 border-t pt-6 lg:grid-cols-2">
                   <div>
                     <h4 className="font-semibold">Review / publication</h4>
-                    <form action={reviewOpportunityAdminAction} className="mt-3 grid gap-3">
-                      <input type="hidden" name="opportunityId" value={item.id} />
+                    <form
+                      action={reviewOpportunityAdminAction}
+                      className="mt-3 grid gap-3"
+                    >
+                      <input
+                        type="hidden"
+                        name="opportunityId"
+                        value={item.id}
+                      />
                       <textarea
                         className={inputClass}
                         name="reviewNotes"
@@ -296,29 +368,67 @@ export default async function AdminOpportunitiesPage({
                         defaultValue={item.reviewNotes ?? ""}
                       />
                       <div className="flex flex-wrap gap-2">
-                        <Button type="submit" name="decision" value="approve">Approve review</Button>
-                        <Button type="submit" name="decision" value="reject" variant="ghost">Reject review</Button>
+                        <Button type="submit" name="decision" value="approve">
+                          Approve review
+                        </Button>
+                        <Button
+                          type="submit"
+                          name="decision"
+                          value="reject"
+                          variant="ghost"
+                        >
+                          Reject review
+                        </Button>
                       </div>
                     </form>
-                    <form action={setOpportunityPublicationAdminAction} className="mt-3 flex flex-wrap gap-2">
-                      <input type="hidden" name="opportunityId" value={item.id} />
+                    <form
+                      action={setOpportunityPublicationAdminAction}
+                      className="mt-3 flex flex-wrap gap-2"
+                    >
+                      <input
+                        type="hidden"
+                        name="opportunityId"
+                        value={item.id}
+                      />
                       {item.publicationStatus !== "published" ? (
-                        <Button type="submit" name="publicationAction" value="publish" variant="secondary">Publish approved item</Button>
+                        <Button
+                          type="submit"
+                          name="publicationAction"
+                          value="publish"
+                          variant="secondary"
+                        >
+                          Publish approved item
+                        </Button>
                       ) : (
-                        <Button type="submit" name="publicationAction" value="withdraw" variant="ghost">Withdraw publication</Button>
+                        <Button
+                          type="submit"
+                          name="publicationAction"
+                          value="withdraw"
+                          variant="ghost"
+                        >
+                          Withdraw publication
+                        </Button>
                       )}
                     </form>
                   </div>
                   <details className="border-border rounded-2xl border p-4">
-                    <summary className="cursor-pointer font-semibold">Edit item — resets review</summary>
-                    <div className="mt-5"><OpportunityForm item={item} /></div>
+                    <summary className="cursor-pointer font-semibold">
+                      Edit item — resets review
+                    </summary>
+                    <div className="mt-5">
+                      <OpportunityForm item={item} />
+                    </div>
                   </details>
                 </div>
               ) : null}
             </Surface>
           ))}
           {workspace.items.length === 0 ? (
-            <Surface className="p-8"><p className="font-semibold">No opportunity supply has been created yet.</p></Surface>
+            <Surface className="p-8">
+              <p className="font-semibold">
+                No opportunity supply has been created yet.
+              </p>
+            </Surface>
           ) : null}
         </div>
       </section>

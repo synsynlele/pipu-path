@@ -74,7 +74,10 @@ describe("Stage 18 Opportunity matching", () => {
   });
 
   it("marks missing geography as an eligibility check instead of guessing", () => {
-    const match = matchOpportunity(context({ countryCode: null }), opportunity());
+    const match = matchOpportunity(
+      context({ countryCode: null }),
+      opportunity(),
+    );
     expect(match?.tier).toBe("eligibility_check");
     expect(match?.readinessGaps.join(" ")).toMatch(/location eligibility/i);
   });
@@ -100,18 +103,22 @@ describe("Stage 18 Opportunity matching", () => {
   it("orders strong matches before possible matches and eligibility checks", () => {
     const strong = matchOpportunity(context(), opportunity())!;
     const possible = matchOpportunity(
-      context({ selectedPathName: null, selectedPathSkills: [], capabilities: [] }),
+      context({
+        selectedPathName: null,
+        selectedPathSkills: [],
+        capabilities: [],
+      }),
       opportunity({ pathwayTags: [], capabilityTags: [] }),
     )!;
     const check = matchOpportunity(
       context({ countryCode: null }),
       opportunity({ id: "22222222-2222-4222-8222-222222222222" }),
     )!;
-    expect(rankOpportunityMatches([check, possible, strong]).map((item) => item.tier)).toEqual([
-      "strong_match",
-      "possible_match",
-      "eligibility_check",
-    ]);
+    expect(
+      rankOpportunityMatches([check, possible, strong]).map(
+        (item) => item.tier,
+      ),
+    ).toEqual(["strong_match", "possible_match", "eligibility_check"]);
   });
 });
 
@@ -173,8 +180,10 @@ describe("Stage 18 Opportunity supply contract", () => {
       category: "competition",
       summary:
         "Join this crypto trading challenge and learn a speculative approach that promises quick money for winners.",
-      eligibilitySummary: "Open globally to adults who meet the published rules.",
-      benefitSummary: "Participants receive educational resources and recognition.",
+      eligibilitySummary:
+        "Open globally to adults who meet the published rules.",
+      benefitSummary:
+        "Participants receive educational resources and recognition.",
       minAge: 18,
       maxAge: null,
       geographyScope: "global",

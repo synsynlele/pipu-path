@@ -11,9 +11,7 @@ const migration = read(
 const contract = read(
   "src/modules/opportunities/domain/opportunity-contract.ts",
 );
-const dal = read(
-  "src/modules/opportunities/infrastructure/opportunity-dal.ts",
-);
+const dal = read("src/modules/opportunities/infrastructure/opportunity-dal.ts");
 const builderPage = read("src/app/opportunities/page.tsx");
 const adminPage = read("src/app/admin/opportunities/page.tsx");
 const navigation = read("src/components/navigation/app-navigation.tsx");
@@ -26,7 +24,9 @@ const vercelConfig = read("vercel.json");
 describe("Stage 18 Opportunity MVP", () => {
   it("keeps vetted supply and private Builder state behind RLS with no browser table grants", () => {
     expect(migration).toContain("create table public.opportunities");
-    expect(migration).toContain("create table public.builder_opportunity_state");
+    expect(migration).toContain(
+      "create table public.builder_opportunity_state",
+    );
     expect(migration).toContain(
       "alter table public.opportunities enable row level security",
     );
@@ -54,7 +54,9 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(migration).toContain("admin_role not in ('owner', 'operator')");
     expect(adminPage).toContain('workspace.role === "owner"');
     expect(adminPage).toContain('workspace.role === "operator"');
-    expect(adminPage).toContain("Moderator and analyst roles can inspect supply");
+    expect(adminPage).toContain(
+      "Moderator and analyst roles can inspect supply",
+    );
   });
 
   it("uses deterministic evidence matching rather than an AI opportunity score", () => {
@@ -68,7 +70,9 @@ describe("Stage 18 Opportunity MVP", () => {
   });
 
   it("never guesses missing age or geography eligibility", () => {
-    expect(contract).toContain("Confirm the exact age requirement before applying");
+    expect(contract).toContain(
+      "Confirm the exact age requirement before applying",
+    );
     expect(contract).toContain("Confirm location eligibility");
     expect(builderPage).toContain("Missing details are shown as");
     expect(builderPage).toContain("eligibility checks rather than guessed");

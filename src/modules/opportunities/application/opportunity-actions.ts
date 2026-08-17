@@ -36,13 +36,15 @@ function nullableText(value: FormDataEntryValue | null) {
 
 function commaList(value: FormDataEntryValue | null, upper = false) {
   const text = typeof value === "string" ? value : "";
-  return [...new Set(
-    text
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .map((item) => (upper ? item.toUpperCase() : item.toLowerCase())),
-  )];
+  return [
+    ...new Set(
+      text
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .map((item) => (upper ? item.toUpperCase() : item.toLowerCase())),
+    ),
+  ];
 }
 
 export async function saveOpportunityAdminAction(formData: FormData) {
@@ -83,9 +85,10 @@ export async function saveOpportunityAdminAction(formData: FormData) {
 export async function reviewOpportunityAdminAction(formData: FormData) {
   const id = opportunityIdSchema.safeParse(formData.get("opportunityId"));
   const decision = formData.get("decision");
-  const notes = typeof formData.get("reviewNotes") === "string"
-    ? String(formData.get("reviewNotes")).trim().slice(0, 1000)
-    : "";
+  const notes =
+    typeof formData.get("reviewNotes") === "string"
+      ? String(formData.get("reviewNotes")).trim().slice(0, 1000)
+      : "";
   if (!id.success || (decision !== "approve" && decision !== "reject")) {
     redirect("/admin/opportunities?error=review_invalid");
   }

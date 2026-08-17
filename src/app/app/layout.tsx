@@ -36,7 +36,11 @@ export default async function ApplicationLayout({
               and readiness checks.
             </p>
           </div>
-          <ButtonLink href="/opportunities" variant="secondary" className="mt-5 sm:mt-0">
+          <ButtonLink
+            href="/opportunities"
+            variant="secondary"
+            className="mt-5 sm:mt-0"
+          >
             Explore opportunities
           </ButtonLink>
         </Surface>
