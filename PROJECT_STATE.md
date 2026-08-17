@@ -1,18 +1,18 @@
 # PipuPath project state
 
-**Current stage:** Stage 16 — Living Builder Profile
+**Current stage:** Stage 17 — AI Personal Builder Guide
 
-**Stage status:** RELEASE CANDIDATE — STAGING + AUTHENTICATED PREVIEW VERIFIED
+**Stage status:** IMPLEMENTATION CANDIDATE — VALIDATION PENDING
 
-**Released product stages:** Stage 0 through Stage 15
+**Released product stages:** Stage 0 through Stage 16
 
-**Current `main` baseline:** `496d558047fe735317eed6cb73e45b23b5feaa82`
+**Current `main` baseline:** `b6dc00458ca3bf264e40f1ce92551b50f9a5708f`
 
-**Stage 15 release:** PR #28, squash-merged and production-verified on 2026-08-17
+**Stage 16 release:** PR #29, squash-merged and production-verified on 2026-08-17
 
-**Review surface:** GitHub pull request #29
+**Review surface:** GitHub pull request #30
 
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 15 is live. Stage 16 migration `20260817191000_stage_16_living_builder_profile` is applied and behaviorally verified. The authenticated Stage 16 Vercel Preview proof passed 3/3 checks. Exact-head validation, merge and production health remain release gates.
+**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 16 is live. Stage 17 migration `20260817200000_stage_17_ai_personal_builder_guide` is not yet applied and must pass repository validation before authorised staging execution.
 
 **Last updated:** 2026-08-17
 
@@ -20,67 +20,52 @@
 
 PipuPath currently moves a Builder through:
 
-`Discovery → Human Potential Profile → Possible Paths → Choose a Path → Practical Mission → 30-Day Pathway / Journey → HQLS Quests + Evidence → First Value Challenge / Builder Project → reflection → Portfolio / Connect → structured collaboration → next growth cycle`
+`Discovery → Human Potential Profile → Possible Paths → Choose a Path → Practical Mission → 30-Day Pathway / Journey → HQLS Quests + Evidence → First Value Challenge / Builder Project → reflection → Portfolio / Connect → structured collaboration → Living Builder Profile → next growth cycle`
 
-Stage 15 is released on `main`. Its structured Builder Collaboration layer passed authorised Supabase verification, authenticated Preview proof, exact-head validation, merged-main CI and production Vercel health.
+Stage 16 is released on `main`. The Living Builder Profile distinguishes Discovery potential from demonstrated action using private, versioned, deterministic evidence from completed Quests, Projects and mutually completed collaboration. Its migration, database lifecycle proof, authenticated Preview proof, exact-head validation, merged-main CI and production Vercel health all passed.
 
 Stage 13's privacy-thresholded PipuPath cohort boundary remains present in production, while the final real KHP-OS → PipuPath cross-product pairing remains a separate outstanding integration gate.
 
-## Stage 16 release candidate
+## Stage 17 implementation candidate
 
-Stage 16 adds a private Living Builder Profile that distinguishes Discovery potential from demonstrated action.
+Stage 17 adds a private Personal Builder Guide that turns existing PipuPath evidence into bounded next-step guidance without becoming a generic chatbot.
 
 The candidate adds:
 
-- `/profile` as the primary private Profile destination while preserving the original Human Potential Profile as the Discovery baseline;
-- versioned Builder Profile snapshots rather than destructive overwrite;
-- capability evidence from completed HQLS Quests only when evidence and Nortnspoil reflection exist;
-- stronger capability evidence from completed Builder Projects, plus Project execution;
-- mutually verified Collaboration evidence only after both participants contribute and confirm completion;
-- deterministic capability states: `practicing`, `demonstrated` and `repeatedly_demonstrated`;
-- exact private evidence links behind every capability claim;
-- Builder feedback: `accurate`, `needs_context` or `not_representative`;
-- no AI identity mutation and no automatic publication.
+- `/guide` as a private evidence-aware guidance workspace;
+- four structured questions only: `next_move`, `improvement`, `missing_evidence` and `weekly_focus`;
+- context from the Human Potential Profile baseline, Living Builder Profile, selected Economic Pathway and current Mission/Journey/Quest/Project state;
+- OpenAI structured output through the existing server-only provider boundary;
+- deterministic evidence-rule fallback when the AI provider is unavailable or its output fails safety validation;
+- exact Living Builder Profile claim-ID grounding for evidence observations;
+- trusted product destinations only, mapped server-side rather than accepting arbitrary model URLs;
+- current `ai_processing` consent and safeguarding checks;
+- explicit uncertainty, fixed-identity rejection, income-promise/risky-finance rejection and minor-contact safety rules;
+- six-hour reuse for unchanged intent/context and a 12-generation rolling 24-hour limit;
+- private Guide run provenance and helpful/not-helpful Builder feedback;
+- privacy-safe Guide telemetry;
+- a Home entry point without adding the Guide to primary navigation.
 
-## Stage 16 verification evidence
+## Stage 17 privacy boundary
 
-- Migration `20260817191000_stage_16_living_builder_profile` is applied.
-- All four Stage 16 persistence tables have RLS enabled.
-- `anon` and `authenticated` have no direct table select, insert or update privileges.
-- Authenticated users have execute access only to the allow-listed Stage 16 profile, refresh and feedback RPCs.
-- A rollback-only authenticated database proof created version 1, derived capability claims from completed action, verified a Project execution claim and exact `/projects/...` evidence link, recorded Builder feedback, created version 2 and preserved two-version history.
-- The proof asserted that raw Project, Quest/reflection and contact-field names were absent from the safe profile projection.
-- The database proof transaction rolled back completely; its cleanup check returned zero Stage 16 profile versions, claims and feedback.
-- Generated Supabase TypeScript output confirms the Stage 16 tables, enums and RPC signatures exist in the live schema.
-- Authenticated Vercel Preview run `32055234944`, job `95463741823`, passed **3/3 Playwright checks** with 0 failures.
-- Preview verification proved anonymous denial, the private evidence-backed profile surface, the Discovery baseline link, Project execution evidence, exact private Project links, Builder feedback controls and absence of raw private narrative field names.
-- The Preview test created the first legitimate evidence snapshot for the dedicated authenticated test fixture from its existing completed PipuPath actions; it did not submit capability feedback.
-- The temporary Preview verification workflow was removed after proof.
+The Guide provider receives bounded private context. Raw Quest reflections, raw Project narratives, contact details and another Builder's private data are excluded. AI may interpret existing evidence but cannot create, delete or upgrade Living Builder Profile capability claims.
 
-## Stage 16 evidence rule
+`builder_guide_runs` and `builder_guide_feedback` are designed with RLS enabled and no direct `public`, `anon` or `authenticated` table grants. Trusted server code performs authenticated, user-scoped access. Recommendation bodies are not copied into general product telemetry.
 
-The existing Journey milestone `capabilities_to_develop` is the vocabulary source for Quest and Project capability evidence. Stage 16 does not perform free-form AI classification. Completed Quests carry strength 1. Completed Projects carry strength 2 for their source milestone capabilities and strength 2 for Project execution. Mutually completed collaboration carries strength 2 for Collaboration.
+## Stage 17 non-goals
 
-Progression is conservative and reproducible:
+Stage 17 does not add unrestricted chat, psychological diagnosis, therapy, mentor matching, automated opportunity matching, autonomous task execution, public AI advice, employability scores, public capability ranking or automatic Human Potential Profile / Living Builder Profile mutation.
 
-- one strength point → Practicing;
-- at least two strength points → Demonstrated;
-- at least four strength points across at least two evidence records → Repeatedly demonstrated.
+## Release gate
 
-These are product evidence rules, not psychological scores or deterministic labels.
+Stage 17 must not be called released until:
 
-## Stage 16 non-goals
+1. the complete repository validator passes on the implementation candidate;
+2. migration `20260817200000_stage_17_ai_personal_builder_guide` is applied and behaviorally verified on authorised staging;
+3. authenticated Vercel Preview verification proves the bounded Guide, evidence grounding, safe generation and feedback flow;
+4. the exact approved PR head passes repository CI and the matching Vercel check;
+5. PR #30 is merged intentionally;
+6. merged-main CI passes; and
+7. the production Vercel deployment is confirmed healthy.
 
-Stage 16 does not add a generic chatbot, employability score, personality diagnosis, public capability ranking, automatic portfolio publication, mentor matching or automatic Human Potential Profile mutation.
-
-## Immediate release gate
-
-Stage 16 must not be called released until:
-
-1. the exact final PR head passes the complete repository validator;
-2. the matching Vercel deployment check is green;
-3. PR #29 is merged intentionally;
-4. merged-main CI passes; and
-5. the production Vercel deployment is confirmed healthy.
-
-Stage 17 — AI Personal Builder Guide remains deferred until Stage 16 is released and explicitly authorised.
+Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
