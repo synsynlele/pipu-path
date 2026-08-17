@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 17 — AI Personal Builder Guide
 
-**Stage status:** IMPLEMENTATION CANDIDATE — VALIDATION PENDING
+**Stage status:** RELEASE CANDIDATE — STAGING + AUTHENTICATED PREVIEW VERIFIED; EXACT-HEAD VERCEL GATE QUOTA-BLOCKED
 
 **Released product stages:** Stage 0 through Stage 16
 
@@ -12,7 +12,7 @@
 
 **Review surface:** GitHub pull request #30
 
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 16 is live. Stage 17 migration `20260817200000_stage_17_ai_personal_builder_guide` is not yet applied and must pass repository validation before authorised staging execution.
+**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 16 is live. Stage 17 migration `stage_17_ai_personal_builder_guide` is applied under Supabase registry version `20260817192833` from repository source migration `20260817200000_stage_17_ai_personal_builder_guide.sql`. Database security/persistence checks and authenticated Preview proof have passed. Exact-head Vercel deployment remains blocked by the Free-plan daily deployment limit.
 
 **Last updated:** 2026-08-17
 
@@ -26,7 +26,7 @@ Stage 16 is released on `main`. The Living Builder Profile distinguishes Discove
 
 Stage 13's privacy-thresholded PipuPath cohort boundary remains present in production, while the final real KHP-OS → PipuPath cross-product pairing remains a separate outstanding integration gate.
 
-## Stage 17 implementation candidate
+## Stage 17 release candidate
 
 Stage 17 adds a private Personal Builder Guide that turns existing PipuPath evidence into bounded next-step guidance without becoming a generic chatbot.
 
@@ -46,26 +46,33 @@ The candidate adds:
 - privacy-safe Guide telemetry;
 - a Home entry point without adding the Guide to primary navigation.
 
+## Stage 17 verified evidence
+
+- Complete repository validation passed on implementation commit `ab58ca5b44dc15e1206d532c3c6a6e7ccdf7e30a` in GitHub Actions run `32061598753`.
+- Stage 17 persistence is live on the authorised Supabase project with RLS enabled and no direct `anon` or `authenticated` table access.
+- A controlled persistence lifecycle check passed and its verification rows were removed.
+- A real authenticated Preview request persisted OpenAI-backed `gpt-5-mini` guidance with prompt version `stage17.v1`.
+- Preview run `32061593484`, job `95483882748`, passed 2/2 Playwright checks covering anonymous protection and authenticated bounded guidance rendering, next action, uncertainty, feedback controls and exclusion of raw private field names.
+- The permanent Stage 17 E2E regression spec remains in the repository; the one-time Preview workflow is removed after proof.
+
 ## Stage 17 privacy boundary
 
 The Guide provider receives bounded private context. Raw Quest reflections, raw Project narratives, contact details and another Builder's private data are excluded. AI may interpret existing evidence but cannot create, delete or upgrade Living Builder Profile capability claims.
 
-`builder_guide_runs` and `builder_guide_feedback` are designed with RLS enabled and no direct `public`, `anon` or `authenticated` table grants. Trusted server code performs authenticated, user-scoped access. Recommendation bodies are not copied into general product telemetry.
+`builder_guide_runs` and `builder_guide_feedback` have RLS enabled and no direct `public`, `anon` or `authenticated` table grants. Trusted server code performs authenticated, user-scoped access. Recommendation bodies are not copied into general product telemetry.
 
 ## Stage 17 non-goals
 
 Stage 17 does not add unrestricted chat, psychological diagnosis, therapy, mentor matching, automated opportunity matching, autonomous task execution, public AI advice, employability scores, public capability ranking or automatic Human Potential Profile / Living Builder Profile mutation.
 
-## Release gate
+## Remaining release gate
 
 Stage 17 must not be called released until:
 
-1. the complete repository validator passes on the implementation candidate;
-2. migration `20260817200000_stage_17_ai_personal_builder_guide` is applied and behaviorally verified on authorised staging;
-3. authenticated Vercel Preview verification proves the bounded Guide, evidence grounding, safe generation and feedback flow;
-4. the exact approved PR head passes repository CI and the matching Vercel check;
-5. PR #30 is merged intentionally;
-6. merged-main CI passes; and
-7. the production Vercel deployment is confirmed healthy.
+1. the complete repository validator passes on the final PR head;
+2. the exact final PR head receives a successful matching Vercel deployment check;
+3. PR #30 is merged intentionally;
+4. merged-main CI passes; and
+5. the production Vercel deployment is confirmed healthy.
 
-Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
+The current Vercel blocker is the account's Free-plan daily deployment limit (`api-deployments-free-per-day`), not a Stage 17 application-build failure. PR #30 remains draft and Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
