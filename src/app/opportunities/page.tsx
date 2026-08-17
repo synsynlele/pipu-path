@@ -9,6 +9,7 @@ import {
   setOpportunitySavedAction,
 } from "@/modules/opportunities/application/opportunity-actions";
 import type {
+  OpportunityCatalogItem,
   OpportunityMatch,
   OpportunityMatchTier,
 } from "@/modules/opportunities/domain/opportunity-contract";
@@ -50,6 +51,37 @@ function formatDeadline(value: string | null) {
     year: "numeric",
     timeZone: "UTC",
   }).format(new Date(`${value}T12:00:00Z`));
+}
+
+function OutcomeForm({ item }: { item: OpportunityCatalogItem }) {
+  return (
+    <form
+      action={recordOpportunityOutcomeAction}
+      className="mt-4 flex flex-wrap items-end gap-2"
+    >
+      <input type="hidden" name="opportunityId" value={item.id} />
+      <label className="min-w-48 text-sm font-semibold">
+        Outcome
+        <select
+          name="outcome"
+          defaultValue={item.state.outcome ?? ""}
+          required
+          className="border-border bg-background text-foreground mt-2 block min-h-11 w-full rounded-xl border px-3 py-2"
+        >
+          <option value="" disabled>
+            Choose outcome
+          </option>
+          <option value="accepted">Accepted</option>
+          <option value="not_selected">Not selected</option>
+          <option value="withdrawn">I withdrew</option>
+          <option value="other">Other</option>
+        </select>
+      </label>
+      <Button type="submit" variant="ghost">
+        Save self-reported outcome
+      </Button>
+    </form>
+  );
 }
 
 function MatchCard({ match }: { match: OpportunityMatch }) {
@@ -167,34 +199,43 @@ function MatchCard({ match }: { match: OpportunityMatch }) {
             You marked this as applied. PipuPath has not independently verified
             the application or its result.
           </p>
-          <form
-            action={recordOpportunityOutcomeAction}
-            className="mt-4 flex flex-wrap items-end gap-2"
-          >
-            <input type="hidden" name="opportunityId" value={item.id} />
-            <label className="min-w-48 text-sm font-semibold">
-              Outcome
-              <select
-                name="outcome"
-                defaultValue={item.state.outcome ?? ""}
-                required
-                className="border-border bg-background text-foreground mt-2 block min-h-11 w-full rounded-xl border px-3 py-2"
-              >
-                <option value="" disabled>
-                  Choose outcome
-                </option>
-                <option value="accepted">Accepted</option>
-                <option value="not_selected">Not selected</option>
-                <option value="withdrawn">I withdrew</option>
-                <option value="other">Other</option>
-              </select>
-            </label>
-            <Button type="submit" variant="ghost">
-              Save self-reported outcome
-            </Button>
-          </form>
+          <OutcomeForm item={item} />
         </div>
       ) : null}
+    </Surface>
+  );
+}
+
+function TrackedApplicationCard({ item }: { item: OpportunityCatalogItem }) {
+  return (
+    <Surface className="p-6 sm:p-7">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+            Tracked application · {readable(item.category)}
+          </p>
+          <h3 className="text-navy mt-2 text-xl font-semibold">{item.title}</h3>
+          <p className="text-muted mt-1 text-sm">{item.providerName}</p>
+        </div>
+        <span className="border-border text-muted rounded-full border px-3 py-1.5 text-xs font-semibold">
+          Opportunity no longer active
+        </span>
+      </div>
+      <p className="text-muted mt-4 text-sm leading-6">
+        You previously marked this opportunity as applied. Its deadline,
+        publication or review state has changed, so PipuPath will not send you
+        to the external application page or treat it as an active match. You can
+        still record your outcome below.
+      </p>
+      <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
+        <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+          Application — self-reported
+        </p>
+        <p className="text-muted mt-2 text-sm">
+          PipuPath has not independently verified the application or result.
+        </p>
+        <OutcomeForm item={item} />
+      </div>
     </Surface>
   );
 }
@@ -297,6 +338,30 @@ export default async function OpportunitiesPage({
           </Surface>
         )}
       </section>
+
+      {workspace.trackedApplications.length > 0 ? (
+        <section className="mt-12" aria-labelledby="tracked-applications-heading">
+          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+            Your application history
+          </p>
+          <h2
+            id="tracked-applications-heading"
+            className="mt-3 text-3xl font-semibold tracking-tight"
+          >
+            Tracked applications that are no longer active
+          </h2>
+          <p className="text-muted mt-3 max-w-3xl leading-7">
+            Closed opportunities stay here only so you can finish your own
+            outcome record. They are not recommended again and their official
+            external link is disabled.
+          </p>
+          <div className="mt-6 grid gap-5 xl:grid-cols-2">
+            {workspace.trackedApplications.map((item) => (
+              <TrackedApplicationCard key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <p className="text-muted mt-8 text-center text-xs leading-5">
         Always read the official eligibility and terms before applying. PipuPath
