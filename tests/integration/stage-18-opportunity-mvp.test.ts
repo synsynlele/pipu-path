@@ -11,6 +11,9 @@ const migration = read(
 const hardeningMigration = read(
   "supabase/migrations/20260817210100_stage_18_opportunity_mvp_hardening.sql",
 );
+const reviewEnumRepair = read(
+  "supabase/migrations/20260817210200_fix_stage_18_review_enum_cast.sql",
+);
 const contract = read(
   "src/modules/opportunities/domain/opportunity-contract.ts",
 );
@@ -49,6 +52,12 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(migration).toContain("review_status = 'pending'");
     expect(migration).toContain("publication_status = 'draft'");
     expect(migration).toContain("OPPORTUNITY_REVIEW_REQUIRED");
+    expect(reviewEnumRepair).toContain(
+      "'approved'::public.opportunity_review_status",
+    );
+    expect(reviewEnumRepair).toContain(
+      "'rejected'::public.opportunity_review_status",
+    );
     expect(adminPage).toContain("Review and publication are separate");
     expect(adminPage).toContain("reviewed item resets it to draft");
   });
