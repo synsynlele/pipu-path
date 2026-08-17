@@ -64,11 +64,19 @@ test("authenticated product navigation records privacy-safe feature telemetry", 
 }) => {
   await signIn(page);
 
-  const telemetry = page.waitForResponse(
-    (response) =>
-      response.url().includes("/api/product-events/feature-view") &&
-      response.request().method() === "POST",
-  );
+  const telemetry = page.waitForResponse((response) => {
+    if (
+      !response.url().includes("/api/product-events/feature-view") ||
+      response.request().method() !== "POST"
+    ) {
+      return false;
+    }
+    try {
+      return response.request().postDataJSON()?.featureKey === "connect";
+    } catch {
+      return false;
+    }
+  });
   await page.goto("/connect");
   const response = await telemetry;
 
