@@ -53,6 +53,10 @@ Raw Quest reflections, raw Project narratives, contact details and another Build
 
 Guide recommendation bodies are not copied into general product telemetry. Telemetry records only bounded events such as Guide generation, feedback and feature views.
 
+## Validation discipline
+
+Generation orchestration is covered with focused unit tests, while server-only persistence and provider adapters remain behind the same infrastructure boundaries used elsewhere in PipuPath and are verified through structural checks plus staging and Preview proof before release.
+
 ## Explicit non-goals
 
 Stage 17 does not add unrestricted chat, psychological diagnosis, therapy, mentor matching, opportunity matching, autonomous task execution, public AI advice, public capability ranking or automatic profile mutation.
