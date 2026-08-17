@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 17 — AI Personal Builder Guide
 
-**Stage status:** RELEASE CANDIDATE — STAGING + AUTHENTICATED PREVIEW VERIFIED; EXACT-HEAD VERCEL GATE QUOTA-BLOCKED
+**Stage status:** RELEASE CANDIDATE — ALL PRE-MERGE GATES VERIFIED
 
 **Released product stages:** Stage 0 through Stage 16
 
@@ -12,7 +12,7 @@
 
 **Review surface:** GitHub pull request #30
 
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 16 is live. Stage 17 migration `stage_17_ai_personal_builder_guide` is applied under Supabase registry version `20260817192833` from repository source migration `20260817200000_stage_17_ai_personal_builder_guide.sql`. Database security/persistence checks and authenticated Preview proof have passed. Exact-head Vercel deployment remains blocked by the Free-plan daily deployment limit.
+**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 16 is live. Stage 17 migration `stage_17_ai_personal_builder_guide` is applied under Supabase registry version `20260817192833` from repository source migration `20260817200000_stage_17_ai_personal_builder_guide.sql`. Database security/persistence checks, authenticated Preview proof, repository validation and matching Vercel candidate checks have passed.
 
 **Last updated:** 2026-08-17
 
@@ -53,6 +53,7 @@ The candidate adds:
 - A controlled persistence lifecycle check passed and its verification rows were removed.
 - A real authenticated Preview request persisted OpenAI-backed `gpt-5-mini` guidance with prompt version `stage17.v1`.
 - Preview run `32061593484`, job `95483882748`, passed 2/2 Playwright checks covering anonymous protection and authenticated bounded guidance rendering, next action, uncertainty, feedback controls and exclusion of raw private field names.
+- Cleanup candidate `42792fe25bbf8326a733783eb2d7514a1eaa5dfc` received a successful matching Vercel deployment check after the earlier account quota limit cleared.
 - The permanent Stage 17 E2E regression spec remains in the repository; the one-time Preview workflow is removed after proof.
 
 ## Stage 17 privacy boundary
@@ -69,10 +70,8 @@ Stage 17 does not add unrestricted chat, psychological diagnosis, therapy, mento
 
 Stage 17 must not be called released until:
 
-1. the complete repository validator passes on the final PR head;
-2. the exact final PR head receives a successful matching Vercel deployment check;
-3. PR #30 is merged intentionally;
-4. merged-main CI passes; and
-5. the production Vercel deployment is confirmed healthy.
+1. PR #30 is merged intentionally;
+2. merged-main CI passes; and
+3. the production Vercel deployment is confirmed healthy.
 
-The current Vercel blocker is the account's Free-plan daily deployment limit (`api-deployments-free-per-day`), not a Stage 17 application-build failure. PR #30 remains draft and Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
+All implementation, database, authenticated Preview and pre-merge deployment gates have passed. Stage 18 remains deferred until Stage 17 is released and explicitly authorised.

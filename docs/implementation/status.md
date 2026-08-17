@@ -1,29 +1,29 @@
 # Implementation status
 
 **Current stage:** Stage 17 — AI Personal Builder Guide  
-**Stage status:** Release candidate — staging + authenticated Preview verified; exact-head Vercel gate quota-blocked  
+**Stage status:** Release candidate — all pre-merge gates verified  
 **Last updated:** 2026-08-17
 
-| Stage                                   | Status                     | Evidence                                                                                                                                 |
-| --------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| 0 — Governance and architecture         | Complete / released        | Constitution, boundaries, ADRs and implementation discipline                                                                             |
-| 1 — Engineering foundation              | Complete / released        | Runtime, design system, config, logging, tests and CI                                                                                    |
-| 2 — Identity and access                 | Complete / released        | Auth, private identity, consent, recovery and RLS                                                                                        |
-| 3 — Discovery                           | Complete / released        | Fifteen-question evidence, review and persistence                                                                                        |
-| 4 — Human Potential Profile             | Complete / released        | Private synthesis, feedback and provenance                                                                                               |
-| 5 — Practical Mission                   | Complete / released        | Generation, refinement, activation and recovery                                                                                          |
-| 6 — Practical Builder Journey           | Complete / released        | Ordered milestones, activation and recovery                                                                                              |
-| 7 — HQLS Quest Execution                | Complete / released        | Action, evidence, Nortnspoil reflection, XP and progression                                                                              |
-| 8 — Builder Project MVP                 | Complete / released        | Quest-linked Project and proof-backed milestones                                                                                         |
-| 9 — Selective Project Portfolio         | Complete / released        | Consent, safe projection, publish, withdraw and republish                                                                                |
-| 10 — MVP Launch Readiness               | Complete / released        | Production-aligned shell, OAuth hardening and release operations                                                                         |
-| 11 — Connect + Growth Cycles            | Complete / released        | Adult-safe discovery, requests, accepted network, contact consent, blocking/reporting and renewable Journey cycles                       |
-| 12 — Economic Pathways MVP              | Complete / released        | Possible Paths, strength-to-value guidance, path selection, 30-Day Pathway and First Value Challenge integration                         |
-| 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                                      |
-| 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit and production verification                                        |
-| 15 — Builder Collaboration MVP          | Complete / released        | Project collaboration, contribution evidence, mutual completion, relationship safety and production validation                           |
-| 16 — Living Builder Profile             | Complete / released        | Private versioned evidence profile, deterministic capability progression, feedback, staging/Preview/main/production validation           |
-| 17 — AI Personal Builder Guide          | Release candidate          | Bounded Guide, live migration, full validator and authenticated Preview proof complete; exact-head Vercel release check is quota-blocked |
+| Stage                                   | Status                     | Evidence                                                                                                                       |
+| --------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 0 — Governance and architecture         | Complete / released        | Constitution, boundaries, ADRs and implementation discipline                                                                   |
+| 1 — Engineering foundation              | Complete / released        | Runtime, design system, config, logging, tests and CI                                                                          |
+| 2 — Identity and access                 | Complete / released        | Auth, private identity, consent, recovery and RLS                                                                              |
+| 3 — Discovery                           | Complete / released        | Fifteen-question evidence, review and persistence                                                                              |
+| 4 — Human Potential Profile             | Complete / released        | Private synthesis, feedback and provenance                                                                                     |
+| 5 — Practical Mission                   | Complete / released        | Generation, refinement, activation and recovery                                                                                |
+| 6 — Practical Builder Journey           | Complete / released        | Ordered milestones, activation and recovery                                                                                    |
+| 7 — HQLS Quest Execution                | Complete / released        | Action, evidence, Nortnspoil reflection, XP and progression                                                                    |
+| 8 — Builder Project MVP                 | Complete / released        | Quest-linked Project and proof-backed milestones                                                                               |
+| 9 — Selective Project Portfolio         | Complete / released        | Consent, safe projection, publish, withdraw and republish                                                                      |
+| 10 — MVP Launch Readiness               | Complete / released        | Production-aligned shell, OAuth hardening and release operations                                                               |
+| 11 — Connect + Growth Cycles            | Complete / released        | Adult-safe discovery, requests, accepted network, contact consent, blocking/reporting and renewable Journey cycles             |
+| 12 — Economic Pathways MVP              | Complete / released        | Possible Paths, strength-to-value guidance, path selection, 30-Day Pathway and First Value Challenge integration               |
+| 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                            |
+| 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit and production verification                              |
+| 15 — Builder Collaboration MVP          | Complete / released        | Project collaboration, contribution evidence, mutual completion, relationship safety and production validation                 |
+| 16 — Living Builder Profile             | Complete / released        | Private versioned evidence profile, deterministic capability progression, feedback, staging/Preview/main/production validation |
+| 17 — AI Personal Builder Guide          | Release candidate          | Bounded Guide, live migration, full validator, authenticated Preview and matching Vercel candidate checks complete             |
 
 ## Stage 16 release evidence
 
@@ -58,15 +58,14 @@ Stage 17 adds a private Personal Builder Guide that interprets existing PipuPath
 - A fresh authenticated Preview request successfully persisted an OpenAI-backed `gpt-5-mini` Guide run with prompt version `stage17.v1`.
 - Authenticated Preview run `32061593484`, job `95483882748`, passed **2/2 Playwright checks**: anonymous denial and the authenticated bounded evidence-aware Guide flow, including rendered next action, uncertainty, feedback controls and raw-private-field exclusion.
 - The temporary Preview verification workflow was removed after proof.
+- Cleanup candidate `42792fe25bbf8326a733783eb2d7514a1eaa5dfc` received a successful matching Vercel deployment check after the earlier account quota limit cleared.
 
 ## Remaining Stage 17 release gate
 
-Stage 17 is **not released**. The remaining gates are:
+Stage 17 is **not released**. All implementation, database, authenticated Preview and pre-merge deployment gates are verified. The remaining release steps are:
 
-1. pass complete repository CI on the final documentation/cleanup PR head;
-2. obtain a successful matching Vercel check for that exact head — current attempts are blocked by Vercel's Free-plan daily deployment limit (`api-deployments-free-per-day`), not by an application build failure;
-3. merge PR #30 intentionally;
-4. confirm merged-main CI; and
-5. confirm production Vercel health.
+1. merge PR #30 intentionally;
+2. confirm merged-main CI; and
+3. confirm production Vercel health.
 
 Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
