@@ -4,11 +4,7 @@ import path from "node:path";
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
+  resolve: { alias: { "@": path.resolve(__dirname, "./src") } },
   test: {
     include: ["src/**/*.test.{ts,tsx}"],
     environment: "jsdom",
@@ -49,6 +45,9 @@ export default defineConfig({
         "src/modules/human-potential/application/profile-actions.ts",
         "src/modules/human-potential/infrastructure/**",
         "src/modules/human-potential/ui/**",
+        "src/modules/living-builder-profile/application/**",
+        "src/modules/living-builder-profile/infrastructure/**",
+        "src/modules/living-builder-profile/ui/**",
         "src/modules/mission/application/mission-actions.ts",
         "src/modules/mission/infrastructure/**",
         "src/modules/mission/ui/**",
@@ -65,12 +64,7 @@ export default defineConfig({
         "src/modules/portfolio/infrastructure/**",
         "src/modules/portfolio/ui/**",
       ],
-      thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 75,
-        statements: 80,
-      },
+      thresholds: { lines: 80, functions: 80, branches: 75, statements: 80 },
     },
   },
 });

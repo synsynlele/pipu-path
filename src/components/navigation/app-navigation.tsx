@@ -9,11 +9,7 @@ const items = [
   { label: "Build", href: "/build", icon: "build" },
   { label: "Portfolio", href: "/portfolio", icon: "portfolio" },
   { label: "Connect", href: "/connect", icon: "connect" },
-  {
-    label: "Profile",
-    href: "/onboarding/discovery/profile",
-    icon: "profile",
-  },
+  { label: "Profile", href: "/profile", icon: "profile" },
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -25,6 +21,11 @@ function isActive(pathname: string, href: string) {
       pathname.startsWith("/build") ||
       pathname.startsWith("/quests") ||
       pathname.startsWith("/projects")
+    );
+  if (href === "/profile")
+    return (
+      pathname.startsWith("/profile") ||
+      pathname.startsWith("/onboarding/discovery/profile")
     );
   return pathname.startsWith(href);
 }
@@ -55,14 +56,8 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 aria-current={active ? "page" : undefined}
                 className={
                   mobile
-                    ? `flex min-h-16 flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${
-                        active ? "text-primary" : "text-muted"
-                      }`
-                    : `inline-flex min-h-10 items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${
-                        active
-                          ? "bg-primary-soft text-primary"
-                          : "text-muted hover:bg-soft hover:text-navy"
-                      }`
+                    ? `flex min-h-16 flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary" : "text-muted"}`
+                    : `inline-flex min-h-10 items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary" : "text-muted hover:bg-soft hover:text-navy"}`
                 }
               >
                 <NavigationIcon name={item.icon} active={active} />
@@ -94,7 +89,7 @@ function NavigationIcon({
     "aria-hidden": true,
   };
 
-  if (name === "home") {
+  if (name === "home")
     return (
       <svg {...common}>
         <path d="m3 11 9-8 9 8" />
@@ -102,8 +97,7 @@ function NavigationIcon({
         <path d="M9 20v-6h6v6" />
       </svg>
     );
-  }
-  if (name === "path") {
+  if (name === "path")
     return (
       <svg {...common}>
         <circle cx="6" cy="18" r="2" />
@@ -111,15 +105,13 @@ function NavigationIcon({
         <path d="M8 18h2a4 4 0 0 0 4-4V10a4 4 0 0 1 4-4" />
       </svg>
     );
-  }
-  if (name === "build") {
+  if (name === "build")
     return (
       <svg {...common}>
         <path d="M14.7 6.3a4 4 0 0 0-5 5L3 18v3h3l6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-3-3z" />
       </svg>
     );
-  }
-  if (name === "portfolio") {
+  if (name === "portfolio")
     return (
       <svg {...common}>
         <rect x="3" y="6" width="18" height="14" rx="2" />
@@ -127,8 +119,7 @@ function NavigationIcon({
         <path d="M3 11h18" />
       </svg>
     );
-  }
-  if (name === "connect") {
+  if (name === "connect")
     return (
       <svg {...common}>
         <circle cx="8" cy="8" r="3" />
@@ -137,7 +128,6 @@ function NavigationIcon({
         <path d="M13 19a4.5 4.5 0 0 1 8.5-2" />
       </svg>
     );
-  }
   return (
     <svg {...common}>
       <circle cx="12" cy="8" r="4" />

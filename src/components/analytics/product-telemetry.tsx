@@ -8,7 +8,11 @@ type FeatureKey =
 
 function featureForPath(pathname: string): FeatureKey | null {
   if (pathname === "/app") return "home";
-  if (pathname.startsWith("/onboarding/discovery/profile")) return "profile";
+  if (
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/onboarding/discovery/profile")
+  )
+    return "profile";
   if (pathname.startsWith("/mission") || pathname.startsWith("/journey"))
     return "journey";
   if (

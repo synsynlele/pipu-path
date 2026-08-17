@@ -30,7 +30,7 @@ describe("AppNavigation", () => {
     );
     expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute(
       "href",
-      "/onboarding/discovery/profile",
+      "/profile",
     );
   });
 });

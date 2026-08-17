@@ -4,12 +4,11 @@ import { ProductTelemetry } from "./product-telemetry";
 
 const navigation = vi.hoisted(() => ({ pathname: "/app" }));
 
-vi.mock("next/navigation", () => ({
-  usePathname: () => navigation.pathname,
-}));
+vi.mock("next/navigation", () => ({ usePathname: () => navigation.pathname }));
 
 const featurePaths = [
   ["/app", "home"],
+  ["/profile", "profile"],
   ["/onboarding/discovery/profile", "profile"],
   ["/mission", "journey"],
   ["/journey", "journey"],
@@ -38,7 +37,6 @@ describe("ProductTelemetry", () => {
   it.each(featurePaths)("records %s as %s", async (pathname, featureKey) => {
     navigation.pathname = pathname;
     render(<ProductTelemetry />);
-
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/product-events/feature-view",
@@ -54,7 +52,6 @@ describe("ProductTelemetry", () => {
   it("does not record public or unrelated routes", async () => {
     navigation.pathname = "/privacy";
     render(<ProductTelemetry />);
-
     await Promise.resolve();
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -64,7 +61,6 @@ describe("ProductTelemetry", () => {
     const first = render(<ProductTelemetry />);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     first.unmount();
-
     render(<ProductTelemetry />);
     await Promise.resolve();
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -76,7 +72,6 @@ describe("ProductTelemetry", () => {
       "pipupath:feature-view:/app",
       String(Date.now() - 60_001),
     );
-
     render(<ProductTelemetry />);
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
   });
@@ -84,13 +79,11 @@ describe("ProductTelemetry", () => {
   it("removes the dedupe marker when telemetry delivery fails", async () => {
     navigation.pathname = "/connect";
     fetchMock.mockRejectedValueOnce(new Error("offline"));
-
     render(<ProductTelemetry />);
-
-    await waitFor(() => {
+    await waitFor(() =>
       expect(
         sessionStorage.getItem("pipupath:feature-view:/connect"),
-      ).toBeNull();
-    });
+      ).toBeNull(),
+    );
   });
 });
