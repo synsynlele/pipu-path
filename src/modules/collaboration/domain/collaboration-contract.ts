@@ -47,12 +47,7 @@ export const collaborationCompletionSchema = z.object({
 });
 
 export type BuilderCollaborationStatus =
-  | "pending"
-  | "accepted"
-  | "declined"
-  | "withdrawn"
-  | "cancelled"
-  | "completed";
+  "pending" | "accepted" | "declined" | "withdrawn" | "cancelled" | "completed";
 
 export function collaborationStatusLabel(status: BuilderCollaborationStatus) {
   return {

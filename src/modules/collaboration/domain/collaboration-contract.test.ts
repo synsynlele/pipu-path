@@ -18,8 +18,10 @@ describe("Stage 15 collaboration contract", () => {
       collaboratorId: otherId,
       objective: "Test a useful prototype with three intended users.",
       roleNeeded: "Research partner",
-      expectedContribution: "Interview users and summarise the strongest patterns.",
-      ownerContribution: "Prepare the prototype and organise the test sessions.",
+      expectedContribution:
+        "Interview users and summarise the strongest patterns.",
+      ownerContribution:
+        "Prepare the prototype and organise the test sessions.",
       commitmentNote: "Two short working sessions across one week.",
     });
     expect(parsed.roleNeeded).toBe("Research partner");
@@ -41,23 +43,28 @@ describe("Stage 15 collaboration contract", () => {
 
   it("keeps response and closure actions explicit", () => {
     expect(
-      collaborationResponseSchema.parse({ collaborationId: id, action: "accept" })
-        .action,
+      collaborationResponseSchema.parse({
+        collaborationId: id,
+        action: "accept",
+      }).action,
     ).toBe("accept");
     expect(
       collaborationCloseSchema.parse({ collaborationId: id, action: "cancel" })
         .action,
     ).toBe("cancel");
     expect(
-      collaborationCompletionSchema.parse({ collaborationId: id }).collaborationId,
+      collaborationCompletionSchema.parse({ collaborationId: id })
+        .collaborationId,
     ).toBe(id);
   });
 
   it("requires structured contribution evidence", () => {
     const parsed = collaborationContributionSchema.parse({
       collaborationId: id,
-      contributionSummary: "I interviewed three users and grouped their recurring needs.",
-      evidenceNote: "Notes from all three interviews are recorded in the shared evidence link.",
+      contributionSummary:
+        "I interviewed three users and grouped their recurring needs.",
+      evidenceNote:
+        "Notes from all three interviews are recorded in the shared evidence link.",
       evidenceLink: "https://example.com/proof",
       nextStep: "Use the strongest pattern to revise the prototype.",
     });

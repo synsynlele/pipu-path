@@ -47,7 +47,10 @@ export default async function CollaborationDetailPage({
   params: Promise<{ collaborationId: string }>;
   searchParams: Promise<{ status?: string }>;
 }) {
-  const [{ collaborationId }, query] = await Promise.all([params, searchParams]);
+  const [{ collaborationId }, query] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   const detail = await getCollaborationDetail(collaborationId);
   const { collaboration, contributions } = detail;
   const me =
@@ -95,9 +98,10 @@ export default async function CollaborationDetailPage({
             </span>
           </div>
           <p className="text-muted mt-5 max-w-3xl text-lg leading-8">
-            You are building with {other.preferredName} · @{other.username}. This
-            workspace shares only the collaboration agreement and structured
-            contribution evidence—not either Builder's private development data.
+            You are building with {other.preferredName} · @{other.username}.
+            This workspace shares only the collaboration agreement and
+            structured contribution evidence—not private development data
+            belonging to either Builder.
           </p>
         </div>
       </section>
@@ -124,7 +128,9 @@ export default async function CollaborationDetailPage({
               </dd>
             </div>
             <div>
-              <dt className="text-sm font-semibold">Project owner contribution</dt>
+              <dt className="text-sm font-semibold">
+                Project owner contribution
+              </dt>
               <dd className="text-muted mt-2 leading-7">
                 {collaboration.ownerContribution}
               </dd>
@@ -147,7 +153,9 @@ export default async function CollaborationDetailPage({
           </h2>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <div className="border-border rounded-2xl border p-4">
-              <p className="font-semibold">{collaboration.owner.preferredName}</p>
+              <p className="font-semibold">
+                {collaboration.owner.preferredName}
+              </p>
               <p className="text-muted mt-2 text-sm">
                 {collaboration.ownerConfirmed
                   ? "Contribution confirmed"
@@ -367,9 +375,12 @@ export default async function CollaborationDetailPage({
                       {contribution.contributor.username}
                     </p>
                     <span className="text-muted text-xs">
-                      {new Date(contribution.createdAt).toLocaleDateString("en", {
-                        dateStyle: "medium",
-                      })}
+                      {new Date(contribution.createdAt).toLocaleDateString(
+                        "en",
+                        {
+                          dateStyle: "medium",
+                        },
+                      )}
                     </span>
                   </div>
                   <p className="mt-4 leading-7">

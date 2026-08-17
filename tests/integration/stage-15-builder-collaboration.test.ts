@@ -48,7 +48,9 @@ describe("Stage 15 Builder Collaboration MVP structure", () => {
   });
 
   it("requires adult eligibility, accepted connection state and no block", () => {
-    expect(migration).toContain("private.stage11_builder_connect_eligible(actor)");
+    expect(migration).toContain(
+      "private.stage11_builder_connect_eligible(actor)",
+    );
     expect(migration).toContain("private.stage15_connection_for_pair");
     expect(migration).toContain("connection.status = 'accepted'");
     expect(migration).toContain("private.stage11_builder_pair_blocked");
@@ -58,9 +60,12 @@ describe("Stage 15 Builder Collaboration MVP structure", () => {
   it("does not grant collaborators access to raw Project or developmental narratives", () => {
     const projection =
       migration
-        .split("create or replace function private.stage15_collaboration_item")[1]
-        ?.split("create or replace function public.get_stage15_collaboration_state")[0] ??
-      "";
+        .split(
+          "create or replace function private.stage15_collaboration_item",
+        )[1]
+        ?.split(
+          "create or replace function public.get_stage15_collaboration_state",
+        )[0] ?? "";
     for (const forbidden of [
       "problem_statement",
       "people_served",

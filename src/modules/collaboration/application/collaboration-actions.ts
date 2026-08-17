@@ -14,7 +14,8 @@ import { runCollaborationRpc } from "../infrastructure/collaboration-dal";
 
 function destination(formData: FormData) {
   const value = formData.get("returnTo");
-  return typeof value === "string" && value.startsWith("/connect/collaborations")
+  return typeof value === "string" &&
+    value.startsWith("/connect/collaborations")
     ? value
     : "/connect/collaborations";
 }

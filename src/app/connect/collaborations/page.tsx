@@ -166,15 +166,18 @@ export default async function CollaborationsPage({
               ) : inviteOptions.length === 0 ? (
                 <div className="mt-5">
                   <p className="text-muted leading-7">
-                    Your active Project is ready, but there is no unused accepted
-                    connection available for a new invitation yet.
+                    Your active Project is ready, but there is no unused
+                    accepted connection available for a new invitation yet.
                   </p>
                   <ButtonLink href="/connect" className="mt-5">
                     Discover Builders
                   </ButtonLink>
                 </div>
               ) : (
-                <form action={createCollaborationAction} className="mt-6 grid gap-5">
+                <form
+                  action={createCollaborationAction}
+                  className="mt-6 grid gap-5"
+                >
                   <input
                     type="hidden"
                     name="projectId"
@@ -189,11 +192,17 @@ export default async function CollaborationsPage({
                     <p className="text-xs font-semibold tracking-wide uppercase">
                       Active Project
                     </p>
-                    <p className="mt-2 font-semibold">{state.activeProject.title}</p>
+                    <p className="mt-2 font-semibold">
+                      {state.activeProject.title}
+                    </p>
                   </div>
                   <label className="text-sm font-semibold">
                     Builder to invite
-                    <select name="collaboratorId" required className={inputClass}>
+                    <select
+                      name="collaboratorId"
+                      required
+                      className={inputClass}
+                    >
                       <option value="">Choose an accepted connection</option>
                       {inviteOptions.map((person) => (
                         <option key={person.userId} value={person.userId}>
@@ -281,7 +290,8 @@ export default async function CollaborationsPage({
                           {item.objective}
                         </h3>
                         <p className="text-muted mt-2 text-sm leading-6">
-                          From {item.owner.preferredName} · Role: {item.roleNeeded}
+                          From {item.owner.preferredName} · Role:{" "}
+                          {item.roleNeeded}
                         </p>
                         <p className="text-muted mt-3 text-sm leading-6">
                           Expected: {item.expectedContribution}
@@ -307,7 +317,11 @@ export default async function CollaborationsPage({
                               name="collaborationId"
                               value={item.id}
                             />
-                            <input type="hidden" name="action" value="decline" />
+                            <input
+                              type="hidden"
+                              name="action"
+                              value="decline"
+                            />
                             <input
                               type="hidden"
                               name="returnTo"
@@ -343,7 +357,10 @@ export default async function CollaborationsPage({
                         <p className="text-muted mt-2 text-sm">
                           Waiting for {item.collaborator.preferredName}
                         </p>
-                        <form action={closeCollaborationAction} className="mt-3">
+                        <form
+                          action={closeCollaborationAction}
+                          className="mt-3"
+                        >
                           <input
                             type="hidden"
                             name="collaborationId"
