@@ -6,6 +6,7 @@ on:
       - agent/stage-14-retention-intelligence-foundation
     paths:
       - ".github/workflows/stage14-preview-proof.yml"
+      - "tests/e2e/stage14-mission-control.spec.ts"
 
 permissions:
   contents: read
