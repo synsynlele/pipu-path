@@ -86,8 +86,9 @@ alter table public.product_events
   );
 
 alter table public.product_events
-  add constraint product_events_feature_view_requires_key check (
-    event_name <> 'feature_viewed' or feature_key is not null
+  add constraint product_events_feature_key_consistency check (
+    (event_name = 'feature_viewed' and feature_key is not null)
+    or (event_name <> 'feature_viewed' and feature_key is null)
   );
 
 create index if not exists product_events_event_time_user_idx
@@ -201,7 +202,6 @@ begin
 
   return jsonb_build_object(
     'windowDays', safe_days,
-    'telemetryStartedAt', now(),
     'totals', jsonb_build_object(
       'builders', total_builders,
       'newBuilders', new_builders,
