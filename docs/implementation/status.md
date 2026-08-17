@@ -1,7 +1,7 @@
 # Implementation status
 
-**Current stage:** Stage 17 — AI Personal Builder Guide  
-**Stage status:** Release candidate — staging + authenticated Preview verified; exact final-head Vercel gate quota-blocked  
+**Current stage:** Stage 18 — Curated Opportunity MVP  
+**Stage status:** Release candidate — clean main-based release gates in progress  
 **Last updated:** 2026-08-17
 
 | Stage                                   | Status                     | Evidence                                                                                                                       |
@@ -22,51 +22,53 @@
 | 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                            |
 | 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit and production verification                              |
 | 15 — Builder Collaboration MVP          | Complete / released        | Project collaboration, contribution evidence, mutual completion, relationship safety and production validation                 |
-| 16 — Living Builder Profile             | Complete / released        | Private versioned evidence profile, deterministic capability progression, feedback, staging/Preview/main/production validation |
-| 17 — AI Personal Builder Guide          | Release candidate          | Migration, validator and authenticated Preview verified; exact final-head Vercel check is daily-quota blocked                  |
+| 16 — Living Builder Profile             | Complete / released        | Private versioned evidence profile, deterministic capability progression, feedback and production validation                   |
+| 17 — AI Personal Builder Guide          | Complete / released        | Bounded evidence-aware Guide, Supabase verification, authenticated browser proof, merged-main CI and production Vercel success |
+| 18 — Curated Opportunity MVP            | Release candidate          | Supabase lifecycle/security proof, deterministic matching, deliberate Preview and 3/3 authenticated browser proof passed       |
 
-## Stage 16 release evidence
+## Stage 17 release evidence
 
-- PR #29 was squash-merged to `main` as `b6dc00458ca3bf264e40f1ce92551b50f9a5708f`.
-- Migration `20260817191000_stage_16_living_builder_profile` is live and behaviorally verified.
-- The rollback-only database lifecycle proof passed evidence derivation, version supersession, exact evidence links, Builder feedback and privacy-safe projection checks.
-- Authenticated Preview verification passed 3/3 Playwright checks.
-- The exact release candidate passed the complete repository validator and matching Vercel check.
-- Merged-main CI passed and the production Vercel deployment was confirmed healthy.
+- PR #30 was squash-merged to `main` as `c4bd6be6d5a257ed72c6a8cea7f33168c2475d6c`.
+- The Stage 17 migration and RLS/privilege boundaries are live and verified.
+- A real authenticated Preview generation persisted OpenAI-backed `gpt-5-mini` guidance.
+- Permanent authenticated browser verification passed 2/2.
+- The exact final pre-merge head passed GitHub validation and Vercel after the daily deployment quota cleared.
+- Merged-main CI run `32071722620` passed.
+- Vercel Production deployment `5951764007` completed successfully.
 
-## Stage 17 release-candidate evidence
+## Stage 18 candidate evidence
 
-Stage 17 adds a private Personal Builder Guide that interprets existing PipuPath evidence without becoming an unrestricted chatbot or an identity authority.
+Stage 18 adds a curated and explainable opportunity layer that connects Builder evidence to larger real-world tests without becoming an unvetted marketplace.
 
-- `/guide` exposes exactly four structured questions and no free-form prompt box.
-- Context is grounded in the Human Potential Profile baseline, Living Builder Profile, selected Economic Pathway and current Mission/Journey/Quest/Project state.
-- OpenAI structured output is checked against valid Living Builder Profile claim IDs and a closed set of trusted PipuPath destinations.
-- Provider failure or invalid/unsafe output falls back to deterministic evidence rules.
-- Current AI-processing consent and safeguarding status are enforced before new guidance or cached reuse.
-- Fixed-identity claims, guaranteed money/outcomes, risky finance and unsafe minor-contact advice are rejected.
-- Unchanged intent/context may reuse a recent six-hour result; new generations are limited to 12 per rolling 24 hours per Builder.
-- Guide runs and feedback are private and provenance-backed; recommendation bodies are not copied into general product telemetry.
-- The established `feature_viewed` telemetry contract remains `stage14-v1`; Stage 17 extends only the allowed event/feature vocabulary.
+- `/opportunities` is private and authenticated.
+- `/admin/opportunities` is limited to active platform administrators; only owner/operator roles mutate supply.
+- Opportunity supply uses separate review and publication state, and material edits reset approval.
+- Match tiers are deterministic `Strong Match`, `Possible Match` and `Eligibility Check`, not employability scores or selection probabilities.
+- Missing exact age/geography is surfaced as uncertainty rather than inferred.
+- Private save/application/outcome state is stored separately from opportunity supply.
+- Application and outcome claims are labelled self-reported unless a future verification process proves otherwise.
+- Official provider URLs remain behind authenticated tracked redirects rather than the Builder catalog payload.
+- Unsafe financial/get-rich opportunity copy is rejected by the application contract and database-authoritative checks.
+- Stage 18 reuses the central `product_events` stream instead of introducing duplicate analytics infrastructure.
 
-## Stage 17 verification completed
+## Stage 18 verification completed
 
-- Full repository validation passed on implementation commit `ab58ca5b44dc15e1206d532c3c6a6e7ccdf7e30a` in CI run `32061598753`: formatting, zero-warning lint, strict TypeScript, unit coverage, structural integration checks and production build.
-- Supabase migration `stage_17_ai_personal_builder_guide` is applied on authorised project `kvjcswnmhwegpakbtvlh` under registry version `20260817192833`; the repository source migration is `20260817200000_stage_17_ai_personal_builder_guide.sql`.
-- Both Stage 17 persistence tables have RLS enabled. `anon` and `authenticated` have no direct select/insert privileges; `service_role` has the intended trusted access.
-- Stage 17 intent/feedback enums and the extended privacy-safe product-event constraints are live.
-- A controlled persistence proof created and removed a Guide run and feedback record; cleanup confirmed zero verification rows remained.
-- A fresh authenticated Preview request successfully persisted an OpenAI-backed `gpt-5-mini` Guide run with prompt version `stage17.v1`.
-- Authenticated Preview run `32061593484`, job `95483882748`, passed **2/2 Playwright checks**: anonymous denial and the authenticated bounded evidence-aware Guide flow, including rendered next action, uncertainty, feedback controls and raw-private-field exclusion.
-- The temporary Preview verification workflow was removed after proof.
-- Cleanup candidate `42792fe25bbf8326a733783eb2d7514a1eaa5dfc` received a successful matching Vercel deployment check, proving the cleaned application candidate could deploy. The subsequent documentation-only head hit Vercel's Free-plan daily deployment limit again.
+- Full repository validation passed on the verified implementation candidate: formatting, zero-warning lint, strict TypeScript, 233 unit tests, integration checks, coverage thresholds and production build.
+- Migrations `20260817210000_stage_18_opportunity_mvp`, `20260817210100_stage_18_opportunity_mvp_hardening` and `20260817210200_fix_stage_18_review_enum_cast` are applied to authorised staging.
+- RLS, browser table-grant denial, authenticated RPC execution and admin audit boundaries were verified directly.
+- Rollback lifecycle proof passed unsafe-copy rejection, normalisation, create → review → publish → save → apply → outcome, material-edit reset, inactive applied-opportunity outcome continuity and cleanup.
+- Permanent Chromium browser proof passed **3/3** against one deliberate Vercel Preview.
+- Temporary browser opportunity and cascading Builder state were deleted; zero verification fixture rows remain.
+- After Stage 17 released, a clean Stage 18 release tree was reconstructed directly on the released Stage 17 `main` commit using the already-verified Stage 18 file blobs and excluding the temporary branch-only Vercel quota control.
 
-## Remaining Stage 17 release gate
+## Remaining Stage 18 release gate
 
-Stage 17 is **not released**. The remaining gates are:
+Stage 18 is **not released** until the clean main-based release candidate:
 
-1. obtain a successful Vercel check for the exact final PR head after the daily deployment limit clears;
-2. merge PR #30 intentionally;
-3. confirm merged-main CI; and
-4. confirm production Vercel health.
+1. passes exact-head GitHub validation;
+2. receives a successful exact-head Vercel check;
+3. is intentionally merged;
+4. passes merged-main CI; and
+5. receives a successful Vercel Production deployment.
 
-The current red Vercel status is `api-deployments-free-per-day`, not an application build failure. Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
+No additional Stage 18 product scope is permitted during this release gate.
