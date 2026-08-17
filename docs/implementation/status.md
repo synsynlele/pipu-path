@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 16 — Living Builder Profile  
-**Stage status:** Implementation candidate  
+**Stage status:** Release candidate — staging + authenticated Preview verified  
 **Last updated:** 2026-08-17
 
 | Stage                                   | Status                     | Evidence                                                                                                                         |
@@ -22,7 +22,7 @@
 | 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                              |
 | 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit and production verification                                |
 | 15 — Builder Collaboration MVP          | Complete / released        | Project collaboration, contribution evidence, mutual completion, relationship safety, staging/Preview/main/production validation |
-| 16 — Living Builder Profile             | Implementation candidate   | Private versioned profile, deterministic action evidence, capability progression, feedback and exact evidence links under review |
+| 16 — Living Builder Profile             | Release candidate          | Private versioned profile, deterministic action evidence, feedback, staging DB proof and authenticated Preview verification       |
 
 ## Stage 15 release evidence
 
@@ -33,7 +33,7 @@
 - Merged-main CI passed.
 - The production Vercel deployment check succeeded.
 
-## Stage 16 implementation candidate
+## Stage 16 release candidate
 
 Stage 16 preserves the Human Potential Profile as a private Discovery baseline and adds a separate evidence-backed profile that evolves through completed action.
 
@@ -47,14 +47,23 @@ Stage 16 preserves the Human Potential Profile as a private Discovery baseline a
 - Builders can record Accurate, Needs context or Not representative feedback without deleting history.
 - Stage 16 introduces no AI identity mutation and no public capability publication.
 
-## Stage 16 verification still required
+## Stage 16 verification completed
 
-- Pass formatting, lint, strict TypeScript, unit coverage, structural integration checks and production build.
-- Apply migration `20260817191000_stage_16_living_builder_profile` to authorised staging and verify RLS, privileges and RPC behavior.
-- Prove deterministic evidence derivation, version supersession and Builder feedback in a rollback-safe database verification.
-- Verify the matching authenticated Vercel Preview and private route boundary.
-- Pass the exact final PR-head validator and matching Vercel check.
-- Merge PR #29, confirm merged-main CI and production Vercel health.
+- Migration `20260817191000_stage_16_living_builder_profile` is applied to the authorised Supabase project.
+- Stage 16 persistence tables have RLS enabled with no direct `anon` or `authenticated` browser-table privileges.
+- Authenticated RPC grants are limited to the profile projection, refresh and feedback boundaries.
+- A rollback-only authenticated database proof passed evidence derivation, version supersession, exact evidence links, Builder feedback and privacy-safe projection checks.
+- The rollback proof left zero Stage 16 verification rows behind.
+- Generated live-schema TypeScript confirms the Stage 16 tables, enums and RPC signatures.
+- Authenticated Preview run `32055234944`, job `95463741823`, passed 3/3 Playwright checks with 0 failures.
+- Preview proof covered anonymous denial, the private Living Builder Profile surface, Discovery baseline access, Project execution evidence, exact Project evidence links, feedback controls and raw-private-field exclusion.
+- The temporary Preview verifier was removed after the proof.
+
+## Final Stage 16 release gate
+
+- Pass the exact final PR-head complete repository validator and matching Vercel deployment check.
+- Merge PR #29 intentionally.
+- Confirm merged-main CI and production Vercel health.
 
 ## Next authorised stage
 
