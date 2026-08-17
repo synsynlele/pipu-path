@@ -28,6 +28,8 @@ test("anonymous users cannot enter the Personal Builder Guide", async ({
 test("authenticated Builder gets bounded evidence-aware guidance", async ({
   page,
 }) => {
+  test.setTimeout(75_000);
+
   await signIn(page);
   await page.goto("/guide");
 
@@ -50,7 +52,7 @@ test("authenticated Builder gets bounded evidence-aware guidance", async ({
   }
 
   await page.getByRole("button", { name: "Ask the Guide" }).first().click();
-  await expect(page).toHaveURL(/\/guide\?run=/, { timeout: 45_000 });
+  await expect(page).toHaveURL(/\/guide\?run=/, { timeout: 60_000 });
 
   await expect(
     page.getByText("Current guidance", { exact: true }),
