@@ -138,6 +138,8 @@ describe("Stage 17 evidence fallback", () => {
         id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
         title: "Neighbourhood service prototype",
         status: "active",
+        completedMilestones: 1,
+        totalMilestones: 3,
       },
     });
 
