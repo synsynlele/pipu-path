@@ -18,6 +18,11 @@ export const productEventNames = [
   "collaboration_completed",
   "builder_guide_generated",
   "builder_guide_feedback",
+  "opportunity_saved",
+  "opportunity_unsaved",
+  "opportunity_external_clicked",
+  "opportunity_applied",
+  "opportunity_outcome_recorded",
 ] as const;
 
 export type ProductEventName = (typeof productEventNames)[number];
@@ -30,6 +35,7 @@ export const productFeatureKeys = [
   "portfolio",
   "connect",
   "guide",
+  "opportunities",
 ] as const;
 
 export type ProductFeatureKey = (typeof productFeatureKeys)[number];
