@@ -1,6 +1,6 @@
 # Route map
 
-Stage 15 classifies every application route. Server authorization is repeated
+Stage 16 classifies every application route. Server authorization is repeated
 inside each private data boundary; middleware is navigation defence, not the
 sole authorization control.
 
@@ -18,8 +18,9 @@ sole authorization control.
 | `/onboarding/discovery/[section]`           | Session owner                                                     | Answer the current eligible question                                     |
 | `/onboarding/discovery/review`              | Session owner in review                                           | Review and edit evidence                                                 |
 | `/onboarding/discovery/complete`            | Completed session owner                                           | Discovery completion handoff                                             |
-| `/onboarding/discovery/profile`             | Completed Discovery owner                                         | Generate or recover private Human Potential Profile and Possible Paths   |
+| `/onboarding/discovery/profile`             | Completed Discovery owner                                         | Private Human Potential Profile / Discovery baseline and Possible Paths  |
 | `/onboarding/discovery/profile/complete`    | Profile owner                                                     | Mission handoff                                                          |
+| `/profile`                                  | Auth-only profile owner                                           | Private Living Builder Profile, evidence, feedback and version history   |
 | `/mission`, `/mission/complete`             | Auth-only eligible owner                                          | Generate, refine, activate and continue Practical Mission                |
 | `/journey`, `/journey/complete`             | Active Mission owner                                              | Generate, refine, activate and continue Builder Journey / 30-Day Pathway |
 | `/build`                                    | Auth-only contextual router                                       | Active Project first, then Quest, then Project creation                  |
