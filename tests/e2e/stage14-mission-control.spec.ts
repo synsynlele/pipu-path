@@ -37,11 +37,17 @@ test("authorised operator can read aggregate Mission Control without private nar
       name: "Measure what makes Builders return and build.",
     }),
   ).toBeVisible();
-  await expect(page.getByText("PipuPath Mission Control")).toBeVisible();
-  await expect(page.getByText("Total Builders")).toBeVisible();
-  await expect(page.getByText("Repeat Builders")).toBeVisible();
-  await expect(page.getByText("Developmental funnel")).toBeVisible();
-  await expect(page.getByText("Feature intelligence")).toBeVisible();
+  await expect(
+    page.getByText("PipuPath Mission Control", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Total Builders", { exact: true })).toBeVisible();
+  await expect(page.getByText("Repeat Builders", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Developmental funnel", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Feature intelligence", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByText(
       /Private Discovery answers, Human Potential Profile prose, reflections, evidence and contact details are not part of this dashboard\./,
