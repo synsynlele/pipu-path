@@ -57,7 +57,7 @@ The candidate adds:
 - The authenticated Vercel Preview proof passed **3/3 Playwright checks** on branch head `6826d2765585f92278dd4672fe0472f53e1ee38f`.
 - Preview verification proved anonymous denial, the authenticated structured collaboration surface and the privacy-safe detail projection.
 - Synthetic Preview relationship/collaboration data and the temporary fixture username were removed after verification; cleanup checks returned zero remaining synthetic collaboration records.
-- The complete repository validator passed on the formatted Stage 15 candidate before final verification documentation/cleanup. The exact final PR head must pass the same validator before merge.
+- Final documentation has been Prettier-normalized after verification; the exact final PR head now needs one clean repository validator pass before merge.
 
 ## Stage 15 non-goals
 
