@@ -1,7 +1,7 @@
 # Implementation status
 
-**Current stage:** Stage 17 — AI Personal Builder Guide  
-**Stage status:** Release candidate — staging + authenticated Preview verified; exact final-head Vercel gate quota-blocked  
+**Current stage:** Stage 18 — Curated Opportunity MVP  
+**Stage status:** Verified stacked release candidate — Stage 17 must release first  
 **Last updated:** 2026-08-17
 
 | Stage                                   | Status                     | Evidence                                                                                                                       |
@@ -23,7 +23,8 @@
 | 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit and production verification                              |
 | 15 — Builder Collaboration MVP          | Complete / released        | Project collaboration, contribution evidence, mutual completion, relationship safety and production validation                 |
 | 16 — Living Builder Profile             | Complete / released        | Private versioned evidence profile, deterministic capability progression, feedback, staging/Preview/main/production validation |
-| 17 — AI Personal Builder Guide          | Release candidate          | Migration, validator and authenticated Preview verified; exact final-head Vercel check is daily-quota blocked                  |
+| 17 — AI Personal Builder Guide          | Release candidate          | Migration, validator and authenticated Preview verified; exact final-head release sequence remains outstanding                 |
+| 18 — Curated Opportunity MVP            | Verified stacked candidate | Supabase lifecycle/security proof, deterministic matching, one deliberate Preview and 3/3 authenticated browser proof passed   |
 
 ## Stage 16 release evidence
 
@@ -58,15 +59,34 @@ Stage 17 adds a private Personal Builder Guide that interprets existing PipuPath
 - A fresh authenticated Preview request successfully persisted an OpenAI-backed `gpt-5-mini` Guide run with prompt version `stage17.v1`.
 - Authenticated Preview run `32061593484`, job `95483882748`, passed **2/2 Playwright checks**: anonymous denial and the authenticated bounded evidence-aware Guide flow, including rendered next action, uncertainty, feedback controls and raw-private-field exclusion.
 - The temporary Preview verification workflow was removed after proof.
-- Cleanup candidate `42792fe25bbf8326a733783eb2d7514a1eaa5dfc` received a successful matching Vercel deployment check, proving the cleaned application candidate could deploy. The subsequent documentation-only head hit Vercel's Free-plan daily deployment limit again.
+- Cleanup candidate `42792fe25bbf8326a733783eb2d7514a1eaa5dfc` received a successful matching Vercel deployment check, proving the cleaned application candidate could deploy. The final documentation-only head still requires its deliberate release-sequence Vercel confirmation before merge.
 
-## Remaining Stage 17 release gate
+## Stage 18 verification completed
 
-Stage 17 is **not released**. The remaining gates are:
+Stage 18 adds a controlled opportunity layer without turning PipuPath into an open marketplace or exposing private Builder evidence to providers.
 
-1. obtain a successful Vercel check for the exact final PR head after the daily deployment limit clears;
-2. merge PR #30 intentionally;
-3. confirm merged-main CI; and
-4. confirm production Vercel health.
+- `/opportunities` uses deterministic Strong Match / Possible Match / Eligibility Check logic from known age/country, selected Economic Pathway and Living Builder Profile capability labels.
+- Missing age or geography is surfaced as uncertainty rather than guessed.
+- `/admin/opportunities` separates creation, review, publication and withdrawal; material edits reset approval.
+- Unsafe opportunity copy, country-code and tag validation is enforced in Postgres as well as the application boundary.
+- The Builder catalog omits the raw official URL; active links are resolved only through the authenticated tracked redirect RPC.
+- Applied opportunities that later close remain available only for self-reported outcome completion and are not re-recommended.
+- Stage 18 reuses the central product-event stream and does not add a primary navigation item.
+- Stage 18 migrations plus the append-only review-enum correction are live on authorised Supabase staging.
+- RLS, browser privilege denial, authenticated RPC grants and the admin audit boundary were verified directly.
+- The rollback lifecycle proof passed create → review → publish → save → apply → outcome, unsafe-copy rejection, normalisation, edit reset, inactive outcome continuity and cleanup.
+- One deliberate Vercel Preview was built from the same application Git tree as the verified Stage 18 candidate.
+- The permanent Chromium proof passed **3/3** against that Preview: anonymous opportunity denial, authenticated non-admin admin-supply denial and authenticated Builder evaluate/save/apply/outcome flow.
+- The temporary browser fixture and Builder state were deleted; zero fixture rows remain.
 
-The current red Vercel status is `api-deployments-free-per-day`, not an application build failure. Stage 18 remains deferred until Stage 17 is released and explicitly authorised.
+## Remaining release sequence
+
+Neither Stage 17 nor Stage 18 is released yet.
+
+1. obtain the final Stage 17 Vercel release-gate confirmation and intentionally merge PR #30;
+2. confirm merged-main CI and production health for Stage 17;
+3. reconcile/retarget Stage 18 onto the released Stage 17 `main` history;
+4. preserve Stage 18's verified application candidate while obtaining only the final release evidence required;
+5. intentionally merge Stage 18, then confirm merged-main CI and production health.
+
+Automatic Vercel deployment remains disabled for the Stage 18 development branch so ordinary documentation/test commits do not consume Preview quota.
