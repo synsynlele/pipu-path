@@ -2,8 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "agent/stage-18-opportunity-mvp": false,
-      "preview/stage18-proof-exact": false
+      "agent/stage-18-opportunity-mvp": false
     }
   }
 }
