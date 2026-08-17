@@ -49,7 +49,8 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(migration).toContain("review_status = 'pending'");
     expect(migration).toContain("publication_status = 'draft'");
     expect(migration).toContain("OPPORTUNITY_REVIEW_REQUIRED");
-    expect(adminPage).toContain("Editing a reviewed item resets it to draft");
+    expect(adminPage).toContain("Review and publication are separate");
+    expect(adminPage).toContain("reviewed item resets it to draft");
   });
 
   it("makes supply mutations owner/operator only while preserving read-only admin roles", () => {
@@ -109,7 +110,8 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(builderPage).toContain(
       "Tracked applications that are no longer active",
     );
-    expect(builderPage).toContain("official external link is disabled");
+    expect(builderPage).toContain("They are not recommended again");
+    expect(builderPage).toContain("external link is disabled.");
   });
 
   it("labels applications and outcomes as self-reported rather than verified", () => {
