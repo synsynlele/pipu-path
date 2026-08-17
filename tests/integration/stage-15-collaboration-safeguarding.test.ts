@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 const hardening = readFileSync(
   join(
     process.cwd(),
-    "supabase/migrations/20260817171000_harden_stage_15_collaboration_safeguarding.sql",
+    "supabase/migrations/20260817172635_harden_stage_15_collaboration_safeguarding.sql",
   ),
   "utf8",
 );
