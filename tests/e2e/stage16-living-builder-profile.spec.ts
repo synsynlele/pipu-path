@@ -19,7 +19,9 @@ async function signIn(page: Page) {
 }
 
 async function ensureEvidenceSnapshot(page: Page) {
-  const buildButton = page.getByRole("button", { name: "Build from my evidence" });
+  const buildButton = page.getByRole("button", {
+    name: "Build from my evidence",
+  });
   if (await buildButton.isVisible().catch(() => false)) {
     await buildButton.click();
   }
@@ -30,7 +32,9 @@ async function ensureEvidenceSnapshot(page: Page) {
   ).toBeVisible({ timeout: 15_000 });
 }
 
-test("anonymous users cannot enter the Living Builder Profile", async ({ page }) => {
+test("anonymous users cannot enter the Living Builder Profile", async ({
+  page,
+}) => {
   await page.goto("/profile");
   await expect(page).toHaveURL(/\/login/);
 });
@@ -46,7 +50,9 @@ test("authenticated Builder sees a private evidence-backed Living Builder Profil
       name: "Your potential is a starting point. Your evidence keeps the profile alive.",
     }),
   ).toBeVisible();
-  await expect(page.getByText("Private by design", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Private by design", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "View Discovery baseline" }),
   ).toHaveAttribute("href", "/onboarding/discovery/profile");
