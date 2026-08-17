@@ -85,8 +85,7 @@ const context: BuilderGuideContext = {
 
 function withCurrent(
   current: Partial<BuilderGuideContext["current"]>,
-  availableDestinations: BuilderGuideContext["availableDestinations"] =
-    context.availableDestinations,
+  availableDestinations: BuilderGuideContext["availableDestinations"] = context.availableDestinations,
 ): BuilderGuideContext {
   return {
     ...context,
@@ -174,7 +173,9 @@ describe("Stage 17 evidence fallback", () => {
 
     expect(result.nextAction.destination).toBe("build");
     expect(result.nextAction.title).toBe("Create the next proof");
-    expect(result.nextAction.instruction).toContain("Choose one useful problem");
+    expect(result.nextAction.instruction).toContain(
+      "Choose one useful problem",
+    );
   });
 
   it("falls back to Profile when there is no active work or Build access", () => {
@@ -207,7 +208,10 @@ describe("Stage 17 evidence fallback", () => {
       sparseContext,
       "missing_evidence",
     );
-    const weekly = buildEvidenceBasedBuilderGuide(sparseContext, "weekly_focus");
+    const weekly = buildEvidenceBasedBuilderGuide(
+      sparseContext,
+      "weekly_focus",
+    );
     const next = buildEvidenceBasedBuilderGuide(sparseContext, "next_move");
 
     expect(improvement.evidenceObservations).toEqual([]);
