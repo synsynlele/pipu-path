@@ -8,6 +8,9 @@ const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 const migration = read(
   "supabase/migrations/20260817210000_stage_18_opportunity_mvp.sql",
 );
+const hardeningMigration = read(
+  "supabase/migrations/20260817210100_stage_18_opportunity_mvp_hardening.sql",
+);
 const contract = read(
   "src/modules/opportunities/domain/opportunity-contract.ts",
 );
@@ -59,6 +62,21 @@ describe("Stage 18 Opportunity MVP", () => {
     );
   });
 
+  it("makes supply safety authoritative below the UI", () => {
+    expect(hardeningMigration).toContain(
+      "private.stage18_validate_opportunity_supply",
+    );
+    expect(hardeningMigration).toContain("OPPORTUNITY_COPY_UNSAFE");
+    expect(hardeningMigration).toContain("OPPORTUNITY_COUNTRY_CODE_INVALID");
+    expect(hardeningMigration).toContain("OPPORTUNITY_TAG_INVALID");
+    expect(hardeningMigration).toContain(
+      "before insert or update on public.opportunities",
+    );
+    expect(hardeningMigration).toContain(
+      "alter function public.get_stage18_admin_opportunities() volatile",
+    );
+  });
+
   it("uses deterministic evidence matching rather than an AI opportunity score", () => {
     expect(contract).toContain("matchOpportunity");
     expect(contract).toContain("strong_match");
@@ -76,6 +94,16 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(contract).toContain("Confirm location eligibility");
     expect(builderPage).toContain("Missing details are shown as");
     expect(builderPage).toContain("eligibility checks rather than guessed");
+  });
+
+  it("keeps closed applications outcome-trackable without re-recommending them", () => {
+    expect(hardeningMigration).toContain("'isActive'");
+    expect(hardeningMigration).toContain("builder_state.applied_at is not null");
+    expect(hardeningMigration).not.toContain("'officialUrl', opportunity.official_url");
+    expect(contract).toContain("if (!opportunity.isActive) return null");
+    expect(dal).toContain("trackedApplications");
+    expect(builderPage).toContain("Tracked applications that are no longer active");
+    expect(builderPage).toContain("official external link is disabled");
   });
 
   it("labels applications and outcomes as self-reported rather than verified", () => {
