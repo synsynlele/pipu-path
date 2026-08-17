@@ -64,9 +64,11 @@ test("authenticated Builder gets bounded evidence-aware guidance", async ({
   await expect(
     page.getByRole("link", { name: "Take the next action" }),
   ).toBeVisible();
-  await expect(page.getByRole("button", { name: "Helpful" })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Not helpful" }),
+    page.getByRole("button", { name: "Helpful", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Not helpful", exact: true }),
   ).toBeVisible();
 
   const body = page.locator("body");
