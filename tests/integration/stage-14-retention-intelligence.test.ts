@@ -10,10 +10,7 @@ const migration = readFileSync(
   "utf8",
 );
 const adminDal = readFileSync(
-  join(
-    process.cwd(),
-    "src/modules/admin/infrastructure/admin-dal.ts",
-  ),
+  join(process.cwd(), "src/modules/admin/infrastructure/admin-dal.ts"),
   "utf8",
 );
 const adminPage = readFileSync(
@@ -21,17 +18,11 @@ const adminPage = readFileSync(
   "utf8",
 );
 const telemetry = readFileSync(
-  join(
-    process.cwd(),
-    "src/components/analytics/product-telemetry.tsx",
-  ),
+  join(process.cwd(), "src/components/analytics/product-telemetry.tsx"),
   "utf8",
 );
 const productEvents = readFileSync(
-  join(
-    process.cwd(),
-    "src/modules/analytics/infrastructure/product-events.ts",
-  ),
+  join(process.cwd(), "src/modules/analytics/infrastructure/product-events.ts"),
   "utf8",
 );
 
@@ -50,7 +41,9 @@ describe("Stage 14 retention intelligence foundation", () => {
     expect(migration).toContain(
       "grant select, insert on public.admin_audit_events to service_role",
     );
-    expect(migration).not.toMatch(/grant\s+(select|insert|update|delete)[^;]*product_events[^;]*authenticated/i);
+    expect(migration).not.toMatch(
+      /grant\s+(select|insert|update|delete)[^;]*product_events[^;]*authenticated/i,
+    );
   });
 
   it("requires feature keys only for allow-listed feature-view events", () => {

@@ -35,7 +35,9 @@ export default async function AdminPage({
   const state = await getAdminDashboardState(windowDays);
 
   if (state.access === "unauthenticated") {
-    redirect(`/login?next=${encodeURIComponent(`/admin?window=${windowDays}`)}`);
+    redirect(
+      `/login?next=${encodeURIComponent(`/admin?window=${windowDays}`)}`,
+    );
   }
   if (state.access === "forbidden") notFound();
 
@@ -146,9 +148,7 @@ export default async function AdminPage({
                 Where Builders currently reach
               </h2>
             </div>
-            <span className="text-muted text-sm">
-              All-time truthful state
-            </span>
+            <span className="text-muted text-sm">All-time truthful state</span>
           </div>
           <ol className="mt-7 space-y-5">
             {funnel.map(([label, value]) => {
@@ -156,7 +156,9 @@ export default async function AdminPage({
               return (
                 <li key={label}>
                   <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="font-semibold text-slate-800">{label}</span>
+                    <span className="font-semibold text-slate-800">
+                      {label}
+                    </span>
                     <span className="text-muted">
                       {number(value)} · {share}%
                     </span>
@@ -226,8 +228,11 @@ export default async function AdminPage({
               </thead>
               <tbody>
                 {featureUsage.map((row) => (
-                  <tr key={row.featureKey} className="border-border border-b last:border-0">
-                    <td className="py-4 pr-4 font-semibold capitalize text-slate-900">
+                  <tr
+                    key={row.featureKey}
+                    className="border-border border-b last:border-0"
+                  >
+                    <td className="py-4 pr-4 font-semibold text-slate-900 capitalize">
                       {row.featureKey.replaceAll("_", " ")}
                     </td>
                     <td className="px-4 py-4 text-slate-700">

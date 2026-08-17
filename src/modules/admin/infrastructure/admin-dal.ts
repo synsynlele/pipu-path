@@ -57,7 +57,10 @@ type UntypedQuery = {
 };
 type UntypedClient = {
   from(table: string): UntypedQuery;
-  rpc(functionName: string, args?: Record<string, unknown>): Promise<QueryResult>;
+  rpc(
+    functionName: string,
+    args?: Record<string, unknown>,
+  ): Promise<QueryResult>;
 };
 
 function asAdminClient(client: unknown) {
@@ -122,9 +125,7 @@ function parseFeatureUsage(value: unknown): FeatureUsageRow[] {
 }
 
 function isAdminRole(value: unknown): value is PlatformAdminRole {
-  return ["owner", "operator", "moderator", "analyst"].includes(
-    String(value),
-  );
+  return ["owner", "operator", "moderator", "analyst"].includes(String(value));
 }
 
 export async function getAdminDashboardState(

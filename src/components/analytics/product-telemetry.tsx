@@ -4,12 +4,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 type FeatureKey =
-  | "home"
-  | "profile"
-  | "journey"
-  | "build"
-  | "portfolio"
-  | "connect";
+  "home" | "profile" | "journey" | "build" | "portfolio" | "connect";
 
 function featureForPath(pathname: string): FeatureKey | null {
   if (pathname === "/app") return "home";
