@@ -1,6 +1,6 @@
 # ADR — Stage 16 Living Builder Profile
 
-**Status:** Proposed implementation  
+**Status:** Release candidate — staging and authenticated Preview verified  
 **Stage:** 16  
 **Date:** 2026-08-17
 
