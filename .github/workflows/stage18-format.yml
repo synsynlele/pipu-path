@@ -1,0 +1,39 @@
+name: Stage 18 one-shot formatter
+
+on:
+  push:
+    branches:
+      - agent/stage-18-opportunity-mvp
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-18-opportunity-mvp
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format Stage 18 hardening files
+        run: >-
+          npx prettier --write
+          src/app/opportunities/page.tsx
+          src/modules/opportunities/domain/opportunity-contract.test.ts
+          src/modules/opportunities/domain/opportunity-contract.ts
+          tests/integration/stage-18-opportunity-mvp.test.ts
+      - name: Commit formatted files when needed
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name synsynlele
+          git config user.email synsynlele@gmail.com
+          git add src/app/opportunities/page.tsx src/modules/opportunities/domain/opportunity-contract.test.ts src/modules/opportunities/domain/opportunity-contract.ts tests/integration/stage-18-opportunity-mvp.test.ts
+          git commit -m "style(stage18): format hardening files"
+          git push origin HEAD:agent/stage-18-opportunity-mvp
