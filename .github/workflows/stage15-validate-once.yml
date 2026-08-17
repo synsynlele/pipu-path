@@ -1,0 +1,36 @@
+name: Stage 15 one-shot formatter and validator
+
+on:
+  push:
+    branches:
+      - agent/stage-15-builder-collaboration-mvp
+    paths:
+      - ".github/workflows/stage15-validate-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-15-builder-collaboration-mvp
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format
+      - run: npm run validate
+      - name: Commit validated formatting and remove workflow
+        run: |
+          rm .github/workflows/stage15-validate-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(stage15): apply validated formatting"
+          git push origin HEAD:agent/stage-15-builder-collaboration-mvp
