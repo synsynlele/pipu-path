@@ -1,6 +1,6 @@
 # ADR — Stage 14 Retention Intelligence Foundation
 
-**Status:** Implementation candidate  
+**Status:** Release candidate  
 **Stage:** 14  
 **Date:** 2026-08-17
 
@@ -76,8 +76,30 @@ Verified on 17 August 2026:
   server-owned registry and recorded in the administrator audit boundary.
 
 Generated Supabase types confirm the new tables, enums and aggregate RPCs are
-present in the live schema. Application CI and authenticated Preview verification
-remain release gates.
+present in the live schema.
+
+## Authenticated Preview verification
+
+The Stage 14 application path was verified against the matching Vercel Preview on
+17 August 2026. The authenticated Playwright proof passed **3 of 3 tests** with
+zero failures on application head
+`1f7dd554673bd59400f842e8bbfa03a3990938d6`:
+
+1. anonymous access to `/admin` is rejected and redirected into authentication;
+2. an authorised operator can load aggregate Mission Control while the page
+   explicitly excludes private developmental narratives; and
+3. authenticated navigation to Connect records an allow-listed
+   `featureKey: "connect"` event through the protected telemetry endpoint and
+   receives HTTP 204.
+
+Temporary analyst access granted to staging fixture accounts for this proof was
+revoked immediately after verification. The persistent owner administrator
+remains the only intentionally retained Stage 14 bootstrap membership.
+
+The Preview proof validates the application behaviour. Final release still
+requires the repository validator and deployment checks to pass on the exact
+final branch head after documentation and test-workflow cleanup, followed by the
+approved merge and production health confirmation.
 
 ## Deferred
 
@@ -99,4 +121,4 @@ Those remain later vertical slices in the locked PipuPath Retention MVP roadmap.
 
 ## Stage boundary
 
-Stage 14 is complete only when the migration, authorization boundary, product-event instrumentation, aggregate Mission Control query, `/admin` overview, structural tests, full repository validation, authorised staging database verification and authenticated Preview verification all pass on one exact branch head.
+Stage 14 is complete only when the migration, authorization boundary, product-event instrumentation, aggregate Mission Control query, `/admin` overview, structural tests, full repository validation, authorised staging database verification and authenticated Preview verification all pass on one exact release head and that approved head is confirmed healthy after production release.
