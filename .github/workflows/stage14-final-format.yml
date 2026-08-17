@@ -1,0 +1,34 @@
+name: Stage 14 final formatter
+
+on:
+  push:
+    branches:
+      - agent/stage-14-retention-intelligence-foundation
+    paths:
+      - ".github/workflows/stage14-final-format.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-14-retention-intelligence-foundation
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write tests/e2e/stage14-mission-control.spec.ts
+      - name: Commit formatting and remove formatter
+        run: |
+          rm .github/workflows/stage14-final-format.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(stage14): finalize E2E formatting"
+          git push origin HEAD:agent/stage-14-retention-intelligence-foundation
