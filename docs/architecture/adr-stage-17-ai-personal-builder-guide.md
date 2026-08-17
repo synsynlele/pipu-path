@@ -1,6 +1,6 @@
 # ADR — Stage 17 AI Personal Builder Guide
 
-**Status:** Proposed implementation  
+**Status:** Implementation candidate  
 **Stage:** 17  
 **Date:** 2026-08-17
 
@@ -23,7 +23,7 @@ PipuPath now has a private Discovery baseline, Economic Pathways, active develop
 11. Guide runs are private, persisted with provenance and context version references, and protected by RLS with no direct browser table access.
 12. Repeated requests for the same intent and unchanged development context reuse a recent result before spending another model call. New generations are rate-limited per Builder to control cost and abuse.
 13. Builders can record whether a recommendation was helpful or not helpful. Feedback does not mutate their Living Builder Profile.
-14. The Guide is surfaced from Home and Profile but is not added to the primary navigation in Stage 17. This preserves the compact product shell.
+14. The Guide is surfaced from Home but is not added to the primary navigation in Stage 17. This preserves the compact product shell and avoids creating another top-level destination before retention evidence justifies it.
 
 ## Stage boundary
 
