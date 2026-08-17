@@ -1,6 +1,6 @@
 # ADR — Stage 15 Builder Collaboration MVP
 
-**Status:** Proposed implementation  
+**Status:** Release candidate  
 **Stage:** 15  
 **Date:** 2026-08-17
 
@@ -53,6 +53,7 @@ Statuses:
 - Collaboration RPCs re-check Connect eligibility, accepted relationship state and block state at mutation time.
 - Contact details are not part of collaboration payloads. Existing Stage 11 explicit contact-sharing consent remains separate.
 - Collaboration does not grant access to raw Project, Quest, reflection, Human Potential Profile or Economic Pathway records.
+- If the current account becomes Connect-ineligible, unfinished cross-user collaboration state is suppressed.
 
 ## Evidence standard
 
@@ -66,6 +67,39 @@ A completed collaboration must prove:
 - explicit completion confirmation from both participants.
 
 No star ratings, likes, popularity scores or public ranking are introduced.
+
+## Authorised staging verification
+
+The Stage 15 database slice is live on the authorised PipuPath staging project through:
+
+- `20260817172612_stage_15_builder_collaboration_mvp`; and
+- `20260817172635_harden_stage_15_collaboration_safeguarding`.
+
+Verified on 17 August 2026:
+
+- collaboration and contribution tables have RLS enabled;
+- `anon` and `authenticated` have no direct table privileges;
+- all seven collaboration RPCs are exposed only through the intended authenticated function boundary;
+- a rollback-only two-actor transaction proved invitation → acceptance → contribution by both Builders → first confirmation remains incomplete → second confirmation completes;
+- the safe collaboration detail contained the allow-listed agreement and contribution evidence while excluding private Project, Quest, reflection, Human Potential Profile, Economic Pathway and contact fields;
+- removing the accepted connection cancelled unfinished collaboration;
+- blocking either participant cancelled unfinished collaboration;
+- changing one actor into an ineligible safeguarding state suppressed all unfinished cross-user collaboration state; and
+- the behavioral transaction rolled back completely, leaving zero verification collaborations and contributions.
+
+Generated Supabase TypeScript confirms the new enum, tables and RPCs exist in the live schema.
+
+## Authenticated Preview verification
+
+The Stage 15 user experience was verified against the matching Vercel Preview on 17 August 2026.
+
+Playwright run `32051548510`, job `95451843408`, passed **3 of 3 tests** with zero failures on branch head `6826d2765585f92278dd4672fe0472f53e1ee38f`:
+
+1. anonymous users cannot enter Builder Collaboration;
+2. an authenticated eligible Builder can see the structured collaboration surface and contribution evidence without unrestricted social mechanics; and
+3. the collaboration detail renders the allow-listed working agreement while private product fields remain absent.
+
+Synthetic Preview relationship/collaboration data and the temporary fixture username used for this proof were deleted immediately after verification. Post-cleanup checks confirmed zero synthetic Preview collaborations, zero synthetic contributions and restoration of the fixture username.
 
 ## Deferred
 
@@ -81,6 +115,6 @@ Stage 15 does not add:
 - public endorsements; or
 - automatic Human Potential Profile changes.
 
-## Stage boundary
+## Final release gate
 
-Stage 15 is complete only when persistence, lifecycle RPCs, safe cross-user projections, Project/Connect entry points, contribution evidence, mutual completion, relationship-safety cancellation, analytics events, deterministic tests, staging database verification and authenticated Preview verification all pass on one exact release head.
+Stage 15 is a release candidate. Before it can be labelled released, the exact final PR head must pass the complete repository validator and Vercel deployment check, PR #28 must be merged intentionally, merged-main CI must pass and the production Vercel deployment must be confirmed healthy.
