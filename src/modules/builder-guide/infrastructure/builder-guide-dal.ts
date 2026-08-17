@@ -21,7 +21,9 @@ type QueryError = { message?: string } | null;
 type QueryResult = { data: unknown; error: QueryError; count?: number | null };
 type UntypedQuery = PromiseLike<QueryResult> & {
   select(columns?: string, options?: Record<string, unknown>): UntypedQuery;
-  insert(values: Record<string, unknown> | Record<string, unknown>[]): UntypedQuery;
+  insert(
+    values: Record<string, unknown> | Record<string, unknown>[],
+  ): UntypedQuery;
   upsert(
     values: Record<string, unknown> | Record<string, unknown>[],
     options?: Record<string, unknown>,
@@ -79,15 +81,18 @@ export function destinationHref(
 }
 
 export async function getBuilderGuideContext(): Promise<BuilderGuideContext | null> {
-  const [{ profile: identity }, baseline, livingProfile, home] = await Promise.all([
-    requireAuthenticatedIdentity(),
-    getEconomicPathwayContext(),
-    getLivingBuilderProfile(),
-    getAuthenticatedHomeState(),
-  ]);
+  const [{ profile: identity }, baseline, livingProfile, home] =
+    await Promise.all([
+      requireAuthenticatedIdentity(),
+      getEconomicPathwayContext(),
+      getLivingBuilderProfile(),
+      getAuthenticatedHomeState(),
+    ]);
   if (!baseline || !livingProfile || !home) return null;
 
-  const economicState = await getCurrentEconomicPathwayState(baseline.profileId);
+  const economicState = await getCurrentEconomicPathwayState(
+    baseline.profileId,
+  );
   const selected = economicState?.selectedPath ?? null;
   const availableDestinations: BuilderGuideContext["availableDestinations"] = [
     "profile",
@@ -102,8 +107,7 @@ export async function getBuilderGuideContext(): Promise<BuilderGuideContext | nu
     preferredName: home.preferredName,
     ageBand: baseline.ageBand,
     isMinor: identity.is_minor ?? false,
-    safeguardingReviewRequired:
-      identity.safeguarding_review_required ?? false,
+    safeguardingReviewRequired: identity.safeguarding_review_required ?? false,
     baseline: {
       id: baseline.profileId,
       summary: baseline.summary,
@@ -240,7 +244,10 @@ export async function findReusableBuilderGuideRun(input: {
   return parseRun(data);
 }
 
-export async function countRecentBuilderGuideRuns(userId: string, since: string) {
+export async function countRecentBuilderGuideRuns(
+  userId: string,
+  since: string,
+) {
   const { count, error } = await serviceClient()
     .from("builder_guide_runs")
     .select("id", { count: "exact", head: true })
@@ -301,8 +308,7 @@ function parseRun(
   const row = data as Record<string, unknown>;
   const advice = builderGuideOutputSchema.safeParse(row.advice);
   if (!advice.success) return null;
-  const provider =
-    row.provider === "openai" ? "openai" : "evidence_fallback";
+  const provider = row.provider === "openai" ? "openai" : "evidence_fallback";
   return {
     id: String(row.id),
     intent: advice.data.intent,

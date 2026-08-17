@@ -70,7 +70,9 @@ const errorMessages: Record<string, string> = {
 };
 
 function intentLabel(intent: BuilderGuideIntent) {
-  return questions.find((question) => question.intent === intent)?.title ?? intent;
+  return (
+    questions.find((question) => question.intent === intent)?.title ?? intent
+  );
 }
 
 export default async function BuilderGuidePage({
@@ -129,7 +131,9 @@ export default async function BuilderGuidePage({
 
       {errorMessage ? (
         <Surface className="mt-6 border-amber-500/40 p-5" role="alert">
-          <p className="font-semibold">The Guide could not complete that request.</p>
+          <p className="font-semibold">
+            The Guide could not complete that request.
+          </p>
           <p className="text-muted mt-2 text-sm leading-6">{errorMessage}</p>
         </Surface>
       ) : null}
@@ -170,7 +174,11 @@ export default async function BuilderGuidePage({
                     {question.description}
                   </p>
                   <form action={generateBuilderGuideAction} className="mt-5">
-                    <input type="hidden" name="intent" value={question.intent} />
+                    <input
+                      type="hidden"
+                      name="intent"
+                      value={question.intent}
+                    />
                     <Button type="submit" variant="secondary">
                       Ask the Guide
                     </Button>
@@ -181,7 +189,10 @@ export default async function BuilderGuidePage({
           </section>
 
           {activeRun ? (
-            <section className="mt-10" aria-labelledby="current-guidance-heading">
+            <section
+              className="mt-10"
+              aria-labelledby="current-guidance-heading"
+            >
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="text-gold text-xs font-semibold tracking-wide uppercase">
@@ -210,23 +221,27 @@ export default async function BuilderGuidePage({
                   <div className="mt-8">
                     <h3 className="text-lg font-semibold">Evidence I used</h3>
                     <div className="mt-3 grid gap-3 md:grid-cols-2">
-                      {activeRun.advice.evidenceObservations.map((observation) => {
-                        const claim = context.livingProfile.capabilities.find(
-                          (item) => item.id === observation.claimId,
-                        );
-                        return (
-                          <Link
-                            key={observation.claimId}
-                            href="/profile"
-                            className="border-border hover:border-gold/40 rounded-2xl border p-4 transition-colors"
-                          >
-                            <strong>{claim?.label ?? "Profile evidence"}</strong>
-                            <p className="text-muted mt-2 text-sm leading-6">
-                              {observation.observation}
-                            </p>
-                          </Link>
-                        );
-                      })}
+                      {activeRun.advice.evidenceObservations.map(
+                        (observation) => {
+                          const claim = context.livingProfile.capabilities.find(
+                            (item) => item.id === observation.claimId,
+                          );
+                          return (
+                            <Link
+                              key={observation.claimId}
+                              href="/profile"
+                              className="border-border hover:border-gold/40 rounded-2xl border p-4 transition-colors"
+                            >
+                              <strong>
+                                {claim?.label ?? "Profile evidence"}
+                              </strong>
+                              <p className="text-muted mt-2 text-sm leading-6">
+                                {observation.observation}
+                              </p>
+                            </Link>
+                          );
+                        },
+                      )}
                     </div>
                   </div>
                 ) : null}
@@ -259,7 +274,10 @@ export default async function BuilderGuidePage({
                         {activeRun.advice.nextAction.evidenceToCreate}
                       </span>
                     </p>
-                    <ButtonLink href={activeRun.destinationHref} className="mt-5">
+                    <ButtonLink
+                      href={activeRun.destinationHref}
+                      className="mt-5"
+                    >
                       Take the next action
                     </ButtonLink>
                   </div>
@@ -286,7 +304,10 @@ export default async function BuilderGuidePage({
                   className="border-border mt-7 border-t pt-6"
                 >
                   <input type="hidden" name="runId" value={activeRun.id} />
-                  <label htmlFor="guide-feedback-note" className="text-sm font-semibold">
+                  <label
+                    htmlFor="guide-feedback-note"
+                    className="text-sm font-semibold"
+                  >
                     Was this useful? Add context if you want PipuPath to learn
                     about the guidance experience.
                   </label>
@@ -319,7 +340,8 @@ export default async function BuilderGuidePage({
                   </div>
                   {activeRun.feedback ? (
                     <p className="text-muted mt-3 text-sm">
-                      Latest feedback: {activeRun.feedback.verdict.replaceAll("_", " ")}
+                      Latest feedback:{" "}
+                      {activeRun.feedback.verdict.replaceAll("_", " ")}
                     </p>
                   ) : null}
                 </form>

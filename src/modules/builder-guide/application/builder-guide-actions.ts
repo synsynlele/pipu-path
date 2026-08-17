@@ -54,9 +54,13 @@ export async function recordBuilderGuideFeedbackAction(formData: FormData) {
       verdict: parsed.data.verdict,
     });
   } catch {
-    redirect(`/guide?run=${encodeURIComponent(parsed.data.runId)}&error=feedback_save_failed`);
+    redirect(
+      `/guide?run=${encodeURIComponent(parsed.data.runId)}&error=feedback_save_failed`,
+    );
   }
 
   revalidatePath("/guide");
-  redirect(`/guide?run=${encodeURIComponent(parsed.data.runId)}&feedback=saved`);
+  redirect(
+    `/guide?run=${encodeURIComponent(parsed.data.runId)}&feedback=saved`,
+  );
 }

@@ -45,7 +45,8 @@ const context: BuilderGuideContext = {
     recommendationId: "66666666-6666-4666-8666-666666666666",
     key: "community_builder",
     name: "Community Builder",
-    whyItFits: "Your recorded evidence points to practical community problem solving.",
+    whyItFits:
+      "Your recorded evidence points to practical community problem solving.",
     evidenceNeeded:
       "Complete another small project that creates value for a real group of people.",
   },
@@ -107,6 +108,8 @@ describe("Stage 17 evidence fallback", () => {
   it("treats weak capability evidence as something to test, not an absent skill", () => {
     const result = buildEvidenceBasedBuilderGuide(context, "missing_evidence");
     expect(result.title).toContain("Communication");
-    expect(result.uncertainty).toMatch(/does not mean the capability is absent/i);
+    expect(result.uncertainty).toMatch(
+      /does not mean the capability is absent/i,
+    );
   });
 });

@@ -7,7 +7,9 @@ import {
 
 const claimId = "11111111-1111-4111-8111-111111111111";
 
-function context(overrides: Partial<BuilderGuideContext> = {}): BuilderGuideContext {
+function context(
+  overrides: Partial<BuilderGuideContext> = {},
+): BuilderGuideContext {
   return {
     preferredName: "Builder",
     ageBand: "18_24",
@@ -15,7 +17,8 @@ function context(overrides: Partial<BuilderGuideContext> = {}): BuilderGuideCont
     safeguardingReviewRequired: false,
     baseline: {
       id: "22222222-2222-4222-8222-222222222222",
-      summary: "You are exploring practical ways to create value through action.",
+      summary:
+        "You are exploring practical ways to create value through action.",
     },
     livingProfile: {
       id: "33333333-3333-4333-8333-333333333333",
@@ -88,16 +91,18 @@ function output(): BuilderGuideOutput {
 
 describe("Stage 17 Builder Guide contract", () => {
   it("accepts bounded evidence-grounded guidance", () => {
-    expect(validateBuilderGuideOutput(context(), "next_move", output()).ok).toBe(
-      true,
-    );
+    expect(
+      validateBuilderGuideOutput(context(), "next_move", output()).ok,
+    ).toBe(true);
   });
 
   it("rejects evidence references that are not in the Living Builder Profile", () => {
     const candidate = output();
     candidate.evidenceObservations[0]!.claimId =
       "55555555-5555-4555-8555-555555555555";
-    expect(validateBuilderGuideOutput(context(), "next_move", candidate)).toEqual({
+    expect(
+      validateBuilderGuideOutput(context(), "next_move", candidate),
+    ).toEqual({
       ok: false,
       code: "GUIDE_OUTPUT_INVALID",
     });
@@ -106,7 +111,9 @@ describe("Stage 17 Builder Guide contract", () => {
   it("rejects destinations that are not currently available", () => {
     const candidate = output();
     candidate.nextAction.destination = "current_quest";
-    expect(validateBuilderGuideOutput(context(), "next_move", candidate)).toEqual({
+    expect(
+      validateBuilderGuideOutput(context(), "next_move", candidate),
+    ).toEqual({
       ok: false,
       code: "GUIDE_OUTPUT_INVALID",
     });
@@ -116,7 +123,9 @@ describe("Stage 17 Builder Guide contract", () => {
     const candidate = output();
     candidate.summary =
       "Your destiny is entrepreneurship and this will give you guaranteed income quickly.";
-    expect(validateBuilderGuideOutput(context(), "next_move", candidate)).toEqual({
+    expect(
+      validateBuilderGuideOutput(context(), "next_move", candidate),
+    ).toEqual({
       ok: false,
       code: "GUIDE_OUTPUT_UNSAFE",
     });
@@ -136,7 +145,9 @@ describe("Stage 17 Builder Guide contract", () => {
   });
 
   it("requires the output intent to match the selected Guide question", () => {
-    expect(validateBuilderGuideOutput(context(), "weekly_focus", output())).toEqual({
+    expect(
+      validateBuilderGuideOutput(context(), "weekly_focus", output()),
+    ).toEqual({
       ok: false,
       code: "GUIDE_OUTPUT_INVALID",
     });

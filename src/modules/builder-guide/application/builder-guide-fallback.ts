@@ -67,7 +67,8 @@ function evidenceToCreate(destination: BuilderGuideDestination) {
 
 function sortedCapabilities(context: BuilderGuideContext) {
   return [...context.livingProfile.capabilities].sort((a, b) => {
-    if (a.totalStrength !== b.totalStrength) return b.totalStrength - a.totalStrength;
+    if (a.totalStrength !== b.totalStrength)
+      return b.totalStrength - a.totalStrength;
     return b.evidenceCount - a.evidenceCount;
   });
 }
@@ -78,9 +79,10 @@ export function buildEvidenceBasedBuilderGuide(
 ): BuilderGuideOutput {
   const destination = destinationFor(context);
   const strongest = sortedCapabilities(context)[0] ?? null;
-  const developing = [...context.livingProfile.capabilities]
-    .sort((a, b) => {
-      if (a.totalStrength !== b.totalStrength) return a.totalStrength - b.totalStrength;
+  const developing =
+    [...context.livingProfile.capabilities].sort((a, b) => {
+      if (a.totalStrength !== b.totalStrength)
+        return a.totalStrength - b.totalStrength;
       return a.evidenceCount - b.evidenceCount;
     })[0] ?? null;
   const selectedPath = context.selectedPath;
@@ -106,7 +108,9 @@ export function buildEvidenceBasedBuilderGuide(
         : "PipuPath does not yet have enough completed action evidence to make a strong improvement observation. The most useful move is to complete a small piece of work that creates proof.",
       evidenceObservations,
       focus: {
-        label: strongest ? `Test ${strongest.label} again` : "Create the first strong signal",
+        label: strongest
+          ? `Test ${strongest.label} again`
+          : "Create the first strong signal",
         rationale: strongest
           ? "Repeated evidence across different actions is more useful than a single strong result when deciding what is genuinely developing."
           : "A completed action gives PipuPath something concrete to learn from instead of relying only on intention.",
@@ -144,7 +148,9 @@ export function buildEvidenceBasedBuilderGuide(
           ]
         : [],
       focus: {
-        label: target ? `Strengthen evidence for ${target.label}` : "Build observable evidence",
+        label: target
+          ? `Strengthen evidence for ${target.label}`
+          : "Build observable evidence",
         rationale:
           "PipuPath should strengthen capability claims from completed proof, not from confidence, aspiration or repeated self-description.",
       },
@@ -175,7 +181,7 @@ export function buildEvidenceBasedBuilderGuide(
           ? context.current.quest.title
           : context.current.project
             ? context.current.project.title
-            : selectedPath?.name ?? "One completed development action",
+            : (selectedPath?.name ?? "One completed development action"),
         rationale:
           "Finishing one proof-bearing action gives you more useful information than spreading effort across several unfinished intentions.",
       },
