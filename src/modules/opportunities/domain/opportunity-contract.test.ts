@@ -68,7 +68,9 @@ describe("Stage 18 Opportunity matching", () => {
   });
 
   it("does not recommend an inactive opportunity kept only for outcome tracking", () => {
-    expect(matchOpportunity(context(), opportunity({ isActive: false }))).toBeNull();
+    expect(
+      matchOpportunity(context(), opportunity({ isActive: false })),
+    ).toBeNull();
   });
 
   it("does not surface a definite country mismatch", () => {

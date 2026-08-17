@@ -98,11 +98,17 @@ describe("Stage 18 Opportunity MVP", () => {
 
   it("keeps closed applications outcome-trackable without re-recommending them", () => {
     expect(hardeningMigration).toContain("'isActive'");
-    expect(hardeningMigration).toContain("builder_state.applied_at is not null");
-    expect(hardeningMigration).not.toContain("'officialUrl', opportunity.official_url");
+    expect(hardeningMigration).toContain(
+      "builder_state.applied_at is not null",
+    );
+    expect(hardeningMigration).not.toContain(
+      "'officialUrl', opportunity.official_url",
+    );
     expect(contract).toContain("if (!opportunity.isActive) return null");
     expect(dal).toContain("trackedApplications");
-    expect(builderPage).toContain("Tracked applications that are no longer active");
+    expect(builderPage).toContain(
+      "Tracked applications that are no longer active",
+    );
     expect(builderPage).toContain("official external link is disabled");
   });
 

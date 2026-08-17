@@ -340,7 +340,10 @@ export default async function OpportunitiesPage({
       </section>
 
       {workspace.trackedApplications.length > 0 ? (
-        <section className="mt-12" aria-labelledby="tracked-applications-heading">
+        <section
+          className="mt-12"
+          aria-labelledby="tracked-applications-heading"
+        >
           <p className="text-gold text-xs font-semibold tracking-wide uppercase">
             Your application history
           </p>

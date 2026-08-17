@@ -158,9 +158,7 @@ export type OpportunityAdminState = z.infer<typeof opportunityAdminStateSchema>;
 export type OpportunityOutcome = z.infer<typeof opportunityOutcomeSchema>;
 
 export type OpportunityMatchTier =
-  | "strong_match"
-  | "possible_match"
-  | "eligibility_check";
+  "strong_match" | "possible_match" | "eligibility_check";
 
 export type OpportunityMatchContext = {
   ageBand: "under_13" | "13_15" | "16_17" | "18_24" | "25_plus" | "unknown";
