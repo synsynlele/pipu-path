@@ -181,7 +181,7 @@ export default async function HomePage() {
           </Surface>
         </section>
 
-        <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+        <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-6">
           <StatusCard
             label="Active Mission"
             title={state.mission?.title ?? "Not chosen yet"}
@@ -232,6 +232,12 @@ export default async function HomePage() {
             title="Builder Network"
             detail="Discover opt-in adult Builders, exchange requests and share contact details only by explicit consent."
             href="/connect"
+          />
+          <StatusCard
+            label="Builder Guide"
+            title="Ask what matters next"
+            detail="Get private guidance grounded in your Living Builder Profile and current development evidence."
+            href="/guide"
           />
         </section>
       </main>
