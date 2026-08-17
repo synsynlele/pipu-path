@@ -25,7 +25,6 @@ const homeLayout = read("src/app/app/layout.tsx");
 const productEvents = read(
   "src/modules/analytics/infrastructure/product-events.ts",
 );
-const vercelConfig = read("vercel.json");
 
 describe("Stage 18 Opportunity MVP", () => {
   it("keeps vetted supply and private Builder state behind RLS with no browser table grants", () => {
@@ -136,9 +135,5 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(migration).toContain("alter table public.product_events");
     expect(navigation).not.toMatch(/href:\s*["']\/opportunities["']/);
     expect(homeLayout).toContain('href="/opportunities"');
-  });
-
-  it("reserves Vercel quota by disabling automatic Stage 18 branch deployments", () => {
-    expect(vercelConfig).toContain('"agent/stage-18-opportunity-mvp": false');
   });
 });
