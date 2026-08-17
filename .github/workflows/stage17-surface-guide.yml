@@ -1,4 +1,4 @@
-name: Stage 17 finalise candidate formatting
+name: Stage 17 candidate formatter
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  update:
+  format:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -23,58 +23,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Surface and format Stage 17
+      - run: npx prettier --write src/app/app/page.tsx src/app/guide/page.tsx src/modules/builder-guide/application/builder-guide-actions.ts src/modules/builder-guide/application/builder-guide-fallback.test.ts src/modules/builder-guide/application/builder-guide-fallback.ts src/modules/builder-guide/domain/builder-guide-contract.test.ts src/modules/builder-guide/infrastructure/builder-guide-dal.ts tests/integration/stage-17-ai-personal-builder-guide.test.ts
+      - name: Commit formatting and remove formatter
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          home_path = Path("src/app/app/page.tsx")
-          home = home_path.read_text().replace("xl:grid-cols-5", "xl:grid-cols-6")
-          if 'href="/guide"' not in home:
-              pattern = r'(\s*<StatusCard\s+label="Connect"[\s\S]*?href="/connect"\s*/>)'
-              match = re.search(pattern, home)
-              if not match:
-                  raise SystemExit("Home Connect card anchor not found")
-              guide = '''
-          <StatusCard
-            label="Builder Guide"
-            title="Ask what matters next"
-            detail="Get private guidance grounded in your Living Builder Profile and current development evidence."
-            href="/guide"
-          />'''
-              home = home[:match.end()] + guide + home[match.end():]
-          home_path.write_text(home)
-
-          profile_path = Path("src/app/profile/page.tsx")
-          profile = profile_path.read_text()
-          if 'Open Builder Guide' not in profile:
-              anchor = '''            {baseline ? (
-              <form action={refreshLivingBuilderProfileAction}>'''
-              if anchor not in profile:
-                  raise SystemExit("Profile refresh form anchor not found")
-              guide = '''            {baseline ? (
-              <ButtonLink href="/guide" variant="secondary">
-                Open Builder Guide
-              </ButtonLink>
-            ) : null}
-'''
-              profile = profile.replace(anchor, guide + anchor, 1)
-          profile_path.write_text(profile)
-          PY
-          npx prettier --write \
-            src/app/app/page.tsx \
-            src/app/profile/page.tsx \
-            src/app/guide/page.tsx \
-            src/modules/builder-guide/application/builder-guide-actions.ts \
-            src/modules/builder-guide/application/builder-guide-fallback.test.ts \
-            src/modules/builder-guide/application/builder-guide-fallback.ts \
-            src/modules/builder-guide/domain/builder-guide-contract.test.ts \
-            src/modules/builder-guide/infrastructure/builder-guide-dal.ts \
-            tests/integration/stage-17-ai-personal-builder-guide.test.ts
           rm .github/workflows/stage17-surface-guide.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "feat(stage17): surface and format Personal Builder Guide"
+          git commit -m "chore(stage17): format implementation candidate"
           git push origin HEAD:agent/stage-17-ai-personal-builder-guide
