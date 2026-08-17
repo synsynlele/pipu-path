@@ -22,7 +22,7 @@
 | 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                            |
 | 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit and production verification                              |
 | 15 — Builder Collaboration MVP          | Complete / released        | Project collaboration, contribution evidence, mutual completion, relationship safety and production validation                 |
-| 16 — Living Builder Profile             | Complete / released        | Private versioned evidence profile, deterministic capability progression, feedback and production validation                    |
+| 16 — Living Builder Profile             | Complete / released        | Private versioned evidence profile, deterministic capability progression, feedback and production validation                   |
 | 17 — AI Personal Builder Guide          | Complete / released        | Bounded evidence-aware Guide, Supabase verification, authenticated browser proof, merged-main CI and production Vercel success |
 | 18 — Curated Opportunity MVP            | Release candidate          | Supabase lifecycle/security proof, deterministic matching, deliberate Preview and 3/3 authenticated browser proof passed       |
 
