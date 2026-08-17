@@ -1,4 +1,4 @@
-name: Stage 15 authenticated Preview proof
+name: Stage 15 authenticated Preview proof retry
 
 on:
   push:
