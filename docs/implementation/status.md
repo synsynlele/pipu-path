@@ -22,7 +22,7 @@
 | 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                              |
 | 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit and production verification                                |
 | 15 — Builder Collaboration MVP          | Complete / released        | Project collaboration, contribution evidence, mutual completion, relationship safety, staging/Preview/main/production validation |
-| 16 — Living Builder Profile             | Release candidate          | Private versioned profile, deterministic action evidence, feedback, staging DB proof and authenticated Preview verification       |
+| 16 — Living Builder Profile             | Release candidate          | Private versioned profile, deterministic action evidence, feedback, staging DB proof and authenticated Preview verification      |
 
 ## Stage 15 release evidence
 
