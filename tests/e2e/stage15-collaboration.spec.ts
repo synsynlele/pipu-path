@@ -79,7 +79,9 @@ test("collaboration detail exposes the safe agreement but not hidden product fie
       { exact: true },
     ),
   ).toBeVisible();
-  await expect(page.locator("body")).not.toContainText("Problems you care about");
+  await expect(page.locator("body")).not.toContainText(
+    "Problems you care about",
+  );
   await expect(page.locator("body")).not.toContainText("Private contact email");
   await expect(page.locator("body")).not.toContainText("Nortnspoil reflection");
 });
