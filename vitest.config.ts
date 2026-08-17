@@ -65,6 +65,8 @@ export default defineConfig({
         "src/modules/portfolio/application/portfolio-actions.ts",
         "src/modules/portfolio/infrastructure/**",
         "src/modules/portfolio/ui/**",
+        "src/modules/opportunities/application/**",
+        "src/modules/opportunities/infrastructure/**",
       ],
       thresholds: { lines: 80, functions: 80, branches: 75, statements: 80 },
     },
