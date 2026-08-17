@@ -39,6 +39,8 @@ export default defineConfig({
         "src/modules/collaboration/application/**",
         "src/modules/collaboration/infrastructure/**",
         "src/modules/collaboration/ui/**",
+        "src/modules/builder-guide/application/builder-guide-actions.ts",
+        "src/modules/builder-guide/infrastructure/**",
         "src/modules/economic-pathways/application/economic-pathway-actions.ts",
         "src/modules/economic-pathways/infrastructure/**",
         "src/modules/economic-pathways/ui/**",

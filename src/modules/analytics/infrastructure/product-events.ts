@@ -16,6 +16,8 @@ export const productEventNames = [
   "collaboration_accepted",
   "collaboration_contribution_added",
   "collaboration_completed",
+  "builder_guide_generated",
+  "builder_guide_feedback",
 ] as const;
 
 export type ProductEventName = (typeof productEventNames)[number];
@@ -27,6 +29,7 @@ export const productFeatureKeys = [
   "build",
   "portfolio",
   "connect",
+  "guide",
 ] as const;
 
 export type ProductFeatureKey = (typeof productFeatureKeys)[number];
