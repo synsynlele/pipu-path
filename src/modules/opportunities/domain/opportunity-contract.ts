@@ -48,6 +48,10 @@ const tagSchema = z
   .max(60)
   .regex(/^[a-z0-9][a-z0-9 +&/._-]*$/i);
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const httpsUrlSchema = z
+  .string()
+  .url()
+  .refine((value) => value.startsWith("https://"));
 
 export const opportunityBuilderStateSchema = z.object({
   savedAt: z.string().datetime({ offset: true }).nullable(),
@@ -72,19 +76,17 @@ export const opportunityCatalogItemSchema = z.object({
   deliveryMode: opportunityDeliveryModeSchema,
   pathwayTags: z.array(tagSchema).max(12),
   capabilityTags: z.array(tagSchema).max(12),
-  officialUrl: z
-    .string()
-    .url()
-    .refine((value) => value.startsWith("https://")),
   deadlineDate: dateSchema.nullable(),
+  isActive: z.boolean(),
   state: opportunityBuilderStateSchema,
 });
 
 export const opportunityCatalogSchema = z.array(opportunityCatalogItemSchema);
 
 export const opportunityAdminItemSchema = opportunityCatalogItemSchema
-  .omit({ state: true })
+  .omit({ state: true, isActive: true })
   .extend({
+    officialUrl: httpsUrlSchema,
     reviewStatus: opportunityReviewStatusSchema,
     publicationStatus: opportunityPublicationStatusSchema,
     reviewNotes: z.string().max(1000).nullable(),
@@ -116,10 +118,7 @@ export const opportunityAdminInputSchema = z
     deliveryMode: opportunityDeliveryModeSchema,
     pathwayTags: z.array(tagSchema).max(12),
     capabilityTags: z.array(tagSchema).max(12),
-    officialUrl: z
-      .string()
-      .url()
-      .refine((value) => value.startsWith("https://")),
+    officialUrl: httpsUrlSchema,
     deadlineDate: dateSchema.nullable(),
   })
   .superRefine((value, context) => {
@@ -159,7 +158,9 @@ export type OpportunityAdminState = z.infer<typeof opportunityAdminStateSchema>;
 export type OpportunityOutcome = z.infer<typeof opportunityOutcomeSchema>;
 
 export type OpportunityMatchTier =
-  "strong_match" | "possible_match" | "eligibility_check";
+  | "strong_match"
+  | "possible_match"
+  | "eligibility_check";
 
 export type OpportunityMatchContext = {
   ageBand: "under_13" | "13_15" | "16_17" | "18_24" | "25_plus" | "unknown";
@@ -289,6 +290,8 @@ export function matchOpportunity(
   context: OpportunityMatchContext,
   opportunity: OpportunityCatalogItem,
 ): OpportunityMatch | null {
+  if (!opportunity.isActive) return null;
+
   const age = ageEligibility(context, opportunity);
   const geography = geographyEligibility(context, opportunity);
 
