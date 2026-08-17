@@ -4,24 +4,24 @@
 **Stage status:** Release candidate — staging and authenticated Preview verified  
 **Last updated:** 2026-08-17
 
-| Stage                                   | Status                                | Evidence                                                                                                                                          |
-| --------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0 — Governance and architecture         | Complete / released                   | Constitution, boundaries, ADRs and implementation discipline                                                                                      |
-| 1 — Engineering foundation              | Complete / released                   | Runtime, design system, config, logging, tests and CI                                                                                             |
-| 2 — Identity and access                 | Complete / released                   | Auth, private identity, consent, recovery and RLS                                                                                                 |
-| 3 — Discovery                           | Complete / released                   | Fifteen-question evidence, review and persistence                                                                                                 |
-| 4 — Human Potential Profile             | Complete / released                   | Private synthesis, feedback and provenance                                                                                                        |
-| 5 — Practical Mission                   | Complete / released                   | Generation, refinement, activation and recovery                                                                                                   |
-| 6 — Practical Builder Journey           | Complete / released                   | Ordered milestones, activation and recovery                                                                                                       |
-| 7 — HQLS Quest Execution                | Complete / released                   | Action, evidence, Nortnspoil reflection, XP and progression                                                                                       |
-| 8 — Builder Project MVP                 | Complete / released                   | Quest-linked Project and proof-backed milestones                                                                                                  |
-| 9 — Selective Project Portfolio         | Complete / released                   | Consent, safe projection, publish, withdraw and republish                                                                                         |
-| 10 — MVP Launch Readiness               | Complete / released                   | Production-aligned shell, OAuth hardening and release operations                                                                                  |
-| 11 — Connect + Growth Cycles            | Complete / released                   | Adult-safe discovery, requests, accepted network, contact consent, blocking/reporting and renewable Journey cycles                                |
-| 12 — Economic Pathways MVP              | Complete / released                   | Possible Paths, strength-to-value guidance, path selection, 30-Day Pathway and First Value Challenge integration                                  |
-| 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified            | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                                                |
-| 14 — Retention Intelligence Foundation  | Complete / released                   | Mission Control, private feature telemetry, admin authorization/audit, aggregate analytics, staging/Preview/main/production verification           |
-| 15 — Builder Collaboration MVP          | Release candidate                     | Structured Project collaboration, contribution evidence, mutual completion, relationship safety, staging verification and authenticated Preview |
+| Stage                                   | Status                     | Evidence                                                                                                                                        |
+| --------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 — Governance and architecture         | Complete / released        | Constitution, boundaries, ADRs and implementation discipline                                                                                    |
+| 1 — Engineering foundation              | Complete / released        | Runtime, design system, config, logging, tests and CI                                                                                           |
+| 2 — Identity and access                 | Complete / released        | Auth, private identity, consent, recovery and RLS                                                                                               |
+| 3 — Discovery                           | Complete / released        | Fifteen-question evidence, review and persistence                                                                                               |
+| 4 — Human Potential Profile             | Complete / released        | Private synthesis, feedback and provenance                                                                                                      |
+| 5 — Practical Mission                   | Complete / released        | Generation, refinement, activation and recovery                                                                                                 |
+| 6 — Practical Builder Journey           | Complete / released        | Ordered milestones, activation and recovery                                                                                                     |
+| 7 — HQLS Quest Execution                | Complete / released        | Action, evidence, Nortnspoil reflection, XP and progression                                                                                     |
+| 8 — Builder Project MVP                 | Complete / released        | Quest-linked Project and proof-backed milestones                                                                                                |
+| 9 — Selective Project Portfolio         | Complete / released        | Consent, safe projection, publish, withdraw and republish                                                                                       |
+| 10 — MVP Launch Readiness               | Complete / released        | Production-aligned shell, OAuth hardening and release operations                                                                                |
+| 11 — Connect + Growth Cycles            | Complete / released        | Adult-safe discovery, requests, accepted network, contact consent, blocking/reporting and renewable Journey cycles                              |
+| 12 — Economic Pathways MVP              | Complete / released        | Possible Paths, strength-to-value guidance, path selection, 30-Day Pathway and First Value Challenge integration                                |
+| 13 — KHP-OS Institutional Cohort Bridge | PipuPath boundary verified | Privacy-thresholded cohort bridge live; final real cross-product KHP-OS pairing remains outstanding                                             |
+| 14 — Retention Intelligence Foundation  | Complete / released        | Mission Control, private feature telemetry, admin authorization/audit, aggregate analytics, staging/Preview/main/production verification        |
+| 15 — Builder Collaboration MVP          | Release candidate          | Structured Project collaboration, contribution evidence, mutual completion, relationship safety, staging verification and authenticated Preview |
 
 ## Stage 14 release evidence
 
