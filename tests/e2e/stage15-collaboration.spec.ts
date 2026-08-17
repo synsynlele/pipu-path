@@ -38,13 +38,11 @@ test("authenticated Builder sees the structured collaboration surface", async ({
       { exact: true },
     ),
   ).toBeVisible();
-  await expect(page.getByText(/unrestricted chat, likes or popularity scores/i)).toBeVisible();
+  await expect(
+    page.getByText(/unrestricted chat, likes or popularity scores/i),
+  ).toBeVisible();
 
-  await page
-    .getByRole("link", { name: "Open Collaboration" })
-    .filter({ visible: true })
-    .first()
-    .click();
+  await page.getByRole("link", { name: "Open Collaboration" }).first().click();
 
   await expect(
     page.getByRole("heading", {
@@ -60,7 +58,9 @@ test("authenticated Builder sees the structured collaboration surface", async ({
       { exact: true },
     ),
   ).toBeVisible();
-  await expect(page.getByText(/private development data belonging to either Builder/i)).toBeVisible();
+  await expect(
+    page.getByText(/private development data belonging to either Builder/i),
+  ).toBeVisible();
 });
 
 test("collaboration detail exposes the safe agreement but not hidden product fields", async ({
@@ -70,7 +70,9 @@ test("collaboration detail exposes the safe agreement but not hidden product fie
   await page.goto("/connect/collaborations");
   await page.getByRole("link", { name: "Open Collaboration" }).first().click();
 
-  await expect(page.getByText("Preview verification partner", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Preview verification partner", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByText(
       "Review the structured collaboration workspace and contribute evidence safely.",
