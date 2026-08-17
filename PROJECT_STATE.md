@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 16 — Living Builder Profile
 
-**Stage status:** IMPLEMENTATION CANDIDATE
+**Stage status:** RELEASE CANDIDATE — STAGING VERIFIED, AUTHENTICATED PREVIEW PENDING
 
 **Released product stages:** Stage 0 through Stage 15
 
@@ -12,7 +12,7 @@
 
 **Review surface:** GitHub pull request #29
 
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 15 is live. Stage 16 migration `20260817191000_stage_16_living_builder_profile` is not yet applied and must pass repository validation before authorised staging execution.
+**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 15 is live. Stage 16 migration `20260817191000_stage_16_living_builder_profile` is applied and behaviorally verified. Authenticated Preview verification remains the next release gate.
 
 **Last updated:** 2026-08-17
 
@@ -26,7 +26,7 @@ Stage 15 is released on `main`. Its structured Builder Collaboration layer passe
 
 Stage 13's privacy-thresholded PipuPath cohort boundary remains present in production, while the final real KHP-OS → PipuPath cross-product pairing remains a separate outstanding integration gate.
 
-## Stage 16 implementation candidate
+## Stage 16 release candidate
 
 Stage 16 adds a private Living Builder Profile that distinguishes Discovery potential from demonstrated action.
 
@@ -41,6 +41,17 @@ The candidate adds:
 - exact private evidence links behind every capability claim;
 - Builder feedback: `accurate`, `needs_context` or `not_representative`;
 - no AI identity mutation and no automatic publication.
+
+## Stage 16 authorised staging verification
+
+- Migration `20260817191000_stage_16_living_builder_profile` is applied.
+- All four Stage 16 persistence tables have RLS enabled.
+- `anon` and `authenticated` have no direct table select, insert or update privileges.
+- Authenticated users have execute access only to the allow-listed Stage 16 profile, refresh and feedback RPCs.
+- A rollback-only authenticated database proof created version 1, derived capability claims from completed action, verified a Project execution claim and exact `/projects/...` evidence link, recorded Builder feedback, created version 2 and preserved two-version history.
+- The proof asserted that raw Project, Quest/reflection and contact-field names were absent from the safe profile projection.
+- The proof transaction rolled back completely; cleanup checks returned zero Stage 16 profile versions, claims and feedback for the verification fixture.
+- Generated Supabase TypeScript output confirms the Stage 16 tables, enums and RPC signatures exist in the live schema.
 
 ## Stage 16 evidence rule
 
@@ -62,12 +73,10 @@ Stage 16 does not add a generic chatbot, employability score, personality diagno
 
 Stage 16 must not be called released until:
 
-1. the complete repository validator passes on the implementation candidate;
-2. the Stage 16 migration is applied and behaviorally verified on authorised staging;
-3. authenticated Preview verification proves the private profile, evidence projection and feedback boundary;
-4. the exact approved PR head passes repository CI and the matching Vercel check;
-5. PR #29 is merged intentionally;
-6. merged-main CI passes; and
-7. the production Vercel deployment is confirmed healthy.
+1. authenticated Preview verification proves the private profile and evidence projection boundary;
+2. the exact approved PR head passes the complete repository validator and matching Vercel check;
+3. PR #29 is merged intentionally;
+4. merged-main CI passes; and
+5. the production Vercel deployment is confirmed healthy.
 
 Stage 17 — AI Personal Builder Guide remains deferred until Stage 16 is released and explicitly authorised.
