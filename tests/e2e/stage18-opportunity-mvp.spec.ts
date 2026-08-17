@@ -25,6 +25,17 @@ test("anonymous users cannot enter Opportunities", async ({ page }) => {
   await expect(page).toHaveURL(/\/login/);
 });
 
+test("authenticated non-admin cannot enter Opportunity Supply", async ({
+  page,
+}) => {
+  await signIn(page);
+  const response = await page.goto("/admin/opportunities");
+  expect(response?.status()).toBe(404);
+  await expect(
+    page.getByText("Mission Control · Opportunity Supply", { exact: true }),
+  ).toHaveCount(0);
+});
+
 test("authenticated Builder can evaluate and self-track a vetted opportunity", async ({
   page,
 }) => {
@@ -46,18 +57,25 @@ test("authenticated Builder can evaluate and self-track a vetted opportunity", a
   ).toBeVisible();
 
   const opportunityHeading = page.getByRole("heading", { name: proofTitle });
-  if ((await opportunityHeading.count()) === 0) {
-    test.skip(true, "Stage 18 vetted browser-proof opportunity is not seeded.");
-  }
-  await expect(opportunityHeading).toBeVisible();
+  await expect(
+    opportunityHeading,
+    `Expected the deliberate Stage 18 browser-proof opportunity ${proofTitle} to be seeded.`,
+  ).toBeVisible();
 
   const card = opportunityHeading.locator("xpath=ancestor::article[1]");
-  const cardRoot = (await card.count()) > 0
-    ? card
-    : opportunityHeading.locator("xpath=ancestor::div[contains(@class,'p-6')][1]");
+  const cardRoot =
+    (await card.count()) > 0
+      ? card
+      : opportunityHeading.locator(
+          "xpath=ancestor::div[contains(@class,'p-6')][1]",
+        );
 
-  await expect(cardRoot.getByText("Why this may fit", { exact: true })).toBeVisible();
-  await expect(cardRoot.getByText("Readiness / checks", { exact: true })).toBeVisible();
+  await expect(
+    cardRoot.getByText("Why this may fit", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    cardRoot.getByText("Readiness / checks", { exact: true }),
+  ).toBeVisible();
   await expect(
     cardRoot.getByRole("button", { name: "Open official opportunity" }),
   ).toBeVisible();
