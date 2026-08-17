@@ -3,7 +3,8 @@ import { expect, test, type Page } from "@playwright/test";
 const email = process.env.E2E_STAGE3_EMAIL;
 const password = process.env.E2E_STAGE3_PASSWORD;
 const proofTitle =
-  process.env.E2E_STAGE18_OPPORTUNITY_TITLE ?? "Stage18 Browser Proof Opportunity";
+  process.env.E2E_STAGE18_OPPORTUNITY_TITLE ??
+  "Stage18 Browser Proof Opportunity";
 
 async function signIn(page: Page) {
   test.skip(
@@ -102,7 +103,9 @@ test("authenticated Builder can evaluate and self-track a vetted opportunity", a
     page.getByText("Application — self-reported", { exact: true }).first(),
   ).toBeVisible();
   await expect(
-    page.getByText("PipuPath has not independently verified", { exact: false }).first(),
+    page
+      .getByText("PipuPath has not independently verified", { exact: false })
+      .first(),
   ).toBeVisible();
 
   const outcome = page.getByLabel("Outcome").first();
