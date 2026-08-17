@@ -2,7 +2,10 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
-import { getCurrentEconomicPathwayState, getEconomicPathwayContext } from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
+import {
+  getCurrentEconomicPathwayState,
+  getEconomicPathwayContext,
+} from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { getAuthenticatedHomeState } from "@/modules/identity/infrastructure/progress-dal";
 import { getLivingBuilderProfile } from "@/modules/living-builder-profile/infrastructure/living-profile-dal";
@@ -57,7 +60,9 @@ export function destinationHref(
 ) {
   switch (destination) {
     case "current_quest":
-      return context.current.quest ? `/quests/${context.current.quest.id}` : "/journey";
+      return context.current.quest
+        ? `/quests/${context.current.quest.id}`
+        : "/journey";
     case "current_project":
       return context.current.project
         ? `/projects/${context.current.project.id}`
@@ -104,15 +109,15 @@ export async function getBuilderGuideContext(): Promise<BuilderGuideContext | nu
       summary: baseline.summary,
     },
     livingProfile: {
-      id: livingProfile.profile.id,
-      version: livingProfile.profile.version,
+      id: livingProfile.id,
+      version: livingProfile.version,
       capabilities: livingProfile.capabilities.map((claim) => ({
         id: claim.id,
-        label: claim.capabilityLabel,
+        label: claim.label,
         level: claim.level,
         evidenceCount: claim.evidenceCount,
         totalStrength: claim.totalStrength,
-        feedbackType: claim.feedback?.feedbackType ?? null,
+        feedbackType: claim.feedback?.type ?? null,
         evidence: claim.evidence.slice(0, 3).map((evidence) => ({
           sourceTitle: evidence.sourceTitle,
           summary: evidence.summary,
@@ -132,10 +137,18 @@ export async function getBuilderGuideContext(): Promise<BuilderGuideContext | nu
         : null,
     current: {
       mission: home.mission
-        ? { id: home.mission.id, title: home.mission.title, status: home.mission.status }
+        ? {
+            id: home.mission.id,
+            title: home.mission.title,
+            status: home.mission.status,
+          }
         : null,
       journey: home.journey
-        ? { id: home.journey.id, title: home.journey.title, status: home.journey.status }
+        ? {
+            id: home.journey.id,
+            title: home.journey.title,
+            status: home.journey.status,
+          }
         : null,
       milestone: home.milestone
         ? {
@@ -145,7 +158,11 @@ export async function getBuilderGuideContext(): Promise<BuilderGuideContext | nu
           }
         : null,
       quest: home.quest
-        ? { id: home.quest.id, title: home.quest.title, status: home.quest.status }
+        ? {
+            id: home.quest.id,
+            title: home.quest.title,
+            status: home.quest.status,
+          }
         : null,
       project: home.project
         ? {
@@ -268,19 +285,27 @@ export async function saveBuilderGuideRun(input: {
   if (error) throw new Error("GUIDE_SAVE_FAILED");
   const parsed = parseRun(data);
   if (!parsed) throw new Error("GUIDE_SAVE_FAILED");
-  return { ...parsed, destinationHref: destinationHref(input.context, parsed.advice.nextAction.destination) };
+  return {
+    ...parsed,
+    destinationHref: destinationHref(
+      input.context,
+      parsed.advice.nextAction.destination,
+    ),
+  };
 }
 
-function parseRun(data: unknown): Omit<BuilderGuideRun, "destinationHref" | "feedback"> | null {
+function parseRun(
+  data: unknown,
+): Omit<BuilderGuideRun, "destinationHref" | "feedback"> | null {
   if (!data || typeof data !== "object") return null;
   const row = data as Record<string, unknown>;
   const advice = builderGuideOutputSchema.safeParse(row.advice);
   if (!advice.success) return null;
-  const intent = advice.data.intent;
-  const provider = row.provider === "openai" ? "openai" : "evidence_fallback";
+  const provider =
+    row.provider === "openai" ? "openai" : "evidence_fallback";
   return {
     id: String(row.id),
-    intent,
+    intent: advice.data.intent,
     advice: advice.data,
     provider,
     model: String(row.model ?? "unknown"),
@@ -321,7 +346,10 @@ export async function getBuilderGuideHistory(
       ) as Record<string, unknown> | undefined;
       return {
         ...parsed,
-        destinationHref: destinationHref(context, parsed.advice.nextAction.destination),
+        destinationHref: destinationHref(
+          context,
+          parsed.advice.nextAction.destination,
+        ),
         feedback: matching
           ? {
               verdict:
