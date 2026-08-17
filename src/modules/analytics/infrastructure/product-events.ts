@@ -12,6 +12,10 @@ export const productEventNames = [
   "first_value_challenge_started",
   "first_value_challenge_completed",
   "feature_viewed",
+  "collaboration_invited",
+  "collaboration_accepted",
+  "collaboration_contribution_added",
+  "collaboration_completed",
 ] as const;
 
 export type ProductEventName = (typeof productEventNames)[number];
@@ -60,17 +64,31 @@ export async function recordProductEventForUser(
   return !error;
 }
 
-export async function recordCurrentUserFeatureView(
-  featureKey: ProductFeatureKey,
-) {
+async function currentUserId() {
   const server = await createServerSupabaseClient();
   const {
     data: { user },
   } = await server.auth.getUser();
-  if (!user) return false;
+  return user?.id ?? null;
+}
+
+export async function recordCurrentUserProductEvent(
+  eventName: ProductEventName,
+  metadata: Record<string, unknown> = {},
+) {
+  const userId = await currentUserId();
+  if (!userId) return false;
+  return recordProductEventForUser(userId, eventName, metadata);
+}
+
+export async function recordCurrentUserFeatureView(
+  featureKey: ProductFeatureKey,
+) {
+  const userId = await currentUserId();
+  if (!userId) return false;
 
   return recordProductEventForUser(
-    user.id,
+    userId,
     "feature_viewed",
     { telemetryVersion: "stage14-v1" },
     featureKey,

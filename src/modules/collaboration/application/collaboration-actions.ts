@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { recordCurrentUserProductEvent } from "@/modules/analytics/infrastructure/product-events";
 import {
   collaborationCloseSchema,
   collaborationCompletionSchema,
@@ -50,6 +51,12 @@ export async function createCollaborationAction(formData: FormData) {
       commitment_note_input: parsed.data.commitmentNote,
     },
   );
+  if (!result.error && result.data) {
+    await recordCurrentUserProductEvent("collaboration_invited", {
+      collaborationId: String(result.data),
+      projectId: parsed.data.projectId,
+    });
+  }
   finish(returnTo, result.error || !result.data ? "error" : "created");
 }
 
@@ -65,6 +72,11 @@ export async function respondCollaborationAction(formData: FormData) {
     collaboration_id_input: parsed.data.collaborationId,
     accept_input: parsed.data.action === "accept",
   });
+  if (!result.error && result.data && parsed.data.action === "accept") {
+    await recordCurrentUserProductEvent("collaboration_accepted", {
+      collaborationId: parsed.data.collaborationId,
+    });
+  }
   finish(returnTo, result.error || !result.data ? "error" : "updated");
 }
 
@@ -104,6 +116,12 @@ export async function addCollaborationContributionAction(formData: FormData) {
       next_step_input: parsed.data.nextStep,
     },
   );
+  if (!result.error && result.data) {
+    await recordCurrentUserProductEvent("collaboration_contribution_added", {
+      collaborationId: parsed.data.collaborationId,
+      contributionId: String(result.data),
+    });
+  }
   finish(returnTo, result.error || !result.data ? "error" : "updated");
 }
 
@@ -118,5 +136,10 @@ export async function confirmCollaborationCompletionAction(formData: FormData) {
     "confirm_stage15_collaboration_completion",
     { collaboration_id_input: parsed.data.collaborationId },
   );
+  if (!result.error && result.data === true) {
+    await recordCurrentUserProductEvent("collaboration_completed", {
+      collaborationId: parsed.data.collaborationId,
+    });
+  }
   finish(returnTo, result.error || result.data === null ? "error" : "updated");
 }
