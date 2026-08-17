@@ -1,0 +1,46 @@
+name: Stage 16 formatter
+
+on:
+  push:
+    branches:
+      - agent/stage-16-living-builder-profile
+    paths:
+      - ".github/workflows/stage16-format.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-16-living-builder-profile
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format Stage 16 files
+        run: |
+          npx prettier --write \
+            src/app/profile/layout.tsx \
+            src/app/profile/page.tsx \
+            src/components/analytics/product-telemetry.test.tsx \
+            src/components/analytics/product-telemetry.tsx \
+            src/components/navigation/app-navigation.test.tsx \
+            src/components/navigation/app-navigation.tsx \
+            src/modules/living-builder-profile/application/living-profile-actions.ts \
+            src/modules/living-builder-profile/domain/living-profile-contract.ts \
+            tests/integration/stage-16-living-builder-profile.test.ts
+      - name: Commit formatting and remove formatter
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm .github/workflows/stage16-format.yml
+          git add -A
+          git commit -m "chore(stage16): format implementation"
+          git push origin HEAD:agent/stage-16-living-builder-profile
