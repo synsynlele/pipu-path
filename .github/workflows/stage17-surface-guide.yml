@@ -49,19 +49,17 @@ jobs:
           profile_path = Path("src/app/profile/page.tsx")
           profile = profile_path.read_text()
           if 'Open Builder Guide' not in profile:
-              anchor = "View Discovery baseline"
-              position = profile.find(anchor)
-              if position < 0:
-                  raise SystemExit("Profile baseline button anchor not found")
-              close = profile.find("</ButtonLink>", position)
-              if close < 0:
-                  raise SystemExit("Profile baseline button close not found")
-              close += len("</ButtonLink>")
-              addition = '''
+              anchor = '''            {baseline ? (
+              <form action={refreshLivingBuilderProfileAction}>'''
+              if anchor not in profile:
+                  raise SystemExit("Profile refresh form anchor not found")
+              guide = '''            {baseline ? (
               <ButtonLink href="/guide" variant="secondary">
                 Open Builder Guide
-              </ButtonLink>'''
-              profile = profile[:close] + addition + profile[close:]
+              </ButtonLink>
+            ) : null}
+'''
+              profile = profile.replace(anchor, guide + anchor, 1)
           profile_path.write_text(profile)
           PY
           npx prettier --write \
