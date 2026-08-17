@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 16 — Living Builder Profile
 
-**Stage status:** RELEASE CANDIDATE — STAGING VERIFIED, AUTHENTICATED PREVIEW PENDING
+**Stage status:** RELEASE CANDIDATE — STAGING + AUTHENTICATED PREVIEW VERIFIED
 
 **Released product stages:** Stage 0 through Stage 15
 
@@ -12,7 +12,7 @@
 
 **Review surface:** GitHub pull request #29
 
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 15 is live. Stage 16 migration `20260817191000_stage_16_living_builder_profile` is applied and behaviorally verified. Authenticated Preview verification remains the next release gate.
+**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`. Stage 15 is live. Stage 16 migration `20260817191000_stage_16_living_builder_profile` is applied and behaviorally verified. The authenticated Stage 16 Vercel Preview proof passed 3/3 checks. Exact-head validation, merge and production health remain release gates.
 
 **Last updated:** 2026-08-17
 
@@ -42,7 +42,7 @@ The candidate adds:
 - Builder feedback: `accurate`, `needs_context` or `not_representative`;
 - no AI identity mutation and no automatic publication.
 
-## Stage 16 authorised staging verification
+## Stage 16 verification evidence
 
 - Migration `20260817191000_stage_16_living_builder_profile` is applied.
 - All four Stage 16 persistence tables have RLS enabled.
@@ -50,8 +50,12 @@ The candidate adds:
 - Authenticated users have execute access only to the allow-listed Stage 16 profile, refresh and feedback RPCs.
 - A rollback-only authenticated database proof created version 1, derived capability claims from completed action, verified a Project execution claim and exact `/projects/...` evidence link, recorded Builder feedback, created version 2 and preserved two-version history.
 - The proof asserted that raw Project, Quest/reflection and contact-field names were absent from the safe profile projection.
-- The proof transaction rolled back completely; cleanup checks returned zero Stage 16 profile versions, claims and feedback for the verification fixture.
+- The database proof transaction rolled back completely; its cleanup check returned zero Stage 16 profile versions, claims and feedback.
 - Generated Supabase TypeScript output confirms the Stage 16 tables, enums and RPC signatures exist in the live schema.
+- Authenticated Vercel Preview run `32055234944`, job `95463741823`, passed **3/3 Playwright checks** with 0 failures.
+- Preview verification proved anonymous denial, the private evidence-backed profile surface, the Discovery baseline link, Project execution evidence, exact private Project links, Builder feedback controls and absence of raw private narrative field names.
+- The Preview test created the first legitimate evidence snapshot for the dedicated authenticated test fixture from its existing completed PipuPath actions; it did not submit capability feedback.
+- The temporary Preview verification workflow was removed after proof.
 
 ## Stage 16 evidence rule
 
@@ -69,12 +73,12 @@ These are product evidence rules, not psychological scores or deterministic labe
 
 Stage 16 does not add a generic chatbot, employability score, personality diagnosis, public capability ranking, automatic portfolio publication, mentor matching or automatic Human Potential Profile mutation.
 
-## Release gate
+## Immediate release gate
 
 Stage 16 must not be called released until:
 
-1. authenticated Preview verification proves the private profile and evidence projection boundary;
-2. the exact approved PR head passes the complete repository validator and matching Vercel check;
+1. the exact final PR head passes the complete repository validator;
+2. the matching Vercel deployment check is green;
 3. PR #29 is merged intentionally;
 4. merged-main CI passes; and
 5. the production Vercel deployment is confirmed healthy.
