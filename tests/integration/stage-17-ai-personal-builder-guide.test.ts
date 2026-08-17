@@ -28,7 +28,9 @@ describe("Stage 17 AI Personal Builder Guide", () => {
     expect(migration).toMatch(
       /revoke all on public\.builder_guide_runs, public\.builder_guide_feedback\s+from public, anon, authenticated;/,
     );
-    expect(migration).toContain("grant select, insert on public.builder_guide_runs to service_role");
+    expect(migration).toContain(
+      "grant select, insert on public.builder_guide_runs to service_role",
+    );
   });
 
   it("keeps Guide prompts bounded to four product questions rather than free chat", () => {
@@ -67,10 +69,13 @@ describe("Stage 17 AI Personal Builder Guide", () => {
     expect(navigation).not.toMatch(/href:\s*["']\/guide["']/);
   });
 
-  it("extends product telemetry without putting Guide advice into product events", () => {
+  it("extends product telemetry without copying Guide advice into telemetry metadata", () => {
     expect(migration).toContain("'builder_guide_generated'");
     expect(migration).toContain("'builder_guide_feedback'");
     expect(migration).toContain("'guide'");
-    expect(generation).not.toContain("advice: validated.value");
+    expect(generation).toContain(
+      'recordProductEventForUser(user.id, "builder_guide_generated"',
+    );
+    expect(generation).toContain("livingProfileVersion:");
   });
 });
