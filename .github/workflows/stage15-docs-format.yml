@@ -1,0 +1,34 @@
+name: Stage 15 final docs formatter
+
+on:
+  push:
+    branches:
+      - agent/stage-15-builder-collaboration-mvp
+    paths:
+      - ".github/workflows/stage15-docs-format.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-15-builder-collaboration-mvp
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write docs/implementation/status.md
+      - name: Commit formatting and remove formatter
+        run: |
+          rm .github/workflows/stage15-docs-format.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(stage15): finalize status formatting"
+          git push origin HEAD:agent/stage-15-builder-collaboration-mvp
