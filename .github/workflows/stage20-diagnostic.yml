@@ -1,9 +1,9 @@
 name: Stage 20 Diagnostic
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/stage-20-opportunity-marketplace
+      - main
 
 permissions:
   contents: read
