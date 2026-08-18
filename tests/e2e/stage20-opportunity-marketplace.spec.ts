@@ -52,7 +52,7 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   await expect(
     page.getByRole("heading", { name: "Exact Builder packets only" }),
   ).toBeVisible();
-  await expect(page.locator("body")).not.toContainText("Builder directory");
+  await expect(page.locator("body")).not.toContainText("Search Builders");
 
   await page.goto("/opportunities");
   await expect(
