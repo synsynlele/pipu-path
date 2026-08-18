@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 18 — Capability Verification  
-**Stage status:** Release candidate — final exact-head browser/release gates in progress  
+**Stage status:** Release candidate — database, Preview and authenticated browser proof verified; merge/production gates remain  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
@@ -13,7 +13,7 @@ Stage 13 — KHP-OS Institutional Cohort Bridge has its PipuPath privacy-thresho
 
 Stages 14–17 are complete and released: Retention Intelligence Foundation, Builder Collaboration MVP, Living Builder Profile and AI Personal Builder Guide.
 
-Stage 18 — Capability Verification is the current release candidate. Database security and the full rollback lifecycle are verified; final Preview and release gates remain.
+Stage 18 — Capability Verification is the current release candidate. Database security, rollback lifecycle, deliberate Vercel Preview and authenticated browser proof are verified; merge and production gates remain.
 
 Stage 19 — Institution Workspace is next and begins only after Stage 18 releases.
 
@@ -36,14 +36,15 @@ The repository previously released a Curated Opportunity MVP under the label “
 - RLS and grants deny direct browser table access; authenticated interaction occurs only through bounded RPCs.
 - Rollback database proof passed request → confirmation → revocation and relationship-break rejection with zero synthetic data left behind.
 - Generated live Supabase types contain the Stage 18 verification table, enum types and all five public RPCs.
-- Repository validation passed before final migration filename/status reconciliation with 237 unit tests plus integration, coverage and production build.
+- Full repository validation passed on the deliberate Preview head `2a770b3d3cc958e78e06c9287e8e910ba2683b42` with 237 unit tests plus structural/integration checks, coverage thresholds and production build.
+- The matching Vercel Preview succeeded.
+- Preview proof run `32127540044`, job `95681332511`, passed 2/2 Chromium checks against that Preview: anonymous denial and authenticated evidence-bound workspace rendering with raw private field names excluded.
 
 ## Remaining release gate
 
-1. Run exact-head `npm run validate` after this reconciliation.
-2. Enable one deliberate Vercel Preview and run the permanent Stage 18 E2E proof.
-3. Remove any temporary Preview-enabling release control if used.
-4. Merge PR #34 intentionally.
-5. Verify merged-main CI and production Vercel health.
+1. Remove the temporary Preview-proof workflow and keep ordinary branch preview suppression.
+2. Run exact final-head `npm run validate`.
+3. Merge PR #34 intentionally.
+4. Verify merged-main CI and production Vercel health.
 
 No Institution Workspace code is permitted inside the Stage 18 PR.
