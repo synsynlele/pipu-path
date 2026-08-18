@@ -1,0 +1,77 @@
+name: Stage 18 Preview Proof
+
+on:
+  push:
+    branches:
+      - agent/stage-18-capability-verification-corrective
+
+permissions:
+  contents: read
+  deployments: read
+
+jobs:
+  preview-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TARGET_SHA: 2a770b3d3cc958e78e06c9287e8e910ba2683b42
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Resolve successful Vercel Preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          preview_url=""
+          for attempt in $(seq 1 60); do
+            deployments="$(curl -fsSL \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/deployments?sha=${TARGET_SHA}&per_page=20")"
+
+            while read -r deployment_id; do
+              [ -n "${deployment_id}" ] || continue
+              statuses="$(curl -fsSL \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses?per_page=20")"
+              candidate="$(printf '%s' "${statuses}" | jq -r '[.[] | select(.state == "success" and (.environment_url // "") != "")][0].environment_url // empty')"
+              if [[ "${candidate}" == https://*.vercel.app* ]]; then
+                preview_url="${candidate}"
+                break
+              fi
+            done < <(printf '%s' "${deployments}" | jq -r '.[].id')
+
+            if [ -n "${preview_url}" ]; then
+              break
+            fi
+            sleep 10
+          done
+
+          if [ -z "${preview_url}" ]; then
+            echo "No successful Vercel Preview environment URL was found for ${TARGET_SHA}." >&2
+            exit 1
+          fi
+
+          echo "Resolved Preview: ${preview_url}"
+          echo "E2E_BASE_URL=${preview_url}" >> "${GITHUB_ENV}"
+      - name: Run Stage 18 authenticated browser proof
+        run: npx playwright test tests/e2e/stage18-capability-verification.spec.ts --project=chromium
+        env:
+          E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
+          E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage18-preview-proof-traces
+          path: test-results
+          if-no-files-found: ignore
