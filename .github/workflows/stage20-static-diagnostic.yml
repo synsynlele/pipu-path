@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  stage20-integration:
+  opportunity-integration:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -19,5 +19,9 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Run Stage 20 integration file only
-        run: npx vitest run --config vitest.integration.config.ts tests/integration/stage-20-opportunity-marketplace.test.ts --reporter=verbose
+      - name: Run Stage 18 and Stage 20 opportunity integration files
+        run: >-
+          npx vitest run --config vitest.integration.config.ts
+          tests/integration/stage-18-opportunity-mvp.test.ts
+          tests/integration/stage-20-opportunity-marketplace.test.ts
+          --reporter=verbose
