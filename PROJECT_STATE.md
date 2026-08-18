@@ -2,11 +2,11 @@
 
 **Current stage:** Stage 21 — Builder Passport/API
 
-**Stage status:** ACTIVE — STATIC VALIDATION HAS PASSED FORMAT/LINT/TYPES/255 UNIT TESTS; COVERAGE RESTORATION TESTS ARE BEING CANONICALIZED BEFORE THE NEXT FULL GATE
+**Stage status:** RELEASE CANDIDATE — STATIC, SUPABASE AND CORRECTIVE AUTHENTICATED/PUBLIC PREVIEW GATES PASSED; FINAL CLEAN-HEAD CI, MERGE AND PRODUCTION VERIFICATION REMAIN
 
 **Released product baseline:** Stages 0–20 are released.
 
-**Stage 20 release:** PR #36 squash-merged on 2026-08-18 as `11af1f10c15b82ba7ff7504d5eee9f5a8fadda70`. Final cleaned-head CI #926 passed, Supabase security/lifecycle/performance verification passed with zero release-fixture residue, authenticated browser proof passed against the corrective Vercel Preview, and production deployment `dpl_3DU6RMNFRfbbiPLiTn7LiWv4iUb9` reached READY on the exact merge commit. The canonical production health endpoint returned `status: ok` and no production error/fatal logs were found after release.
+**Stage 20 release:** PR #36 squash-merged on 2026-08-18 as `11af1f10c15b82ba7ff7504d5eee9f5a8fadda70`. Final cleaned-head CI #926 passed and production deployment `dpl_3DU6RMNFRfbbiPLiTn7LiWv4iUb9` reached READY on the exact merge commit.
 
 **Current Stage 21 branch:** `agent/stage-21-builder-passport-api`
 
@@ -14,9 +14,11 @@
 
 **Stage 21 authority:** `docs/stages/stage-21-builder-passport-api.md`
 
+**Stage 21 release proof:** `docs/stages/stage-21-release-proof.md`
+
 **Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`; Vercel project `copyartint-2860s-projects/pipu-path` linked to `synsynlele/pipu-path`.
 
-**Deployment control:** automatic Vercel Preview deployment is disabled for `agent/stage-21-builder-passport-api`. Stage 21 uses GitHub CI and Supabase verification until the final deliberate Preview gate.
+**Deployment control:** automatic Vercel Preview deployment is restored to disabled for `agent/stage-21-builder-passport-api`; temporary Preview-proof workflow is removed.
 
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API.
 
@@ -26,19 +28,11 @@
 
 `Discovery → Human Potential Profile → Possible Paths → Practical Mission → Journey → HQLS Quests + Evidence → Builder Project → reflection → Portfolio / Connect → structured collaboration → Living Builder Profile → AI Personal Builder Guide → Capability Verification → Institution / Opportunity deployment → Builder Passport portability`
 
-## Released Stage 19 — Institution Workspace
-
-Stage 19 provides the controlled institution-facing surface for privacy-thresholded cohort intelligence and Builder-authorised institution capability confirmation.
-
-## Released Stage 20 — Opportunity Marketplace
-
-Stage 20 extends the Curated Opportunity seed into a trusted deployment marketplace with platform-controlled provider trust, provider-scoped supply, deterministic explainable matching, exact Builder-controlled application packets, bounded provider visibility and complete release verification.
-
 ## Stage 21 — Builder Passport/API
 
-Stage 21 turns selected, already-proven PipuPath evidence into portable proof without creating a public Builder directory or overstating evidence as formal credentials.
+Stage 21 makes selected, already-proven PipuPath evidence portable without creating a public Builder directory or overstating evidence as formal credentials.
 
-Locked and implemented/in-progress boundaries include:
+Implemented and verified boundaries include:
 
 - private `/passport` workspace and `/passport/preview` exact issuance surface;
 - immutable versioned Passport snapshots owned by the Builder;
@@ -50,25 +44,66 @@ Locked and implemented/in-progress boundaries include:
 - bearer-authorised `/api/passport/v1/shares/[shareId]` verification API;
 - service-role-only share resolution after durable rate limiting;
 - live integrity overlay for institution confirmation and Portfolio withdrawal/revocation;
-- no raw private evidence routes, Discovery answers, HPP prose, reflections, contact data or safeguarding/moderation fields in portable output;
-- Builder Passport remains explicitly distinct from government identity, academic credentials and employment verification.
+- no raw private evidence routes, Discovery answers, HPP prose, reflections, contact data, network state or safeguarding/moderation fields in portable output;
+- Builder Passport explicitly remains distinct from government identity, academic credentials and employment verification.
 
-## Current static validation evidence
+## Static gate — passed
 
-- Prettier passes on the implemented Stage 21 product surface after repository canonicalization.
-- Zero-warning lint passes after moving time-dependent share status outside React render and removing effect-driven share URL state.
-- Strict TypeScript passes.
-- 51 unit-test files / 255 unit tests passed before the coverage-restoration batch.
-- Initial Stage 21 coverage gate exposed untested DAL/action/UI/security code rather than product failures. Thresholds remain unchanged.
-- Focused tests now cover Passport cryptographic helpers, owner/service-role DAL boundaries, server-action validation/fail-closed behavior and public fragment-to-bearer verification UI. These tests are being canonicalized before the next full CI run.
+The corrected Stage 21 application head passed the complete repository gate after the first Preview exposed a timestamp-shape defect:
 
-## Stage 21 release discipline
+- formatting;
+- zero-warning lint;
+- strict TypeScript;
+- 56 unit-test files / 287 unit tests;
+- all global coverage thresholds without lowering or exclusions;
+- Stage 0–21 integration/regression suite;
+- production build.
 
-1. canonical formatting and complete repository validation must pass before Supabase deployment;
-2. Stage 21 migrations must then be applied and reconciled with the live Supabase ledger;
-3. RLS, grants, service-role-only resolution, rate limiting, share lifecycle and zero-residue rollback proof must pass live;
-4. one deliberate Vercel Preview is allowed only after static and database gates are green;
-5. authenticated Builder issuance/share plus public bearer verification must pass against the exact Preview;
-6. temporary release fixtures/workflows must be removed;
-7. final cleaned-head CI must pass before PR #37 is intentionally merged;
-8. production deployment must be verified on the exact merge commit.
+CI #1003 passed on corrected head `485f34e4aeb498320fa5b648cbd41be035a7a34d`. The timestamp regression explicitly accepts Supabase/PostgreSQL offset timestamps such as `2026-08-13T11:44:37.334053+00:00` while rejecting zone-less values.
+
+## Supabase gate — passed
+
+Live and repository-reconciled migrations:
+
+- `20260818173546_stage_21_builder_passport_api.sql`
+- `20260818173828_index_stage_21_builder_passport_foreign_keys.sql`
+
+Verified live:
+
+- RLS enabled across all eight Stage 21 tables;
+- no direct `anon` or `authenticated` table CRUD;
+- share storage contains `secret_hash` only, never the raw bearer secret;
+- owner workspace/issue/share RPCs are authenticated boundaries;
+- resolver and durable rate limiter are service-role-only;
+- covering indexes exist for the Stage 21 composite foreign keys;
+- rollback-only lifecycle proof passed issuance, immutable snapshot enforcement, wrong/right bearer behavior, rate limiting, live Portfolio integrity downgrade/link removal, share revocation, Passport supersession and Passport revocation;
+- rollback cleanup left zero synthetic Stage 21 residue.
+
+## Preview/browser gate — passed after one real defect correction
+
+First deliberate Preview `dpl_3J1qNifcBfHK4pJCsiuSUucQ2aFu` on `55b6074f25600db7df0ec08e94ea95394bdaade5` reached READY. Anonymous private-route denial and invalid-bearer fail-closed behavior passed, but authenticated `/passport` failed with `PASSPORT_WORKSPACE_INVALID`.
+
+Runtime investigation proved the database was returning valid PostgreSQL offset timestamps while the Stage 21 Zod contract accepted only the stricter UTC form. The contract was corrected systematically for both private workspace and public Passport timestamps and regression-tested against the exact live `+00:00` shape. Full CI #1003 then passed.
+
+Corrective Preview `dpl_FwvJdLM1ZQT1zcdgLU3zShLGztu7` on exact source `ecb8f16f027b4ac7e8ae10d458391fc04ac8ee34` reached READY. Stage 21 Final Preview Proof run `32170096576` passed completely:
+
+- anonymous `/passport` denial;
+- invalid bearer API/shell fail-closed behavior;
+- authenticated exact Passport issuance;
+- one-time hash-backed share creation;
+- direct bearer API verification;
+- fresh anonymous human verification with the fragment removed from browser history;
+- private/internal fields absent from public output;
+- share revocation followed by bearer rejection;
+- Passport revocation.
+
+All temporary release records were removed afterward. Final verification shows 0 fixture Passport versions, 0 shares, 0 Passport events, 0 release rate-limit buckets, and the CI Builder display name restored to `null`.
+
+## Remaining Stage 21 release gate
+
+1. final restored-suppression PR head passes complete repository CI;
+2. PR #37 is intentionally squash-merged;
+3. production Vercel reaches READY on the exact merge commit;
+4. canonical production health and runtime errors are verified.
+
+Stage 22 work must not enter PR #37. The next roadmap stage must be determined from the repository/product roadmap after Stage 21 is released rather than invented in advance.
