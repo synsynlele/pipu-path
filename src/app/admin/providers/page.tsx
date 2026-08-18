@@ -198,7 +198,7 @@ export default async function AdminProvidersPage({
   } catch (error) {
     if (
       error instanceof Error &&
-      error.message.includes("PLATFORM_ADMIN_REQUIRED")
+      error.message.includes("OPPORTUNITY_ADMIN_REQUIRED")
     ) {
       notFound();
     }
