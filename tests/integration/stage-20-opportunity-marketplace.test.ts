@@ -23,8 +23,9 @@ if (!hardeningFile) throw new Error("Stage 20 hardening migration missing");
 const hardening = read(`supabase/migrations/${hardeningFile}`);
 const authority = read("docs/stages/stage-20-opportunity-marketplace.md");
 const projectState = read("PROJECT_STATE.md");
-const implementationStatus = read("docs/implementation/status.md");
-const vercelConfig = read("vercel.json");
+const vercelConfig = JSON.parse(read("vercel.json")) as {
+  git?: { deploymentEnabled?: Record<string, boolean> };
+};
 const routeMap = read("docs/implementation/route-map.md");
 
 describe("Stage 20 Opportunity Marketplace structure", () => {
@@ -136,15 +137,15 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
     expect(migration).not.toMatch(/provider_[a-z_]*builder_directory/i);
   });
 
-  it("keeps Stage 20 Preview suppression locked after release proof", () => {
-    expect(projectState.toLowerCase()).toContain(
-      "stage 20 branch preview suppression is restored",
+  it("keeps the released Stage 20 branch deployment-suppressed", () => {
+    expect(projectState).toContain("Stages 0–20 are released");
+    expect(projectState).toContain(
+      "11af1f10c15b82ba7ff7504d5eee9f5a8fadda70",
     );
-    expect(vercelConfig).toContain(
-      '"agent/stage-20-opportunity-marketplace": false',
-    );
-    expect(implementationStatus).toContain(
-      "No further Stage 20 Preview is expected before merge.",
-    );
+    expect(
+      vercelConfig.git?.deploymentEnabled?.[
+        "agent/stage-20-opportunity-marketplace"
+      ],
+    ).toBe(false);
   });
 });
