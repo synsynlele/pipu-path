@@ -1,6 +1,6 @@
 # Route map
 
-Stage 20 classifies every application route. Server authorization is repeated
+Stage 21 classifies every application route. Server authorization is repeated
 inside each private data boundary; middleware is navigation defence, not the
 sole authorization control.
 
@@ -22,6 +22,10 @@ sole authorization control.
 | `/onboarding/discovery/profile/complete`    | Profile owner                                                     | Mission handoff                                                          |
 | `/profile`                                  | Auth-only profile owner                                           | Private Living Builder Profile, evidence, feedback and version history   |
 | `/profile/verification`                     | Auth-only profile owner / exact authorised verifier               | Collaborator and Builder-authorised institution capability verification  |
+| `/passport`                                 | Auth-only profile owner                                           | Current Passport, version history, share creation and revocation          |
+| `/passport/preview`                         | Eligible adult profile owner                                      | Exact selected proof preview and Passport issuance consent               |
+| `/passport/share/[shareId]`                 | Public no-index verification shell                                | Read fragment secret client-side; no Passport data in initial request    |
+| `/api/passport/v1/shares/[shareId]`         | Public capability API; bearer + durable rate limit                | Service-role-only resolution of one exact, valid Passport share          |
 | `/mission`, `/mission/complete`             | Auth-only eligible owner                                          | Generate, refine, activate and continue Practical Mission                |
 | `/journey`, `/journey/complete`             | Active Mission owner                                              | Generate, refine, activate and continue Builder Journey / 30-Day Pathway |
 | `/build`                                    | Auth-only contextual router                                       | Active Project first, then Quest, then Project creation                  |
