@@ -23,6 +23,8 @@ if (!hardeningFile) throw new Error("Stage 20 hardening migration missing");
 const hardening = read(`supabase/migrations/${hardeningFile}`);
 const authority = read("docs/stages/stage-20-opportunity-marketplace.md");
 const projectState = read("PROJECT_STATE.md");
+const implementationStatus = read("docs/implementation/status.md");
+const vercelConfig = read("vercel.json");
 const routeMap = read("docs/implementation/route-map.md");
 
 describe("Stage 20 Opportunity Marketplace structure", () => {
@@ -134,11 +136,15 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
     expect(migration).not.toMatch(/provider_[a-z_]*builder_directory/i);
   });
 
-  it("keeps the deliberate single-Preview quota gate in project authority", () => {
-    // The policy is semantic, not dependent on capitalization in project prose.
+  it("keeps Stage 20 Preview suppression locked after release proof", () => {
     expect(projectState.toLowerCase()).toContain(
-      "automatic vercel preview deployment is disabled",
+      "stage 20 branch preview suppression is restored",
     );
-    expect(projectState).toContain("exactly one deliberate Vercel Preview");
+    expect(vercelConfig).toContain(
+      '"agent/stage-20-opportunity-marketplace": false',
+    );
+    expect(implementationStatus).toContain(
+      "No further Stage 20 Preview is expected before merge.",
+    );
   });
 });
