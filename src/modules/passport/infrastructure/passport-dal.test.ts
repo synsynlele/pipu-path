@@ -57,7 +57,8 @@ const workspace = {
       capabilityKey: "systems-thinking",
       sourceType: "project",
       sourceTitle: "Community map",
-      evidenceSummary: "Mapped a community problem and tested a practical response.",
+      evidenceSummary:
+        "Mapped a community problem and tested a practical response.",
       verification: "pipupath_action",
       occurredAt: "2026-08-01T10:00:00.000Z",
     },
@@ -133,7 +134,8 @@ const publicPassport = {
       capabilityKey: "systems-thinking",
       sourceType: "project",
       sourceTitle: "Community map",
-      evidenceSummary: "Mapped a community problem and tested a practical response.",
+      evidenceSummary:
+        "Mapped a community problem and tested a practical response.",
       verification: "pipupath_action",
       occurredAt: "2026-08-01T10:00:00.000Z",
     },
@@ -175,7 +177,10 @@ describe("passport DAL", () => {
       "database unavailable",
     );
 
-    mocks.serverRpc.mockResolvedValueOnce({ data: { adultEligible: true }, error: null });
+    mocks.serverRpc.mockResolvedValueOnce({
+      data: { adultEligible: true },
+      error: null,
+    });
     await expect(getBuilderPassportWorkspace()).rejects.toThrow(
       "PASSPORT_WORKSPACE_INVALID",
     );
@@ -207,7 +212,9 @@ describe("passport DAL", () => {
       data: null,
       error: { message: "issue denied" },
     });
-    await expect(issueBuilderPassport(issueInput)).rejects.toThrow("issue denied");
+    await expect(issueBuilderPassport(issueInput)).rejects.toThrow(
+      "issue denied",
+    );
 
     mocks.serverRpc.mockResolvedValueOnce({
       data: null,
@@ -227,12 +234,15 @@ describe("passport DAL", () => {
       expiresInDays: 7,
     });
 
-    expect(mocks.serverRpc).toHaveBeenCalledWith("create_stage21_passport_share", {
-      passport_id_input: passportId,
-      secret_hash_input: mocks.secretHash,
-      label_input: "Scholarship",
-      expires_in_days_input: 7,
-    });
+    expect(mocks.serverRpc).toHaveBeenCalledWith(
+      "create_stage21_passport_share",
+      {
+        passport_id_input: passportId,
+        secret_hash_input: mocks.secretHash,
+        label_input: "Scholarship",
+        expires_in_days_input: 7,
+      },
+    );
     expect(JSON.stringify(mocks.serverRpc.mock.calls[0])).not.toContain(
       mocks.secret,
     );
@@ -279,7 +289,10 @@ describe("passport DAL", () => {
   });
 
   it("returns only a valid allow-listed Passport from the service-role resolver", async () => {
-    mocks.serviceRpc.mockResolvedValueOnce({ data: publicPassport, error: null });
+    mocks.serviceRpc.mockResolvedValueOnce({
+      data: publicPassport,
+      error: null,
+    });
     await expect(
       resolveBuilderPassportShare(shareId, mocks.secretHash),
     ).resolves.toEqual(publicPassport);

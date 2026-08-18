@@ -14,8 +14,12 @@ describe("passport security", () => {
     const first = generatePassportShareSecret();
     const second = generatePassportShareSecret();
 
-    expect(builderPassportShareSecretSchema.safeParse(first).success).toBe(true);
-    expect(builderPassportShareSecretSchema.safeParse(second).success).toBe(true);
+    expect(builderPassportShareSecretSchema.safeParse(first).success).toBe(
+      true,
+    );
+    expect(builderPassportShareSecretSchema.safeParse(second).success).toBe(
+      true,
+    );
     expect(first).not.toBe(second);
     expect(first).toHaveLength(48);
   });

@@ -59,11 +59,14 @@ describe("Passport server actions", () => {
 
   it("issues a valid Passport then redirects to the private workspace", async () => {
     mocks.issue.mockResolvedValue(passportId);
-    await expect(issuePassportAction({ error: null }, issueForm())).rejects.toThrow(
-      "REDIRECT:/passport?issued=1",
-    );
+    await expect(
+      issuePassportAction({ error: null }, issueForm()),
+    ).rejects.toThrow("REDIRECT:/passport?issued=1");
     expect(mocks.issue).toHaveBeenCalledWith(
-      expect.objectContaining({ claimIds: [claimId], evidenceIds: [evidenceId] }),
+      expect.objectContaining({
+        claimIds: [claimId],
+        evidenceIds: [evidenceId],
+      }),
     );
   });
 

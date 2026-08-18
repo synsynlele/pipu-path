@@ -3,9 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PublicPassportShare } from "./public-passport-share";
 
 vi.mock("next/link", () => ({
-  default: ({ href, children }: { href: string; children: React.ReactNode }) => (
-    <a href={href}>{children}</a>
-  ),
+  default: ({
+    href,
+    children,
+  }: {
+    href: string;
+    children: React.ReactNode;
+  }) => <a href={href}>{children}</a>,
 }));
 
 const shareId = "44444444-4444-4444-8444-444444444444";
@@ -33,7 +37,8 @@ const passport = {
       capabilityKey: "systems-thinking",
       sourceType: "project",
       sourceTitle: "Community map",
-      evidenceSummary: "Mapped a community problem and tested a practical response.",
+      evidenceSummary:
+        "Mapped a community problem and tested a practical response.",
       verification: "pipupath_action",
       occurredAt: "2026-08-01T10:00:00.000Z",
     },
@@ -117,7 +122,11 @@ describe("PublicPassportShare", () => {
   });
 
   it("renders only the allow-listed snapshot and changed-integrity notices", async () => {
-    window.history.replaceState(null, "", `/passport/share/${shareId}#${secret}`);
+    window.history.replaceState(
+      null,
+      "",
+      `/passport/share/${shareId}#${secret}`,
+    );
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify(passport), {
         status: 200,
@@ -133,7 +142,9 @@ describe("PublicPassportShare", () => {
     expect(screen.getByText("Community map")).toBeInTheDocument();
     expect(screen.getByText(/confirmation changed/i)).toBeInTheDocument();
     expect(
-      screen.getByText("An institution confirmation has changed since issuance."),
+      screen.getByText(
+        "An institution confirmation has changed since issuance.",
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByText("This public proof is no longer currently published."),
@@ -144,18 +155,28 @@ describe("PublicPassportShare", () => {
   it("shows current Portfolio proof links only while source integrity is current", async () => {
     const currentPassport = {
       ...passport,
-      integrity: { ...passport.integrity, state: "current" as const, notices: [] },
-      institutionVerifications: passport.institutionVerifications.map((item) => ({
-        ...item,
-        current: true,
-      })),
+      integrity: {
+        ...passport.integrity,
+        state: "current" as const,
+        notices: [],
+      },
+      institutionVerifications: passport.institutionVerifications.map(
+        (item) => ({
+          ...item,
+          current: true,
+        }),
+      ),
       portfolioProofs: passport.portfolioProofs.map((proof) => ({
         ...proof,
         current: true,
         proofHref: "/proof/community-map",
       })),
     };
-    window.history.replaceState(null, "", `/passport/share/${shareId}#${secret}`);
+    window.history.replaceState(
+      null,
+      "",
+      `/passport/share/${shareId}#${secret}`,
+    );
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify(currentPassport), {
         status: 200,
@@ -174,7 +195,11 @@ describe("PublicPassportShare", () => {
   });
 
   it("uses the same unavailable response for invalid bearer and network failure", async () => {
-    window.history.replaceState(null, "", `/passport/share/${shareId}#${secret}`);
+    window.history.replaceState(
+      null,
+      "",
+      `/passport/share/${shareId}#${secret}`,
+    );
     fetchMock.mockResolvedValueOnce(new Response(null, { status: 404 }));
     const first = render(<PublicPassportShare shareId={shareId} />);
     await screen.findByRole("heading", {
@@ -182,7 +207,11 @@ describe("PublicPassportShare", () => {
     });
     first.unmount();
 
-    window.history.replaceState(null, "", `/passport/share/${shareId}#${secret}`);
+    window.history.replaceState(
+      null,
+      "",
+      `/passport/share/${shareId}#${secret}`,
+    );
     fetchMock.mockRejectedValueOnce(new Error("offline"));
     render(<PublicPassportShare shareId={shareId} />);
     await waitFor(() =>
