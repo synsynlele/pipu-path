@@ -43,17 +43,20 @@ describe("Stage 18 Capability Verification structure", () => {
     );
   });
 
-  it("preserves stable provenance across profile refreshes without ratings or public badges", () => {
+  it("preserves stable provenance across profile refreshes without rating fields or public badges", () => {
     expect(migration).toContain("capability_key");
     expect(migration).toContain("claim_id_at_request");
     expect(migration).toContain("evidence_id_at_request");
     expect(migration).toContain("basis_source_id");
-    expect(migration).not.toContain("rating");
+    expect(migration).not.toMatch(
+      /\brating(?:_score)?\s+(?:smallint|integer|numeric|text|real|double precision)\b/i,
+    );
     expect(migration).not.toContain("public_visibility");
   });
 
   it("ships a private verification workspace and keeps institution verification out of Stage 18", () => {
     const page = read("src/app/profile/verification/page.tsx");
+    const proxy = read("src/proxy.ts");
     const adr = read(
       "docs/architecture/adr-stage-18-capability-verification.md",
     );
@@ -61,6 +64,7 @@ describe("Stage 18 Capability Verification structure", () => {
     expect(page).toContain(
       "No stars, endorsements, popularity counts or paid verification",
     );
+    expect(proxy).toContain('"/profile"');
     expect(adr).toContain("Stage 19 may add institution verification");
     expect(adr).toContain("does not add:\n\n- Institution Workspace");
   });
