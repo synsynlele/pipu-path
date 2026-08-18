@@ -22,6 +22,10 @@ const marketplaceDal = read(
   "src/modules/opportunities/infrastructure/marketplace-dal.ts",
 );
 const builderPage = read("src/app/opportunities/page.tsx");
+const trackedCard = builderPage.slice(
+  builderPage.indexOf("function TrackedApplicationCard"),
+  builderPage.indexOf("export default async function OpportunitiesPage"),
+);
 const adminPage = read("src/app/admin/opportunities/page.tsx");
 const navigation = read("src/components/navigation/app-navigation.tsx");
 const homeLayout = read("src/app/app/layout.tsx");
@@ -121,12 +125,11 @@ describe("Stage 18 Opportunity MVP", () => {
     );
     expect(contract).toContain("if (!opportunity.isActive) return null");
     expect(dal).toContain("trackedApplications");
-    expect(builderPage).toContain("Tracked application");
-    expect(builderPage).toContain("Opportunity no longer active");
-    expect(builderPage).toContain("will not treat it as an active match");
-    expect(builderPage).not.toContain(
-      "Open official opportunity" + "\n" + "              </Button>",
-    );
+    expect(trackedCard).toContain("Tracked application");
+    expect(trackedCard).toContain("Opportunity no longer active");
+    expect(trackedCard).toContain("will not treat it as an active match");
+    expect(trackedCard).not.toContain("openOpportunityAction");
+    expect(trackedCard).not.toContain("Open official opportunity");
   });
 
   it("labels applications and outcomes as self-reported rather than verified", () => {
