@@ -3,7 +3,7 @@ import "server-only";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   marketplaceApplicationSchema,
-  marketplaceApplicationStatusSchema,
+  opportunityApplicationStatusSchema,
   marketplaceCatalogSchema,
   marketplaceCapabilitySelectionSchema,
   marketplaceEvidenceSelectionSchema,
@@ -182,7 +182,7 @@ function parseBuilderApplicationWorkspace(
 
   const applicationRow = object(row.application);
   const applicationId = text(applicationRow.id);
-  const applicationStatus = marketplaceApplicationStatusSchema.safeParse(
+  const applicationStatus = opportunityApplicationStatusSchema.safeParse(
     applicationRow.status,
   );
   const application =
