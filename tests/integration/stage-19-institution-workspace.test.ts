@@ -78,9 +78,7 @@ describe("Stage 19 Institution Workspace structure", () => {
     expect(provisioningHardening).toContain(
       "values (\n    resolved_workspace_id, owner_profile.id",
     );
-    expect(provisioningHardening).toContain(
-      "return resolved_workspace_id",
-    );
+    expect(provisioningHardening).toContain("return resolved_workspace_id");
   });
 
   it("keeps institution verification private and out of ranking/public badge scope", () => {
