@@ -126,6 +126,7 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
   });
 
   it("keeps the deliberate single-Preview quota gate in project authority", () => {
+    // The policy is semantic, not dependent on capitalization in project prose.
     expect(projectState.toLowerCase()).toContain(
       "automatic vercel preview deployment is disabled",
     );
