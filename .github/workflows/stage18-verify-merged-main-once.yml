@@ -1,0 +1,26 @@
+name: Stage18 verify merged main once
+
+on:
+  push:
+    branches:
+      - agent/stage-18-opportunity-mvp
+    paths:
+      - .github/workflows/stage18-verify-merged-main-once.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate-merged-main:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run validate
