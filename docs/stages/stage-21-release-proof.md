@@ -91,4 +91,4 @@ Post-proof verification confirms:
 
 Automatic Preview deployment remains disabled for `agent/stage-21-builder-passport-api`. No Stage 21 Preview has been consumed during implementation or the Supabase gate.
 
-The next deployment gate is one deliberate exact-head Preview after the reconciled release-candidate head passes complete CI. The permanent Playwright proof must then verify authenticated issuance/sharing plus anonymous valid/invalid bearer behavior before merge.
+The final structural release assertion now checks the actual current deployment invariant rather than a lifecycle sentence that changes as gates advance. The next deployment gate remains one deliberate exact-head Preview after complete CI, followed by authenticated issuance/sharing plus anonymous valid/invalid bearer proof before merge.
