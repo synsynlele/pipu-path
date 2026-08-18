@@ -12,7 +12,7 @@ permissions:
 jobs:
   preview-e2e:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 15
     env:
       TARGET_SHA: 2a770b3d3cc958e78e06c9287e8e910ba2683b42
     steps:
@@ -22,14 +22,14 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install chromium
       - name: Resolve successful Vercel Preview
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           preview_url=""
-          for attempt in $(seq 1 60); do
+          for attempt in $(seq 1 30); do
             deployments="$(curl -fsSL \
               -H "Authorization: Bearer ${GH_TOKEN}" \
               -H "Accept: application/vnd.github+json" \
@@ -53,7 +53,7 @@ jobs:
             if [ -n "${preview_url}" ]; then
               break
             fi
-            sleep 10
+            sleep 5
           done
 
           if [ -z "${preview_url}" ]; then
