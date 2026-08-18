@@ -37,6 +37,7 @@ const evidenceId = "22222222-2222-4222-8222-222222222222";
 const passportId = "33333333-3333-4333-8333-333333333333";
 const shareId = "44444444-4444-4444-8444-444444444444";
 const profileVersionId = "55555555-5555-4555-8555-555555555555";
+const postgresTimestamp = "2026-08-18T10:00:00.123456+00:00";
 
 const workspace = {
   adultEligible: true,
@@ -60,7 +61,7 @@ const workspace = {
       evidenceSummary:
         "Mapped a community problem and tested a practical response.",
       verification: "pipupath_action",
-      occurredAt: "2026-08-01T10:00:00.000Z",
+      occurredAt: postgresTimestamp,
     },
   ],
   eligibleInstitutionVerifications: [],
@@ -73,7 +74,7 @@ const workspace = {
       displayName: "Ada Builder",
       publicSummary: "Builder working on useful community systems.",
       selectedPathName: "Community systems",
-      issuedAt: "2026-08-18T10:00:00.000Z",
+      issuedAt: postgresTimestamp,
       supersededAt: null,
       revokedAt: null,
     },
@@ -83,21 +84,21 @@ const workspace = {
       id: shareId,
       passportId,
       label: "Current share",
-      expiresAt: "2099-08-25T10:00:00.000Z",
+      expiresAt: "2099-08-25T10:00:00.123456+00:00",
       lastAccessedAt: null,
       accessCount: 0,
       revokedAt: null,
-      createdAt: "2026-08-18T10:00:00.000Z",
+      createdAt: postgresTimestamp,
     },
     {
       id: "66666666-6666-4666-8666-666666666666",
       passportId,
       label: "Expired share",
-      expiresAt: "2000-08-25T10:00:00.000Z",
-      lastAccessedAt: "2000-08-20T10:00:00.000Z",
+      expiresAt: "2000-08-25T10:00:00.123456+00:00",
+      lastAccessedAt: "2000-08-20T10:00:00.123456+00:00",
       accessCount: 2,
       revokedAt: null,
-      createdAt: "2000-08-18T10:00:00.000Z",
+      createdAt: "2000-08-18T10:00:00.123456+00:00",
     },
   ],
 };
@@ -116,7 +117,7 @@ const publicPassport = {
   schemaVersion: "builder-passport.v1" as const,
   passportId,
   version: 1,
-  issuedAt: "2026-08-18T10:00:00.000Z",
+  issuedAt: postgresTimestamp,
   builder: {
     displayName: "Ada Builder",
     publicSummary: "Builder working on useful community systems.",
@@ -137,17 +138,17 @@ const publicPassport = {
       evidenceSummary:
         "Mapped a community problem and tested a practical response.",
       verification: "pipupath_action",
-      occurredAt: "2026-08-01T10:00:00.000Z",
+      occurredAt: postgresTimestamp,
     },
   ],
   institutionVerifications: [],
   portfolioProofs: [],
   integrity: {
     state: "current" as const,
-    checkedAt: "2026-08-18T11:00:00.000Z",
+    checkedAt: "2026-08-18T11:00:00.123456+00:00",
     notices: [],
   },
-  share: { expiresAt: "2026-08-25T10:00:00.000Z" },
+  share: { expiresAt: "2026-08-25T10:00:00.123456+00:00" },
 };
 
 describe("passport DAL", () => {
@@ -156,7 +157,7 @@ describe("passport DAL", () => {
     mocks.serviceRpc.mockReset();
   });
 
-  it("parses the owner workspace and derives active share state server-side", async () => {
+  it("parses Supabase offset timestamps in the owner workspace and derives active share state server-side", async () => {
     mocks.serverRpc.mockResolvedValueOnce({ data: workspace, error: null });
 
     const result = await getBuilderPassportWorkspace();
@@ -164,6 +165,7 @@ describe("passport DAL", () => {
     expect(mocks.serverRpc).toHaveBeenCalledWith(
       "get_stage21_builder_passport_workspace",
     );
+    expect(result.eligibleEvidence[0]?.occurredAt).toBe(postgresTimestamp);
     expect(result.shares[0]?.active).toBe(true);
     expect(result.shares[1]?.active).toBe(false);
   });
@@ -288,7 +290,7 @@ describe("passport DAL", () => {
     );
   });
 
-  it("returns only a valid allow-listed Passport from the service-role resolver", async () => {
+  it("accepts offset-aware public Passport timestamps and rejects invalid projections", async () => {
     mocks.serviceRpc.mockResolvedValueOnce({
       data: publicPassport,
       error: null,
