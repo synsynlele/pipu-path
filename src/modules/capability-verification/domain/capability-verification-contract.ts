@@ -27,11 +27,7 @@ export const capabilityVerificationCloseSchema = z.object({
 });
 
 export type CapabilityVerificationStatus =
-  | "pending"
-  | "confirmed"
-  | "declined"
-  | "withdrawn"
-  | "revoked";
+  "pending" | "confirmed" | "declined" | "withdrawn" | "revoked";
 
 export function capabilityVerificationStatusLabel(
   status: CapabilityVerificationStatus,
