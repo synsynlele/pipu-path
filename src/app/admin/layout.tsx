@@ -15,6 +15,9 @@ export default function AdminLayout({
           <Link href="/admin" className="font-semibold text-white">
             Mission Control
           </Link>
+          <Link href="/admin/institutions" className="text-blue-100">
+            Institutions
+          </Link>
           <Link href="/admin/opportunities" className="text-blue-100">
             Opportunities
           </Link>
