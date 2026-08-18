@@ -35,8 +35,11 @@ test("authenticated non-admin users cannot enter the provider trust registry", a
   page,
 }) => {
   await signIn(page);
-  const response = await page.goto("/admin/providers");
-  expect(response?.status()).toBe(404);
+  await page.goto("/admin/providers");
+  await expect(
+    page.getByRole("heading", { name: "This path is not available." }),
+  ).toBeVisible();
+  await expect(page.getByText("404", { exact: true })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Opportunity Providers" }),
   ).not.toBeVisible();
