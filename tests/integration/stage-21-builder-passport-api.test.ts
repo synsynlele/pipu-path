@@ -139,18 +139,18 @@ describe("Stage 21 Builder Passport/API structure", () => {
     );
   });
 
-  it("keeps Stage 21 Vercel Preview deployment suppressed until the deliberate release gate", () => {
+  it("keeps Stage 21 Preview deployment suppressed after the successful release proof", () => {
     expect(vercelConfig).toContain(
       '"agent/stage-21-builder-passport-api": false',
     );
     expect(projectState).toContain(
-      "automatic Vercel Preview deployment is disabled for `agent/stage-21-builder-passport-api`",
+      "automatic Vercel Preview deployment is restored to disabled for `agent/stage-21-builder-passport-api`",
     );
     expect(implementationStatus).toContain(
-      "No Stage 21 Preview has been consumed during implementation or the database gate.",
+      "Corrective Preview `dpl_FwvJdLM1ZQT1zcdgLU3zShLGztu7` reached READY",
     );
     expect(implementationStatus).toContain(
-      "one deliberate Vercel Preview reaches READY on that exact head",
+      "final clean restored-suppression head passes complete CI",
     );
   });
 });
