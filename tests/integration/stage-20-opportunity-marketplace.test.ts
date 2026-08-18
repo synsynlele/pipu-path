@@ -6,12 +6,21 @@ const root = process.cwd();
 const read = (relativePath: string) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
 
-const migration = read(
-  "supabase/migrations/20260818123042_stage_20_opportunity_marketplace.sql",
-);
-const hardening = read(
-  "supabase/migrations/20260818124524_harden_stage_20_marketplace_privacy.sql",
-);
+const migration = fs
+  .readdirSync(path.join(root, "supabase/migrations"))
+  .filter(
+    (file) =>
+      file.includes("stage_20_opportunity_marketplace") &&
+      !file.includes("harden_stage_20_marketplace_privacy"),
+  )
+  .sort()
+  .map((file) => read(`supabase/migrations/${file}`))
+  .join("\n");
+const hardeningFile = fs
+  .readdirSync(path.join(root, "supabase/migrations"))
+  .find((file) => file.includes("harden_stage_20_marketplace_privacy_v2"));
+if (!hardeningFile) throw new Error("Stage 20 hardening migration missing");
+const hardening = read(`supabase/migrations/${hardeningFile}`);
 const authority = read("docs/stages/stage-20-opportunity-marketplace.md");
 const projectState = read("PROJECT_STATE.md");
 const routeMap = read("docs/implementation/route-map.md");
