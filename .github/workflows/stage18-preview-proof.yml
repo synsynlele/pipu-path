@@ -1,9 +1,9 @@
 name: Stage 18 Preview Proof
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/stage-18-capability-verification-corrective
+      - main
 
 permissions:
   contents: read
