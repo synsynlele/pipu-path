@@ -1,0 +1,35 @@
+name: Stage 20 Format Once
+
+on:
+  push:
+    branches:
+      - agent/stage-20-opportunity-marketplace
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: "${{ !startsWith(github.event.head_commit.message, 'style(stage20): apply repository Prettier') }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-20-opportunity-marketplace
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format Stage 20 files
+        run: npx prettier --write src/modules/opportunities/domain/marketplace-contract.ts src/modules/opportunities/domain/marketplace-contract.test.ts tests/integration/stage-20-opportunity-marketplace.test.ts
+      - name: Commit exact repository formatting and remove workflow
+        run: |
+          set -euo pipefail
+          rm .github/workflows/stage20-format-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/modules/opportunities/domain/marketplace-contract.ts src/modules/opportunities/domain/marketplace-contract.test.ts tests/integration/stage-20-opportunity-marketplace.test.ts .github/workflows/stage20-format-once.yml
+          git commit -m "style(stage20): apply repository Prettier"
+          git push origin HEAD:agent/stage-20-opportunity-marketplace
