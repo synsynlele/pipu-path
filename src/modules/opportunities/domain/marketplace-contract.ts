@@ -150,6 +150,9 @@ export const marketplaceEvidenceSelectionSchema = z.object({
   sourceHref: z.string().startsWith("/"),
 });
 
+export const marketplaceSharedEvidenceSchema =
+  marketplaceEvidenceSelectionSchema.omit({ sourceHref: true });
+
 export const marketplaceInstitutionVerificationSelectionSchema = z.object({
   verificationId: z.uuid(),
   capabilityKey: z.string().min(2).max(120),
@@ -172,7 +175,7 @@ export const marketplaceApplicationPacketSchema = z.object({
   selectedPathName: z.string().trim().min(2).max(180).nullable(),
   applicationNote: z.string().trim().max(2000).nullable(),
   capabilities: z.array(marketplaceCapabilitySelectionSchema).max(12),
-  evidence: z.array(marketplaceEvidenceSelectionSchema).max(20),
+  evidence: z.array(marketplaceSharedEvidenceSchema).max(20),
   institutionVerifications: z
     .array(marketplaceInstitutionVerificationSelectionSchema)
     .max(12),

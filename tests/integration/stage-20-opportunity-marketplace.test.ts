@@ -101,6 +101,8 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
     const projection = hardening.slice(projectionStart, projectionEnd);
     expect(projection).not.toContain("builderUserId");
     expect(projection).not.toContain("builder_user_id");
+    expect(projection).not.toContain("sourceHref");
+    expect(projection).not.toContain("source_href");
     expect(projection).toContain("displayName");
     expect(projection).toContain("capabilities");
     expect(projection).toContain("institutionVerifications");
@@ -124,8 +126,8 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
   });
 
   it("keeps the deliberate single-Preview quota gate in project authority", () => {
-    expect(projectState).toContain(
-      "Automatic Vercel Preview deployment is disabled",
+    expect(projectState.toLowerCase()).toContain(
+      "automatic vercel preview deployment is disabled",
     );
     expect(projectState).toContain("exactly one deliberate Vercel Preview");
   });

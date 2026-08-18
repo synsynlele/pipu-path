@@ -57,7 +57,9 @@ export default async function OpportunityApplyPage({
   }
 
   const application = workspace.application;
-  const editable = application === null || application.status === "draft";
+  const editable =
+    workspace.canEdit &&
+    (application === null || application.status === "draft");
   const selectedClaimIds = new Set(application?.selectedClaimIds ?? []);
   const selectedEvidenceIds = new Set(application?.selectedEvidenceIds ?? []);
   const selectedVerificationIds = new Set(
@@ -79,7 +81,7 @@ export default async function OpportunityApplyPage({
     selectedPortfolioIds.has(item.portfolioId),
   );
 
-  const hasSavedDraft = application?.status === "draft";
+  const hasSavedDraft = workspace.canEdit && application?.status === "draft";
   const canWithdraw = Boolean(
     application &&
     ["draft", "submitted", "viewed", "shortlisted"].includes(

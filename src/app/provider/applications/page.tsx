@@ -137,12 +137,6 @@ function ApplicationCard({
                     {evidence.sourceTitle}
                   </p>
                   <p className="mt-1 leading-6">{evidence.evidenceSummary}</p>
-                  <Link
-                    href={evidence.sourceHref}
-                    className="text-gold mt-2 inline-block font-semibold"
-                  >
-                    Open PipuPath evidence
-                  </Link>
                 </li>
               ))}
             </ul>

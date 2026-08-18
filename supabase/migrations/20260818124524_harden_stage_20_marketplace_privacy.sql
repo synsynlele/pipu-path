@@ -117,8 +117,7 @@ begin
         'claimId', selection.claim_id,
         'sourceType', selection.source_type,
         'sourceTitle', selection.source_title,
-        'evidenceSummary', selection.evidence_summary,
-        'sourceHref', selection.source_href
+        'evidenceSummary', selection.evidence_summary
       ) order by selection.source_title)
       from public.opportunity_application_evidence selection
       where selection.application_id = application.id

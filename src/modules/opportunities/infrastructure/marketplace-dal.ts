@@ -67,6 +67,7 @@ export async function getMarketplaceCatalog() {
 }
 
 export type BuilderApplicationWorkspace = {
+  canEdit: boolean;
   opportunity: {
     id: string;
     title: string;
@@ -144,6 +145,10 @@ function parseBuilderApplicationWorkspace(
   const providerStatus = opportunityProviderStatusSchema.safeParse(
     provider.status,
   );
+  if (typeof row.canEdit !== "boolean") {
+    throw new Error("MARKETPLACE_APPLICATION_WORKSPACE_INVALID");
+  }
+  const canEdit = row.canEdit;
 
   const opportunityId = text(opportunity.id);
   const title = text(opportunity.title);
@@ -239,6 +244,7 @@ function parseBuilderApplicationWorkspace(
     : [];
 
   return {
+    canEdit,
     opportunity: {
       id: opportunityId,
       title,
