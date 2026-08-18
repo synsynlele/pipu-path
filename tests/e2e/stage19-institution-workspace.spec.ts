@@ -43,18 +43,14 @@ test(
     await expect(
       page.getByRole("heading", { name: "KAEC Nigerian Schools" }),
     ).toBeVisible();
-    await expect(
-      page.getByText("Role: Owner", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByText("Role: Owner", { exact: true })).toBeVisible();
     await expect(
       page.getByRole("heading", {
         name: "Privacy-thresholded development patterns.",
       }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", {
-        name: "Small-cohort protection is active.",
-      }),
+      page.getByRole("heading", { name: "Small-cohort protection is active." }),
     ).toBeVisible();
     await expect(
       page.getByRole("heading", {
