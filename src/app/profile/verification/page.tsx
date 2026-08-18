@@ -12,6 +12,7 @@ import {
   capabilityVerificationTrustCopy,
 } from "@/modules/capability-verification/domain/capability-verification-contract";
 import { getCapabilityVerificationWorkspace } from "@/modules/capability-verification/infrastructure/capability-verification-dal";
+import { BuilderInstitutionVerificationSection } from "@/modules/institution/ui/builder-institution-verification-section";
 
 export const metadata: Metadata = {
   title: "Capability Verification",
@@ -396,6 +397,8 @@ export default async function CapabilityVerificationPage() {
           </div>
         )}
       </section>
+
+      <BuilderInstitutionVerificationSection />
     </main>
   );
 }

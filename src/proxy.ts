@@ -16,6 +16,7 @@ const protectedPrefixes = [
   "/portfolio",
   "/connect",
   "/profile",
+  "/institution",
 ];
 const publicProofPattern = /^\/proof\/([a-z0-9-]+)$/;
 

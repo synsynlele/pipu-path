@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
-      "agent/stage-18-capability-verification-corrective": false
+      "agent/stage-19-institution-workspace": false
     }
   }
 }
