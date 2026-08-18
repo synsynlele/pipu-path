@@ -124,14 +124,16 @@ export const opportunityProviderWorkspaceSchema = z.object({
   ),
 });
 
-export const marketplaceCatalogItemSchema = opportunityCatalogItemSchema.extend({
-  providerId: z.uuid().nullable(),
-  providerStatus: opportunityProviderStatusSchema.nullable(),
-  providerWebsite: httpsUrlSchema.nullable(),
-  providerCountryCode: countryCodeSchema.nullable(),
-  nativeApplicationEnabled: z.boolean(),
-  applicationStatus: opportunityApplicationStatusSchema.nullable(),
-});
+export const marketplaceCatalogItemSchema = opportunityCatalogItemSchema.extend(
+  {
+    providerId: z.uuid().nullable(),
+    providerStatus: opportunityProviderStatusSchema.nullable(),
+    providerWebsite: httpsUrlSchema.nullable(),
+    providerCountryCode: countryCodeSchema.nullable(),
+    nativeApplicationEnabled: z.boolean(),
+    applicationStatus: opportunityApplicationStatusSchema.nullable(),
+  },
+);
 
 export const marketplaceCatalogSchema = z.array(marketplaceCatalogItemSchema);
 
@@ -225,8 +227,12 @@ export type OpportunityProviderInput = z.infer<
 export type OpportunityProviderWorkspace = z.infer<
   typeof opportunityProviderWorkspaceSchema
 >;
-export type MarketplaceCatalogItem = z.infer<typeof marketplaceCatalogItemSchema>;
-export type MarketplaceApplication = z.infer<typeof marketplaceApplicationSchema>;
+export type MarketplaceCatalogItem = z.infer<
+  typeof marketplaceCatalogItemSchema
+>;
+export type MarketplaceApplication = z.infer<
+  typeof marketplaceApplicationSchema
+>;
 export type MarketplaceApplicationPacket = z.infer<
   typeof marketplaceApplicationPacketSchema
 >;

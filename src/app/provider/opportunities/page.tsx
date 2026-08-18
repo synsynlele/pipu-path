@@ -19,7 +19,8 @@ export const dynamic = "force-dynamic";
 const inputClass =
   "border-border bg-background text-foreground mt-2 min-h-11 w-full rounded-xl border px-3 py-2 text-sm";
 
-type ProviderOpportunity = OpportunityProviderWorkspace["opportunities"][number];
+type ProviderOpportunity =
+  OpportunityProviderWorkspace["opportunities"][number];
 
 function readable(value: string) {
   return value.replaceAll("_", " ");
@@ -226,7 +227,8 @@ export default async function ProviderOpportunitiesPage({
   const choices = await listProviderWorkspaceChoices();
   if (choices.length === 0) notFound();
   const selected =
-    choices.find((choice) => choice.providerId === query.provider) ?? choices[0];
+    choices.find((choice) => choice.providerId === query.provider) ??
+    choices[0];
 
   let workspace;
   try {
@@ -254,7 +256,10 @@ export default async function ProviderOpportunitiesPage({
             provider can never self-approve a listing.
           </p>
         </div>
-        <ButtonLink href={`/provider?provider=${selected.providerId}`} variant="ghost">
+        <ButtonLink
+          href={`/provider?provider=${selected.providerId}`}
+          variant="ghost"
+        >
           Back to provider workspace
         </ButtonLink>
       </div>
@@ -303,7 +308,9 @@ export default async function ProviderOpportunitiesPage({
         </h2>
         {workspace.opportunities.length === 0 ? (
           <Surface className="mt-5 p-6">
-            <p className="text-muted">No provider-owned opportunity draft yet.</p>
+            <p className="text-muted">
+              No provider-owned opportunity draft yet.
+            </p>
           </Surface>
         ) : (
           <div className="mt-5 space-y-5">

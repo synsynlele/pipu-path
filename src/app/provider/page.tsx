@@ -28,7 +28,8 @@ export default async function ProviderPage({
   if (choices.length === 0) notFound();
 
   const selected =
-    choices.find((choice) => choice.providerId === query.provider) ?? choices[0];
+    choices.find((choice) => choice.providerId === query.provider) ??
+    choices[0];
 
   let workspace;
   try {
@@ -115,7 +116,8 @@ export default async function ProviderPage({
           <p className="text-muted mt-3 leading-7">
             The application queue contains only the display name and development
             evidence each Builder chose to submit. Discovery answers, private
-            HPP/reflections, contacts and unrelated evidence remain inaccessible.
+            HPP/reflections, contacts and unrelated evidence remain
+            inaccessible.
           </p>
           <ButtonLink
             href={`/provider/applications?provider=${selected.providerId}`}
@@ -134,8 +136,9 @@ export default async function ProviderPage({
           </h2>
           <p className="mt-2 text-sm leading-6 text-amber-900">
             This provider is {readable(workspace.provider.status)}. Opportunity
-            creation and application access require an approved provider. Existing
-            Builder withdrawal rights remain independent of provider status.
+            creation and application access require an approved provider.
+            Existing Builder withdrawal rights remain independent of provider
+            status.
           </p>
         </Surface>
       ) : null}

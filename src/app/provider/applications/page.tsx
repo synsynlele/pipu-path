@@ -100,7 +100,7 @@ function ApplicationCard({
           <p className="text-muted text-xs font-semibold uppercase">
             Application note
           </p>
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-6">
+          <p className="mt-2 text-sm leading-6 whitespace-pre-wrap">
             {packet.applicationNote}
           </p>
         </div>
@@ -121,7 +121,9 @@ function ApplicationCard({
               ))}
             </ul>
           ) : (
-            <p className="text-muted mt-3 text-sm">No capability claim shared.</p>
+            <p className="text-muted mt-3 text-sm">
+              No capability claim shared.
+            </p>
           )}
         </div>
 
@@ -248,13 +250,16 @@ export default async function ProviderApplicationsPage({
   const choices = await listProviderWorkspaceChoices();
   if (choices.length === 0) notFound();
   const selected =
-    choices.find((choice) => choice.providerId === query.provider) ?? choices[0];
+    choices.find((choice) => choice.providerId === query.provider) ??
+    choices[0];
 
   let queue;
   try {
     queue = await getProviderApplications(selected.providerId);
   } catch {
-    redirect(`/provider?provider=${selected.providerId}&error=queue_unavailable`);
+    redirect(
+      `/provider?provider=${selected.providerId}&error=queue_unavailable`,
+    );
   }
 
   return (
@@ -276,7 +281,10 @@ export default async function ProviderApplicationsPage({
             fields and evidence the Builder selected before consent.
           </p>
         </div>
-        <ButtonLink href={`/provider?provider=${selected.providerId}`} variant="ghost">
+        <ButtonLink
+          href={`/provider?provider=${selected.providerId}`}
+          variant="ghost"
+        >
           Back to provider workspace
         </ButtonLink>
       </div>
@@ -301,18 +309,22 @@ export default async function ProviderApplicationsPage({
           Provider role: {readable(queue.role)}
         </p>
         <p className="text-muted mt-2 text-sm leading-6">
-          Provider operators cannot see Discovery answers, Human Potential Profile
-          prose, private reflections/projects, Builder contacts, network state or
-          any capability/evidence not selected into an application packet.
+          Provider operators cannot see Discovery answers, Human Potential
+          Profile prose, private reflections/projects, Builder contacts, network
+          state or any capability/evidence not selected into an application
+          packet.
         </p>
       </Surface>
 
       {queue.applications.length === 0 ? (
         <Surface className="mt-8 p-8">
-          <h2 className="text-2xl font-semibold">No submitted applications yet.</h2>
+          <h2 className="text-2xl font-semibold">
+            No submitted applications yet.
+          </h2>
           <p className="text-muted mt-3 max-w-3xl leading-7">
-            Nothing appears until an eligible adult Builder chooses this provider
-            opportunity, prepares an exact packet, previews it and submits it.
+            Nothing appears until an eligible adult Builder chooses this
+            provider opportunity, prepares an exact packet, previews it and
+            submits it.
           </p>
         </Surface>
       ) : (

@@ -123,7 +123,9 @@ export async function withdrawMarketplaceApplicationAction(formData: FormData) {
   try {
     await withdrawMarketplaceApplication(applicationId.data);
   } catch {
-    redirect(`/opportunities/${opportunityId.data}/apply?error=withdraw_failed`);
+    redirect(
+      `/opportunities/${opportunityId.data}/apply?error=withdraw_failed`,
+    );
   }
 
   revalidatePath(`/opportunities/${opportunityId.data}/apply`);
@@ -256,9 +258,7 @@ export async function transitionProviderApplicationAction(formData: FormData) {
     !providerId.success ||
     !applicationId.success ||
     !status.success ||
-    !["viewed", "shortlisted", "accepted", "not_selected"].includes(
-      status.data,
-    )
+    !["viewed", "shortlisted", "accepted", "not_selected"].includes(status.data)
   ) {
     redirect("/provider/applications?error=transition_invalid");
   }

@@ -71,9 +71,10 @@ export default async function OpportunityApplyPage({
   const selectedEvidence = workspace.eligibleEvidence.filter((item) =>
     selectedEvidenceIds.has(item.evidenceId),
   );
-  const selectedVerifications = workspace.eligibleInstitutionVerifications.filter(
-    (item) => selectedVerificationIds.has(item.verificationId),
-  );
+  const selectedVerifications =
+    workspace.eligibleInstitutionVerifications.filter((item) =>
+      selectedVerificationIds.has(item.verificationId),
+    );
   const selectedProofs = workspace.eligiblePortfolioProofs.filter((item) =>
     selectedPortfolioIds.has(item.portfolioId),
   );
@@ -81,9 +82,9 @@ export default async function OpportunityApplyPage({
   const hasSavedDraft = application?.status === "draft";
   const canWithdraw = Boolean(
     application &&
-      ["draft", "submitted", "viewed", "shortlisted"].includes(
-        application.status,
-      ),
+    ["draft", "submitted", "viewed", "shortlisted"].includes(
+      application.status,
+    ),
   );
 
   return (
@@ -143,8 +144,8 @@ export default async function OpportunityApplyPage({
         <p className="text-muted mt-3 max-w-4xl leading-7">
           Only the fields selected into this application packet are shared.
           Discovery answers, Human Potential Profile prose, private reflections,
-          private Project fields, contacts, network state, safeguarding fields and
-          unrelated capabilities remain outside the provider boundary.
+          private Project fields, contacts, network state, safeguarding fields
+          and unrelated capabilities remain outside the provider boundary.
         </p>
       </Surface>
 
@@ -208,7 +209,11 @@ export default async function OpportunityApplyPage({
               className="border-border mt-5 border-t pt-5"
             >
               <input type="hidden" name="opportunityId" value={opportunityId} />
-              <input type="hidden" name="applicationId" value={application.id} />
+              <input
+                type="hidden"
+                name="applicationId"
+                value={application.id}
+              />
               <Button type="submit" variant="ghost">
                 Withdraw application
               </Button>
@@ -218,11 +223,16 @@ export default async function OpportunityApplyPage({
       ) : null}
 
       {editable ? (
-        <form action={saveMarketplaceApplicationDraftAction} className="mt-8 space-y-6">
+        <form
+          action={saveMarketplaceApplicationDraftAction}
+          className="mt-8 space-y-6"
+        >
           <input type="hidden" name="opportunityId" value={opportunityId} />
 
           <Surface className="p-6 sm:p-8">
-            <h2 className="text-2xl font-semibold">1. Your application context</h2>
+            <h2 className="text-2xl font-semibold">
+              1. Your application context
+            </h2>
             <p className="text-muted mt-2 leading-7">
               Write only what you want this provider to receive. Saving a draft
               does not submit anything.
@@ -266,10 +276,12 @@ export default async function OpportunityApplyPage({
           </Surface>
 
           <Surface className="p-6 sm:p-8">
-            <h2 className="text-2xl font-semibold">2. Select capability claims</h2>
+            <h2 className="text-2xl font-semibold">
+              2. Select capability claims
+            </h2>
             <p className="text-muted mt-2 leading-7">
-              Select only capabilities relevant to this application. Evidence can
-              be shared only when its capability claim is also selected.
+              Select only capabilities relevant to this application. Evidence
+              can be shared only when its capability claim is also selected.
             </p>
             {workspace.eligibleCapabilities.length ? (
               <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -305,10 +317,13 @@ export default async function OpportunityApplyPage({
           </Surface>
 
           <Surface className="p-6 sm:p-8">
-            <h2 className="text-2xl font-semibold">3. Select supporting evidence</h2>
+            <h2 className="text-2xl font-semibold">
+              3. Select supporting evidence
+            </h2>
             <p className="text-muted mt-2 leading-7">
-              Each selected evidence item must belong to a capability you selected
-              above. PipuPath enforces that relationship again in the database.
+              Each selected evidence item must belong to a capability you
+              selected above. PipuPath enforces that relationship again in the
+              database.
             </p>
             {workspace.eligibleEvidence.length ? (
               <div className="mt-5 space-y-3">
@@ -321,11 +336,15 @@ export default async function OpportunityApplyPage({
                       type="checkbox"
                       name="evidenceIds"
                       value={evidence.evidenceId}
-                      defaultChecked={selectedEvidenceIds.has(evidence.evidenceId)}
+                      defaultChecked={selectedEvidenceIds.has(
+                        evidence.evidenceId,
+                      )}
                       className="mt-1 size-4"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block font-semibold">{evidence.sourceTitle}</span>
+                      <span className="block font-semibold">
+                        {evidence.sourceTitle}
+                      </span>
                       <span className="text-muted mt-1 block text-sm leading-6">
                         {evidence.evidenceSummary}
                       </span>
@@ -348,37 +367,41 @@ export default async function OpportunityApplyPage({
 
           <div className="grid gap-6 lg:grid-cols-2">
             <Surface className="p-6">
-              <h2 className="text-xl font-semibold">4. Institution confirmations</h2>
+              <h2 className="text-xl font-semibold">
+                4. Institution confirmations
+              </h2>
               <p className="text-muted mt-2 text-sm leading-6">
                 Optional. Only confirmed, non-revoked institution verification
                 records can be selected.
               </p>
               {workspace.eligibleInstitutionVerifications.length ? (
                 <div className="mt-4 space-y-3">
-                  {workspace.eligibleInstitutionVerifications.map((verification) => (
-                    <label
-                      key={verification.verificationId}
-                      className="border-border flex items-start gap-3 rounded-xl border p-3"
-                    >
-                      <input
-                        type="checkbox"
-                        name="institutionVerificationIds"
-                        value={verification.verificationId}
-                        defaultChecked={selectedVerificationIds.has(
-                          verification.verificationId,
-                        )}
-                        className="mt-1 size-4"
-                      />
-                      <span className="text-sm">
-                        <span className="block font-semibold">
-                          {verification.capabilityLabel}
+                  {workspace.eligibleInstitutionVerifications.map(
+                    (verification) => (
+                      <label
+                        key={verification.verificationId}
+                        className="border-border flex items-start gap-3 rounded-xl border p-3"
+                      >
+                        <input
+                          type="checkbox"
+                          name="institutionVerificationIds"
+                          value={verification.verificationId}
+                          defaultChecked={selectedVerificationIds.has(
+                            verification.verificationId,
+                          )}
+                          className="mt-1 size-4"
+                        />
+                        <span className="text-sm">
+                          <span className="block font-semibold">
+                            {verification.capabilityLabel}
+                          </span>
+                          <span className="text-muted mt-1 block">
+                            {verification.institutionName}
+                          </span>
                         </span>
-                        <span className="text-muted mt-1 block">
-                          {verification.institutionName}
-                        </span>
-                      </span>
-                    </label>
-                  ))}
+                      </label>
+                    ),
+                  )}
                 </div>
               ) : (
                 <p className="text-muted mt-4 text-sm">None available.</p>
@@ -386,7 +409,9 @@ export default async function OpportunityApplyPage({
             </Surface>
 
             <Surface className="p-6">
-              <h2 className="text-xl font-semibold">5. Published Portfolio proof</h2>
+              <h2 className="text-xl font-semibold">
+                5. Published Portfolio proof
+              </h2>
               <p className="text-muted mt-2 text-sm leading-6">
                 Optional. Only proof you already chose to publish can enter this
                 packet.
@@ -402,11 +427,15 @@ export default async function OpportunityApplyPage({
                         type="checkbox"
                         name="portfolioIds"
                         value={proof.portfolioId}
-                        defaultChecked={selectedPortfolioIds.has(proof.portfolioId)}
+                        defaultChecked={selectedPortfolioIds.has(
+                          proof.portfolioId,
+                        )}
                         className="mt-1 size-4"
                       />
                       <span className="text-sm">
-                        <span className="block font-semibold">{proof.publicTitle}</span>
+                        <span className="block font-semibold">
+                          {proof.publicTitle}
+                        </span>
                         <span className="text-muted mt-1 block leading-6">
                           {proof.publicSummary}
                         </span>
@@ -444,12 +473,15 @@ export default async function OpportunityApplyPage({
           </h2>
           <p className="text-muted mt-3 max-w-4xl leading-7">
             Nothing outside this preview is submitted to the provider. If the
-            packet is wrong, edit the draft above and save again before consenting.
+            packet is wrong, edit the draft above and save again before
+            consenting.
           </p>
 
           <div className="mt-6 grid gap-5 lg:grid-cols-2">
             <div className="border-border rounded-2xl border p-5">
-              <p className="text-muted text-xs font-semibold uppercase">Identity</p>
+              <p className="text-muted text-xs font-semibold uppercase">
+                Identity
+              </p>
               <p className="mt-2 font-semibold">{application.displayName}</p>
               {application.builderSummary ? (
                 <p className="text-muted mt-2 text-sm leading-6">
@@ -466,7 +498,7 @@ export default async function OpportunityApplyPage({
               <p className="text-muted text-xs font-semibold uppercase">
                 Application note
               </p>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6">
+              <p className="mt-2 text-sm leading-6 whitespace-pre-wrap">
                 {application.applicationNote || "No application note selected."}
               </p>
             </div>
@@ -483,14 +515,18 @@ export default async function OpportunityApplyPage({
               </ul>
             </div>
             <div className="border-border rounded-2xl border p-5">
-              <p className="font-semibold">Evidence ({selectedEvidence.length})</p>
+              <p className="font-semibold">
+                Evidence ({selectedEvidence.length})
+              </p>
               <ul className="text-muted mt-3 space-y-3 text-sm">
                 {selectedEvidence.map((item) => (
                   <li key={item.evidenceId}>
                     <span className="text-foreground font-semibold">
                       {item.sourceTitle}
                     </span>
-                    <span className="mt-1 block leading-6">{item.evidenceSummary}</span>
+                    <span className="mt-1 block leading-6">
+                      {item.evidenceSummary}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -508,7 +544,9 @@ export default async function OpportunityApplyPage({
               </ul>
             </div>
             <div className="border-border rounded-2xl border p-5">
-              <p className="font-semibold">Published proof ({selectedProofs.length})</p>
+              <p className="font-semibold">
+                Published proof ({selectedProofs.length})
+              </p>
               <ul className="text-muted mt-3 space-y-2 text-sm">
                 {selectedProofs.map((item) => (
                   <li key={item.portfolioId}>• {item.publicTitle}</li>

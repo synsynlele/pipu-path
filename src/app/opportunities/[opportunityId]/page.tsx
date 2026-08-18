@@ -37,7 +37,8 @@ export default async function OpportunityDetailPage({
   if (!item) notFound();
 
   const native = item.nativeApplicationEnabled && item.providerId !== null;
-  const canApplyNatively = native && !workspace.context.isMinor && item.isActive;
+  const canApplyNatively =
+    native && !workspace.context.isMinor && item.isActive;
 
   return (
     <main
@@ -105,19 +106,21 @@ export default async function OpportunityDetailPage({
 
           {native ? (
             <Surface className="border-gold/25 bg-gold/5 mt-8 p-6">
-              <h2 className="text-xl font-semibold">Builder-controlled application</h2>
+              <h2 className="text-xl font-semibold">
+                Builder-controlled application
+              </h2>
               <p className="text-muted mt-3 leading-7">
-                This provider can receive a PipuPath application packet, but only
-                after you choose exactly what to share and review the packet before
-                submission. Your Discovery answers, private Human Potential Profile,
-                reflections, contacts and unrelated evidence are never added
-                automatically.
+                This provider can receive a PipuPath application packet, but
+                only after you choose exactly what to share and review the
+                packet before submission. Your Discovery answers, private Human
+                Potential Profile, reflections, contacts and unrelated evidence
+                are never added automatically.
               </p>
               {workspace.context.isMinor ? (
                 <p className="mt-4 text-sm font-semibold text-amber-800">
-                  Provider application submission is limited to eligible adults in
-                  Stage 20. You can still evaluate the opportunity and use the
-                  official provider information.
+                  Provider application submission is limited to eligible adults
+                  in Stage 20. You can still evaluate the opportunity and use
+                  the official provider information.
                 </p>
               ) : item.applicationStatus ? (
                 <div className="mt-5 flex flex-wrap items-center gap-3">
@@ -129,12 +132,16 @@ export default async function OpportunityDetailPage({
                   </ButtonLink>
                 </div>
               ) : canApplyNatively ? (
-                <ButtonLink href={`/opportunities/${item.id}/apply`} className="mt-5">
+                <ButtonLink
+                  href={`/opportunities/${item.id}/apply`}
+                  className="mt-5"
+                >
                   Prepare PipuPath application
                 </ButtonLink>
               ) : (
                 <p className="mt-4 text-sm font-semibold text-amber-800">
-                  Native application is not currently available for this listing.
+                  Native application is not currently available for this
+                  listing.
                 </p>
               )}
             </Surface>
@@ -142,9 +149,9 @@ export default async function OpportunityDetailPage({
             <Surface className="mt-8 p-6">
               <h2 className="text-xl font-semibold">External application</h2>
               <p className="text-muted mt-3 leading-7">
-                This curated listing uses the provider&apos;s official application
-                page. PipuPath does not send your private profile or evidence when
-                you open that external link.
+                This curated listing uses the provider&apos;s official
+                application page. PipuPath does not send your private profile or
+                evidence when you open that external link.
               </p>
             </Surface>
           )}

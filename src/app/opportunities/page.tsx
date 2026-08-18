@@ -257,7 +257,8 @@ function MatchCard({
 }
 
 function TrackedApplicationCard({ item }: { item: MarketplaceCatalogItem }) {
-  const native = item.nativeApplicationEnabled || item.applicationStatus !== null;
+  const native =
+    item.nativeApplicationEnabled || item.applicationStatus !== null;
 
   return (
     <Surface className="p-6 sm:p-7">
@@ -280,8 +281,9 @@ function TrackedApplicationCard({ item }: { item: MarketplaceCatalogItem }) {
         <>
           <p className="text-muted mt-4 text-sm leading-6">
             Your PipuPath application record remains available even if the
-            provider or listing is no longer accepting new applications. Existing
-            withdrawal rights are preserved by the application lifecycle.
+            provider or listing is no longer accepting new applications.
+            Existing withdrawal rights are preserved by the application
+            lifecycle.
           </p>
           <ButtonLink href={`/opportunities/${item.id}/apply`} className="mt-5">
             Open application history
@@ -339,9 +341,9 @@ export default async function OpportunitiesPage({
           </h1>
           <p className="text-muted mt-5 max-w-3xl text-lg leading-8">
             PipuPath shows curated opportunities and explains why they may fit.
-            Approved marketplace providers can receive a Builder-controlled exact
-            application packet; ordinary curated listings still use the official
-            external application route.
+            Approved marketplace providers can receive a Builder-controlled
+            exact application packet; ordinary curated listings still use the
+            official external application route.
           </p>
         </div>
       </section>
@@ -358,8 +360,8 @@ export default async function OpportunitiesPage({
         <p className="text-muted mt-3 max-w-4xl leading-7">
           Recommendations use your declared age band, country when you supplied
           one, selected path and capability labels. Missing details are shown as
-          eligibility checks rather than guessed. There is no hidden employability
-          score or selection probability.
+          eligibility checks rather than guessed. There is no hidden
+          employability score or selection probability.
         </p>
       </Surface>
 

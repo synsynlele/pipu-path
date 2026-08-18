@@ -174,7 +174,11 @@ function MemberForm({
         value={active === false ? "revoke" : "activate"}
         variant={active === false ? "ghost" : "secondary"}
       >
-        {active === false ? "Revoke" : username ? "Update member" : "Add member"}
+        {active === false
+          ? "Revoke"
+          : username
+            ? "Update member"
+            : "Add member"}
       </Button>
     </form>
   );
@@ -192,7 +196,10 @@ export default async function AdminProvidersPage({
   try {
     registry = await getAdminProviderRegistry();
   } catch (error) {
-    if (error instanceof Error && error.message.includes("PLATFORM_ADMIN_REQUIRED")) {
+    if (
+      error instanceof Error &&
+      error.message.includes("PLATFORM_ADMIN_REQUIRED")
+    ) {
       notFound();
     }
     redirect("/admin?error=provider_registry_unavailable");
@@ -225,7 +232,9 @@ export default async function AdminProvidersPage({
         </div>
       </section>
 
-      {query.saved === "1" || query.status === "updated" || query.member === "updated" ? (
+      {query.saved === "1" ||
+      query.status === "updated" ||
+      query.member === "updated" ? (
         <Surface className="mt-6 border-emerald-200 bg-emerald-50 p-4">
           <p className="text-sm font-semibold text-emerald-900">
             Provider configuration updated.
@@ -235,7 +244,8 @@ export default async function AdminProvidersPage({
       {query.error ? (
         <Surface className="mt-6 border-red-200 bg-red-50 p-4">
           <p className="text-sm font-semibold text-red-900">
-            The requested provider change was rejected or could not be completed.
+            The requested provider change was rejected or could not be
+            completed.
           </p>
         </Surface>
       ) : null}
@@ -261,7 +271,10 @@ export default async function AdminProvidersPage({
             <p className="text-gold text-xs font-semibold tracking-wide uppercase">
               Provider registry
             </p>
-            <h2 id="provider-registry-heading" className="mt-3 text-3xl font-semibold">
+            <h2
+              id="provider-registry-heading"
+              className="mt-3 text-3xl font-semibold"
+            >
               {registry.providers.length} provider records
             </h2>
           </div>
@@ -284,7 +297,8 @@ export default async function AdminProvidersPage({
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                       <p className="text-gold text-xs font-semibold uppercase">
-                        {readable(provider.organisationType)} · {provider.countryCode}
+                        {readable(provider.organisationType)} ·{" "}
+                        {provider.countryCode}
                       </p>
                       <h3 className="mt-2 text-2xl font-semibold">
                         {provider.organisationName}
@@ -324,7 +338,11 @@ export default async function AdminProvidersPage({
                       action={setOpportunityProviderStatusAdminAction}
                       className="border-border mt-6 grid gap-3 border-t pt-5 md:grid-cols-[180px_1fr_auto]"
                     >
-                      <input type="hidden" name="providerId" value={provider.id} />
+                      <input
+                        type="hidden"
+                        name="providerId"
+                        value={provider.id}
+                      />
                       <label className="text-sm font-semibold">
                         Trust decision
                         <select
@@ -389,7 +407,9 @@ export default async function AdminProvidersPage({
                             className="border-border rounded-2xl border p-4"
                           >
                             <p className="font-semibold">
-                              {member.displayName || member.username || "PipuPath operator"}
+                              {member.displayName ||
+                                member.username ||
+                                "PipuPath operator"}
                             </p>
                             <p className="text-muted mt-1 text-sm">
                               {readable(member.role)} · {member.status}
@@ -408,7 +428,9 @@ export default async function AdminProvidersPage({
                         ))}
                       </div>
                     ) : (
-                      <p className="text-muted mt-3 text-sm">No provider operator assigned.</p>
+                      <p className="text-muted mt-3 text-sm">
+                        No provider operator assigned.
+                      </p>
                     )}
                     {provider.status !== "revoked" ? (
                       <div className="mt-4">

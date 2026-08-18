@@ -108,7 +108,9 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
 
   it("preserves Builder application history and withdrawal access after supply closes", () => {
     expect(hardening).toContain("application_status_value");
-    expect(hardening).toContain("if application_status_value is null and not can_edit");
+    expect(hardening).toContain(
+      "if application_status_value is null and not can_edit",
+    );
     expect(hardening).toContain("'canEdit', can_edit");
     expect(routeMap).toContain(
       "Eligible adult Builder / existing application owner",

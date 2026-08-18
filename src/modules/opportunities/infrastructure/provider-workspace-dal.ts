@@ -37,7 +37,8 @@ export type ProviderWorkspaceChoice = {
 export async function listProviderWorkspaceChoices(): Promise<
   ProviderWorkspaceChoice[]
 > {
-  const client = (await createServerSupabaseClient()) as unknown as UntypedClient;
+  const client =
+    (await createServerSupabaseClient()) as unknown as UntypedClient;
   const result = await client.rpc("list_stage20_provider_workspaces");
   if (result.error) throw new Error("PROVIDER_WORKSPACE_LIST_UNAVAILABLE");
   if (!Array.isArray(result.data)) return [];

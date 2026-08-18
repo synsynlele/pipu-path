@@ -205,7 +205,9 @@ function parseBuilderApplicationWorkspace(
           selectedInstitutionVerificationIds: stringArray(
             applicationRow.selectedInstitutionVerificationIds,
           ),
-          selectedPortfolioIds: stringArray(applicationRow.selectedPortfolioIds),
+          selectedPortfolioIds: stringArray(
+            applicationRow.selectedPortfolioIds,
+          ),
         }
       : null;
 
@@ -273,7 +275,10 @@ export async function getBuilderApplicationWorkspace(opportunityId: string) {
     opportunity_id_input: opportunityId,
   });
   if (result.error) {
-    throwRpcError(result.error, "MARKETPLACE_APPLICATION_WORKSPACE_UNAVAILABLE");
+    throwRpcError(
+      result.error,
+      "MARKETPLACE_APPLICATION_WORKSPACE_UNAVAILABLE",
+    );
   }
   return parseBuilderApplicationWorkspace(result.data);
 }
@@ -328,7 +333,8 @@ export async function getProviderWorkspace(providerId: string) {
     throwRpcError(result.error, "OPPORTUNITY_PROVIDER_WORKSPACE_UNAVAILABLE");
   }
   const parsed = opportunityProviderWorkspaceSchema.safeParse(result.data);
-  if (!parsed.success) throw new Error("OPPORTUNITY_PROVIDER_WORKSPACE_INVALID");
+  if (!parsed.success)
+    throw new Error("OPPORTUNITY_PROVIDER_WORKSPACE_INVALID");
   return parsed.data;
 }
 
@@ -458,7 +464,9 @@ export async function getAdminProviderRegistry() {
   const providers = Array.isArray(row.providers)
     ? row.providers.flatMap((item) => {
         const provider = object(item);
-        const status = opportunityProviderStatusSchema.safeParse(provider.status);
+        const status = opportunityProviderStatusSchema.safeParse(
+          provider.status,
+        );
         const id = text(provider.id);
         const organisationName = text(provider.organisationName);
         const organisationType = text(provider.organisationType);
