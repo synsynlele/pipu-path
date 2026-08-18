@@ -6,7 +6,7 @@ const root = process.cwd();
 const read = (relativePath: string) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
 const migration = read(
-  "supabase/migrations/20260818090000_stage_18_capability_verification.sql",
+  "supabase/migrations/20260818092629_stage_18_capability_verification_corrective.sql",
 );
 
 describe("Stage 18 Capability Verification structure", () => {
