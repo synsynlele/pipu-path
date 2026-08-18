@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  opportunityAdminInputSchema,
+  opportunityAdminItemSchema,
   opportunityCatalogItemSchema,
 } from "./opportunity-contract";
 
@@ -113,14 +113,7 @@ export const opportunityProviderWorkspaceSchema = z.object({
   provider: opportunityProviderSchema,
   membership: opportunityProviderMembershipSchema,
   opportunities: z.array(
-    opportunityAdminInputSchema.omit({ id: true, providerName: true }).extend({
-      id: z.uuid(),
-      reviewStatus: z.enum(["pending", "approved", "rejected"]),
-      publicationStatus: z.enum(["draft", "published", "withdrawn"]),
-      reviewNotes: z.string().max(1000).nullable(),
-      createdAt: timestampSchema,
-      updatedAt: timestampSchema,
-    }),
+    opportunityAdminItemSchema.omit({ providerName: true }),
   ),
 });
 
