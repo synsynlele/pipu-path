@@ -8,7 +8,8 @@ import {
 
 const ids = Array.from(
   { length: 24 },
-  (_, index) => `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+  (_, index) =>
+    `00000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
 );
 
 describe("Builder Passport contract", () => {
@@ -74,18 +75,21 @@ describe("Builder Passport contract", () => {
 
   it("accepts only the server share-secret shape", () => {
     expect(
-      builderPassportShareSecretSchema.safeParse(
-        `ppsp_${"a".repeat(43)}`,
-      ).success,
+      builderPassportShareSecretSchema.safeParse(`ppsp_${"a".repeat(43)}`)
+        .success,
     ).toBe(true);
-    expect(builderPassportShareSecretSchema.safeParse("guessable").success).toBe(
-      false,
-    );
+    expect(
+      builderPassportShareSecretSchema.safeParse("guessable").success,
+    ).toBe(false);
   });
 
   it("states the external trust boundary without credential overclaiming", () => {
-    expect(builderPassportTrustCopy.boundary).toContain("not government identity");
+    expect(builderPassportTrustCopy.boundary).toContain(
+      "not government identity",
+    );
     expect(builderPassportTrustCopy.boundary).toContain("academic credential");
-    expect(builderPassportTrustCopy.boundary).toContain("public Builder directory");
+    expect(builderPassportTrustCopy.boundary).toContain(
+      "public Builder directory",
+    );
   });
 });

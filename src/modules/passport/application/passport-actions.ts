@@ -47,13 +47,18 @@ export async function issuePassportAction(
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Review your Passport." };
+    return {
+      error: parsed.error.issues[0]?.message ?? "Review your Passport.",
+    };
   }
 
   try {
     await issueBuilderPassport(parsed.data);
   } catch {
-    return { error: "PipuPath could not issue this Passport. Review the selected proof and try again." };
+    return {
+      error:
+        "PipuPath could not issue this Passport. Review the selected proof and try again.",
+    };
   }
 
   redirect("/passport?issued=1");
@@ -83,7 +88,10 @@ export async function createPassportShareAction(
     expiresInDays: Number(formData.get("expiresInDays")),
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Review this share.", relativeUrl: null };
+    return {
+      error: parsed.error.issues[0]?.message ?? "Review this share.",
+      relativeUrl: null,
+    };
   }
 
   try {
@@ -91,7 +99,8 @@ export async function createPassportShareAction(
     return { error: null, relativeUrl: share.relativeUrl };
   } catch {
     return {
-      error: "PipuPath could not create this share. Confirm the Passport is current and try again.",
+      error:
+        "PipuPath could not create this share. Confirm the Passport is current and try again.",
       relativeUrl: null,
     };
   }

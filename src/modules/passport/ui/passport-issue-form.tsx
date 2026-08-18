@@ -15,7 +15,10 @@ export function PassportIssueForm({
 }: {
   workspace: BuilderPassportWorkspace;
 }) {
-  const [state, action, pending] = useActionState(issuePassportAction, initialState);
+  const [state, action, pending] = useActionState(
+    issuePassportAction,
+    initialState,
+  );
   const [publicSummary, setPublicSummary] = useState("");
   const [selectedPathName, setSelectedPathName] = useState("");
   const [claimIds, setClaimIds] = useState<string[]>([]);
@@ -58,7 +61,9 @@ export function PassportIssueForm({
   );
 
   const hasSupportingProof =
-    evidenceIds.length > 0 || institutionIds.length > 0 || portfolioIds.length > 0;
+    evidenceIds.length > 0 ||
+    institutionIds.length > 0 ||
+    portfolioIds.length > 0;
   const ready =
     workspace.adultEligible &&
     claimIds.length > 0 &&
@@ -99,39 +104,48 @@ export function PassportIssueForm({
 
       {!workspace.adultEligible ? (
         <div className="rounded-2xl border p-5">
-          <h2 className="font-semibold">External Passport sharing is not available.</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Stage 21 external Passport issuance is limited to eligible adults with no
-            safeguarding review hold. Your private PipuPath development data remains unchanged.
+          <h2 className="font-semibold">
+            External Passport sharing is not available.
+          </h2>
+          <p className="text-muted-foreground mt-2 text-sm">
+            Stage 21 external Passport issuance is limited to eligible adults
+            with no safeguarding review hold. Your private PipuPath development
+            data remains unchanged.
           </p>
         </div>
       ) : null}
 
       {currentPassport ? (
         <div className="rounded-2xl border p-5">
-          <p className="text-sm font-medium">You already have Passport v{currentPassport.version}.</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Issuing a new version will supersede it and revoke every active share created from
-            that older version.
+          <p className="text-sm font-medium">
+            You already have Passport v{currentPassport.version}.
+          </p>
+          <p className="text-muted-foreground mt-2 text-sm">
+            Issuing a new version will supersede it and revoke every active
+            share created from that older version.
           </p>
         </div>
       ) : null}
 
       <section className="space-y-5">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-muted-foreground text-sm font-medium tracking-[0.16em] uppercase">
             01 · Builder-facing context
           </p>
-          <h2 className="mt-2 text-2xl font-semibold">Choose what you want to say</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            These two fields are self-described. They are not generated from private Discovery or
-            Human Potential Profile prose.
+          <h2 className="mt-2 text-2xl font-semibold">
+            Choose what you want to say
+          </h2>
+          <p className="text-muted-foreground mt-2 text-sm">
+            These two fields are self-described. They are not generated from
+            private Discovery or Human Potential Profile prose.
           </p>
         </div>
         <label className="block space-y-2">
-          <span className="text-sm font-medium">Public-safe Builder summary</span>
+          <span className="text-sm font-medium">
+            Public-safe Builder summary
+          </span>
           <textarea
-            className="min-h-28 w-full rounded-xl border bg-background px-4 py-3"
+            className="bg-background min-h-28 w-full rounded-xl border px-4 py-3"
             maxLength={800}
             name="publicSummary"
             onChange={(event) => setPublicSummary(event.target.value)}
@@ -142,7 +156,7 @@ export function PassportIssueForm({
         <label className="block space-y-2">
           <span className="text-sm font-medium">Selected pathway label</span>
           <input
-            className="w-full rounded-xl border bg-background px-4 py-3"
+            className="bg-background w-full rounded-xl border px-4 py-3"
             maxLength={180}
             name="selectedPathName"
             onChange={(event) => setSelectedPathName(event.target.value)}
@@ -154,24 +168,33 @@ export function PassportIssueForm({
 
       <section className="space-y-5 border-t pt-8">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-muted-foreground text-sm font-medium tracking-[0.16em] uppercase">
             02 · Capability claims
           </p>
-          <h2 className="mt-2 text-2xl font-semibold">Select the capabilities to carry</h2>
+          <h2 className="mt-2 text-2xl font-semibold">
+            Select the capabilities to carry
+          </h2>
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {workspace.eligibleCapabilities.map((capability) => (
-            <label className="flex gap-3 rounded-2xl border p-4" key={capability.claimId}>
+            <label
+              className="flex gap-3 rounded-2xl border p-4"
+              key={capability.claimId}
+            >
               <input
                 checked={claimIds.includes(capability.claimId)}
                 name="claimIds"
-                onChange={(event) => toggleClaim(capability.claimId, event.target.checked)}
+                onChange={(event) =>
+                  toggleClaim(capability.claimId, event.target.checked)
+                }
                 type="checkbox"
                 value={capability.claimId}
               />
               <span>
-                <span className="block font-medium">{capability.capabilityLabel}</span>
-                <span className="mt-1 block text-sm text-muted-foreground">
+                <span className="block font-medium">
+                  {capability.capabilityLabel}
+                </span>
+                <span className="text-muted-foreground mt-1 block text-sm">
                   {capability.capabilityLevel.replaceAll("_", " ")}
                 </span>
               </span>
@@ -182,13 +205,14 @@ export function PassportIssueForm({
 
       <section className="space-y-5 border-t pt-8">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-muted-foreground text-sm font-medium tracking-[0.16em] uppercase">
             03 · Supporting proof
           </p>
           <h2 className="mt-2 text-2xl font-semibold">Select exact evidence</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Evidence can be selected only after its capability claim is selected. Private PipuPath
-            route links are never included in the Passport.
+          <p className="text-muted-foreground mt-2 text-sm">
+            Evidence can be selected only after its capability claim is
+            selected. Private PipuPath route links are never included in the
+            Passport.
           </p>
         </div>
         <div className="space-y-3">
@@ -215,7 +239,7 @@ export function PassportIssueForm({
                 />
                 <span>
                   <span className="block font-medium">{item.sourceTitle}</span>
-                  <span className="mt-1 block text-sm text-muted-foreground">
+                  <span className="text-muted-foreground mt-1 block text-sm">
                     {item.evidenceSummary}
                   </span>
                 </span>
@@ -251,8 +275,10 @@ export function PassportIssueForm({
                     value={item.verificationId}
                   />
                   <span>
-                    <span className="block font-medium">{item.capabilityLabel}</span>
-                    <span className="mt-1 block text-sm text-muted-foreground">
+                    <span className="block font-medium">
+                      {item.capabilityLabel}
+                    </span>
+                    <span className="text-muted-foreground mt-1 block text-sm">
                       Confirmed by {item.institutionName}
                     </span>
                   </span>
@@ -268,7 +294,10 @@ export function PassportIssueForm({
           <h2 className="text-2xl font-semibold">Published Portfolio proofs</h2>
           <div className="space-y-3">
             {workspace.eligiblePortfolioProofs.map((proof) => (
-              <label className="flex gap-3 rounded-2xl border p-4" key={proof.portfolioId}>
+              <label
+                className="flex gap-3 rounded-2xl border p-4"
+                key={proof.portfolioId}
+              >
                 <input
                   checked={portfolioIds.includes(proof.portfolioId)}
                   name="portfolioIds"
@@ -284,7 +313,7 @@ export function PassportIssueForm({
                 />
                 <span>
                   <span className="block font-medium">{proof.publicTitle}</span>
-                  <span className="mt-1 block text-sm text-muted-foreground">
+                  <span className="text-muted-foreground mt-1 block text-sm">
                     {proof.publicSummary}
                   </span>
                 </span>
@@ -296,23 +325,27 @@ export function PassportIssueForm({
 
       <section className="space-y-5 border-t pt-8">
         <div>
-          <p className="text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-muted-foreground text-sm font-medium tracking-[0.16em] uppercase">
             04 · Exact Passport preview
           </p>
           <h2 className="mt-2 text-2xl font-semibold">
             {workspace.profile.displayName ?? "Builder"}
           </h2>
           {selectedPathName.trim() ? (
-            <p className="mt-1 text-muted-foreground">{selectedPathName.trim()}</p>
+            <p className="text-muted-foreground mt-1">
+              {selectedPathName.trim()}
+            </p>
           ) : null}
-          {publicSummary.trim() ? <p className="mt-4 max-w-3xl">{publicSummary.trim()}</p> : null}
+          {publicSummary.trim() ? (
+            <p className="mt-4 max-w-3xl">{publicSummary.trim()}</p>
+          ) : null}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           {selectedCapabilities.map((capability) => (
             <div className="rounded-2xl border p-4" key={capability.claimId}>
               <p className="font-medium">{capability.capabilityLabel}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {capability.capabilityLevel.replaceAll("_", " ")}
               </p>
             </div>
@@ -322,7 +355,7 @@ export function PassportIssueForm({
         {selectedEvidence.length > 0 ? (
           <div>
             <h3 className="font-medium">Evidence shared</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
               {selectedEvidence.map((item) => (
                 <li key={item.evidenceId}>{item.sourceTitle}</li>
               ))}
@@ -333,7 +366,7 @@ export function PassportIssueForm({
         {selectedInstitutions.length > 0 ? (
           <div>
             <h3 className="font-medium">Institution confirmations shared</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
               {selectedInstitutions.map((item) => (
                 <li key={item.verificationId}>
                   {item.capabilityLabel} · {item.institutionName}
@@ -346,7 +379,7 @@ export function PassportIssueForm({
         {selectedPortfolios.length > 0 ? (
           <div>
             <h3 className="font-medium">Portfolio proofs shared</h3>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
               {selectedPortfolios.map((proof) => (
                 <li key={proof.portfolioId}>{proof.publicTitle}</li>
               ))}
@@ -363,26 +396,37 @@ export function PassportIssueForm({
             type="checkbox"
           />
           <span className="text-sm leading-6">
-            I reviewed this exact Passport and consent to issue only the selected proof under
-            Builder Passport policy v1. I understand that a newer Passport will supersede the
-            current one and close its active shares.
+            I reviewed this exact Passport and consent to issue only the
+            selected proof under Builder Passport policy v1. I understand that a
+            newer Passport will supersede the current one and close its active
+            shares.
           </span>
         </label>
         {!hasSupportingProof ? (
-          <p className="text-sm text-muted-foreground">
-            Add at least one supporting evidence item, institution confirmation, or Portfolio proof.
+          <p className="text-muted-foreground text-sm">
+            Add at least one supporting evidence item, institution confirmation,
+            or Portfolio proof.
           </p>
         ) : null}
-        {state.error ? <p className="text-sm font-medium">{state.error}</p> : null}
+        {state.error ? (
+          <p className="text-sm font-medium">{state.error}</p>
+        ) : null}
         <div className="flex flex-wrap gap-3">
           <button
-            className="rounded-full bg-foreground px-5 py-3 text-sm font-medium text-background disabled:opacity-40"
+            className="bg-foreground text-background rounded-full px-5 py-3 text-sm font-medium disabled:opacity-40"
             disabled={!ready || pending}
             type="submit"
           >
-            {pending ? "Issuing…" : currentPassport ? "Issue new Passport version" : "Issue Passport"}
+            {pending
+              ? "Issuing…"
+              : currentPassport
+                ? "Issue new Passport version"
+                : "Issue Passport"}
           </button>
-          <Link className="rounded-full border px-5 py-3 text-sm font-medium" href="/passport">
+          <Link
+            className="rounded-full border px-5 py-3 text-sm font-medium"
+            href="/passport"
+          >
             Cancel
           </Link>
         </div>

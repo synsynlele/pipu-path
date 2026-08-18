@@ -59,7 +59,9 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
   if (state.status === "loading") {
     return (
       <main className="mx-auto min-h-screen max-w-4xl px-6 py-16">
-        <p className="text-sm text-muted-foreground">Verifying this Passport…</p>
+        <p className="text-muted-foreground text-sm">
+          Verifying this Passport…
+        </p>
       </main>
     );
   }
@@ -67,17 +69,20 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
   if (state.status === "unavailable") {
     return (
       <main className="mx-auto min-h-screen max-w-3xl px-6 py-16">
-        <p className="text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="text-muted-foreground text-sm font-medium tracking-[0.18em] uppercase">
           Builder Passport
         </p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight">
           This Passport share is not available.
         </h1>
-        <p className="mt-4 max-w-2xl text-muted-foreground">
-          The share may be invalid, expired, revoked, or replaced by the Builder.
-          PipuPath does not reveal which condition applies.
+        <p className="text-muted-foreground mt-4 max-w-2xl">
+          The share may be invalid, expired, revoked, or replaced by the
+          Builder. PipuPath does not reveal which condition applies.
         </p>
-        <Link className="mt-8 inline-flex underline underline-offset-4" href="/">
+        <Link
+          className="mt-8 inline-flex underline underline-offset-4"
+          href="/"
+        >
           Learn about PipuPath
         </Link>
       </main>
@@ -88,14 +93,14 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-6 py-14">
       <header className="border-b pb-8">
-        <p className="text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="text-muted-foreground text-sm font-medium tracking-[0.18em] uppercase">
           PipuPath Builder Passport · v{passport.version}
         </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">
           {passport.builder.displayName}
         </h1>
         {passport.builder.selectedPathName ? (
-          <p className="mt-2 text-lg text-muted-foreground">
+          <p className="text-muted-foreground mt-2 text-lg">
             {passport.builder.selectedPathName}
           </p>
         ) : null}
@@ -104,11 +109,12 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
             {passport.builder.publicSummary}
           </p>
         ) : null}
-        <div className="mt-6 flex flex-wrap gap-3 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mt-6 flex flex-wrap gap-3 text-sm">
           <span>Issued {new Date(passport.issuedAt).toLocaleDateString()}</span>
           <span>·</span>
           <span>
-            Share expires {new Date(passport.share.expiresAt).toLocaleDateString()}
+            Share expires{" "}
+            {new Date(passport.share.expiresAt).toLocaleDateString()}
           </span>
         </div>
       </header>
@@ -116,9 +122,10 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
       <section className="py-8">
         <div className="rounded-2xl border p-5">
           <p className="text-sm font-medium">
-            Integrity: {passport.integrity.state === "current" ? "Current" : "Changed"}
+            Integrity:{" "}
+            {passport.integrity.state === "current" ? "Current" : "Changed"}
           </p>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-2 text-sm">
             Checked {new Date(passport.integrity.checkedAt).toLocaleString()}.
           </p>
           {passport.integrity.notices.length > 0 ? (
@@ -135,9 +142,12 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
         <h2 className="text-2xl font-semibold">Capabilities</h2>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {passport.capabilities.map((capability) => (
-            <article className="rounded-2xl border p-5" key={capability.capabilityKey}>
+            <article
+              className="rounded-2xl border p-5"
+              key={capability.capabilityKey}
+            >
               <h3 className="font-medium">{capability.capabilityLabel}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {capability.capabilityLevel.replaceAll("_", " ")}
               </p>
             </article>
@@ -150,9 +160,13 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
           <h2 className="text-2xl font-semibold">Selected evidence</h2>
           <div className="mt-5 space-y-4">
             {passport.evidence.map((item, index) => (
-              <article className="rounded-2xl border p-5" key={`${item.capabilityKey}-${index}`}>
-                <p className="text-sm text-muted-foreground">
-                  {item.sourceType.replaceAll("_", " ")} · {item.verification.replaceAll("_", " ")}
+              <article
+                className="rounded-2xl border p-5"
+                key={`${item.capabilityKey}-${index}`}
+              >
+                <p className="text-muted-foreground text-sm">
+                  {item.sourceType.replaceAll("_", " ")} ·{" "}
+                  {item.verification.replaceAll("_", " ")}
                 </p>
                 <h3 className="mt-1 font-medium">{item.sourceTitle}</h3>
                 <p className="mt-2 text-sm leading-6">{item.evidenceSummary}</p>
@@ -167,10 +181,16 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
           <h2 className="text-2xl font-semibold">Institution confirmations</h2>
           <div className="mt-5 space-y-4">
             {passport.institutionVerifications.map((item, index) => (
-              <article className="rounded-2xl border p-5" key={`${item.institutionName}-${index}`}>
+              <article
+                className="rounded-2xl border p-5"
+                key={`${item.institutionName}-${index}`}
+              >
                 <h3 className="font-medium">{item.capabilityLabel}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {item.institutionName} · {item.current ? "currently confirmed" : "confirmation changed"}
+                <p className="text-muted-foreground mt-1 text-sm">
+                  {item.institutionName} ·{" "}
+                  {item.current
+                    ? "currently confirmed"
+                    : "confirmation changed"}
                 </p>
               </article>
             ))}
@@ -187,11 +207,14 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
                 <h3 className="font-medium">{proof.publicTitle}</h3>
                 <p className="mt-2 text-sm leading-6">{proof.publicSummary}</p>
                 {proof.current && proof.proofHref ? (
-                  <Link className="mt-3 inline-flex underline underline-offset-4" href={proof.proofHref}>
+                  <Link
+                    className="mt-3 inline-flex underline underline-offset-4"
+                    href={proof.proofHref}
+                  >
                     View current public proof
                   </Link>
                 ) : (
-                  <p className="mt-3 text-sm text-muted-foreground">
+                  <p className="text-muted-foreground mt-3 text-sm">
                     This public proof is no longer currently published.
                   </p>
                 )}
@@ -201,10 +224,10 @@ export function PublicPassportShare({ shareId }: { shareId: string }) {
         </section>
       ) : null}
 
-      <footer className="border-t py-8 text-sm text-muted-foreground">
-        This is a Builder-selected PipuPath evidence snapshot. It is not government
-        identity, an academic credential, employment verification, or a public
-        Builder directory.
+      <footer className="text-muted-foreground border-t py-8 text-sm">
+        This is a Builder-selected PipuPath evidence snapshot. It is not
+        government identity, an academic credential, employment verification, or
+        a public Builder directory.
       </footer>
     </main>
   );

@@ -16,11 +16,15 @@ const vercelConfig = read("vercel.json");
 
 describe("Stage 21 Builder Passport/API structure", () => {
   it("persists immutable Passport snapshots and bounded proof selections", () => {
-    expect(migration).toContain("create table public.builder_passport_versions");
+    expect(migration).toContain(
+      "create table public.builder_passport_versions",
+    );
     expect(migration).toContain(
       "create table public.builder_passport_capabilities",
     );
-    expect(migration).toContain("create table public.builder_passport_evidence");
+    expect(migration).toContain(
+      "create table public.builder_passport_evidence",
+    );
     expect(migration).toContain(
       "create table public.builder_passport_institution_verifications",
     );

@@ -13,18 +13,22 @@ export default async function BuilderPassportPreviewPage() {
     <AppShell>
       <main id="main-content" className="mx-auto max-w-6xl px-6 py-10 lg:py-14">
         <header className="border-b pb-8">
-          <Link className="text-sm underline underline-offset-4" href="/passport">
+          <Link
+            className="text-sm underline underline-offset-4"
+            href="/passport"
+          >
             ← Passport workspace
           </Link>
-          <p className="mt-8 text-sm font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-muted-foreground mt-8 text-sm font-medium tracking-[0.18em] uppercase">
             Passport preview
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-tight">
             Choose exactly what becomes portable.
           </h1>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
-            Nothing is shared by opening this page. Select the capability evidence you want, review
-            the exact snapshot, then explicitly consent before PipuPath issues a version.
+          <p className="text-muted-foreground mt-4 max-w-3xl text-base leading-7">
+            Nothing is shared by opening this page. Select the capability
+            evidence you want, review the exact snapshot, then explicitly
+            consent before PipuPath issues a version.
           </p>
         </header>
 
