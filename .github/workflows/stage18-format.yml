@@ -1,0 +1,39 @@
+name: Stage 18 formatter
+
+on:
+  push:
+    branches:
+      - agent/stage-18-capability-verification-corrective
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format Stage 18 files
+        run: >-
+          npx prettier --write
+          src/app/profile/verification/page.tsx
+          src/modules/capability-verification/domain/capability-verification-contract.ts
+          tests/integration/stage-18-capability-verification.test.ts
+      - name: Capture formatted files
+        run: |
+          mkdir -p /tmp/stage18-formatted/src/app/profile/verification
+          mkdir -p /tmp/stage18-formatted/src/modules/capability-verification/domain
+          mkdir -p /tmp/stage18-formatted/tests/integration
+          cp src/app/profile/verification/page.tsx /tmp/stage18-formatted/src/app/profile/verification/page.tsx
+          cp src/modules/capability-verification/domain/capability-verification-contract.ts /tmp/stage18-formatted/src/modules/capability-verification/domain/capability-verification-contract.ts
+          cp tests/integration/stage-18-capability-verification.test.ts /tmp/stage18-formatted/tests/integration/stage-18-capability-verification.test.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stage18-formatted
+          path: /tmp/stage18-formatted
+          retention-days: 1
