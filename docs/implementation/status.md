@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 21 — Builder Passport/API  
-**Stage status:** Active — all unit/coverage thresholds are green; one historical Stage 20 compatibility test is being repository-formatted before the complete integration/build gate reruns  
+**Stage status:** Release candidate — complete static and live Supabase gates passed; permanent browser proof is being canonicalized before the single deliberate Preview  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
@@ -13,63 +13,68 @@ Stage 19 Institution Workspace was squash-merged through PR #35 as `e2dd36bd6756
 
 Stage 20 Opportunity Marketplace was squash-merged through PR #36 as `11af1f10c15b82ba7ff7504d5eee9f5a8fadda70`. Final cleaned-head CI #926 passed. Production deployment `dpl_3DU6RMNFRfbbiPLiTn7LiWv4iUb9` reached READY on the exact merge commit, the canonical health endpoint returned `status: ok`, and no production error/fatal logs were found after release.
 
-Stage 21 Builder Passport/API is now active on `agent/stage-21-builder-passport-api` with draft PR #37.
+Stage 21 Builder Passport/API is now a release candidate on `agent/stage-21-builder-passport-api` with draft PR #37.
 
 ## Stage 21 authority
 
-The locked authority is `docs/stages/stage-21-builder-passport-api.md`.
+The locked authority is `docs/stages/stage-21-builder-passport-api.md`; live database/release evidence is recorded in `docs/stages/stage-21-release-proof.md`.
 
 Stage 21 is a Builder-controlled proof-portability layer, not a public profile directory or formal academic/government/employment credential system.
 
-Locked implementation boundaries:
+## Static validation evidence — passed
 
-- private `/passport` Builder workspace;
-- immutable versioned Passport snapshots;
-- exact selected deployment-safe capability/evidence/institution/Portfolio projections;
-- explicit preview and issuance consent;
-- one current issued version, with new issuance superseding the prior version and closing its active shares;
-- server-generated high-entropy share secrets stored only as hashes;
-- independently revocable, expiring shares;
-- human share links using fragment secrets so the secret is absent from the initial HTTP request;
-- narrow bearer-authorized read-only verification API;
-- no API or page capable of enumerating Builders or Passports;
-- live integrity status for revoked institution confirmations and withdrawn Portfolio proofs;
-- durable privacy-safe share-resolution rate limiting and access audit;
-- adult-only external issuance/sharing in Stage 21.
+Complete repository validation passed before Stage 21 database deployment:
 
-## Stage 21 privacy exclusions
+- formatting;
+- zero-warning lint;
+- strict TypeScript;
+- 56 unit-test files / 286 unit tests;
+- all global coverage thresholds without lowering or excluding any threshold: statements 87.12%, branches 79.25%, functions 88.65%, lines 88.92%;
+- 185 integration/regression tests;
+- production build.
 
-Passport snapshots must not silently include Discovery answers, Human Potential Profile prose, reflection prose, private Project fields, contact details, network state, safeguarding/moderation data, provider application notes, unrelated evidence, hidden scores or rankings.
+Focused Stage 21 tests cover cryptographic helpers, authenticated-owner/service-role DAL separation, hash-only share creation, server-action fail-closed behavior, fragment-to-bearer public verification, issuance consent, dependent-proof removal and adult eligibility.
+
+## Supabase release evidence — passed
+
+Authorised project: `kvjcswnmhwegpakbtvlh`.
+
+Live and repository-reconciled Stage 21 migrations:
+
+- `20260818173546_stage_21_builder_passport_api.sql`
+- `20260818173828_index_stage_21_builder_passport_foreign_keys.sql`
+
+Verified live:
+
+- RLS enabled across all eight Stage 21 tables;
+- no direct `anon` or `authenticated` table CRUD;
+- share storage contains only `secret_hash`, not a raw bearer secret;
+- owner workspace/issue/share RPCs remain authenticated boundaries;
+- public share resolver and durable rate limiter are service-role-only;
+- both new composite foreign keys have covering indexes;
+- rollback-only lifecycle proof passed issuance, immutable snapshot enforcement, wrong/right bearer behavior, durable rate limiting, live Portfolio integrity downgrade and link removal, share revocation, Passport supersession and Passport revocation;
+- post-proof verification shows zero Stage 21 test residue and the borrowed public Portfolio source restored to `published`.
+
+## Stage 21 privacy boundary
+
+Passport snapshots do not silently include Discovery answers, Human Potential Profile prose, reflection prose, private Project fields, private evidence routes, contact details, network state, safeguarding/moderation data, provider application notes, unrelated evidence, hidden scores or rankings.
 
 No permanent public Builder profile, searchable credential registry, government-ID verification, academic credential issuance, employment/income verification, general partner API credentials, OAuth clients, bulk export, webhooks or payments enter Stage 21.
-
-## Static validation evidence
-
-- Formatting, zero-warning lint and strict TypeScript pass on the implemented Stage 21 surface.
-- 56 unit-test files / 286 unit tests pass.
-- All global coverage thresholds are green without lowering or excluding any threshold: statements 87.12%, branches 79.25%, functions 88.65%, lines 88.92%.
-- Focused Stage 21 tests cover cryptographic helpers, owner/service-role DAL separation, hash-only share creation, server-action fail-closed behavior, fragment-to-bearer public verification, issuance consent, dependent-proof removal and adult eligibility.
-- Stage 21's own structural integration suite passes. The remaining integration blocker is an older Stage 20 release assertion that froze retired project-state wording; it has been replaced with the stronger invariant that Stage 20 is released on its exact merge SHA and its Vercel branch remains explicitly disabled.
 
 ## Deployment control
 
 - Branch: `agent/stage-21-builder-passport-api`.
-- Automatic Vercel Preview deployment is disabled in the branch from its first commit.
-- GitHub CI and Supabase verification are the implementation gates.
-- A deliberate Preview is reserved until static and database gates are green.
+- Automatic Vercel Preview deployment remains disabled.
+- No Stage 21 Preview has been consumed during implementation or the database gate.
+- The permanent Playwright release proof now covers anonymous private-route denial, invalid bearer fail-closed behavior, authenticated issuance, one-time share creation, direct API verification, fresh anonymous public verification, share revocation and Passport revocation.
+- That E2E file is being canonicalized before one exact-head static CI run and the single deliberate Preview.
 
-## Stage 21 release gate
+## Remaining Stage 21 release gate
 
-Stage 21 remains active until:
-
-1. domain/persistence contracts are complete;
-2. snapshot selection, issuance, supersession and revocation are database-enforced;
-3. share secrets are hash-only at rest and returned once;
-4. expiry, revocation, rate limiting and privacy-safe audit are proven;
-5. human/API verification exposes only allow-listed fields;
-6. source-integrity changes are surfaced truthfully;
-7. full repository validation passes;
-8. live Supabase rollback/security/lifecycle proof passes with zero synthetic residue;
-9. one deliberate Vercel Preview passes authenticated Builder plus anonymous valid/invalid share/API proof;
-10. Preview machinery is removed and final cleaned-head CI passes;
-11. the Stage 21 PR is intentionally merged and production health is verified.
+1. reconciled release-candidate head passes complete CI with the permanent E2E spec;
+2. one deliberate Vercel Preview reaches READY on that exact head;
+3. authenticated Builder issuance/share plus anonymous valid/invalid share/API proof passes;
+4. all temporary release fixture data/workflows are removed and Preview suppression restored;
+5. final cleaned-head CI passes;
+6. PR #37 is intentionally squash-merged; and
+7. production deployment health is verified on the exact merge commit.
