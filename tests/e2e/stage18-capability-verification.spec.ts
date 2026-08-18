@@ -18,7 +18,9 @@ async function signIn(page: Page) {
     .not.toBe("/login");
 }
 
-test("anonymous users cannot enter capability verification", async ({ page }) => {
+test("anonymous users cannot enter capability verification", async ({
+  page,
+}) => {
   await page.goto("/profile/verification");
   await expect(page).toHaveURL(/\/login/);
 });
