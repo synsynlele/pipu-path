@@ -16,7 +16,9 @@ const migration = read(`supabase/migrations/${migrationFile}`);
 
 const indexMigrationFile = fs
   .readdirSync(path.join(root, "supabase/migrations"))
-  .find((file) => file.includes("index_stage_21_builder_passport_foreign_keys"));
+  .find((file) =>
+    file.includes("index_stage_21_builder_passport_foreign_keys"),
+  );
 if (!indexMigrationFile) {
   throw new Error("Stage 21 Passport index migration missing");
 }
