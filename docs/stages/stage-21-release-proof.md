@@ -29,7 +29,7 @@ Live Stage 21 migrations:
 - `20260818173546_stage_21_builder_passport_api`
 - `20260818173828_index_stage_21_builder_passport_foreign_keys`
 
-The repository migration filenames are reconciled to those exact remote versions.
+The repository migration filenames are reconciled to those exact remote versions. The Stage 21 structural regression test now discovers the authoritative Passport migration by name and separately requires the exact live index-hardening migration, so future timestamp reconciliation does not freeze an obsolete local filename.
 
 ## Database security boundary — passed
 
