@@ -10,7 +10,6 @@ import {
   marketplaceInstitutionVerificationSelectionSchema,
   marketplacePortfolioProofSelectionSchema,
   opportunityProviderRoleSchema,
-  opportunityProviderSchema,
   opportunityProviderStatusSchema,
   opportunityProviderWorkspaceSchema,
   type MarketplaceApplication,
