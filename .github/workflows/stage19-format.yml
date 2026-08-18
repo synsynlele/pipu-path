@@ -1,0 +1,53 @@
+name: Stage 19 formatter
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.head_ref == 'agent/stage-19-institution-workspace'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format Stage 19 files
+        run: >-
+          npx prettier --write
+          src/app/admin/institutions/page.tsx
+          src/app/institution/page.tsx
+          src/modules/institution/application/institution-actions.ts
+          src/modules/institution/domain/institution-contract.ts
+          src/modules/institution/infrastructure/institution-admin-dal.ts
+          src/modules/institution/infrastructure/institution-dal.ts
+          src/modules/institution/ui/builder-institution-verification-section.tsx
+          tests/integration/stage-19-institution-workspace.test.ts
+      - name: Commit formatter output
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/app/admin/institutions/page.tsx \
+            src/app/institution/page.tsx \
+            src/modules/institution/application/institution-actions.ts \
+            src/modules/institution/domain/institution-contract.ts \
+            src/modules/institution/infrastructure/institution-admin-dal.ts \
+            src/modules/institution/infrastructure/institution-dal.ts \
+            src/modules/institution/ui/builder-institution-verification-section.tsx \
+            tests/integration/stage-19-institution-workspace.test.ts
+          git commit -m "style(stage19): apply repository formatter"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
