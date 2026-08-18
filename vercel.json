@@ -3,7 +3,7 @@
   "git": {
     "deploymentEnabled": {
       "agent/stage-19-institution-workspace": false,
-      "agent/stage-20-opportunity-marketplace": true
+      "agent/stage-20-opportunity-marketplace": false
     }
   }
 }
