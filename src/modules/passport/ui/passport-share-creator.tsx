@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import {
   createPassportShareAction,
   type PassportShareActionState,
@@ -16,21 +16,15 @@ export function PassportShareCreator({ passportId }: { passportId: string }) {
     createPassportShareAction,
     initialState,
   );
-  const [absoluteUrl, setAbsoluteUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (!state.relativeUrl) {
-      setAbsoluteUrl(null);
-      return;
-    }
-    setAbsoluteUrl(`${window.location.origin}${state.relativeUrl}`);
-    setCopied(false);
-  }, [state.relativeUrl]);
-
   async function copyLink() {
-    if (!absoluteUrl) return;
+    if (!state.relativeUrl) return;
     try {
+      const absoluteUrl = new URL(
+        state.relativeUrl,
+        window.location.origin,
+      ).toString();
       await navigator.clipboard.writeText(absoluteUrl);
       setCopied(true);
     } catch {
@@ -42,13 +36,14 @@ export function PassportShareCreator({ passportId }: { passportId: string }) {
     <div className="rounded-2xl border p-5">
       <h3 className="font-semibold">Create a private share</h3>
       <p className="text-muted-foreground mt-2 text-sm">
-        PipuPath stores only a hash of the secret in this link. The complete
-        link is shown only in this response; if you lose it, create a new share.
+        PipuPath stores only a hash of the secret in this share. The secret is
+        returned only in this response; if you lose it, create a new share.
       </p>
 
       <form
         action={action}
         className="mt-5 grid gap-4 md:grid-cols-[1fr_auto_auto]"
+        onSubmit={() => setCopied(false)}
       >
         <input name="passportId" type="hidden" value={passportId} />
         <label className="space-y-2">
@@ -86,17 +81,19 @@ export function PassportShareCreator({ passportId }: { passportId: string }) {
         <p className="mt-4 text-sm font-medium">{state.error}</p>
       ) : null}
 
-      {absoluteUrl ? (
+      {state.relativeUrl ? (
         <div className="mt-5 rounded-xl border p-4">
-          <p className="text-sm font-medium">Copy this link now</p>
+          <p className="text-sm font-medium">Copy this share now</p>
           <p className="text-muted-foreground mt-1 text-xs">
-            The fragment after # is the bearer secret. Do not post it publicly.
+            The fragment after # is the bearer secret. The field below shows the
+            private path; Copy link writes the complete URL including this
+            site&apos;s origin.
           </p>
           <div className="mt-3 flex flex-col gap-3 sm:flex-row">
             <input
               className="bg-background min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm"
               readOnly
-              value={absoluteUrl}
+              value={state.relativeUrl}
             />
             <button
               className="rounded-full border px-4 py-2 text-sm font-medium"
