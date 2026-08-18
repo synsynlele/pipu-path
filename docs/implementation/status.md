@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 21 — Builder Passport/API  
-**Stage status:** Active — canonical formatting and the first React lint corrections are complete; full semantic validation is running before any Supabase deployment  
+**Stage status:** Active — Stage 21 coverage tests are repository-formatted and the full static gate is rerunning before any Supabase deployment  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
