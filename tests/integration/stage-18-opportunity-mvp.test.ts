@@ -18,7 +18,15 @@ const contract = read(
   "src/modules/opportunities/domain/opportunity-contract.ts",
 );
 const dal = read("src/modules/opportunities/infrastructure/opportunity-dal.ts");
+const marketplaceDal = read(
+  "src/modules/opportunities/infrastructure/marketplace-dal.ts",
+);
 const builderPage = read("src/app/opportunities/page.tsx");
+const trackedCard = builderPage.slice(
+  builderPage.indexOf("function TrackedApplicationCard"),
+  builderPage.indexOf("export default async function OpportunitiesPage"),
+);
+const normalizedTrackedCard = trackedCard.replace(/\s+/g, " ");
 const adminPage = read("src/app/admin/opportunities/page.tsx");
 const navigation = read("src/components/navigation/app-navigation.tsx");
 const homeLayout = read("src/app/app/layout.tsx");
@@ -42,7 +50,10 @@ describe("Stage 18 Opportunity MVP", () => {
       /revoke all on public\.opportunities, public\.builder_opportunity_state\s+from public, anon, authenticated;/,
     );
     expect(dal).not.toContain('.from("opportunities")');
-    expect(dal).toContain('rpc("get_stage18_opportunity_catalog")');
+    // Stage 20 intentionally supersedes the Stage 18 catalog transport while
+    // preserving the curated supply/private-state contract.
+    expect(dal).toContain("getMarketplaceCatalog");
+    expect(marketplaceDal).toContain('rpc("get_stage20_marketplace_catalog")');
   });
 
   it("separates review from publication and invalidates approval after edits", () => {
@@ -115,11 +126,13 @@ describe("Stage 18 Opportunity MVP", () => {
     );
     expect(contract).toContain("if (!opportunity.isActive) return null");
     expect(dal).toContain("trackedApplications");
-    expect(builderPage).toContain(
-      "Tracked applications that are no longer active",
+    expect(normalizedTrackedCard).toContain("Tracked application");
+    expect(normalizedTrackedCard).toContain("Opportunity no longer active");
+    expect(normalizedTrackedCard).toContain(
+      "deadline, publication or review state has changed, so PipuPath will not treat it as an active match",
     );
-    expect(builderPage).toContain("They are not recommended again");
-    expect(builderPage).toContain("external link is disabled.");
+    expect(trackedCard).not.toContain("openOpportunityAction");
+    expect(trackedCard).not.toContain("Open official opportunity");
   });
 
   it("labels applications and outcomes as self-reported rather than verified", () => {
