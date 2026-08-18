@@ -75,9 +75,10 @@ These migrations are code-only until the exact Stage 20 branch passes full `npm 
 
 - The complete Stage 20 TypeScript/TSX surface passed repository Prettier formatting.
 - CI run `32139736943` reached lint and found one zero-warning-policy issue only: an unused `opportunityProviderSchema` import in `marketplace-dal.ts`; the unused import was removed.
-- CI run `32139988333` then passed formatting and zero-warning lint, reached strict TypeScript, and found one exported-symbol naming mismatch: the DAL referenced `marketplaceApplicationStatusSchema` while the domain contract exports `opportunityApplicationStatusSchema`.
-- That proven TypeScript symbol mismatch was corrected before the next validation run.
-- Unit/integration, coverage and production-build gates remain unclaimed until a rerun reaches and passes them.
+- CI run `32139988333` then passed formatting and zero-warning lint, reached strict TypeScript, and found one exported-symbol naming mismatch: the DAL referenced `marketplaceApplicationStatusSchema` while the domain contract exports `opportunityApplicationStatusSchema`; the symbol mismatch was corrected.
+- CI run `32140199986` then passed formatting, zero-warning lint and strict TypeScript. All 242 pre-existing unit tests passed, but the new Stage 20 marketplace contract suite could not load because Zod v4 forbids `.omit()` on a refined schema.
+- The provider-workspace runtime schema now derives from the released non-refined `opportunityAdminItemSchema` projection instead. The temporary fix workflow removed itself after applying that correction.
+- Stage 20 unit assertions, integration tests, coverage and production-build gates remain unclaimed until the next full validation run reaches and passes them.
 
 ## Stage 20 non-goals
 
@@ -85,4 +86,4 @@ No payments, escrow, contracts, payroll, fees, bidding, gig marketplace, employe
 
 ## Stage 20 next gate
 
-Run complete static validation on the fully formatted vertical slice. Fix every lint, TypeScript, unit/integration or production-build issue before applying either Stage 20 migration to Supabase. Only after static green: apply migrations in order, verify RLS/grants/RPCs and run rollback-only provider → opportunity → Builder packet → provider decision → withdrawal/closure lifecycle proofs with zero synthetic residue.
+Run complete static validation on the corrected fully formatted vertical slice. Fix every unit/integration, coverage or production-build issue before applying either Stage 20 migration to Supabase. Only after static green: apply migrations in order, verify RLS/grants/RPCs and run rollback-only provider → opportunity → Builder packet → provider decision → withdrawal/closure lifecycle proofs with zero synthetic residue.
