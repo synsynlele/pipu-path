@@ -16,9 +16,7 @@ const migration = read(`supabase/migrations/${migrationFile}`);
 
 const indexMigrationFile = fs
   .readdirSync(path.join(root, "supabase/migrations"))
-  .find((file) =>
-    file.includes("index_stage_21_builder_passport_foreign_keys"),
-  );
+  .find((file) => file.includes("index_stage_21_builder_passport_foreign_keys"));
 if (!indexMigrationFile) {
   throw new Error("Stage 21 Passport index migration missing");
 }
@@ -139,7 +137,7 @@ describe("Stage 21 Builder Passport/API structure", () => {
     );
   });
 
-  it("keeps Stage 21 Vercel Preview deployment suppressed during implementation", () => {
+  it("keeps Stage 21 Vercel Preview deployment suppressed until the deliberate release gate", () => {
     expect(vercelConfig).toContain(
       '"agent/stage-21-builder-passport-api": false',
     );
@@ -147,7 +145,10 @@ describe("Stage 21 Builder Passport/API structure", () => {
       "automatic Vercel Preview deployment is disabled for `agent/stage-21-builder-passport-api`",
     );
     expect(implementationStatus).toContain(
-      "A deliberate Preview is reserved until static and database gates are green.",
+      "No Stage 21 Preview has been consumed during implementation or the database gate.",
+    );
+    expect(implementationStatus).toContain(
+      "one deliberate Vercel Preview reaches READY on that exact head",
     );
   });
 });
