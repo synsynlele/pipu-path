@@ -69,6 +69,11 @@ export default async function LivingBuilderProfilePage() {
                 </Button>
               </form>
             ) : null}
+            {profile ? (
+              <ButtonLink href="/profile/verification" variant="ghost">
+                Capability verification
+              </ButtonLink>
+            ) : null}
           </div>
         </div>
       </section>
