@@ -6,7 +6,13 @@ const root = process.cwd();
 const read = (relativePath: string) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
 const migration = read(
-  "supabase/migrations/20260818112000_stage_19_institution_workspace.sql",
+  "supabase/migrations/20260818113113_stage_19_institution_workspace.sql",
+);
+const volatilityHardening = read(
+  "supabase/migrations/20260818113125_harden_stage_19_workspace_audit_volatility.sql",
+);
+const provisioningHardening = read(
+  "supabase/migrations/20260818114500_fix_stage_19_workspace_provisioning_ambiguity.sql",
 );
 const adr = read("docs/architecture/adr-stage-19-institution-workspace.md");
 
@@ -59,6 +65,22 @@ describe("Stage 19 Institution Workspace structure", () => {
     );
     expect(migration).toContain("institution_pending_shares_closed");
     expect(migration).toContain("status = 'withdrawn', withdrawn_at = now()");
+  });
+
+  it("marks the audited workspace read RPC volatile", () => {
+    expect(volatilityHardening).toContain(
+      "alter function public.get_stage19_institution_workspace(uuid, integer) volatile",
+    );
+  });
+
+  it("disambiguates workspace provisioning before release", () => {
+    expect(provisioningHardening).toContain("resolved_workspace_id uuid");
+    expect(provisioningHardening).toContain(
+      "values (\n    resolved_workspace_id, owner_profile.id",
+    );
+    expect(provisioningHardening).toContain(
+      "return resolved_workspace_id",
+    );
   });
 
   it("keeps institution verification private and out of ranking/public badge scope", () => {
