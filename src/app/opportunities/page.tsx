@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import { recordCurrentUserFeatureView } from "@/modules/analytics/infrastructure/product-events";
 import {
@@ -8,6 +8,7 @@ import {
   recordOpportunityOutcomeAction,
   setOpportunitySavedAction,
 } from "@/modules/opportunities/application/opportunity-actions";
+import type { MarketplaceCatalogItem } from "@/modules/opportunities/domain/marketplace-contract";
 import type {
   OpportunityCatalogItem,
   OpportunityMatch,
@@ -84,10 +85,20 @@ function OutcomeForm({ item }: { item: OpportunityCatalogItem }) {
   );
 }
 
-function MatchCard({ match }: { match: OpportunityMatch }) {
+function MatchCard({
+  match,
+  marketplaceItem,
+  isMinor,
+}: {
+  match: OpportunityMatch;
+  marketplaceItem: MarketplaceCatalogItem | undefined;
+  isMinor: boolean;
+}) {
   const item = match.opportunity;
   const saved = Boolean(item.state.savedAt);
   const applied = Boolean(item.state.appliedAt);
+  const native = Boolean(marketplaceItem?.nativeApplicationEnabled);
+  const applicationStatus = marketplaceItem?.applicationStatus ?? null;
 
   return (
     <Surface className="flex h-full flex-col p-6 sm:p-7">
@@ -100,6 +111,11 @@ function MatchCard({ match }: { match: OpportunityMatch }) {
             {item.title}
           </h2>
           <p className="text-muted mt-1 text-sm">{item.providerName}</p>
+          {native ? (
+            <p className="mt-2 text-xs font-semibold text-emerald-700">
+              Approved PipuPath provider · private application packet supported
+            </p>
+          ) : null}
         </div>
         <span className="border-primary/20 bg-primary-soft text-primary rounded-full border px-3 py-1.5 text-xs font-semibold">
           {tierLabels[match.tier]}
@@ -176,28 +192,62 @@ function MatchCard({ match }: { match: OpportunityMatch }) {
             {saved ? "Remove saved" : "Save opportunity"}
           </Button>
         </form>
-        <form action={openOpportunityAction}>
-          <input type="hidden" name="opportunityId" value={item.id} />
-          <Button type="submit" variant="secondary">
-            Open official opportunity
-          </Button>
-        </form>
-        {!applied ? (
-          <form action={markOpportunityAppliedAction}>
-            <input type="hidden" name="opportunityId" value={item.id} />
-            <Button type="submit">I applied</Button>
-          </form>
-        ) : null}
+        <ButtonLink href={`/opportunities/${item.id}`} variant="secondary">
+          View details
+        </ButtonLink>
+        {native ? (
+          isMinor ? null : (
+            <ButtonLink href={`/opportunities/${item.id}/apply`}>
+              {applicationStatus
+                ? `Application: ${readable(applicationStatus)}`
+                : "Prepare PipuPath application"}
+            </ButtonLink>
+          )
+        ) : (
+          <>
+            <form action={openOpportunityAction}>
+              <input type="hidden" name="opportunityId" value={item.id} />
+              <Button type="submit" variant="secondary">
+                Open official opportunity
+              </Button>
+            </form>
+            {!applied ? (
+              <form action={markOpportunityAppliedAction}>
+                <input type="hidden" name="opportunityId" value={item.id} />
+                <Button type="submit">I applied</Button>
+              </form>
+            ) : null}
+          </>
+        )}
       </div>
 
-      {applied ? (
+      {native && isMinor ? (
+        <p className="mt-4 text-sm font-semibold text-amber-800">
+          Stage 20 provider application submission is adult-only. You can still
+          evaluate the opportunity and review its official information.
+        </p>
+      ) : null}
+
+      {native && applicationStatus ? (
+        <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
+          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+            PipuPath application
+          </p>
+          <p className="text-muted mt-2 text-sm leading-6">
+            Current provider workflow state: {readable(applicationStatus)}. Open
+            the application to review consent and withdrawal options.
+          </p>
+        </div>
+      ) : null}
+
+      {!native && applied ? (
         <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
           <p className="text-primary text-xs font-semibold tracking-wide uppercase">
             Application — self-reported
           </p>
           <p className="text-muted mt-2 text-sm leading-6">
-            You marked this as applied. PipuPath has not independently verified
-            the application or its result.
+            You marked this external opportunity as applied. PipuPath has not
+            independently verified the application or its result.
           </p>
           <OutcomeForm item={item} />
         </div>
@@ -206,7 +256,9 @@ function MatchCard({ match }: { match: OpportunityMatch }) {
   );
 }
 
-function TrackedApplicationCard({ item }: { item: OpportunityCatalogItem }) {
+function TrackedApplicationCard({ item }: { item: MarketplaceCatalogItem }) {
+  const native = item.nativeApplicationEnabled || item.applicationStatus !== null;
+
   return (
     <Surface className="p-6 sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -218,24 +270,41 @@ function TrackedApplicationCard({ item }: { item: OpportunityCatalogItem }) {
           <p className="text-muted mt-1 text-sm">{item.providerName}</p>
         </div>
         <span className="border-border text-muted rounded-full border px-3 py-1.5 text-xs font-semibold">
-          Opportunity no longer active
+          {native && item.applicationStatus
+            ? readable(item.applicationStatus)
+            : "Opportunity no longer active"}
         </span>
       </div>
-      <p className="text-muted mt-4 text-sm leading-6">
-        You previously marked this opportunity as applied. Its deadline,
-        publication or review state has changed, so PipuPath will not send you
-        to the external application page or treat it as an active match. You can
-        still record your outcome below.
-      </p>
-      <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
-        <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-          Application — self-reported
-        </p>
-        <p className="text-muted mt-2 text-sm">
-          PipuPath has not independently verified the application or result.
-        </p>
-        <OutcomeForm item={item} />
-      </div>
+
+      {native && item.applicationStatus ? (
+        <>
+          <p className="text-muted mt-4 text-sm leading-6">
+            Your PipuPath application record remains available even if the
+            provider or listing is no longer accepting new applications. Existing
+            withdrawal rights are preserved by the application lifecycle.
+          </p>
+          <ButtonLink href={`/opportunities/${item.id}/apply`} className="mt-5">
+            Open application history
+          </ButtonLink>
+        </>
+      ) : (
+        <>
+          <p className="text-muted mt-4 text-sm leading-6">
+            You previously marked this external opportunity as applied. Its
+            deadline, publication or review state has changed, so PipuPath will
+            not treat it as an active match. You can still record your outcome.
+          </p>
+          <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
+            <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+              Application — self-reported
+            </p>
+            <p className="text-muted mt-2 text-sm">
+              PipuPath has not independently verified the application or result.
+            </p>
+            <OutcomeForm item={item} />
+          </div>
+        </>
+      )}
     </Surface>
   );
 }
@@ -270,8 +339,9 @@ export default async function OpportunitiesPage({
           </h1>
           <p className="text-muted mt-5 max-w-3xl text-lg leading-8">
             PipuPath shows curated opportunities and explains why they may fit.
-            It does not promise selection, income or outcomes, and it never
-            sends your private Builder profile to the provider.
+            Approved marketplace providers can receive a Builder-controlled exact
+            application packet; ordinary curated listings still use the official
+            external application route.
           </p>
         </div>
       </section>
@@ -288,7 +358,8 @@ export default async function OpportunitiesPage({
         <p className="text-muted mt-3 max-w-4xl leading-7">
           Recommendations use your declared age band, country when you supplied
           one, selected path and capability labels. Missing details are shown as
-          eligibility checks rather than guessed.
+          eligibility checks rather than guessed. There is no hidden employability
+          score or selection probability.
         </p>
       </Surface>
 
@@ -323,7 +394,14 @@ export default async function OpportunitiesPage({
         {workspace.matches.length > 0 ? (
           <div className="mt-6 grid gap-6 xl:grid-cols-2">
             {workspace.matches.map((match) => (
-              <MatchCard key={match.opportunity.id} match={match} />
+              <MatchCard
+                key={match.opportunity.id}
+                match={match}
+                marketplaceItem={workspace.marketplaceItems.get(
+                  match.opportunity.id,
+                )}
+                isMinor={workspace.context.isMinor}
+              />
             ))}
           </div>
         ) : (
@@ -351,12 +429,12 @@ export default async function OpportunitiesPage({
             id="tracked-applications-heading"
             className="mt-3 text-3xl font-semibold tracking-tight"
           >
-            Tracked applications that are no longer active
+            Applications and outcomes you are tracking
           </h2>
           <p className="text-muted mt-3 max-w-3xl leading-7">
-            Closed opportunities stay here only so you can finish your own
-            outcome record. They are not recommended again and their official
-            external link is disabled.
+            Native PipuPath applications retain their controlled lifecycle even
+            after supply closes. External applications remain explicitly
+            self-reported.
           </p>
           <div className="mt-6 grid gap-5 xl:grid-cols-2">
             {workspace.trackedApplications.map((item) => (
@@ -368,7 +446,7 @@ export default async function OpportunitiesPage({
 
       <p className="text-muted mt-8 text-center text-xs leading-5">
         Always read the official eligibility and terms before applying. PipuPath
-        records your application/outcome only when you choose to self-report it.
+        never promises selection, income or provider outcomes.
       </p>
     </main>
   );
