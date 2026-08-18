@@ -41,7 +41,8 @@ const workspace: BuilderPassportWorkspace = {
       capabilityKey: "systems-thinking",
       sourceType: "project",
       sourceTitle: "Community map",
-      evidenceSummary: "Mapped a local problem and tested a practical response.",
+      evidenceSummary:
+        "Mapped a local problem and tested a practical response.",
       verification: "pipupath_action",
       occurredAt: "2026-08-01T10:00:00.000Z",
     },
@@ -61,7 +62,8 @@ const workspace: BuilderPassportWorkspace = {
       portfolioId,
       slug: "community-map",
       publicTitle: "Community Map",
-      publicSummary: "A public proof of the completed community mapping project.",
+      publicSummary:
+        "A public proof of the completed community mapping project.",
       proofHref: "/proof/community-map",
       publishedAt: "2026-08-12T10:00:00.000Z",
     },
@@ -88,11 +90,15 @@ describe("PassportIssueForm", () => {
   it("requires exact capability proof and explicit consent before issuance", () => {
     render(<PassportIssueForm workspace={workspace} />);
 
-    expect(screen.getByText("You already have Passport v1.")).toBeInTheDocument();
+    expect(
+      screen.getByText("You already have Passport v1."),
+    ).toBeInTheDocument();
     const submit = screen.getByRole("button", {
       name: "Issue new Passport version",
     });
-    const claim = screen.getByRole("checkbox", { name: /Systems thinking demonstrated/i });
+    const claim = screen.getByRole("checkbox", {
+      name: /Systems thinking demonstrated/i,
+    });
     const evidence = screen.getByRole("checkbox", { name: /Community map/i });
     const institution = screen.getByRole("checkbox", {
       name: /Confirmed by KAEC Nigerian Schools/i,
@@ -106,12 +112,18 @@ describe("PassportIssueForm", () => {
     expect(institution).toBeDisabled();
     expect(submit).toBeDisabled();
 
-    fireEvent.change(screen.getByRole("textbox", { name: /Public-safe Builder summary/i }), {
-      target: { value: "I build practical systems with communities." },
-    });
-    fireEvent.change(screen.getByRole("textbox", { name: /Selected pathway label/i }), {
-      target: { value: "Systems builder" },
-    });
+    fireEvent.change(
+      screen.getByRole("textbox", { name: /Public-safe Builder summary/i }),
+      {
+        target: { value: "I build practical systems with communities." },
+      },
+    );
+    fireEvent.change(
+      screen.getByRole("textbox", { name: /Selected pathway label/i }),
+      {
+        target: { value: "Systems builder" },
+      },
+    );
     fireEvent.click(claim);
 
     expect(evidence).toBeEnabled();
@@ -128,14 +140,18 @@ describe("PassportIssueForm", () => {
       screen.getByText("I build practical systems with communities."),
     ).toBeInTheDocument();
     expect(screen.getByText("Evidence shared")).toBeInTheDocument();
-    expect(screen.getByText("Institution confirmations shared")).toBeInTheDocument();
+    expect(
+      screen.getByText("Institution confirmations shared"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Portfolio proofs shared")).toBeInTheDocument();
   });
 
   it("removes dependent evidence and institution confirmation when its capability is deselected", () => {
     render(<PassportIssueForm workspace={workspace} />);
 
-    const claim = screen.getByRole("checkbox", { name: /Systems thinking demonstrated/i });
+    const claim = screen.getByRole("checkbox", {
+      name: /Systems thinking demonstrated/i,
+    });
     const evidence = screen.getByRole("checkbox", { name: /Community map/i });
     const institution = screen.getByRole("checkbox", {
       name: /Confirmed by KAEC Nigerian Schools/i,
@@ -145,7 +161,9 @@ describe("PassportIssueForm", () => {
     fireEvent.click(evidence);
     fireEvent.click(institution);
     expect(screen.getByText("Evidence shared")).toBeInTheDocument();
-    expect(screen.getByText("Institution confirmations shared")).toBeInTheDocument();
+    expect(
+      screen.getByText("Institution confirmations shared"),
+    ).toBeInTheDocument();
 
     fireEvent.click(claim);
 
