@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 21 — Builder Passport/API
 
-**Stage status:** ACTIVE — AUTHORITY LOCKED; FIRST FULL STATIC VALIDATION AND CANONICAL FORMATTING GATE IN PROGRESS
+**Stage status:** ACTIVE — STATIC VALIDATION HAS PASSED FORMAT/LINT/TYPES/255 UNIT TESTS; COVERAGE RESTORATION TESTS ARE BEING CANONICALIZED BEFORE THE NEXT FULL GATE
 
 **Released product baseline:** Stages 0–20 are released.
 
@@ -32,17 +32,7 @@ Stage 19 provides the controlled institution-facing surface for privacy-threshol
 
 ## Released Stage 20 — Opportunity Marketplace
 
-Stage 20 extends the Curated Opportunity seed into a trusted deployment marketplace with:
-
-- platform-controlled provider trust lifecycle;
-- provider-scoped opportunity supply with independent review/publication;
-- deterministic explainable Builder matching;
-- Builder-controlled exact application packets;
-- provider access limited to deliberately submitted packets;
-- adult/safeguarding boundaries;
-- lifecycle/audit controls and Builder withdrawal authority;
-- browser-private tables behind bounded RPCs;
-- production verification on the exact release commit.
+Stage 20 extends the Curated Opportunity seed into a trusted deployment marketplace with platform-controlled provider trust, provider-scoped supply, deterministic explainable matching, exact Builder-controlled application packets, bounded provider visibility and complete release verification.
 
 ## Stage 21 — Builder Passport/API
 
@@ -62,6 +52,15 @@ Locked and implemented/in-progress boundaries include:
 - live integrity overlay for institution confirmation and Portfolio withdrawal/revocation;
 - no raw private evidence routes, Discovery answers, HPP prose, reflections, contact data or safeguarding/moderation fields in portable output;
 - Builder Passport remains explicitly distinct from government identity, academic credentials and employment verification.
+
+## Current static validation evidence
+
+- Prettier passes on the implemented Stage 21 product surface after repository canonicalization.
+- Zero-warning lint passes after moving time-dependent share status outside React render and removing effect-driven share URL state.
+- Strict TypeScript passes.
+- 51 unit-test files / 255 unit tests passed before the coverage-restoration batch.
+- Initial Stage 21 coverage gate exposed untested DAL/action/UI/security code rather than product failures. Thresholds remain unchanged.
+- Focused tests now cover Passport cryptographic helpers, owner/service-role DAL boundaries, server-action validation/fail-closed behavior and public fragment-to-bearer verification UI. These tests are being canonicalized before the next full CI run.
 
 ## Stage 21 release discipline
 
