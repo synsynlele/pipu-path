@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 21 — Builder Passport/API  
-**Stage status:** Active — authority locked; domain, persistence, sharing and verification implementation in progress  
+**Stage status:** Active — first full static validation in progress; canonical Passport-page formatting correction is being applied before semantic gates continue  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
@@ -13,7 +13,7 @@ Stage 19 Institution Workspace was squash-merged through PR #35 as `e2dd36bd6756
 
 Stage 20 Opportunity Marketplace was squash-merged through PR #36 as `11af1f10c15b82ba7ff7504d5eee9f5a8fadda70`. Final cleaned-head CI #926 passed. Production deployment `dpl_3DU6RMNFRfbbiPLiTn7LiWv4iUb9` reached READY on the exact merge commit, the canonical health endpoint returned `status: ok`, and no production error/fatal logs were found after release.
 
-Stage 21 Builder Passport/API is now active on `agent/stage-21-builder-passport-api`.
+Stage 21 Builder Passport/API is now active on `agent/stage-21-builder-passport-api` with draft PR #37.
 
 ## Stage 21 authority
 
