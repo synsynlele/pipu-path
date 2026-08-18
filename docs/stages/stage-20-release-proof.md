@@ -13,7 +13,7 @@ Stage 20 reached repeated complete repository validation while defects were corr
 - CI #918 validates the corrected Playwright release-proof assertion/workflow cleanup path;
 - the permanent Stage 20 integration/regression suite preserves Stage 18 Curated Opportunity behavior while testing Stage 20 provider/application boundaries.
 
-The repository validation gate covers formatting, zero-warning lint, strict TypeScript, unit tests, coverage, integration/regression tests and production build.
+The repository validation gate covers formatting, zero-warning lint, strict TypeScript, unit tests, coverage, integration/regression tests and production build. The final Preview-suppression invariant was canonicalized with the repository Prettier toolchain before the cleaned-head CI trigger.
 
 ## Supabase gate — passed
 
