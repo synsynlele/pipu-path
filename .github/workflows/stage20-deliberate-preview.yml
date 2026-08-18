@@ -1,0 +1,48 @@
+name: Stage 20 Deliberate Preview
+
+on:
+  push:
+    branches:
+      - agent/stage-20-opportunity-marketplace
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    if: "${{ github.event.head_commit.message == 'chore(stage20): trigger deliberate preview' }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_ubRQez43BmYh0TGp9Not5K9C
+      VERCEL_PROJECT_ID: prj_2HGwlLFnfUgFDjNoALdj5YMSxGVh
+      VERCEL_SCOPE: synsynlele-3991s-projects
+    steps:
+      - uses: actions/checkout@v5
+      - name: Verify Vercel deployment credential exists
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN is not configured; no Vercel call was made."
+            exit 1
+          fi
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Link exact Vercel project locally
+        run: |
+          mkdir -p .vercel
+          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
+      - name: Pull Preview environment
+        run: npx --yes vercel@latest pull --yes --environment=preview --token="$VERCEL_TOKEN" --scope="$VERCEL_SCOPE"
+      - name: Build exact Stage 20 commit
+        run: npx --yes vercel@latest build --token="$VERCEL_TOKEN" --scope="$VERCEL_SCOPE"
+      - name: Deploy single prebuilt Preview
+        id: deploy
+        run: |
+          url=$(npx --yes vercel@latest deploy --prebuilt --yes --token="$VERCEL_TOKEN" --scope="$VERCEL_SCOPE")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Stage 20 Preview" >> "$GITHUB_STEP_SUMMARY"
+          echo "$url" >> "$GITHUB_STEP_SUMMARY"
