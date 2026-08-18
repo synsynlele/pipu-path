@@ -3,6 +3,7 @@ import {
   builderPassportIssueSchema,
   builderPassportShareCreateSchema,
   builderPassportShareSecretSchema,
+  builderPassportTimestampSchema,
   builderPassportTrustCopy,
 } from "./passport-contract";
 
@@ -53,6 +54,22 @@ describe("Builder Passport contract", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("accepts Supabase/Postgres offset-aware timestamps without accepting zone-less values", () => {
+    expect(
+      builderPassportTimestampSchema.safeParse(
+        "2026-08-13T11:44:37.334053+00:00",
+      ).success,
+    ).toBe(true);
+    expect(
+      builderPassportTimestampSchema.safeParse("2026-08-13T11:44:37.334053Z")
+        .success,
+    ).toBe(true);
+    expect(
+      builderPassportTimestampSchema.safeParse("2026-08-13T11:44:37.334053")
+        .success,
+    ).toBe(false);
   });
 
   it("bounds share expiry to the release-authorized windows", () => {
