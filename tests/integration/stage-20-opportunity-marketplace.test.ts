@@ -15,7 +15,9 @@ const projectState = read("PROJECT_STATE.md");
 describe("Stage 20 Opportunity Marketplace structure", () => {
   it("creates trusted provider and application persistence behind RLS", () => {
     expect(migration).toContain("create table public.opportunity_providers");
-    expect(migration).toContain("create table public.opportunity_provider_members");
+    expect(migration).toContain(
+      "create table public.opportunity_provider_members",
+    );
     expect(migration).toContain("create table public.opportunity_applications");
     expect(migration).toContain("enable row level security");
     expect(migration).toContain("from public, anon, authenticated");
@@ -24,11 +26,15 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
   it("extends rather than duplicates the released Stage 18 opportunity supply", () => {
     expect(migration).toContain("alter table public.opportunities");
     expect(migration).toContain("add column provider_id");
-    expect(authority).toContain("Stage 20 extends this vertical slice. It does not rebuild it.");
+    expect(authority).toContain(
+      "Stage 20 extends this vertical slice. It does not rebuild it.",
+    );
   });
 
   it("keeps provider approval independent from provider listing ownership", () => {
-    expect(migration).toContain("private.stage20_require_approved_provider_operator");
+    expect(migration).toContain(
+      "private.stage20_require_approved_provider_operator",
+    );
     expect(migration).toContain("upsert_stage20_provider_opportunity");
     expect(migration).toContain("review_status = 'pending'");
     expect(migration).toContain("publication_status = 'draft'");
@@ -39,15 +45,21 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
     expect(migration).toContain("private.stage20_active_adult_builder");
     expect(migration).toContain("coalesce(profile.is_minor, true) = false");
     expect(migration).toContain("profile.safeguarding_review_required = false");
-    expect(authority).toContain("Stage 20 defaults provider application submission to eligible adults only");
+    expect(authority).toContain(
+      "Stage 20 defaults provider application submission to eligible adults only",
+    );
   });
 
   it("snapshots only exact Builder-selected deployment-safe evidence", () => {
     expect(migration).toContain("opportunity_application_capabilities");
     expect(migration).toContain("opportunity_application_evidence");
-    expect(migration).toContain("opportunity_application_institution_verifications");
+    expect(migration).toContain(
+      "opportunity_application_institution_verifications",
+    );
     expect(migration).toContain("opportunity_application_portfolio_proofs");
-    expect(migration).toContain("MARKETPLACE_APPLICATION_EVIDENCE_NOT_ELIGIBLE");
+    expect(migration).toContain(
+      "MARKETPLACE_APPLICATION_EVIDENCE_NOT_ELIGIBLE",
+    );
     expect(migration).toContain("claim.id = any(claim_ids)");
   });
 
@@ -55,7 +67,9 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
     expect(migration).toContain("submit_stage20_opportunity_application");
     expect(migration).toContain("withdraw_stage20_opportunity_application");
     expect(migration).toContain("transition_stage20_provider_application");
-    expect(migration).toContain("MARKETPLACE_APPLICATION_PROVIDER_TRANSITION_INVALID");
+    expect(migration).toContain(
+      "MARKETPLACE_APPLICATION_PROVIDER_TRANSITION_INVALID",
+    );
   });
 
   it("never gives providers a Builder directory", () => {
@@ -65,7 +79,9 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
   });
 
   it("keeps the deliberate single-Preview quota gate in project authority", () => {
-    expect(projectState).toContain("Automatic Vercel Preview deployment is disabled");
+    expect(projectState).toContain(
+      "Automatic Vercel Preview deployment is disabled",
+    );
     expect(projectState).toContain("exactly one deliberate Vercel Preview");
   });
 });

@@ -156,7 +156,9 @@ export const marketplaceApplicationEligibilitySchema = z.object({
 export type OpportunityProviderStatus = z.infer<
   typeof opportunityProviderStatusSchema
 >;
-export type OpportunityProviderRole = z.infer<typeof opportunityProviderRoleSchema>;
+export type OpportunityProviderRole = z.infer<
+  typeof opportunityProviderRoleSchema
+>;
 export type OpportunityProvider = z.infer<typeof opportunityProviderSchema>;
 export type OpportunityProviderWorkspace = z.infer<
   typeof opportunityProviderWorkspaceSchema
@@ -214,9 +216,10 @@ export function canBuilderTransitionApplication(
 ) {
   return (
     (from === "draft" && to === "submitted") ||
-    (["draft", "submitted", "viewed", "shortlisted"] as const).includes(
+    ((["draft", "submitted", "viewed", "shortlisted"] as const).includes(
       from as "draft" | "submitted" | "viewed" | "shortlisted",
-    ) && to === "withdrawn"
+    ) &&
+      to === "withdrawn")
   );
 }
 
@@ -237,16 +240,24 @@ export function evaluateMarketplaceApplicationEligibility(input: {
   const reasons: string[] = [];
 
   if (input.isMinor) {
-    reasons.push("Provider application submission is limited to eligible adults in Stage 20.");
+    reasons.push(
+      "Provider application submission is limited to eligible adults in Stage 20.",
+    );
   }
   if (input.safeguardingReviewRequired) {
-    reasons.push("Resolve the safeguarding review before sharing an application packet.");
+    reasons.push(
+      "Resolve the safeguarding review before sharing an application packet.",
+    );
   }
   if (input.providerStatus !== "approved") {
-    reasons.push("The opportunity provider is not currently approved to receive applications.");
+    reasons.push(
+      "The opportunity provider is not currently approved to receive applications.",
+    );
   }
   if (!input.opportunityActive) {
-    reasons.push("This opportunity is not currently open for marketplace applications.");
+    reasons.push(
+      "This opportunity is not currently open for marketplace applications.",
+    );
   }
 
   return marketplaceApplicationEligibilitySchema.parse({
@@ -258,7 +269,9 @@ export function evaluateMarketplaceApplicationEligibility(input: {
 export function validateMarketplacePacketSelections(
   packet: MarketplaceApplicationPacket,
 ) {
-  const capabilityIds = new Set(packet.capabilities.map((item) => item.claimId));
+  const capabilityIds = new Set(
+    packet.capabilities.map((item) => item.claimId),
+  );
   const evidenceIds = new Set(packet.evidence.map((item) => item.evidenceId));
   const institutionIds = new Set(
     packet.institutionVerifications.map((item) => item.verificationId),

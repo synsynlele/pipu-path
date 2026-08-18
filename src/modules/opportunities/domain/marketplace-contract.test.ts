@@ -11,9 +11,11 @@ import {
 
 const basePacket = marketplaceApplicationPacketSchema.parse({
   displayName: "Stage Builder",
-  builderSummary: "I build evidence-backed systems that improve practical learning outcomes.",
+  builderSummary:
+    "I build evidence-backed systems that improve practical learning outcomes.",
   selectedPathName: "Education technology builder",
-  applicationNote: "I want to test my capability in a larger real-world environment.",
+  applicationNote:
+    "I want to test my capability in a larger real-world environment.",
   capabilities: [
     {
       claimId: "11111111-1111-4111-8111-111111111111",
@@ -28,7 +30,8 @@ const basePacket = marketplaceApplicationPacketSchema.parse({
       claimId: "11111111-1111-4111-8111-111111111111",
       sourceType: "project",
       sourceTitle: "School system prototype",
-      evidenceSummary: "Built and tested a practical system prototype with documented implementation evidence.",
+      evidenceSummary:
+        "Built and tested a practical system prototype with documented implementation evidence.",
       sourceHref: "/projects/22222222-2222-4222-8222-222222222222",
     },
   ],
@@ -46,7 +49,8 @@ const basePacket = marketplaceApplicationPacketSchema.parse({
       portfolioId: "44444444-4444-4444-8444-444444444444",
       slug: "stage-builder-school-system",
       publicTitle: "School system prototype",
-      publicSummary: "A public-safe proof of a completed school system prototype and its observed outcome.",
+      publicSummary:
+        "A public-safe proof of a completed school system prototype and its observed outcome.",
       proofHref: "/proof/stage-builder-school-system",
     },
   ],
@@ -55,27 +59,47 @@ const basePacket = marketplaceApplicationPacketSchema.parse({
 describe("Stage 20 marketplace contracts", () => {
   it("keeps provider approval under an explicit irreversible lifecycle", () => {
     expect(canTransitionOpportunityProvider("pending", "approved")).toBe(true);
-    expect(canTransitionOpportunityProvider("approved", "suspended")).toBe(true);
-    expect(canTransitionOpportunityProvider("suspended", "approved")).toBe(true);
+    expect(canTransitionOpportunityProvider("approved", "suspended")).toBe(
+      true,
+    );
+    expect(canTransitionOpportunityProvider("suspended", "approved")).toBe(
+      true,
+    );
     expect(canTransitionOpportunityProvider("revoked", "approved")).toBe(false);
   });
 
   it("separates Builder and provider application transitions", () => {
     expect(canBuilderTransitionApplication("draft", "submitted")).toBe(true);
-    expect(canBuilderTransitionApplication("submitted", "withdrawn")).toBe(true);
-    expect(canBuilderTransitionApplication("submitted", "accepted")).toBe(false);
+    expect(canBuilderTransitionApplication("submitted", "withdrawn")).toBe(
+      true,
+    );
+    expect(canBuilderTransitionApplication("submitted", "accepted")).toBe(
+      false,
+    );
 
     expect(canProviderTransitionApplication("submitted", "viewed")).toBe(true);
-    expect(canProviderTransitionApplication("viewed", "shortlisted")).toBe(true);
-    expect(canProviderTransitionApplication("shortlisted", "accepted")).toBe(true);
+    expect(canProviderTransitionApplication("viewed", "shortlisted")).toBe(
+      true,
+    );
+    expect(canProviderTransitionApplication("shortlisted", "accepted")).toBe(
+      true,
+    );
     expect(canProviderTransitionApplication("draft", "accepted")).toBe(false);
-    expect(canProviderTransitionApplication("accepted", "not_selected")).toBe(false);
+    expect(canProviderTransitionApplication("accepted", "not_selected")).toBe(
+      false,
+    );
   });
 
   it("prevents reopening terminal application outcomes", () => {
-    expect(canTransitionOpportunityApplication("accepted", "submitted")).toBe(false);
-    expect(canTransitionOpportunityApplication("not_selected", "shortlisted")).toBe(false);
-    expect(canTransitionOpportunityApplication("withdrawn", "submitted")).toBe(false);
+    expect(canTransitionOpportunityApplication("accepted", "submitted")).toBe(
+      false,
+    );
+    expect(
+      canTransitionOpportunityApplication("not_selected", "shortlisted"),
+    ).toBe(false);
+    expect(canTransitionOpportunityApplication("withdrawn", "submitted")).toBe(
+      false,
+    );
   });
 
   it("blocks minors, safeguarding holds, unapproved providers and inactive listings", () => {
