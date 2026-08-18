@@ -103,7 +103,7 @@ export const builderPassportPortfolioProofSchema = z.object({
   slug: z.string().trim().min(3).max(120),
   publicTitle: z.string().trim().min(3).max(180),
   publicSummary: z.string().trim().min(20).max(600),
-  proofHref: z.string().regex(/^\/proof\//),
+  proofHref: z.string().regex(/^\/proof\//).nullable(),
   current: z.boolean(),
 });
 
