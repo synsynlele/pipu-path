@@ -17,6 +17,8 @@ const uniqueUuidList = (maximum: number) =>
       message: "Choose each item only once.",
     });
 
+export const builderPassportTimestampSchema = z.iso.datetime({ offset: true });
+
 export const builderPassportStatusSchema = z.enum([
   "issued",
   "superseded",
@@ -88,14 +90,14 @@ export const builderPassportEvidenceSchema = z.object({
   sourceTitle: z.string().trim().min(2).max(160),
   evidenceSummary: z.string().trim().min(10).max(400),
   verification: z.string().trim().min(2).max(60),
-  occurredAt: z.iso.datetime(),
+  occurredAt: builderPassportTimestampSchema,
 });
 
 export const builderPassportInstitutionVerificationSchema = z.object({
   capabilityKey: z.string().trim().min(2).max(120),
   capabilityLabel: z.string().trim().min(2).max(120),
   institutionName: z.string().trim().min(2).max(180),
-  confirmedAt: z.iso.datetime(),
+  confirmedAt: builderPassportTimestampSchema,
   current: z.boolean(),
 });
 
@@ -114,7 +116,7 @@ export const publicBuilderPassportSchema = z.object({
   schemaVersion: z.literal("builder-passport.v1"),
   passportId: z.uuid(),
   version: z.number().int().positive(),
-  issuedAt: z.iso.datetime(),
+  issuedAt: builderPassportTimestampSchema,
   builder: z.object({
     displayName: z.string().trim().min(2).max(120),
     publicSummary: z.string().trim().max(800).nullable(),
@@ -128,11 +130,11 @@ export const publicBuilderPassportSchema = z.object({
   portfolioProofs: z.array(builderPassportPortfolioProofSchema).max(8),
   integrity: z.object({
     state: builderPassportIntegrityStateSchema,
-    checkedAt: z.iso.datetime(),
+    checkedAt: builderPassportTimestampSchema,
     notices: z.array(z.string().trim().min(3).max(240)).max(20),
   }),
   share: z.object({
-    expiresAt: z.iso.datetime(),
+    expiresAt: builderPassportTimestampSchema,
   }),
 });
 
