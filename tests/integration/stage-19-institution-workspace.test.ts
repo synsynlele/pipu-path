@@ -27,7 +27,9 @@ describe("Stage 19 Institution Workspace structure", () => {
     expect(migration).toContain(
       "public.get_stage13_khpos_cohort_aggregate_server",
     );
-    expect(adr).toContain("Cohort membership alone does not permit learner-level browsing");
+    expect(adr).toContain(
+      "Cohort membership alone does not permit learner-level browsing",
+    );
     expect(adr).toContain("no user IDs, names or learner rows");
   });
 
@@ -46,7 +48,9 @@ describe("Stage 19 Institution Workspace structure", () => {
       "private.stage19_institution_member_role(target.workspace_id, actor)",
     );
     expect(migration).toContain("actor_role not in ('owner','verifier')");
-    expect(migration).toContain("INSTITUTION_VERIFICATION_RELATIONSHIP_REQUIRED");
+    expect(migration).toContain(
+      "INSTITUTION_VERIFICATION_RELATIONSHIP_REQUIRED",
+    );
   });
 
   it("closes pending individual shares when cohort consent is withdrawn", () => {

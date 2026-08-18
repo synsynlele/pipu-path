@@ -230,7 +230,9 @@ function parseQueue(value: unknown): InstitutionVerificationQueueItem[] {
   });
 }
 
-function parseWorkspaceDetail(value: unknown): InstitutionWorkspaceDetail | null {
+function parseWorkspaceDetail(
+  value: unknown,
+): InstitutionWorkspaceDetail | null {
   const row = object(value);
   const workspaceId = text(row.workspaceId);
   const organisationName = text(row.organisationName);
@@ -378,7 +380,8 @@ export async function getInstitutionWorkspaceState(
   if (!choices.length) return { access: "forbidden" };
 
   const choice =
-    choices.find((item) => item.workspaceId === requestedWorkspaceId) ?? choices[0];
+    choices.find((item) => item.workspaceId === requestedWorkspaceId) ??
+    choices[0];
   const detailResult = await client.rpc("get_stage19_institution_workspace", {
     workspace_id_input: choice.workspaceId,
     window_days_input: Math.min(Math.max(Math.trunc(windowDays), 1), 180),

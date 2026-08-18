@@ -55,7 +55,9 @@ export default async function InstitutionPage({
 }) {
   const query = await searchParams;
   const requestedWindow = Number(query.window ?? 90);
-  const windowDays = windows.includes(requestedWindow as (typeof windows)[number])
+  const windowDays = windows.includes(
+    requestedWindow as (typeof windows)[number],
+  )
     ? requestedWindow
     : 90;
   const state = await getInstitutionWorkspaceState(query.workspace, windowDays);
@@ -84,8 +86,8 @@ export default async function InstitutionPage({
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
             Development intelligence without a learner surveillance layer.
-            Aggregate cohort patterns stay separate from individual evidence that
-            a Builder explicitly shares for verification.
+            Aggregate cohort patterns stay separate from individual evidence
+            that a Builder explicitly shares for verification.
           </p>
           <p className="mt-5 text-sm font-semibold text-slate-400">
             Role: {institutionRoleLabel(workspace.role)}
@@ -112,7 +114,9 @@ export default async function InstitutionPage({
           <Link
             key={choice.workspaceId}
             href={`/institution?workspace=${choice.workspaceId}&window=${windowDays}`}
-            aria-current={choice.workspaceId === workspace.workspaceId ? "page" : undefined}
+            aria-current={
+              choice.workspaceId === workspace.workspaceId ? "page" : undefined
+            }
             className={`rounded-full border px-4 py-2 text-sm font-semibold ${
               choice.workspaceId === workspace.workspaceId
                 ? "border-primary bg-primary text-white"
@@ -128,16 +132,21 @@ export default async function InstitutionPage({
       </div>
 
       <Surface className="border-gold/25 bg-gold/5 mt-8 p-6 sm:p-8">
-        <p className="text-gold text-xs font-semibold uppercase">Privacy boundary</p>
+        <p className="text-gold text-xs font-semibold uppercase">
+          Privacy boundary
+        </p>
         <p className="text-muted mt-3 max-w-4xl leading-7">
-          {institutionTrustCopy.aggregate} Individual names appear below only when
-          that Builder explicitly shared one capability/evidence item with this
-          institution for a verification decision.
+          {institutionTrustCopy.aggregate} Individual names appear below only
+          when that Builder explicitly shared one capability/evidence item with
+          this institution for a verification decision.
         </p>
       </Surface>
 
       {workspace.analyticsAllowed ? (
-        <section className="mt-10" aria-labelledby="cohort-intelligence-heading">
+        <section
+          className="mt-10"
+          aria-labelledby="cohort-intelligence-heading"
+        >
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-primary text-xs font-semibold tracking-wide uppercase">
@@ -150,7 +159,10 @@ export default async function InstitutionPage({
                 Privacy-thresholded development patterns.
               </h2>
             </div>
-            <nav aria-label="Institution analytics window" className="flex gap-2">
+            <nav
+              aria-label="Institution analytics window"
+              className="flex gap-2"
+            >
               {windows.map((days) => (
                 <Link
                   key={days}
@@ -170,25 +182,42 @@ export default async function InstitutionPage({
 
           {!aggregate || !aggregate.reportingEligible ? (
             <Surface className="mt-5 p-6 sm:p-8">
-              <h3 className="text-xl font-semibold">Small-cohort protection is active.</h3>
+              <h3 className="text-xl font-semibold">
+                Small-cohort protection is active.
+              </h3>
               <p className="text-muted mt-3 max-w-3xl leading-7">
                 Detailed institutional signals remain suppressed until at least{" "}
-                {workspace.reportingMinimum} active cohort participants contribute.
-                PipuPath returns zero detailed counts rather than revealing a small
-                group.
+                {workspace.reportingMinimum} active cohort participants
+                contribute. PipuPath returns zero detailed counts rather than
+                revealing a small group.
               </p>
             </Surface>
           ) : (
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Metric label="Cohort members" value={aggregate.cohortMemberCount} />
-              <Metric label="Active profiles" value={aggregate.activeProfileCount} />
-              <Metric label="Paths selected" value={aggregate.pathSelectedCount} />
-              <Metric label="Quest participants" value={aggregate.questParticipantCount} />
+              <Metric
+                label="Cohort members"
+                value={aggregate.cohortMemberCount}
+              />
+              <Metric
+                label="Active profiles"
+                value={aggregate.activeProfileCount}
+              />
+              <Metric
+                label="Paths selected"
+                value={aggregate.pathSelectedCount}
+              />
+              <Metric
+                label="Quest participants"
+                value={aggregate.questParticipantCount}
+              />
               <Metric
                 label="Evidence-backed quest participants"
                 value={aggregate.evidenceBackedQuestParticipantCount}
               />
-              <Metric label="Project participants" value={aggregate.projectParticipantCount} />
+              <Metric
+                label="Project participants"
+                value={aggregate.projectParticipantCount}
+              />
               <Metric
                 label="Project completers"
                 value={aggregate.projectCompletionParticipantCount}
@@ -218,13 +247,15 @@ export default async function InstitutionPage({
             Decide only on evidence the Builder deliberately shared.
           </h2>
           <p className="text-muted mt-3 max-w-3xl leading-7">
-            This is not a learner directory. Each row exists because that Builder
-            submitted the exact capability and evidence shown here.
+            This is not a learner directory. Each row exists because that
+            Builder submitted the exact capability and evidence shown here.
           </p>
 
           {workspace.verificationQueue.length === 0 ? (
             <Surface className="mt-5 p-6">
-              <p className="text-muted">No institutional verification request yet.</p>
+              <p className="text-muted">
+                No institutional verification request yet.
+              </p>
             </Surface>
           ) : (
             <div className="mt-5 space-y-5">
@@ -239,7 +270,11 @@ export default async function InstitutionPage({
                         {item.capabilityLabel}
                       </h3>
                       <p className="text-muted mt-1 text-sm">
-                        Shared by {personLabel(item.builderDisplayName, item.builderUsername)}
+                        Shared by{" "}
+                        {personLabel(
+                          item.builderDisplayName,
+                          item.builderUsername,
+                        )}
                         {" · "}
                         {item.sourceTitle}
                       </p>
@@ -248,7 +283,9 @@ export default async function InstitutionPage({
                       {item.sourceType} evidence
                     </span>
                   </div>
-                  <p className="text-muted mt-4 leading-7">{item.sourceSummary}</p>
+                  <p className="text-muted mt-4 leading-7">
+                    {item.sourceSummary}
+                  </p>
                   {item.requestNote ? (
                     <p className="border-border mt-4 rounded-xl border p-3 text-sm">
                       Builder context: {item.requestNote}
@@ -256,9 +293,20 @@ export default async function InstitutionPage({
                   ) : null}
 
                   {item.actionable ? (
-                    <form action={respondInstitutionVerificationAction} className="mt-5">
-                      <input type="hidden" name="verificationId" value={item.id} />
-                      <input type="hidden" name="workspaceId" value={workspace.workspaceId} />
+                    <form
+                      action={respondInstitutionVerificationAction}
+                      className="mt-5"
+                    >
+                      <input
+                        type="hidden"
+                        name="verificationId"
+                        value={item.id}
+                      />
+                      <input
+                        type="hidden"
+                        name="workspaceId"
+                        value={workspace.workspaceId}
+                      />
                       <label
                         htmlFor={`institution-response-${item.id}`}
                         className="text-sm font-semibold"
@@ -288,10 +336,26 @@ export default async function InstitutionPage({
                       </div>
                     </form>
                   ) : item.status === "confirmed" ? (
-                    <form action={closeInstitutionVerificationAction} className="mt-4">
-                      <input type="hidden" name="verificationId" value={item.id} />
-                      <input type="hidden" name="workspaceId" value={workspace.workspaceId} />
-                      <Button type="submit" name="action" value="revoke" variant="ghost">
+                    <form
+                      action={closeInstitutionVerificationAction}
+                      className="mt-4"
+                    >
+                      <input
+                        type="hidden"
+                        name="verificationId"
+                        value={item.id}
+                      />
+                      <input
+                        type="hidden"
+                        name="workspaceId"
+                        value={workspace.workspaceId}
+                      />
+                      <Button
+                        type="submit"
+                        name="action"
+                        value="revoke"
+                        variant="ghost"
+                      >
                         Revoke institution confirmation
                       </Button>
                     </form>

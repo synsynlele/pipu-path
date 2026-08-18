@@ -52,11 +52,7 @@ export const institutionWorkspaceRevokeSchema = z.object({
 
 export type InstitutionRole = "owner" | "verifier" | "analyst";
 export type InstitutionVerificationStatus =
-  | "pending"
-  | "confirmed"
-  | "declined"
-  | "withdrawn"
-  | "revoked";
+  "pending" | "confirmed" | "declined" | "withdrawn" | "revoked";
 
 export function institutionRoleLabel(role: InstitutionRole) {
   return { owner: "Owner", verifier: "Verifier", analyst: "Analyst" }[role];

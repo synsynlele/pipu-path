@@ -27,7 +27,9 @@ function finishInstitution(
   status: "updated" | "error",
 ): never {
   revalidatePath("/institution");
-  redirect(`/institution?workspace=${encodeURIComponent(workspaceId)}&status=${status}`);
+  redirect(
+    `/institution?workspace=${encodeURIComponent(workspaceId)}&status=${status}`,
+  );
 }
 
 function finishAdmin(status: "updated" | "error"): never {

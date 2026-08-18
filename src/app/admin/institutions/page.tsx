@@ -63,7 +63,8 @@ export default async function AdminInstitutionsPage({
       ) : query.status === "error" ? (
         <Surface className="mt-5 border-red-200 bg-red-50 p-4">
           <p className="text-sm font-semibold text-red-900">
-            The requested institution change was rejected or could not be completed.
+            The requested institution change was rejected or could not be
+            completed.
           </p>
         </Surface>
       ) : null}
@@ -79,7 +80,9 @@ export default async function AdminInstitutionsPage({
 
       {state.cohorts.length === 0 ? (
         <Surface className="mt-8 p-6 sm:p-8">
-          <h2 className="text-2xl font-semibold">No Stage 13 cohort exists yet.</h2>
+          <h2 className="text-2xl font-semibold">
+            No Stage 13 cohort exists yet.
+          </h2>
           <p className="text-muted mt-3 leading-7">
             Complete the controlled KHP-OS institutional pairing first. Stage 19
             will not invent an institution outside that existing trust boundary.
@@ -116,7 +119,11 @@ export default async function AdminInstitutionsPage({
                   action={provisionInstitutionWorkspaceAction}
                   className="border-border mt-6 border-t pt-5"
                 >
-                  <input type="hidden" name="cohortId" value={cohort.cohortId} />
+                  <input
+                    type="hidden"
+                    name="cohortId"
+                    value={cohort.cohortId}
+                  />
                   <label
                     htmlFor={`owner-${cohort.cohortId}`}
                     className="text-sm font-semibold"
@@ -138,9 +145,13 @@ export default async function AdminInstitutionsPage({
               ) : (
                 <>
                   <div className="mt-6">
-                    <h3 className="text-lg font-semibold">Institution operators</h3>
+                    <h3 className="text-lg font-semibold">
+                      Institution operators
+                    </h3>
                     {cohort.members.length === 0 ? (
-                      <p className="text-muted mt-2 text-sm">No operator records.</p>
+                      <p className="text-muted mt-2 text-sm">
+                        No operator records.
+                      </p>
                     ) : (
                       <div className="mt-3 grid gap-3 md:grid-cols-2">
                         {cohort.members.map((member) => (
@@ -149,13 +160,20 @@ export default async function AdminInstitutionsPage({
                             className="border-border rounded-2xl border p-4"
                           >
                             <p className="font-semibold">
-                              {member.displayName || member.username || "PipuPath operator"}
+                              {member.displayName ||
+                                member.username ||
+                                "PipuPath operator"}
                             </p>
                             <p className="text-muted mt-1 text-sm">
-                              {institutionRoleLabel(member.role)} · {member.status}
+                              {institutionRoleLabel(member.role)} ·{" "}
+                              {member.status}
                             </p>
-                            {member.status === "active" && cohort.workspaceStatus === "active" ? (
-                              <form action={setInstitutionMemberAction} className="mt-3">
+                            {member.status === "active" &&
+                            cohort.workspaceStatus === "active" ? (
+                              <form
+                                action={setInstitutionMemberAction}
+                                className="mt-3"
+                              >
                                 <input
                                   type="hidden"
                                   name="workspaceId"
@@ -166,7 +184,11 @@ export default async function AdminInstitutionsPage({
                                   name="targetUsername"
                                   value={member.username ?? ""}
                                 />
-                                <input type="hidden" name="role" value={member.role} />
+                                <input
+                                  type="hidden"
+                                  name="role"
+                                  value={member.role}
+                                />
                                 <Button
                                   type="submit"
                                   name="action"
@@ -194,7 +216,9 @@ export default async function AdminInstitutionsPage({
                           name="workspaceId"
                           value={cohort.workspaceId}
                         />
-                        <h3 className="font-semibold">Add or update an operator</h3>
+                        <h3 className="font-semibold">
+                          Add or update an operator
+                        </h3>
                         <div className="mt-3 grid gap-3 md:grid-cols-[1fr_180px_auto]">
                           <input
                             name="targetUsername"
@@ -230,8 +254,9 @@ export default async function AdminInstitutionsPage({
                           value={cohort.workspaceId}
                         />
                         <p className="text-muted text-sm leading-6">
-                          Revoking a workspace removes operator access and closes
-                          every unresolved institution verification request.
+                          Revoking a workspace removes operator access and
+                          closes every unresolved institution verification
+                          request.
                         </p>
                         <Button type="submit" variant="ghost" className="mt-3">
                           Revoke workspace
@@ -240,7 +265,8 @@ export default async function AdminInstitutionsPage({
                     </>
                   ) : (
                     <p className="text-muted mt-6 text-sm">
-                      This Institution Workspace has been revoked and cannot be reactivated in Stage 19.
+                      This Institution Workspace has been revoked and cannot be
+                      reactivated in Stage 19.
                     </p>
                   )}
                 </>

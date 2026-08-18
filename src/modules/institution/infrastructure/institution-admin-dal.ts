@@ -146,7 +146,10 @@ export async function runInstitutionAdminRpc(
 ) {
   const provisioner = await currentProvisioner();
   if (provisioner.access !== "granted") {
-    return { data: null, error: { message: "INSTITUTION_ADMIN_ACCESS_DENIED" } };
+    return {
+      data: null,
+      error: { message: "INSTITUTION_ADMIN_ACCESS_DENIED" },
+    };
   }
   return provisioner.service.rpc(name, {
     ...args,

@@ -14,7 +14,10 @@ export async function BuilderInstitutionVerificationSection() {
   const workspace = await getBuilderInstitutionVerificationWorkspace();
 
   return (
-    <section className="mt-12" aria-labelledby="institution-verification-heading">
+    <section
+      className="mt-12"
+      aria-labelledby="institution-verification-heading"
+    >
       <p className="text-gold text-xs font-semibold tracking-wide uppercase">
         Institution verification
       </p>
@@ -30,11 +33,14 @@ export async function BuilderInstitutionVerificationSection() {
 
       {!workspace.connected ? (
         <Surface className="mt-5 p-6">
-          <h3 className="text-lg font-semibold">No active Institution Workspace.</h3>
+          <h3 className="text-lg font-semibold">
+            No active Institution Workspace.
+          </h3>
           <p className="text-muted mt-2 leading-7">
             Institution verification appears only after you voluntarily join an
             active school-development cohort and that institution has a verified
-            PipuPath workspace. Your existing verification history remains below.
+            PipuPath workspace. Your existing verification history remains
+            below.
           </p>
         </Surface>
       ) : (
@@ -56,9 +62,9 @@ export async function BuilderInstitutionVerificationSection() {
           {workspace.eligibleEvidence.length === 0 ? (
             <Surface className="mt-5 p-6">
               <p className="text-muted leading-7">
-                There is no new evidence available for institutional verification
-                right now. Refresh your Living Builder Profile after completing
-                more evidence-backed work.
+                There is no new evidence available for institutional
+                verification right now. Refresh your Living Builder Profile
+                after completing more evidence-backed work.
               </p>
             </Surface>
           ) : (
@@ -66,18 +72,28 @@ export async function BuilderInstitutionVerificationSection() {
               {workspace.eligibleEvidence.map((item) => (
                 <Surface key={item.evidenceId} className="p-6">
                   <p className="text-gold text-xs font-semibold uppercase">
-                    {item.capabilityLabel} · {item.capabilityLevel.replaceAll("_", " ")}
+                    {item.capabilityLabel} ·{" "}
+                    {item.capabilityLevel.replaceAll("_", " ")}
                   </p>
-                  <h3 className="mt-2 text-xl font-semibold">{item.sourceTitle}</h3>
+                  <h3 className="mt-2 text-xl font-semibold">
+                    {item.sourceTitle}
+                  </h3>
                   <p className="text-muted mt-2 text-sm leading-6">
                     {item.sourceSummary}
                   </p>
                   <p className="text-muted mt-3 text-xs uppercase">
                     Evidence source: {item.sourceType}
                   </p>
-                  <form action={requestInstitutionVerificationAction} className="mt-5">
+                  <form
+                    action={requestInstitutionVerificationAction}
+                    className="mt-5"
+                  >
                     <input type="hidden" name="claimId" value={item.claimId} />
-                    <input type="hidden" name="evidenceId" value={item.evidenceId} />
+                    <input
+                      type="hidden"
+                      name="evidenceId"
+                      value={item.evidenceId}
+                    />
                     <label
                       htmlFor={`institution-request-${item.evidenceId}`}
                       className="text-sm font-semibold"
@@ -104,10 +120,14 @@ export async function BuilderInstitutionVerificationSection() {
       )}
 
       <div className="mt-8">
-        <h3 className="text-xl font-semibold">Institution verification history</h3>
+        <h3 className="text-xl font-semibold">
+          Institution verification history
+        </h3>
         {workspace.history.length === 0 ? (
           <Surface className="mt-4 p-6">
-            <p className="text-muted">No institution verification request yet.</p>
+            <p className="text-muted">
+              No institution verification request yet.
+            </p>
           </Surface>
         ) : (
           <div className="mt-4 space-y-4">
@@ -127,7 +147,11 @@ export async function BuilderInstitutionVerificationSection() {
                   </div>
                   {item.status === "pending" ? (
                     <form action={closeInstitutionVerificationAction}>
-                      <input type="hidden" name="verificationId" value={item.id} />
+                      <input
+                        type="hidden"
+                        name="verificationId"
+                        value={item.id}
+                      />
                       <Button
                         type="submit"
                         name="action"
@@ -139,7 +163,11 @@ export async function BuilderInstitutionVerificationSection() {
                     </form>
                   ) : item.status === "confirmed" ? (
                     <form action={closeInstitutionVerificationAction}>
-                      <input type="hidden" name="verificationId" value={item.id} />
+                      <input
+                        type="hidden"
+                        name="verificationId"
+                        value={item.id}
+                      />
                       <Button
                         type="submit"
                         name="action"
