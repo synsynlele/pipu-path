@@ -6,6 +6,7 @@
 - CI #889 passed after the foreign-key index corrective migration was added to Supabase and the repository.
 - CI #893 passed the formatted permanent Stage 20 authenticated Playwright release proof.
 - CI #895 passed after the release-proof deployment guard was added.
+- CI #899 passed the cleaned Stage 20 head after all temporary deployment/credential diagnostics were removed.
 - The permanent Stage 20 authenticated Playwright release proof is opt-in and requires `E2E_STAGE20_EXPECT_MARKETPLACE=true`.
 
 ## Supabase gate — passed
@@ -42,25 +43,24 @@ Transactional rollback proof passed:
 - provider projection privacy assertions passed;
 - all synthetic providers/listings/applications were rolled back to zero rows.
 
-## Vercel gate — account-level blocker, no Preview consumed
+## Vercel gate — correct project verified
 
-The connected Vercel project `pipupath` is still linked in deployment metadata to the obsolete repository `synsynlele/pipupath`, whose `main` stopped on 15 June 2026. The active Stage 0–20 repository is `synsynlele/pipu-path`.
+Connected Vercel team: `copyartint-2860s-projects` (`team_BVKFc6kjlaazTmHWc1vXv6RK`).
 
-A GitHub Actions credential-only check proved that the active repository does not have a `VERCEL_TOKEN` secret. The check made no Vercel call. A direct connector deployment probe also failed input validation before deployment creation. Vercel deployment history was rechecked afterward and contains no new Stage 20 Preview. Therefore the reserved deliberate Preview has not been consumed.
+Connected Vercel project: `pipu-path` (`prj_EijX6BCMKdWZTMCJDMevLFj1TjmK`).
 
-Temporary deployment and credential-diagnostic workflows were removed after the blocker was proven. Git-triggered Stage 20 deployment remains disabled until the project source is corrected.
+Live Vercel deployment metadata proves this project is correctly connected to GitHub repository `synsynlele/pipu-path` (repository ID `1311277909`). Production deployments track `main`, and Preview deployments track PipuPath release branches and PRs.
 
-## Required account correction
+An early automatic Stage 20 Preview exists for commit `a794b523e2e65f95e11493489ab83c6586b50347` (`docs(stage20): lock opportunity marketplace scope`), deployment `dpl_GQP81W1wwMpuo8BF6p1T1xq5tTsP`. It predates the release candidate and is not accepted as the Stage 20 release proof.
 
-Preferred: reconnect the existing Vercel project `pipupath` to `synsynlele/pipu-path` instead of the obsolete `synsynlele/pipupath`. This fixes both the Stage 20 gate and future Git-based releases.
-
-Alternative: configure a repository `VERCEL_TOKEN` secret and use a guarded prebuilt deployment workflow from the exact `pipu-path` commit. The repository relink is preferred because it removes the underlying infrastructure drift.
+Automatic Preview deployment remains disabled for `agent/stage-20-opportunity-marketplace`. The final release gate will enable exactly one deliberate exact-head Preview, run the authenticated Builder/provider/admin proof, then restore branch deployment suppression before merge.
 
 ## Remaining release gates
 
-1. correct the Vercel project Git source to `synsynlele/pipu-path` (preferred) or configure a deployment credential;
-2. create exactly one deliberate Preview from the exact current Stage 20 commit;
-3. run authenticated Builder + provider + admin browser proof with temporary marketplace fixtures;
-4. remove fixtures and re-check zero synthetic marketplace rows;
-5. run cleaned-head CI;
-6. intentionally merge PR #36 and deploy/verify production from the exact merged source.
+1. pass full CI after the final browser-proof correction;
+2. enable one deliberate exact-head Stage 20 Preview on `copyartint-2860s-projects/pipu-path`;
+3. create temporary marketplace fixture records scoped to the existing authenticated CI identities;
+4. run authenticated Builder + provider + admin browser proof against the matching Preview;
+5. remove fixture records and re-check zero synthetic marketplace rows;
+6. restore Stage 20 branch deployment suppression and run cleaned-head CI;
+7. intentionally squash-merge PR #36 and verify production from the exact merged source.
