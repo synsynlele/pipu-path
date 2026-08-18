@@ -1,17 +1,19 @@
 # Stage 20 — Release Proof Ledger
 
+## Status
+
+**Stage 20 is a release candidate.** Product implementation, Supabase migration/security/lifecycle verification, and authenticated browser proof are complete. Remaining gates are final cleaned-head CI, intentional squash merge of PR #36, and production deployment verification.
+
 ## Static validation
 
-- CI #887 passed the split Stage 20 migration package.
-- CI #889 passed after the foreign-key index corrective migration was added to Supabase and the repository.
-- CI #893 passed the formatted permanent Stage 20 authenticated Playwright release proof.
-- CI #895 passed after the release-proof deployment guard was added.
-- CI #899 passed the cleaned Stage 20 head after temporary deployment/credential diagnostics were removed.
-- CI #903 passed after correcting the provider-directory browser assertion and Vercel project ledger.
-- CI #904 passed the first release-trigger preparation.
-- CI #906 passed after separating provider membership provisioning from direct database authorization writes.
-- CI #912 passed the corrective admin-boundary implementation and regression coverage.
-- The permanent Stage 20 authenticated Playwright release proof is opt-in and requires `E2E_STAGE20_EXPECT_MARKETPLACE=true`.
+Stage 20 reached repeated complete repository validation while defects were corrected. Important final checkpoints include:
+
+- CI #913 passed on the corrected Stage 20 application head after the non-admin admin-boundary hardening;
+- CI #915 validated the corrective exact-head Preview trigger;
+- CI #918 validates the corrected Playwright release-proof assertion/workflow cleanup path;
+- the permanent Stage 20 integration/regression suite preserves Stage 18 Curated Opportunity behavior while testing Stage 20 provider/application boundaries.
+
+The repository validation gate covers formatting, zero-warning lint, strict TypeScript, unit tests, coverage, integration/regression tests and production build.
 
 ## Supabase gate — passed
 
@@ -31,61 +33,64 @@ Verified live:
 
 - all Stage 20 tables have RLS enabled;
 - `anon` and `authenticated` have no direct Stage 20 table CRUD privileges;
-- public Stage 20 RPCs are executable only by authenticated/service-role callers and enforce actor-specific authorization internally;
+- authenticated Stage 20 RPCs enforce actor-specific Builder/provider/admin authorization;
 - private Stage 20 helper functions are not browser-callable;
-- the application provider/listing integrity trigger is enabled;
-- the provider application projection excludes the internal Builder UUID and private evidence href;
-- migration deployment created no provider, provider-member, application or provider-owned opportunity fixture rows;
+- provider/listing integrity is enforced at the database boundary;
+- provider application projection excludes the internal Builder UUID and private evidence href;
 - every Stage 20 foreign key has a covering index.
 
-Transactional rollback proof passed:
+Transactional rollback proof passed provider/listing mismatch rejection, invalid submission rejection, provider suspension withdrawal, post-suspension Builder withdrawal authority, provider projection privacy and zero persistent synthetic data.
 
-- mismatched application provider/listing IDs were rejected;
-- invalid submitted application state without consent/submission metadata was rejected;
-- provider suspension automatically withdrew a published provider-owned listing;
-- an existing Builder application remained withdrawable after provider suspension;
-- provider projection privacy assertions passed;
-- all synthetic providers/listings/applications were rolled back to zero rows.
-
-## Vercel gate — correct project verified
+## Vercel gate — passed
 
 Connected Vercel team: `copyartint-2860s-projects` (`team_BVKFc6kjlaazTmHWc1vXv6RK`).
 
-Connected Vercel project: `pipu-path` (`prj_EijX6BCMKdWZTMCJDMevLFj1TjmK`).
+Connected project: `pipu-path` (`prj_EijX6BCMKdWZTMCJDMevLFj1TjmK`), correctly linked to GitHub repository `synsynlele/pipu-path`.
 
-Live Vercel deployment metadata proves this project is correctly connected to GitHub repository `synsynlele/pipu-path` (repository ID `1311277909`). Production deployments track `main`, and Preview deployments track PipuPath release branches and PRs.
+An early automatic Stage 20 Preview existed before branch deployment suppression and is not counted as release proof.
 
-An early automatic Stage 20 Preview exists for commit `a794b523e2e65f95e11493489ab83c6586b50347` (`docs(stage20): lock opportunity marketplace scope`), deployment `dpl_GQP81W1wwMpuo8BF6p1T1xq5tTsP`. It predates the release candidate and is not accepted as release proof.
+The first deliberate release Preview, `dpl_2QBRJ7dpZaX8MGSX7zuASNkBZf4x` from `d9bfe2f5de8e0a5979653212d165c28698e229ef`, served as a defect-discovery gate. It confirmed anonymous provider protection and exposed two fixture/test issues: the reusable CI identities had intentionally revoked platform-admin records, and the original cleanup helper assumed two provider memberships.
 
-The first deliberate release Preview was deployment `dpl_2QBRJ7dpZaX8MGSX7zuASNkBZf4x` from exact commit `d9bfe2f5de8e0a5979653212d165c28698e229ef` on PR #36. It reached READY and the proof workflow resolved the exact Preview URL successfully. Anonymous provider-workspace protection passed.
+Those issues were corrected without weakening production authorization. The CI identity remained non-admin and received only temporary membership in the fixed release provider fixture.
 
-The authenticated proof then exposed two release-gate facts:
+The corrective exact-head Preview is:
 
-1. the reusable Stage 3 CI identities have intentionally revoked `platform_admins` records, so they correctly cannot operate the provider trust registry;
-2. `/admin/providers` was matching the obsolete error discriminator `PLATFORM_ADMIN_REQUIRED`, while the authoritative Stage 18 admin boundary raises `OPPORTUNITY_ADMIN_REQUIRED`. This caused a revoked/non-admin identity to redirect to `provider_registry_unavailable` instead of the intended hidden 404 boundary.
+- deployment: `dpl_5yFRKsa7FDb5pEkaFfYhjf844Vfi`;
+- Vercel source SHA: `82b4cd4cafa5c3e24dfe737806a386d0deddd770`;
+- state: `READY`;
+- project: `copyartint-2860s-projects/pipu-path`.
 
-The admin-boundary bug is fixed and now has permanent integration coverage. Preview suppression was restored before corrective code changes, so no second Preview was consumed by the fix commits. CI #912 passed the corrected implementation.
+Its first Playwright run proved the complete Builder/provider flow but exposed one test-only mismatch: Next.js rendered the correct not-found boundary for `/admin/providers` while returning an HTTP 200 streamed response. The captured page was the PipuPath 404 surface: `404 — This path is not available.` The registry heading was absent.
 
-The first deliberate Preview therefore served as a defect-discovery gate and is **not** accepted as the final exact-head release proof. A corrective exact-head Preview is required after the least-privilege provider test membership is granted through the real admin boundary.
+The test was corrected to assert the rendered authorization boundary rather than transport status. With Vercel deployment suppression restored, GitHub reran the corrected Playwright suite against the **same READY Preview URL**, consuming no additional Preview deployment.
 
-## Current release fixture
+Final browser proof run `32157112775` passed all three Chromium checks:
 
-Temporary release-only provider and published opportunity records exist for the final authenticated proof:
+1. anonymous users cannot enter `/provider`;
+2. authenticated non-admin users receive the PipuPath not-available boundary for `/admin/providers` and cannot see the provider registry;
+3. an authenticated Builder with membership only in the release provider can discover the opportunity, save a private draft, preview the exact consent packet, submit it, view it from the provider queue, transition it to `viewed`, and withdraw it, while private/internal fields remain absent from provider output.
 
-- provider: `Stage 20 Release Fixture Provider`;
-- opportunity: `Stage 20 Release Fixture Opportunity`;
-- CI Builder/provider test identity username: `stage20_ci_owner`.
+## Fixture cleanup — passed
 
-The fixture currently has zero applications and zero provider memberships. The second unused CI identity has been restored to its previous null username/display-name state.
+After browser proof:
 
-Direct database/provider-role authorization writes were intentionally not used. Provider membership must be granted through the authenticated platform-admin boundary so the release proof exercises the real trust path.
+- fixture providers: `0`;
+- fixture opportunities: `0`;
+- fixture applications: `0`;
+- fixture provider memberships: `0`;
+- fixture marketplace audit events: `0`;
+- fixture Builder opportunity state: `0`.
+
+The two reusable CI profiles were restored to their original null username/display-name state. Their platform-admin records are again `analyst / revoked`; no temporary platform-admin privilege remains.
+
+## Deployment control
+
+`agent/stage-20-opportunity-marketplace` has Vercel deployment suppression restored. Temporary Preview-proof workflows are removed. No further Stage 20 Preview is expected before merge.
 
 ## Remaining release gates
 
-1. grant `stage20_ci_owner` temporary **Operator** membership on `Stage 20 Release Fixture Provider` through `/admin/providers` using an active platform owner/operator account;
-2. create one corrective exact-head Preview from the current Stage 20 branch on `copyartint-2860s-projects/pipu-path`;
-3. run the authenticated non-admin denial + Builder application + provider application-review proof against that exact Preview;
-4. revoke the temporary provider membership and delete all Stage 20 release fixture/application/audit/state rows;
-5. restore the CI fixture profile fields and re-check zero synthetic marketplace rows;
-6. restore Preview suppression and run final cleaned-head CI;
-7. intentionally squash-merge PR #36 and verify production from the exact merged source.
+1. final cleaned PR head passes complete CI;
+2. PR #36 is intentionally squash-merged; and
+3. the resulting production Vercel deployment is confirmed healthy on the exact merged commit.
+
+Stage 21 work must not enter PR #36.
