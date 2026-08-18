@@ -1,0 +1,50 @@
+name: Stage 20 Format Final Batch
+
+on:
+  push:
+    branches:
+      - agent/stage-20-opportunity-marketplace
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: "${{ !startsWith(github.event.head_commit.message, 'style(stage20): format marketplace vertical slice') }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-20-opportunity-marketplace
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format complete Stage 20 TypeScript surface
+        run: >-
+          npx prettier --write
+          src/modules/opportunities/domain/marketplace-contract.ts
+          src/modules/opportunities/domain/marketplace-contract.test.ts
+          src/modules/opportunities/infrastructure/marketplace-dal.ts
+          src/modules/opportunities/infrastructure/provider-workspace-dal.ts
+          src/modules/opportunities/infrastructure/opportunity-dal.ts
+          src/modules/opportunities/application/marketplace-actions.ts
+          src/app/opportunities/page.tsx
+          'src/app/opportunities/[opportunityId]/page.tsx'
+          'src/app/opportunities/[opportunityId]/apply/page.tsx'
+          src/app/provider/page.tsx
+          src/app/provider/opportunities/page.tsx
+          src/app/provider/applications/page.tsx
+          src/app/admin/providers/page.tsx
+          tests/integration/stage-20-opportunity-marketplace.test.ts
+      - name: Commit formatting and remove one-shot workflow
+        run: |
+          set -euo pipefail
+          rm .github/workflows/stage20-format-final-batch.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src tests .github/workflows/stage20-format-final-batch.yml
+          git commit -m "style(stage20): format marketplace vertical slice"
+          git push origin HEAD:agent/stage-20-opportunity-marketplace
