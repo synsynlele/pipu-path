@@ -1,6 +1,6 @@
 # Route map
 
-Stage 16 classifies every application route. Server authorization is repeated
+Stage 18 classifies every application route. Server authorization is repeated
 inside each private data boundary; middleware is navigation defence, not the
 sole authorization control.
 
@@ -21,6 +21,7 @@ sole authorization control.
 | `/onboarding/discovery/profile`             | Completed Discovery owner                                         | Private Human Potential Profile / Discovery baseline and Possible Paths  |
 | `/onboarding/discovery/profile/complete`    | Profile owner                                                     | Mission handoff                                                          |
 | `/profile`                                  | Auth-only profile owner                                           | Private Living Builder Profile, evidence, feedback and version history   |
+| `/profile/verification`                     | Auth-only profile owner / exact collaboration verifier            | Evidence-bound capability verification workspace                         |
 | `/mission`, `/mission/complete`             | Auth-only eligible owner                                          | Generate, refine, activate and continue Practical Mission                |
 | `/journey`, `/journey/complete`             | Active Mission owner                                              | Generate, refine, activate and continue Builder Journey / 30-Day Pathway |
 | `/build`                                    | Auth-only contextual router                                       | Active Project first, then Quest, then Project creation                  |
@@ -39,8 +40,11 @@ sole authorization control.
 | `/portfolio/[projectId]/preview`            | Eligible adult Project owner                                      | Exact private preview and publication consent                            |
 | `/proof/[slug]`                             | Public Portfolio allow-list                                       | Eleven approved public fields for a published slug                       |
 | `/proof-unavailable`                        | Internal public 404                                               | Withdrawn or unknown proof response                                      |
+| `/guide`                                    | Auth-only                                                         | Evidence-aware AI Personal Builder Guide                                 |
+| `/opportunities`                            | Auth-only                                                         | Curated opportunity discovery and private action state                   |
 | `/admin`                                    | Authenticated platform administrator                              | Aggregate Mission Control with no private development narratives         |
-| `/integrations/khpos/school-cohort`         | Authenticated learner                                             | Voluntary institutional cohort join/withdrawal boundary                  |
+| `/admin/opportunities`                      | Authenticated platform administrator                              | Curated opportunity operations                                           |
+| `/integrations/khpos`                       | Authenticated learner                                             | Voluntary institutional cohort join/withdrawal boundary                  |
 | `/privacy`, `/terms`                        | Public                                                            | MVP privacy and terms notices                                            |
 | `/api/health`                               | Public operational                                                | Non-secret health response                                               |
 | `/api/discovery/save`                       | Auth-only API                                                     | Controlled Discovery save boundary                                       |
