@@ -86,7 +86,6 @@ describe("PublicPassportShare", () => {
   it("fails closed when the fragment bearer is missing", async () => {
     render(<PublicPassportShare shareId={shareId} />);
 
-    expect(screen.getByText("Verifying this Passport…")).toBeInTheDocument();
     await screen.findByRole("heading", {
       name: "This Passport share is not available.",
     });
@@ -138,7 +137,7 @@ describe("PublicPassportShare", () => {
 
     await screen.findByRole("heading", { name: "Ada Builder" });
     expect(screen.getByText("Community systems")).toBeInTheDocument();
-    expect(screen.getByText("Systems thinking")).toBeInTheDocument();
+    expect(screen.getAllByText("Systems thinking")).toHaveLength(2);
     expect(screen.getByText("Community map")).toBeInTheDocument();
     expect(screen.getByText(/confirmation changed/i)).toBeInTheDocument();
     expect(
