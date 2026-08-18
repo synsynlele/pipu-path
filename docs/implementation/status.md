@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 21 — Builder Passport/API  
-**Stage status:** Active — Stage 21 coverage tests are repository-formatted and the full static gate is rerunning before any Supabase deployment  
+**Stage status:** Active — all Stage 21 coverage thresholds except function coverage are green; the final issuance-interaction coverage test is being canonicalized before rerun  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
@@ -42,6 +42,13 @@ Locked implementation boundaries:
 Passport snapshots must not silently include Discovery answers, Human Potential Profile prose, reflection prose, private Project fields, contact details, network state, safeguarding/moderation data, provider application notes, unrelated evidence, hidden scores or rankings.
 
 No permanent public Builder profile, searchable credential registry, government-ID verification, academic credential issuance, employment/income verification, general partner API credentials, OAuth clients, bulk export, webhooks or payments enter Stage 21.
+
+## Static validation evidence
+
+- Formatting, zero-warning lint and strict TypeScript pass on the implemented Stage 21 surface.
+- 55 unit-test files / 283 unit tests pass after adding focused Passport security, DAL, server-action and public bearer UI coverage.
+- Coverage is green for statements (83.27%), branches (75.86%) and lines (84.8%). Function coverage is the sole remaining threshold at 77.3% versus the required 80%.
+- A real issuance interaction test now exercises capability/evidence/institution/Portfolio selection, explicit consent and dependent-proof removal; it is being canonicalized before the next full gate.
 
 ## Deployment control
 
