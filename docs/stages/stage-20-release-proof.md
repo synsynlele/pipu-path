@@ -6,7 +6,11 @@
 - CI #889 passed after the foreign-key index corrective migration was added to Supabase and the repository.
 - CI #893 passed the formatted permanent Stage 20 authenticated Playwright release proof.
 - CI #895 passed after the release-proof deployment guard was added.
-- CI #899 passed the cleaned Stage 20 head after all temporary deployment/credential diagnostics were removed.
+- CI #899 passed the cleaned Stage 20 head after temporary deployment/credential diagnostics were removed.
+- CI #903 passed after correcting the provider-directory browser assertion and Vercel project ledger.
+- CI #904 passed the first release-trigger preparation.
+- CI #906 passed after separating provider membership provisioning from direct database authorization writes.
+- CI #912 passed the corrective admin-boundary implementation and regression coverage.
 - The permanent Stage 20 authenticated Playwright release proof is opt-in and requires `E2E_STAGE20_EXPECT_MARKETPLACE=true`.
 
 ## Supabase gate — passed
@@ -51,16 +55,37 @@ Connected Vercel project: `pipu-path` (`prj_EijX6BCMKdWZTMCJDMevLFj1TjmK`).
 
 Live Vercel deployment metadata proves this project is correctly connected to GitHub repository `synsynlele/pipu-path` (repository ID `1311277909`). Production deployments track `main`, and Preview deployments track PipuPath release branches and PRs.
 
-An early automatic Stage 20 Preview exists for commit `a794b523e2e65f95e11493489ab83c6586b50347` (`docs(stage20): lock opportunity marketplace scope`), deployment `dpl_GQP81W1wwMpuo8BF6p1T1xq5tTsP`. It predates the release candidate and is not accepted as the Stage 20 release proof.
+An early automatic Stage 20 Preview exists for commit `a794b523e2e65f95e11493489ab83c6586b50347` (`docs(stage20): lock opportunity marketplace scope`), deployment `dpl_GQP81W1wwMpuo8BF6p1T1xq5tTsP`. It predates the release candidate and is not accepted as release proof.
 
-Automatic Preview deployment remains disabled for `agent/stage-20-opportunity-marketplace`. The final release gate will enable exactly one deliberate exact-head Preview, run the authenticated Builder/provider/admin proof, then restore branch deployment suppression before merge.
+The first deliberate release Preview was deployment `dpl_2QBRJ7dpZaX8MGSX7zuASNkBZf4x` from exact commit `d9bfe2f5de8e0a5979653212d165c28698e229ef` on PR #36. It reached READY and the proof workflow resolved the exact Preview URL successfully. Anonymous provider-workspace protection passed.
+
+The authenticated proof then exposed two release-gate facts:
+
+1. the reusable Stage 3 CI identities have intentionally revoked `platform_admins` records, so they correctly cannot operate the provider trust registry;
+2. `/admin/providers` was matching the obsolete error discriminator `PLATFORM_ADMIN_REQUIRED`, while the authoritative Stage 18 admin boundary raises `OPPORTUNITY_ADMIN_REQUIRED`. This caused a revoked/non-admin identity to redirect to `provider_registry_unavailable` instead of the intended hidden 404 boundary.
+
+The admin-boundary bug is fixed and now has permanent integration coverage. Preview suppression was restored before corrective code changes, so no second Preview was consumed by the fix commits. CI #912 passed the corrected implementation.
+
+The first deliberate Preview therefore served as a defect-discovery gate and is **not** accepted as the final exact-head release proof. A corrective exact-head Preview is required after the least-privilege provider test membership is granted through the real admin boundary.
+
+## Current release fixture
+
+Temporary release-only provider and published opportunity records exist for the final authenticated proof:
+
+- provider: `Stage 20 Release Fixture Provider`;
+- opportunity: `Stage 20 Release Fixture Opportunity`;
+- CI Builder/provider test identity username: `stage20_ci_owner`.
+
+The fixture currently has zero applications and zero provider memberships. The second unused CI identity has been restored to its previous null username/display-name state.
+
+Direct database/provider-role authorization writes were intentionally not used. Provider membership must be granted through the authenticated platform-admin boundary so the release proof exercises the real trust path.
 
 ## Remaining release gates
 
-1. pass full CI after the final browser-proof correction;
-2. enable one deliberate exact-head Stage 20 Preview on `copyartint-2860s-projects/pipu-path`;
-3. create temporary marketplace fixture records scoped to the existing authenticated CI identities;
-4. run authenticated Builder + provider + admin browser proof against the matching Preview;
-5. remove fixture records and re-check zero synthetic marketplace rows;
-6. restore Stage 20 branch deployment suppression and run cleaned-head CI;
+1. grant `stage20_ci_owner` temporary **Operator** membership on `Stage 20 Release Fixture Provider` through `/admin/providers` using an active platform owner/operator account;
+2. create one corrective exact-head Preview from the current Stage 20 branch on `copyartint-2860s-projects/pipu-path`;
+3. run the authenticated non-admin denial + Builder application + provider application-review proof against that exact Preview;
+4. revoke the temporary provider membership and delete all Stage 20 release fixture/application/audit/state rows;
+5. restore the CI fixture profile fields and re-check zero synthetic marketplace rows;
+6. restore Preview suppression and run final cleaned-head CI;
 7. intentionally squash-merge PR #36 and verify production from the exact merged source.
