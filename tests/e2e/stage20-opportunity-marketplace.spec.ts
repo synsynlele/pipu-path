@@ -45,9 +45,7 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   await expect(
     page.getByRole("heading", { name: "Opportunity Providers" }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: providerName }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: providerName })).toBeVisible();
 
   await page.goto("/provider");
   await expect(page.getByRole("heading", { name: providerName })).toBeVisible();
@@ -67,7 +65,9 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   await expect(
     page.getByText("Builder-controlled application", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { name: opportunityTitle })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: opportunityTitle }),
+  ).toBeVisible();
   await page.getByLabel("Public-safe Builder summary").fill(builderSummary);
   await page
     .getByLabel("Application note")
@@ -93,7 +93,9 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   await expect(
     page.getByText("Application submitted to this provider.", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("Status: submitted", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Status: submitted", { exact: true }),
+  ).toBeVisible();
 
   await page.goto("/provider/applications");
   await expect(
@@ -113,7 +115,9 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   await expect(
     page.getByText("Application state updated.", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("Status: viewed", { exact: false })).toBeVisible();
+  await expect(
+    page.getByText("Status: viewed", { exact: false }),
+  ).toBeVisible();
 
   await page.goto("/opportunities");
   await page.getByRole("link", { name: /Application: viewed/i }).click();
@@ -122,5 +126,7 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   await expect(
     page.getByText("Application withdrawn.", { exact: false }),
   ).toBeVisible();
-  await expect(page.getByText("Status: withdrawn", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Status: withdrawn", { exact: true }),
+  ).toBeVisible();
 });
