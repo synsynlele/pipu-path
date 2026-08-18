@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 21 — Builder Passport/API  
-**Stage status:** Active — all Stage 21 coverage thresholds except function coverage are green; the final issuance-interaction coverage test is being canonicalized before rerun  
+**Stage status:** Active — all unit/coverage thresholds are green; one historical Stage 20 compatibility test is being repository-formatted before the complete integration/build gate reruns  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
@@ -46,9 +46,10 @@ No permanent public Builder profile, searchable credential registry, government-
 ## Static validation evidence
 
 - Formatting, zero-warning lint and strict TypeScript pass on the implemented Stage 21 surface.
-- 55 unit-test files / 283 unit tests pass after adding focused Passport security, DAL, server-action and public bearer UI coverage.
-- Coverage is green for statements (83.27%), branches (75.86%) and lines (84.8%). Function coverage is the sole remaining threshold at 77.3% versus the required 80%.
-- A real issuance interaction test now exercises capability/evidence/institution/Portfolio selection, explicit consent and dependent-proof removal; it is being canonicalized before the next full gate.
+- 56 unit-test files / 286 unit tests pass.
+- All global coverage thresholds are green without lowering or excluding any threshold: statements 87.12%, branches 79.25%, functions 88.65%, lines 88.92%.
+- Focused Stage 21 tests cover cryptographic helpers, owner/service-role DAL separation, hash-only share creation, server-action fail-closed behavior, fragment-to-bearer public verification, issuance consent, dependent-proof removal and adult eligibility.
+- Stage 21's own structural integration suite passes. The remaining integration blocker is an older Stage 20 release assertion that froze retired project-state wording; it has been replaced with the stronger invariant that Stage 20 is released on its exact merge SHA and its Vercel branch remains explicitly disabled.
 
 ## Deployment control
 
