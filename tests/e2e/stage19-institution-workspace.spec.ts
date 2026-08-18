@@ -37,11 +37,15 @@ test("authenticated institution operator sees only bounded cohort and shared-evi
   await signIn(page);
   await page.goto("/institution");
 
-  await expect(page.getByText("Institution Workspace", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Institution Workspace", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "KAEC Nigerian Schools" }),
   ).toBeVisible();
-  await expect(page.getByText("Role: Owner", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Role: Owner", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", {
       name: "Privacy-thresholded development patterns.",
@@ -70,10 +74,16 @@ test("authenticated institution operator sees only bounded cohort and shared-evi
       name: "Share one exact capability when institutional confirmation matters.",
     }),
   ).toBeVisible();
-  await expect(page.getByText("Connected institution", { exact: true })).toBeVisible();
-  await expect(page.getByText("KAEC Nigerian Schools", { exact: true })).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Share this evidence for verification" }).first(),
+    page.getByText("Connected institution", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("KAEC Nigerian Schools", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("button", { name: "Share this evidence for verification" })
+      .first(),
   ).toBeVisible();
 
   const builderBody = page.locator("body");
