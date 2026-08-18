@@ -1,6 +1,6 @@
 # Route map
 
-Stage 19 classifies every application route. Server authorization is repeated
+Stage 20 classifies every application route. Server authorization is repeated
 inside each private data boundary; middleware is navigation defence, not the
 sole authorization control.
 
@@ -41,11 +41,17 @@ sole authorization control.
 | `/proof/[slug]`                             | Public Portfolio allow-list                                       | Eleven approved public fields for a published slug                       |
 | `/proof-unavailable`                        | Internal public 404                                               | Withdrawn or unknown proof response                                      |
 | `/guide`                                    | Auth-only                                                         | Evidence-aware AI Personal Builder Guide                                 |
-| `/opportunities`                            | Auth-only                                                         | Curated opportunity discovery and private action state                   |
+| `/opportunities`                            | Auth-only                                                         | Explainable curated/marketplace discovery and application state          |
+| `/opportunities/[opportunityId]`            | Auth-only                                                         | Vetted opportunity detail, provider trust and application path           |
+| `/opportunities/[opportunityId]/apply`      | Eligible adult Builder / existing application owner               | Exact private application packet selection, preview, consent, history    |
+| `/provider`                                 | Active provider member                                            | Provider-scoped workspace; no Builder directory                          |
+| `/provider/opportunities`                   | Active approved provider member                                   | Provider-owned drafts; independent platform review still required        |
+| `/provider/applications`                    | Active approved provider member                                   | Packets explicitly submitted to that provider only                       |
 | `/institution`                              | Auth-only active institution operator                             | Aggregate cohort intelligence and Builder-authorised verification queue  |
 | `/admin`                                    | Authenticated platform administrator                              | Aggregate Mission Control with no private development narratives         |
 | `/admin/institutions`                       | Platform owner/operator                                           | Provision institution workspaces and explicit operator roles             |
-| `/admin/opportunities`                      | Authenticated platform administrator                              | Curated opportunity operations                                           |
+| `/admin/providers`                          | Platform owner/operator                                           | Approve/suspend/revoke providers and scoped provider memberships         |
+| `/admin/opportunities`                      | Authenticated platform administrator                              | Independent curated/provider opportunity review and publication          |
 | `/integrations/khpos`                       | Authenticated learner                                             | Voluntary institutional cohort join/withdrawal boundary                  |
 | `/privacy`, `/terms`                        | Public                                                            | MVP privacy and terms notices                                            |
 | `/api/health`                               | Public operational                                                | Non-secret health response                                               |
