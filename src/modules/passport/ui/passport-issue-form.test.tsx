@@ -97,13 +97,17 @@ describe("PassportIssueForm", () => {
       name: "Issue new Passport version",
     });
     const claim = screen.getByRole("checkbox", {
-      name: /Systems thinking demonstrated/i,
+      name: /Systems thinking.*demonstrated/i,
     });
-    const evidence = screen.getByRole("checkbox", { name: /Community map/i });
+    const evidence = screen.getByRole("checkbox", {
+      name: /Community map.*Mapped a local problem/i,
+    });
     const institution = screen.getByRole("checkbox", {
-      name: /Confirmed by KAEC Nigerian Schools/i,
+      name: /Systems thinking.*Confirmed by KAEC Nigerian Schools/i,
     });
-    const portfolio = screen.getByRole("checkbox", { name: /Community Map/i });
+    const portfolio = screen.getByRole("checkbox", {
+      name: /Community Map.*public proof of the completed community mapping project/i,
+    });
     const consent = screen.getByRole("checkbox", {
       name: /I reviewed this exact Passport/i,
     });
@@ -150,11 +154,13 @@ describe("PassportIssueForm", () => {
     render(<PassportIssueForm workspace={workspace} />);
 
     const claim = screen.getByRole("checkbox", {
-      name: /Systems thinking demonstrated/i,
+      name: /Systems thinking.*demonstrated/i,
     });
-    const evidence = screen.getByRole("checkbox", { name: /Community map/i });
+    const evidence = screen.getByRole("checkbox", {
+      name: /Community map.*Mapped a local problem/i,
+    });
     const institution = screen.getByRole("checkbox", {
-      name: /Confirmed by KAEC Nigerian Schools/i,
+      name: /Systems thinking.*Confirmed by KAEC Nigerian Schools/i,
     });
 
     fireEvent.click(claim);
