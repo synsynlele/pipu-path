@@ -1,0 +1,47 @@
+name: Stage 20 Fix Zod Workspace Once
+
+on:
+  push:
+    branches:
+      - agent/stage-20-opportunity-marketplace
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: "${{ !startsWith(github.event.head_commit.message, 'fix(stage20): use non-refined provider opportunity schema') }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-20-opportunity-marketplace
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Replace refined schema derivation with the released admin item projection
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('src/modules/opportunities/domain/marketplace-contract.ts')
+          text = path.read_text()
+          text = text.replace('  opportunityAdminInputSchema,\n', '  opportunityAdminItemSchema,\n')
+          old = '''  opportunities: z.array(\n    opportunityAdminInputSchema.omit({ id: true, providerName: true }).extend({\n      id: z.uuid(),\n      reviewStatus: z.enum(["pending", "approved", "rejected"]),\n      publicationStatus: z.enum(["draft", "published", "withdrawn"]),\n      reviewNotes: z.string().max(1000).nullable(),\n      createdAt: timestampSchema,\n      updatedAt: timestampSchema,\n    }),\n  ),'''
+          new = '''  opportunities: z.array(\n    opportunityAdminItemSchema.omit({ providerName: true }),\n  ),'''
+          if old not in text:
+              raise SystemExit('Expected Stage 20 provider workspace schema block not found')
+          path.write_text(text.replace(old, new))
+          PY
+          npx --no-install prettier --write src/modules/opportunities/domain/marketplace-contract.ts
+      - name: Remove workflow and commit fix
+        run: |
+          set -euo pipefail
+          rm .github/workflows/stage20-fix-zod-workspace-once.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/modules/opportunities/domain/marketplace-contract.ts .github/workflows/stage20-fix-zod-workspace-once.yml
+          git commit -m "fix(stage20): use non-refined provider opportunity schema"
+          git push origin HEAD:agent/stage-20-opportunity-marketplace
