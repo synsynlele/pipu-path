@@ -155,54 +155,48 @@ export default async function BuilderPassportPage({
 
             {currentShares.length > 0 ? (
               <div className="space-y-3">
-                {currentShares.map((share) => {
-                  const expired =
-                    new Date(share.expiresAt).getTime() <= Date.now();
-                  const active = !share.revokedAt && !expired;
-                  return (
-                    <article className="rounded-2xl border p-5" key={share.id}>
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <h3 className="font-medium">
-                            {share.label ?? "Passport share"}
-                          </h3>
-                          <p className="text-muted-foreground mt-1 text-sm">
-                            {active
-                              ? "Active"
-                              : share.revokedAt
-                                ? "Revoked"
-                                : "Expired"}{" "}
-                            · expires{" "}
-                            {new Date(share.expiresAt).toLocaleString()} ·{" "}
-                            {share.accessCount} successful
-                            {share.accessCount === 1 ? " access" : " accesses"}
+                {currentShares.map((share) => (
+                  <article className="rounded-2xl border p-5" key={share.id}>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h3 className="font-medium">
+                          {share.label ?? "Passport share"}
+                        </h3>
+                        <p className="text-muted-foreground mt-1 text-sm">
+                          {share.active
+                            ? "Active"
+                            : share.revokedAt
+                              ? "Revoked"
+                              : "Expired"}{" "}
+                          · expires {new Date(share.expiresAt).toLocaleString()} ·{" "}
+                          {share.accessCount} successful
+                          {share.accessCount === 1 ? " access" : " accesses"}
+                        </p>
+                        {share.lastAccessedAt ? (
+                          <p className="text-muted-foreground mt-1 text-xs">
+                            Last opened{" "}
+                            {new Date(share.lastAccessedAt).toLocaleString()}
                           </p>
-                          {share.lastAccessedAt ? (
-                            <p className="text-muted-foreground mt-1 text-xs">
-                              Last opened{" "}
-                              {new Date(share.lastAccessedAt).toLocaleString()}
-                            </p>
-                          ) : null}
-                        </div>
-                        {active ? (
-                          <form action={revokePassportShareAction}>
-                            <input
-                              name="shareId"
-                              type="hidden"
-                              value={share.id}
-                            />
-                            <button
-                              className="rounded-full border px-4 py-2 text-sm font-medium"
-                              type="submit"
-                            >
-                              Revoke share
-                            </button>
-                          </form>
                         ) : null}
                       </div>
-                    </article>
-                  );
-                })}
+                      {share.active ? (
+                        <form action={revokePassportShareAction}>
+                          <input
+                            name="shareId"
+                            type="hidden"
+                            value={share.id}
+                          />
+                          <button
+                            className="rounded-full border px-4 py-2 text-sm font-medium"
+                            type="submit"
+                          >
+                            Revoke share
+                          </button>
+                        </form>
+                      ) : null}
+                    </div>
+                  </article>
+                ))}
               </div>
             ) : (
               <p className="text-muted-foreground text-sm">
