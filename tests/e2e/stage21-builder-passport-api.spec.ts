@@ -43,15 +43,21 @@ test("invalid public Passport shares fail closed without revealing why", async (
     { headers: { Authorization: `Bearer ${invalidSecret}` } },
   );
   expect(response.status()).toBe(404);
-  expect(await response.json()).toEqual({ error: "passport_share_unavailable" });
+  expect(await response.json()).toEqual({
+    error: "passport_share_unavailable",
+  });
   expect(response.headers()["cache-control"]).toContain("no-store");
   expect(response.headers()["x-robots-tag"]).toContain("noindex");
 
   await page.goto(`/passport/share/${invalidShareId}#${invalidSecret}`);
   await expect(
-    page.getByRole("heading", { name: "This Passport share is not available." }),
+    page.getByRole("heading", {
+      name: "This Passport share is not available.",
+    }),
   ).toBeVisible();
-  await expect(page.locator("body")).not.toContainText("passport_share_unavailable");
+  await expect(page.locator("body")).not.toContainText(
+    "passport_share_unavailable",
+  );
 });
 
 test("Stage 21 issues, shares, verifies and revokes one exact Builder Passport", async ({
@@ -72,21 +78,31 @@ test("Stage 21 issues, shares, verifies and revokes one exact Builder Passport",
   await page.getByRole("link", { name: "Prepare Passport" }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Choose exactly what becomes portable." }),
+    page.getByRole("heading", {
+      name: "Choose exactly what becomes portable.",
+    }),
   ).toBeVisible();
   await page.getByLabel("Public-safe Builder summary").fill(publicSummary);
   await page.getByLabel("Selected pathway label").fill(selectedPathName);
 
   const claim = page.locator('input[name="claimIds"]').first();
   await claim.check();
-  const evidence = page.locator('input[name="evidenceIds"]:not(:disabled)').first();
+  const evidence = page
+    .locator('input[name="evidenceIds"]:not(:disabled)')
+    .first();
   await expect(evidence).toBeEnabled();
   await evidence.check();
 
-  await expect(page.getByText("Evidence shared", { exact: true })).toBeVisible();
-  await expect(page.getByText(publicSummary, { exact: true }).last()).toBeVisible();
+  await expect(
+    page.getByText("Evidence shared", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText(publicSummary, { exact: true }).last(),
+  ).toBeVisible();
   await page
-    .getByLabel(/I reviewed this exact Passport and consent to issue only the selected proof/i)
+    .getByLabel(
+      /I reviewed this exact Passport and consent to issue only the selected proof/i,
+    )
     .check();
   await page.getByRole("button", { name: "Issue Passport" }).click();
 
@@ -94,7 +110,9 @@ test("Stage 21 issues, shares, verifies and revokes one exact Builder Passport",
   await expect(
     page.getByText("Passport issued. Review it below before creating a share."),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { name: releaseDisplayName })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: releaseDisplayName }),
+  ).toBeVisible();
 
   await page.getByLabel("Share label").fill("Stage 21 release proof");
   await page.getByLabel("Expires").selectOption("1");
