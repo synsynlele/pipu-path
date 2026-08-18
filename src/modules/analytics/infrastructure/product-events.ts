@@ -23,6 +23,8 @@ export const productEventNames = [
   "opportunity_external_clicked",
   "opportunity_applied",
   "opportunity_outcome_recorded",
+  "capability_verification_requested",
+  "capability_verification_confirmed",
 ] as const;
 
 export type ProductEventName = (typeof productEventNames)[number];
