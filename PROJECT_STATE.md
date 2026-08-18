@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 18 — Capability Verification (corrective roadmap release)
 
-**Stage status:** RELEASE CANDIDATE — DATABASE + ROLLBACK LIFECYCLE VERIFIED; FINAL EXACT-HEAD PREVIEW/RELEASE GATES IN PROGRESS
+**Stage status:** RELEASE CANDIDATE — DATABASE, EXACT-HEAD VALIDATION, VERCEL PREVIEW AND AUTHENTICATED BROWSER PROOF VERIFIED; MERGE/PRODUCTION GATES REMAIN
 
 **Released product baseline:** Stages 0–17 are released. The already-released Curated Opportunity implementation remains in production and is now treated as an early Stage 20 Opportunity Marketplace seed rather than the authoritative Stage 18 definition.
 
@@ -44,22 +44,24 @@ The release candidate includes:
 
 ## Verified Stage 18 evidence
 
-- Full repository validation passed on implementation head `81ddb51f08d94efca3bf891c9937f710a3a13bbf` before final documentation/migration-name reconciliation, including formatting, zero-warning lint, strict TypeScript, 237 unit tests, structural/integration checks, coverage thresholds and production build.
+- Full repository validation passed on implementation head `81ddb51f08d94efca3bf891c9937f710a3a13bbf`, and again after roadmap/migration reconciliation on `eebb2fe8ee39fab41f411800503b2f3e052d4f32` and deliberate Preview head `2a770b3d3cc958e78e06c9287e8e910ba2683b42`.
+- Validation includes formatting, zero-warning lint, strict TypeScript, 237 unit tests, structural/integration checks, coverage thresholds and production build.
 - Supabase RLS is enabled on `builder_capability_verifications`.
 - `anon` and `authenticated` have no direct table select/insert/update grants; service-role access remains server-side.
 - Only the five intended public Stage 18 RPCs are executable by authenticated users; the private relationship helper is not browser-executable.
 - A rollback-only two-person lifecycle proof passed request, duplicate rejection, unrelated-user rejection, collaborator confirmation, safe workspace projection, revocation, removed-relationship suppression and response rejection after connection removal.
 - The rollback proof left zero synthetic verification, collaboration and Living Profile rows.
 - Generated Supabase types confirm the Stage 18 table, enums and RPC signatures are live. The Stage 18 DAL intentionally remains on the repository's existing untyped-RPC adapter boundary; no claim is made that the tracked generated type file was regenerated.
+- Deliberate Vercel Preview commit `2a770b3d3cc958e78e06c9287e8e910ba2683b42` received a successful matching Vercel deployment.
+- Preview proof run `32127540044`, job `95681332511`, resolved that exact Preview and passed 2/2 Chromium checks: anonymous route denial and authenticated private capability-verification workspace rendering with raw private field names excluded.
 
 ## Remaining Stage 18 release gate
 
 Stage 18 must not be called released until:
 
-1. the exact final PR head passes `npm run validate`;
-2. one deliberate matching Vercel Preview passes permanent anonymous/authenticated browser proof;
-3. PR #34 is intentionally merged;
-4. merged-main CI passes; and
-5. the production Vercel deployment is confirmed healthy.
+1. the final cleaned PR head passes `npm run validate`;
+2. PR #34 is intentionally merged;
+3. merged-main CI passes; and
+4. the production Vercel deployment is confirmed healthy.
 
 No Stage 19 product scope enters this PR. After Stage 18 releases, the next implementation stage is **Stage 19 — Institution Workspace**.
