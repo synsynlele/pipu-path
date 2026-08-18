@@ -7,12 +7,12 @@ import { getLivingBuilderProfile } from "@/modules/living-builder-profile/infras
 import {
   matchOpportunity,
   opportunityAdminStateSchema,
-  opportunityCatalogSchema,
   rankOpportunityMatches,
   type OpportunityAdminInput,
   type OpportunityMatchContext,
   type OpportunityOutcome,
 } from "../domain/opportunity-contract";
+import { getMarketplaceCatalog } from "./marketplace-dal";
 
 type RpcError = { message?: string; code?: string } | null;
 type RpcResult = { data: unknown; error: RpcError };
@@ -35,18 +35,11 @@ function throwRpcError(error: RpcError, fallback: string): never {
 
 export async function getOpportunityWorkspace() {
   const { profile } = await requireAuthenticatedIdentity();
-  const rpc = await authenticatedRpc();
-  const [pathway, livingProfile, catalogResult] = await Promise.all([
+  const [pathway, livingProfile, catalog] = await Promise.all([
     getCurrentEconomicPathwayState(),
     getLivingBuilderProfile(),
-    rpc.rpc("get_stage18_opportunity_catalog"),
+    getMarketplaceCatalog(),
   ]);
-
-  if (catalogResult.error) {
-    throwRpcError(catalogResult.error, "OPPORTUNITY_CATALOG_UNAVAILABLE");
-  }
-  const parsedCatalog = opportunityCatalogSchema.safeParse(catalogResult.data);
-  if (!parsedCatalog.success) throw new Error("OPPORTUNITY_CATALOG_INVALID");
 
   const context: OpportunityMatchContext = {
     ageBand: profile.age_band,
@@ -62,13 +55,18 @@ export async function getOpportunityWorkspace() {
   };
 
   const matches = rankOpportunityMatches(
-    parsedCatalog.data.flatMap((opportunity) => {
+    catalog.flatMap((opportunity) => {
       const match = matchOpportunity(context, opportunity);
       return match ? [match] : [];
     }),
   );
-  const trackedApplications = parsedCatalog.data.filter(
-    (opportunity) => !opportunity.isActive && opportunity.state.appliedAt,
+  const trackedApplications = catalog.filter(
+    (opportunity) =>
+      (!opportunity.isActive && opportunity.state.appliedAt) ||
+      opportunity.applicationStatus !== null,
+  );
+  const marketplaceItems = new Map(
+    catalog.map((opportunity) => [opportunity.id, opportunity]),
   );
 
   return {
@@ -76,6 +74,7 @@ export async function getOpportunityWorkspace() {
     selectedPathName: pathway?.selectedPath?.pathName ?? null,
     matches,
     trackedApplications,
+    marketplaceItems,
   };
 }
 
