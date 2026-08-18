@@ -24,38 +24,6 @@ async function signIn(page: Page) {
     .not.toBe("/login");
 }
 
-async function grantReleaseProviderMemberships(page: Page) {
-  await page.goto("/admin/providers");
-  await expect(
-    page.getByRole("heading", { name: "Opportunity Providers" }),
-  ).toBeVisible();
-  await expect(page.getByRole("heading", { name: providerName })).toBeVisible();
-
-  for (const [username, role] of [
-    ["stage20_ci_owner", "owner"],
-    ["stage20_ci_operator", "operator"],
-  ] as const) {
-    await page.getByLabel("PipuPath username").last().fill(username);
-    await page.getByLabel("Role").last().selectOption(role);
-    await page.getByRole("button", { name: "Add member" }).click();
-    await expect(
-      page.getByText("Provider configuration updated.", { exact: true }),
-    ).toBeVisible();
-  }
-}
-
-async function revokeReleaseProviderMemberships(page: Page) {
-  await page.goto("/admin/providers");
-  for (let index = 0; index < 2; index += 1) {
-    const revoke = page.getByRole("button", { name: "Revoke" }).first();
-    await expect(revoke).toBeVisible();
-    await revoke.click();
-    await expect(
-      page.getByText("Provider configuration updated.", { exact: true }),
-    ).toBeVisible();
-  }
-}
-
 test("anonymous users cannot enter the Opportunity Provider workspace", async ({
   page,
 }) => {
@@ -63,7 +31,18 @@ test("anonymous users cannot enter the Opportunity Provider workspace", async ({
   await expect(page).toHaveURL(/\/login/);
 });
 
-test("Stage 20 marketplace preserves admin, Builder and provider trust boundaries", async ({
+test("authenticated non-admin users cannot enter the provider trust registry", async ({
+  page,
+}) => {
+  await signIn(page);
+  const response = await page.goto("/admin/providers");
+  expect(response?.status()).toBe(404);
+  await expect(
+    page.getByRole("heading", { name: "Opportunity Providers" }),
+  ).not.toBeVisible();
+});
+
+test("Stage 20 marketplace preserves Builder and provider trust boundaries", async ({
   page,
 }) => {
   test.skip(
@@ -72,7 +51,6 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   );
 
   await signIn(page);
-  await grantReleaseProviderMemberships(page);
 
   await page.goto("/provider");
   await expect(page.getByRole("heading", { name: providerName })).toBeVisible();
@@ -156,6 +134,4 @@ test("Stage 20 marketplace preserves admin, Builder and provider trust boundarie
   await expect(
     page.getByText("Status: withdrawn", { exact: true }),
   ).toBeVisible();
-
-  await revokeReleaseProviderMemberships(page);
 });
