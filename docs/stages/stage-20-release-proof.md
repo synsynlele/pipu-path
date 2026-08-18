@@ -4,6 +4,7 @@
 
 - CI #887 passed the split Stage 20 migration package.
 - CI #889 passed after the foreign-key index corrective migration was added to Supabase and the repository.
+- CI #893 passed the formatted permanent Stage 20 authenticated Playwright release proof.
 - The permanent Stage 20 authenticated Playwright release proof is opt-in and requires `E2E_STAGE20_EXPECT_MARKETPLACE=true`.
 
 ## Supabase gate — passed
@@ -40,17 +41,17 @@ Transactional rollback proof passed:
 - provider projection privacy assertions passed;
 - all synthetic providers/listings/applications were rolled back to zero rows.
 
-## Vercel gate — blocked pending source-link correction
+## Vercel gate — deliberate direct-deploy path
 
 The connected Vercel project `pipupath` is still linked in deployment metadata to the obsolete repository `synsynlele/pipupath`, whose `main` stopped on 15 June 2026. The active Stage 0–20 repository is `synsynlele/pipu-path`.
 
-Do not consume the deliberate Stage 20 Preview against the stale Git source. The final Preview must prove the exact current Stage 20 head from `synsynlele/pipu-path`.
+Git-triggered Preview deployment remains disabled. The deliberate Stage 20 Preview is built from the exact current `synsynlele/pipu-path` commit in GitHub Actions and uploaded as a prebuilt Preview directly to the existing Vercel project. The gate is credential-guarded: if `VERCEL_TOKEN` is absent, it exits before any Vercel call.
 
 ## Remaining release gates
 
-1. correct or bypass the stale Vercel Git source using a deployment path that proves the exact current Stage 20 commit;
-2. create the one deliberate Preview;
-3. run authenticated Builder + provider + admin browser proof with temporary marketplace fixtures;
-4. remove fixtures and re-check zero synthetic marketplace rows;
-5. run cleaned-head CI;
-6. intentionally merge PR #36 and verify production on the exact merged source.
+1. create the one deliberate direct Preview from the exact current Stage 20 commit;
+2. run authenticated Builder + provider + admin browser proof with temporary marketplace fixtures;
+3. remove fixtures and re-check zero synthetic marketplace rows;
+4. remove the one-shot deployment workflow and run cleaned-head CI;
+5. intentionally merge PR #36 and verify production on the exact merged source;
+6. correct the stale Vercel Git integration so future Git-triggered releases follow `synsynlele/pipu-path` rather than the obsolete repository.
