@@ -141,8 +141,8 @@ describe("PassportIssueForm", () => {
     expect(submit).toBeEnabled();
     expect(screen.getByText("Systems builder")).toBeInTheDocument();
     expect(
-      screen.getByText("I build practical systems with communities."),
-    ).toBeInTheDocument();
+      screen.getAllByText("I build practical systems with communities."),
+    ).toHaveLength(2);
     expect(screen.getByText("Evidence shared")).toBeInTheDocument();
     expect(
       screen.getByText("Institution confirmations shared"),
