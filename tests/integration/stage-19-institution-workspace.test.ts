@@ -15,7 +15,7 @@ const provisioningHardening = read(
   "supabase/migrations/20260818114223_fix_stage_19_workspace_provisioning_ambiguity.sql",
 );
 const requestHardening = read(
-  "supabase/migrations/20260818115000_fix_stage_19_verification_request_ambiguity.sql",
+  "supabase/migrations/20260818114754_fix_stage_19_verification_request_ambiguity.sql",
 );
 const adr = read("docs/architecture/adr-stage-19-institution-workspace.md");
 
