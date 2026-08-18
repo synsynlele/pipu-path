@@ -6,9 +6,22 @@ const root = process.cwd();
 const read = (relativePath: string) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
 
-const migration = read(
-  "supabase/migrations/20260818162108_stage_21_builder_passport_api.sql",
-);
+const migrationFiles = fs
+  .readdirSync(path.join(root, "supabase/migrations"))
+  .filter((file) => file.includes("stage_21_builder_passport_api"))
+  .sort();
+const migrationFile = migrationFiles.at(-1);
+if (!migrationFile) throw new Error("Stage 21 Passport migration missing");
+const migration = read(`supabase/migrations/${migrationFile}`);
+
+const indexMigrationFile = fs
+  .readdirSync(path.join(root, "supabase/migrations"))
+  .find((file) => file.includes("index_stage_21_builder_passport_foreign_keys"));
+if (!indexMigrationFile) {
+  throw new Error("Stage 21 Passport index migration missing");
+}
+const indexMigration = read(`supabase/migrations/${indexMigrationFile}`);
+
 const authority = read("docs/stages/stage-21-builder-passport-api.md");
 const projectState = read("PROJECT_STATE.md");
 const implementationStatus = read("docs/implementation/status.md");
@@ -107,6 +120,21 @@ describe("Stage 21 Builder Passport/API structure", () => {
       "There is **no API for enumerating Builders, Passports or shares**.",
     );
     expect(authority).toContain("Authorization: Bearer <secret>");
+  });
+
+  it("records the reconciled live migration and foreign-key index hardening", () => {
+    expect(migrationFile).toBe(
+      "20260818173546_stage_21_builder_passport_api.sql",
+    );
+    expect(indexMigrationFile).toBe(
+      "20260818173828_index_stage_21_builder_passport_foreign_keys.sql",
+    );
+    expect(indexMigration).toContain(
+      "builder_passport_evidence_passport_claim_idx",
+    );
+    expect(indexMigration).toContain(
+      "builder_passport_institution_passport_claim_idx",
+    );
   });
 
   it("keeps Stage 21 Vercel Preview deployment suppressed during implementation", () => {
