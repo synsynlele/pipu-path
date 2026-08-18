@@ -168,8 +168,8 @@ export default async function BuilderPassportPage({
                             : share.revokedAt
                               ? "Revoked"
                               : "Expired"}{" "}
-                          · expires {new Date(share.expiresAt).toLocaleString()} ·{" "}
-                          {share.accessCount} successful
+                          · expires {new Date(share.expiresAt).toLocaleString()}{" "}
+                          · {share.accessCount} successful
                           {share.accessCount === 1 ? " access" : " accesses"}
                         </p>
                         {share.lastAccessedAt ? (
