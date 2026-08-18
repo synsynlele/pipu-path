@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  opportunityAdminInputSchema,
+  opportunityCatalogItemSchema,
+} from "./opportunity-contract";
 
 export const opportunityProviderStatuses = [
   "pending",
@@ -70,18 +74,66 @@ export const opportunityProviderSchema = z.object({
   updatedAt: timestampSchema,
 });
 
+export const opportunityProviderPublicSchema = opportunityProviderSchema.pick({
+  id: true,
+  organisationName: true,
+  organisationType: true,
+  officialWebsite: true,
+  officialDomain: true,
+  countryCode: true,
+  publicDescription: true,
+  status: true,
+});
+
+export const opportunityProviderInputSchema = z.object({
+  id: z.uuid().nullable(),
+  organisationName: z.string().trim().min(2).max(180),
+  organisationType: opportunityProviderOrganisationTypeSchema,
+  officialWebsite: httpsUrlSchema,
+  officialDomain: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3)
+    .max(253)
+    .regex(/^[a-z0-9.-]+$/),
+  countryCode: countryCodeSchema,
+  publicDescription: z.string().trim().min(20).max(1200),
+});
+
 export const opportunityProviderMembershipSchema = z.object({
   providerId: z.uuid(),
   role: opportunityProviderRoleSchema,
   status: z.enum(["active", "revoked"]),
-  joinedAt: timestampSchema,
-  revokedAt: timestampSchema.nullable(),
+  joinedAt: timestampSchema.nullable().optional(),
+  revokedAt: timestampSchema.nullable().optional(),
 });
 
 export const opportunityProviderWorkspaceSchema = z.object({
   provider: opportunityProviderSchema,
   membership: opportunityProviderMembershipSchema,
+  opportunities: z.array(
+    opportunityAdminInputSchema.omit({ id: true, providerName: true }).extend({
+      id: z.uuid(),
+      reviewStatus: z.enum(["pending", "approved", "rejected"]),
+      publicationStatus: z.enum(["draft", "published", "withdrawn"]),
+      reviewNotes: z.string().max(1000).nullable(),
+      createdAt: timestampSchema,
+      updatedAt: timestampSchema,
+    }),
+  ),
 });
+
+export const marketplaceCatalogItemSchema = opportunityCatalogItemSchema.extend({
+  providerId: z.uuid().nullable(),
+  providerStatus: opportunityProviderStatusSchema.nullable(),
+  providerWebsite: httpsUrlSchema.nullable(),
+  providerCountryCode: countryCodeSchema.nullable(),
+  nativeApplicationEnabled: z.boolean(),
+  applicationStatus: opportunityApplicationStatusSchema.nullable(),
+});
+
+export const marketplaceCatalogSchema = z.array(marketplaceCatalogItemSchema);
 
 export const marketplaceCapabilitySelectionSchema = z.object({
   claimId: z.uuid(),
@@ -136,16 +188,23 @@ export const marketplaceApplicationSchema = z.object({
   id: z.uuid(),
   opportunityId: z.uuid(),
   providerId: z.uuid(),
-  builderUserId: z.uuid(),
   status: opportunityApplicationStatusSchema,
-  consentPolicyVersion: z.string().min(3).max(120).nullable(),
   packet: marketplaceApplicationPacketSchema,
   submittedAt: timestampSchema.nullable(),
   viewedAt: timestampSchema.nullable(),
   decidedAt: timestampSchema.nullable(),
   withdrawnAt: timestampSchema.nullable(),
-  createdAt: timestampSchema,
-  updatedAt: timestampSchema,
+});
+
+export const marketplaceApplicationDraftInputSchema = z.object({
+  opportunityId: z.uuid(),
+  builderSummary: z.string().trim().min(20).max(800).nullable(),
+  selectedPathName: z.string().trim().min(2).max(180).nullable(),
+  applicationNote: z.string().trim().max(2000).nullable(),
+  claimIds: z.array(z.uuid()).max(12),
+  evidenceIds: z.array(z.uuid()).max(20),
+  institutionVerificationIds: z.array(z.uuid()).max(12),
+  portfolioIds: z.array(z.uuid()).max(8),
 });
 
 export const marketplaceApplicationEligibilitySchema = z.object({
@@ -160,14 +219,19 @@ export type OpportunityProviderRole = z.infer<
   typeof opportunityProviderRoleSchema
 >;
 export type OpportunityProvider = z.infer<typeof opportunityProviderSchema>;
+export type OpportunityProviderInput = z.infer<
+  typeof opportunityProviderInputSchema
+>;
 export type OpportunityProviderWorkspace = z.infer<
   typeof opportunityProviderWorkspaceSchema
 >;
-export type MarketplaceApplication = z.infer<
-  typeof marketplaceApplicationSchema
->;
+export type MarketplaceCatalogItem = z.infer<typeof marketplaceCatalogItemSchema>;
+export type MarketplaceApplication = z.infer<typeof marketplaceApplicationSchema>;
 export type MarketplaceApplicationPacket = z.infer<
   typeof marketplaceApplicationPacketSchema
+>;
+export type MarketplaceApplicationDraftInput = z.infer<
+  typeof marketplaceApplicationDraftInputSchema
 >;
 export type MarketplaceApplicationStatus = z.infer<
   typeof opportunityApplicationStatusSchema
