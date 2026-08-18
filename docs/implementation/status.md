@@ -1,82 +1,70 @@
 # Implementation status
 
-**Current stage:** Stage 20 — Opportunity Marketplace  
-**Stage status:** Release candidate — application, Supabase and authenticated browser gates passed; final cleaned-head CI, merge and production verification remain  
+**Current stage:** Stage 21 — Builder Passport/API  
+**Stage status:** Release candidate — static, live Supabase and corrective authenticated/public Preview gates passed; final clean-head CI, merge and production verification remain  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
 ## Released and verified stages
 
-Stages 0–12 are complete and released. Stage 13 has its PipuPath cohort/privacy boundary verified; the final real KHP-OS cross-product pairing remains a separate integration gate. Stages 14–19 are complete and released in PipuPath.
+Stages 0–20 are released in PipuPath. Stage 20 Opportunity Marketplace was squash-merged through PR #36 as `11af1f10c15b82ba7ff7504d5eee9f5a8fadda70` and its exact production deployment completed successfully.
 
-Stage 19 Institution Workspace was squash-merged through PR #35 as `e2dd36bd6756492c7c89d3cddb5afee762c83082`. Its final cleaned PR head passed complete validation, its database/RLS/lifecycle proof passed, its authenticated Vercel Preview proof passed, and production Vercel completed successfully on the release commit.
+Stage 21 Builder Passport/API is the active release candidate on `agent/stage-21-builder-passport-api`, draft PR #37.
 
-Stage 20 Opportunity Marketplace is now at the final release gate on PR #36. Stage 21 Builder Passport/API remains planned and must not enter PR #36.
+## Stage 21 product boundary
 
-## Stage 20 implemented and verified scope
+The locked authority is `docs/stages/stage-21-builder-passport-api.md`; detailed evidence is in `docs/stages/stage-21-release-proof.md`.
 
-The authority remains `docs/stages/stage-20-opportunity-marketplace.md` and the detailed release evidence is in `docs/stages/stage-20-release-proof.md`.
+Stage 21 provides Builder-controlled proof portability through immutable selected snapshots, hash-only revocable/expiring shares, a fragment-secret human verification flow and a narrow bearer API. It does not create a public Builder directory or claim government identity, academic credential or employment-verification status.
 
-Stage 20 implements and verifies:
+## Static validation — passed
 
-- trusted provider persistence with `pending`, `approved`, `suspended` and `revoked` states;
-- scoped provider `owner` / `operator` memberships;
-- provider-owned opportunity drafts that cannot self-approve or self-publish;
-- platform provider-trust administration with a hidden boundary for non-admins;
-- provider `/provider`, `/provider/opportunities` and `/provider/applications` surfaces with no Builder directory/search;
-- extension of the released Stage 18 opportunity catalog and matching behavior rather than duplicate supply;
-- Builder opportunity detail with approved-provider trust context;
-- private draft → exact packet preview → explicit consent → submission application flow;
-- exact selected capability, evidence, institution-confirmation and published Portfolio proof snapshots;
-- application lifecycle `draft`, `submitted`, `viewed`, `shortlisted`, `accepted`, `not_selected`, `withdrawn`;
-- Builder withdrawal authority preserved after listing/provider closure where lifecycle rules allow;
-- database-level provider/listing integrity enforcement;
-- provider application projection excluding internal Builder UUIDs and private evidence routes;
-- direct browser table access revoked with bounded authenticated RPCs and service-role direct access only;
-- minor/safeguarding submission exclusion for the Stage 20 provider application path.
+The final corrected application code passed complete repository validation on head `485f34e4aeb498320fa5b648cbd41be035a7a34d` in CI #1003:
 
-## Supabase release evidence
+- formatting;
+- zero-warning lint;
+- strict TypeScript;
+- 56 unit-test files / 287 unit tests;
+- global coverage thresholds unchanged and green;
+- full integration/regression suite;
+- production build.
 
-Connected project: `kvjcswnmhwegpakbtvlh`.
+The corrected regression suite includes the exact PostgreSQL/Supabase offset timestamp format that the first Preview exposed.
 
-Stage 20 migrations are live through:
+## Supabase validation — passed
 
-- `20260818141201_stage_20_opportunity_marketplace.sql`
-- `20260818141248_stage_20_opportunity_marketplace_provider.sql`
-- `20260818141319_stage_20_opportunity_marketplace_catalog.sql`
-- `20260818141400_stage_20_opportunity_marketplace_application.sql`
-- `20260818141444_stage_20_opportunity_marketplace_provider_application.sql`
-- `20260818141524_harden_stage_20_marketplace_privacy_v2.sql`
-- `20260818142148_index_stage_20_marketplace_foreign_keys.sql`
+Authorised project: `kvjcswnmhwegpakbtvlh`.
 
-Live proofs confirm RLS, closed direct browser CRUD, bounded RPC authorization, provider/listing integrity, privacy-safe provider projections, complete FK indexing, rollback lifecycle behavior and zero persistent synthetic release data.
+Live and repository-reconciled migrations:
 
-## Vercel and browser release evidence
+- `20260818173546_stage_21_builder_passport_api.sql`
+- `20260818173828_index_stage_21_builder_passport_foreign_keys.sql`
 
-Connected Vercel project: `copyartint-2860s-projects/pipu-path` (`prj_EijX6BCMKdWZTMCJDMevLFj1TjmK`), correctly linked to `synsynlele/pipu-path`.
+RLS/grants, service-role-only share resolution/rate limiting, hash-only secret storage, FK indexing, immutable snapshot behavior, wrong/right bearer handling, live integrity overlay, revocation and supersession were verified live. The rollback-only DB proof left zero synthetic residue.
 
-The first deliberate Preview was used as a defect-discovery gate. A corrective exact-head Preview, deployment `dpl_5yFRKsa7FDb5pEkaFfYhjf844Vfi`, reached READY from source commit `82b4cd4cafa5c3e24dfe737806a386d0deddd770`.
+## Preview/browser validation — passed
 
-The corrected Playwright suite was rerun against that same READY Preview after fixing a test-only HTTP-status assumption. Final run `32157112775` passed all three browser checks:
+First deliberate Preview `dpl_3J1qNifcBfHK4pJCsiuSUucQ2aFu` reached READY and passed anonymous private-route denial plus invalid bearer denial. Its authenticated Passport workspace exposed a real runtime contract defect: Supabase returned offset-aware timestamps that were rejected by the initial Zod schema.
 
-- anonymous provider workspace denial;
-- authenticated non-admin provider-registry denial through the rendered PipuPath not-found boundary;
-- complete Builder → exact consent packet → provider queue → viewed → Builder withdrawal flow, with private/internal fields absent from provider output.
+The timestamp contract was corrected across private and public Passport projections and fully revalidated in CI #1003.
 
-All Stage 20 release fixtures and test profile labels were removed afterward. The reusable CI identities are restored to their original revoked platform-admin state.
+Corrective Preview `dpl_FwvJdLM1ZQT1zcdgLU3zShLGztu7` reached READY from exact source `ecb8f16f027b4ac7e8ae10d458391fc04ac8ee34`. Stage 21 Final Preview Proof run `32170096576` passed the complete Builder/public loop: private-route denial, invalid bearer fail-closed, issuance, one-time share creation, direct API verification, anonymous human verification, private-field exclusion, share revocation and Passport revocation.
 
-## Deployment control
+## Release cleanup — passed
 
-- Branch: `agent/stage-20-opportunity-marketplace`.
-- Draft PR: #36.
-- Automatic Vercel Preview deployment is restored to disabled for the branch.
-- Temporary Preview-proof workflows are removed.
-- No further Stage 20 Preview is expected before merge.
+Preview suppression is restored and the temporary Preview-proof workflow is removed.
 
-## Remaining Stage 20 release gate
+The CI Builder fixture is fully restored:
 
-1. final cleaned PR head passes complete repository CI;
-2. PR #36 is intentionally squash-merged; and
-3. production Vercel is confirmed healthy on the exact merged commit.
+- 0 Passport versions;
+- 0 Passport shares;
+- 0 Passport audit events;
+- 0 release-created rate-limit buckets;
+- display name restored to `null`.
 
-After Stage 20 releases, the next implementation stage is **Stage 21 — Builder Passport/API**.
+## Remaining Stage 21 release gate
+
+1. final clean restored-suppression head passes complete CI;
+2. PR #37 is marked ready and intentionally squash-merged;
+3. production Vercel is READY on the exact merge SHA;
+4. canonical production health and runtime logs are verified.

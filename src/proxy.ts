@@ -17,8 +17,11 @@ const protectedPrefixes = [
   "/connect",
   "/profile",
   "/institution",
+  "/passport",
 ];
 const publicProofPattern = /^\/proof\/([a-z0-9-]+)$/;
+const publicPassportSharePattern =
+  /^\/passport\/share\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 async function hasPublishedProjectProof(slug: string) {
   const { url, anonKey } = requireSupabasePublicEnvironment();
@@ -47,6 +50,10 @@ export async function proxy(request: NextRequest) {
       destination.search = "";
       return NextResponse.rewrite(destination, { status: 404 });
     }
+    return NextResponse.next();
+  }
+
+  if (publicPassportSharePattern.test(path)) {
     return NextResponse.next();
   }
 
