@@ -14,6 +14,9 @@ const volatilityHardening = read(
 const provisioningHardening = read(
   "supabase/migrations/20260818114223_fix_stage_19_workspace_provisioning_ambiguity.sql",
 );
+const requestHardening = read(
+  "supabase/migrations/20260818115000_fix_stage_19_verification_request_ambiguity.sql",
+);
 const adr = read("docs/architecture/adr-stage-19-institution-workspace.md");
 
 describe("Stage 19 Institution Workspace structure", () => {
@@ -79,6 +82,16 @@ describe("Stage 19 Institution Workspace structure", () => {
       "values (\n    resolved_workspace_id, owner_profile.id",
     );
     expect(provisioningHardening).toContain("return resolved_workspace_id");
+  });
+
+  it("disambiguates Builder verification request workspace state", () => {
+    expect(requestHardening).toContain("resolved_workspace_id uuid");
+    expect(requestHardening).toContain(
+      "verification.workspace_id = resolved_workspace_id",
+    );
+    expect(requestHardening).toContain(
+      "resolved_workspace_id := private.stage19_builder_workspace(actor)",
+    );
   });
 
   it("keeps institution verification private and out of ranking/public badge scope", () => {
