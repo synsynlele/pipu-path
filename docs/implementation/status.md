@@ -1,59 +1,64 @@
 # Implementation status
 
-**Current stage:** Stage 19 — Institution Workspace  
-**Stage status:** Release candidate — database/security/lifecycle and authenticated Preview proof verified; final clean-head/merge/production gates remain  
+**Current stage:** Stage 20 — Opportunity Marketplace  
+**Stage status:** Active implementation — product/privacy authority locked; provider + application vertical slice next  
 **Authoritative roadmap:** Stage 18 Capability Verification → Stage 19 Institution Workspace → Stage 20 Opportunity Marketplace → Stage 21 Builder Passport/API  
 **Last updated:** 2026-08-18
 
 ## Released and verified stages
 
-Stages 0–12 are complete and released. Stage 13 has its PipuPath cohort/privacy boundary verified; the final real KHP-OS cross-product pairing remains a separate integration gate. Stages 14–18 are complete and released in the PipuPath product.
+Stages 0–12 are complete and released. Stage 13 has its PipuPath cohort/privacy boundary verified; the final real KHP-OS cross-product pairing remains a separate integration gate. Stages 14–19 are complete and released in the PipuPath product.
 
-Stage 18 Capability Verification was squash-merged as `5ef298e68b1a75541e1e1e9cd9248f6751469d9f`. Its final PR tree passed full validation, its database/RLS/lifecycle proof passed, its matching authenticated Vercel Preview proof passed 2/2 checks, and production Vercel is green on the merged commit.
+Stage 19 Institution Workspace was squash-merged through PR #35 as `e2dd36bd6756492c7c89d3cddb5afee762c83082`. Its final cleaned PR head passed complete validation, its database/RLS/lifecycle proof passed, its matching authenticated Vercel Preview proof passed 2/2 checks, and production Vercel completed successfully on the release commit.
 
-Stage 19 Institution Workspace is the current release candidate.
-
-Stage 20 Opportunity Marketplace remains planned; the already-released Curated Opportunity MVP is its seed rather than duplicate work.
+Stage 20 Opportunity Marketplace is now the active implementation stage. The already-released Curated Opportunity MVP is its seed rather than duplicate work.
 
 Stage 21 Builder Passport/API remains planned.
 
-## Stage 19 delivered scope
+## Stage 20 locked scope
 
-- explicit Institution Workspace bound to an existing Stage 13 cohort;
-- platform-admin-provisioned institution operator roles: owner, verifier and analyst;
-- aggregate-only cohort intelligence using the existing Stage 13 privacy-thresholded server function;
-- Builder-authorised, exact-evidence institutional capability verification extending the Stage 18 trust substrate;
-- institution verifier identity and workspace provenance on each institutional verification;
-- pending, confirmed, declined, withdrawn and revoked lifecycle plus cohort-withdrawal closure of pending shares;
-- private `/institution` workspace and `/admin/institutions` provisioning surface;
-- institution request/history integrated into `/profile/verification`;
-- privacy-safe audit and lifecycle telemetry;
-- permanent Stage 19 E2E regression covering anonymous protection and bounded authenticated institution/Builder surfaces.
+The authority is `docs/stages/stage-20-opportunity-marketplace.md`.
 
-## Stage 19 verified evidence
+Stage 20 will:
 
-- Supabase migrations are live as `20260818113113_stage_19_institution_workspace`, `20260818113125_harden_stage_19_workspace_audit_volatility`, `20260818114223_fix_stage_19_workspace_provisioning_ambiguity` and `20260818114754_fix_stage_19_verification_request_ambiguity`.
-- RLS is enabled on all four institution tables and no direct `public`, `anon` or `authenticated` table grants remain.
-- Platform provisioning functions remain service-role only; authenticated execution is limited to the bounded institution/Builder RPCs.
-- The audited institution workspace read function is correctly `VOLATILE`.
-- Controlled runtime proof found and fixed two PL/pgSQL ambiguity defects before release: provisioning workspace resolution and Builder request workspace resolution.
-- Rollback lifecycle proof passed owner/analyst/verifier separation, privacy-threshold aggregate suppression, exact evidence request, duplicate rejection, analyst decision denial, verifier confirmation, Builder revoke/withdraw, and Stage 13 cohort-withdrawal closure of pending institution shares.
-- Generated live Supabase types contain the Stage 19 tables, enums and RPC signatures; no claim is made that the tracked repository type file was regenerated.
-- Clean pre-Preview branch head `bcaff37aafd034d2b6e70d3c8c9d7dfac8a9804b` passed complete validation in CI run `32134797075`.
-- Deliberate Preview head `18b1c454f671d548716cfe54f7eb7a25226f63cb` received a successful matching Vercel Preview.
-- Preview proof run `32135152478`, job `95704613239`, passed 2/2 Chromium checks: anonymous `/institution` denial and authenticated Institution Workspace plus Builder institutional-share rendering with protected raw field names excluded.
-- Temporary Preview workflow and database fixtures were removed after proof; cleanup confirmed zero synthetic Stage 19 workspace/member/verification/cohort-membership rows remained.
-- Branch-specific Vercel Preview suppression is restored after the one deliberate Preview.
+- add a trusted provider registry with `pending`, `approved`, `suspended` and `revoked` states;
+- allow approved provider operators to manage their own opportunity drafts without self-review or self-publication;
+- preserve platform review/publication authority from the Stage 18 curated supply model;
+- preserve deterministic age/geography/path/capability matching while adding provider trust and evidence readiness context;
+- add a Builder-controlled exact application packet with explicit pre-submission preview and consent;
+- allow only selected deployment-safe capability/evidence/institution/portfolio projections into the application packet;
+- create durable application states: `draft`, `submitted`, `viewed`, `shortlisted`, `accepted`, `not_selected`, `withdrawn`;
+- scope provider application access to applications deliberately submitted to that provider;
+- keep provider-to-Builder direct messaging, broad Builder browsing and minor submission out of scope;
+- feed final deployment outcomes into future guidance without silently rewriting evidence or HPP claims.
 
-## Stage 19 non-goals
+## Existing Stage 18 seed preserved
 
-No SIS/LMS, attendance, fees, grading, timetables, learner rankings, institutional rankings, broad learner profile browser, direct messaging, private HPP/reflection/raw-evidence access, public badges, payments, marketplace changes or credential API enters this stage.
+Stage 18 already supplies:
 
-## Remaining Stage 19 release gate
+- vetted opportunity categories;
+- age and geography eligibility checks;
+- pathway/capability matching;
+- explainable match tiers and readiness gaps;
+- save/open/external-applied/self-reported outcome state;
+- admin create/review/publish/withdraw flow;
+- official external URL boundary;
+- RLS with no direct browser table access.
 
-1. Final cleaned PR head passes exact-head `npm run validate`.
-2. PR #35 is intentionally squash-merged.
-3. Merged-main CI passes.
-4. Production Vercel deployment is confirmed healthy.
+The live opportunity catalog currently has no production listing rows, so Stage 20 can extend the schema without migrating or rewriting live opportunity supply data.
 
-No Stage 20 code enters PR #35.
+## Stage 20 development control
+
+- Branch: `agent/stage-20-opportunity-marketplace`.
+- Automatic Vercel Preview deployment is disabled for the branch.
+- GitHub CI is the continuous static gate.
+- Supabase schema/security/lifecycle verification occurs only after the code/migration shape is coherent.
+- Exactly one deliberate Vercel Preview is reserved for the final authenticated Builder/provider/admin browser proof.
+
+## Stage 20 non-goals
+
+No payments, escrow, contracts, payroll, fees, bidding, gig marketplace, employer/provider Builder search, open messaging, ranking, automated AI selection/rejection, marketplace recommendation sale or Stage 21 credential/API work enters Stage 20.
+
+## Stage 20 next gate
+
+Implement the provider/application database and domain contracts first, with browser roles denied direct table access and narrowly granted RPCs for Builder, provider and platform-admin actions. Then run full static validation before any production Supabase migration or Vercel Preview.
