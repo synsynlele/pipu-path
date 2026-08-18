@@ -97,7 +97,15 @@ const passportWorkspaceSchema = z.object({
   ),
 });
 
-export type BuilderPassportWorkspace = z.infer<typeof passportWorkspaceSchema>;
+type BuilderPassportWorkspaceRaw = z.infer<typeof passportWorkspaceSchema>;
+export type BuilderPassportWorkspace = Omit<
+  BuilderPassportWorkspaceRaw,
+  "shares"
+> & {
+  shares: Array<
+    BuilderPassportWorkspaceRaw["shares"][number] & { active: boolean }
+  >;
+};
 
 function asRpcClient(client: unknown) {
   return client as UntypedRpcClient;
@@ -107,7 +115,7 @@ function throwRpcError(error: RpcError, fallback: string): never {
   throw new Error(error?.message ?? fallback);
 }
 
-export async function getBuilderPassportWorkspace() {
+export async function getBuilderPassportWorkspace(): Promise<BuilderPassportWorkspace> {
   const client = asRpcClient(await createServerSupabaseClient());
   const result = await client.rpc("get_stage21_builder_passport_workspace");
   if (result.error) {
@@ -115,7 +123,17 @@ export async function getBuilderPassportWorkspace() {
   }
   const parsed = passportWorkspaceSchema.safeParse(result.data);
   if (!parsed.success) throw new Error("PASSPORT_WORKSPACE_INVALID");
-  return parsed.data;
+
+  const currentTime = Date.now();
+  return {
+    ...parsed.data,
+    shares: parsed.data.shares.map((share) => ({
+      ...share,
+      active:
+        share.revokedAt === null &&
+        new Date(share.expiresAt).getTime() > currentTime,
+    })),
+  };
 }
 
 export async function issueBuilderPassport(input: BuilderPassportIssueInput) {
