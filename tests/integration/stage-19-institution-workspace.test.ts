@@ -12,7 +12,7 @@ const volatilityHardening = read(
   "supabase/migrations/20260818113125_harden_stage_19_workspace_audit_volatility.sql",
 );
 const provisioningHardening = read(
-  "supabase/migrations/20260818114500_fix_stage_19_workspace_provisioning_ambiguity.sql",
+  "supabase/migrations/20260818114223_fix_stage_19_workspace_provisioning_ambiguity.sql",
 );
 const adr = read("docs/architecture/adr-stage-19-institution-workspace.md");
 
