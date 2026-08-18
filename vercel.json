@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "agent/stage-19-institution-workspace": false,
+      "agent/stage-20-opportunity-marketplace": false
+    }
+  }
+}
