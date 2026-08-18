@@ -9,8 +9,12 @@ const read = (relativePath: string) =>
 const migration = read(
   "supabase/migrations/20260818123042_stage_20_opportunity_marketplace.sql",
 );
+const hardening = read(
+  "supabase/migrations/20260818124524_harden_stage_20_marketplace_privacy.sql",
+);
 const authority = read("docs/stages/stage-20-opportunity-marketplace.md");
 const projectState = read("PROJECT_STATE.md");
+const routeMap = read("docs/implementation/route-map.md");
 
 describe("Stage 20 Opportunity Marketplace structure", () => {
   it("creates trusted provider and application persistence behind RLS", () => {
@@ -69,6 +73,45 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
     expect(migration).toContain("transition_stage20_provider_application");
     expect(migration).toContain(
       "MARKETPLACE_APPLICATION_PROVIDER_TRANSITION_INVALID",
+    );
+  });
+
+  it("enforces listing/provider integrity again at the database trigger boundary", () => {
+    expect(hardening).toContain(
+      "private.stage20_enforce_application_provider_match",
+    );
+    expect(hardening).toContain("opportunity_application_provider_match");
+    expect(hardening).toContain("MARKETPLACE_APPLICATION_PROVIDER_MISMATCH");
+  });
+
+  it("lets operators discover only provider workspaces they actually belong to", () => {
+    expect(hardening).toContain("list_stage20_provider_workspaces");
+    expect(hardening).toContain("member.user_id = actor");
+    expect(hardening).toContain("member.status = 'active'");
+  });
+
+  it("never exposes the internal Builder UUID in the provider application projection", () => {
+    const projectionStart = hardening.indexOf(
+      "create or replace function private.stage20_application_projection",
+    );
+    const projectionEnd = hardening.indexOf(
+      "revoke all on function private.stage20_application_projection",
+      projectionStart,
+    );
+    const projection = hardening.slice(projectionStart, projectionEnd);
+    expect(projection).not.toContain("builderUserId");
+    expect(projection).not.toContain("builder_user_id");
+    expect(projection).toContain("displayName");
+    expect(projection).toContain("capabilities");
+    expect(projection).toContain("institutionVerifications");
+  });
+
+  it("preserves Builder application history and withdrawal access after supply closes", () => {
+    expect(hardening).toContain("application_status_value");
+    expect(hardening).toContain("if application_status_value is null and not can_edit");
+    expect(hardening).toContain("'canEdit', can_edit");
+    expect(routeMap).toContain(
+      "Eligible adult Builder / existing application owner",
     );
   });
 
