@@ -74,9 +74,10 @@ These migrations are code-only until the exact Stage 20 branch passes full `npm 
 ## Static validation evidence
 
 - The complete Stage 20 TypeScript/TSX surface passed repository Prettier formatting.
-- CI run `32139736943` reached lint and found one zero-warning-policy issue only: an unused `opportunityProviderSchema` import in `marketplace-dal.ts`.
-- That proven unused import was removed before the next validation run.
-- TypeScript, test and production-build gates remain unclaimed until the rerun reaches and passes them.
+- CI run `32139736943` reached lint and found one zero-warning-policy issue only: an unused `opportunityProviderSchema` import in `marketplace-dal.ts`; the unused import was removed.
+- CI run `32139988333` then passed formatting and zero-warning lint, reached strict TypeScript, and found one exported-symbol naming mismatch: the DAL referenced `marketplaceApplicationStatusSchema` while the domain contract exports `opportunityApplicationStatusSchema`.
+- That proven TypeScript symbol mismatch was corrected before the next validation run.
+- Unit/integration, coverage and production-build gates remain unclaimed until a rerun reaches and passes them.
 
 ## Stage 20 non-goals
 
