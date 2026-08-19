@@ -14,12 +14,13 @@ describe("parentNavigationForPath", () => {
     ["/connect/builders/a-builder", "/connect"],
     ["/connect/collaborations/collab-1", "/connect/collaborations"],
     ["/profile/verification", "/profile"],
+    ["/growth", "/profile"],
     ["/passport/preview", "/passport"],
   ])("maps %s to a deterministic parent", (pathname, href) => {
     expect(parentNavigationForPath(pathname)?.href).toBe(href);
   });
 
-  it("does not add redundant back controls on top-level destinations", () => {
+  it("does not add redundant back controls on top-level primary destinations", () => {
     expect(parentNavigationForPath("/app")).toBeNull();
     expect(parentNavigationForPath("/journey")).toBeNull();
     expect(parentNavigationForPath("/connect")).toBeNull();
