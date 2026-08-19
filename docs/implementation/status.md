@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 22 — Human Potential Adventure & Reliability  
 **Stage status:** Released; final proof-flow correction gate passed in PR #40  
-**Released baseline entering Stage 22:** Stages 0–21 are released.  
+**Released baseline:** Stages 0–21 are released; this was the baseline entering Stage 22.  
 **Stage 22 release:** PR #38 → `cae7533cd2616c52547389612e9644773fc7eae0`  
 **Production baseline:** `44f0c835949b737fd1ab3bfa93e42d5dd244b50d` → `dpl_28dPmz3sqXBb3Rq1geNRWCdCG28T` READY  
 **Final correction runtime:** `d1668ff9ce14161f56e916d42196ac77237e1eae`  
@@ -98,7 +98,7 @@ Stage 22 and the final proof-flow correction introduce no new Supabase schema mi
 
 ## Resource-control result
 
-The final correction consumed one deliberate Preview only. Automatic implementation/test branch Preview deployments remained suppressed. Documentation release-lock changes after the browser proof are non-runtime and do not justify another Preview.
+The historical release discipline remains intact: one deliberate exact-head Preview is reserved only after static readiness, while implementation branches stay deployment-suppressed. The final correction consumed one deliberate Preview only. Automatic implementation/test branch Preview deployments remained suppressed. Documentation release-lock changes after the browser proof are non-runtime and do not justify another Preview.
 
 ## Release gate
 
