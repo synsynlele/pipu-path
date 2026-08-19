@@ -19,4 +19,20 @@ describe("AppShell", () => {
     expect(button).toBeVisible();
     expect(button.closest("form")).not.toHaveClass("hidden");
   });
+
+  it("reserves the phone safe area below fixed mobile navigation", () => {
+    const { container } = render(
+      <AppShell>
+        <main id="main-content">Dashboard</main>
+      </AppShell>,
+    );
+
+    expect(container.firstElementChild).toHaveClass(
+      "pb-[calc(5rem+env(safe-area-inset-bottom))]",
+    );
+    expect(
+      screen.getByRole("navigation", { name: "PipuPath mobile navigation" })
+        .parentElement,
+    ).toHaveClass("pb-[env(safe-area-inset-bottom)]");
+  });
 });
