@@ -18,8 +18,8 @@ export default function ProjectProofUnavailablePage() {
         </h1>
         <p className="text-muted mt-3 leading-7">
           It may still be a private draft, it may have been withdrawn, or the
-          address may no longer be valid. PipuPath keeps the Builder&apos;s private
-          Project evidence protected.
+          address may no longer be valid. PipuPath keeps private Project
+          evidence protected for the Builder.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <ButtonLink href="/portfolio">Manage my Portfolio</ButtonLink>
