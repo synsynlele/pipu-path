@@ -48,6 +48,7 @@ export function PathSelectionForm({
         type="submit"
         disabled={pending || selected}
         variant={selected ? "secondary" : "primary"}
+        className="w-full sm:w-auto"
       >
         {selected
           ? "Selected Path"
