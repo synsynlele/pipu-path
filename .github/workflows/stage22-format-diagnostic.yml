@@ -1,0 +1,37 @@
+name: Stage 22 Format Diagnostic
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    if: github.head_ref == 'fix/stage22-mobile-proof-contrast'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format changed UX files
+        run: |
+          npx prettier --write \
+            src/app/passport/page.tsx \
+            src/components/navigation/app-navigation.test.tsx \
+            src/components/navigation/app-navigation.tsx \
+            src/modules/passport/ui/passport-share-creator.tsx \
+            src/modules/quest/ui/quest-evidence-form.tsx \
+            tests/integration/stage-22-proof-flow.test.ts
+      - name: Print canonical diff
+        run: git diff -- \
+          src/app/passport/page.tsx \
+          src/components/navigation/app-navigation.test.tsx \
+          src/components/navigation/app-navigation.tsx \
+          src/modules/passport/ui/passport-share-creator.tsx \
+          src/modules/quest/ui/quest-evidence-form.tsx \
+          tests/integration/stage-22-proof-flow.test.ts
