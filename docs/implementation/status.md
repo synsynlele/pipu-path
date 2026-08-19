@@ -2,7 +2,7 @@
 
 **Current stage:** Stage 22 — Human Potential Adventure & Reliability  
 **Stage status:** Release gate passed; PR #38 carries the fully validated Stage 22 release candidate  
-**Released baseline entering Stage 22:** Stages 0–21  
+**Released baseline:** Stages 0–21  
 **Release candidate:** `c74788cfa8f3532b20f999329daaa80dbc1f1e78`  
 **Stage authority:** `docs/stages/stage-22-human-potential-adventure.md`  
 **Product direction authority:** `docs/product/human-potential-adventure-direction.md`  
@@ -92,6 +92,8 @@ Automatic Vercel Preview deployment remained suppressed on `agent/stage-22-human
 The first deliberate Stage 22 Preview was used as a real release test and exposed the Mission/Journey/Connect shell defect. No product release was attempted from that failed proof.
 
 After the repair passed canonical CI, corrective exact-head Preview `dpl_Bqm5FRy3qtN1kd9MjeaW386qBC6p` reached READY from `c74788cfa8f3532b20f999329daaa80dbc1f1e78`.
+
+The historical Stage 21 release discipline remains part of the repository contract: one deliberate exact-head Preview is reserved after static readiness, while implementation branches stay deployment-suppressed.
 
 ### Browser gate
 

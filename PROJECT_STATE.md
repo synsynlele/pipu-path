@@ -4,7 +4,7 @@
 
 **Stage status:** RELEASE GATE PASSED — PR #38 is the Stage 22 release vehicle; controlled pilot begins after merge.
 
-**Released baseline entering Stage 22:** Stages 0–21.
+**Released baseline entering Stage 22:** Stages 0–21 are released.
 
 **Stage 21 release:** PR #37 squash-merged on 2026-08-18 as `ee09f96d02adb72079b4ce4a29a3e2f872f618db`.
 
