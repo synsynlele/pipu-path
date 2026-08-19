@@ -140,7 +140,7 @@ export async function publishProjectPortfolioAction(
   revalidatePath(`/portfolio/${parsed.data.projectId}`);
   revalidatePath(`/portfolio/${parsed.data.projectId}/preview`);
   revalidatePath(`/proof/${data}`);
-  redirect(`/proof/${data}`);
+  redirect(`/portfolio/${parsed.data.projectId}`);
 }
 
 export async function withdrawProjectPortfolioAction(
