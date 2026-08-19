@@ -61,4 +61,10 @@ Stage 22 classifies every application route, including the Human Potential Adven
 | `/api/discovery/save`                       | Auth-only API                                                     | Controlled Discovery save boundary                                      |
 | `/api/product-events/feature-view`          | Auth-only API                                                     | Privacy-safe allow-listed feature telemetry                             |
 
+## Final Stage 22 private proof routes
+
+- `/proof` is an auth-only compatibility router. It resolves a legacy proof entry to the Builder's current owned Quest proof/detail state without rendering private evidence itself.
+- `/quests/[questId]/proof` is owner-only and available for an active Quest. It provides the dedicated private Prove step, submits Proof of Action through the released Stage 7 evidence boundary and unlocks Reflection on success.
+- stale owned Quest/proof links use scoped recovery and current saved Quest state instead of an unexplained unavailable page.
+
 Unknown paths use the global not-found experience. Major route groups provide loading and safe retry states. Private routes are excluded from indexing.

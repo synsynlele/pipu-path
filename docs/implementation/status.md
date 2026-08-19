@@ -1,19 +1,21 @@
 # Implementation status
 
 **Current stage:** Stage 22 — Human Potential Adventure & Reliability  
-**Stage status:** Release gate passed; PR #38 carries the fully validated Stage 22 release candidate  
-**Released baseline:** Stages 0–21  
-**Release candidate:** `c74788cfa8f3532b20f999329daaa80dbc1f1e78`  
+**Stage status:** Released; final proof-flow correction gate passed in PR #40  
+**Released baseline:** Stages 0–21 are released; this was the baseline entering Stage 22.  
+**Stage 22 release:** PR #38 → `cae7533cd2616c52547389612e9644773fc7eae0`  
+**Production baseline:** `44f0c835949b737fd1ab3bfa93e42d5dd244b50d` → `dpl_28dPmz3sqXBb3Rq1geNRWCdCG28T` READY  
+**Final correction runtime:** `d1668ff9ce14161f56e916d42196ac77237e1eae`  
+**Final correction PR:** #40 — Stage 22 finalization — premium private proof flow  
 **Stage authority:** `docs/stages/stage-22-human-potential-adventure.md`  
 **Product direction authority:** `docs/product/human-potential-adventure-direction.md`  
 **Growth Pack authority:** `docs/product/growth-pack-direction.md`  
 **Release evidence:** `docs/release/stage-22-release-proof.md`  
-**PR:** #38 — Stage 22 — Human Potential Adventure & Reliability  
 **Last updated:** 2026-08-19
 
 ## Release position
 
-Stage 22 is no longer in feature implementation. The complete release candidate has passed static validation and the authenticated exact-preview browser gate.
+Stage 22 is released. PR #40 is the final launch-quality correction for the proof-submission reliability gap found immediately after the release.
 
 The product remains governed by:
 
@@ -40,8 +42,8 @@ Stage 22 is an experience and reliability transformation over that engine, not a
 - Mission is experienced as a Campaign without changing Mission persistence;
 - Journey is represented as an accessible Adventure Map with saved lifecycle states;
 - Quest follows `Understand → Act → Prove → Reflect → Reveal`;
-- long explanation is progressively disclosed;
-- evidence, reflection, XP and unlocks remain grounded in released state.
+- evidence, reflection, XP and unlocks remain grounded in released state;
+- Prove is now a dedicated private screen instead of an implicit/buried evidence action.
 
 ### Build, Vault, World, Doors and Skill Tree
 
@@ -60,78 +62,49 @@ Stage 22 is an experience and reliability transformation over that engine, not a
 
 ## Reliability corrections
 
-- unavailable public proof now resolves to an explanatory recovery experience while preserving privacy;
-- Portfolio publication returns through an authenticated confirmation path before deliberate public opening;
-- deep Quest, Project, Portfolio, Opportunity, Profile, Growth and Passport flows have deterministic escape/continuation paths;
-- primary navigation remains Home, Journey, Build, Vault, Connect and Me;
-- a live browser gate discovered that Mission, Journey and Connect were the three primary-route shell gaps;
-- commit `cbd2ac492d0cc6ddace9a371276ad9a35badd3d9` added authenticated `AppShell` layouts for Mission/Journey and wrapped Connect's existing submenu inside the shared shell;
-- `tests/integration/stage-22-navigation-shell.test.ts` prevents those three routes from silently losing the application shell again.
+- unavailable public Portfolio proof resolves to an explanatory recovery experience while preserving privacy;
+- Mission, Journey and Connect retain the authenticated `AppShell` and stable six-destination navigation;
+- `/proof` now safely resolves authenticated Builders into their current Quest proof/detail path;
+- `/quests/[questId]/proof` is a dedicated owner-only active-Quest Prove step;
+- stale Quest/proof links recover to current saved state instead of a generic unavailable page;
+- Quest-specific unavailable state now explains that the adventure moved forward and gives clear continuation actions;
+- proof submission retains private Stage 7 evidence storage and unlocks Reflection after successful submission;
+- `tests/integration/stage-22-proof-flow.test.ts`, the Stage 7 structural contract and browser proof prevent regression.
 
 ## Validation ledger
 
-### Static gate
+### Original Stage 22 release
 
-CI #1066 passed the full canonical `npm run validate` chain on the navigation repair commit `cbd2ac492d0cc6ddace9a371276ad9a35badd3d9`.
+- CI #1067 passed the exact runtime tree used by corrective Stage 22 Preview `dpl_Bqm5FRy3qtN1kd9MjeaW386qBC6p`.
+- CI #1068 passed the authenticated release browser proof, including Mission/Journey/Connect navigation continuity, reduced motion and 390×844 mobile coverage.
+- PR #38 squash-merged as `cae7533cd2616c52547389612e9644773fc7eae0`.
+- production Git integration required a zero-file-difference trigger `44f0c835949b737fd1ab3bfa93e42d5dd244b50d`.
+- production deployment `dpl_28dPmz3sqXBb3Rq1geNRWCdCG28T` reached READY with no runtime error clusters during release verification.
 
-A zero-tree release-proof trigger advanced the exact executable tree to `c74788cfa8f3532b20f999329daaa80dbc1f1e78`.
+### Final proof-flow correction
 
-CI #1067 passed on that exact release-candidate SHA, including:
-
-- Prettier formatting;
-- zero-warning lint;
-- strict TypeScript;
-- unit tests and coverage thresholds;
-- integration/regression tests;
-- production build.
-
-### Vercel gate
-
-Automatic Vercel Preview deployment remained suppressed on `agent/stage-22-human-potential-adventure`.
-
-The first deliberate Stage 22 Preview was used as a real release test and exposed the Mission/Journey/Connect shell defect. No product release was attempted from that failed proof.
-
-After the repair passed canonical CI, corrective exact-head Preview `dpl_Bqm5FRy3qtN1kd9MjeaW386qBC6p` reached READY from `c74788cfa8f3532b20f999329daaa80dbc1f1e78`.
-
-The historical Stage 21 release discipline remains part of the repository contract: one deliberate exact-head Preview is reserved after static readiness, while implementation branches stay deployment-suppressed.
-
-### Browser gate
-
-Disposable PR #39 existed only as a CI carrier, had its own Vercel deployment disabled, and was closed without merge after verification.
-
-CI #1068 passed the isolated Playwright release proof against the corrective exact-head Preview. It verified:
-
-- public landing and private-by-default messaging;
-- safe unavailable-proof recovery;
-- anonymous Mission Control rejection;
-- authenticated Mission Control access using the dedicated staging analyst fixture;
-- Adventure Home, current Next Move, Adventure Map and Builder level;
-- six-destination desktop navigation;
-- visible role-aware Mission Control entry from Home;
-- Growth Library/Growth Pack surface and learning-resource disclaimer;
-- persistent application navigation on `/mission`, `/journey` and `/connect`;
-- reduced-motion rendering;
-- 390×844 mobile navigation and no horizontal page overflow.
-
-Vercel runtime error/fatal logs remained clean during the proof.
-
-The dedicated staging analyst fixture was reactivated only for authenticated admin verification and immediately returned to `revoked` afterwards.
+- CI #1075 passed the canonical `npm run validate` chain on `d1668ff9ce14161f56e916d42196ac77237e1eae`;
+- the validation included Prettier, zero-warning lint, strict TypeScript, unit/coverage tests, integration/regression contracts and production build;
+- implementation branch `agent/stage-22-proof-finalization` remained Vercel-disabled;
+- zero-file-difference carrier `8fe68b46b9adda6ef2c09c35b6ffa5f150103b89` produced exactly one deliberate correction Preview;
+- Vercel Preview `dpl_4i6LT35NRVmXW6JTHCPd219CGMPy` reached READY and its executable tree is identical to the green product head;
+- disposable PR #41 was Vercel-disabled and closed without merge;
+- CI #1076 passed authenticated Chromium verification of `/proof` recovery, premium Prove rendering, 390×844 mobile/no-overflow behaviour, real private proof submission and Reflection unlock;
+- desktop/mobile screenshots were captured and visually reviewed.
 
 ## Database / migration state
 
-Stage 22 introduced no Supabase schema migration. Existing released persistence, RLS, lifecycle, profile/evidence state and authorization remain in force.
+Stage 22 and the final proof-flow correction introduce no new Supabase schema migration. Existing released RLS, lifecycle, profile/evidence persistence and authorization remain authoritative.
 
 ## Resource-control result
 
-No automatic implementation-branch Preview was consumed. The only additional Preview after the first release test was the corrective exact-head Preview required to verify the real defect found by that test.
-
-The final release-lock documentation changes are non-runtime only; source, configuration, dependencies and database schema remain identical to the exact Preview-tested executable tree.
+The historical release discipline remains intact: one deliberate exact-head Preview is reserved only after static readiness, while implementation branches stay deployment-suppressed. The final correction consumed one deliberate Preview only. Automatic implementation/test branch Preview deployments remained suppressed. Documentation release-lock changes after the browser proof are non-runtime and do not justify another Preview.
 
 ## Release gate
 
-All Stage 22 release criteria are satisfied for intentional PR #38 merge and exact production verification.
+The final proof-flow correction satisfies the static, exact-preview, authenticated-browser, mobile, privacy and visual-quality gates for intentional PR #40 merge and production verification.
 
-After production is READY on the merge commit, the operating mode changes to:
+After production is READY, operating mode remains:
 
 **controlled pilot → measure → improve → prove adoption**.
 

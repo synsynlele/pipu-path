@@ -102,7 +102,8 @@ describe("Stage 7 HQLS Quest structural contract", () => {
   it("requires evidence and reflection before completion", () => {
     expect(migration).toContain("QUEST_EVIDENCE_REQUIRED");
     expect(migration).toContain("quest_reflections");
-    expect(evidenceForm).toContain("Submit Evidence");
+    expect(evidenceForm).toContain("submitQuestEvidenceAction");
+    expect(evidenceForm).toContain("Submit Proof");
     expect(reflectionForm).toContain("Nortnspoil reflection");
   });
 

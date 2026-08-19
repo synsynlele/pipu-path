@@ -6,7 +6,8 @@
       "agent/stage-20-opportunity-marketplace": false,
       "agent/stage-21-builder-passport-api": false,
       "agent/stage-22-mentor-network": false,
-      "agent/stage-22-human-potential-adventure": false
+      "agent/stage-22-human-potential-adventure": false,
+      "agent/stage-22-proof-finalization": false
     }
   }
 }

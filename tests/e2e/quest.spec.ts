@@ -19,13 +19,11 @@ async function signIn(page: Page) {
 
 async function openCurrentQuestForVerification(page: Page) {
   await page.goto("/quests");
-  await expect(
-    page.getByRole("heading", { name: "Build proof, not just plans." }),
-  ).toBeVisible();
+  await expect(page.getByText("Quest path · Real-world action")).toBeVisible();
 
   const anyQuestAction = page
     .getByRole("link", {
-      name: /Complete Reflection|Continue Quest|Open Quest|Review Quest/,
+      name: /Reflect and Complete|Continue Challenge|Enter Challenge/,
     })
     .first();
   const generate = page.getByRole("button", {
@@ -40,10 +38,9 @@ async function openCurrentQuestForVerification(page: Page) {
   }
 
   for (const label of [
-    "Complete Reflection",
-    "Continue Quest",
-    "Open Quest",
-    "Review Quest",
+    "Reflect and Complete →",
+    "Continue Challenge →",
+    "Enter Challenge →",
   ]) {
     const link = page.getByRole("link", { name: label, exact: true }).first();
     if (await link.isVisible()) {
@@ -66,28 +63,42 @@ test("authenticated Builder completes or verifies the current Quest with exactly
   await openCurrentQuestForVerification(page);
 
   const start = page.getByRole("button", { name: "Start This Quest" });
-  const evidence = page.getByLabel("What proof did you create?");
   const reflection = page.getByLabel("What did you do?");
   const completed = page.getByRole("heading", {
     name: "Proof created. Progress earned.",
   });
 
-  await expect(start.or(evidence).or(reflection).or(completed)).toBeVisible({
+  await expect(
+    start.or(reflection).or(completed).or(page.getByText("Phase 2 · Act")),
+  ).toBeVisible({
     timeout: 15_000,
   });
 
   if (await start.isVisible()) {
     await start.click();
-    await expect(evidence.or(reflection).or(completed)).toBeVisible({
+    await expect(
+      page.getByText("Phase 2 · Act").or(reflection).or(completed),
+    ).toBeVisible({
       timeout: 30_000,
     });
   }
 
-  if (await evidence.isVisible()) {
+  if (await page.getByText("Phase 2 · Act").isVisible()) {
+    const questPath = new URL(page.url()).pathname;
+    await page.goto(`${questPath}/proof`);
+    await expect(
+      page.getByRole("heading", { name: "Bring back what happened." }),
+    ).toBeVisible();
+    await expect(page.getByText("Private by default")).toBeVisible();
+
+    const evidence = page.getByLabel("Tell the proof story");
     await evidence.fill(
       "I completed the practical action with a trusted participant and recorded the useful result and honest response.",
     );
-    await page.getByRole("button", { name: "Submit Evidence" }).click();
+    await page.getByRole("button", { name: "Submit Proof" }).click();
+    await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+$/, {
+      timeout: 60_000,
+    });
     await expect(reflection.or(completed)).toBeVisible({ timeout: 60_000 });
   }
 
@@ -131,7 +142,7 @@ test("authenticated Builder completes or verifies the current Quest with exactly
   await expect(completed).toBeVisible();
   await expect(awardedXp).toBeVisible();
   await page.goto("/quests");
-  await expect(page.getByText("Verified XP", { exact: true })).toBeVisible();
+  await expect(page.getByText(/verified XP/).first()).toBeVisible();
 });
 
 test("anonymous users cannot access private Quests", async ({ page }) => {
@@ -146,9 +157,7 @@ test("Quest path remains usable on a narrow screen", async ({
   test.skip(!isMobile, "Focused narrow-screen coverage runs on mobile only.");
   await signIn(page);
   await page.goto("/quests");
-  await expect(
-    page.getByRole("heading", { name: "Build proof, not just plans." }),
-  ).toBeVisible();
+  await expect(page.getByText("Quest path · Real-world action")).toBeVisible();
   const mobileNavigation = page.getByRole("navigation", {
     name: "PipuPath mobile navigation",
   });

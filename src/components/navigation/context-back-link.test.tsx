@@ -4,6 +4,7 @@ import { parentNavigationForPath } from "./context-back-link";
 describe("parentNavigationForPath", () => {
   it.each([
     ["/quests/quest-1", "/quests"],
+    ["/quests/quest-1/proof", "/quests/quest-1"],
     ["/quests/quest-1/complete", "/quests/quest-1"],
     ["/projects/new", "/projects"],
     ["/projects/project-1", "/projects"],
