@@ -12,28 +12,24 @@ describe("AppNavigation", () => {
     });
 
     expect(within(navigation).getAllByRole("link")).toHaveLength(6);
-    expect(within(navigation).getByRole("link", { name: "Home" })).toHaveAttribute(
-      "href",
-      "/app",
-    );
+    expect(
+      within(navigation).getByRole("link", { name: "Home" }),
+    ).toHaveAttribute("href", "/app");
     expect(
       within(navigation).getByRole("link", { name: "Journey" }),
     ).toHaveAttribute("href", "/journey");
-    expect(within(navigation).getByRole("link", { name: "Build" })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
-    expect(within(navigation).getByRole("link", { name: "Vault" })).toHaveAttribute(
-      "href",
-      "/portfolio",
-    );
+    expect(
+      within(navigation).getByRole("link", { name: "Build" }),
+    ).toHaveAttribute("aria-current", "page");
+    expect(
+      within(navigation).getByRole("link", { name: "Vault" }),
+    ).toHaveAttribute("href", "/portfolio");
     expect(
       within(navigation).getByRole("link", { name: "Connect" }),
     ).toHaveAttribute("href", "/connect");
-    expect(within(navigation).getByRole("link", { name: "Me" })).toHaveAttribute(
-      "href",
-      "/profile",
-    );
+    expect(
+      within(navigation).getByRole("link", { name: "Me" }),
+    ).toHaveAttribute("href", "/profile");
   });
 
   it("keeps inactive desktop destinations visible before hover", () => {
