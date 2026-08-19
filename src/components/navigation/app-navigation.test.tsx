@@ -20,7 +20,7 @@ describe("AppNavigation", () => {
       "aria-current",
       "page",
     );
-    expect(screen.getByRole("link", { name: "Portfolio" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Vault" })).toHaveAttribute(
       "href",
       "/portfolio",
     );
@@ -28,7 +28,7 @@ describe("AppNavigation", () => {
       "href",
       "/connect",
     );
-    expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Me" })).toHaveAttribute(
       "href",
       "/profile",
     );
