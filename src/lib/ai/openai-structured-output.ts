@@ -69,8 +69,15 @@ function parseStructuredOutput(payload: OpenAIResponsePayload) {
   }
 }
 
-function supportsGpt5Controls(model: string) {
-  return /^gpt-5(?:[.-]|$)/i.test(model) && !/^gpt-5-pro(?:[.-]|$)/i.test(model);
+function gpt5ReasoningEffort(model: string) {
+  if (/^gpt-5-pro(?:[.-]|$)/i.test(model)) return null;
+  if (/^gpt-5\.1(?:[.-]|$)/i.test(model)) return "low" as const;
+  if (/^gpt-5(?:[.-]|$)/i.test(model)) return "minimal" as const;
+  return null;
+}
+
+function supportsGpt5Verbosity(model: string) {
+  return /^gpt-5(?:[.-]|$)/i.test(model);
 }
 
 function retryReason(error: unknown) {
@@ -101,10 +108,11 @@ async function requestOnce(input: {
 }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
-  const lowLatencyControls = supportsGpt5Controls(input.model)
-    ? { reasoning: { effort: "minimal" as const } }
+  const reasoningEffort = gpt5ReasoningEffort(input.model);
+  const lowLatencyControls = reasoningEffort
+    ? { reasoning: { effort: reasoningEffort } }
     : {};
-  const lowVerbosityControls = supportsGpt5Controls(input.model)
+  const lowVerbosityControls = supportsGpt5Verbosity(input.model)
     ? { verbosity: "low" as const }
     : {};
 
