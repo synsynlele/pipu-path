@@ -88,6 +88,33 @@ describe("OpenAI structured output client", () => {
     });
   });
 
+  it("uses GPT-5.1 compatible low reasoning when that model is configured", async () => {
+    requireOpenAIEnvironment.mockReturnValue({
+      apiKey: "server-secret",
+      model: "gpt-5.1",
+    });
+    const fetchMock = vi.fn().mockResolvedValue(
+      response({
+        status: "completed",
+        output_text: JSON.stringify({ result: "compatible" }),
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(requestOpenAIStructuredOutput(requestInput())).resolves.toEqual({
+      result: "compatible",
+    });
+
+    const request = JSON.parse(
+      String(fetchMock.mock.calls[0]?.[1]?.body),
+    ) as Record<string, unknown>;
+    expect(request).toMatchObject({
+      model: "gpt-5.1",
+      reasoning: { effort: "low" },
+      text: { verbosity: "low" },
+    });
+  });
+
   it("accepts the direct output_text projection", async () => {
     vi.stubGlobal(
       "fetch",
