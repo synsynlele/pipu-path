@@ -2,37 +2,39 @@
 
 **Current stage:** Stage 22 — Human Potential Adventure & Reliability
 
-**Stage status:** ACTIVE — PRODUCT DIRECTION LOCKED; RELIABILITY + EXPERIENCE IMPLEMENTATION IN PROGRESS
+**Stage status:** RELEASE GATE PASSED — PR #38 is the Stage 22 release vehicle; controlled pilot begins after merge.
 
-**Released product baseline:** Stages 0–21 are released.
+**Released baseline entering Stage 22:** Stages 0–21.
 
-**Stage 21 release:** PR #37 squash-merged on 2026-08-18 as `ee09f96d02adb72079b4ce4a29a3e2f872f618db`. Final clean-head CI passed and the exact production deployment reached READY on the merge commit.
+**Stage 21 release:** PR #37 squash-merged on 2026-08-18 as `ee09f96d02adb72079b4ce4a29a3e2f872f618db`.
 
-**Current Stage 22 branch:** `agent/stage-22-human-potential-adventure`
+**Stage 22 release candidate:** `c74788cfa8f3532b20f999329daaa80dbc1f1e78` on `agent/stage-22-human-potential-adventure`.
 
-**Stage 22 authority:** `docs/stages/stage-22-human-potential-adventure.md`
+**Stage 22 PR:** #38 — `Stage 22 — Human Potential Adventure & Reliability`.
 
-**Locked product direction:** `docs/product/human-potential-adventure-direction.md`
+**Stage 22 authority:** `docs/stages/stage-22-human-potential-adventure.md`.
+
+**Locked product direction:** `docs/product/human-potential-adventure-direction.md`.
+
+**Growth Pack direction:** `docs/product/growth-pack-direction.md`.
+
+**Final release evidence:** `docs/release/stage-22-release-proof.md`.
 
 **Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`; Vercel project `copyartint-2860s-projects/pipu-path` linked to `synsynlele/pipu-path`.
 
-**Deployment control:** automatic Vercel Preview is disabled for the Stage 22 implementation branch. No deliberate Stage 22 Preview should be created until static/CI gates are ready for final browser proof.
-
-**Roadmap decision:** MVP feature expansion stops at Stage 21. Stage 22 is not a new conceptual product layer; it is the release-quality Human Potential Adventure experience and reliability transformation over the Stage 0–21 engine. Mentor Network remains post-MVP.
-
 **Last updated:** 2026-08-19
 
-## Core developmental engine — preserve
-
-`Discovery → Human Potential Profile → Possible Paths → Practical Mission → Journey → HQLS Quest → Evidence → Reflection → Capability → Builder Project → Portfolio / Connect → Collaboration → Living Builder Profile → AI Personal Builder Guide → Capability Verification → Institution / Opportunity deployment → Builder Passport portability`
-
-Stage 22 must not flatten or replace this engine.
-
-## Locked Stage 22 experience doctrine
+## Product doctrine now in force
 
 > **The screen is not the game. Life is the game.**
 
-PipuPath is now governed as a **Human Potential Adventure System**. The application provides direction, challenge, suspense, truthful progression, reflection and proof while meaningful development happens primarily in the Builder's real life.
+PipuPath is governed as a **Human Potential Adventure System**. The application gives direction, challenge, feedback, progression and proof while meaningful development happens primarily in the Builder's real life.
+
+The released developmental engine remains authoritative:
+
+`Discovery → Human Potential Profile → Possible Paths → Mission → Journey → Quest → Evidence → Reflection → Capability → Project → Portfolio / Connect → Collaboration → Living Builder Profile → AI Personal Builder Guide → Capability Verification → Institution / Opportunity → Builder Passport`
+
+Stage 22 changes how that engine is experienced; it does not replace the domain model, lifecycle, persistence, privacy or safeguarding boundaries.
 
 Experience mapping:
 
@@ -47,78 +49,51 @@ Experience mapping:
 - Opportunity = Deployment Door / New World;
 - Passport = Portable Builder Identity.
 
-This is an experience layer. Existing domain language, lifecycle, persistence, privacy and safeguarding boundaries remain authoritative unless explicitly migrated later.
+## Stage 22 delivered
 
-## Mandatory Stage 22 corrections from live user testing
+- Adventure Home now prioritises current Campaign, one dominant Next Move, Journey progress, truthful Builder level/XP and contextual Builder Guide support.
+- Journey is an accessible Adventure Map rather than a prose-first page.
+- Quest experience follows `Understand → Act → Prove → Reflect → Reveal` with progressive disclosure.
+- Projects use Major Build framing while preserving Project semantics and evidence lifecycle.
+- Portfolio is experienced as the Builder Vault with private-by-default selective publication.
+- Living Builder Profile presents evidence-backed capabilities as a Skill Tree without inventing capability scores.
+- Opportunities are framed as Deployment Doors without probabilistic employability claims.
+- Growth Pack recommendations are contextual to the current adventure; Growth Library revisits prior contextual suggestions and does not become a generic content catalogue.
+- Mission Control is visibly available only to active platform administrators; server/data authorization remains authoritative.
+- public-proof failures recover safely without exposing private proof.
+- primary navigation remains six stable destinations: Home, Journey, Build, Vault, Connect and Me.
+- Mission, Journey and Connect now remain inside the authenticated `AppShell`, closing the final live-discovered navigation dead end.
+- mobile and reduced-motion behavior are part of the release proof.
 
-1. **Proof/evidence flow reliability** — trace and repair any expected proof/evidence action that reaches an unavailable/unopenable page or invalid lifecycle state.
-2. **Experience density** — replace text-heavy vertical-page fatigue with action-first, progressive, spatial and reveal-led interaction without removing developmental substance.
-3. **Navigation recovery** — every deep authenticated screen must have a deterministic escape or continuation path; the browser Back button must not be required for normal use.
-4. **Admin discoverability** — the active platform owner/admin account must receive a visible role-aware route into Mission Control after normal login.
+## Final quality state
 
-## Stage 22 delivery gates
+The Stage 22 release candidate passed the canonical repository validation chain on exact head `c74788cfa8f3532b20f999329daaa80dbc1f1e78` through CI #1067.
 
-### Gate A — Authority and audit
+The corrective exact-head Vercel Preview `dpl_Bqm5FRy3qtN1kd9MjeaW386qBC6p` reached READY from that same SHA.
 
-- product doctrine locked;
-- stage authority locked;
-- repository state updated;
-- proof/evidence and navigation audit in progress.
+The isolated authenticated release proof passed in CI #1068 against that Preview, including:
 
-### Gate B — Reliability foundation
+- public landing and proof-unavailable recovery;
+- unauthenticated admin protection;
+- authenticated Mission Control access for the dedicated staging analyst fixture;
+- Adventure Home and six-destination navigation;
+- Growth Library/Growth Pack surface;
+- persistent navigation across Mission, Journey and Connect;
+- reduced-motion rendering;
+- 390×844 mobile navigation and horizontal-overflow check.
 
-- repair proof/evidence route/state failures;
-- establish contextual Back/Close/continuation behavior;
-- expose role-aware Mission Control entry;
-- add regression tests.
+The staging analyst fixture was returned to `revoked` immediately after proof. No Stage 22 Supabase schema migration was required.
 
-### Gate C — Adventure Home
-
-Authenticated Home becomes a return-to-adventure surface rather than an equal-weight feature dashboard:
-
-- current Mission/Campaign;
-- one dominant Next Move;
-- Journey progress/map preview;
-- truthful XP / Builder level / next progression signal;
-- meaningful recent achievement when backed by real data;
-- contextual Builder Guide;
-- secondary tools remain discoverable but visually subordinate.
-
-### Gate D — Journey and Quest transformation
-
-- Journey represented as an accessible Adventure Map;
-- Quest experienced as `Understand → Act → Prove → Reflect → Reveal`;
-- meaningful unlock/reveal feedback;
-- reduced text density through progressive disclosure;
-- mobile, keyboard and reduced-motion support.
-
-### Gate E — Build and capability transformation
-
-- Builder Projects gain major Build/Boss Build experience framing without changing Project semantics;
-- capability presentation may become an evidence-backed Skill Tree only from real existing state;
-- no invented scores or achievements.
-
-### Gate F — Release proof
-
-- formatting;
-- zero-warning lint;
-- strict TypeScript;
-- unit/integration/regression suite;
-- unchanged coverage thresholds;
-- production build;
-- authenticated Builder + owner/admin E2E;
-- mobile viewport and navigation proof;
-- one deliberate exact-head Vercel Preview only after static readiness;
-- production exact-merge verification after intentional merge.
+The first deliberate Stage 22 Preview exposed the real Mission/Journey/Connect shell gap. A single corrective Preview was then created after the fix passed static CI; automatic implementation-branch previews remained suppressed throughout.
 
 ## Safety / anti-dark-pattern boundary
 
-Stage 22 may not introduce gambling mechanics, paid random rewards, fake urgency, manipulative infinite feeds, child popularity leaderboards, shame-based streaks, fabricated social activity, unrestricted minor/adult messaging, public leakage of private development evidence or AI pretending to be a human mentor.
+Stage 22 does not introduce gambling mechanics, paid random rewards, fake urgency, manipulative infinite feeds, child popularity leaderboards, shame-based streaks, fabricated social activity, unrestricted minor/adult messaging, public leakage of private development evidence or AI pretending to be a human mentor.
 
-The objective is to increase the urge to **build in real life**, not to maximise screen time.
+Progress remains tied to meaningful developmental action and evidence, not page views or compulsive return behaviour.
 
-## Stop boundary
+## Next operating mode
 
-Do not implement Mentor Network, unrestricted communities/chat, payments or another major post-MVP capability inside Stage 22.
+After PR #38 is intentionally merged and production is verified on the merge commit, PipuPath moves into **controlled pilot → measure → improve → prove adoption**.
 
-After Stage 22 release, move PipuPath into controlled pilot → measure → improve → prove adoption before authorising another major product layer.
+Do not begin Mentor Network, unrestricted communities/chat, payments or another major product layer merely because Stage 22 is complete. The next work should be driven by observed Builder use, retention, completion, proof quality and real-world outcomes.
