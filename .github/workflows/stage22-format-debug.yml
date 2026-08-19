@@ -6,13 +6,16 @@ on:
       - agent/stage-22-human-potential-adventure
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format-diff:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-22-human-potential-adventure
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
@@ -27,11 +30,20 @@ jobs:
             'src/app/quests/[questId]/complete/page.tsx' \
             src/components/navigation/context-back-link.tsx \
             src/modules/identity/domain/builder-level.ts
-      - name: Show exact formatter diff
-        run: git diff --no-ext-diff -- \
-          src/app/app/page.tsx \
-          src/app/journey/page.tsx \
-          'src/app/quests/[questId]/page.tsx' \
-          'src/app/quests/[questId]/complete/page.tsx' \
-          src/components/navigation/context-back-link.tsx \
-          src/modules/identity/domain/builder-level.ts
+      - name: Commit exact formatter result
+        run: |
+          if git diff --quiet; then
+            echo "No formatter changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/app/app/page.tsx \
+            src/app/journey/page.tsx \
+            'src/app/quests/[questId]/page.tsx' \
+            'src/app/quests/[questId]/complete/page.tsx' \
+            src/components/navigation/context-back-link.tsx \
+            src/modules/identity/domain/builder-level.ts
+          git commit -m "style(stage22): apply repository formatter"
+          git push origin HEAD:agent/stage-22-human-potential-adventure
