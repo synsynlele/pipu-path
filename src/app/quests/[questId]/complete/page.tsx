@@ -17,78 +17,91 @@ export default async function QuestCompletePage({
   const { questId } = await params;
   const detail = await getQuestById(questId);
   if (!detail) notFound();
-  if (detail.quest.status !== "completed")
+  if (detail.quest.status !== "completed") {
     redirect(`/quests/${detail.quest.id}`);
+  }
 
   return (
     <main
       id="main-content"
-      className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-20"
+      className="mx-auto max-w-5xl px-4 py-7 sm:px-8 sm:py-14"
     >
-      <section className="border-gold/30 bg-panel relative overflow-hidden rounded-[2rem] border p-7 text-center sm:p-12">
-        <div
-          aria-hidden="true"
-          className="bg-gold/15 absolute inset-x-1/4 -top-32 h-64 rounded-full blur-3xl"
-        />
-        <div className="relative">
-          <p className="text-gold font-mono text-xs tracking-[0.2em] uppercase">
-            HQLS loop complete
+      <section className="relative overflow-hidden rounded-[2rem] border border-[#f3c86b]/25 bg-[#07142f] p-6 text-white sm:p-10">
+        <div aria-hidden="true" className="absolute inset-x-1/4 -top-28 h-56 rounded-full bg-[#f3c86b]/12 blur-3xl" />
+        <div aria-hidden="true" className="absolute -right-20 -bottom-24 size-64 rounded-full border border-white/10" />
+        <div className="relative text-center">
+          <p className="text-xs font-semibold tracking-[0.2em] text-[#f3c86b] uppercase">
+            Quest cleared · Reveal
           </p>
-          <h1 className="mt-5 text-4xl font-semibold tracking-tight sm:text-6xl">
-            Proof created. Progress earned.
+          <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-6xl">
+            You did more than finish a screen.
           </h1>
-          <p className="text-muted mx-auto mt-5 max-w-2xl text-lg leading-8">
-            You acted, preserved honest evidence and reflected on what the
-            experience taught you. That is real Builder progress.
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-blue-50/75 sm:text-base">
+            You acted in the real world, preserved proof and turned the experience into learning. That is Builder progress.
           </p>
-          <div className="border-gold/40 bg-gold/10 mx-auto mt-8 flex h-28 w-28 flex-col items-center justify-center rounded-full border">
-            <span className="text-gold text-3xl font-semibold">
-              +{detail.xpAwarded}
-            </span>
-            <span className="text-muted text-xs tracking-wide uppercase">
-              XP
-            </span>
+
+          <div className="mx-auto mt-7 grid size-28 place-items-center rounded-full border border-[#f3c86b]/35 bg-[#f3c86b]/10 shadow-[0_0_50px_-20px_rgba(243,200,107,0.9)]">
+            <div>
+              <span className="block text-3xl font-bold text-[#f3c86b]">+{detail.xpAwarded}</span>
+              <span className="mt-1 block text-[0.65rem] font-semibold tracking-[0.16em] text-blue-100/65 uppercase">verified XP</span>
+            </div>
           </div>
         </div>
       </section>
-      <Surface className="mt-8 p-6 sm:p-8">
-        <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-          Quest {detail.quest.sequence_order} completed
-        </p>
-        <h2 className="mt-3 text-2xl font-semibold">{detail.quest.title}</h2>
-        <p className="text-muted mt-4 leading-7">
-          {detail.reflection?.nortnspoil_reflection}
-        </p>
-        <div className="border-border mt-6 border-t pt-6">
+
+      <section className="mt-5 grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
+        <Surface className="p-5 sm:p-6">
+          <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+            What you just cleared
+          </p>
+          <h2 className="text-navy mt-2 text-xl font-semibold">{detail.quest.title}</h2>
+          {detail.reflection?.nortnspoil_reflection ? (
+            <p className="text-muted mt-3 text-sm leading-6">
+              {detail.reflection.nortnspoil_reflection}
+            </p>
+          ) : null}
+        </Surface>
+
+        <Surface className={`p-5 sm:p-7 ${detail.nextQuest ? "border-primary/25 bg-primary-soft/25" : ""}`}>
           {detail.nextQuest ? (
             <>
-              <p className="text-muted text-sm">Next unlocked action</p>
-              <p className="mt-2 text-lg font-semibold">
-                {detail.nextQuest.title}
+              <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
+                New challenge unlocked
               </p>
-              <ButtonLink
-                href={`/quests/${detail.nextQuest.id}`}
-                className="mt-5"
-              >
-                Open Next Quest
-              </ButtonLink>
+              <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+                {detail.nextQuest.title}
+              </h2>
+              <p className="text-muted mt-3 text-sm leading-6">
+                Your evidence from the last Quest opened the next real-world action. You can enter it now or return later from your Adventure Home.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <ButtonLink href={`/quests/${detail.nextQuest.id}`}>
+                  Enter Next Quest →
+                </ButtonLink>
+                <ButtonLink href="/app" variant="secondary">
+                  Return Home
+                </ButtonLink>
+              </div>
             </>
           ) : (
             <>
-              <p className="text-muted leading-7">
-                Review the Quest path to see whether the milestone is complete
-                or the next milestone is ready.
+              <p className="text-success text-xs font-semibold tracking-[0.16em] uppercase">
+                Chapter checkpoint reached
               </p>
-              <ButtonLink href="/quests" className="mt-5">
-                Review Quest Path
-              </ButtonLink>
+              <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+                Check the map for what opened next.
+              </h2>
+              <p className="text-muted mt-3 text-sm leading-6">
+                The current milestone may now be complete, or the next milestone may be ready. PipuPath will only show progress the saved state can prove.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <ButtonLink href="/quests">Review Quest Path</ButtonLink>
+                <ButtonLink href="/journey" variant="secondary">Open Journey Map</ButtonLink>
+              </div>
             </>
           )}
-        </div>
-      </Surface>
-      <ButtonLink href="/app" variant="secondary" className="mt-6">
-        Return to dashboard
-      </ButtonLink>
+        </Surface>
+      </section>
     </main>
   );
 }
