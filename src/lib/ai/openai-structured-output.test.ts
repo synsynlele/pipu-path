@@ -64,7 +64,9 @@ describe("OpenAI structured output client", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(requestOpenAIStructuredOutput(requestInput())).resolves.toEqual({
+    await expect(
+      requestOpenAIStructuredOutput(requestInput()),
+    ).resolves.toEqual({
       result: "ok",
     });
 
@@ -101,7 +103,9 @@ describe("OpenAI structured output client", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(requestOpenAIStructuredOutput(requestInput())).resolves.toEqual({
+    await expect(
+      requestOpenAIStructuredOutput(requestInput()),
+    ).resolves.toEqual({
       result: "compatible",
     });
 
@@ -126,7 +130,9 @@ describe("OpenAI structured output client", () => {
       ),
     );
 
-    await expect(requestOpenAIStructuredOutput(requestInput())).resolves.toEqual({
+    await expect(
+      requestOpenAIStructuredOutput(requestInput()),
+    ).resolves.toEqual({
       result: "direct",
     });
   });

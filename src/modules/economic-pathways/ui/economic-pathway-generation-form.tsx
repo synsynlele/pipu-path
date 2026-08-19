@@ -17,11 +17,7 @@ export function EconomicPathwayGenerationForm() {
 
   return (
     <form action={action} aria-busy={pending}>
-      <Button
-        type="submit"
-        disabled={pending}
-        className="w-full sm:w-auto"
-      >
+      <Button type="submit" disabled={pending} className="w-full sm:w-auto">
         {pending ? "Exploring possible paths…" : "Explore Possible Paths"}
       </Button>
       {pending ? (

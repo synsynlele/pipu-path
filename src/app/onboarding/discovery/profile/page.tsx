@@ -82,11 +82,7 @@ export default async function HumanPotentialProfilePage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2 lg:justify-end">
-          {[
-            "Private",
-            "Provisional",
-            "Evidence-led",
-          ].map((label) => (
+          {["Private", "Provisional", "Evidence-led"].map((label) => (
             <span
               key={label}
               className="border-border bg-panel text-muted rounded-full border px-3 py-1.5 text-xs font-semibold"
@@ -125,7 +121,7 @@ export default async function HumanPotentialProfilePage() {
                   {profile.summary}
                 </p>
               </div>
-              <div className="border-border border-t p-6 lg:border-t-0 lg:border-l sm:p-8">
+              <div className="border-border border-t p-6 sm:p-8 lg:border-t-0 lg:border-l">
                 <p className="text-muted text-xs font-semibold tracking-wide uppercase">
                   Interpretation source
                 </p>
@@ -451,7 +447,9 @@ export default async function HumanPotentialProfilePage() {
                           </dd>
                         </div>
                         <div>
-                          <dt className="font-semibold">Evidence of improvement</dt>
+                          <dt className="font-semibold">
+                            Evidence of improvement
+                          </dt>
                           <dd className="text-muted mt-1 leading-6">
                             {item.evidenceOfImprovement}
                           </dd>
@@ -471,7 +469,8 @@ export default async function HumanPotentialProfilePage() {
                   Ready for action
                 </p>
                 <p className="mt-1 font-semibold">
-                  Turn {pathways.selectedPath.pathName} into a practical mission.
+                  Turn {pathways.selectedPath.pathName} into a practical
+                  mission.
                 </p>
               </div>
               <ButtonLink
