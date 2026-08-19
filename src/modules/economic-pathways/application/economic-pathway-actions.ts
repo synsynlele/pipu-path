@@ -4,17 +4,22 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
-import {
-  asEconomicPathwayClient,
-  getCurrentEconomicPathwayState,
-  recordProductEventForUser,
-} from "../infrastructure/economic-pathway-dal";
+import { getCurrentEconomicPathwayState } from "../infrastructure/economic-pathway-dal";
 import { generateCurrentEconomicPathways } from "./economic-pathway-generation";
 
 export type EconomicPathwayFormState =
   { status: "idle" } | { status: "error"; message: string };
+
+type PathSwitchRpcClient = {
+  rpc: (
+    functionName: "switch_economic_path",
+    args: { recommendation_id_input: string; path_key_input: string },
+  ) => Promise<{
+    data: boolean | null;
+    error: { message: string } | null;
+  }>;
+};
 
 export async function generateEconomicPathwaysAction(
   _previous: EconomicPathwayFormState,
@@ -41,7 +46,7 @@ export async function selectEconomicPathAction(
     return { status: "error", message: "Choose one of your available paths." };
   }
 
-  const { user } = await requireAuthenticatedIdentity();
+  await requireAuthenticatedIdentity();
   const state = await getCurrentEconomicPathwayState();
   if (!state || state.id !== parsed.data.recommendationId) {
     return {
@@ -56,54 +61,29 @@ export async function selectEconomicPathAction(
     redirect("/onboarding/discovery/profile/complete");
   }
 
-  if (state.selectedPathKey) {
-    const browser = await createServerSupabaseClient();
-    const { data: currentMission } = await browser
-      .from("user_missions")
-      .select("id,status")
-      .eq("user_id", user.id)
-      .in("status", ["draft", "active", "paused"])
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (currentMission) {
-      return {
-        status: "error",
-        message:
-          "Finish or replace your current mission before changing the path it is built from.",
-      };
-    }
-  }
+  const browser = await createServerSupabaseClient();
+  const { data, error } = await (browser as unknown as PathSwitchRpcClient).rpc(
+    "switch_economic_path",
+    {
+      recommendation_id_input: parsed.data.recommendationId,
+      path_key_input: parsed.data.pathKey,
+    },
+  );
 
-  const service = asEconomicPathwayClient(createServiceRoleSupabaseClient());
-  const { data, error } = await service
-    .from("economic_pathway_recommendations")
-    .update({
-      selected_path_key: parsed.data.pathKey,
-      selected_at: new Date().toISOString(),
-    })
-    .eq("id", parsed.data.recommendationId)
-    .eq("user_id", user.id)
-    .select("id")
-    .single();
-  if (error || !data) {
+  if (error || data !== true) {
     return {
       status: "error",
-      message: "Your selected path could not be saved.",
+      message:
+        "Your path could not be changed safely. Your current work has been left unchanged.",
     };
   }
 
-  await recordProductEventForUser(
-    user.id,
-    state.selectedPathKey ? "path_changed" : "path_selected",
-    {
-      recommendationId: state.id,
-      pathKey: parsed.data.pathKey,
-      previousPathKey: state.selectedPathKey,
-    },
-  );
+  revalidatePath("/app");
   revalidatePath("/onboarding/discovery/profile");
+  revalidatePath("/onboarding/discovery/profile/complete");
   revalidatePath("/mission");
   revalidatePath("/journey");
+  revalidatePath("/quests");
+  revalidatePath("/proof");
   redirect("/onboarding/discovery/profile/complete");
 }
