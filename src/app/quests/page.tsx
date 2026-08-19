@@ -33,203 +33,256 @@ export default async function QuestsPage() {
         journeyState.active.milestones.map((milestone) => milestone.status),
       )
     : 0;
+  const currentQuest = state?.quests.find(
+    (quest) =>
+      quest.status === "available" ||
+      quest.status === "active" ||
+      quest.status === "evidence_submitted",
+  );
 
   return (
     <main
       id="main-content"
-      className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-16"
+      className="mx-auto max-w-6xl px-4 py-7 sm:px-8 sm:py-12 lg:px-10"
     >
-      <section className="border-gold/20 bg-panel relative overflow-hidden rounded-[2rem] border px-6 py-10 sm:px-10 sm:py-14">
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-6 text-white sm:p-9">
         <div
           aria-hidden="true"
-          className="bg-gold/10 absolute -top-24 -right-20 h-64 w-64 rounded-full blur-3xl"
+          className="absolute -top-28 -right-20 size-72 rounded-full border border-white/10"
         />
-        <p className="text-gold font-mono text-xs tracking-[0.2em] uppercase">
-          HQLS Quest Lab
-        </p>
-        <h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-tight sm:text-6xl">
-          Build proof, not just plans.
-        </h1>
-        <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
-          Take one focused real-world action, record honest evidence, reflect
-          deeply and use what you learn to improve the next action.
-        </p>
+        <div
+          aria-hidden="true"
+          className="absolute right-12 -bottom-36 size-72 rounded-full bg-[#4f7cff]/18 blur-3xl"
+        />
+        <div className="relative max-w-4xl">
+          <p className="text-xs font-semibold tracking-[0.18em] text-[#f3c86b] uppercase">
+            Quest path · Real-world action
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+            {context?.milestoneTitle ?? "Your Journey creates the challenges."}
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
+            {context
+              ? "Clear one challenge at a time. Action creates proof; proof creates learning; learning opens what comes next."
+              : "Activate a Journey first. PipuPath only creates Quests when there is a real milestone to move forward."}
+          </p>
+          {state ? (
+            <div className="mt-6 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-blue-50">
+                Journey {journeyProgress}%
+              </span>
+              <span className="rounded-full border border-[#f3c86b]/25 bg-[#f3c86b]/8 px-3 py-1.5 font-semibold text-[#f3c86b]">
+                {state.totalXp} verified XP
+              </span>
+              <span className="rounded-full border border-white/15 px-3 py-1.5 text-blue-100">
+                Milestone {questProgress}%
+              </span>
+            </div>
+          ) : null}
+        </div>
       </section>
 
       {!journeyState.active || !context || !state ? (
-        <Surface className="mt-8 p-6 sm:p-8">
-          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Journey required
+        <Surface className="mt-6 p-6 sm:p-8">
+          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+            Quest path locked
           </p>
-          <h2 className="mt-3 text-2xl font-semibold">
-            Activate your Builder Journey first.
+          <h2 className="text-navy mt-2 text-2xl font-semibold">
+            Enter an active Journey first.
           </h2>
-          <p className="text-muted mt-3 max-w-2xl leading-7">
-            Quests come from the first available milestone in your active
-            Journey. PipuPath will not invent activity before that pathway is
-            ready.
+          <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+            Quests grow from the current Journey milestone. PipuPath does not invent disconnected activities just to keep you busy.
           </p>
-          <ButtonLink href="/journey" className="mt-6">
-            Open My Journey
+          <ButtonLink href="/journey" className="mt-5">
+            Open Journey Map →
           </ButtonLink>
         </Surface>
+      ) : state.quests.length === 0 ? (
+        <section className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+          <Surface className="border-gold/30 bg-gold/5 p-6 sm:p-8">
+            <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+              New Quest chain
+            </p>
+            <h2 className="text-navy mt-2 text-3xl font-semibold tracking-tight">
+              Shape three challenges for this chapter.
+            </h2>
+            <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+              Quest 1 creates a useful result. Quest 2 tests and improves it. Quest 3 demonstrates stronger capability and clears the milestone.
+            </p>
+            <div className="mt-5">
+              <QuestGenerationForm attemptsRemaining={attemptsRemaining} />
+            </div>
+          </Surface>
+          <Surface className="p-5 sm:p-6">
+            <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+              Chapter outcome
+            </p>
+            <p className="text-navy mt-2 text-sm leading-6">
+              {context.milestoneExpectedOutcome}
+            </p>
+            <p className="text-muted mt-4 text-xs font-semibold tracking-wide uppercase">
+              Completion signal
+            </p>
+            <p className="text-muted mt-2 text-sm leading-6">
+              {context.milestoneCompletionSignal}
+            </p>
+          </Surface>
+        </section>
       ) : (
         <>
-          <section
-            aria-label="Builder progress"
-            className="mt-8 grid gap-4 sm:grid-cols-3"
-          >
-            {[
-              [
-                "Journey progress",
-                `${journeyProgress}%`,
-                "Completed milestones only",
-              ],
-              [
-                "Current milestone",
-                `${questProgress}%`,
-                "Completed Quests only",
-              ],
-              ["Verified XP", `${state.totalXp}`, "Awarded once per Quest"],
-            ].map(([label, value, detail]) => (
-              <Surface key={label} className="p-5">
-                <p className="text-muted text-xs tracking-wide uppercase">
-                  {label}
-                </p>
-                <p className="mt-2 text-3xl font-semibold">{value}</p>
-                <p className="text-muted mt-2 text-xs">{detail}</p>
-              </Surface>
-            ))}
-          </section>
-
-          <section className="mt-8 grid gap-8 lg:grid-cols-[1.3fr_0.7fr]">
-            <Surface className="p-6 sm:p-8">
-              <div className="flex flex-wrap items-start justify-between gap-4">
+          <section className="mt-6 grid gap-5 lg:grid-cols-[1.3fr_0.7fr]">
+            <Surface className="p-5 sm:p-7">
+              <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                    Current milestone
+                  <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+                    Three-Quest chain
                   </p>
-                  <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-                    {context.milestoneTitle}
+                  <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+                    The next challenge reveals itself through action.
                   </h2>
                 </div>
-                <span className="border-border bg-background rounded-full border px-3 py-1.5 text-xs font-semibold">
-                  {context.capabilitiesToDevelop.join(" · ")}
+                <span className="border-primary/15 bg-primary-soft text-primary rounded-full border px-3 py-1.5 text-xs font-semibold">
+                  {questProgress}% cleared
                 </span>
               </div>
-              <p className="text-muted mt-4 leading-7">
-                {context.milestonePurpose}
-              </p>
-              <div className="mt-6">
-                <div className="flex justify-between gap-4 text-xs">
-                  <span className="text-muted">Quest-pack progress</span>
-                  <span className="font-semibold">{questProgress}%</span>
-                </div>
-                <div className="bg-background mt-2 h-2 overflow-hidden rounded-full">
-                  <div
-                    className="bg-gold h-full rounded-full transition-[width]"
-                    style={{ width: `${questProgress}%` }}
-                  />
-                </div>
+
+              <ol className="mt-7 grid grid-cols-3 gap-2" aria-label="Quest chain">
+                {state.quests.map((quest, index) => {
+                  const completed = quest.status === "completed";
+                  const current = quest.id === currentQuest?.id;
+                  return (
+                    <li key={quest.id} className="relative min-w-0">
+                      {index > 0 ? (
+                        <span
+                          aria-hidden="true"
+                          className={`absolute top-5 -left-1/2 h-px w-full ${completed || current ? "bg-primary/45" : "bg-border"}`}
+                        />
+                      ) : null}
+                      <div className="relative z-10">
+                        <span
+                          className={`grid size-10 place-items-center rounded-full border text-xs font-bold ${
+                            completed
+                              ? "border-success/30 bg-success/10 text-success"
+                              : current
+                                ? "border-primary bg-primary text-white shadow-[0_0_0_5px_rgba(79,124,255,0.09)]"
+                                : "border-border bg-background text-muted"
+                          }`}
+                          aria-label={`Quest ${quest.sequence_order}: ${questStatusLabel(quest.status)}`}
+                        >
+                          {completed ? "✓" : current ? "●" : "?"}
+                        </span>
+                        <p
+                          className={`mt-3 text-[0.65rem] font-semibold tracking-wide uppercase ${current ? "text-primary" : completed ? "text-success" : "text-muted"}`}
+                        >
+                          Quest {quest.sequence_order}
+                        </p>
+                        <h3 className="text-navy mt-1 line-clamp-2 text-sm font-semibold leading-5">
+                          {quest.title}
+                        </h3>
+                        <p className="text-muted mt-1 text-[0.68rem]">
+                          {completed
+                            ? "Cleared"
+                            : current
+                              ? questStatusLabel(quest.status)
+                              : "Hidden until ready"}
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+
+              <div className="bg-soft-blue mt-6 h-2 overflow-hidden rounded-full">
+                <div
+                  className="bg-primary h-full rounded-full transition-[width] motion-reduce:transition-none"
+                  style={{ width: `${questProgress}%` }}
+                />
               </div>
 
-              {state.quests.length === 0 ? (
-                <div className="border-gold/20 bg-gold/5 mt-8 rounded-2xl border p-5 sm:p-6">
-                  <h3 className="text-xl font-semibold">
-                    Shape three practical Quests
-                  </h3>
-                  <p className="text-muted mt-3 leading-7">
-                    Quest 1 creates a small useful result. Quest 2 tests and
-                    improves it. Quest 3 demonstrates stronger capability and
-                    completes this milestone.
+              {currentQuest ? (
+                <div className="border-primary/20 bg-primary-soft/30 mt-6 rounded-2xl border p-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+                        Your challenge now
+                      </p>
+                      <h3 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+                        {currentQuest.title}
+                      </h3>
+                    </div>
+                    <span className="border-gold/25 bg-gold/8 text-gold rounded-full border px-3 py-1.5 text-xs font-semibold">
+                      +{currentQuest.xp_value} XP
+                    </span>
+                  </div>
+                  <p className="text-muted mt-3 text-sm leading-6">
+                    {currentQuest.real_world_outcome}
                   </p>
-                  <div className="mt-6">
-                    <QuestGenerationForm
-                      attemptsRemaining={attemptsRemaining}
-                    />
+                  <div className="mt-5 flex flex-wrap items-center gap-3">
+                    <ButtonLink href={`/quests/${currentQuest.id}`}>
+                      {currentQuest.status === "evidence_submitted"
+                        ? "Reflect and Complete →"
+                        : currentQuest.status === "active"
+                          ? "Continue Challenge →"
+                          : "Enter Challenge →"}
+                    </ButtonLink>
+                    <span className="text-muted text-xs">
+                      ≈ {currentQuest.estimated_minutes} min
+                    </span>
                   </div>
                 </div>
               ) : (
-                <ol className="mt-8 grid gap-4">
-                  {state.quests.map((quest) => (
-                    <li
-                      key={quest.id}
-                      className="border-border bg-background/40 rounded-2xl border p-5"
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                          Quest {quest.sequence_order}
-                        </p>
-                        <span className="border-border rounded-full border px-2.5 py-1 text-xs">
-                          {questStatusLabel(quest.status)}
-                        </span>
-                      </div>
-                      <h3 className="mt-3 text-xl font-semibold">
-                        {quest.title}
-                      </h3>
-                      <p className="text-muted mt-2 leading-7">
-                        {quest.real_world_outcome}
-                      </p>
-                      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
-                        <span className="text-muted">
-                          About {quest.estimated_minutes} minutes
-                        </span>
-                        <span className="text-gold">+{quest.xp_value} XP</span>
-                      </div>
-                      {quest.status === "locked" ? (
-                        <p className="text-muted mt-4 text-sm">
-                          Complete the previous Quest to unlock this action.
-                        </p>
-                      ) : (
-                        <ButtonLink
-                          href={`/quests/${quest.id}`}
-                          variant={
-                            quest.status === "completed"
-                              ? "secondary"
-                              : "primary"
-                          }
-                          className="mt-5"
-                        >
-                          {quest.status === "completed"
-                            ? "Review Quest"
-                            : quest.status === "evidence_submitted"
-                              ? "Complete Reflection"
-                              : quest.status === "active"
-                                ? "Continue Quest"
-                                : "Open Quest"}
-                        </ButtonLink>
-                      )}
-                    </li>
-                  ))}
-                </ol>
+                <div className="border-success/20 bg-success/5 mt-6 rounded-2xl border p-5">
+                  <p className="text-success text-xs font-semibold tracking-[0.14em] uppercase">
+                    Quest chain cleared
+                  </p>
+                  <h3 className="text-navy mt-2 text-xl font-semibold">
+                    Check the Journey Map for the next chapter.
+                  </h3>
+                  <ButtonLink href="/journey" className="mt-4">
+                    Open Journey Map →
+                  </ButtonLink>
+                </div>
               )}
             </Surface>
-            <aside className="space-y-6">
-              <Surface className="p-6">
+
+            <aside className="space-y-5">
+              <Surface className="p-5 sm:p-6">
                 <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                  Milestone outcome
+                  What this chapter develops
                 </p>
-                <p className="text-muted mt-3 leading-7">
-                  {context.milestoneExpectedOutcome}
-                </p>
-                <h3 className="mt-5 text-sm font-semibold">
-                  Honest completion signal
-                </h3>
-                <p className="text-muted mt-2 text-sm leading-6">
-                  {context.milestoneCompletionSignal}
-                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {context.capabilitiesToDevelop.map((capability) => (
+                    <span
+                      key={capability}
+                      className="border-border bg-background rounded-full border px-3 py-1.5 text-xs font-semibold"
+                    >
+                      {capability}
+                    </span>
+                  ))}
+                </div>
+                <details className="border-border mt-5 border-t pt-4">
+                  <summary className="text-navy cursor-pointer text-sm font-semibold">
+                    Chapter outcome and completion signal
+                  </summary>
+                  <p className="text-muted mt-3 text-sm leading-6">
+                    {context.milestoneExpectedOutcome}
+                  </p>
+                  <p className="text-muted mt-3 text-xs font-semibold uppercase">
+                    Completion signal
+                  </p>
+                  <p className="text-muted mt-2 text-sm leading-6">
+                    {context.milestoneCompletionSignal}
+                  </p>
+                </details>
               </Surface>
-              <Surface className="p-6">
-                <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                  HQLS loop
+
+              <Surface className="p-5 sm:p-6">
+                <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+                  The PipuPath rule
                 </p>
-                <ol className="text-muted mt-4 space-y-3 text-sm">
-                  <li>1. Plan one useful action</li>
-                  <li>2. Act in the real world</li>
-                  <li>3. Preserve honest evidence</li>
-                  <li>4. Reflect with Nortnspoil</li>
-                  <li>5. Adapt the next action</li>
-                </ol>
+                <p className="text-muted mt-2 text-sm leading-6">
+                  Do something real → bring back proof → reflect → let the saved evidence decide what opens next.
+                </p>
               </Surface>
             </aside>
           </section>
