@@ -30,6 +30,7 @@ jobs:
             docs/product/human-potential-adventure-direction.md \
             docs/product/growth-pack-direction.md \
             docs/stages/stage-22-human-potential-adventure.md \
+            docs/implementation/route-map.md \
             docs/implementation/status.md \
             src/app/app/layout.tsx \
             src/app/app/page.tsx \
