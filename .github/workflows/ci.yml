@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   validate:
+    if: github.event_name != 'pull_request' || github.head_ref != 'test/stage-22-e2e-proof'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -62,7 +63,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: npx playwright test tests/e2e/stage22-release-proof.spec.ts
         env:
           E2E_BASE_URL: https://pipu-path-byppcesbv-copyartint-2860s-projects.vercel.app

@@ -39,7 +39,9 @@ test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
   await expect(
     page.getByRole("heading", { name: "This proof is not public right now." }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Continue in PipuPath" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Return to PipuPath" }),
+  ).toBeVisible();
 
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/login/);
