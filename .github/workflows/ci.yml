@@ -24,6 +24,20 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Temporary proof-finalization formatter diagnostic
+        run: |
+          npx prettier --write \
+            'src/app/quests/[questId]/proof/page.tsx' \
+            'src/modules/quest/ui/quest-evidence-form.tsx' \
+            'tests/e2e/quest.spec.ts' \
+            'tests/integration/stage-22-proof-flow.test.ts'
+          echo '--- BEGIN FORMATTED PATCH ---'
+          git diff -- \
+            'src/app/quests/[questId]/proof/page.tsx' \
+            'src/modules/quest/ui/quest-evidence-form.tsx' \
+            'tests/e2e/quest.spec.ts' \
+            'tests/integration/stage-22-proof-flow.test.ts'
+          echo '--- END FORMATTED PATCH ---'
       - run: npm run validate
 
   staging-e2e:
