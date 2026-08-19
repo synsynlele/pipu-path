@@ -1,6 +1,6 @@
 # Route map
 
-Stage 22 classifies every application route, including the Human Potential Adventure experience layer, private Growth Library and final private Prove flow. Server authorization is repeated inside each private data boundary; middleware is navigation defence, not the sole authorization control.
+Stage 22 classifies every application route, including the Human Potential Adventure experience layer and private Growth Library. Server authorization is repeated inside each private data boundary; middleware is navigation defence, not the sole authorization control.
 
 | Route                                       | Classification                                                    | Purpose / required next action                                          |
 | ------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -29,10 +29,8 @@ Stage 22 classifies every application route, including the Human Potential Adven
 | `/journey`, `/journey/complete`             | Active Mission owner                                              | Adventure Map over Builder Journey / 30-Day Pathway lifecycle           |
 | `/build`                                    | Auth-only contextual router                                       | Active Major Build first, then Quest, then Project creation             |
 | `/quests`                                   | Active Journey owner                                              | Current unfolding HQLS Quest chain                                      |
-| `/quests/[questId]`                         | Quest owner                                                       | Understand → Act → Reflect/Reveal detail around saved Quest state        |
-| `/quests/[questId]/proof`                   | Active Quest owner                                                | Dedicated private Prove step; submit Proof of Action and unlock Reflection |
+| `/quests/[questId]`                         | Quest owner                                                       | Understand → Act → Prove → Reflect challenge flow                       |
 | `/quests/[questId]/complete`                | Quest owner with evidence                                         | Truthful completion reveal, XP and next unlocked action                 |
-| `/proof`                                    | Auth-only compatibility router                                    | Resolve legacy proof entry to current owned Quest proof/detail          |
 | `/projects`                                 | Auth-only owner                                                   | Major Build list, eligibility and current work                          |
 | `/projects/new`                             | Eligible completed-Quest owner                                    | Create one private Project                                              |
 | `/projects/[projectId]`                     | Project owner                                                     | Execute evidence-backed Major Build milestones                          |
@@ -63,4 +61,10 @@ Stage 22 classifies every application route, including the Human Potential Adven
 | `/api/discovery/save`                       | Auth-only API                                                     | Controlled Discovery save boundary                                      |
 | `/api/product-events/feature-view`          | Auth-only API                                                     | Privacy-safe allow-listed feature telemetry                             |
 
-Unknown paths use the global not-found experience. Quest routes additionally provide a scoped recovery experience for stale owned Quest links. Major route groups provide loading and safe retry states. Private routes are excluded from indexing.
+## Final Stage 22 private proof routes
+
+- `/proof` is an auth-only compatibility router. It resolves a legacy proof entry to the Builder's current owned Quest proof/detail state without rendering private evidence itself.
+- `/quests/[questId]/proof` is owner-only and available for an active Quest. It provides the dedicated private Prove step, submits Proof of Action through the released Stage 7 evidence boundary and unlocks Reflection on success.
+- stale owned Quest/proof links use scoped recovery and current saved Quest state instead of an unexplained unavailable page.
+
+Unknown paths use the global not-found experience. Major route groups provide loading and safe retry states. Private routes are excluded from indexing.
