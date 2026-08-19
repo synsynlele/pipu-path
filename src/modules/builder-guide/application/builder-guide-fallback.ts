@@ -3,6 +3,7 @@ import type {
   BuilderGuideDestination,
   BuilderGuideIntent,
   BuilderGuideOutput,
+  GrowthPackItem,
 } from "../domain/builder-guide-contract";
 
 function destinationFor(context: BuilderGuideContext): BuilderGuideDestination {
@@ -73,6 +74,62 @@ function sortedCapabilities(context: BuilderGuideContext) {
   });
 }
 
+function growthFocus(context: BuilderGuideContext) {
+  const capabilities = sortedCapabilities(context);
+  const developing = [...capabilities].sort((a, b) => {
+    if (a.totalStrength !== b.totalStrength)
+      return a.totalStrength - b.totalStrength;
+    return a.evidenceCount - b.evidenceCount;
+  })[0];
+
+  return (
+    developing?.label ??
+    context.current.milestone?.title ??
+    context.selectedPath?.name ??
+    context.current.quest?.title ??
+    "your current Builder work"
+  );
+}
+
+function fallbackGrowthPack(context: BuilderGuideContext): GrowthPackItem[] {
+  const focus = growthFocus(context);
+  const minorNote = context.isMinor
+    ? "Verify that the activity and any provider rules are appropriate for your age with a responsible adult or institution before taking part."
+    : "Verify the current provider details, access requirements and any cost before enrolling or paying.";
+
+  return [
+    {
+      kind: "skill",
+      title: `Practise ${focus}`,
+      source: null,
+      whyNow: `Your current PipuPath state points to ${focus} as a useful area to strengthen through action rather than more planning.`,
+      howToUse:
+        "Choose one small exercise you can complete this week, apply the skill to a real task, then keep the result as evidence and reflect on what improved.",
+      verificationNote:
+        "Treat the skill as demonstrated only when your completed work provides evidence; practising it does not automatically create a capability claim.",
+    },
+    {
+      kind: "course",
+      title: `Short introductory course on ${focus}`,
+      source: null,
+      whyNow: `A focused course can give you vocabulary, examples and structured practice that support the next real-world test of ${focus}.`,
+      howToUse:
+        "Prefer a short reputable course with exercises or a project. Learn one useful idea, apply it immediately to your current Quest or Build, and avoid collecting certificates without practice.",
+      verificationNote: minorNote,
+    },
+    {
+      kind: "book",
+      title: `A practical book on ${focus}`,
+      source: null,
+      whyNow: `Reading can help if it gives you one concrete idea to test in the current adventure instead of becoming a substitute for action.`,
+      howToUse:
+        "Choose one credible practical book, read only the section relevant to the current challenge, write down one idea, then apply that idea before continuing to another chapter.",
+      verificationNote:
+        "Check the exact title, author and edition before obtaining a book; PipuPath's fallback does not invent a specific title when it cannot verify one confidently.",
+    },
+  ];
+}
+
 export function buildEvidenceBasedBuilderGuide(
   context: BuilderGuideContext,
   intent: BuilderGuideIntent,
@@ -95,6 +152,34 @@ export function buildEvidenceBasedBuilderGuide(
         },
       ]
     : [];
+
+  if (intent === "growth_support") {
+    const focus = growthFocus(context);
+    return {
+      schemaVersion: "builder-guide-v1",
+      intent,
+      title: `Build a Growth Pack around ${focus}`,
+      summary:
+        "Use learning as fuel for the current adventure, not as an escape from it. Choose one resource or practice, take only what helps the present challenge, then turn the learning into observable action.",
+      evidenceObservations,
+      focus: {
+        label: focus,
+        rationale:
+          "The strongest learning recommendation is the one that improves the next real-world test already connected to your PipuPath evidence and current work.",
+      },
+      nextAction: {
+        title: destinationLabel(destination),
+        instruction: nextInstruction(context, destination),
+        evidenceToCreate: evidenceToCreate(destination),
+        destination,
+      },
+      growthPack: fallbackGrowthPack(context),
+      challenge:
+        "Do not try to finish every resource. Use one useful idea, practise it, and let the result decide what you need to learn next.",
+      uncertainty:
+        "The evidence fallback can identify a useful learning focus but cannot verify a specific current book edition, course listing, provider availability or price, so it recommends what to look for rather than inventing those details.",
+    };
+  }
 
   if (intent === "improvement") {
     return {
@@ -121,6 +206,7 @@ export function buildEvidenceBasedBuilderGuide(
         evidenceToCreate: evidenceToCreate(destination),
         destination,
       },
+      growthPack: [],
       challenge:
         "Do not confuse one successful result with a permanent identity. Look for repeatable evidence across different contexts.",
       uncertainty:
@@ -160,6 +246,7 @@ export function buildEvidenceBasedBuilderGuide(
         evidenceToCreate: evidenceToCreate(destination),
         destination,
       },
+      growthPack: [],
       challenge:
         "Choose an action that could genuinely confirm or challenge the capability instead of designing a task that can only make you look successful.",
       uncertainty:
@@ -191,6 +278,7 @@ export function buildEvidenceBasedBuilderGuide(
         evidenceToCreate: evidenceToCreate(destination),
         destination,
       },
+      growthPack: [],
       challenge:
         "Before adding a new goal this week, ask whether the current action has produced evidence you can point to.",
       uncertainty:
@@ -221,6 +309,7 @@ export function buildEvidenceBasedBuilderGuide(
       evidenceToCreate: evidenceToCreate(destination),
       destination,
     },
+    growthPack: [],
     challenge:
       "Finish the smallest meaningful proof before expanding the scope or switching to a new direction.",
     uncertainty:
