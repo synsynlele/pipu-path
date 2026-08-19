@@ -14,20 +14,26 @@ import {
 } from "../infrastructure/builder-guide-dal";
 import { generateBuilderGuide } from "./builder-guide-generation";
 
+function guideReturnPath(value: FormDataEntryValue | null) {
+  return value === "/growth" ? "/growth" : "/guide";
+}
+
 export async function generateBuilderGuideAction(formData: FormData) {
+  const returnTo = guideReturnPath(formData.get("returnTo"));
   const parsed = builderGuideIntentSchema.safeParse(formData.get("intent"));
-  if (!parsed.success) redirect("/guide?error=invalid_question");
+  if (!parsed.success) redirect(`${returnTo}?error=invalid_question`);
 
   const result = await generateBuilderGuide(parsed.data);
   if (!result.ok) {
     const params = new URLSearchParams({
       error: result.code.toLowerCase(),
     });
-    redirect(`/guide?${params.toString()}`);
+    redirect(`${returnTo}?${params.toString()}`);
   }
 
   revalidatePath("/guide");
-  redirect(`/guide?run=${encodeURIComponent(result.runId)}`);
+  revalidatePath("/growth");
+  redirect(`${returnTo}?run=${encodeURIComponent(result.runId)}`);
 }
 
 export async function recordBuilderGuideFeedbackAction(formData: FormData) {

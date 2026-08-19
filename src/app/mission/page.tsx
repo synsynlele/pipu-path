@@ -25,30 +25,56 @@ type DisplayMission = NonNullable<
   Awaited<ReturnType<typeof getCurrentMissionState>>["draft"]
 >;
 
-function MissionDetails({ mission }: { mission: DisplayMission }) {
-  const fields = [
-    ["Mission Statement", mission.mission_statement],
-    ["Who This Helps", mission.who_this_helps],
-    ["First Meaningful Outcome", mission.first_meaningful_outcome],
-    ["Suggested Time Horizon", horizonLabels[mission.time_horizon]],
-    ["Success Signal", mission.success_signal],
-    ["Current Caution", mission.current_caution],
-    ["Why This Fits You", mission.why_this_fits],
-  ];
+function CampaignBrief({ mission }: { mission: DisplayMission }) {
   return (
-    <div className="mt-6 grid gap-4 sm:grid-cols-2">
-      {fields.map(([label, value], index) => (
-        <div
-          key={label}
-          className={index === fields.length - 1 ? "sm:col-span-2" : ""}
-        >
-          <h3 className="text-gold text-xs font-semibold tracking-wide uppercase">
-            {label}
-          </h3>
-          <p className="text-muted mt-2 leading-7">{value}</p>
+    <>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="border-border bg-background rounded-2xl border p-4">
+          <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+            Who it helps
+          </p>
+          <p className="text-navy mt-2 text-sm leading-6">
+            {mission.who_this_helps}
+          </p>
         </div>
-      ))}
-    </div>
+        <div className="border-border bg-background rounded-2xl border p-4">
+          <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+            First win
+          </p>
+          <p className="text-navy mt-2 text-sm leading-6">
+            {mission.first_meaningful_outcome}
+          </p>
+        </div>
+        <div className="border-border bg-background rounded-2xl border p-4">
+          <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+            Time horizon
+          </p>
+          <p className="text-navy mt-2 text-sm font-semibold">
+            {horizonLabels[mission.time_horizon]}
+          </p>
+        </div>
+      </div>
+
+      <details className="border-border mt-4 rounded-2xl border p-4">
+        <summary className="text-navy cursor-pointer text-sm font-semibold">
+          Open full Campaign brief
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {[
+            ["Success signal", mission.success_signal],
+            ["Current caution", mission.current_caution],
+            ["Why this fits you", mission.why_this_fits],
+          ].map(([label, value], index) => (
+            <div key={label} className={index === 2 ? "sm:col-span-2" : ""}>
+              <h3 className="text-gold text-xs font-semibold tracking-wide uppercase">
+                {label}
+              </h3>
+              <p className="text-muted mt-2 text-sm leading-6">{value}</p>
+            </div>
+          ))}
+        </div>
+      </details>
+    </>
   );
 }
 
@@ -56,116 +82,198 @@ export default async function MissionPage() {
   const context = await getMissionProfileContext();
   const state = await getCurrentMissionState(context?.profileId);
   const attemptsRemaining = Math.max(0, 3 - state.attempts);
+  const mission = state.active ?? state.draft;
 
   return (
     <main
       id="main-content"
-      className="mx-auto max-w-4xl px-5 py-12 sm:px-8 sm:py-16"
+      className="mx-auto max-w-6xl px-4 py-7 sm:px-8 sm:py-12 lg:px-10"
     >
-      <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
-        Your practical Builder Mission
-      </p>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
-        Test a path by creating real value.
-      </h1>
-      <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
-        A mission turns one Possible Path into a small experiment. The aim is to
-        learn what you can do, whether somebody finds it useful and what
-        evidence should shape your next step. It is not a permanent career
-        decision or an income promise.
-      </p>
-
-      {context?.selectedPath ? (
-        <Surface className="border-gold/30 bg-gold/5 mt-8 p-5 sm:p-6">
-          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Selected Possible Path
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-6 text-white sm:p-9">
+        <div
+          aria-hidden="true"
+          className="absolute -top-28 -right-20 size-72 rounded-full border border-white/10"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-12 -bottom-36 size-72 rounded-full bg-[#f3c86b]/12 blur-3xl"
+        />
+        <div className="relative max-w-4xl">
+          <p className="text-xs font-semibold tracking-[0.18em] text-[#f3c86b] uppercase">
+            Mission · Your Campaign
           </p>
-          <h2 className="mt-2 text-xl font-semibold">
-            {context.selectedPath.pathName}
-          </h2>
-          <p className="text-muted mt-2 leading-7">
-            {context.selectedPath.possibleInterpretation}
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+            {mission?.title ?? "Choose a direction worth testing in real life."}
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
+            {mission?.mission_statement ??
+              "A Campaign is not a permanent career decision. It is one meaningful direction you can test by creating value, learning and collecting evidence."}
           </p>
-        </Surface>
-      ) : null}
+          {context?.selectedPath ? (
+            <div className="mt-6 inline-flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-xs text-blue-50">
+              <span className="text-[#f3c86b]">Path</span>
+              <span className="truncate font-semibold">
+                {context.selectedPath.pathName}
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </section>
 
       {!context ? (
-        <Surface className="mt-10 p-6 sm:p-8">
-          <h2 className="text-xl font-semibold">Your profile comes first</h2>
-          <p className="text-muted mt-3 leading-7">
-            Complete your Human Potential Profile before PipuPath shapes a
-            mission from it.
+        <Surface className="mt-6 p-6 sm:p-8">
+          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+            Campaign locked
           </p>
-          <ButtonLink href="/onboarding/discovery/profile" className="mt-6">
-            Complete my profile
+          <h2 className="text-navy mt-2 text-2xl font-semibold">
+            Discover your starting point first.
+          </h2>
+          <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+            Your Human Potential Profile gives the Mission evidence to work from
+            instead of inventing a direction for you.
+          </p>
+          <ButtonLink href="/onboarding/discovery/profile" className="mt-5">
+            Open My Potential Profile →
           </ButtonLink>
         </Surface>
       ) : state.active ? (
-        <Surface className="mt-10 p-6 sm:p-8">
-          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Active Mission
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            {state.active.title}
-          </h2>
-          <MissionDetails mission={state.active} />
-          <ButtonLink href="/mission/complete" className="mt-8">
-            Build My 30-Day Pathway
-          </ButtonLink>
-        </Surface>
-      ) : state.draft ? (
-        <Surface className="mt-10 p-6 sm:p-8">
-          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Mission Review
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-            {state.draft.title}
-          </h2>
-          <MissionDetails mission={state.draft} />
-          <div className="mt-8 flex flex-wrap gap-3">
-            <form action={activateMissionAction}>
-              <input type="hidden" name="missionId" value={state.draft.id} />
-              <Button type="submit">Accept Mission</Button>
-            </form>
-            <MissionGenerationForm
-              kind="regenerate"
-              attemptsRemaining={attemptsRemaining}
-            />
+        <section className="mt-6 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+          <Surface className="p-5 sm:p-7">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-success text-xs font-semibold tracking-[0.14em] uppercase">
+                  Campaign active
+                </p>
+                <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+                  This is the direction your next actions serve.
+                </h2>
+              </div>
+              <span className="border-success/20 bg-success/10 text-success rounded-full border px-3 py-1.5 text-xs font-semibold">
+                Active
+              </span>
+            </div>
+            <CampaignBrief mission={state.active} />
+            <ButtonLink href="/journey" className="mt-6">
+              Enter Journey Map →
+            </ButtonLink>
+          </Surface>
+
+          <div className="space-y-5">
+            <Surface className="border-gold/25 bg-gold/5 p-5 sm:p-6">
+              <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+                Campaign rule
+              </p>
+              <p className="text-muted mt-2 text-sm leading-6">
+                Do not prove that this is your forever path. Prove what you can
+                learn, build and contribute next.
+              </p>
+            </Surface>
+            {context.selectedPath ? (
+              <Surface className="p-5 sm:p-6">
+                <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+                  Why this path is being tested
+                </p>
+                <p className="text-muted mt-2 text-sm leading-6">
+                  {context.selectedPath.possibleInterpretation}
+                </p>
+              </Surface>
+            ) : null}
           </div>
-          <MissionRefinementForm
-            missionId={state.draft.id}
-            attemptsRemaining={attemptsRemaining}
-          />
-        </Surface>
+        </section>
+      ) : state.draft ? (
+        <section className="mt-6 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+          <Surface className="border-primary/20 p-5 sm:p-7">
+            <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+              Campaign proposal
+            </p>
+            <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+              Does this feel worth testing?
+            </h2>
+            <CampaignBrief mission={state.draft} />
+            <div className="mt-6 flex flex-wrap gap-3">
+              <form action={activateMissionAction}>
+                <input type="hidden" name="missionId" value={state.draft.id} />
+                <Button type="submit">Start This Campaign →</Button>
+              </form>
+              <MissionGenerationForm
+                kind="regenerate"
+                attemptsRemaining={attemptsRemaining}
+              />
+            </div>
+          </Surface>
+
+          <aside className="space-y-5">
+            <Surface className="p-5 sm:p-6">
+              <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+                You still own the direction
+              </p>
+              <p className="text-muted mt-2 text-sm leading-6">
+                PipuPath can shape the Campaign, but you choose whether it is a
+                useful experiment.
+              </p>
+            </Surface>
+            <details className="border-border bg-panel rounded-2xl border p-5">
+              <summary className="text-navy cursor-pointer text-sm font-semibold">
+                Adjust this Campaign
+              </summary>
+              <div className="mt-4">
+                <MissionRefinementForm
+                  missionId={state.draft.id}
+                  attemptsRemaining={attemptsRemaining}
+                />
+              </div>
+            </details>
+          </aside>
+        </section>
       ) : !context.selectedPath ? (
-        <Surface className="mt-10 p-6 sm:p-8">
-          <h2 className="text-xl font-semibold">Choose a path to test first</h2>
-          <p className="text-muted mt-3 max-w-2xl leading-7">
-            Your profile can now show several realistic Possible Paths. Choose
-            one before PipuPath creates a mission so the next steps remain
-            connected to a direction you deliberately selected.
+        <Surface className="mt-6 p-6 sm:p-8">
+          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+            Choose your direction
           </p>
-          <ButtonLink href="/onboarding/discovery/profile" className="mt-6">
-            Explore Possible Paths
+          <h2 className="text-navy mt-2 text-2xl font-semibold">
+            Pick one Possible Path to test.
+          </h2>
+          <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+            You are not choosing your whole future. You are choosing which
+            possibility deserves the next real experiment.
+          </p>
+          <ButtonLink href="/onboarding/discovery/profile" className="mt-5">
+            Explore Possible Paths →
           </ButtonLink>
         </Surface>
       ) : (
-        <Surface className="mt-10 p-6 sm:p-8">
-          <h2 className="text-xl font-semibold">
-            Turn {context.selectedPath.pathName} into one practical test
-          </h2>
-          <p className="text-muted mt-3 max-w-2xl leading-7">
-            PipuPath will use your profile evidence and selected path to create
-            one small mission that develops capability, creates value and gives
-            you evidence before you commit more time or resources.
-          </p>
-          <div className="mt-7">
-            <MissionGenerationForm
-              kind="initial"
-              attemptsRemaining={attemptsRemaining}
-            />
-          </div>
-        </Surface>
+        <section className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+          <Surface className="border-gold/30 bg-gold/5 p-6 sm:p-8">
+            <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+              Campaign generation
+            </p>
+            <h2 className="text-navy mt-2 text-3xl font-semibold tracking-tight">
+              Turn {context.selectedPath.pathName} into one practical test.
+            </h2>
+            <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+              The Campaign will aim for a reachable useful outcome that develops
+              capability and gives you evidence before you commit more time or
+              resources.
+            </p>
+            <div className="mt-5">
+              <MissionGenerationForm
+                kind="initial"
+                attemptsRemaining={attemptsRemaining}
+              />
+            </div>
+          </Surface>
+          <Surface className="p-5 sm:p-6">
+            <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+              Selected path
+            </p>
+            <h3 className="text-navy mt-2 text-lg font-semibold">
+              {context.selectedPath.pathName}
+            </h3>
+            <p className="text-muted mt-2 text-sm leading-6">
+              {context.selectedPath.possibleInterpretation}
+            </p>
+          </Surface>
+        </section>
       )}
     </main>
   );

@@ -1,16 +1,7 @@
-import type { Metadata } from "next";
 import { AppShell } from "@/components/shells/app-shell";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 
-export const metadata: Metadata = {
-  title: "Home",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
-export default async function ApplicationLayout({
+export default async function MissionLayout({
   children,
 }: {
   children: React.ReactNode;

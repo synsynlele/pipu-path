@@ -26,7 +26,7 @@ export const dynamic = "force-dynamic";
 const tierLabels: Record<OpportunityMatchTier, string> = {
   strong_match: "Strong match",
   possible_match: "Possible match",
-  eligibility_check: "Eligibility check",
+  eligibility_check: "Check eligibility",
 };
 
 const errorMessages: Record<string, string> = {
@@ -79,7 +79,7 @@ function OutcomeForm({ item }: { item: OpportunityCatalogItem }) {
         </select>
       </label>
       <Button type="submit" variant="ghost">
-        Save self-reported outcome
+        Save outcome
       </Button>
     </form>
   );
@@ -101,157 +101,178 @@ function MatchCard({
   const applicationStatus = marketplaceItem?.applicationStatus ?? null;
 
   return (
-    <Surface className="flex h-full flex-col p-6 sm:p-7">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
-            {readable(item.category)}
-          </p>
-          <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-            {item.title}
-          </h2>
-          <p className="text-muted mt-1 text-sm">{item.providerName}</p>
-          {native ? (
-            <p className="mt-2 text-xs font-semibold text-emerald-700">
-              Approved PipuPath provider · private application packet supported
+    <Surface className="flex h-full flex-col overflow-hidden p-0">
+      <div className="p-5 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+              {readable(item.category)} · Deployment door
             </p>
-          ) : null}
+            <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+              {item.title}
+            </h2>
+            <p className="text-muted mt-1 text-sm">{item.providerName}</p>
+          </div>
+          <span className="border-primary/20 bg-primary-soft text-primary rounded-full border px-3 py-1.5 text-xs font-semibold">
+            {tierLabels[match.tier]}
+          </span>
         </div>
-        <span className="border-primary/20 bg-primary-soft text-primary rounded-full border px-3 py-1.5 text-xs font-semibold">
-          {tierLabels[match.tier]}
-        </span>
-      </div>
 
-      <p className="text-muted mt-5 leading-7">{item.summary}</p>
+        <p className="text-muted mt-4 line-clamp-3 text-sm leading-6">
+          {item.summary}
+        </p>
 
-      <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
-        <div className="border-border rounded-2xl border p-4">
-          <dt className="text-muted text-xs font-semibold uppercase">
-            Eligibility
-          </dt>
-          <dd className="text-navy mt-2 leading-6">
-            {item.eligibilitySummary}
-          </dd>
-        </div>
-        <div className="border-border rounded-2xl border p-4">
-          <dt className="text-muted text-xs font-semibold uppercase">
-            What it offers
-          </dt>
-          <dd className="text-navy mt-2 leading-6">{item.benefitSummary}</dd>
-        </div>
-        <div className="border-border rounded-2xl border p-4">
-          <dt className="text-muted text-xs font-semibold uppercase">
-            Geography
-          </dt>
-          <dd className="text-navy mt-2 leading-6">
-            {item.geographyLabel} · {readable(item.deliveryMode)}
-          </dd>
-        </div>
-        <div className="border-border rounded-2xl border p-4">
-          <dt className="text-muted text-xs font-semibold uppercase">
-            Deadline
-          </dt>
-          <dd className="text-navy mt-2 leading-6">
-            {formatDeadline(item.deadlineDate)}
-          </dd>
-        </div>
-      </dl>
-
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <div className="border-success/25 bg-success/5 rounded-2xl border p-4">
-          <h3 className="text-sm font-semibold">Why this may fit</h3>
-          <ul className="text-muted mt-3 space-y-2 text-sm leading-6">
-            {match.reasons.map((reason) => (
-              <li key={reason}>• {reason}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="border-border rounded-2xl border p-4">
-          <h3 className="text-sm font-semibold">Readiness / checks</h3>
-          {match.readinessGaps.length > 0 ? (
-            <ul className="text-muted mt-3 space-y-2 text-sm leading-6">
-              {match.readinessGaps.map((gap) => (
-                <li key={gap}>• {gap}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-muted mt-3 text-sm leading-6">
-              No unresolved age, location or capability check was identified by
-              the current PipuPath rules. Read the official eligibility before
-              applying.
+        <div className="mt-5 grid grid-cols-2 gap-2 text-xs">
+          <div className="border-border rounded-xl border p-3">
+            <p className="text-muted font-semibold tracking-wide uppercase">
+              Deadline
             </p>
-          )}
+            <p className="text-navy mt-1 font-semibold">
+              {formatDeadline(item.deadlineDate)}
+            </p>
+          </div>
+          <div className="border-border rounded-xl border p-3">
+            <p className="text-muted font-semibold tracking-wide uppercase">
+              Where
+            </p>
+            <p className="text-navy mt-1 line-clamp-2 font-semibold">
+              {item.geographyLabel} · {readable(item.deliveryMode)}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="border-border mt-6 flex flex-wrap gap-2 border-t pt-5">
-        <form action={setOpportunitySavedAction}>
-          <input type="hidden" name="opportunityId" value={item.id} />
-          <input type="hidden" name="saved" value={saved ? "false" : "true"} />
-          <Button type="submit" variant="ghost">
-            {saved ? "Remove saved" : "Save opportunity"}
-          </Button>
-        </form>
-        <ButtonLink href={`/opportunities/${item.id}`} variant="secondary">
-          View details
-        </ButtonLink>
+        {match.reasons.length > 0 ? (
+          <div className="border-success/25 bg-success/5 mt-4 rounded-xl border p-3">
+            <p className="text-success text-xs font-semibold tracking-wide uppercase">
+              Why this door appeared
+            </p>
+            <p className="text-muted mt-1.5 line-clamp-2 text-xs leading-5">
+              {match.reasons.join(" · ")}
+            </p>
+          </div>
+        ) : null}
+
         {native ? (
-          isMinor ? null : (
-            <ButtonLink href={`/opportunities/${item.id}/apply`}>
-              {applicationStatus
-                ? `Application: ${readable(applicationStatus)}`
-                : "Prepare PipuPath application"}
-            </ButtonLink>
-          )
-        ) : (
-          <>
+          <p className="text-success mt-4 text-xs font-semibold">
+            ✓ Approved PipuPath provider · controlled application supported
+          </p>
+        ) : null}
+
+        <details className="border-border mt-4 rounded-xl border p-3">
+          <summary className="text-navy cursor-pointer text-sm font-semibold">
+            Check eligibility, benefit and readiness
+          </summary>
+          <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            <div>
+              <p className="text-muted text-xs font-semibold uppercase">
+                Eligibility
+              </p>
+              <p className="text-navy mt-1.5 leading-6">
+                {item.eligibilitySummary}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted text-xs font-semibold uppercase">
+                What it offers
+              </p>
+              <p className="text-navy mt-1.5 leading-6">
+                {item.benefitSummary}
+              </p>
+            </div>
+          </div>
+          <div className="border-border mt-4 border-t pt-4">
+            <p className="text-muted text-xs font-semibold uppercase">
+              Readiness checks
+            </p>
+            {match.readinessGaps.length > 0 ? (
+              <ul className="text-muted mt-2 grid gap-1 text-sm leading-6">
+                {match.readinessGaps.map((gap) => (
+                  <li key={gap}>• {gap}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted mt-2 text-sm leading-6">
+                No unresolved age, location or capability check was identified
+                by current PipuPath rules. Always read the official eligibility
+                before applying.
+              </p>
+            )}
+          </div>
+        </details>
+      </div>
+
+      <div className="border-border bg-background/35 mt-auto border-t p-4 sm:p-5">
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink href={`/opportunities/${item.id}`} variant="secondary">
+            Inspect Door
+          </ButtonLink>
+          {native ? (
+            isMinor ? null : (
+              <ButtonLink href={`/opportunities/${item.id}/apply`}>
+                {applicationStatus
+                  ? `Application: ${readable(applicationStatus)}`
+                  : "Enter Application →"}
+              </ButtonLink>
+            )
+          ) : (
             <form action={openOpportunityAction}>
               <input type="hidden" name="opportunityId" value={item.id} />
-              <Button type="submit" variant="secondary">
-                Open official opportunity
-              </Button>
+              <Button type="submit">Open Official Door →</Button>
             </form>
-            {!applied ? (
-              <form action={markOpportunityAppliedAction}>
-                <input type="hidden" name="opportunityId" value={item.id} />
-                <Button type="submit">I applied</Button>
-              </form>
-            ) : null}
-          </>
-        )}
+          )}
+          <form action={setOpportunitySavedAction}>
+            <input type="hidden" name="opportunityId" value={item.id} />
+            <input
+              type="hidden"
+              name="saved"
+              value={saved ? "false" : "true"}
+            />
+            <Button type="submit" variant="ghost">
+              {saved ? "Unsave" : "Save"}
+            </Button>
+          </form>
+        </div>
+
+        {!native && !applied ? (
+          <form action={markOpportunityAppliedAction} className="mt-3">
+            <input type="hidden" name="opportunityId" value={item.id} />
+            <Button type="submit" variant="ghost" className="text-xs">
+              I applied externally
+            </Button>
+          </form>
+        ) : null}
+
+        {native && isMinor ? (
+          <p className="mt-3 text-xs font-semibold text-amber-800">
+            Provider application submission is adult-only in the current
+            safeguarding boundary. You can still evaluate the opportunity.
+          </p>
+        ) : null}
+
+        {native && applicationStatus ? (
+          <div className="border-primary/20 bg-primary-soft mt-4 rounded-xl border p-3">
+            <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+              Application in motion
+            </p>
+            <p className="text-muted mt-1.5 text-xs leading-5">
+              Current controlled provider state: {readable(applicationStatus)}.
+            </p>
+          </div>
+        ) : null}
+
+        {!native && applied ? (
+          <details className="border-primary/20 bg-primary-soft mt-4 rounded-xl border p-3">
+            <summary className="text-primary cursor-pointer text-xs font-semibold">
+              External application tracked
+            </summary>
+            <p className="text-muted mt-2 text-xs leading-5">
+              This application and its outcome are self-reported; PipuPath has
+              not independently verified them.
+            </p>
+            <OutcomeForm item={item} />
+          </details>
+        ) : null}
       </div>
-
-      {native && isMinor ? (
-        <p className="mt-4 text-sm font-semibold text-amber-800">
-          Stage 20 provider application submission is adult-only. You can still
-          evaluate the opportunity and review its official information.
-        </p>
-      ) : null}
-
-      {native && applicationStatus ? (
-        <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
-          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-            PipuPath application
-          </p>
-          <p className="text-muted mt-2 text-sm leading-6">
-            Current provider workflow state: {readable(applicationStatus)}. Open
-            the application to review consent and withdrawal options.
-          </p>
-        </div>
-      ) : null}
-
-      {!native && applied ? (
-        <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
-          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-            Application — self-reported
-          </p>
-          <p className="text-muted mt-2 text-sm leading-6">
-            You marked this external opportunity as applied. PipuPath has not
-            independently verified the application or its result.
-          </p>
-          <OutcomeForm item={item} />
-        </div>
-      ) : null}
     </Surface>
   );
 }
@@ -261,50 +282,44 @@ function TrackedApplicationCard({ item }: { item: MarketplaceCatalogItem }) {
     item.nativeApplicationEnabled || item.applicationStatus !== null;
 
   return (
-    <Surface className="p-6 sm:p-7">
+    <Surface className="w-[19rem] shrink-0 p-5 sm:w-[22rem]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
-            Tracked application · {readable(item.category)}
+            Application trail · {readable(item.category)}
           </p>
           <h3 className="text-navy mt-2 text-xl font-semibold">{item.title}</h3>
-          <p className="text-muted mt-1 text-sm">{item.providerName}</p>
+          <p className="text-muted mt-1 text-xs">{item.providerName}</p>
         </div>
-        <span className="border-border text-muted rounded-full border px-3 py-1.5 text-xs font-semibold">
+        <span className="border-border text-muted rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold">
           {native && item.applicationStatus
             ? readable(item.applicationStatus)
-            : "Opportunity no longer active"}
+            : "listing closed"}
         </span>
       </div>
 
       {native && item.applicationStatus ? (
         <>
-          <p className="text-muted mt-4 text-sm leading-6">
-            Your PipuPath application record remains available even if the
-            provider or listing is no longer accepting new applications.
-            Existing withdrawal rights are preserved by the application
-            lifecycle.
+          <p className="text-muted mt-4 text-xs leading-5">
+            Your controlled application record remains available even if new
+            applications close.
           </p>
-          <ButtonLink href={`/opportunities/${item.id}/apply`} className="mt-5">
-            Open application history
+          <ButtonLink href={`/opportunities/${item.id}/apply`} className="mt-4">
+            Open Application Trail
           </ButtonLink>
         </>
       ) : (
         <>
-          <p className="text-muted mt-4 text-sm leading-6">
-            You previously marked this external opportunity as applied. Its
-            deadline, publication or review state has changed, so PipuPath will
-            not treat it as an active match. You can still record your outcome.
+          <p className="text-muted mt-4 text-xs leading-5">
+            This external opportunity is no longer an active match, but your
+            self-reported application trail remains yours.
           </p>
-          <div className="border-primary/20 bg-primary-soft mt-5 rounded-2xl border p-4">
-            <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-              Application — self-reported
-            </p>
-            <p className="text-muted mt-2 text-sm">
-              PipuPath has not independently verified the application or result.
-            </p>
+          <details className="border-primary/20 bg-primary-soft mt-4 rounded-xl border p-3">
+            <summary className="text-primary cursor-pointer text-xs font-semibold">
+              Record outcome
+            </summary>
             <OutcomeForm item={item} />
-          </div>
+          </details>
         </>
       )}
     </Surface>
@@ -321,80 +336,100 @@ export default async function OpportunitiesPage({
   await recordCurrentUserFeatureView("opportunities");
   const errorKey = typeof params.error === "string" ? params.error : null;
   const errorMessage = errorKey ? errorMessages[errorKey] : null;
+  const strongMatches = workspace.matches.filter(
+    (match) => match.tier === "strong_match",
+  ).length;
 
   return (
     <main
       id="main-content"
-      className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-16 lg:px-10"
+      className="mx-auto max-w-7xl px-4 py-7 sm:px-8 sm:py-12 lg:px-10"
     >
-      <section className="border-gold/20 bg-panel relative overflow-hidden rounded-[2rem] border px-6 py-10 sm:px-10 sm:py-14">
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-6 text-white sm:p-9">
         <div
           aria-hidden="true"
-          className="bg-gold/10 absolute -top-24 -right-20 size-64 rounded-full blur-3xl"
+          className="absolute -top-28 -right-20 size-72 rounded-full border border-white/10"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-12 -bottom-36 size-72 rounded-full bg-[#4f7cff]/18 blur-3xl"
         />
         <div className="relative max-w-4xl">
-          <p className="text-gold font-mono text-xs tracking-[0.2em] uppercase">
-            Opportunities
+          <p className="text-xs font-semibold tracking-[0.18em] text-[#f3c86b] uppercase">
+            Opportunities · Deployment Doors
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
-            Put your development evidence in front of a larger real-world test.
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+            Build capability here. Deploy it into a bigger real-world test.
           </h1>
-          <p className="text-muted mt-5 max-w-3xl text-lg leading-8">
-            PipuPath shows curated opportunities and explains why they may fit.
-            Approved marketplace providers can receive a Builder-controlled
-            exact application packet; ordinary curated listings still use the
-            official external application route.
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
+            These doors are curated from real opportunities. PipuPath explains
+            why one may fit, but never pretends to know who will select you.
           </p>
+          <div className="mt-6 flex flex-wrap gap-2 text-xs">
+            <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-blue-50">
+              {workspace.matches.length} open{" "}
+              {workspace.matches.length === 1 ? "door" : "doors"}
+            </span>
+            {strongMatches > 0 ? (
+              <span className="rounded-full border border-[#f3c86b]/25 bg-[#f3c86b]/8 px-3 py-1.5 font-semibold text-[#f3c86b]">
+                {strongMatches} strong{" "}
+                {strongMatches === 1 ? "match" : "matches"}
+              </span>
+            ) : null}
+            {workspace.selectedPathName ? (
+              <span className="rounded-full border border-white/15 px-3 py-1.5 text-blue-100">
+                Path: {workspace.selectedPathName}
+              </span>
+            ) : null}
+          </div>
         </div>
       </section>
 
-      <Surface className="mt-8 p-6 sm:p-8">
-        <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
-          Matching context
-        </p>
-        <h2 className="text-navy mt-3 text-2xl font-semibold">
-          {workspace.selectedPathName
-            ? `Selected path: ${workspace.selectedPathName}`
-            : "No Economic Pathway selected yet"}
-        </h2>
-        <p className="text-muted mt-3 max-w-4xl leading-7">
-          Recommendations use your declared age band, country when you supplied
-          one, selected path and capability labels. Missing details are shown as
-          eligibility checks rather than guessed. There is no hidden
-          employability score or selection probability.
-        </p>
-      </Surface>
+      <div className="border-primary/15 bg-primary-soft/30 mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 sm:px-5">
+        <div>
+          <p className="text-navy text-sm font-semibold">
+            Matching is guidance, not a hidden employability score
+          </p>
+          <p className="text-muted mt-0.5 text-xs">
+            Age band, country when supplied, selected path and demonstrated
+            capability labels are used; unknowns stay explicit.
+          </p>
+        </div>
+        <ButtonLink href="/profile" variant="secondary" className="min-h-10">
+          Open Skill Tree
+        </ButtonLink>
+      </div>
 
       {errorMessage ? (
-        <Surface className="mt-6 border-amber-500/40 p-5" role="alert">
-          <p className="font-semibold">
+        <Surface className="mt-5 border-amber-500/40 p-5" role="alert">
+          <p className="text-navy font-semibold">
             That opportunity action did not finish.
           </p>
           <p className="text-muted mt-2 text-sm">{errorMessage}</p>
         </Surface>
       ) : null}
 
-      <section className="mt-10" aria-labelledby="opportunity-list-heading">
+      <section className="mt-8" aria-labelledby="deployment-doors-heading">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-              Active vetted supply
+            <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+              Doors available now
             </p>
             <h2
-              id="opportunity-list-heading"
-              className="mt-3 text-3xl font-semibold tracking-tight"
+              id="deployment-doors-heading"
+              className="text-navy mt-2 text-3xl font-semibold tracking-tight"
             >
-              {workspace.matches.length} opportunities to evaluate
+              Choose what deserves your next real-world attempt
             </h2>
           </div>
-          <p className="text-muted max-w-md text-sm leading-6">
-            “Strong match” means current PipuPath evidence overlaps the listing;
-            it is not a selection probability or employability score.
-          </p>
+          <span className="text-muted max-w-sm text-xs leading-5">
+            Inspect the fit, verify official eligibility, then decide whether
+            this opportunity is worth your effort.
+          </span>
         </div>
 
         {workspace.matches.length > 0 ? (
-          <div className="mt-6 grid gap-6 xl:grid-cols-2">
+          <div className="mt-5 grid gap-5 xl:grid-cols-2">
             {workspace.matches.map((match) => (
               <MatchCard
                 key={match.opportunity.id}
@@ -407,38 +442,49 @@ export default async function OpportunitiesPage({
             ))}
           </div>
         ) : (
-          <Surface className="mt-6 p-8">
-            <h3 className="text-2xl font-semibold">No active match yet.</h3>
-            <p className="text-muted mt-3 max-w-3xl leading-7">
-              PipuPath may have no currently published opportunity that passes
-              your known eligibility boundaries. This is a supply state, not a
-              judgement about your potential. New vetted opportunities can be
-              added without changing your profile.
-            </p>
+          <Surface className="mt-5 p-7 sm:p-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="border-border bg-background text-muted mx-auto grid size-16 place-items-center rounded-full border-2 text-xl">
+                ?
+              </span>
+              <p className="text-primary mt-4 text-xs font-semibold tracking-[0.14em] uppercase">
+                No door open right now
+              </p>
+              <h3 className="text-navy mt-2 text-2xl font-semibold">
+                This is a supply state, not a judgement about your potential.
+              </h3>
+              <p className="text-muted mt-3 text-sm leading-6">
+                There may be no currently published opportunity that passes your
+                known eligibility boundaries. Keep building; new vetted supply
+                can appear without changing who you are.
+              </p>
+              <ButtonLink href="/build" className="mt-5">
+                Continue Building →
+              </ButtonLink>
+            </div>
           </Surface>
         )}
       </section>
 
       {workspace.trackedApplications.length > 0 ? (
-        <section
-          className="mt-12"
-          aria-labelledby="tracked-applications-heading"
-        >
-          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Your application history
-          </p>
-          <h2
-            id="tracked-applications-heading"
-            className="mt-3 text-3xl font-semibold tracking-tight"
-          >
-            Applications and outcomes you are tracking
-          </h2>
-          <p className="text-muted mt-3 max-w-3xl leading-7">
-            Native PipuPath applications retain their controlled lifecycle even
-            after supply closes. External applications remain explicitly
-            self-reported.
-          </p>
-          <div className="mt-6 grid gap-5 xl:grid-cols-2">
+        <section className="mt-9" aria-labelledby="application-trails-heading">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+                Deployment trails
+              </p>
+              <h2
+                id="application-trails-heading"
+                className="text-navy mt-2 text-2xl font-semibold tracking-tight"
+              >
+                Attempts already in motion
+              </h2>
+            </div>
+            <span className="text-muted text-xs">
+              {workspace.trackedApplications.length} tracked
+            </span>
+          </div>
+          <div className="mt-5 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
             {workspace.trackedApplications.map((item) => (
               <TrackedApplicationCard key={item.id} item={item} />
             ))}
@@ -447,7 +493,7 @@ export default async function OpportunitiesPage({
       ) : null}
 
       <p className="text-muted mt-8 text-center text-xs leading-5">
-        Always read the official eligibility and terms before applying. PipuPath
+        Always read official eligibility and terms before applying. PipuPath
         never promises selection, income or provider outcomes.
       </p>
     </main>

@@ -30,7 +30,7 @@ function Notice({ status }: { status?: string }) {
   return (
     <p
       role={error ? "alert" : "status"}
-      className={`mt-6 rounded-2xl border p-4 text-sm ${
+      className={`mt-5 rounded-2xl border p-4 text-sm ${
         error
           ? "border-error/30 bg-error/10 text-error"
           : "border-success/30 bg-success/10 text-success"
@@ -39,7 +39,7 @@ function Notice({ status }: { status?: string }) {
       {error
         ? "That Connect action could not be completed. Review the details and try again."
         : status === "saved"
-          ? "Your Builder Connect profile and privacy choice were saved."
+          ? "Your Builder World profile and privacy choice were saved."
           : "Your network was updated."}
     </p>
   );
@@ -81,54 +81,64 @@ function ActionForm({
 
 function BuilderCardView({ builder }: { builder: BuilderCard }) {
   return (
-    <Surface className="flex h-full flex-col p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-            @{builder.username}
-          </p>
-          <h3 className="mt-2 text-xl font-semibold">
-            {builder.preferredName}
-          </h3>
+    <Surface className="flex h-full w-[19rem] shrink-0 flex-col p-5 sm:w-[21rem]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="border-primary/20 bg-primary-soft text-primary grid size-11 shrink-0 place-items-center rounded-2xl border text-sm font-bold"
+          >
+            ◈
+          </span>
+          <div className="min-w-0">
+            <h3 className="text-navy truncate text-lg font-semibold">
+              {builder.preferredName}
+            </h3>
+            <p className="text-primary mt-0.5 truncate text-xs font-semibold">
+              @{builder.username}
+            </p>
+          </div>
         </div>
-        <span className="border-border rounded-full border px-2.5 py-1 text-[0.68rem] font-semibold uppercase">
+        <span className="border-border text-muted rounded-full border px-2.5 py-1 text-[0.62rem] font-semibold uppercase">
           {builder.relationship === "none" ? "Discover" : builder.relationship}
         </span>
       </div>
-      <p className="text-muted mt-4 text-sm leading-6">
+
+      <p className="text-muted mt-4 line-clamp-3 text-sm leading-6">
         {builder.missionStatement ??
           "Building evidence around a practical mission."}
       </p>
-      <div className="mt-5 grid gap-3 text-sm">
-        <p>
-          <strong>Can help with:</strong>{" "}
-          <span className="text-muted">
-            {builder.canHelpWith || "Not stated yet"}
-          </span>
+
+      {builder.capabilities.length > 0 ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {builder.capabilities.slice(0, 4).map((capability) => (
+            <span
+              key={capability}
+              className="bg-primary-soft text-primary rounded-full px-2.5 py-1 text-xs font-semibold"
+            >
+              {capability}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      <div className="border-border mt-4 grid gap-2 border-t pt-4 text-xs">
+        <p className="text-muted line-clamp-2">
+          <strong className="text-navy">Can help:</strong>{" "}
+          {builder.canHelpWith || "Not stated yet"}
         </p>
-        <p>
-          <strong>Needs help with:</strong>{" "}
-          <span className="text-muted">
-            {builder.needsHelpWith || "Not stated yet"}
-          </span>
+        <p className="text-muted line-clamp-2">
+          <strong className="text-navy">Needs:</strong>{" "}
+          {builder.needsHelpWith || "Not stated yet"}
         </p>
       </div>
-      <div className="mt-5 flex flex-wrap gap-2">
-        {builder.capabilities.slice(0, 4).map((capability) => (
-          <span
-            key={capability}
-            className="bg-primary-soft text-primary rounded-full px-2.5 py-1 text-xs font-semibold"
-          >
-            {capability}
-          </span>
-        ))}
-      </div>
+
       <ButtonLink
         href={`/connect/builders/${builder.username}`}
-        className="mt-6"
+        className="mt-auto pt-5"
         variant="secondary"
       >
-        View Builder
+        Meet This Builder →
       </ButtonLink>
     </Surface>
   );
@@ -146,7 +156,7 @@ function RequestRow({
       <div>
         <Link
           href={`/connect/builders/${item.username}`}
-          className="font-semibold hover:underline"
+          className="text-navy font-semibold hover:underline"
         >
           {item.preferredName}
         </Link>
@@ -171,7 +181,7 @@ function RequestRow({
           <ActionForm
             action="cancel"
             connectionId={item.connectionId}
-            label="Cancel request"
+            label="Cancel"
           />
         )}
       </div>
@@ -189,12 +199,12 @@ function ConnectionCard({
   profileHasWhatsapp: boolean;
 }) {
   return (
-    <Surface className="p-6">
+    <Surface className="p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link
             href={`/connect/builders/${item.username}`}
-            className="text-xl font-semibold hover:underline"
+            className="text-navy text-xl font-semibold hover:underline"
           >
             {item.preferredName}
           </Link>
@@ -207,52 +217,59 @@ function ConnectionCard({
           variant="ghost"
         />
       </div>
-      <div className="border-border mt-5 rounded-2xl border p-4 text-sm">
-        <p className="font-semibold">Contact shared with you</p>
-        <p className="text-muted mt-2">
+
+      <div className="border-border mt-4 rounded-xl border p-3 text-xs">
+        <p className="text-navy font-semibold">Contact shared with you</p>
+        <p className="text-muted mt-1.5 leading-5">
           {(item.sharedEmail ?? item.sharedWhatsapp)
             ? [item.sharedEmail, item.sharedWhatsapp]
                 .filter(Boolean)
                 .join(" · ")
-            : "No contact detail has been shared. Connection does not create messaging access."}
+            : "Nothing shared yet. A connection does not create private messaging access."}
         </p>
       </div>
-      <form action={shareContactAction} className="mt-5">
-        <input type="hidden" name="connectionId" value={item.connectionId} />
-        <input type="hidden" name="returnTo" value="/connect" />
-        <fieldset>
-          <legend className="text-sm font-semibold">
-            Your explicit contact consent
-          </legend>
-          <div className="mt-3 flex flex-wrap gap-4 text-sm">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="shareEmail"
-                defaultChecked={item.myShareEmail}
-                disabled={!profileHasEmail}
-              />
-              Share saved email
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="shareWhatsapp"
-                defaultChecked={item.myShareWhatsapp}
-                disabled={!profileHasWhatsapp}
-              />
-              Share saved WhatsApp
-            </label>
-          </div>
-        </fieldset>
-        <Button
-          type="submit"
-          variant="secondary"
-          className="mt-4 min-h-9 px-3 py-1.5 text-xs"
-        >
-          Update consent
-        </Button>
-      </form>
+
+      <details className="border-border mt-4 border-t pt-4">
+        <summary className="text-navy cursor-pointer text-xs font-semibold">
+          Manage my contact consent
+        </summary>
+        <form action={shareContactAction} className="mt-3">
+          <input type="hidden" name="connectionId" value={item.connectionId} />
+          <input type="hidden" name="returnTo" value="/connect" />
+          <fieldset>
+            <legend className="text-xs font-semibold">
+              Explicit contact sharing
+            </legend>
+            <div className="mt-3 grid gap-2 text-xs">
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="shareEmail"
+                  defaultChecked={item.myShareEmail}
+                  disabled={!profileHasEmail}
+                />
+                Share saved email
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="shareWhatsapp"
+                  defaultChecked={item.myShareWhatsapp}
+                  disabled={!profileHasWhatsapp}
+                />
+                Share saved WhatsApp
+              </label>
+            </div>
+          </fieldset>
+          <Button
+            type="submit"
+            variant="secondary"
+            className="mt-3 min-h-9 px-3 py-1.5 text-xs"
+          >
+            Update consent
+          </Button>
+        </form>
+      </details>
     </Surface>
   );
 }
@@ -263,101 +280,258 @@ export default async function ConnectPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const [state, query] = await Promise.all([getConnectState(), searchParams]);
+  const pendingCount = state.incoming.length + state.sent.length;
 
   return (
     <main
       id="main-content"
-      className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-16"
+      className="mx-auto max-w-7xl px-4 py-7 sm:px-8 sm:py-12 lg:px-10"
     >
-      <section className="border-gold/20 bg-panel relative overflow-hidden rounded-[2rem] border px-6 py-10 sm:px-10 sm:py-14">
-        <p className="text-gold font-mono text-xs tracking-[0.2em] uppercase">
-          Builder Connect
-        </p>
-        <h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-tight sm:text-6xl">
-          Find trusted Builders around complementary missions.
-        </h1>
-        <p className="text-muted mt-5 max-w-3xl text-lg leading-8">
-          Discovery is opt-in. Connection requests contain no private message,
-          and contact details stay hidden until an accepted connection
-          deliberately shares them.
-        </p>
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-6 text-white sm:p-9">
+        <div
+          aria-hidden="true"
+          className="absolute -top-28 -right-20 size-72 rounded-full border border-white/10"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-12 -bottom-36 size-72 rounded-full bg-[#4f7cff]/18 blur-3xl"
+        />
+        <div className="relative max-w-4xl">
+          <p className="text-xs font-semibold tracking-[0.18em] text-[#f3c86b] uppercase">
+            Connect · Builder World
+          </p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+            Find people to build with—not people to impress.
+          </h1>
+          <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
+            PipuPath connects complementary missions and capabilities without
+            follower counts, popularity scores or unrestricted private
+            messaging.
+          </p>
+          {state.eligible ? (
+            <div className="mt-6 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-blue-50">
+                {state.discover.length} discoverable{" "}
+                {state.discover.length === 1 ? "Builder" : "Builders"}
+              </span>
+              <span className="rounded-full border border-white/15 px-3 py-1.5 text-blue-100">
+                {state.connections.length} accepted{" "}
+                {state.connections.length === 1 ? "connection" : "connections"}
+              </span>
+              {pendingCount > 0 ? (
+                <span className="rounded-full border border-[#f3c86b]/25 bg-[#f3c86b]/8 px-3 py-1.5 font-semibold text-[#f3c86b]">
+                  {pendingCount} pending
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </section>
       <Notice status={query.status} />
 
       {!state.eligible ? (
-        <Surface className="border-gold/30 bg-gold/5 mt-8 p-6 sm:p-8">
-          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-            Safeguarding boundary
+        <Surface className="border-gold/30 bg-gold/5 mt-6 p-6 sm:p-8">
+          <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+            Builder World protected by safeguarding
           </p>
-          <h2 className="mt-3 text-2xl font-semibold">
-            Builder Connect is adult-only in this MVP.
+          <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+            Public discovery and direct contact sharing stay closed for younger
+            Builders.
           </h2>
-          <p className="text-muted mt-3 max-w-3xl leading-7">
-            Younger Builders keep their complete private PipuPath journey.
-            Public discovery and direct contact sharing require a dedicated
-            guardian and institutional safeguarding system, so PipuPath does not
-            reduce that protection to a checkbox.
+          <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
+            Your complete private PipuPath adventure remains available. Youth
+            networking needs a dedicated guardian and institutional safeguarding
+            system, so PipuPath will not reduce that protection to a checkbox.
           </p>
-          <ButtonLink href="/journey" className="mt-6">
-            Continue Private Journey
+          <ButtonLink href="/journey" className="mt-5">
+            Continue My Adventure →
           </ButtonLink>
         </Surface>
       ) : (
         <>
-          <section className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-            <Surface className="p-6 sm:p-8">
-              <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-                Privacy and Builder profile
-              </p>
-              <h2 className="mt-3 text-2xl font-semibold">
-                Control how other Builders discover you.
-              </h2>
-              <form
-                action={saveConnectProfileAction}
-                className="mt-6 grid gap-5"
-              >
-                <input type="hidden" name="returnTo" value="/connect" />
-                <label className="text-sm font-semibold">
-                  Interests{" "}
-                  <span className="text-muted">(comma separated)</span>
-                  <input
-                    name="interests"
-                    required
-                    defaultValue={state.profile?.interests.join(", ") ?? ""}
-                    className={inputClass}
-                    placeholder="education, agriculture, technology"
-                  />
-                </label>
-                <label className="text-sm font-semibold">
-                  Capabilities{" "}
-                  <span className="text-muted">(comma separated)</span>
-                  <input
-                    name="capabilities"
-                    required
-                    defaultValue={state.profile?.capabilities.join(", ") ?? ""}
-                    className={inputClass}
-                    placeholder="teaching, design, research"
-                  />
-                </label>
-                <label className="text-sm font-semibold">
-                  I can help with
-                  <textarea
-                    name="canHelpWith"
-                    maxLength={320}
-                    defaultValue={state.profile?.canHelpWith ?? ""}
-                    className={textareaClass}
-                  />
-                </label>
-                <label className="text-sm font-semibold">
-                  I need help with
-                  <textarea
-                    name="needsHelpWith"
-                    maxLength={320}
-                    defaultValue={state.profile?.needsHelpWith ?? ""}
-                    className={textareaClass}
-                  />
-                </label>
-                <div className="grid gap-4 sm:grid-cols-2">
+          <section className="mt-7" aria-labelledby="discover-builders-heading">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+                  Explore the Builder World
+                </p>
+                <h2
+                  id="discover-builders-heading"
+                  className="text-navy mt-2 text-3xl font-semibold tracking-tight"
+                >
+                  Complementary people. No popularity contest.
+                </h2>
+              </div>
+              <span className="text-muted max-w-sm text-xs leading-5">
+                Discovery is opt-in. Safe profile fields appear only when a
+                Builder deliberately enables visibility.
+              </span>
+            </div>
+
+            {state.discover.length ? (
+              <div className="mt-5 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
+                {state.discover.map((builder) => (
+                  <BuilderCardView key={builder.userId} builder={builder} />
+                ))}
+              </div>
+            ) : (
+              <Surface className="mt-5 p-6">
+                <p className="text-muted text-sm leading-6">
+                  The Builder World is quiet right now. No other adult Builder
+                  has deliberately enabled discoverability yet.
+                </p>
+              </Surface>
+            )}
+          </section>
+
+          <section className="mt-8 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+            <div>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+                    My Network
+                  </p>
+                  <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+                    People you deliberately connected with
+                  </h2>
+                </div>
+                <ButtonLink
+                  href="/connect/collaborations"
+                  variant="secondary"
+                  className="min-h-10"
+                >
+                  Collaborations →
+                </ButtonLink>
+              </div>
+
+              {state.connections.length ? (
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  {state.connections.map((item) => (
+                    <ConnectionCard
+                      key={item.connectionId}
+                      item={item}
+                      profileHasEmail={Boolean(state.profile?.contactEmail)}
+                      profileHasWhatsapp={Boolean(
+                        state.profile?.contactWhatsapp,
+                      )}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Surface className="mt-5 p-5">
+                  <p className="text-muted text-sm leading-6">
+                    No accepted connections yet. Connection does not create
+                    messaging access; it opens only the relationship and consent
+                    controls PipuPath explicitly supports.
+                  </p>
+                </Surface>
+              )}
+            </div>
+
+            <aside className="space-y-5">
+              <Surface className="p-5 sm:p-6">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+                      Requests
+                    </p>
+                    <h3 className="text-navy mt-1 text-lg font-semibold">
+                      {pendingCount > 0
+                        ? `${pendingCount} waiting`
+                        : "Nothing waiting"}
+                    </h3>
+                  </div>
+                  <span className="border-border text-muted grid size-10 place-items-center rounded-xl border text-xs font-bold">
+                    {pendingCount}
+                  </span>
+                </div>
+
+                {state.incoming.length > 0 ? (
+                  <>
+                    <p className="text-muted mt-4 text-[0.68rem] font-semibold tracking-wide uppercase">
+                      Incoming
+                    </p>
+                    <ul>
+                      {state.incoming.map((item) => (
+                        <RequestRow
+                          key={item.connectionId}
+                          item={item}
+                          type="incoming"
+                        />
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+
+                {state.sent.length > 0 ? (
+                  <>
+                    <p className="text-muted mt-4 text-[0.68rem] font-semibold tracking-wide uppercase">
+                      Sent
+                    </p>
+                    <ul>
+                      {state.sent.map((item) => (
+                        <RequestRow
+                          key={item.connectionId}
+                          item={item}
+                          type="sent"
+                        />
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </Surface>
+
+              <details className="border-border bg-panel rounded-2xl border p-5">
+                <summary className="text-navy cursor-pointer text-sm font-semibold">
+                  My discovery profile & privacy
+                </summary>
+                <form
+                  action={saveConnectProfileAction}
+                  className="mt-5 grid gap-4"
+                >
+                  <input type="hidden" name="returnTo" value="/connect" />
+                  <label className="text-sm font-semibold">
+                    Interests{" "}
+                    <span className="text-muted">(comma separated)</span>
+                    <input
+                      name="interests"
+                      required
+                      defaultValue={state.profile?.interests.join(", ") ?? ""}
+                      className={inputClass}
+                      placeholder="education, agriculture, technology"
+                    />
+                  </label>
+                  <label className="text-sm font-semibold">
+                    Capabilities{" "}
+                    <span className="text-muted">(comma separated)</span>
+                    <input
+                      name="capabilities"
+                      required
+                      defaultValue={
+                        state.profile?.capabilities.join(", ") ?? ""
+                      }
+                      className={inputClass}
+                      placeholder="teaching, design, research"
+                    />
+                  </label>
+                  <label className="text-sm font-semibold">
+                    I can help with
+                    <textarea
+                      name="canHelpWith"
+                      maxLength={320}
+                      defaultValue={state.profile?.canHelpWith ?? ""}
+                      className={textareaClass}
+                    />
+                  </label>
+                  <label className="text-sm font-semibold">
+                    I need help with
+                    <textarea
+                      name="needsHelpWith"
+                      maxLength={320}
+                      defaultValue={state.profile?.needsHelpWith ?? ""}
+                      className={textareaClass}
+                    />
+                  </label>
                   <label className="text-sm font-semibold">
                     Private contact email
                     <input
@@ -375,128 +549,42 @@ export default async function ConnectPage({
                       className={inputClass}
                     />
                   </label>
-                </div>
-                <label className="text-sm font-semibold">
-                  Discovery visibility
-                  <select
-                    name="visibility"
-                    defaultValue={state.profile?.visibility ?? "private"}
-                    className={inputClass}
-                  >
-                    <option value="private">Private — not discoverable</option>
-                    <option value="discoverable">
-                      Discoverable — show safe Builder fields
-                    </option>
-                  </select>
-                </label>
-                <Button type="submit">Save Connect Profile</Button>
-              </form>
-            </Surface>
-
-            <div>
-              <div>
-                <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                  Discover Builders
-                </p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-                  Complementary people, not popularity metrics.
-                </h2>
-              </div>
-              {state.discover.length ? (
-                <div className="mt-6 grid gap-5 md:grid-cols-2">
-                  {state.discover.map((builder) => (
-                    <BuilderCardView key={builder.userId} builder={builder} />
-                  ))}
-                </div>
-              ) : (
-                <Surface className="mt-6 p-6">
-                  <p className="text-muted leading-7">
-                    No other adult Builder has enabled discoverability yet. Your
-                    network remains private until people deliberately opt in.
-                  </p>
-                </Surface>
-              )}
-            </div>
-          </section>
-
-          <section className="mt-12">
-            <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-              My Network
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight">
-              Requests, accepted connections and consent.
-            </h2>
-            <div className="mt-6 grid gap-6 lg:grid-cols-2">
-              <Surface className="p-6">
-                <h3 className="text-xl font-semibold">Pending requests</h3>
-                <ul className="mt-3">
-                  {state.incoming.length ? (
-                    state.incoming.map((item) => (
-                      <RequestRow
-                        key={item.connectionId}
-                        item={item}
-                        type="incoming"
-                      />
-                    ))
-                  ) : (
-                    <li className="text-muted py-4 text-sm">
-                      No incoming requests.
-                    </li>
-                  )}
-                </ul>
-              </Surface>
-              <Surface className="p-6">
-                <h3 className="text-xl font-semibold">Sent requests</h3>
-                <ul className="mt-3">
-                  {state.sent.length ? (
-                    state.sent.map((item) => (
-                      <RequestRow
-                        key={item.connectionId}
-                        item={item}
-                        type="sent"
-                      />
-                    ))
-                  ) : (
-                    <li className="text-muted py-4 text-sm">
-                      No sent requests.
-                    </li>
-                  )}
-                </ul>
-              </Surface>
-            </div>
-            {state.connections.length ? (
-              <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                {state.connections.map((item) => (
-                  <ConnectionCard
-                    key={item.connectionId}
-                    item={item}
-                    profileHasEmail={Boolean(state.profile?.contactEmail)}
-                    profileHasWhatsapp={Boolean(state.profile?.contactWhatsapp)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <Surface className="mt-6 p-6">
-                <p className="text-muted">
-                  {
-                    "Accepted connections will appear here. PipuPath has no unrestricted private messaging."
-                  }
-                </p>
-              </Surface>
-            )}
+                  <label className="text-sm font-semibold">
+                    Discovery visibility
+                    <select
+                      name="visibility"
+                      defaultValue={state.profile?.visibility ?? "private"}
+                      className={inputClass}
+                    >
+                      <option value="private">
+                        Private — not discoverable
+                      </option>
+                      <option value="discoverable">
+                        Discoverable — show safe Builder fields
+                      </option>
+                    </select>
+                  </label>
+                  <Button type="submit">Save Builder World Profile</Button>
+                </form>
+              </details>
+            </aside>
           </section>
 
           {state.blocked.length ? (
-            <section className="mt-12">
-              <h2 className="text-2xl font-semibold">Blocked Builders</h2>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <details className="border-border bg-panel mt-7 rounded-2xl border p-5 sm:p-6">
+              <summary className="text-navy cursor-pointer text-sm font-semibold">
+                Blocked Builders · {state.blocked.length}
+              </summary>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {state.blocked.map((builder) => (
                   <Surface
                     key={builder.userId}
-                    className="flex items-center justify-between gap-4 p-5"
+                    className="flex items-center justify-between gap-4 p-4"
                   >
                     <div>
-                      <p className="font-semibold">{builder.preferredName}</p>
+                      <p className="text-navy font-semibold">
+                        {builder.preferredName}
+                      </p>
                       <p className="text-muted text-xs">@{builder.username}</p>
                     </div>
                     <ActionForm
@@ -507,7 +595,7 @@ export default async function ConnectPage({
                   </Surface>
                 ))}
               </div>
-            </section>
+            </details>
           ) : null}
         </>
       )}

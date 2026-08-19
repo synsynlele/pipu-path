@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import { getPortfolioProjectState } from "@/modules/portfolio/infrastructure/portfolio-dal";
@@ -18,7 +18,7 @@ export default async function PortfolioPreviewPage({
 }) {
   const { projectId } = await params;
   const state = await getPortfolioProjectState(projectId);
-  if (!state) notFound();
+  if (!state) redirect("/portfolio");
   if (!state.portfolio) redirect(`/portfolio/${projectId}`);
 
   const { portfolio } = state;
@@ -83,6 +83,11 @@ export default async function PortfolioPreviewPage({
               <h2 className="mt-3 text-2xl font-semibold">
                 Publish only when this exact preview is safe.
               </h2>
+              <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+                After publishing, PipuPath returns you to Portfolio Studio first
+                so you can confirm the status and deliberately open the public
+                page. You will not be dropped into an unavailable route.
+              </p>
               <PortfolioPublishForm
                 portfolioId={portfolio.id}
                 projectId={projectId}

@@ -110,7 +110,8 @@ describe("Stage 7 HQLS Quest structural contract", () => {
     expect(migration).toContain("quest_id uuid not null unique");
     expect(migration).toContain("amount smallint not null check (amount = 50)");
     expect(migration).toContain("on conflict (quest_id) do nothing");
-    expect(completionPage).toContain("Proof created. Progress earned.");
+    expect(completionPage).toContain("verified XP");
+    expect(completionPage).toContain("acted in the real world");
   });
 
   it("indexes the Stage 7 foreign keys", () => {

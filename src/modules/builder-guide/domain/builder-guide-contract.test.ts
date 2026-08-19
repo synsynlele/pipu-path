@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  builderGuideOutputSchema,
   validateBuilderGuideOutput,
   type BuilderGuideContext,
   type BuilderGuideOutput,
@@ -82,6 +83,7 @@ function output(): BuilderGuideOutput {
         "A completed project milestone and a short reflection on what changed.",
       destination: "build",
     },
+    growthPack: [],
     challenge:
       "Keep the next experiment small enough to finish instead of expanding the idea before you have proof.",
     uncertainty:
@@ -93,6 +95,36 @@ describe("Stage 17 Builder Guide contract", () => {
   it("accepts bounded evidence-grounded guidance", () => {
     expect(
       validateBuilderGuideOutput(context(), "next_move", output()).ok,
+    ).toBe(true);
+  });
+
+  it("keeps historical Builder Guide advice readable when Growth Pack did not exist", () => {
+    const legacy = output() as Record<string, unknown>;
+    delete legacy.growthPack;
+    const parsed = builderGuideOutputSchema.parse(legacy);
+    expect(parsed.growthPack).toEqual([]);
+  });
+
+  it("accepts a bounded contextual Growth Pack", () => {
+    const candidate: BuilderGuideOutput = {
+      ...output(),
+      intent: "growth_support",
+      growthPack: [
+        {
+          kind: "book",
+          title: "A real practical book",
+          source: "Known Author",
+          whyNow:
+            "This supports the Builder's current evidence gap without replacing real-world action.",
+          howToUse:
+            "Read the section relevant to the current challenge, choose one idea, and test it in the active Build.",
+          verificationNote:
+            "Verify the exact title, author and edition before obtaining the book.",
+        },
+      ],
+    };
+    expect(
+      validateBuilderGuideOutput(context(), "growth_support", candidate).ok,
     ).toBe(true);
   });
 

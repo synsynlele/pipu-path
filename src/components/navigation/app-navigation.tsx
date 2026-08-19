@@ -7,9 +7,9 @@ const items = [
   { label: "Home", href: "/app", icon: "home" },
   { label: "Journey", href: "/journey", icon: "path" },
   { label: "Build", href: "/build", icon: "build" },
-  { label: "Portfolio", href: "/portfolio", icon: "portfolio" },
+  { label: "Vault", href: "/portfolio", icon: "portfolio" },
   { label: "Connect", href: "/connect", icon: "connect" },
-  { label: "Profile", href: "/profile", icon: "profile" },
+  { label: "Me", href: "/profile", icon: "profile" },
 ] as const;
 
 function isActive(pathname: string, href: string) {
@@ -25,6 +25,7 @@ function isActive(pathname: string, href: string) {
   if (href === "/profile")
     return (
       pathname.startsWith("/profile") ||
+      pathname.startsWith("/growth") ||
       pathname.startsWith("/passport") ||
       pathname.startsWith("/onboarding/discovery/profile")
     );

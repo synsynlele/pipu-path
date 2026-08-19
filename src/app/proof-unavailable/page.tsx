@@ -8,19 +8,25 @@ export const metadata: Metadata = {
 
 export default function ProjectProofUnavailablePage() {
   return (
-    <main className="grid min-h-screen place-items-center px-5 text-center">
+    <main className="grid min-h-screen place-items-center px-5 py-12 text-center">
       <div className="max-w-xl">
-        <p className="text-gold font-mono text-sm">404</p>
+        <p className="text-gold font-mono text-sm tracking-[0.16em] uppercase">
+          Proof unavailable
+        </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">
-          This Project proof is not public.
+          This proof is not public right now.
         </h1>
         <p className="text-muted mt-3 leading-7">
-          The Builder may have withdrawn it, or the address may not exist.
-          Private Project history remains protected.
+          It may still be a private draft, it may have been withdrawn, or the
+          address may no longer be valid. PipuPath keeps private Project
+          evidence protected for the Builder.
         </p>
-        <ButtonLink href="/" className="mt-7">
-          Go home
-        </ButtonLink>
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
+          <ButtonLink href="/portfolio">Manage my Portfolio</ButtonLink>
+          <ButtonLink href="/" variant="secondary">
+            Return to PipuPath
+          </ButtonLink>
+        </div>
       </div>
     </main>
   );

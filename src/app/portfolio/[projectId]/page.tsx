@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import { portfolioStatusLabel } from "@/modules/portfolio/domain/portfolio-contract";
@@ -19,7 +19,7 @@ export default async function PortfolioProjectPage({
 }) {
   const { projectId } = await params;
   const state = await getPortfolioProjectState(projectId);
-  if (!state) notFound();
+  if (!state) redirect("/portfolio");
 
   const { project, milestones, portfolio, profile, adultEligible } = state;
   const preferredName =
@@ -87,9 +87,9 @@ export default async function PortfolioProjectPage({
               {portfolio.public_title}
             </h2>
             <p className="text-muted mt-4 leading-7">
-              Editing is locked while the page is public. Withdraw it first to
-              revise the public wording; your stable slug and private Project
-              history will remain.
+              Your selected public proof is live. Editing remains locked while
+              it is public; withdraw it first if you need to revise what other
+              people can see.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink href={`/proof/${portfolio.slug}`}>
@@ -154,17 +154,19 @@ export default async function PortfolioProjectPage({
             {portfolio ? (
               <Surface className="p-6">
                 <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                  Stable proof address
+                  Private draft ready
                 </p>
-                <p className="text-muted mt-3 text-sm leading-6 break-all">
-                  /proof/{portfolio.slug}
+                <p className="text-muted mt-3 text-sm leading-6">
+                  Review the exact public-safe presentation before you choose to
+                  publish it. The public address will not open until publishing
+                  succeeds.
                 </p>
                 <ButtonLink
                   href={`/portfolio/${project.id}/preview`}
                   variant="secondary"
                   className="mt-5"
                 >
-                  Preview Existing Draft
+                  Review Draft and Publish
                 </ButtonLink>
               </Surface>
             ) : null}
