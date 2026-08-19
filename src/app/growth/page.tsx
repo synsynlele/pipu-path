@@ -27,8 +27,7 @@ const errorMessages: Record<string, string> = {
     "PipuPath could not safely ground those learning suggestions in your current evidence. Please try again.",
   guide_output_unsafe:
     "Those learning suggestions did not meet PipuPath's safety rules. Please try again.",
-  guide_save_failed:
-    "Your Growth Pack could not be saved. Please try again.",
+  guide_save_failed: "Your Growth Pack could not be saved. Please try again.",
   invalid_question: "That Growth Pack request could not be understood.",
 };
 
@@ -55,13 +54,12 @@ export default async function GrowthLibraryPage({
   const context = await getBuilderGuideContext();
   const history = context ? await getBuilderGuideHistory(context, 20) : [];
   const growthRuns = history.filter(
-    (run) => run.intent === "growth_support" || run.advice.growthPack.length > 0,
+    (run) =>
+      run.intent === "growth_support" || run.advice.growthPack.length > 0,
   );
   const requestedRun = typeof params.run === "string" ? params.run : null;
   const activeRun =
-    (requestedRun
-      ? growthRuns.find((run) => run.id === requestedRun)
-      : null) ??
+    (requestedRun ? growthRuns.find((run) => run.id === requestedRun) : null) ??
     growthRuns[0] ??
     null;
   const library = growthRuns
@@ -130,7 +128,9 @@ export default async function GrowthLibraryPage({
 
       {errorMessage ? (
         <Surface className="mt-6 border-amber-500/40 p-5" role="alert">
-          <p className="font-semibold">Growth Pack generation did not finish.</p>
+          <p className="font-semibold">
+            Growth Pack generation did not finish.
+          </p>
           <p className="text-muted mt-2 text-sm leading-6">{errorMessage}</p>
         </Surface>
       ) : null}

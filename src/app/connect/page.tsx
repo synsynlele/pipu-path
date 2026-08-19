@@ -304,15 +304,19 @@ export default async function ConnectPage({
             Find people to build with—not people to impress.
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
-            PipuPath connects complementary missions and capabilities without follower counts, popularity scores or unrestricted private messaging.
+            PipuPath connects complementary missions and capabilities without
+            follower counts, popularity scores or unrestricted private
+            messaging.
           </p>
           {state.eligible ? (
             <div className="mt-6 flex flex-wrap gap-2 text-xs">
               <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-blue-50">
-                {state.discover.length} discoverable {state.discover.length === 1 ? "Builder" : "Builders"}
+                {state.discover.length} discoverable{" "}
+                {state.discover.length === 1 ? "Builder" : "Builders"}
               </span>
               <span className="rounded-full border border-white/15 px-3 py-1.5 text-blue-100">
-                {state.connections.length} accepted {state.connections.length === 1 ? "connection" : "connections"}
+                {state.connections.length} accepted{" "}
+                {state.connections.length === 1 ? "connection" : "connections"}
               </span>
               {pendingCount > 0 ? (
                 <span className="rounded-full border border-[#f3c86b]/25 bg-[#f3c86b]/8 px-3 py-1.5 font-semibold text-[#f3c86b]">
@@ -331,10 +335,13 @@ export default async function ConnectPage({
             Builder World protected by safeguarding
           </p>
           <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-            Public discovery and direct contact sharing stay closed for younger Builders.
+            Public discovery and direct contact sharing stay closed for younger
+            Builders.
           </h2>
           <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
-            Your complete private PipuPath adventure remains available. Youth networking needs a dedicated guardian and institutional safeguarding system, so PipuPath will not reduce that protection to a checkbox.
+            Your complete private PipuPath adventure remains available. Youth
+            networking needs a dedicated guardian and institutional safeguarding
+            system, so PipuPath will not reduce that protection to a checkbox.
           </p>
           <ButtonLink href="/journey" className="mt-5">
             Continue My Adventure →
@@ -356,12 +363,13 @@ export default async function ConnectPage({
                 </h2>
               </div>
               <span className="text-muted max-w-sm text-xs leading-5">
-                Discovery is opt-in. Safe profile fields appear only when a Builder deliberately enables visibility.
+                Discovery is opt-in. Safe profile fields appear only when a
+                Builder deliberately enables visibility.
               </span>
             </div>
 
             {state.discover.length ? (
-              <div className="mt-5 flex gap-4 overflow-x-auto pb-3 [scrollbar-width:thin]">
+              <div className="mt-5 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
                 {state.discover.map((builder) => (
                   <BuilderCardView key={builder.userId} builder={builder} />
                 ))}
@@ -369,7 +377,8 @@ export default async function ConnectPage({
             ) : (
               <Surface className="mt-5 p-6">
                 <p className="text-muted text-sm leading-6">
-                  The Builder World is quiet right now. No other adult Builder has deliberately enabled discoverability yet.
+                  The Builder World is quiet right now. No other adult Builder
+                  has deliberately enabled discoverability yet.
                 </p>
               </Surface>
             )}
@@ -402,14 +411,18 @@ export default async function ConnectPage({
                       key={item.connectionId}
                       item={item}
                       profileHasEmail={Boolean(state.profile?.contactEmail)}
-                      profileHasWhatsapp={Boolean(state.profile?.contactWhatsapp)}
+                      profileHasWhatsapp={Boolean(
+                        state.profile?.contactWhatsapp,
+                      )}
                     />
                   ))}
                 </div>
               ) : (
                 <Surface className="mt-5 p-5">
                   <p className="text-muted text-sm leading-6">
-                    No accepted connections yet. Connection does not create messaging access; it opens only the relationship and consent controls PipuPath explicitly supports.
+                    No accepted connections yet. Connection does not create
+                    messaging access; it opens only the relationship and consent
+                    controls PipuPath explicitly supports.
                   </p>
                 </Surface>
               )}
@@ -423,7 +436,9 @@ export default async function ConnectPage({
                       Requests
                     </p>
                     <h3 className="text-navy mt-1 text-lg font-semibold">
-                      {pendingCount > 0 ? `${pendingCount} waiting` : "Nothing waiting"}
+                      {pendingCount > 0
+                        ? `${pendingCount} waiting`
+                        : "Nothing waiting"}
                     </h3>
                   </div>
                   <span className="border-border text-muted grid size-10 place-items-center rounded-xl border text-xs font-bold">
@@ -470,10 +485,14 @@ export default async function ConnectPage({
                 <summary className="text-navy cursor-pointer text-sm font-semibold">
                   My discovery profile & privacy
                 </summary>
-                <form action={saveConnectProfileAction} className="mt-5 grid gap-4">
+                <form
+                  action={saveConnectProfileAction}
+                  className="mt-5 grid gap-4"
+                >
                   <input type="hidden" name="returnTo" value="/connect" />
                   <label className="text-sm font-semibold">
-                    Interests <span className="text-muted">(comma separated)</span>
+                    Interests{" "}
+                    <span className="text-muted">(comma separated)</span>
                     <input
                       name="interests"
                       required
@@ -483,11 +502,14 @@ export default async function ConnectPage({
                     />
                   </label>
                   <label className="text-sm font-semibold">
-                    Capabilities <span className="text-muted">(comma separated)</span>
+                    Capabilities{" "}
+                    <span className="text-muted">(comma separated)</span>
                     <input
                       name="capabilities"
                       required
-                      defaultValue={state.profile?.capabilities.join(", ") ?? ""}
+                      defaultValue={
+                        state.profile?.capabilities.join(", ") ?? ""
+                      }
                       className={inputClass}
                       placeholder="teaching, design, research"
                     />
@@ -534,7 +556,9 @@ export default async function ConnectPage({
                       defaultValue={state.profile?.visibility ?? "private"}
                       className={inputClass}
                     >
-                      <option value="private">Private — not discoverable</option>
+                      <option value="private">
+                        Private — not discoverable
+                      </option>
                       <option value="discoverable">
                         Discoverable — show safe Builder fields
                       </option>
