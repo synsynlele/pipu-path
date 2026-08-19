@@ -6,7 +6,6 @@ import {
   getQuestById,
   questStatusLabel,
 } from "@/modules/quest/infrastructure/quest-dal";
-import { QuestEvidenceForm } from "@/modules/quest/ui/quest-evidence-form";
 import { QuestReflectionForm } from "@/modules/quest/ui/quest-reflection-form";
 import { QuestStartForm } from "@/modules/quest/ui/quest-start-form";
 
@@ -92,7 +91,6 @@ export default async function QuestFocusPage({
     journey,
     imageUrl,
   } = detail;
-  const today = new Date().toISOString().slice(0, 10);
   const status = quest.status as QuestStatus;
 
   return (
@@ -172,25 +170,41 @@ export default async function QuestFocusPage({
           ) : null}
 
           {quest.status === "active" ? (
-            <Surface className="border-primary/25 p-5 sm:p-7">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="text-primary text-xs font-semibold tracking-[0.15em] uppercase">
-                    Phase 2 · Act
-                  </p>
-                  <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-                    Do it in the real world. Bring back proof.
-                  </h2>
+            <Surface className="border-primary/25 overflow-hidden p-0">
+              <div className="p-5 sm:p-7">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-primary text-xs font-semibold tracking-[0.15em] uppercase">
+                      Phase 2 · Act
+                    </p>
+                    <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+                      Do it in the real world. Bring back proof.
+                    </h2>
+                  </div>
+                  <span className="border-gold/25 bg-gold/8 text-gold rounded-full border px-3 py-1.5 text-xs font-semibold">
+                    Proof unlocks reflection
+                  </span>
                 </div>
-                <span className="border-gold/25 bg-gold/8 text-gold rounded-full border px-3 py-1.5 text-xs font-semibold">
-                  Proof unlocks reflection
-                </span>
+                <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+                  Evidence does not need to look impressive. It needs to be true
+                  and connected to what you actually did.
+                </p>
               </div>
-              <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                Evidence does not need to look impressive. It needs to be true
-                and connected to what you actually did.
-              </p>
-              <QuestEvidenceForm questId={quest.id} today={today} />
+              <div className="border-primary/15 bg-primary-soft/20 border-t p-5 sm:p-7">
+                <p className="text-navy text-sm font-semibold">
+                  Finished the real-world action?
+                </p>
+                <p className="text-muted mt-1 max-w-2xl text-sm leading-6">
+                  Move into the dedicated Prove step to record what happened,
+                  add optional supporting evidence and unlock Reflection.
+                </p>
+                <ButtonLink
+                  href={`/quests/${quest.id}/proof`}
+                  className="mt-4 w-full touch-manipulation sm:w-auto"
+                >
+                  Continue to Prove →
+                </ButtonLink>
+              </div>
             </Surface>
           ) : null}
 
