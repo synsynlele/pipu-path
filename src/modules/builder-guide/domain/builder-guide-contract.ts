@@ -5,6 +5,7 @@ export const builderGuideIntents = [
   "improvement",
   "missing_evidence",
   "weekly_focus",
+  "growth_support",
 ] as const;
 
 export const builderGuideIntentSchema = z.enum(builderGuideIntents);
@@ -23,6 +24,21 @@ export const builderGuideDestinationSchema = z.enum(builderGuideDestinations);
 export type BuilderGuideDestination = z.infer<
   typeof builderGuideDestinationSchema
 >;
+
+export const growthPackKinds = ["book", "course", "skill", "practice"] as const;
+export const growthPackKindSchema = z.enum(growthPackKinds);
+export type GrowthPackKind = z.infer<typeof growthPackKindSchema>;
+
+export const growthPackItemSchema = z.object({
+  kind: growthPackKindSchema,
+  title: z.string().trim().min(3).max(180),
+  source: z.string().trim().min(2).max(140).nullable(),
+  whyNow: z.string().trim().min(20).max(500),
+  howToUse: z.string().trim().min(20).max(500),
+  verificationNote: z.string().trim().min(12).max(300),
+});
+
+export type GrowthPackItem = z.infer<typeof growthPackItemSchema>;
 
 export const builderGuideOutputSchema = z.object({
   schemaVersion: z.literal("builder-guide-v1"),
@@ -47,6 +63,7 @@ export const builderGuideOutputSchema = z.object({
     evidenceToCreate: z.string().trim().min(12).max(500),
     destination: builderGuideDestinationSchema,
   }),
+  growthPack: z.array(growthPackItemSchema).max(3).default([]),
   challenge: z.string().trim().min(12).max(600).nullable(),
   uncertainty: z.string().trim().min(12).max(500),
 });
