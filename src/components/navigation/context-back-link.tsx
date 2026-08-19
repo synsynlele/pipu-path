@@ -48,6 +48,13 @@ export function parentNavigationForPath(
   if (
     segments[0] === "quests" &&
     segments.length === 3 &&
+    segments[2] === "proof"
+  ) {
+    return { href: `/quests/${segments[1]}`, label: "Quest" };
+  }
+  if (
+    segments[0] === "quests" &&
+    segments.length === 3 &&
     segments[2] === "complete"
   ) {
     return { href: `/quests/${segments[1]}`, label: "Quest" };
