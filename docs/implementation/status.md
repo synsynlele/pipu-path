@@ -1,10 +1,11 @@
 # Implementation status
 
 **Current stage:** Stage 22 — Human Potential Adventure & Reliability  
-**Stage status:** Active — primary adventure experience implemented; static validation in progress  
+**Stage status:** Active — primary adventure experience plus Growth Pack implemented; canonical validation in progress  
 **Released baseline:** Stages 0–21  
 **Stage authority:** `docs/stages/stage-22-human-potential-adventure.md`  
 **Product direction authority:** `docs/product/human-potential-adventure-direction.md`  
+**Growth Pack authority:** `docs/product/growth-pack-direction.md`  
 **Draft PR:** #38 — Stage 22 — Human Potential Adventure & Reliability  
 **Last updated:** 2026-08-19
 
@@ -34,21 +35,28 @@ Primary experience language now aligns as:
 
 These are experience labels over the released domain model, not replacement persistence concepts.
 
+Learning support follows a separate locked rule:
+
+> **Growth Pack = what may help this Builder's current adventure now. Growth Library = where earlier contextual suggestions can be revisited.**
+
+Reading, opening a course or viewing a recommendation does not itself earn XP or strengthen a capability claim.
+
 ## Deployment control
 
 Branch: `agent/stage-22-human-potential-adventure`
 
 Automatic Vercel Preview deployment is suppressed for the implementation branch. Vercel quota remains conserved; one deliberate exact-head Preview is reserved for the final authenticated/mobile browser gate after static CI readiness.
 
-No Stage 22 Supabase schema change has been introduced. The experience work reuses released data, lifecycle and authorization.
+No Stage 22 Supabase schema change has been introduced. The experience and Growth Pack work reuse released data, JSON advice history, lifecycle and authorization.
 
 ## Gate A — Authority and audit
 
 ### Completed
 
 - locked `docs/product/human-potential-adventure-direction.md`;
+- locked `docs/product/growth-pack-direction.md`;
 - created `docs/stages/stage-22-human-potential-adventure.md`;
-- updated `AGENTS.md` so future implementation must read the Human Potential Adventure direction;
+- updated `AGENTS.md` so future implementation must read both Human Potential Adventure and Growth Pack direction;
 - advanced `PROJECT_STATE.md` to Stage 22;
 - preserved Mission → Journey → Quest → Evidence → Reflection → Capability → Project → Portfolio → Opportunity → Passport as the non-negotiable engine;
 - classified Mentor Network as post-MVP;
@@ -67,7 +75,7 @@ No Stage 22 Supabase schema change has been introduced. The experience work reus
 - successful Portfolio publishing now returns first to the authenticated Portfolio Studio so publication state can be confirmed before the Builder deliberately opens the public page;
 - draft Portfolio language no longer presents an unopenable public slug as though it were already live;
 - invalid/private Portfolio detail and preview states recover to safe parent routes;
-- deterministic contextual Back navigation added for deep Quest, Project, Portfolio, Opportunity, Connect, Profile, Passport and onboarding routes;
+- deterministic contextual Back navigation added for deep Quest, Project, Portfolio, Opportunity, Connect, Profile, Growth Library, Passport and onboarding routes;
 - active platform-admin role lookup added without changing backend authorization;
 - Adventure Home now exposes Mission Control only when an active platform-admin role is present;
 - contextual-navigation and Builder-level unit tests added;
@@ -174,6 +182,24 @@ Evidence-backed Skill Tree / Living Builder Profile:
 - Builder feedback controls and version history remain available;
 - if evidence is insufficient, PipuPath explicitly shows no capability rather than fabricating one.
 
+## Gate E2 — Growth Pack and Growth Library
+
+### Implemented; static/browser validation pending
+
+- added locked `docs/product/growth-pack-direction.md` so future chats/agents cannot turn learning support into a generic content feed;
+- extended Builder Guide with backward-compatible `growthPack` advice data and the new `growth_support` intent;
+- historical Builder Guide advice without `growthPack` remains parseable with an empty default;
+- AI may recommend up to three contextual `book`, `course`, `skill` or `practice` items;
+- resource rationale must be grounded in the Builder's current private evidence/workflow context;
+- specific books are allowed only when the model is confident the title/author are stable and real;
+- course recommendations must not invent URLs, current availability, fees, certificates or age eligibility;
+- minors receive an explicit responsible-adult/institution verification boundary where external provider rules matter;
+- deterministic fallback recommends what to learn/practise without inventing a specific unverifiable external resource;
+- added private `/growth` Growth Library, backed by existing Builder Guide history rather than a new database table;
+- Growth Library aggregates earlier Growth Pack suggestions while keeping their original Guide run/context available;
+- Profile tools expose Growth Library and main navigation keeps it inside the `Me` navigation context;
+- Growth Pack interaction awards no XP and does not independently change capability evidence.
+
 ## Validation ledger
 
 Draft PR #38 is open from the Preview-suppressed Stage 22 branch.
@@ -182,9 +208,11 @@ CI #1013 ran against head `148c1e4bb425d332aefccf4f9332dd50525c38f8` and failed 
 
 A temporary branch-only formatter workflow applied the repository's exact Prettier/Tailwind ordering to those source files, then was removed. The formatter commit was `b4c7c6c5004221ac9ea173f3fda5c8c720f942b5`; the workflow-removal commit was `f5a2a0a430a8e0b539b3a28935e066b52d1c67b0`.
 
-CI #1018 on the human-authored cleanup commit confirmed those source files were formatted and stopped only on `docs/implementation/status.md`, which had been updated after the formatter pass. Because format checking stops the validation pipeline, lint, TypeScript, coverage, integration and production build are not yet proven for the complete Stage 22 experience batch.
+CI #1018 on the human-authored cleanup commit confirmed those source files were formatted and stopped only on `docs/implementation/status.md`, which had been updated after the formatter pass.
 
-The complete primary experience batch is now frozen. The next action is one final exact repository formatter pass over all Stage 22 files changed since the previous formatter, followed by canonical CI. No Vercel Preview should be created until that CI is green.
+CI #1033 on head `3ce8cb44840e1c716743b4793ef47fe6d8b4e1d9` stopped at Prettier only because the newly transformed `src/app/connect/page.tsx` had not yet been included in the temporary formatter list. The validation pipeline therefore still has not proven lint, TypeScript, coverage, integration or production build for the complete Stage 22 batch.
+
+The final formatter workflow has now been expanded to cover Builder World plus the Growth Pack/Library files. It will be removed again before the canonical release-candidate CI. No Vercel Preview should be created until that CI is green.
 
 ## Gate F — Release proof
 
@@ -201,5 +229,6 @@ Not started. Required before release:
 - mobile viewport/navigation proof;
 - reduced-motion/accessibility proof;
 - exact reproduction/closure proof for the reported public-proof failure;
+- Growth Library/Growth Pack authenticated browser proof;
 - one deliberate exact-head Vercel Preview;
 - intentional merge and exact production verification.
