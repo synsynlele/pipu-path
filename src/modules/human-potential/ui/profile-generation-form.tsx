@@ -21,7 +21,11 @@ export function ProfileGenerationForm({
   return (
     <>
       <form action={action} aria-busy={pending}>
-        <Button type="submit" disabled={pending} className="gap-2">
+        <Button
+          type="submit"
+          disabled={pending}
+          className="w-full gap-2 sm:w-auto"
+        >
           {pending ? (
             <>
               <span
