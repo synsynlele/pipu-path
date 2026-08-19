@@ -17,6 +17,16 @@ async function signIn(page: Page) {
     .not.toBe("/login");
 }
 
+async function expectApplicationNavigation(page: Page) {
+  const navigation = page.getByRole("navigation", {
+    name: "PipuPath application",
+  });
+  await expect(navigation).toBeVisible();
+  for (const label of ["Home", "Journey", "Build", "Vault", "Connect", "Me"]) {
+    await expect(navigation.getByText(label, { exact: true })).toBeVisible();
+  }
+}
+
 test("Stage 22 exact-preview release proof", async ({ page }) => {
   const landing = await page.goto("/");
   expect(landing?.ok()).toBe(true);
@@ -61,14 +71,7 @@ test("Stage 22 exact-preview release proof", async ({ page }) => {
   await expect(page.getByText("⚡ Your next move", { exact: true })).toBeVisible();
   await expect(page.getByText("Adventure map", { exact: true })).toBeVisible();
   await expect(page.getByText("Builder level", { exact: true })).toBeVisible();
-
-  const desktopNavigation = page.getByRole("navigation", {
-    name: "PipuPath application",
-  });
-  await expect(desktopNavigation).toBeVisible();
-  for (const label of ["Home", "Journey", "Build", "Vault", "Connect", "Me"]) {
-    await expect(desktopNavigation.getByText(label, { exact: true })).toBeVisible();
-  }
+  await expectApplicationNavigation(page);
 
   await expect(
     page.getByText("Mission Control available", { exact: true }),
@@ -106,11 +109,11 @@ test("Stage 22 exact-preview release proof", async ({ page }) => {
     ),
   ).toBeVisible();
 
-  await page.goto("/journey");
-  await expect(
-    page.getByRole("navigation", { name: "PipuPath application" }),
-  ).toBeVisible();
-  await expect(page.getByText(/Application error/i)).toHaveCount(0);
+  for (const path of ["/mission", "/journey", "/connect"]) {
+    await page.goto(path);
+    await expectApplicationNavigation(page);
+    await expect(page.getByText(/Application error/i)).toHaveCount(0);
+  }
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/app");

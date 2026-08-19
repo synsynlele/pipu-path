@@ -66,7 +66,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/e2e/stage22-release-proof.spec.ts --project=chromium
         env:
-          E2E_BASE_URL: https://pipu-path-byppcesbv-copyartint-2860s-projects.vercel.app
+          E2E_BASE_URL: https://pipu-path-gu5fsfh3h-copyartint-2860s-projects.vercel.app
           E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
           E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
       - name: Upload Stage 22 browser traces on failure
