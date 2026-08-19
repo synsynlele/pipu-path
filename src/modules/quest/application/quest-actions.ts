@@ -16,7 +16,14 @@ import {
 } from "./quest-generation";
 
 const evidenceBucket = "quest-evidence";
-const acceptedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+const acceptedImageTypes = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+]);
 const maximumImageBytes = 5 * 1024 * 1024;
 
 export type QuestFormState =
@@ -27,6 +34,14 @@ function errorCode(error: unknown, fallback: QuestErrorCode) {
     /QUEST_[A-Z_]+/,
   )?.[0] as QuestErrorCode | undefined;
   return match ?? fallback;
+}
+
+function imageExtension(contentType: string) {
+  if (contentType === "image/png") return "png";
+  if (contentType === "image/webp") return "webp";
+  if (contentType === "image/heic") return "heic";
+  if (contentType === "image/heif") return "heif";
+  return "jpg";
 }
 
 export async function generateQuestPackAction(
@@ -104,13 +119,7 @@ export async function submitQuestEvidenceAction(
       };
     }
 
-    const extension =
-      image.type === "image/png"
-        ? "png"
-        : image.type === "image/webp"
-          ? "webp"
-          : "jpg";
-    uploadedPath = `${user.id}/${parsed.data.questId}/${crypto.randomUUID()}.${extension}`;
+    uploadedPath = `${user.id}/${parsed.data.questId}/${crypto.randomUUID()}.${imageExtension(image.type)}`;
 
     const { error: uploadError } = await client.storage
       .from(evidenceBucket)
