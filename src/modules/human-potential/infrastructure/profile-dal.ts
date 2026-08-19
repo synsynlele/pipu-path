@@ -109,11 +109,28 @@ export async function getCurrentHumanPotentialProfile() {
     typeof profileMetadata.summary === "string"
       ? profileMetadata.summary
       : "";
+  const generationMode =
+    typeof profileMetadata === "object" &&
+    profileMetadata !== null &&
+    "generation_mode" in profileMetadata &&
+    (profileMetadata.generation_mode === "openai" ||
+      profileMetadata.generation_mode === "evidence_fallback")
+      ? profileMetadata.generation_mode
+      : null;
+  const fallbackReason =
+    typeof profileMetadata === "object" &&
+    profileMetadata !== null &&
+    "fallback_reason" in profileMetadata &&
+    typeof profileMetadata.fallback_reason === "string"
+      ? profileMetadata.fallback_reason
+      : null;
 
   return {
     id: profile.id,
     createdAt: profile.created_at,
     summary,
+    generationMode,
+    fallbackReason,
     sections: bySection,
   };
 }
