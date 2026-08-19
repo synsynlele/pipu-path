@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 const phases = ["Understand", "Act", "Prove", "Reflect", "Reveal"] as const;
 
 function proofDestination(status: string, questId: string) {
-  return status === "active" ? `/quests/${questId}/proof` : `/quests/${questId}`;
+  return status === "active"
+    ? `/quests/${questId}/proof`
+    : `/quests/${questId}`;
 }
 
 export default async function QuestProofPage({

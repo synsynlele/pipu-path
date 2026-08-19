@@ -35,7 +35,9 @@ describe("Stage 22 proof-flow finalization", () => {
   });
 
   it("replaces a generic dead end with a deterministic recovery path", () => {
-    expect(questNotFound).toContain("This Quest is no longer your current proof step.");
+    expect(questNotFound).toContain(
+      "This Quest is no longer your current proof step.",
+    );
     expect(questNotFound).toContain('href="/quests"');
     expect(questNotFound).toContain('href="/app"');
   });

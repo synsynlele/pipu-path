@@ -46,10 +46,16 @@ export function QuestEvidenceForm({
             1
           </span>
           <div className="min-w-0 flex-1">
-            <label htmlFor="evidenceText" className="text-navy text-sm font-semibold">
+            <label
+              htmlFor="evidenceText"
+              className="text-navy text-sm font-semibold"
+            >
               Tell the proof story
             </label>
-            <p id="evidenceTextHelp" className="text-muted mt-1 text-sm leading-5">
+            <p
+              id="evidenceTextHelp"
+              className="text-muted mt-1 text-sm leading-5"
+            >
               What did you actually do, what happened, and what could another
               person honestly verify?
             </p>
@@ -61,7 +67,7 @@ export function QuestEvidenceForm({
               maxLength={2000}
               defaultValue={existingEvidence?.evidenceText}
               aria-describedby="evidenceTextHelp"
-              className="border-border bg-background focus:border-primary mt-3 min-h-40 w-full resize-y rounded-2xl border p-4 text-sm leading-6 shadow-sm outline-none transition-colors"
+              className="border-border bg-background focus:border-primary mt-3 min-h-40 w-full resize-y rounded-2xl border p-4 text-sm leading-6 shadow-sm transition-colors outline-none"
               placeholder="I tried…, the result was…, and the evidence I can point to is…"
             />
             <p className="text-muted mt-2 text-xs">
@@ -74,7 +80,9 @@ export function QuestEvidenceForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="border-border bg-background rounded-2xl border p-4">
-          <span className="text-navy text-sm font-semibold">Date of action</span>
+          <span className="text-navy text-sm font-semibold">
+            Date of action
+          </span>
           <span className="text-muted mt-1 block text-xs">
             When did the real-world action happen?
           </span>
@@ -85,13 +93,14 @@ export function QuestEvidenceForm({
             required
             max={today}
             defaultValue={existingEvidence?.happenedOn ?? today}
-            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full rounded-xl border px-3 text-sm outline-none transition-colors"
+            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full rounded-xl border px-3 text-sm transition-colors outline-none"
           />
         </label>
 
         <label className="border-border bg-background rounded-2xl border p-4">
           <span className="text-navy text-sm font-semibold">
-            Supporting link <span className="text-muted font-normal">(optional)</span>
+            Supporting link{" "}
+            <span className="text-muted font-normal">(optional)</span>
           </span>
           <span className="text-muted mt-1 block text-xs">
             Add only a link that genuinely supports the action.
@@ -103,7 +112,7 @@ export function QuestEvidenceForm({
             maxLength={500}
             defaultValue={existingEvidence?.evidenceLink ?? ""}
             placeholder="https://…"
-            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full rounded-xl border px-3 text-sm outline-none transition-colors"
+            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full rounded-xl border px-3 text-sm transition-colors outline-none"
           />
         </label>
       </div>
@@ -111,10 +120,17 @@ export function QuestEvidenceForm({
       <div className="border-border bg-soft/45 rounded-2xl border border-dashed p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <label htmlFor="evidenceImage" className="text-navy text-sm font-semibold">
-              Add a private image <span className="text-muted font-normal">(optional)</span>
+            <label
+              htmlFor="evidenceImage"
+              className="text-navy text-sm font-semibold"
+            >
+              Add a private image{" "}
+              <span className="text-muted font-normal">(optional)</span>
             </label>
-            <p id="evidenceImageHelp" className="text-muted mt-1 text-sm leading-5">
+            <p
+              id="evidenceImageHelp"
+              className="text-muted mt-1 text-sm leading-5"
+            >
               A photo or screenshot can strengthen the evidence when it adds
               useful context.
             </p>
@@ -141,7 +157,9 @@ export function QuestEvidenceForm({
 
       <div className="border-border flex flex-col gap-4 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-xl">
-          <p className="text-navy text-sm font-semibold">Your proof stays private.</p>
+          <p className="text-navy text-sm font-semibold">
+            Your proof stays private.
+          </p>
           <p className="text-muted mt-1 text-xs leading-5">
             Submitting this unlocks reflection. It does not publish the evidence
             to your Profile, Builder Vault or public proof page.

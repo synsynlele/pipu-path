@@ -68,13 +68,17 @@ test("authenticated Builder completes or verifies the current Quest with exactly
     name: "Proof created. Progress earned.",
   });
 
-  await expect(start.or(reflection).or(completed).or(page.getByText("Phase 2 · Act"))).toBeVisible({
+  await expect(
+    start.or(reflection).or(completed).or(page.getByText("Phase 2 · Act")),
+  ).toBeVisible({
     timeout: 15_000,
   });
 
   if (await start.isVisible()) {
     await start.click();
-    await expect(page.getByText("Phase 2 · Act").or(reflection).or(completed)).toBeVisible({
+    await expect(
+      page.getByText("Phase 2 · Act").or(reflection).or(completed),
+    ).toBeVisible({
       timeout: 30_000,
     });
   }
@@ -92,7 +96,9 @@ test("authenticated Builder completes or verifies the current Quest with exactly
       "I completed the practical action with a trusted participant and recorded the useful result and honest response.",
     );
     await page.getByRole("button", { name: "Submit Proof" }).click();
-    await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+$/, { timeout: 60_000 });
+    await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+$/, {
+      timeout: 60_000,
+    });
     await expect(reflection.or(completed)).toBeVisible({ timeout: 60_000 });
   }
 
