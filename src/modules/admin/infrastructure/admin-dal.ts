@@ -128,6 +128,25 @@ function isAdminRole(value: unknown): value is PlatformAdminRole {
   return ["owner", "operator", "moderator", "analyst"].includes(String(value));
 }
 
+export async function getCurrentPlatformAdminRole(): Promise<PlatformAdminRole | null> {
+  const server = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await server.auth.getUser();
+  if (!user) return null;
+
+  const service = asAdminClient(createServiceRoleSupabaseClient());
+  const { data: adminRow, error } = await service
+    .from("platform_admins")
+    .select("role,status")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle();
+  const admin = object(adminRow);
+
+  return !error && isAdminRole(admin.role) ? admin.role : null;
+}
+
 export async function getAdminDashboardState(
   windowDays = 30,
 ): Promise<AdminDashboardState> {
