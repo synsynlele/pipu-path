@@ -1,9 +1,11 @@
 import "server-only";
 
 import { requireOpenAIEnvironment } from "@/lib/config/env";
+import { createLogger } from "@/lib/observability/logger";
 
 const requestTimeoutMs = 45_000;
 const retryableStatuses = new Set([408, 409, 429, 500, 502, 503, 504]);
+const logger = createLogger();
 
 export type JsonSchema = Record<string, unknown>;
 
@@ -67,6 +69,34 @@ function parseStructuredOutput(payload: OpenAIResponsePayload) {
   }
 }
 
+function gpt5ReasoningEffort(model: string) {
+  if (/^gpt-5-pro(?:[.-]|$)/i.test(model)) return null;
+  if (/^gpt-5\.1(?:[.-]|$)/i.test(model)) return "low" as const;
+  if (/^gpt-5(?:[.-]|$)/i.test(model)) return "minimal" as const;
+  return null;
+}
+
+function supportsGpt5Verbosity(model: string) {
+  return /^gpt-5(?:[.-]|$)/i.test(model);
+}
+
+function retryReason(error: unknown) {
+  if (error instanceof OpenAIHttpError && retryableStatuses.has(error.status)) {
+    return error.message;
+  }
+  if (error instanceof Error && error.message === "OPENAI_TIMEOUT") {
+    return error.message;
+  }
+  if (error instanceof TypeError) return "OPENAI_NETWORK_ERROR";
+  return null;
+}
+
+function retryDelayMs(error: unknown) {
+  if (error instanceof OpenAIHttpError && error.status === 429) return 2_500;
+  if (error instanceof OpenAIHttpError) return 1_200;
+  return 700;
+}
+
 async function requestOnce(input: {
   apiKey: string;
   model: string;
@@ -78,6 +108,13 @@ async function requestOnce(input: {
 }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
+  const reasoningEffort = gpt5ReasoningEffort(input.model);
+  const lowLatencyControls = reasoningEffort
+    ? { reasoning: { effort: reasoningEffort } }
+    : {};
+  const lowVerbosityControls = supportsGpt5Verbosity(input.model)
+    ? { verbosity: "low" as const }
+    : {};
 
   try {
     // This server-only boundary keeps provider credentials and private prompts out of browser bundles.
@@ -94,7 +131,9 @@ async function requestOnce(input: {
         instructions: input.instructions,
         input: input.prompt,
         max_output_tokens: input.maxOutputTokens,
+        ...lowLatencyControls,
         text: {
+          ...lowVerbosityControls,
           format: {
             type: "json_schema",
             name: input.schemaName,
@@ -135,12 +174,13 @@ export async function requestOpenAIStructuredOutput(input: {
       return await requestOnce({ ...input, apiKey, model });
     } catch (error) {
       lastError = error;
-      if (
-        error instanceof OpenAIHttpError &&
-        retryableStatuses.has(error.status) &&
-        attempt === 0
-      ) {
-        await wait(error.status === 429 ? 2_500 : 1_200);
+      const reason = retryReason(error);
+      if (reason && attempt === 0) {
+        logger.warn("openai_structured_request_retry", {
+          attempt: attempt + 1,
+          reason,
+        });
+        await wait(retryDelayMs(error));
         continue;
       }
       throw error;

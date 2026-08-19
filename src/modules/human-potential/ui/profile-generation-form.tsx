@@ -9,7 +9,11 @@ import {
 
 const initialState: ProfileGenerationFormState = { status: "idle" };
 
-export function ProfileGenerationForm() {
+export function ProfileGenerationForm({
+  buttonLabel = "Generate my profile",
+}: {
+  buttonLabel?: string;
+} = {}) {
   const [state, action, pending] = useActionState(
     generateProfileAction,
     initialState,
@@ -17,7 +21,11 @@ export function ProfileGenerationForm() {
   return (
     <>
       <form action={action} aria-busy={pending}>
-        <Button type="submit" disabled={pending} className="gap-2">
+        <Button
+          type="submit"
+          disabled={pending}
+          className="w-full gap-2 sm:w-auto"
+        >
           {pending ? (
             <>
               <span
@@ -27,13 +35,13 @@ export function ProfileGenerationForm() {
               Analysing your responses…
             </>
           ) : (
-            "Generate my profile"
+            buttonLabel
           )}
         </Button>
         {pending ? (
           <p className="text-muted mt-4 text-sm leading-6" role="status">
-            PipuPath is analysing your Discovery responses. This can take up to
-            a minute.
+            PipuPath is connecting the evidence in your Discovery responses. A
+            brief provider retry may happen automatically if the AI is slow.
           </p>
         ) : null}
         {state.status === "error" ? (
@@ -58,7 +66,7 @@ export function ProfileGenerationForm() {
               Building your Human Potential Profile…
             </p>
             <p className="text-muted mt-2 text-sm leading-6">
-              PipuPath is connecting the evidence in your Discovery answers.
+              PipuPath is connecting patterns across your Discovery evidence.
             </p>
           </div>
         </div>
