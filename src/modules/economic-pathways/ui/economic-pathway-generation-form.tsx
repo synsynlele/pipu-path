@@ -17,12 +17,17 @@ export function EconomicPathwayGenerationForm() {
 
   return (
     <form action={action} aria-busy={pending}>
-      <Button type="submit" disabled={pending}>
+      <Button
+        type="submit"
+        disabled={pending}
+        className="w-full sm:w-auto"
+      >
         {pending ? "Exploring possible paths…" : "Explore Possible Paths"}
       </Button>
       {pending ? (
-        <p role="status" className="text-muted mt-3 text-sm">
-          Connecting your profile evidence to realistic paths you can test…
+        <p role="status" className="text-muted mt-3 text-sm leading-6">
+          Connecting your profile evidence to realistic paths you can test. A
+          brief provider retry may happen automatically if the AI is slow.
         </p>
       ) : null}
       {state.status === "error" ? (
