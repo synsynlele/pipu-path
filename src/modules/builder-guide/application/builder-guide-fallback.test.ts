@@ -108,6 +108,7 @@ describe("Stage 17 evidence fallback", () => {
     "improvement",
     "missing_evidence",
     "weekly_focus",
+    "growth_support",
   ] as const)("returns bounded %s guidance", (intent) => {
     const result = buildEvidenceBasedBuilderGuide(context, intent);
     expect(result.schemaVersion).toBe("builder-guide-v1");
@@ -116,6 +117,33 @@ describe("Stage 17 evidence fallback", () => {
     expect(context.availableDestinations).toContain(
       result.nextAction.destination,
     );
+  });
+
+  it("builds a three-part Growth Pack without inventing a verified resource", () => {
+    const result = buildEvidenceBasedBuilderGuide(context, "growth_support");
+    expect(result.growthPack).toHaveLength(3);
+    expect(result.growthPack.map((item) => item.kind)).toEqual([
+      "skill",
+      "course",
+      "book",
+    ]);
+    expect(result.growthPack[0]?.title).toContain("Communication");
+    expect(result.growthPack[1]?.verificationNote).toMatch(/verify/i);
+    expect(result.growthPack[2]?.verificationNote).toMatch(/does not invent/i);
+  });
+
+  it("adds an age-appropriate verification boundary for a minor's course suggestion", () => {
+    const minorContext: BuilderGuideContext = {
+      ...context,
+      ageBand: "16_17",
+      isMinor: true,
+    };
+    const result = buildEvidenceBasedBuilderGuide(
+      minorContext,
+      "growth_support",
+    );
+    const course = result.growthPack.find((item) => item.kind === "course");
+    expect(course?.verificationNote).toMatch(/responsible adult|institution/i);
   });
 
   it("prioritises the active Quest for the next action", () => {
@@ -215,6 +243,10 @@ describe("Stage 17 evidence fallback", () => {
       "weekly_focus",
     );
     const next = buildEvidenceBasedBuilderGuide(sparseContext, "next_move");
+    const growth = buildEvidenceBasedBuilderGuide(
+      sparseContext,
+      "growth_support",
+    );
 
     expect(improvement.evidenceObservations).toEqual([]);
     expect(improvement.title).toContain("completed action");
@@ -222,6 +254,7 @@ describe("Stage 17 evidence fallback", () => {
     expect(missing.title).toBe("Your profile needs more completed evidence");
     expect(weekly.focus.label).toBe("One completed development action");
     expect(next.summary).not.toContain("selected");
+    expect(growth.growthPack).toHaveLength(3);
   });
 
   it("uses evidence count to break equal-strength capability ties", () => {
