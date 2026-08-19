@@ -16,6 +16,9 @@ export function parentNavigationForPath(
   if (pathname === "/profile/verification") {
     return { href: "/profile", label: "Profile" };
   }
+  if (pathname === "/growth") {
+    return { href: "/profile", label: "Profile" };
+  }
   if (pathname === "/passport/preview") {
     return { href: "/passport", label: "Passport" };
   }
