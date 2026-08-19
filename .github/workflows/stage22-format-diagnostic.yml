@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format:
@@ -13,12 +13,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format changed UX files
+      - name: Apply canonical formatting
         run: |
           npx prettier --write \
             src/app/passport/page.tsx \
@@ -27,11 +29,20 @@ jobs:
             src/modules/passport/ui/passport-share-creator.tsx \
             src/modules/quest/ui/quest-evidence-form.tsx \
             tests/integration/stage-22-proof-flow.test.ts
-      - name: Print canonical diff
-        run: git diff -- \
-          src/app/passport/page.tsx \
-          src/components/navigation/app-navigation.test.tsx \
-          src/components/navigation/app-navigation.tsx \
-          src/modules/passport/ui/passport-share-creator.tsx \
-          src/modules/quest/ui/quest-evidence-form.tsx \
-          tests/integration/stage-22-proof-flow.test.ts
+      - name: Commit canonical formatting when needed
+        run: |
+          if git diff --quiet; then
+            echo "Formatting already canonical."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            src/app/passport/page.tsx \
+            src/components/navigation/app-navigation.test.tsx \
+            src/components/navigation/app-navigation.tsx \
+            src/modules/passport/ui/passport-share-creator.tsx \
+            src/modules/quest/ui/quest-evidence-form.tsx \
+            tests/integration/stage-22-proof-flow.test.ts
+          git commit -m "style(stage22): apply canonical formatting"
+          git push origin HEAD:${{ github.head_ref }}
