@@ -157,7 +157,7 @@ export function QuestEvidenceForm({
       </div>
 
       <div className="border-border flex min-w-0 flex-col gap-4 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 max-w-xl">
+        <div className="max-w-xl min-w-0">
           <p className="text-navy text-sm font-semibold">
             Your proof stays private.
           </p>

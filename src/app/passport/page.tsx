@@ -28,7 +28,10 @@ export default async function BuilderPassportPage({
 
   return (
     <AppShell>
-      <main id="main-content" className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10 lg:py-14">
+      <main
+        id="main-content"
+        className="mx-auto max-w-6xl px-4 py-8 sm:px-8 sm:py-10 lg:py-14"
+      >
         <header className="border-border bg-panel relative overflow-hidden rounded-[2rem] border p-6 shadow-[0_24px_80px_-48px_rgba(79,124,255,0.75)] sm:p-8 lg:flex lg:items-end lg:justify-between lg:gap-8">
           <div
             aria-hidden="true"

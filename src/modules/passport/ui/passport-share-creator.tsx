@@ -70,7 +70,7 @@ export function PassportShareCreator({ passportId }: { passportId: string }) {
           </select>
         </label>
         <Button
-          className="w-full self-end touch-manipulation md:w-auto"
+          className="w-full touch-manipulation self-end md:w-auto"
           disabled={pending}
           type="submit"
         >

@@ -33,9 +33,9 @@ describe("Stage 22 proof-flow finalization", () => {
 
   it("routes an active Quest into the dedicated Prove step", () => {
     expect(questFocus).not.toContain(
-      '<QuestEvidenceForm questId={quest.id} today={today} />',
+      "<QuestEvidenceForm questId={quest.id} today={today} />",
     );
-    expect(questFocus).toContain('href={`/quests/${quest.id}/proof`}');
+    expect(questFocus).toContain("href={`/quests/${quest.id}/proof`}");
     expect(questFocus).toContain("Continue to Prove →");
   });
 

@@ -59,7 +59,7 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 className={
                   mobile
                     ? `flex min-h-16 w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/75 active:text-white"}`
-                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary-light" : "text-blue-100/80 hover:bg-primary-soft/70 hover:text-white"}`
+                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary-light" : "hover:bg-primary-soft/70 text-blue-100/80 hover:text-white"}`
                 }
               >
                 <NavigationIcon name={item.icon} active={active} />
