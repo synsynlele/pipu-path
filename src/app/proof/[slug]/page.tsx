@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { getPublicPortfolioBySlug } from "@/modules/portfolio/infrastructure/portfolio-dal";
 import { PublicProofView } from "@/modules/portfolio/ui/public-proof-view";
 
@@ -28,6 +28,6 @@ export default async function PublicProjectProofPage({
 }) {
   const { slug } = await params;
   const proof = await getPublicPortfolioBySlug(slug);
-  if (!proof) notFound();
+  if (!proof) redirect("/proof-unavailable");
   return <PublicProofView proof={proof} />;
 }
