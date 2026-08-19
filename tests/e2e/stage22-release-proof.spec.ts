@@ -17,12 +17,7 @@ async function signIn(page: Page) {
     .not.toBe("/login");
 }
 
-test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
-  const isMobile = testInfo.project.name === "mobile";
-  const navigationName = isMobile
-    ? "PipuPath mobile navigation"
-    : "PipuPath application";
-
+test("Stage 22 exact-preview release proof", async ({ page }) => {
   const landing = await page.goto("/");
   expect(landing?.ok()).toBe(true);
   await expect(
@@ -67,10 +62,12 @@ test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
   await expect(page.getByText("Adventure map", { exact: true })).toBeVisible();
   await expect(page.getByText("Builder level", { exact: true })).toBeVisible();
 
-  const navigation = page.getByRole("navigation", { name: navigationName });
-  await expect(navigation).toBeVisible();
+  const desktopNavigation = page.getByRole("navigation", {
+    name: "PipuPath application",
+  });
+  await expect(desktopNavigation).toBeVisible();
   for (const label of ["Home", "Journey", "Build", "Vault", "Connect", "Me"]) {
-    await expect(navigation.getByText(label, { exact: true })).toBeVisible();
+    await expect(desktopNavigation.getByText(label, { exact: true })).toBeVisible();
   }
 
   await expect(
@@ -110,18 +107,27 @@ test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
   ).toBeVisible();
 
   await page.goto("/journey");
-  await expect(page.getByRole("navigation", { name: navigationName })).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "PipuPath application" }),
+  ).toBeVisible();
   await expect(page.getByText(/Application error/i)).toHaveCount(0);
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/app");
   await expect(page.getByText("⚡ Your next move", { exact: true })).toBeVisible();
-  await expect(page.getByRole("navigation", { name: navigationName })).toBeVisible();
 
-  if (isMobile) {
-    const hasHorizontalOverflow = await page.evaluate(
-      () => document.documentElement.scrollWidth > window.innerWidth + 1,
-    );
-    expect(hasHorizontalOverflow).toBe(false);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/app");
+  const mobileNavigation = page.getByRole("navigation", {
+    name: "PipuPath mobile navigation",
+  });
+  await expect(mobileNavigation).toBeVisible();
+  for (const label of ["Home", "Journey", "Build", "Vault", "Connect", "Me"]) {
+    await expect(mobileNavigation.getByText(label, { exact: true })).toBeVisible();
   }
+  await expect(page.getByText("⚡ Your next move", { exact: true })).toBeVisible();
+  const hasHorizontalOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > window.innerWidth + 1,
+  );
+  expect(hasHorizontalOverflow).toBe(false);
 });
