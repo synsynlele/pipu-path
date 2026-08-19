@@ -1,6 +1,7 @@
 import { BrandMark } from "@/components/brand/brand-mark";
-import { Button } from "@/components/ui/button";
+import { ContextBackLink } from "@/components/navigation/context-back-link";
 import { AppNavigation } from "@/components/navigation/app-navigation";
+import { Button } from "@/components/ui/button";
 import { signOutAction } from "@/modules/identity/application/auth-actions";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -14,8 +15,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </a>
 
       <header className="border-border bg-panel/92 sticky top-0 z-50 border-b backdrop-blur-xl">
-        <div className="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-5 px-5 sm:px-8 lg:px-10">
-          <BrandMark href="/app" />
+        <div className="mx-auto flex min-h-18 max-w-7xl items-center justify-between gap-3 px-5 sm:gap-5 sm:px-8 lg:px-10">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <ContextBackLink />
+            <BrandMark href="/app" />
+          </div>
           <div className="hidden lg:block">
             <AppNavigation />
           </div>
@@ -23,7 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Button
               type="submit"
               variant="ghost"
-              className="min-h-10 px-3 whitespace-nowrap sm:px-3.5"
+              className="min-h-10 px-2.5 whitespace-nowrap sm:px-3.5"
             >
               Sign out
             </Button>
