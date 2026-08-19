@@ -65,10 +65,7 @@ function CampaignBrief({ mission }: { mission: DisplayMission }) {
             ["Current caution", mission.current_caution],
             ["Why this fits you", mission.why_this_fits],
           ].map(([label, value], index) => (
-            <div
-              key={label}
-              className={index === 2 ? "sm:col-span-2" : ""}
-            >
+            <div key={label} className={index === 2 ? "sm:col-span-2" : ""}>
               <h3 className="text-gold text-xs font-semibold tracking-wide uppercase">
                 {label}
               </h3>
@@ -132,7 +129,8 @@ export default async function MissionPage() {
             Discover your starting point first.
           </h2>
           <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-            Your Human Potential Profile gives the Mission evidence to work from instead of inventing a direction for you.
+            Your Human Potential Profile gives the Mission evidence to work from
+            instead of inventing a direction for you.
           </p>
           <ButtonLink href="/onboarding/discovery/profile" className="mt-5">
             Open My Potential Profile →
@@ -166,7 +164,8 @@ export default async function MissionPage() {
                 Campaign rule
               </p>
               <p className="text-muted mt-2 text-sm leading-6">
-                Do not prove that this is your forever path. Prove what you can learn, build and contribute next.
+                Do not prove that this is your forever path. Prove what you can
+                learn, build and contribute next.
               </p>
             </Surface>
             {context.selectedPath ? (
@@ -209,7 +208,8 @@ export default async function MissionPage() {
                 You still own the direction
               </p>
               <p className="text-muted mt-2 text-sm leading-6">
-                PipuPath can shape the Campaign, but you choose whether it is a useful experiment.
+                PipuPath can shape the Campaign, but you choose whether it is a
+                useful experiment.
               </p>
             </Surface>
             <details className="border-border bg-panel rounded-2xl border p-5">
@@ -234,7 +234,8 @@ export default async function MissionPage() {
             Pick one Possible Path to test.
           </h2>
           <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-            You are not choosing your whole future. You are choosing which possibility deserves the next real experiment.
+            You are not choosing your whole future. You are choosing which
+            possibility deserves the next real experiment.
           </p>
           <ButtonLink href="/onboarding/discovery/profile" className="mt-5">
             Explore Possible Paths →
@@ -250,7 +251,9 @@ export default async function MissionPage() {
               Turn {context.selectedPath.pathName} into one practical test.
             </h2>
             <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-              The Campaign will aim for a reachable useful outcome that develops capability and gives you evidence before you commit more time or resources.
+              The Campaign will aim for a reachable useful outcome that develops
+              capability and gives you evidence before you commit more time or
+              resources.
             </p>
             <div className="mt-5">
               <MissionGenerationForm

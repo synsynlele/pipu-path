@@ -31,7 +31,9 @@ export default async function MissionCompletePage() {
             Direction chosen. The map can now open.
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-blue-50/75 sm:text-base">
-            Your Campaign is saved. The Journey will turn this direction into practical chapters, then Quests will move those chapters into real life.
+            Your Campaign is saved. The Journey will turn this direction into
+            practical chapters, then Quests will move those chapters into real
+            life.
           </p>
         </div>
       </section>

@@ -141,7 +141,7 @@ export default async function ProjectDetailPage({
                       >
                         {projectMilestoneStatusLabel(milestone.status)}
                       </p>
-                      <h3 className="text-navy mt-1 line-clamp-2 text-sm font-semibold leading-5">
+                      <h3 className="text-navy mt-1 line-clamp-2 text-sm leading-5 font-semibold">
                         {milestone.title}
                       </h3>
                     </div>
@@ -156,7 +156,8 @@ export default async function ProjectDetailPage({
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-primary text-xs font-semibold tracking-[0.15em] uppercase">
-                    Build focus now · Milestone {currentMilestone.sequence_order}
+                    Build focus now · Milestone{" "}
+                    {currentMilestone.sequence_order}
                   </p>
                   <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
                     {currentMilestone.title}
@@ -185,7 +186,7 @@ export default async function ProjectDetailPage({
               </div>
             </Surface>
           ) : (
-            <Surface className="relative overflow-hidden border-gold/30 bg-gold/5 p-6 sm:p-8">
+            <Surface className="border-gold/30 bg-gold/5 relative overflow-hidden p-6 sm:p-8">
               <div
                 aria-hidden="true"
                 className="bg-gold/10 absolute -top-16 -right-16 size-48 rounded-full blur-3xl"
@@ -198,7 +199,8 @@ export default async function ProjectDetailPage({
                   You built something with an evidence trail.
                 </h2>
                 <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                  The full Project remains private. Choose only what you want to turn into public-safe Builder Vault proof.
+                  The full Project remains private. Choose only what you want to
+                  turn into public-safe Builder Vault proof.
                 </p>
                 <ButtonLink href={`/portfolio/${project.id}`} className="mt-5">
                   Prepare Builder Vault Proof →
@@ -218,7 +220,10 @@ export default async function ProjectDetailPage({
                 ["Smallest useful version", project.smallest_useful_version],
                 ["Success signal", project.success_signal],
               ].map(([label, value]) => (
-                <div key={label} className="border-border rounded-xl border p-4">
+                <div
+                  key={label}
+                  className="border-border rounded-xl border p-4"
+                >
                   <dt className="text-muted text-xs tracking-wide uppercase">
                     {label}
                   </dt>
@@ -257,15 +262,21 @@ export default async function ProjectDetailPage({
                 {updates.map((update) => {
                   const milestone = milestoneById.get(update.milestone_id);
                   return (
-                    <li key={update.id} className="border-border border-l-2 pl-4">
+                    <li
+                      key={update.id}
+                      className="border-border border-l-2 pl-4"
+                    >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="text-navy text-xs font-semibold">
                           {milestone?.title ?? "Project milestone"}
                         </p>
                         <span className="text-muted text-[0.7rem]">
-                          {new Date(update.created_at).toLocaleDateString("en", {
-                            dateStyle: "medium",
-                          })}
+                          {new Date(update.created_at).toLocaleDateString(
+                            "en",
+                            {
+                              dateStyle: "medium",
+                            },
+                          )}
                         </span>
                       </div>
                       <p className="text-muted mt-2 text-sm leading-6">

@@ -57,7 +57,9 @@ export default async function LivingBuilderProfilePage() {
             Watch potential turn into evidence.
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
-            Discovery suggests what may be possible. Quests, Projects and confirmed collaboration show what you are actually demonstrating over time.
+            Discovery suggests what may be possible. Quests, Projects and
+            confirmed collaboration show what you are actually demonstrating
+            over time.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             {baseline ? (
@@ -85,9 +87,12 @@ export default async function LivingBuilderProfilePage() {
 
       <div className="border-gold/20 bg-gold/5 mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 sm:px-5">
         <div>
-          <p className="text-navy text-sm font-semibold">Private development space</p>
+          <p className="text-navy text-sm font-semibold">
+            Private development space
+          </p>
           <p className="text-muted mt-0.5 text-xs">
-            Capability claims come from completed evidence. Nothing here becomes public automatically.
+            Capability claims come from completed evidence. Nothing here becomes
+            public automatically.
           </p>
         </div>
         {baseline ? (
@@ -109,7 +114,8 @@ export default async function LivingBuilderProfilePage() {
             Discovery creates the starting point.
           </h2>
           <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-            Complete your private Human Potential Profile first. The Skill Tree will then grow only from real evidence.
+            Complete your private Human Potential Profile first. The Skill Tree
+            will then grow only from real evidence.
           </p>
           <ButtonLink href="/onboarding/discovery" className="mt-5">
             Begin Discovery
@@ -124,7 +130,9 @@ export default async function LivingBuilderProfilePage() {
             Build your first evidence-backed Skill Tree.
           </h2>
           <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
-            PipuPath will use only completed Quests with evidence and reflection, completed Projects and mutually confirmed collaboration. If the proof is not there yet, no capability will be invented.
+            PipuPath will use only completed Quests with evidence and
+            reflection, completed Projects and mutually confirmed collaboration.
+            If the proof is not there yet, no capability will be invented.
           </p>
           <form action={refreshLivingBuilderProfileAction} className="mt-5">
             <Button type="submit">Build My Skill Tree →</Button>
@@ -160,7 +168,8 @@ export default async function LivingBuilderProfilePage() {
                     No capability has enough proof yet.
                   </h3>
                   <p className="text-muted mt-2 text-sm leading-6">
-                    This is not failure. Clear more real-world Quests, complete a Project or collaborate, then refresh the tree.
+                    This is not failure. Clear more real-world Quests, complete
+                    a Project or collaborate, then refresh the tree.
                   </p>
                   <ButtonLink href="/build" className="mt-5">
                     Go Build Something →
@@ -184,7 +193,7 @@ export default async function LivingBuilderProfilePage() {
                   {profile.capabilities.map((capability) => (
                     <details
                       key={capability.id}
-                      className="border-border bg-panel group relative rounded-2xl border p-5 open:border-primary/25"
+                      className="border-border bg-panel group open:border-primary/25 relative rounded-2xl border p-5"
                     >
                       <summary className="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                         <div className="flex items-start gap-4">
@@ -203,7 +212,9 @@ export default async function LivingBuilderProfilePage() {
                             </h3>
                             <p className="text-muted mt-1 text-xs">
                               {capability.evidenceCount} evidence{" "}
-                              {capability.evidenceCount === 1 ? "record" : "records"}
+                              {capability.evidenceCount === 1
+                                ? "record"
+                                : "records"}
                             </p>
                           </div>
                           <span
@@ -231,7 +242,9 @@ export default async function LivingBuilderProfilePage() {
                                   {evidence.sourceTitle}
                                 </span>
                                 <span className="text-muted text-[0.68rem]">
-                                  {capabilityVerificationLabel(evidence.verification)}
+                                  {capabilityVerificationLabel(
+                                    evidence.verification,
+                                  )}
                                 </span>
                               </div>
                               <p className="text-muted mt-2 text-xs leading-5">
@@ -314,7 +327,9 @@ export default async function LivingBuilderProfilePage() {
               {profile.history.length === 1 ? "snapshot" : "snapshots"}
             </summary>
             <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
-              Refreshes create new private versions instead of rewriting your history. You can see how demonstrated capability changes as evidence accumulates.
+              Refreshes create new private versions instead of rewriting your
+              history. You can see how demonstrated capability changes as
+              evidence accumulates.
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {profile.history.map((version) => (
@@ -322,7 +337,9 @@ export default async function LivingBuilderProfilePage() {
                   key={version.id}
                   className="border-border rounded-xl border p-4 text-sm"
                 >
-                  <strong className="text-navy">Version {version.version}</strong>
+                  <strong className="text-navy">
+                    Version {version.version}
+                  </strong>
                   <span className="text-muted mt-1 block text-xs">
                     {version.capabilityCount} capability{" "}
                     {version.capabilityCount === 1 ? "claim" : "claims"} ·{" "}

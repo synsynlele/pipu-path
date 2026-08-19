@@ -91,7 +91,8 @@ export default async function QuestsPage() {
             Enter an active Journey first.
           </h2>
           <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-            Quests grow from the current Journey milestone. PipuPath does not invent disconnected activities just to keep you busy.
+            Quests grow from the current Journey milestone. PipuPath does not
+            invent disconnected activities just to keep you busy.
           </p>
           <ButtonLink href="/journey" className="mt-5">
             Open Journey Map →
@@ -107,7 +108,8 @@ export default async function QuestsPage() {
               Shape three challenges for this chapter.
             </h2>
             <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-              Quest 1 creates a useful result. Quest 2 tests and improves it. Quest 3 demonstrates stronger capability and clears the milestone.
+              Quest 1 creates a useful result. Quest 2 tests and improves it.
+              Quest 3 demonstrates stronger capability and clears the milestone.
             </p>
             <div className="mt-5">
               <QuestGenerationForm attemptsRemaining={attemptsRemaining} />
@@ -146,7 +148,10 @@ export default async function QuestsPage() {
                 </span>
               </div>
 
-              <ol className="mt-7 grid grid-cols-3 gap-2" aria-label="Quest chain">
+              <ol
+                className="mt-7 grid grid-cols-3 gap-2"
+                aria-label="Quest chain"
+              >
                 {state.quests.map((quest, index) => {
                   const completed = quest.status === "completed";
                   const current = quest.id === currentQuest?.id;
@@ -176,7 +181,7 @@ export default async function QuestsPage() {
                         >
                           Quest {quest.sequence_order}
                         </p>
-                        <h3 className="text-navy mt-1 line-clamp-2 text-sm font-semibold leading-5">
+                        <h3 className="text-navy mt-1 line-clamp-2 text-sm leading-5 font-semibold">
                           {quest.title}
                         </h3>
                         <p className="text-muted mt-1 text-[0.68rem]">
@@ -281,7 +286,8 @@ export default async function QuestsPage() {
                   The PipuPath rule
                 </p>
                 <p className="text-muted mt-2 text-sm leading-6">
-                  Do something real → bring back proof → reflect → let the saved evidence decide what opens next.
+                  Do something real → bring back proof → reflect → let the saved
+                  evidence decide what opens next.
                 </p>
               </Surface>
             </aside>

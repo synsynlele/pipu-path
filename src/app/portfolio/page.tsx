@@ -34,14 +34,19 @@ export default async function PortfolioPage() {
             Your real builds live here. You decide what leaves the Vault.
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
-            Completed Projects become evidence you can keep private, shape into a safe public presentation, or later carry through your Builder Passport.
+            Completed Projects become evidence you can keep private, shape into
+            a safe public presentation, or later carry through your Builder
+            Passport.
           </p>
           <div className="mt-6 flex flex-wrap gap-2 text-xs">
             <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-blue-50">
-              {state.projects.length} completed {state.projects.length === 1 ? "build" : "builds"}
+              {state.projects.length} completed{" "}
+              {state.projects.length === 1 ? "build" : "builds"}
             </span>
             <span className="rounded-full border border-[#f3c86b]/25 bg-[#f3c86b]/8 px-3 py-1.5 font-semibold text-[#f3c86b]">
-              {state.published ? "1 proof deployed" : "No public proof deployed"}
+              {state.published
+                ? "1 proof deployed"
+                : "No public proof deployed"}
             </span>
           </div>
         </div>
@@ -49,9 +54,12 @@ export default async function PortfolioPage() {
 
       <div className="border-gold/20 bg-gold/5 mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 sm:px-5">
         <div>
-          <p className="text-navy text-sm font-semibold">Vault rule: private by default</p>
+          <p className="text-navy text-sm font-semibold">
+            Vault rule: private by default
+          </p>
           <p className="text-muted mt-0.5 text-xs">
-            Raw Quest evidence, reflection and private Project updates never leave the Vault automatically.
+            Raw Quest evidence, reflection and private Project updates never
+            leave the Vault automatically.
           </p>
         </div>
         <ButtonLink href="/passport" variant="secondary" className="min-h-10">
@@ -68,7 +76,10 @@ export default async function PortfolioPage() {
             Your Vault works. Public Project publishing stays closed for now.
           </h2>
           <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
-            Younger Builders keep every private Mission, Journey, Quest, capability and Project. Public Project proof needs a dedicated guardian-consent and safeguarding workflow; PipuPath will not reduce that protection to a checkbox.
+            Younger Builders keep every private Mission, Journey, Quest,
+            capability and Project. Public Project proof needs a dedicated
+            guardian-consent and safeguarding workflow; PipuPath will not reduce
+            that protection to a checkbox.
           </p>
           <ButtonLink href="/projects" className="mt-5">
             Continue Major Builds →
@@ -87,7 +98,8 @@ export default async function PortfolioPage() {
               Complete a Major Build to create your first Vault artifact.
             </h2>
             <p className="text-muted mt-3 text-sm leading-6">
-              A Portfolio item grows from verified execution—not from an idea, bio or unfinished plan.
+              A Portfolio item grows from verified execution—not from an idea,
+              bio or unfinished plan.
             </p>
             <ButtonLink href="/projects" className="mt-5">
               Open Major Builds →
@@ -107,7 +119,8 @@ export default async function PortfolioPage() {
                     {state.published.public_title}
                   </h2>
                   <p className="text-muted mt-3 text-sm leading-6">
-                    Only the fields you deliberately selected are public. The underlying Project evidence remains protected.
+                    Only the fields you deliberately selected are public. The
+                    underlying Project evidence remains protected.
                   </p>
                 </div>
                 <span className="border-success/20 bg-success/10 text-success rounded-full border px-3 py-1.5 text-xs font-semibold">
@@ -135,7 +148,8 @@ export default async function PortfolioPage() {
                 Your completed work is ready when you choose to present it.
               </h2>
               <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
-                Preparing a draft does not publish anything. You review the exact public-safe presentation before explicit consent.
+                Preparing a draft does not publish anything. You review the
+                exact public-safe presentation before explicit consent.
               </p>
             </Surface>
           )}
@@ -154,11 +168,12 @@ export default async function PortfolioPage() {
                 </h2>
               </div>
               <span className="text-muted max-w-sm text-xs leading-5">
-                A public presentation is a selected view of a private Build—not the raw Build itself.
+                A public presentation is a selected view of a private Build—not
+                the raw Build itself.
               </span>
             </div>
 
-            <div className="mt-5 flex gap-4 overflow-x-auto pb-3 [scrollbar-width:thin]">
+            <div className="mt-5 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
               {state.projects.map(({ project, portfolio }) => {
                 const status = portfolio
                   ? portfolioStatusLabel(portfolio.status)
@@ -228,7 +243,8 @@ export default async function PortfolioPage() {
           <p>
             <strong className="text-navy block">Pull it back</strong>
             <span className="text-muted mt-1 block">
-              Withdrawal removes anonymous access without deleting private history.
+              Withdrawal removes anonymous access without deleting private
+              history.
             </span>
           </p>
         </div>

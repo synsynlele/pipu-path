@@ -192,7 +192,9 @@ function MatchCard({
               </ul>
             ) : (
               <p className="text-muted mt-2 text-sm leading-6">
-                No unresolved age, location or capability check was identified by current PipuPath rules. Always read the official eligibility before applying.
+                No unresolved age, location or capability check was identified
+                by current PipuPath rules. Always read the official eligibility
+                before applying.
               </p>
             )}
           </div>
@@ -220,7 +222,11 @@ function MatchCard({
           )}
           <form action={setOpportunitySavedAction}>
             <input type="hidden" name="opportunityId" value={item.id} />
-            <input type="hidden" name="saved" value={saved ? "false" : "true"} />
+            <input
+              type="hidden"
+              name="saved"
+              value={saved ? "false" : "true"}
+            />
             <Button type="submit" variant="ghost">
               {saved ? "Unsave" : "Save"}
             </Button>
@@ -238,7 +244,8 @@ function MatchCard({
 
         {native && isMinor ? (
           <p className="mt-3 text-xs font-semibold text-amber-800">
-            Provider application submission is adult-only in the current safeguarding boundary. You can still evaluate the opportunity.
+            Provider application submission is adult-only in the current
+            safeguarding boundary. You can still evaluate the opportunity.
           </p>
         ) : null}
 
@@ -259,7 +266,8 @@ function MatchCard({
               External application tracked
             </summary>
             <p className="text-muted mt-2 text-xs leading-5">
-              This application and its outcome are self-reported; PipuPath has not independently verified them.
+              This application and its outcome are self-reported; PipuPath has
+              not independently verified them.
             </p>
             <OutcomeForm item={item} />
           </details>
@@ -293,7 +301,8 @@ function TrackedApplicationCard({ item }: { item: MarketplaceCatalogItem }) {
       {native && item.applicationStatus ? (
         <>
           <p className="text-muted mt-4 text-xs leading-5">
-            Your controlled application record remains available even if new applications close.
+            Your controlled application record remains available even if new
+            applications close.
           </p>
           <ButtonLink href={`/opportunities/${item.id}/apply`} className="mt-4">
             Open Application Trail
@@ -302,7 +311,8 @@ function TrackedApplicationCard({ item }: { item: MarketplaceCatalogItem }) {
       ) : (
         <>
           <p className="text-muted mt-4 text-xs leading-5">
-            This external opportunity is no longer an active match, but your self-reported application trail remains yours.
+            This external opportunity is no longer an active match, but your
+            self-reported application trail remains yours.
           </p>
           <details className="border-primary/20 bg-primary-soft mt-4 rounded-xl border p-3">
             <summary className="text-primary cursor-pointer text-xs font-semibold">
@@ -352,15 +362,18 @@ export default async function OpportunitiesPage({
             Build capability here. Deploy it into a bigger real-world test.
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
-            These doors are curated from real opportunities. PipuPath explains why one may fit, but never pretends to know who will select you.
+            These doors are curated from real opportunities. PipuPath explains
+            why one may fit, but never pretends to know who will select you.
           </p>
           <div className="mt-6 flex flex-wrap gap-2 text-xs">
             <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-blue-50">
-              {workspace.matches.length} open {workspace.matches.length === 1 ? "door" : "doors"}
+              {workspace.matches.length} open{" "}
+              {workspace.matches.length === 1 ? "door" : "doors"}
             </span>
             {strongMatches > 0 ? (
               <span className="rounded-full border border-[#f3c86b]/25 bg-[#f3c86b]/8 px-3 py-1.5 font-semibold text-[#f3c86b]">
-                {strongMatches} strong {strongMatches === 1 ? "match" : "matches"}
+                {strongMatches} strong{" "}
+                {strongMatches === 1 ? "match" : "matches"}
               </span>
             ) : null}
             {workspace.selectedPathName ? (
@@ -378,7 +391,8 @@ export default async function OpportunitiesPage({
             Matching is guidance, not a hidden employability score
           </p>
           <p className="text-muted mt-0.5 text-xs">
-            Age band, country when supplied, selected path and demonstrated capability labels are used; unknowns stay explicit.
+            Age band, country when supplied, selected path and demonstrated
+            capability labels are used; unknowns stay explicit.
           </p>
         </div>
         <ButtonLink href="/profile" variant="secondary" className="min-h-10">
@@ -409,7 +423,8 @@ export default async function OpportunitiesPage({
             </h2>
           </div>
           <span className="text-muted max-w-sm text-xs leading-5">
-            Inspect the fit, verify official eligibility, then decide whether this opportunity is worth your effort.
+            Inspect the fit, verify official eligibility, then decide whether
+            this opportunity is worth your effort.
           </span>
         </div>
 
@@ -439,7 +454,9 @@ export default async function OpportunitiesPage({
                 This is a supply state, not a judgement about your potential.
               </h3>
               <p className="text-muted mt-3 text-sm leading-6">
-                There may be no currently published opportunity that passes your known eligibility boundaries. Keep building; new vetted supply can appear without changing who you are.
+                There may be no currently published opportunity that passes your
+                known eligibility boundaries. Keep building; new vetted supply
+                can appear without changing who you are.
               </p>
               <ButtonLink href="/build" className="mt-5">
                 Continue Building →
@@ -467,7 +484,7 @@ export default async function OpportunitiesPage({
               {workspace.trackedApplications.length} tracked
             </span>
           </div>
-          <div className="mt-5 flex gap-4 overflow-x-auto pb-3 [scrollbar-width:thin]">
+          <div className="mt-5 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
             {workspace.trackedApplications.map((item) => (
               <TrackedApplicationCard key={item.id} item={item} />
             ))}
@@ -476,7 +493,8 @@ export default async function OpportunitiesPage({
       ) : null}
 
       <p className="text-muted mt-8 text-center text-xs leading-5">
-        Always read official eligibility and terms before applying. PipuPath never promises selection, income or provider outcomes.
+        Always read official eligibility and terms before applying. PipuPath
+        never promises selection, income or provider outcomes.
       </p>
     </main>
   );

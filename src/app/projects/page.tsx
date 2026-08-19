@@ -120,7 +120,7 @@ export default async function ProjectsPage() {
                       >
                         Milestone {milestone.sequence_order}
                       </p>
-                      <h3 className="text-navy mt-1 line-clamp-2 text-sm font-semibold leading-5">
+                      <h3 className="text-navy mt-1 line-clamp-2 text-sm leading-5 font-semibold">
                         {milestone.title}
                       </h3>
                     </div>
@@ -180,11 +180,13 @@ export default async function ProjectsPage() {
                   {active.updates.length}
                 </span>
                 <span className="text-muted pb-1 text-xs">
-                  private progress {active.updates.length === 1 ? "record" : "records"}
+                  private progress{" "}
+                  {active.updates.length === 1 ? "record" : "records"}
                 </span>
               </div>
               <p className="text-muted mt-2 text-xs leading-5">
-                Evidence remains private until you deliberately prepare selected Portfolio proof.
+                Evidence remains private until you deliberately prepare selected
+                Portfolio proof.
               </p>
             </Surface>
           </div>
@@ -203,7 +205,8 @@ export default async function ProjectsPage() {
                   Your next challenge is larger than one Quest.
                 </h2>
                 <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                  Completed evidence-backed action can now become one focused Builder Project for real people.
+                  Completed evidence-backed action can now become one focused
+                  Builder Project for real people.
                 </p>
                 <ButtonLink href="/projects/new" className="mt-5">
                   Define My Major Build →
@@ -218,7 +221,8 @@ export default async function ProjectsPage() {
                   Clear a Quest with proof first.
                 </h2>
                 <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                  PipuPath will not create a Project from an idea alone. Act, prove and reflect first; then the larger Build opens.
+                  PipuPath will not create a Project from an idea alone. Act,
+                  prove and reflect first; then the larger Build opens.
                 </p>
                 <ButtonLink href="/quests" className="mt-5">
                   Return to Quests
@@ -261,7 +265,7 @@ export default async function ProjectsPage() {
               Major Builds you have completed
             </h2>
           </div>
-          <div className="mt-4 flex gap-4 overflow-x-auto pb-3 [scrollbar-width:thin]">
+          <div className="mt-4 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
             {state.history.map((project) => (
               <Surface key={project.id} className="w-72 shrink-0 p-5">
                 <p className="text-success text-xs font-semibold tracking-wide uppercase">
