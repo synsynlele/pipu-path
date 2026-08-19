@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 22 — Human Potential Adventure & Reliability  
-**Stage status:** Active — first reliability/adventure batch implemented; validation in progress  
+**Stage status:** Active — primary adventure experience implemented; static validation in progress  
 **Released baseline:** Stages 0–21  
 **Stage authority:** `docs/stages/stage-22-human-potential-adventure.md`  
 **Product direction authority:** `docs/product/human-potential-adventure-direction.md`  
@@ -26,15 +26,21 @@ Core doctrine:
 
 > **The screen is not the game. Life is the game.**
 
-The existing Mission/Journey/Quest structure must be preserved. Experience changes sit over the domain and make real-world progress feel spatial, consequential, intriguing and rewarding without fabricating development.
+The existing Mission/Journey/Quest structure remains intact. The new experience layer makes real-world development feel spatial, consequential, intriguing and rewarding without fabricating progress.
+
+Primary experience language now aligns as:
+
+`Campaign → Adventure Map → Quest Chain → Major Build → Builder Vault → Builder World → Deployment Doors → Skill Tree → Builder Passport`
+
+These are experience labels over the released domain model, not replacement persistence concepts.
 
 ## Deployment control
 
 Branch: `agent/stage-22-human-potential-adventure`
 
-Automatic Vercel Preview deployment is suppressed for the implementation branch. Vercel quota must be conserved; one deliberate exact-head Preview is reserved for the final authenticated/mobile browser gate after static CI readiness.
+Automatic Vercel Preview deployment is suppressed for the implementation branch. Vercel quota remains conserved; one deliberate exact-head Preview is reserved for the final authenticated/mobile browser gate after static CI readiness.
 
-No Stage 22 Supabase schema change has been introduced. The first experience batch reuses released data and authorization.
+No Stage 22 Supabase schema change has been introduced. The experience work reuses released data, lifecycle and authorization.
 
 ## Gate A — Authority and audit
 
@@ -46,30 +52,32 @@ No Stage 22 Supabase schema change has been introduced. The first experience bat
 - advanced `PROJECT_STATE.md` to Stage 22;
 - preserved Mission → Journey → Quest → Evidence → Reflection → Capability → Project → Portfolio → Opportunity → Passport as the non-negotiable engine;
 - classified Mentor Network as post-MVP;
-- confirmed the application already has a server-authorised Mission Control admin surface but the normal Builder shell did not expose it;
+- confirmed the application already has a server-authorised Mission Control admin surface but the normal Builder experience did not expose it;
 - confirmed `/proof/[slug]` exists as a public selective Portfolio proof route;
 - inspected the live owner test state and found the recent MagicPen/HQLS Portfolio was a valid **draft**, not a published public proof;
-- verified the Stage 9 publish RPC returns the public proof slug and the owner is adult-eligible, so the observed proof experience was not caused by an RPC return-type mismatch or age safeguard.
+- verified the Stage 9 publish RPC returns the public proof slug and the owner is adult-eligible, so the observed proof experience was not caused by an RPC return-type mismatch or age safeguard;
+- audited the core deep-route shells and confirmed Quest, Project, Portfolio, Opportunities, Profile and private Passport flows inherit or directly wrap `AppShell`.
 
 ## Gate B — Reliability foundation
 
 ### Implemented; static/browser validation pending
 
 - unavailable `/proof/[slug]` state now resolves to an explanatory proof-unavailable recovery screen rather than a generic dead 404;
-- proof-unavailable recovery offers Portfolio and PipuPath exits while preserving privacy;
+- proof-unavailable recovery offers safe Portfolio and PipuPath exits while preserving privacy;
 - successful Portfolio publishing now returns first to the authenticated Portfolio Studio so publication state can be confirmed before the Builder deliberately opens the public page;
 - draft Portfolio language no longer presents an unopenable public slug as though it were already live;
 - invalid/private Portfolio detail and preview states recover to safe parent routes;
 - deterministic contextual Back navigation added for deep Quest, Project, Portfolio, Opportunity, Connect, Profile, Passport and onboarding routes;
 - active platform-admin role lookup added without changing backend authorization;
 - Adventure Home now exposes Mission Control only when an active platform-admin role is present;
-- contextual-navigation and Builder-level unit tests added.
+- contextual-navigation and Builder-level unit tests added;
+- primary navigation keeps six stable destinations but now uses adventure-facing `Vault` and `Me` labels while retaining existing routes.
 
 The exact user-reported proof path still requires final authenticated browser reproduction on the deliberate Stage 22 Preview before the bug is considered closed.
 
 ## Gate C — Adventure Home
 
-### First implementation complete; validation/refinement pending
+### Implemented; static/browser validation pending
 
 - removed the equal-weight dashboard hierarchy and the layout-level Opportunities promo;
 - Home now leads with current Campaign/Mission and one dominant Next Move;
@@ -82,11 +90,19 @@ The exact user-reported proof path still requires final authenticated browser re
 - Builder Guide and the broader toolset remain available but subordinate to the current adventure;
 - active owner/admin sees a role-aware Mission Control entrance.
 
-## Gate D — Journey and Quest transformation
+## Gate D — Campaign, Journey and Quest transformation
 
-### First implementation complete; validation/refinement pending
+### Implemented; static/browser validation pending
+
+Mission / Campaign:
+
+- Mission is experienced as a Builder Campaign while Mission persistence remains unchanged;
+- active Campaign foregrounds who it helps, first meaningful outcome and time horizon;
+- full explanatory content is progressively disclosed;
+- Campaign activation now transitions directly into the Journey Map.
 
 Journey:
+
 - active/draft/completed Journey uses a horizontal Adventure Map;
 - milestones show cleared/current/ready/locked states from saved lifecycle state;
 - long Journey explanation and chapter detail moved behind progressive disclosure;
@@ -94,7 +110,15 @@ Journey:
 - active Journey goes directly toward current Quests rather than making the Builder read the full route repeatedly;
 - reduced-motion-safe progress movement is used.
 
-Quest:
+Quest chain:
+
+- Quest list is now a three-node unfolding challenge chain rather than a vertical catalogue of full Quest cards;
+- future Quest nodes remain visually ahead/unknown until lifecycle state makes them available;
+- current Quest is visually dominant and links directly into the challenge;
+- capability targets and chapter outcome remain available without dominating the screen.
+
+Quest focus:
+
 - Quest experience now communicates `Understand → Act → Prove → Reflect → Reveal`;
 - only the current lifecycle phase dominates the page;
 - long why/proof/resources material is progressively disclosed;
@@ -103,21 +127,64 @@ Quest:
 - completed Quest has a dedicated truthful reveal moment using real XP and the real next unlocked Quest when one exists;
 - no fake unlock is shown when the saved state does not provide one.
 
-## Gate E — Build and capability transformation
+## Gate E — Build, Vault, World, Doors and Skill Tree
 
-Pending implementation:
+### Implemented; static/browser validation pending
 
-- major Build/Boss Build experience framing over existing Project semantics;
-- evidence-backed capability/skill-tree presentation where released data supports it;
-- no fabricated scores, rankings or achievements.
+Major Build / Builder Project:
+
+- Builder Projects now carry Major Build/Boss Build experience framing without changing Project semantics;
+- active Project uses a three-node evidence-backed milestone path;
+- one current milestone dominates the Project detail experience;
+- full Project definition and historical evidence remain available through progressive disclosure;
+- completed Project transitions toward the Builder Vault rather than directly exposing raw proof.
+
+Builder Vault / Portfolio:
+
+- Portfolio now feels like a Vault of completed real Builds rather than a publication administration page;
+- private-by-default rule is explicit but compact;
+- completed Builds are horizontal Vault artifacts with Draft/Published/Vault-only state;
+- a published proof is framed as deliberately deployed selected proof;
+- adult-only/publication safeguarding remains unchanged;
+- raw Quest/Project evidence remains private.
+
+Builder World / Connect:
+
+- Connect now leads with complementary Builders rather than profile settings and network administration;
+- no follower counts, popularity scores or unrestricted private messaging were introduced;
+- Builder discovery is horizontal and activity-oriented;
+- accepted connections, requests, privacy settings and blocked users remain controlled but are visually subordinate;
+- youth/adult safeguarding boundary remains unchanged.
+
+Deployment Doors / Opportunities:
+
+- Opportunities are now presented as real-world Deployment Doors rather than a dense marketplace dashboard;
+- matching guidance remains explicitly non-probabilistic and non-employability-scored;
+- eligibility, benefit and readiness detail is progressively disclosed;
+- provider-native application and external application lifecycle controls remain intact;
+- tracked application history remains available as deployment trails;
+- minor application safeguards remain unchanged.
+
+Evidence-backed Skill Tree / Living Builder Profile:
+
+- the Living Builder Profile now presents capability claims as a Skill Tree;
+- only existing `practicing`, `demonstrated` and `repeatedly_demonstrated` levels are shown;
+- no numeric capability strength was invented;
+- every node expands to its real evidence and verification source;
+- Builder feedback controls and version history remain available;
+- if evidence is insufficient, PipuPath explicitly shows no capability rather than fabricating one.
 
 ## Validation ledger
 
-Draft PR #38 opened from the Preview-suppressed Stage 22 branch.
+Draft PR #38 is open from the Preview-suppressed Stage 22 branch.
 
-CI #1013 ran against head `148c1e4bb425d332aefccf4f9332dd50525c38f8` and failed at the **first gate only: Prettier format check**. Six new Stage 22 source files require repository-standard formatting. Because validation stops at formatting, lint, TypeScript, coverage, integration and production build have **not yet been proven** for this batch.
+CI #1013 ran against head `148c1e4bb425d332aefccf4f9332dd50525c38f8` and failed at the first gate only: Prettier formatting on six initial Stage 22 source files.
 
-A temporary branch-only formatter-diff workflow is being used to obtain the repository's exact Prettier/Tailwind formatting before continuing. It will be removed after the formatting correction; it does not deploy to Vercel.
+A temporary branch-only formatter workflow applied the repository's exact Prettier/Tailwind ordering to those source files, then was removed. The formatter commit was `b4c7c6c5004221ac9ea173f3fda5c8c720f942b5`; the workflow-removal commit was `f5a2a0a430a8e0b539b3a28935e066b52d1c67b0`.
+
+CI #1018 on the human-authored cleanup commit confirmed those source files were formatted and stopped only on `docs/implementation/status.md`, which had been updated after the formatter pass. Because format checking stops the validation pipeline, lint, TypeScript, coverage, integration and production build are not yet proven for the complete Stage 22 experience batch.
+
+The complete primary experience batch is now frozen. The next action is one final exact repository formatter pass over all Stage 22 files changed since the previous formatter, followed by canonical CI. No Vercel Preview should be created until that CI is green.
 
 ## Gate F — Release proof
 
@@ -133,5 +200,6 @@ Not started. Required before release:
 - authenticated owner/admin E2E;
 - mobile viewport/navigation proof;
 - reduced-motion/accessibility proof;
+- exact reproduction/closure proof for the reported public-proof failure;
 - one deliberate exact-head Vercel Preview;
 - intentional merge and exact production verification.
