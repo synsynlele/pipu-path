@@ -38,7 +38,7 @@ export const growthPackItemSchema = z.object({
   verificationNote: z.string().trim().min(12).max(300),
 });
 
-export type GrowthPackItem = z.infer<typeof growthPackItemSchema>;
+export type GrowthPackItem = z.output<typeof growthPackItemSchema>;
 
 export const builderGuideOutputSchema = z.object({
   schemaVersion: z.literal("builder-guide-v1"),
@@ -68,7 +68,7 @@ export const builderGuideOutputSchema = z.object({
   uncertainty: z.string().trim().min(12).max(500),
 });
 
-export type BuilderGuideOutput = z.infer<typeof builderGuideOutputSchema>;
+export type BuilderGuideOutput = z.output<typeof builderGuideOutputSchema>;
 
 export const builderGuideContextSchema = z.object({
   preferredName: z.string().trim().min(1).max(120),
