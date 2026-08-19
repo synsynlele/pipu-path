@@ -9,7 +9,8 @@
       "agent/stage-22-human-potential-adventure": false,
       "agent/stage-22-proof-finalization": false,
       "fix/stage22-mobile-proof-contrast": false,
-      "fix/stage22-onboarding-ai-results": false
+      "fix/stage22-onboarding-ai-results": false,
+      "fix/path-switch-experience-audit": false
     }
   }
 }
