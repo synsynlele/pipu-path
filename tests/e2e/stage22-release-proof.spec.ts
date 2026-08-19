@@ -50,8 +50,20 @@ test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
   ).toBeVisible();
 
   await signIn(page);
+
+  await page.goto("/admin?window=30");
+  await expect(
+    page.getByRole("heading", {
+      name: "Measure what makes Builders return and build.",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("PipuPath Mission Control", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Total Builders", { exact: true })).toBeVisible();
+
   await page.goto("/app");
-  await expect(page.getByText("Your next move", { exact: true })).toBeVisible();
+  await expect(page.getByText("⚡ Your next move", { exact: true })).toBeVisible();
   await expect(page.getByText("Adventure map", { exact: true })).toBeVisible();
   await expect(page.getByText("Builder level", { exact: true })).toBeVisible();
 
@@ -61,6 +73,9 @@ test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
     await expect(navigation.getByText(label, { exact: true })).toBeVisible();
   }
 
+  await expect(
+    page.getByText("Mission Control available", { exact: true }),
+  ).toBeVisible();
   const missionControl = page.getByRole("link", {
     name: "Enter Mission Control",
   });
@@ -69,7 +84,6 @@ test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
   await expect(
     page.getByText("PipuPath Mission Control", { exact: true }),
   ).toBeVisible();
-  await expect(page.getByText("Total Builders", { exact: true })).toBeVisible();
 
   await page.goto("/growth");
   await expect(
@@ -101,7 +115,7 @@ test("Stage 22 exact-preview release proof", async ({ page }, testInfo) => {
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/app");
-  await expect(page.getByText("Your next move", { exact: true })).toBeVisible();
+  await expect(page.getByText("⚡ Your next move", { exact: true })).toBeVisible();
   await expect(page.getByRole("navigation", { name: navigationName })).toBeVisible();
 
   if (isMobile) {
