@@ -1,0 +1,68 @@
+name: Stage22 final format
+
+on:
+  push:
+    branches:
+      - agent/stage-22-human-potential-adventure
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-22-human-potential-adventure
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Apply exact repository formatting to Stage 22 diff
+        run: |
+          npx prettier --write \
+            AGENTS.md \
+            PROJECT_STATE.md \
+            docs/product/human-potential-adventure-direction.md \
+            docs/stages/stage-22-human-potential-adventure.md \
+            docs/implementation/status.md \
+            src/app/app/layout.tsx \
+            src/app/app/page.tsx \
+            src/app/journey/page.tsx \
+            src/app/mission/page.tsx \
+            src/app/mission/complete/page.tsx \
+            src/app/opportunities/page.tsx \
+            src/app/portfolio/page.tsx \
+            'src/app/portfolio/[projectId]/page.tsx' \
+            'src/app/portfolio/[projectId]/preview/page.tsx' \
+            src/app/projects/page.tsx \
+            'src/app/projects/[projectId]/page.tsx' \
+            'src/app/proof/[slug]/page.tsx' \
+            src/app/proof-unavailable/page.tsx \
+            src/app/profile/page.tsx \
+            src/app/quests/page.tsx \
+            'src/app/quests/[questId]/page.tsx' \
+            'src/app/quests/[questId]/complete/page.tsx' \
+            src/components/navigation/app-navigation.tsx \
+            src/components/navigation/app-navigation.test.tsx \
+            src/components/navigation/context-back-link.tsx \
+            src/components/navigation/context-back-link.test.tsx \
+            src/components/shells/app-shell.tsx \
+            src/modules/admin/infrastructure/admin-dal.ts \
+            src/modules/identity/domain/builder-level.ts \
+            src/modules/identity/domain/builder-level.test.ts \
+            src/modules/portfolio/application/portfolio-actions.ts
+      - name: Commit formatter output when needed
+        run: |
+          if git diff --quiet; then
+            echo "Stage 22 diff already matches repository formatting."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add AGENTS.md PROJECT_STATE.md docs src
+          git commit -m "style(stage22): apply final repository formatter"
+          git push origin HEAD:agent/stage-22-human-potential-adventure
