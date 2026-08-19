@@ -85,12 +85,12 @@ describe("Stage 12 Economic Pathways structural contract", () => {
     );
   });
 
-  it("surfaces Possible Paths and Earn From Your Strengths inside the existing profile", () => {
-    expect(profilePage).toContain("Possible Paths");
-    expect(profilePage).toContain("Earn From Your Strengths");
-    expect(profilePage).toContain("Observed Pattern");
-    expect(profilePage).toContain("Possible Interpretation");
-    expect(profilePage).toContain("Evidence Needed");
+  it("surfaces testable paths and value experiments inside the existing profile", () => {
+    expect(profilePage).toContain("Paths to Test");
+    expect(profilePage).toContain("Ways to Create Value");
+    expect(profilePage).toContain("Pattern");
+    expect(profilePage).toContain("Interpretation");
+    expect(profilePage).toContain("Proof to look for");
     expect(pathSelection).toContain("Choose This Path");
   });
 
