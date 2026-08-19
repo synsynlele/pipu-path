@@ -116,7 +116,14 @@ describe("Stage 10 MVP launch-readiness contract", () => {
   });
 
   it("preserves six stable destinations while Stage 22 uses adventure-facing labels", () => {
-    for (const label of ["Home", "Journey", "Build", "Vault", "Connect", "Me"]) {
+    for (const label of [
+      "Home",
+      "Journey",
+      "Build",
+      "Vault",
+      "Connect",
+      "Me",
+    ]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
     expect(navigation).toContain(
