@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   createPassportShareAction,
   type PassportShareActionState,
@@ -42,23 +43,23 @@ export function PassportShareCreator({ passportId }: { passportId: string }) {
 
       <form
         action={action}
-        className="mt-5 grid gap-4 md:grid-cols-[1fr_auto_auto]"
+        className="mt-5 grid min-w-0 gap-4 md:grid-cols-[1fr_auto_auto]"
         onSubmit={() => setCopied(false)}
       >
         <input name="passportId" type="hidden" value={passportId} />
-        <label className="space-y-2">
+        <label className="min-w-0 space-y-2">
           <span className="block text-sm font-medium">Share label</span>
           <input
-            className="bg-background w-full rounded-xl border px-3 py-2.5"
+            className="bg-background w-full min-w-0 rounded-xl border px-3 py-2.5 text-base sm:text-sm"
             maxLength={80}
             name="label"
             placeholder="Scholarship application"
           />
         </label>
-        <label className="space-y-2">
+        <label className="min-w-0 space-y-2">
           <span className="block text-sm font-medium">Expires</span>
           <select
-            className="bg-background w-full rounded-xl border px-3 py-2.5"
+            className="bg-background w-full min-w-0 rounded-xl border px-3 py-2.5 text-base sm:text-sm"
             defaultValue="7"
             name="expiresInDays"
           >
@@ -68,13 +69,13 @@ export function PassportShareCreator({ passportId }: { passportId: string }) {
             <option value="90">90 days</option>
           </select>
         </label>
-        <button
-          className="bg-foreground text-background self-end rounded-full px-5 py-3 text-sm font-medium disabled:opacity-50"
+        <Button
+          className="w-full touch-manipulation self-end md:w-auto"
           disabled={pending}
           type="submit"
         >
           {pending ? "Creating…" : "Create share"}
-        </button>
+        </Button>
       </form>
 
       {state.error ? (
@@ -89,19 +90,20 @@ export function PassportShareCreator({ passportId }: { passportId: string }) {
             private path; Copy link writes the complete URL including this
             site&apos;s origin.
           </p>
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-3 flex min-w-0 flex-col gap-3 sm:flex-row">
             <input
-              className="bg-background min-w-0 flex-1 rounded-lg border px-3 py-2 text-sm"
+              className="bg-background min-w-0 flex-1 rounded-lg border px-3 py-2 text-base sm:text-sm"
               readOnly
               value={state.relativeUrl}
             />
-            <button
-              className="rounded-full border px-4 py-2 text-sm font-medium"
+            <Button
+              variant="secondary"
+              className="w-full touch-manipulation sm:w-auto"
               onClick={copyLink}
               type="button"
             >
               {copied ? "Copied" : "Copy link"}
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}

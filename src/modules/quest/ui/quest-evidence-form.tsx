@@ -33,12 +33,12 @@ export function QuestEvidenceForm({
       action={action}
       aria-busy={pending}
       encType="multipart/form-data"
-      className="grid gap-6"
+      className="grid min-w-0 gap-6"
     >
       <input type="hidden" name="questId" value={questId} />
 
-      <div className="border-primary/15 bg-primary-soft/25 rounded-2xl border p-4 sm:p-5">
-        <div className="flex items-start gap-3">
+      <div className="border-primary/15 bg-primary-soft/25 min-w-0 rounded-2xl border p-4 sm:p-5">
+        <div className="flex min-w-0 items-start gap-3">
           <span
             aria-hidden="true"
             className="border-primary/20 bg-primary-soft text-primary grid size-9 shrink-0 place-items-center rounded-xl border text-sm font-bold"
@@ -67,7 +67,7 @@ export function QuestEvidenceForm({
               maxLength={2000}
               defaultValue={existingEvidence?.evidenceText}
               aria-describedby="evidenceTextHelp"
-              className="border-border bg-background focus:border-primary mt-3 min-h-40 w-full resize-y rounded-2xl border p-4 text-sm leading-6 shadow-sm transition-colors outline-none"
+              className="border-border bg-background focus:border-primary mt-3 min-h-40 w-full min-w-0 resize-y rounded-2xl border p-4 text-base leading-6 shadow-sm transition-colors outline-none sm:text-sm"
               placeholder="I tried…, the result was…, and the evidence I can point to is…"
             />
             <p className="text-muted mt-2 text-xs">
@@ -78,8 +78,8 @@ export function QuestEvidenceForm({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="border-border bg-background rounded-2xl border p-4">
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+        <label className="border-border bg-background min-w-0 rounded-2xl border p-4">
           <span className="text-navy text-sm font-semibold">
             Date of action
           </span>
@@ -93,11 +93,11 @@ export function QuestEvidenceForm({
             required
             max={today}
             defaultValue={existingEvidence?.happenedOn ?? today}
-            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full rounded-xl border px-3 text-sm transition-colors outline-none"
+            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full min-w-0 rounded-xl border px-3 text-base transition-colors outline-none sm:text-sm"
           />
         </label>
 
-        <label className="border-border bg-background rounded-2xl border p-4">
+        <label className="border-border bg-background min-w-0 rounded-2xl border p-4">
           <span className="text-navy text-sm font-semibold">
             Supporting link{" "}
             <span className="text-muted font-normal">(optional)</span>
@@ -109,17 +109,18 @@ export function QuestEvidenceForm({
             id="evidenceLink"
             name="evidenceLink"
             type="url"
+            inputMode="url"
             maxLength={500}
             defaultValue={existingEvidence?.evidenceLink ?? ""}
             placeholder="https://…"
-            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full rounded-xl border px-3 text-sm transition-colors outline-none"
+            className="border-border bg-background focus:border-primary mt-3 min-h-11 w-full min-w-0 rounded-xl border px-3 text-base transition-colors outline-none sm:text-sm"
           />
         </label>
       </div>
 
-      <div className="border-border bg-soft/45 rounded-2xl border border-dashed p-4 sm:p-5">
+      <div className="border-border bg-soft/45 min-w-0 rounded-2xl border border-dashed p-4 sm:p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <label
               htmlFor="evidenceImage"
               className="text-navy text-sm font-semibold"
@@ -143,20 +144,20 @@ export function QuestEvidenceForm({
           id="evidenceImage"
           name="evidenceImage"
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
           aria-describedby="evidenceImageHelp"
-          className="border-border bg-background file:bg-gold file:text-navy mt-4 block w-full rounded-xl border p-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:px-3 file:py-2 file:font-semibold"
+          className="border-border bg-background file:bg-gold file:text-navy mt-4 block w-full min-w-0 rounded-xl border p-3 text-base file:mr-3 file:rounded-lg file:border-0 file:px-3 file:py-2 file:font-semibold sm:text-sm"
         />
         <p className="text-muted mt-2 text-xs">
-          JPG, PNG or WebP · maximum 5 MB.
+          JPG, PNG, WebP, HEIC or HEIF · maximum 5 MB.
           {existingEvidence?.hasImage
             ? " Your existing image remains unless you choose a new one."
             : ""}
         </p>
       </div>
 
-      <div className="border-border flex flex-col gap-4 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="max-w-xl">
+      <div className="border-border flex min-w-0 flex-col gap-4 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-xl min-w-0">
           <p className="text-navy text-sm font-semibold">
             Your proof stays private.
           </p>
@@ -165,7 +166,11 @@ export function QuestEvidenceForm({
             to your Profile, Builder Vault or public proof page.
           </p>
         </div>
-        <Button type="submit" disabled={pending} className="min-w-40">
+        <Button
+          type="submit"
+          disabled={pending}
+          className="w-full touch-manipulation sm:w-auto sm:min-w-40"
+        >
           {pending ? "Securing proof…" : "Submit Proof"}
         </Button>
       </div>
