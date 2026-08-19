@@ -15,11 +15,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type QuestStatus =
-  | "available"
-  | "active"
-  | "evidence_submitted"
-  | "completed";
+type QuestStatus = "available" | "active" | "evidence_submitted" | "completed";
 
 const phases = ["Understand", "Act", "Prove", "Reflect", "Reveal"] as const;
 
@@ -65,7 +61,9 @@ function QuestPhasePath({ status }: { status: QuestStatus }) {
             >
               {state === "complete" ? "✓" : state === "current" ? "●" : "?"}
             </span>
-            <span className={`mt-2 block truncate text-[0.58rem] font-semibold sm:text-xs ${state === "current" ? "text-white" : state === "complete" ? "text-[#f3c86b]" : "text-blue-100/45"}`}>
+            <span
+              className={`mt-2 block truncate text-[0.58rem] font-semibold sm:text-xs ${state === "current" ? "text-white" : state === "complete" ? "text-[#f3c86b]" : "text-blue-100/45"}`}
+            >
               {phase}
             </span>
           </li>
@@ -103,8 +101,14 @@ export default async function QuestFocusPage({
       className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10 lg:px-10"
     >
       <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white sm:p-8 lg:p-9">
-        <div aria-hidden="true" className="absolute -top-24 -right-16 size-64 rounded-full border border-white/10" />
-        <div aria-hidden="true" className="absolute right-10 -bottom-36 size-72 rounded-full bg-[#4f7cff]/18 blur-3xl" />
+        <div
+          aria-hidden="true"
+          className="absolute -top-24 -right-16 size-64 rounded-full border border-white/10"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-10 -bottom-36 size-72 rounded-full bg-[#4f7cff]/18 blur-3xl"
+        />
         <div className="relative">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -112,7 +116,9 @@ export default async function QuestFocusPage({
                 Quest {quest.sequence_order} · Real-world challenge
               </p>
               {milestone ? (
-                <p className="mt-1 text-xs text-blue-100/60">{milestone.title}</p>
+                <p className="mt-1 text-xs text-blue-100/60">
+                  {milestone.title}
+                </p>
               ) : null}
             </div>
             <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-xs font-semibold text-blue-50">
@@ -156,7 +162,8 @@ export default async function QuestFocusPage({
                 Know the challenge. Then leave the screen.
               </h2>
               <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                Read the action below, start when you are ready, and do the real work outside PipuPath.
+                Read the action below, start when you are ready, and do the real
+                work outside PipuPath.
               </p>
               <div className="mt-5">
                 <QuestStartForm questId={quest.id} />
@@ -180,7 +187,8 @@ export default async function QuestFocusPage({
                 </span>
               </div>
               <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                Evidence does not need to look impressive. It needs to be true and connected to what you actually did.
+                Evidence does not need to look impressive. It needs to be true
+                and connected to what you actually did.
               </p>
               <QuestEvidenceForm questId={quest.id} today={today} />
             </Surface>
@@ -242,7 +250,8 @@ export default async function QuestFocusPage({
                   What changed because you tried?
                 </h2>
                 <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                  Success and failure both contain useful data. Reflection completes the developmental loop.
+                  Success and failure both contain useful data. Reflection
+                  completes the developmental loop.
                 </p>
                 <QuestReflectionForm
                   questId={quest.id}
@@ -253,8 +262,11 @@ export default async function QuestFocusPage({
           ) : null}
 
           {quest.status === "completed" && reflection ? (
-            <Surface className="relative overflow-hidden border-gold/30 bg-gold/5 p-5 sm:p-8">
-              <div aria-hidden="true" className="bg-gold/12 absolute -top-16 -right-16 size-48 rounded-full blur-3xl" />
+            <Surface className="border-gold/30 bg-gold/5 relative overflow-hidden p-5 sm:p-8">
+              <div
+                aria-hidden="true"
+                className="bg-gold/12 absolute -top-16 -right-16 size-48 rounded-full blur-3xl"
+              />
               <div className="relative">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
@@ -290,10 +302,15 @@ export default async function QuestFocusPage({
             <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
               The challenge
             </p>
-            <h2 className="text-navy mt-2 text-lg font-semibold">Your action steps</h2>
+            <h2 className="text-navy mt-2 text-lg font-semibold">
+              Your action steps
+            </h2>
             <ol className="mt-4 grid gap-3">
               {quest.action_steps.map((step, index) => (
-                <li key={step} className="flex gap-3 rounded-xl border border-border p-3">
+                <li
+                  key={step}
+                  className="border-border flex gap-3 rounded-xl border p-3"
+                >
                   <span className="border-primary/25 bg-primary-soft text-primary grid size-7 shrink-0 place-items-center rounded-full border text-xs font-bold">
                     {index + 1}
                   </span>
@@ -307,7 +324,9 @@ export default async function QuestFocusPage({
             <summary className="text-navy cursor-pointer text-sm font-semibold">
               Why this matters
             </summary>
-            <p className="text-muted mt-3 text-sm leading-6">{quest.why_it_matters}</p>
+            <p className="text-muted mt-3 text-sm leading-6">
+              {quest.why_it_matters}
+            </p>
           </details>
 
           <details className="border-border bg-panel rounded-2xl border p-5">
@@ -317,14 +336,20 @@ export default async function QuestFocusPage({
             <ul className="text-muted mt-3 grid gap-2 text-sm leading-6">
               {quest.evidence_requirements.map((requirement) => (
                 <li key={requirement} className="flex gap-2">
-                  <span aria-hidden="true" className="text-gold">•</span>
+                  <span aria-hidden="true" className="text-gold">
+                    •
+                  </span>
                   <span>{requirement}</span>
                 </li>
               ))}
             </ul>
             <div className="border-border mt-4 border-t pt-4">
-              <p className="text-xs font-semibold uppercase tracking-wide">Completion signal</p>
-              <p className="text-muted mt-2 text-sm leading-6">{quest.completion_criteria}</p>
+              <p className="text-xs font-semibold tracking-wide uppercase">
+                Completion signal
+              </p>
+              <p className="text-muted mt-2 text-sm leading-6">
+                {quest.completion_criteria}
+              </p>
             </div>
           </details>
 
@@ -349,7 +374,9 @@ export default async function QuestFocusPage({
             <p className="text-error text-xs font-semibold tracking-[0.14em] uppercase">
               Safety boundary
             </p>
-            <p className="text-muted mt-2 text-sm leading-6">{quest.safety_guidance}</p>
+            <p className="text-muted mt-2 text-sm leading-6">
+              {quest.safety_guidance}
+            </p>
           </Surface>
         </aside>
       </section>

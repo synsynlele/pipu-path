@@ -8,7 +8,9 @@ type ParentNavigation = {
   label: string;
 };
 
-export function parentNavigationForPath(pathname: string): ParentNavigation | null {
+export function parentNavigationForPath(
+  pathname: string,
+): ParentNavigation | null {
   const segments = pathname.split("/").filter(Boolean);
 
   if (pathname === "/profile/verification") {
@@ -32,11 +34,19 @@ export function parentNavigationForPath(pathname: string): ParentNavigation | nu
       label: "Potential Profile",
     };
   }
-  if (segments[0] === "onboarding" && segments[1] === "discovery" && segments.length === 3) {
+  if (
+    segments[0] === "onboarding" &&
+    segments[1] === "discovery" &&
+    segments.length === 3
+  ) {
     return { href: "/onboarding/discovery", label: "Discovery" };
   }
 
-  if (segments[0] === "quests" && segments.length === 3 && segments[2] === "complete") {
+  if (
+    segments[0] === "quests" &&
+    segments.length === 3 &&
+    segments[2] === "complete"
+  ) {
     return { href: `/quests/${segments[1]}`, label: "Quest" };
   }
   if (segments[0] === "quests" && segments.length === 2) {
@@ -50,24 +60,40 @@ export function parentNavigationForPath(pathname: string): ParentNavigation | nu
     return { href: "/projects", label: "Projects" };
   }
 
-  if (segments[0] === "portfolio" && segments.length === 3 && segments[2] === "preview") {
+  if (
+    segments[0] === "portfolio" &&
+    segments.length === 3 &&
+    segments[2] === "preview"
+  ) {
     return { href: `/portfolio/${segments[1]}`, label: "Portfolio Studio" };
   }
   if (segments[0] === "portfolio" && segments.length === 2) {
     return { href: "/portfolio", label: "Portfolio" };
   }
 
-  if (segments[0] === "connect" && segments[1] === "builders" && segments.length >= 3) {
+  if (
+    segments[0] === "connect" &&
+    segments[1] === "builders" &&
+    segments.length >= 3
+  ) {
     return { href: "/connect", label: "Connect" };
   }
-  if (segments[0] === "connect" && segments[1] === "collaborations" && segments.length === 3) {
+  if (
+    segments[0] === "connect" &&
+    segments[1] === "collaborations" &&
+    segments.length === 3
+  ) {
     return { href: "/connect/collaborations", label: "Collaborations" };
   }
   if (pathname === "/connect/collaborations") {
     return { href: "/connect", label: "Connect" };
   }
 
-  if (segments[0] === "opportunities" && segments.length === 3 && segments[2] === "apply") {
+  if (
+    segments[0] === "opportunities" &&
+    segments.length === 3 &&
+    segments[2] === "apply"
+  ) {
     return {
       href: `/opportunities/${segments[1]}`,
       label: "Opportunity",

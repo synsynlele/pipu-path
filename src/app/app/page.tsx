@@ -26,7 +26,11 @@ const adventureStages = [
 type AdventureStageKey = (typeof adventureStages)[number]["key"];
 
 function normalizeStage(stage: string): AdventureStageKey {
-  if (stage === "identity" || stage === "discovery" || stage === "discovery-review") {
+  if (
+    stage === "identity" ||
+    stage === "discovery" ||
+    stage === "discovery-review"
+  ) {
     return "discovery";
   }
   if (stage === "potential-profile") return "potential-profile";
@@ -44,7 +48,9 @@ function questAction(status: string | undefined) {
   return null;
 }
 
-function nextMove(state: Awaited<ReturnType<typeof requireAuthenticatedHomeState>>) {
+function nextMove(
+  state: Awaited<ReturnType<typeof requireAuthenticatedHomeState>>,
+) {
   if (state.quest?.id) {
     return {
       eyebrow: "Your next move",
@@ -94,7 +100,8 @@ export default async function HomePage() {
     (stage) => stage.key === currentStage,
   );
   const completedGrowthCycle = Boolean(
-    state.snapshot.completedProjectId && state.snapshot.journeyStatus === "completed",
+    state.snapshot.completedProjectId &&
+    state.snapshot.journeyStatus === "completed",
   );
   const portfolioPublished = state.portfolio?.status === "published";
 
@@ -113,8 +120,12 @@ export default async function HomePage() {
               ◈
             </span>
             <div>
-              <p className="text-navy text-sm font-semibold">Mission Control available</p>
-              <p className="text-muted text-xs capitalize">Platform {adminRole}</p>
+              <p className="text-navy text-sm font-semibold">
+                Mission Control available
+              </p>
+              <p className="text-muted text-xs capitalize">
+                Platform {adminRole}
+              </p>
             </div>
           </div>
           <ButtonLink href="/admin" variant="secondary" className="min-h-10">
@@ -155,7 +166,8 @@ export default async function HomePage() {
                 {state.mission ? "Your campaign" : "Your adventure"}
               </p>
               <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
-                {state.mission?.title ?? "Discover what you can become by building."}
+                {state.mission?.title ??
+                  "Discover what you can become by building."}
               </h1>
               {state.mission?.mission_statement ? (
                 <p className="mt-4 max-w-3xl text-base leading-7 text-blue-50/80 sm:text-lg">
@@ -181,7 +193,11 @@ export default async function HomePage() {
               <p className="mt-3 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
                 {move.detail}
               </p>
-              <ButtonLink href={move.href} variant="premium" className="mt-5 min-w-44">
+              <ButtonLink
+                href={move.href}
+                variant="premium"
+                className="mt-5 min-w-44"
+              >
                 {move.label} →
               </ButtonLink>
             </div>
@@ -235,8 +251,12 @@ export default async function HomePage() {
               <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
                 Latest real win
               </p>
-              <p className="text-navy mt-2 font-semibold">{state.recentAchievement}</p>
-              <p className="text-muted mt-1 text-xs">Recorded from completed PipuPath work.</p>
+              <p className="text-navy mt-2 font-semibold">
+                {state.recentAchievement}
+              </p>
+              <p className="text-muted mt-1 text-xs">
+                Recorded from completed PipuPath work.
+              </p>
             </div>
           ) : null}
         </Surface>
@@ -250,23 +270,32 @@ export default async function HomePage() {
                 Adventure map
               </p>
               <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-                {completedGrowthCycle ? "A new growth cycle is open" : "See where you are. Not everything comes at once."}
+                {completedGrowthCycle
+                  ? "A new growth cycle is open"
+                  : "See where you are. Not everything comes at once."}
               </h2>
             </div>
             {state.journey?.title ? (
-              <Link href="/journey" className="text-primary text-sm font-semibold">
+              <Link
+                href="/journey"
+                className="text-primary text-sm font-semibold"
+              >
                 Open Journey →
               </Link>
             ) : null}
           </div>
 
-          <ol className="mt-7 grid grid-cols-7 gap-1 sm:gap-2" aria-label="Builder adventure progress">
+          <ol
+            className="mt-7 grid grid-cols-7 gap-1 sm:gap-2"
+            aria-label="Builder adventure progress"
+          >
             {adventureStages.map((stage, index) => {
               const isPortfolioProof = stage.key === "portfolio";
               const completed = isPortfolioProof
                 ? portfolioPublished
                 : !completedGrowthCycle && index < currentStageIndex;
-              const active = !completedGrowthCycle && index === currentStageIndex;
+              const active =
+                !completedGrowthCycle && index === currentStageIndex;
               const reset = completedGrowthCycle && stage.key === "journey";
               const stateLabel = completed
                 ? "completed"
@@ -306,15 +335,21 @@ export default async function HomePage() {
 
           <div className="border-border mt-6 flex flex-wrap items-center justify-between gap-3 border-t pt-5">
             <div>
-              <p className="text-muted text-xs uppercase tracking-wide">Current chapter</p>
+              <p className="text-muted text-xs tracking-wide uppercase">
+                Current chapter
+              </p>
               <p className="text-navy mt-1 font-semibold">
                 {state.journey?.title ?? state.destination.label}
               </p>
             </div>
             {state.milestone ? (
               <div className="text-right">
-                <p className="text-muted text-xs uppercase tracking-wide">Current milestone</p>
-                <p className="text-navy mt-1 text-sm font-semibold">{state.milestone.title}</p>
+                <p className="text-muted text-xs tracking-wide uppercase">
+                  Current milestone
+                </p>
+                <p className="text-navy mt-1 text-sm font-semibold">
+                  {state.milestone.title}
+                </p>
               </div>
             ) : null}
           </div>
@@ -328,7 +363,8 @@ export default async function HomePage() {
             Stuck? Ask about the next move.
           </h2>
           <p className="text-muted mt-3 text-sm leading-6">
-            Get private guidance grounded in your current PipuPath evidence and development state.
+            Get private guidance grounded in your current PipuPath evidence and
+            development state.
           </p>
           <ButtonLink href="/guide" variant="secondary" className="mt-5">
             Ask Builder Guide
@@ -342,9 +378,13 @@ export default async function HomePage() {
             <p className="text-muted text-xs font-semibold tracking-[0.14em] uppercase">
               Builder toolkit
             </p>
-            <h2 className="text-navy mt-1 text-lg font-semibold">Go somewhere specific</h2>
+            <h2 className="text-navy mt-1 text-lg font-semibold">
+              Go somewhere specific
+            </h2>
           </div>
-          <span className="text-muted text-xs">Your adventure stays the priority.</span>
+          <span className="text-muted text-xs">
+            Your adventure stays the priority.
+          </span>
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <ToolkitLink href="/journey" icon="◇" label="Journey" />

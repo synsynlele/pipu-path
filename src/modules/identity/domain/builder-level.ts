@@ -18,7 +18,9 @@ export type BuilderLevelProgress = {
   progressPercent: number;
 };
 
-export function getBuilderLevelProgress(totalXpInput: number): BuilderLevelProgress {
+export function getBuilderLevelProgress(
+  totalXpInput: number,
+): BuilderLevelProgress {
   const totalXp = Number.isFinite(totalXpInput)
     ? Math.max(0, Math.trunc(totalXpInput))
     : 0;
@@ -53,6 +55,9 @@ export function getBuilderLevelProgress(totalXpInput: number): BuilderLevelProgr
     currentMinimumXp: current.minimumXp,
     nextMinimumXp: next.minimumXp,
     xpToNext: Math.max(0, next.minimumXp - totalXp),
-    progressPercent: Math.min(100, Math.max(0, Math.round((earnedInLevel / span) * 100))),
+    progressPercent: Math.min(
+      100,
+      Math.max(0, Math.round((earnedInLevel / span) * 100)),
+    ),
   };
 }
