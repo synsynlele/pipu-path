@@ -92,7 +92,10 @@ describe("Stage 9 selective Project portfolio structural contract", () => {
   it("limits public publishing to adult non-flagged Builders", () => {
     expect(migration).toContain("age_band not in ('18_24', '25_plus')");
     expect(migration).toContain("safeguarding_review_required");
-    expect(portfolioPage).toContain("Public Project proof is adult-only");
+    expect(portfolioPage).toContain("Public door locked by safeguarding");
+    expect(portfolioPage).toContain(
+      "Public Project publishing stays closed for now.",
+    );
     expect(adr).toContain("adult-only");
   });
 
@@ -133,7 +136,7 @@ describe("Stage 9 selective Project portfolio structural contract", () => {
       "NextResponse.rewrite(destination, { status: 404 })",
     );
     expect(publicUnavailablePage).toContain(
-      "This Project proof is not public.",
+      "This proof is not public right now.",
     );
   });
 
@@ -148,10 +151,10 @@ describe("Stage 9 selective Project portfolio structural contract", () => {
   it("integrates Portfolio into the complete Builder shell", () => {
     expect(shell).toContain("<AppNavigation />");
     expect(navigation).toContain(
-      '{ label: "Portfolio", href: "/portfolio", icon: "portfolio" }',
+      '{ label: "Vault", href: "/portfolio", icon: "portfolio" }',
     );
     expect(portfolioPage).toContain(
-      "Present proof without surrendering privacy.",
+      "Your real builds live here. You decide what leaves the Vault.",
     );
     expect(studioPage).toContain("Private Portfolio Studio");
   });

@@ -115,17 +115,16 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 
-  it("preserves the Stage 10 navigation while Stage 11 adds Connect", () => {
-    for (const label of [
-      "Home",
-      "Journey",
-      "Build",
-      "Portfolio",
-      "Connect",
-      "Profile",
-    ]) {
+  it("preserves six stable destinations while Stage 22 uses adventure-facing labels", () => {
+    for (const label of ["Home", "Journey", "Build", "Vault", "Connect", "Me"]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
+    expect(navigation).toContain(
+      '{ label: "Vault", href: "/portfolio", icon: "portfolio" }',
+    );
+    expect(navigation).toContain(
+      '{ label: "Me", href: "/profile", icon: "profile" }',
+    );
     expect(navigation.match(/label: "/g)).toHaveLength(6);
     expect(navigation).not.toContain("Builders");
     expect(navigation).not.toContain("Discovery");

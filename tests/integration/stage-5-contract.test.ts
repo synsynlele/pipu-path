@@ -71,7 +71,9 @@ describe("Stage 5 structural contract", () => {
 
   it("hands the completed mission into the authorized Stage 6 Journey", () => {
     expect(boundary).toContain('href="/journey"');
-    expect(boundary).toMatch(/flexible Journey of practical milestones/);
+    expect(boundary).toContain("Campaign activated");
+    expect(boundary).toContain("Open Journey Map");
+    expect(boundary).toContain("practical chapters");
     expect(boundary).not.toMatch(/generateQuest|awardXp/);
   });
 });

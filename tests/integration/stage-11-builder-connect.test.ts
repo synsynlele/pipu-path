@@ -21,6 +21,7 @@ const migration = [
 const navigation = read("src/components/navigation/app-navigation.tsx");
 const proxy = read("src/proxy.ts");
 const connectPage = read("src/app/connect/page.tsx");
+const normalizedConnectPage = connectPage.replace(/\s+/g, " ");
 const detailPage = read("src/app/connect/builders/[username]/page.tsx");
 const journeyPage = read("src/app/journey/page.tsx");
 const progress = read("src/modules/identity/domain/progress.ts");
@@ -77,7 +78,10 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     expect(migration).toContain("safeguarding_review_required");
     expect(migration).toContain("stage11_builder_pair_blocked");
     expect(migration).toContain("connect.visibility='discoverable'");
-    expect(connectPage).toContain("Builder Connect is adult-only");
+    expect(connectPage).toContain("Builder World protected by safeguarding");
+    expect(normalizedConnectPage).toContain(
+      "Public discovery and direct contact sharing stay closed for younger Builders.",
+    );
     expect(detailPage).toContain("Block Builder");
     expect(detailPage).toContain("Submit Report");
     expect(detailPage).toContain("Decline");
@@ -96,8 +100,8 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     ]) {
       expect(migration).toContain(functionName);
     }
-    expect(connectPage).toContain(
-      "PipuPath has no unrestricted private messaging",
+    expect(normalizedConnectPage).toContain(
+      "without follower counts, popularity scores or unrestricted private messaging.",
     );
     expect(migration).not.toContain("message_body");
     expect(migration).not.toContain("chat_message");
@@ -111,9 +115,9 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     expect(generation).toContain(
       'kind: "initial" | "regenerate" | "refine" | "continue"',
     );
-    expect(journeyPage).toContain(
-      'Build {isThirtyDayPathway ? "30-Day" : "growth"} cycle',
-    );
+    expect(journeyPage).toContain("Next route available");
+    expect(journeyPage).toContain("Open growth cycle {state.nextCycleNumber}");
+    expect(journeyPage).toContain('kind="continue"');
     expect(progress).toContain('label: "Build your next Journey"');
     expect(progressDal).toContain('.eq("journey_id", journey.id)');
   });

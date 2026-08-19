@@ -66,7 +66,8 @@ describe("Stage 16 Living Builder Profile structure", () => {
     const nav = read("src/components/navigation/app-navigation.tsx");
     expect(page).toContain("Living Builder Profile");
     expect(page).toContain("/onboarding/discovery/profile");
-    expect(page).toContain("Private by design");
-    expect(nav).toContain('{ label: "Profile", href: "/profile"');
+    expect(page).toContain("Private development space");
+    expect(page).toContain("Nothing here becomes");
+    expect(nav).toContain('{ label: "Me", href: "/profile"');
   });
 });

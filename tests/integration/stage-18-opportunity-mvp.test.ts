@@ -22,6 +22,7 @@ const marketplaceDal = read(
   "src/modules/opportunities/infrastructure/marketplace-dal.ts",
 );
 const builderPage = read("src/app/opportunities/page.tsx");
+const normalizedBuilderPage = builderPage.replace(/\s+/g, " ");
 const trackedCard = builderPage.slice(
   builderPage.indexOf("function TrackedApplicationCard"),
   builderPage.indexOf("export default async function OpportunitiesPage"),
@@ -29,7 +30,7 @@ const trackedCard = builderPage.slice(
 const normalizedTrackedCard = trackedCard.replace(/\s+/g, " ");
 const adminPage = read("src/app/admin/opportunities/page.tsx");
 const navigation = read("src/components/navigation/app-navigation.tsx");
-const homeLayout = read("src/app/app/layout.tsx");
+const adventureHome = read("src/app/app/page.tsx");
 const productEvents = read(
   "src/modules/analytics/infrastructure/product-events.ts",
 );
@@ -112,8 +113,12 @@ describe("Stage 18 Opportunity MVP", () => {
       "Confirm the exact age requirement before applying",
     );
     expect(contract).toContain("Confirm location eligibility");
-    expect(builderPage).toContain("Missing details are shown as");
-    expect(builderPage).toContain("eligibility checks rather than guessed");
+    expect(normalizedBuilderPage).toContain(
+      "Age band, country when supplied, selected path and demonstrated capability labels are used; unknowns stay explicit.",
+    );
+    expect(builderPage).toContain(
+      "Matching is guidance, not a hidden employability score",
+    );
   });
 
   it("keeps closed applications outcome-trackable without re-recommending them", () => {
@@ -126,19 +131,20 @@ describe("Stage 18 Opportunity MVP", () => {
     );
     expect(contract).toContain("if (!opportunity.isActive) return null");
     expect(dal).toContain("trackedApplications");
-    expect(normalizedTrackedCard).toContain("Tracked application");
-    expect(normalizedTrackedCard).toContain("Opportunity no longer active");
+    expect(normalizedTrackedCard).toContain("Application trail");
+    expect(normalizedTrackedCard).toContain("listing closed");
     expect(normalizedTrackedCard).toContain(
-      "deadline, publication or review state has changed, so PipuPath will not treat it as an active match",
+      "This external opportunity is no longer an active match, but your self-reported application trail remains yours.",
     );
     expect(trackedCard).not.toContain("openOpportunityAction");
     expect(trackedCard).not.toContain("Open official opportunity");
   });
 
   it("labels applications and outcomes as self-reported rather than verified", () => {
-    expect(builderPage).toContain("Application — self-reported");
-    expect(builderPage).toContain("PipuPath has not independently verified");
-    expect(builderPage).toContain("Save self-reported outcome");
+    expect(normalizedBuilderPage).toContain(
+      "This application and its outcome are self-reported; PipuPath has not independently verified them.",
+    );
+    expect(builderPage).toContain("Save outcome");
   });
 
   it("reuses the central product-event stream and adds no primary navigation item", () => {
@@ -147,6 +153,6 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(productEvents).toContain('"opportunities"');
     expect(migration).toContain("alter table public.product_events");
     expect(navigation).not.toMatch(/href:\s*["']\/opportunities["']/);
-    expect(homeLayout).toContain('href="/opportunities"');
+    expect(adventureHome).toContain('<ToolkitLink href="/opportunities"');
   });
 });

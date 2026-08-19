@@ -88,7 +88,7 @@ describe("Stage 8 Builder Project structural contract", () => {
     expect(migration).toMatch(
       /if next_milestone_id is not null[\s\S]{0,500}else[\s\S]{0,220}status = 'completed'/,
     );
-    expect(detailPage).toContain("A useful result now has an evidence trail.");
+    expect(detailPage).toContain("You built something with an evidence trail.");
   });
 
   it("uses controlled authenticated RPCs for all mutations", () => {
@@ -107,14 +107,14 @@ describe("Stage 8 Builder Project structural contract", () => {
     expect(navigation).toContain('href: "/build"');
     expect(navigation).toContain('pathname.startsWith("/quests")');
     expect(navigation).toContain('pathname.startsWith("/projects")');
-    expect(projectPage).toContain("Turn proof into something useful.");
-    expect(detailPage).toContain("Builder Project · Private");
+    expect(projectPage).toContain("Projects prove what you can build.");
+    expect(detailPage).toContain("Major Build · Private");
   });
 
   it("preserves private Stage 8 proof while allowing the authorised Portfolio handoff", () => {
     expect(adr).toContain("Stage 9 remains locked");
     expect(adr).toContain("public Projects or evidence portfolios");
-    expect(detailPage).toContain("Raw evidence, reflections");
-    expect(detailPage).toContain("Prepare Selective Public Proof");
+    expect(detailPage).toContain("The full Project remains private.");
+    expect(detailPage).toContain("Prepare Builder Vault Proof");
   });
 });
