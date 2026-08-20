@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import { calculateJourneyProgress } from "@/modules/journey/domain/journey-contract";
@@ -24,6 +25,11 @@ export default async function QuestsPage() {
   const state = context
     ? await getCurrentQuestState(context.milestoneId)
     : null;
+
+  if (state?.active) {
+    redirect(`/quests/${state.active.id}`);
+  }
+
   const attemptsRemaining = state ? Math.max(0, 3 - state.attempts) : 0;
   const questProgress = state
     ? calculateQuestPackProgress(state.quests.map((quest) => quest.status))
