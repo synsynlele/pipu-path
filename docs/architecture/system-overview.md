@@ -2,7 +2,9 @@
 
 ## Architectural shape
 
-PipuPath begins as a modular monolith. This keeps cross-capability workflows transactionally coherent while preserving boundaries that can be separated if scale or regulation later requires it.
+PipuPath begins as a modular monolith. This keeps cross-capability workflows
+transactionally coherent while preserving boundaries that can be separated if
+scale or regulation later requires it.
 
 ```text
 Route composition
@@ -12,7 +14,8 @@ Route composition
         -> Infrastructure adapters
 ```
 
-Dependencies point inward. Domain and application code may not import Next.js, database SDKs, AI SDKs, analytics SDKs, or transport-specific types.
+Dependencies point inward. Domain and application code may not import Next.js,
+database SDKs, AI SDKs, analytics SDKs, or transport-specific types.
 
 ## Product capability boundaries
 
@@ -26,46 +29,9 @@ Dependencies point inward. Domain and application code may not import Next.js, d
 - Outcomes, impact, and opportunities
 - Operations, moderation, and audit
 
-Every boundary owns its terminology, rules, persistence contract, and emitted events. Cross-boundary reads use explicit application queries; cross-boundary changes use application commands and recorded events.
-
-## Adventure experience architecture
-
-The Builder-facing experience is governed by `docs/product/adventure-experience-constitution.md`.
-
-The experience layer sits above the released domain engine; it does not replace domain entities merely to create adventure language.
-
-```text
-Adventure Shell
-  -> Current Path / Campaign context
-    -> Adventure Map / Journey state
-      -> Quest Focus: Understand → Act → Prove → Reflect → Reveal
-        -> Evidence-backed progression and consequence
-          -> Skill Tree / Major Build / Vault / Deployment Door
-```
-
-Primary experience state should answer:
-
-- where the Builder is;
-- what they are pursuing;
-- what they should do next;
-- what real-world action is required;
-- what truthfully changes after action.
-
-A Path is a mutable developmental direction, not an immutable identity. Path transitions must retain lineage. Changing Path may pause/archive an incompatible active Mission and unfinished Quests, but must preserve completed Quests, Evidence, Reflection, XP, Projects and Capability provenance. New work starts under the new Path without rewriting the Builder's history.
-
-The presentation may use Campaign, Adventure Map, Challenge, Proof, Skill Tree, Major Build, Vault and Deployment Door language while persistence continues to use Mission, Journey, Quest, Evidence, Capability, Project, Portfolio and Opportunity contracts.
-
-This separation prevents decorative gamification from corrupting domain integrity while ensuring the product does not regress into dashboard-first SaaS interaction.
-
-## Experience-state rules
-
-- A primary Builder route should expose one dominant next move rather than an equal-weight feature catalogue.
-- Journey state must expose completed/current/available/locked/reveal-later/milestone distinctions.
-- Quest state must support the five-phase challenge loop without fabricating progression.
-- Progression events must be derived from meaningful developmental action and evidence.
-- Direction changes are explicit transitions with audit/provenance, not destructive updates.
-- Adventure presentation must remain semantically accessible and understandable with reduced motion.
-- Privacy, safeguarding and authorization remain authoritative beneath every experience surface.
+Every boundary owns its terminology, rules, persistence contract, and emitted
+events. Cross-boundary reads use explicit application queries; cross-boundary
+changes use application commands and recorded events.
 
 ## Stage 1 structure
 
@@ -75,23 +41,35 @@ This separation prevents decorative gamification from corrupting domain integrit
 - `src/lib/observability`: structured, redacted logging boundary
 - `docs`: architecture authority and delivery evidence
 
-Future stages add `src/modules/<capability>/{domain,application,infrastructure}` without moving domain rules into route files.
+Future stages add `src/modules/<capability>/{domain,application,infrastructure}`
+without moving domain rules into route files.
 
 ## Data and intelligence rules
 
-- Persistent entities use stable identifiers, timestamps, explicit status transitions, and optimistic concurrency where concurrent edits are possible.
+- Persistent entities use stable identifiers, timestamps, explicit status
+  transitions, and optimistic concurrency where concurrent edits are possible.
 - Derived profile claims retain links to source evidence and synthesis version.
-- AI output is untrusted input: schema-validated, provenance-recorded, bounded, and reviewable by the user.
-- Logs never contain secrets, raw assessment narratives, contact details, or protected youth data.
-- Destructive transitions require authorization, auditability, and a defined recovery or retention policy.
-- Developmental-history transitions must prefer append/supersede/archive semantics over destructive rewriting when provenance matters.
+- AI output is untrusted input: schema-validated, provenance-recorded, bounded,
+  and reviewable by the user.
+- Logs never contain secrets, raw assessment narratives, contact details, or
+  protected youth data.
+- Destructive transitions require authorization, auditability, and a defined
+  recovery or retention policy.
 
 ## Deployment posture
 
-The web application is a single deployable unit in early stages. External services are introduced only by the stage that needs them and behind ports. CI is the authoritative merge gate.
+The web application is a single deployable unit in early stages. External
+services are introduced only by the stage that needs them and behind ports.
+CI is the authoritative merge gate.
 
 ## Stage 11 composition
 
-`src/modules/connect` owns the adult-safe discovery, relationship, blocking, reporting and contact-consent contracts. Routes compose those use cases but do not authorize cross-user state themselves. Supabase RLS and controlled RPCs remain authoritative.
+`src/modules/connect` owns the adult-safe discovery, relationship, blocking,
+reporting and contact-consent contracts. Routes compose those use cases but do
+not authorize cross-user state themselves. Supabase RLS and controlled RPCs
+remain authoritative.
 
-Journey continuity stays inside the Journey boundary. Cycle lineage is stored on generation requests and Journeys, while completed Project state is read as the proof gate. Connect and Journey do not share persistence or mutate each other; they compound through the authenticated Home and progression resolver.
+Journey continuity stays inside the Journey boundary. Cycle lineage is stored on
+generation requests and Journeys, while completed Project state is read as the
+proof gate. Connect and Journey do not share persistence or mutate each other;
+they compound through the authenticated Home and progression resolver.

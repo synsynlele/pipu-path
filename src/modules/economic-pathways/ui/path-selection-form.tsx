@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import {
   selectEconomicPathAction,
@@ -23,6 +23,7 @@ export function PathSelectionForm({
     initialState,
   );
   const [hasSelection, setHasSelection] = useState(selected);
+  const [confirmingChange, setConfirmingChange] = useState(false);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -35,29 +36,69 @@ export function PathSelectionForm({
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    if (hasSelection && !selected && !confirmingChange) {
+      event.preventDefault();
+      setConfirmingChange(true);
+    }
+  }
+
   return (
     <form
       action={action}
+      onSubmit={handleSubmit}
       className="mt-5"
       aria-busy={pending}
       data-economic-path-selected={selected ? "true" : "false"}
     >
       <input type="hidden" name="recommendationId" value={recommendationId} />
       <input type="hidden" name="pathKey" value={pathKey} />
-      <Button
-        type="submit"
-        disabled={pending || selected}
-        variant={selected ? "secondary" : "primary"}
-        className="w-full sm:w-auto"
-      >
-        {selected
-          ? "Selected Path"
-          : pending
-            ? "Saving path…"
-            : hasSelection
-              ? "Change to This Path"
-              : "Choose This Path"}
-      </Button>
+
+      {confirmingChange && !selected ? (
+        <div className="border-border bg-background rounded-2xl border p-4">
+          <p className="text-navy text-sm font-semibold">Change your Path?</p>
+          <p className="text-muted mt-2 text-sm leading-6">
+            Your unfinished Mission, Journey and Quest from the current Path
+            will close. Any unfinished Project from that direction will be
+            archived, not deleted. Completed work, proof, reflections and XP
+            stay saved.
+          </p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <Button
+              type="submit"
+              disabled={pending}
+              className="w-full sm:w-auto"
+            >
+              {pending ? "Changing path…" : "Yes, Change Path"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={pending}
+              className="w-full sm:w-auto"
+              onClick={() => setConfirmingChange(false)}
+            >
+              Keep Current Path
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Button
+          type="submit"
+          disabled={pending || selected}
+          variant={selected ? "secondary" : "primary"}
+          className="w-full sm:w-auto"
+        >
+          {selected
+            ? "Selected Path"
+            : pending
+              ? "Saving path…"
+              : hasSelection
+                ? "Change to This Path"
+                : "Choose This Path"}
+        </Button>
+      )}
+
       {state.status === "error" ? (
         <p role="alert" className="text-error mt-3 text-sm">
           {state.message}

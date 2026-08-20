@@ -259,16 +259,26 @@ export default async function ProjectsPage() {
         <section className="mt-9">
           <div>
             <p className="text-muted text-xs font-semibold tracking-[0.14em] uppercase">
-              Builder Vault history
+              Build history
             </p>
             <h2 className="text-navy mt-1 text-2xl font-semibold">
-              Major Builds you have completed
+              Past Major Builds
             </h2>
+            <p className="text-muted mt-2 max-w-2xl text-sm leading-6">
+              Completed and archived Builds stay here so your history is never
+              rewritten when your direction changes.
+            </p>
           </div>
           <div className="mt-4 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
             {state.history.map((project) => (
               <Surface key={project.id} className="w-72 shrink-0 p-5">
-                <p className="text-success text-xs font-semibold tracking-wide uppercase">
+                <p
+                  className={`${
+                    project.status === "completed"
+                      ? "text-success"
+                      : "text-muted"
+                  } text-xs font-semibold tracking-wide uppercase`}
+                >
                   {projectStatusLabel(project.status)}
                 </p>
                 <h3 className="text-navy mt-2 text-xl font-semibold">
