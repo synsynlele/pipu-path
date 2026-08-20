@@ -22,6 +22,8 @@ function isActive(pathname: string, href: string) {
       pathname.startsWith("/quests") ||
       pathname.startsWith("/projects")
     );
+  if (href === "/connect")
+    return pathname.startsWith("/connect") || pathname.startsWith("/opportunities");
   if (href === "/profile")
     return (
       pathname.startsWith("/profile") ||
