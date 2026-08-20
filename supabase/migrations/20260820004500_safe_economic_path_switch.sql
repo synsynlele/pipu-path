@@ -17,6 +17,7 @@ declare
   retired_missions integer := 0;
   retired_journeys integer := 0;
   retired_quests integer := 0;
+  archived_projects integer := 0;
 begin
   if actor is null then
     raise exception 'ECONOMIC_PATHWAYS_ACCESS_DENIED' using errcode = 'P0001';
@@ -69,6 +70,26 @@ begin
       );
     get diagnostics retired_quests = row_count;
 
+    -- An unfinished Project is part of the old Journey. Archive it rather than
+    -- letting Home present it as the next move after the Builder has pivoted.
+    update public.builder_projects as project
+    set status = 'archived',
+        updated_at = now()
+    where project.user_id = actor
+      and project.status = 'active'
+      and exists (
+        select 1
+        from public.user_journeys as journey
+        join public.user_missions as mission
+          on mission.id = journey.mission_id
+        where journey.id = project.journey_id
+          and journey.user_id = actor
+          and mission.user_id = actor
+          and journey.status in ('draft', 'active', 'paused')
+          and mission.status in ('draft', 'active', 'paused')
+      );
+    get diagnostics archived_projects = row_count;
+
     update public.user_journeys as journey
     set status = 'replaced',
         replaced_at = coalesce(journey.replaced_at, now()),
@@ -111,7 +132,8 @@ begin
       'previousPathKey', recommendation.selected_path_key,
       'retiredMissionCount', retired_missions,
       'retiredJourneyCount', retired_journeys,
-      'retiredQuestCount', retired_quests
+      'retiredQuestCount', retired_quests,
+      'archivedProjectCount', archived_projects
     )
   );
 
