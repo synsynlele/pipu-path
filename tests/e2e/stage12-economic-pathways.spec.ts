@@ -17,11 +17,11 @@ test("selected economic pathways remain usable on mobile", async ({
   await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
 
   await page.goto("/onboarding/discovery/profile");
+  await expect(page.getByRole("heading", { name: "Paths to Test" })).toBeVisible({
+    timeout: 20_000,
+  });
   await expect(
-    page.getByRole("heading", { name: "Possible Paths" }),
-  ).toBeVisible({ timeout: 20_000 });
-  await expect(
-    page.getByRole("heading", { name: "Earn From Your Strengths" }),
+    page.getByRole("heading", { name: "Ways to Create Value" }),
   ).toBeVisible();
 
   const selectedPath = page.getByRole("button", { name: "Selected Path" });
@@ -39,6 +39,23 @@ test("selected economic pathways remain usable on mobile", async ({
   await expect(page.getByRole("button", { name: "Selected Path" })).toBeVisible(
     { timeout: 20_000 },
   );
+
+  const changePath = page
+    .getByRole("button", { name: "Change to This Path" })
+    .first();
+  if ((await changePath.count()) > 0) {
+    await changePath.click();
+    await expect(
+      page.getByText("Change your Path?", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Completed work, proof, reflections, XP and Projects stay saved/),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Keep Current Path" }).click();
+    await expect(
+      page.getByText("Change your Path?", { exact: true }),
+    ).toHaveCount(0);
+  }
 
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - window.innerWidth,
