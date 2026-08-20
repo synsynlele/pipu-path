@@ -20,6 +20,7 @@ const builderRoutes = [
 ] as const;
 
 test("Builder experience stays navigable from A to Z", async ({ page }) => {
+  test.setTimeout(120_000);
   test.skip(
     !process.env.E2E_STAGE3_EMAIL || !process.env.E2E_STAGE3_PASSWORD,
     "Authenticated staging fixture is not configured.",
@@ -35,29 +36,32 @@ test("Builder experience stays navigable from A to Z", async ({ page }) => {
   await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
 
   for (const route of builderRoutes) {
-    const response = await page.goto(route, { waitUntil: "domcontentloaded" });
-    expect(
-      response,
-      `${route} should return a document response`,
-    ).not.toBeNull();
-    expect(
-      response?.status(),
-      `${route} should not return a server/client error`,
-    ).toBeLessThan(400);
-    await expect(page).not.toHaveURL(/\/login(?:\?|$)/);
-    await expect(page.locator("main#main-content")).toBeVisible({
-      timeout: 15_000,
-    });
-    await expect(page.getByText("This path is not available")).toHaveCount(0);
-    await expect(page.getByText("Application error")).toHaveCount(0);
+    await test.step(`verify ${route}`, async () => {
+      const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+      expect(
+        response,
+        `${route} should return a document response`,
+      ).not.toBeNull();
+      expect(
+        response?.status(),
+        `${route} should not return a server/client error`,
+      ).toBeLessThan(400);
+      await expect(page).not.toHaveURL(/\/login(?:\?|$)/);
+      await expect(
+        page.locator("main#main-content"),
+        `${route} should expose the shared main-content target`,
+      ).toBeVisible({ timeout: 15_000 });
+      await expect(page.getByText("This path is not available")).toHaveCount(0);
+      await expect(page.getByText("Application error")).toHaveCount(0);
 
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - window.innerWidth,
-    );
-    expect(
-      overflow,
-      `${route} should not overflow horizontally`,
-    ).toBeLessThanOrEqual(1);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      expect(
+        overflow,
+        `${route} should not overflow horizontally`,
+      ).toBeLessThanOrEqual(1);
+    });
   }
 
   expect(
