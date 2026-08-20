@@ -8,11 +8,13 @@ const builderRoutes = [
   "/journey",
   "/quests",
   "/proof",
+  "/proof-unavailable",
   "/build",
   "/projects",
   "/portfolio",
   "/connect",
   "/profile",
+  "/guide",
   "/opportunities",
   "/passport",
 ] as const;
