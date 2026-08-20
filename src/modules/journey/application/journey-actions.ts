@@ -9,7 +9,6 @@ import {
   recordProductEventForUser,
 } from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
-import { generateCurrentQuestPack } from "@/modules/quest/application/quest-generation";
 import { generateCurrentJourney } from "./journey-generation";
 
 export type JourneyFormState =
@@ -57,8 +56,6 @@ export async function activateJourneyAction(formData: FormData) {
       pathKey: pathways.selectedPath.key,
     });
   }
-
-  await generateCurrentQuestPack();
 
   revalidatePath("/journey");
   revalidatePath("/quests");
