@@ -28,10 +28,13 @@ export default async function ProjectDetailPage({
   const progress = calculateProjectProgress(
     milestones.map((milestone) => milestone.status),
   );
-  const currentMilestone = milestones.find(
-    (milestone) =>
-      milestone.status === "available" || milestone.status === "active",
-  );
+  const currentMilestone =
+    project.status === "active"
+      ? milestones.find(
+          (milestone) =>
+            milestone.status === "available" || milestone.status === "active",
+        )
+      : undefined;
   const milestoneById = new Map(
     milestones.map((milestone) => [milestone.id, milestone]),
   );
