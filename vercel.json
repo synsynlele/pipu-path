@@ -13,7 +13,8 @@
       "fix/path-switch-experience-audit": false,
       "hotfix/build-after-path-switch": false,
       "hotfix/path-pivot-handoff": false,
-      "hotfix/current-quest-direct-and-ai-contract": false
+      "hotfix/current-quest-direct-and-ai-contract": false,
+      "hotfix/active-quest-direct-entry": false
     }
   }
 }
