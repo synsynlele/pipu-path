@@ -26,7 +26,7 @@
     "verify:staging:auth": "node scripts/verify-staging-auth.mjs",
     "verify:staging:discovery": "node scripts/verify-stage3-discovery.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "node scripts/emit-path-switch-formatted-files.mjs",
     "validate": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run test:integration && npm run build"
   },
   "dependencies": {
