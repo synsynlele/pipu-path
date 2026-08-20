@@ -13,6 +13,12 @@ const form = readFileSync(
   "src/modules/economic-pathways/ui/path-selection-form.tsx",
   "utf8",
 );
+const missionPage = readFileSync("src/app/mission/page.tsx", "utf8");
+const projectsPage = readFileSync("src/app/projects/page.tsx", "utf8");
+const projectDetailPage = readFileSync(
+  "src/app/projects/[projectId]/page.tsx",
+  "utf8",
+);
 
 describe("safe Economic Path switching", () => {
   it("uses one authenticated atomic RPC and validates ownership and the requested path", () => {
@@ -87,5 +93,26 @@ describe("safe Economic Path switching", () => {
     expect(form).toContain("archived,");
     expect(form).toContain("not deleted");
     expect(form).toContain("Completed work, proof, reflections and XP stay saved");
+  });
+
+  it("makes Path review discoverable from the Mission experience", () => {
+    expect(missionPage).toContain("Review / Change Path →");
+    expect(missionPage).toContain('href="/onboarding/discovery/profile"');
+  });
+
+  it("keeps archived Projects visibly separate from completed Builds", () => {
+    expect(projectsPage).toContain("Build history");
+    expect(projectsPage).toContain("Past Major Builds");
+    expect(projectsPage).toContain('project.status === "completed"');
+    expect(projectDetailPage).toContain(
+      'project.status === "completed" ? (',
+    );
+    expect(projectDetailPage).toContain("Archived Build");
+    expect(projectDetailPage).toContain(
+      "This Build closed without being marked complete.",
+    );
+    expect(projectDetailPage).toContain(
+      "cannot be prepared as Builder Vault proof",
+    );
   });
 });
