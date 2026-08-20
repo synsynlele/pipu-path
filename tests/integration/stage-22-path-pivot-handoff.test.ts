@@ -59,6 +59,8 @@ describe("Stage 22 Path pivot handoff", () => {
     expect(migration).toContain("created_at >= current_path_selected_at");
     expect(migration).toContain("from anon");
     expect(migration).toContain("to authenticated");
-    expect(missionDal).toContain('requestQuery.gte("created_at", pathways.selectedAt)');
+    expect(missionDal).toContain(
+      'requestQuery.gte("created_at", pathways.selectedAt)',
+    );
   });
 });
