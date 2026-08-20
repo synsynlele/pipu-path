@@ -108,10 +108,8 @@ export function normalizeQuestProviderOutput(input: unknown): unknown {
       if (typeof title === "string") {
         const normalizedTitle = title.toLocaleLowerCase();
         if (seenTitles.has(normalizedTitle)) {
-          title = `${title} — ${titleSuffixes[index] ?? `Step ${index + 1}`}`.slice(
-            0,
-            100,
-          );
+          const suffix = titleSuffixes[index] ?? `Step ${index + 1}`;
+          title = `${title} — ${suffix}`.slice(0, 100);
         }
         seenTitles.add(title.toLocaleLowerCase());
       }
