@@ -96,8 +96,8 @@ describe("safe Economic Path switching", () => {
     expect(form).toContain("Keep Current Path");
     expect(form).toContain("archived,");
     expect(form).toContain("not deleted");
-    expect(form).toContain(
-      "Completed work, proof, reflections and XP stay saved",
+    expect(form).toMatch(
+      /Completed work, proof, reflections and XP\s+stay saved\./,
     );
   });
 
