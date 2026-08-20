@@ -11,7 +11,9 @@ describe("Stage 22 Build access after Path switching", () => {
 
   it("still routes active work directly to the current Project or Quests", () => {
     expect(buildPage).toContain("state.snapshot.activeProjectId");
-    expect(buildPage).toContain('redirect(`/projects/${state.snapshot.activeProjectId}`)');
+    expect(buildPage).toContain(
+      'redirect(`/projects/${state.snapshot.activeProjectId}`)',
+    );
     expect(buildPage).toContain(
       'state.quest || state.snapshot.journeyStatus === "active"',
     );
