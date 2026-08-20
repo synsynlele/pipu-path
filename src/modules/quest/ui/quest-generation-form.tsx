@@ -11,7 +11,7 @@ const initialState: QuestFormState = { status: "idle" };
 
 export function QuestGenerationForm({
   attemptsRemaining,
-  autoStart = false,
+  autoStart = true,
 }: {
   attemptsRemaining: number;
   autoStart?: boolean;
