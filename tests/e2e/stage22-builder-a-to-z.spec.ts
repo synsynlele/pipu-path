@@ -13,11 +13,33 @@ const builderRoutes = [
   "/projects",
   "/portfolio",
   "/connect",
+  "/connect/collaborations",
   "/profile",
+  "/growth",
   "/guide",
+  "/profile/verification",
   "/opportunities",
   "/passport",
 ] as const;
+
+function isPreviewBrowserNoise(error: Error) {
+  const stack = error.stack ?? "";
+
+  // Vercel Preview injects a feedback toolbar iframe. Mobile WebKit does not
+  // expose navigator.storage there, and the toolbar currently rejects while
+  // probing storage persistence. The trace proves this stack originates from
+  // vercel.live rather than PipuPath application code.
+  if (stack.includes("https://vercel.live/_next-live/feedback/")) return true;
+
+  // During deliberate page.goto navigation, WebKit can report abandoned
+  // Next.js RSC prefetches as page errors even though the destination document
+  // succeeds. Keep this narrow: it must be an RSC request, the specific WebKit
+  // access-control message, and originate in the Next.js runtime chunk.
+  return (
+    /_rsc=.*due to access control checks\.$/.test(error.message) &&
+    stack.includes("/_next/static/chunks/")
+  );
+}
 
 test("Builder experience stays navigable from A to Z", async ({ page }) => {
   test.setTimeout(120_000);
@@ -27,7 +49,13 @@ test("Builder experience stays navigable from A to Z", async ({ page }) => {
   );
 
   const runtimeFailures: string[] = [];
-  page.on("pageerror", (error) => runtimeFailures.push(error.message));
+  let currentRoute = "/login";
+  page.on("pageerror", (error) => {
+    if (isPreviewBrowserNoise(error)) return;
+    runtimeFailures.push(
+      `${currentRoute}: ${error.message}${error.stack ? `\n${error.stack}` : ""}`,
+    );
+  });
 
   await page.goto("/login");
   await page.getByLabel("Email address").fill(process.env.E2E_STAGE3_EMAIL!);
@@ -37,6 +65,7 @@ test("Builder experience stays navigable from A to Z", async ({ page }) => {
 
   for (const route of builderRoutes) {
     await test.step(`verify ${route}`, async () => {
+      currentRoute = route;
       const response = await page.goto(route, {
         waitUntil: "domcontentloaded",
       });
@@ -68,6 +97,6 @@ test("Builder experience stays navigable from A to Z", async ({ page }) => {
 
   expect(
     runtimeFailures,
-    "Builder routes should not throw page errors",
+    "Builder routes should not throw PipuPath page errors",
   ).toEqual([]);
 });
