@@ -1,0 +1,38 @@
+name: Path switch Preview E2E
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  preview-e2e:
+    if: github.event.pull_request.number == 45
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Run focused authenticated Builder experience
+        run: >-
+          npx playwright test
+          tests/e2e/stage12-economic-pathways.spec.ts
+          tests/e2e/stage22-builder-a-to-z.spec.ts
+        env:
+          E2E_BASE_URL: https://pipu-path-dyw91jj36-copyartint-2860s-projects.vercel.app
+          E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
+          E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: path-switch-preview-traces-v2
+          path: test-results
+          if-no-files-found: ignore
