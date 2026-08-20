@@ -18,7 +18,6 @@ const questSchema = {
     "safety_guidance",
     "completion_criteria",
     "reflection_prompts",
-    "sequence_order",
   ],
   properties: {
     title: { type: "string", minLength: 3, maxLength: 100 },
@@ -55,7 +54,6 @@ const questSchema = {
       maxItems: 4,
       items: { type: "string", minLength: 8, maxLength: 240 },
     },
-    sequence_order: { type: "integer", minimum: 1, maximum: 3 },
   },
 } as const;
 
@@ -80,21 +78,64 @@ function buildPrompt(input: { context: QuestContext }) {
     "Make every Quest realistic in Nigeria or another low-resource setting, age-appropriate, safe and possible with little or no money.",
     "Do not require purchases, public posting, contact with strangers, secret activity, personal addresses, dangerous activity, illegal activity or fabricated evidence.",
     "Use trusted people and resources already available. For minors, keep participation within trusted family, school or supervised community relationships.",
-    "Quest 1 creates a small result, Quest 2 tests or improves it, and Quest 3 demonstrates a stronger useful outcome.",
-    "Use sequence_order values 1, 2 and 3 without gaps and give every Quest a distinct title.",
+    "The array order is meaningful: Quest 1 creates a small result, Quest 2 tests or improves it, and Quest 3 demonstrates a stronger useful outcome.",
+    "Give every Quest a distinct, specific title. Do not include sequence numbers in the title; PipuPath assigns sequence_order deterministically from array position.",
     `Approved active Journey and milestone context: ${JSON.stringify(input.context)}`,
   ].join("\n");
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+export function normalizeQuestProviderOutput(input: unknown): unknown {
+  const pack = asRecord(input);
+  if (!pack || !Array.isArray(pack.quests)) return input;
+
+  const seenTitles = new Set<string>();
+  const titleSuffixes = ["Create", "Test", "Improve"] as const;
+
+  return {
+    ...pack,
+    quests: pack.quests.map((value, index) => {
+      const quest = asRecord(value);
+      if (!quest) return value;
+
+      let title =
+        typeof quest.title === "string" ? quest.title.trim() : quest.title;
+      if (typeof title === "string") {
+        const normalizedTitle = title.toLocaleLowerCase();
+        if (seenTitles.has(normalizedTitle)) {
+          title = `${title} — ${titleSuffixes[index] ?? `Step ${index + 1}`}`.slice(
+            0,
+            100,
+          );
+        }
+        seenTitles.add(title.toLocaleLowerCase());
+      }
+
+      return {
+        ...quest,
+        title,
+        sequence_order: index + 1,
+      };
+    }),
+  };
+}
+
 export class OpenAIQuestProvider {
   async generate(input: { context: QuestContext }): Promise<unknown> {
-    return requestOpenAIStructuredOutput({
+    const output = await requestOpenAIStructuredOutput({
       instructions:
-        "You create safe, practical HQLS Quest packs for PipuPath. Follow the supplied schema exactly and ground every Quest in the approved Journey milestone.",
+        "You create safe, practical HQLS Quest packs for PipuPath. Follow the supplied schema exactly and ground every Quest in the approved Journey milestone. Return the three Quests in the exact developmental order they should be completed.",
       prompt: buildPrompt(input),
-      schemaName: "pipupath_quest_pack_v1",
+      schemaName: "pipupath_quest_pack_v2",
       schema: questPackResponseSchema,
       maxOutputTokens: 6144,
     });
+
+    return normalizeQuestProviderOutput(output);
   }
 }
