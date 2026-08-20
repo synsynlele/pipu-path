@@ -50,9 +50,7 @@ describe("safe Economic Path switching", () => {
     expect(hardenedMigration).toContain(
       "replaced_at = coalesce(journey.replaced_at, now())",
     );
-    expect(hardenedMigration).toContain(
-      "mission.id = project.mission_id",
-    );
+    expect(hardenedMigration).toContain("mission.id = project.mission_id");
     expect(hardenedMigration).not.toMatch(
       /delete\s+from\s+public\.(user_quests|user_journeys|user_missions|builder_projects|quest_evidence|quest_reflections|builder_xp_transactions)/i,
     );
@@ -98,7 +96,9 @@ describe("safe Economic Path switching", () => {
     expect(form).toContain("Keep Current Path");
     expect(form).toContain("archived,");
     expect(form).toContain("not deleted");
-    expect(form).toContain("Completed work, proof, reflections and XP stay saved");
+    expect(form).toContain(
+      "Completed work, proof, reflections and XP stay saved",
+    );
   });
 
   it("makes Path review discoverable from the Mission experience", () => {
@@ -110,9 +110,7 @@ describe("safe Economic Path switching", () => {
     expect(projectsPage).toContain("Build history");
     expect(projectsPage).toContain("Past Major Builds");
     expect(projectsPage).toContain('project.status === "completed"');
-    expect(projectDetailPage).toContain(
-      'project.status === "completed" ? (',
-    );
+    expect(projectDetailPage).toContain('project.status === "completed" ? (');
     expect(projectDetailPage).toContain("Archived Build");
     expect(projectDetailPage).toContain(
       "This Build closed without being marked complete.",

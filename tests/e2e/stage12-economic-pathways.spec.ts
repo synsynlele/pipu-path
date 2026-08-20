@@ -17,7 +17,9 @@ test("selected economic pathways remain usable on mobile", async ({
   await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
 
   await page.goto("/onboarding/discovery/profile");
-  await expect(page.getByRole("heading", { name: "Paths to Test" })).toBeVisible({
+  await expect(
+    page.getByRole("heading", { name: "Paths to Test" }),
+  ).toBeVisible({
     timeout: 20_000,
   });
   await expect(
@@ -49,7 +51,9 @@ test("selected economic pathways remain usable on mobile", async ({
       page.getByText("Change your Path?", { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText(/Completed work, proof, reflections, XP and Projects stay saved/),
+      page.getByText(
+        /Completed work, proof, reflections, XP and Projects stay saved/,
+      ),
     ).toBeVisible();
     await page.getByRole("button", { name: "Keep Current Path" }).click();
     await expect(

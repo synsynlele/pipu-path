@@ -11,9 +11,8 @@ describe("AppNavigation Builder Guide orientation", () => {
       name: "PipuPath application",
     });
 
-    expect(within(navigation).getByRole("link", { name: "Me" })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
+    expect(
+      within(navigation).getByRole("link", { name: "Me" }),
+    ).toHaveAttribute("aria-current", "page");
   });
 });

@@ -36,7 +36,10 @@ test("Builder experience stays navigable from A to Z", async ({ page }) => {
 
   for (const route of builderRoutes) {
     const response = await page.goto(route, { waitUntil: "domcontentloaded" });
-    expect(response, `${route} should return a document response`).not.toBeNull();
+    expect(
+      response,
+      `${route} should return a document response`,
+    ).not.toBeNull();
     expect(
       response?.status(),
       `${route} should not return a server/client error`,
@@ -51,12 +54,14 @@ test("Builder experience stays navigable from A to Z", async ({ page }) => {
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - window.innerWidth,
     );
-    expect(overflow, `${route} should not overflow horizontally`).toBeLessThanOrEqual(
-      1,
-    );
+    expect(
+      overflow,
+      `${route} should not overflow horizontally`,
+    ).toBeLessThanOrEqual(1);
   }
 
-  expect(runtimeFailures, "Builder routes should not throw page errors").toEqual(
-    [],
-  );
+  expect(
+    runtimeFailures,
+    "Builder routes should not throw page errors",
+  ).toEqual([]);
 });
