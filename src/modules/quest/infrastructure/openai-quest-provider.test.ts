@@ -58,23 +58,39 @@ describe("OpenAIQuestProvider", () => {
 
   it("assigns sequence order from array position instead of trusting model numbering", () => {
     const normalized = normalizeQuestProviderOutput({
-      quests: [quest("Create a Study Check"), quest("Test the Check"), quest("Improve the Check")],
+      quests: [
+        quest("Create a Study Check"),
+        quest("Test the Check"),
+        quest("Improve the Check"),
+      ],
     }) as { quests: Array<{ sequence_order: number }> };
 
-    expect(normalized.quests.map((item) => item.sequence_order)).toEqual([1, 2, 3]);
+    expect(normalized.quests.map((item) => item.sequence_order)).toEqual([
+      1, 2, 3,
+    ]);
   });
 
   it("makes duplicate model titles distinct without changing the Quest content", () => {
     const normalized = normalizeQuestProviderOutput({
-      quests: [quest("Try the idea"), quest("Try the idea"), quest("Try the idea")],
+      quests: [
+        quest("Try the idea"),
+        quest("Try the idea"),
+        quest("Try the idea"),
+      ],
     }) as { quests: Array<{ title: string }> };
 
-    expect(new Set(normalized.quests.map((item) => item.title.toLowerCase())).size).toBe(3);
+    expect(
+      new Set(normalized.quests.map((item) => item.title.toLowerCase())).size,
+    ).toBe(3);
   });
 
   it("requests an ordered three-Quest pack and returns normalized domain-ready output", async () => {
     request.mockResolvedValue({
-      quests: [quest("Create a Study Check"), quest("Test the Study Check"), quest("Improve the Study Check")],
+      quests: [
+        quest("Create a Study Check"),
+        quest("Test the Study Check"),
+        quest("Improve the Study Check"),
+      ],
     });
 
     const output = (await new OpenAIQuestProvider().generate({ context })) as {
