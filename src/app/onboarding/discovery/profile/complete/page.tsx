@@ -4,6 +4,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import { getCurrentEconomicPathwayState } from "@/modules/economic-pathways/infrastructure/economic-pathway-dal";
 import { getCurrentHumanPotentialProfile } from "@/modules/human-potential/infrastructure/profile-dal";
+import { getCurrentMissionState } from "@/modules/mission/infrastructure/mission-dal";
 
 export const metadata: Metadata = {
   title: "Profile and path saved",
@@ -13,8 +14,19 @@ export const metadata: Metadata = {
 export default async function ProfileCompletePage() {
   const profile = await getCurrentHumanPotentialProfile();
   if (!profile) redirect("/onboarding/discovery/profile");
-  const pathways = await getCurrentEconomicPathwayState(profile.id);
+  const [pathways, missionState] = await Promise.all([
+    getCurrentEconomicPathwayState(profile.id),
+    getCurrentMissionState(profile.id),
+  ]);
   if (!pathways?.selectedPath) redirect("/onboarding/discovery/profile");
+
+  const hasMission = Boolean(missionState.active || missionState.draft);
+  const missionHref = missionState.active ? "/journey" : "/mission";
+  const missionLabel = missionState.active
+    ? "Continue My Journey →"
+    : missionState.draft
+      ? "Continue My Mission →"
+      : "Build My Practical Mission →";
 
   return (
     <main
@@ -27,20 +39,22 @@ export default async function ProfileCompletePage() {
             Profile → Path → Mission
           </p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-            You have a direction. Now test it in the real world.
+            {hasMission
+              ? "Your direction is set. Keep moving."
+              : "You have a direction. Now test it in the real world."}
           </h1>
           <p className="text-muted mt-4 max-w-2xl text-base leading-7 sm:text-lg">
-            Your profile is a starting map and this path is an experiment. The
-            next step is to turn it into one practical mission that produces
-            evidence.
+            {hasMission
+              ? "Your selected Path already has a Mission in progress. Continue from the point you reached instead of starting the flow again."
+              : "Your profile is a starting map and this path is an experiment. The next step is to turn it into one practical mission that produces evidence."}
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <ButtonLink
-              href="/mission"
+              href={missionHref}
               variant="premium"
               className="w-full sm:w-auto"
             >
-              Build My Practical Mission →
+              {missionLabel}
             </ButtonLink>
             <ButtonLink
               href="/onboarding/discovery/profile"
