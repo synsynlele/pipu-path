@@ -103,9 +103,9 @@ export function normalizeQuestProviderOutput(input: unknown): unknown {
       const quest = asRecord(value);
       if (!quest) return value;
 
-      let title =
-        typeof quest.title === "string" ? quest.title.trim() : quest.title;
+      let title: unknown = quest.title;
       if (typeof title === "string") {
+        title = title.trim();
         const normalizedTitle = title.toLocaleLowerCase();
         if (seenTitles.has(normalizedTitle)) {
           const suffix = titleSuffixes[index] ?? `Step ${index + 1}`;
