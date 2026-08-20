@@ -13,6 +13,7 @@ import { generateCurrentJourney } from "./journey-generation";
 
 export type JourneyFormState =
   { status: "idle" } | { status: "error"; message: string };
+
 export async function generateJourneyAction(
   _previous: JourneyFormState,
   formData: FormData,
@@ -29,12 +30,14 @@ export async function generateJourneyAction(
       sourceJourneyId: formData.get("sourceJourneyId") || undefined,
       refinementInstruction: formData.get("refinementInstruction") || undefined,
     });
-  if (!parsed.success)
+  if (!parsed.success) {
     return { status: "error", message: "That Journey request is not valid." };
+  }
   const result = await generateCurrentJourney(parsed.data);
   if (!result.ok) return { status: "error", message: result.message };
   redirect("/journey");
 }
+
 export async function activateJourneyAction(formData: FormData) {
   const { user } = await requireAuthenticatedIdentity();
   const journeyId = z.uuid().safeParse(formData.get("journeyId"));
@@ -45,6 +48,7 @@ export async function activateJourneyAction(formData: FormData) {
     journey_id_input: journeyId.data,
   });
   if (error || !data) return;
+
   if (pathways?.selectedPath) {
     await recordProductEventForUser(user.id, "pathway_started", {
       journeyId: journeyId.data,
@@ -52,6 +56,9 @@ export async function activateJourneyAction(formData: FormData) {
       pathKey: pathways.selectedPath.key,
     });
   }
+
   revalidatePath("/journey");
-  redirect("/journey");
+  revalidatePath("/quests");
+  revalidatePath("/build");
+  redirect("/quests");
 }

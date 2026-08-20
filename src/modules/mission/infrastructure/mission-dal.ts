@@ -60,7 +60,12 @@ function mapMission(row: Record<string, unknown>) {
 
 export async function getCurrentMissionState(profileId?: string) {
   const { user } = await requireAuthenticatedIdentity();
-  const client = await createServerSupabaseClient();
+  const [client, pathways] = await Promise.all([
+    createServerSupabaseClient(),
+    profileId
+      ? getCurrentEconomicPathwayState(profileId)
+      : Promise.resolve(null),
+  ]);
   const draftQuery = client
     .from("user_missions")
     .select("*")
@@ -70,11 +75,14 @@ export async function getCurrentMissionState(profileId?: string) {
     .limit(1);
   const requestQuery = client
     .from("mission_generation_requests")
-    .select("status, human_potential_profile_id")
+    .select("status, human_potential_profile_id, created_at")
     .eq("user_id", user.id);
   if (profileId) {
     draftQuery.eq("human_potential_profile_id", profileId);
     requestQuery.eq("human_potential_profile_id", profileId);
+  }
+  if (pathways?.selectedAt) {
+    requestQuery.gte("created_at", pathways.selectedAt);
   }
   const activeQuery = client
     .from("user_missions")

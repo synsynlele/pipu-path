@@ -200,6 +200,8 @@ export async function completeQuestAction(
     return { status: "error", message: questErrorMessage(code) };
   }
 
+  await generateCurrentQuestPack();
+
   revalidatePath("/quests");
   revalidatePath("/journey");
   revalidatePath(`/quests/${parsed.data.questId}`);

@@ -11,7 +11,8 @@
       "fix/stage22-mobile-proof-contrast": false,
       "fix/stage22-onboarding-ai-results": false,
       "fix/path-switch-experience-audit": false,
-      "hotfix/build-after-path-switch": false
+      "hotfix/build-after-path-switch": false,
+      "hotfix/path-pivot-handoff": false
     }
   }
 }
