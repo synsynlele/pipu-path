@@ -37,7 +37,9 @@ test("Builder experience stays navigable from A to Z", async ({ page }) => {
 
   for (const route of builderRoutes) {
     await test.step(`verify ${route}`, async () => {
-      const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+      const response = await page.goto(route, {
+        waitUntil: "domcontentloaded",
+      });
       expect(
         response,
         `${route} should return a document response`,
