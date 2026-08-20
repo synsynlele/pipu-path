@@ -20,14 +20,18 @@ function isActive(pathname: string, href: string) {
     return (
       pathname.startsWith("/build") ||
       pathname.startsWith("/quests") ||
-      pathname.startsWith("/projects")
+      pathname.startsWith("/projects") ||
+      pathname.startsWith("/proof")
     );
   if (href === "/connect")
-    return pathname.startsWith("/connect") || pathname.startsWith("/opportunities");
+    return (
+      pathname.startsWith("/connect") || pathname.startsWith("/opportunities")
+    );
   if (href === "/profile")
     return (
       pathname.startsWith("/profile") ||
       pathname.startsWith("/growth") ||
+      pathname.startsWith("/guide") ||
       pathname.startsWith("/passport") ||
       pathname.startsWith("/onboarding/discovery/profile")
     );
