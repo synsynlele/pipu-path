@@ -54,7 +54,7 @@ export async function generateQuestPackAction(
   const result = await generateCurrentQuestPack();
   if (!result.ok) return { status: "error", message: result.message };
 
-  redirect("/quests");
+  redirect(`/quests/${result.firstQuestId}`);
 }
 
 export async function startQuestAction(
