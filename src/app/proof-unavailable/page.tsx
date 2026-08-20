@@ -8,7 +8,10 @@ export const metadata: Metadata = {
 
 export default function ProjectProofUnavailablePage() {
   return (
-    <main className="grid min-h-screen place-items-center px-5 py-12 text-center">
+    <main
+      id="main-content"
+      className="grid min-h-screen place-items-center px-5 py-12 text-center"
+    >
       <div className="max-w-xl">
         <p className="text-gold font-mono text-sm tracking-[0.16em] uppercase">
           Proof unavailable
