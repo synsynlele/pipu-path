@@ -51,9 +51,7 @@ test("selected economic pathways remain usable on mobile", async ({
       page.getByText("Change your Path?", { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText(
-        /Completed work, proof, reflections and XP stay saved/,
-      ),
+      page.getByText(/Completed work, proof, reflections and XP stay saved/),
     ).toBeVisible();
     await page.getByRole("button", { name: "Keep Current Path" }).click();
     await expect(
