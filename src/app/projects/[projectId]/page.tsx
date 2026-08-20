@@ -185,7 +185,7 @@ export default async function ProjectDetailPage({
                 />
               </div>
             </Surface>
-          ) : (
+          ) : project.status === "completed" ? (
             <Surface className="border-gold/30 bg-gold/5 relative overflow-hidden p-6 sm:p-8">
               <div
                 aria-hidden="true"
@@ -206,6 +206,23 @@ export default async function ProjectDetailPage({
                   Prepare Builder Vault Proof →
                 </ButtonLink>
               </div>
+            </Surface>
+          ) : (
+            <Surface className="border-border bg-panel p-6 sm:p-8">
+              <p className="text-muted text-xs font-semibold tracking-[0.15em] uppercase">
+                Archived Build
+              </p>
+              <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+                This Build closed without being marked complete.
+              </h2>
+              <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
+                Its definition and private evidence remain saved as part of your
+                history. Archived work is not treated as a completed Build and
+                cannot be prepared as Builder Vault proof.
+              </p>
+              <ButtonLink href="/projects" variant="secondary" className="mt-5">
+                Back to Builds
+              </ButtonLink>
             </Surface>
           )}
 
