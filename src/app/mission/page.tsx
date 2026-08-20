@@ -206,7 +206,7 @@ export default async function MissionPage() {
             <div className="mt-6 flex flex-wrap gap-3">
               <form action={activateMissionAction}>
                 <input type="hidden" name="missionId" value={state.draft.id} />
-                <Button type="submit">Start This Campaign →</Button>
+                <Button type="submit">Continue →</Button>
               </form>
               <MissionGenerationForm
                 kind="regenerate"
