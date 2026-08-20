@@ -76,6 +76,7 @@ export type EconomicPathwayState = {
   >["earnFromStrengths"];
   selectedPathKey: string | null;
   selectedPath: PossiblePath | null;
+  selectedAt: string | null;
   generatedAt: string;
 };
 
@@ -113,6 +114,7 @@ export async function getCurrentEconomicPathwayState(
     selectedPath:
       parsed.data.possiblePaths.find((path) => path.key === selectedPathKey) ??
       null,
+    selectedAt: typeof row.selected_at === "string" ? row.selected_at : null,
     generatedAt:
       typeof row.generated_at === "string"
         ? row.generated_at
