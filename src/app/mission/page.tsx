@@ -78,6 +78,18 @@ function CampaignBrief({ mission }: { mission: DisplayMission }) {
   );
 }
 
+function ChangePathLink() {
+  return (
+    <ButtonLink
+      href="/onboarding/discovery/profile"
+      variant="secondary"
+      className="mt-4"
+    >
+      Review / Change Path →
+    </ButtonLink>
+  );
+}
+
 export default async function MissionPage() {
   const context = await getMissionProfileContext();
   const state = await getCurrentMissionState(context?.profileId);
@@ -176,6 +188,7 @@ export default async function MissionPage() {
                 <p className="text-muted mt-2 text-sm leading-6">
                   {context.selectedPath.possibleInterpretation}
                 </p>
+                <ChangePathLink />
               </Surface>
             ) : null}
           </div>
@@ -211,6 +224,7 @@ export default async function MissionPage() {
                 PipuPath can shape the Campaign, but you choose whether it is a
                 useful experiment.
               </p>
+              {context.selectedPath ? <ChangePathLink /> : null}
             </Surface>
             <details className="border-border bg-panel rounded-2xl border p-5">
               <summary className="text-navy cursor-pointer text-sm font-semibold">
@@ -272,6 +286,7 @@ export default async function MissionPage() {
             <p className="text-muted mt-2 text-sm leading-6">
               {context.selectedPath.possibleInterpretation}
             </p>
+            <ChangePathLink />
           </Surface>
         </section>
       )}
