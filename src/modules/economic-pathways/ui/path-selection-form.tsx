@@ -58,9 +58,9 @@ export function PathSelectionForm({
         <div className="border-border bg-background rounded-2xl border p-4">
           <p className="text-navy text-sm font-semibold">Change your Path?</p>
           <p className="text-muted mt-2 text-sm leading-6">
-            Your current unfinished Mission and Quest will close so you can
-            start fresh from this Path. Completed work, proof, reflections, XP
-            and Projects stay saved.
+            Your unfinished Mission, Journey and Quest from the current Path will
+            close. Any unfinished Project from that direction will be archived,
+            not deleted. Completed work, proof, reflections and XP stay saved.
           </p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
             <Button type="submit" disabled={pending} className="w-full sm:w-auto">
