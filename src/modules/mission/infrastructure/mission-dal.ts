@@ -62,7 +62,9 @@ export async function getCurrentMissionState(profileId?: string) {
   const { user } = await requireAuthenticatedIdentity();
   const [client, pathways] = await Promise.all([
     createServerSupabaseClient(),
-    profileId ? getCurrentEconomicPathwayState(profileId) : Promise.resolve(null),
+    profileId
+      ? getCurrentEconomicPathwayState(profileId)
+      : Promise.resolve(null),
   ]);
   const draftQuery = client
     .from("user_missions")
