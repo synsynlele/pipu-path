@@ -145,3 +145,32 @@ begin
   return request_id;
 end;
 $function$;
+
+revoke all on function public.create_stage5_mission_request(
+  uuid,
+  public.mission_generation_kind,
+  uuid,
+  text,
+  text
+) from public;
+revoke all on function public.create_stage5_mission_request(
+  uuid,
+  public.mission_generation_kind,
+  uuid,
+  text,
+  text
+) from anon;
+grant execute on function public.create_stage5_mission_request(
+  uuid,
+  public.mission_generation_kind,
+  uuid,
+  text,
+  text
+) to authenticated;
+grant execute on function public.create_stage5_mission_request(
+  uuid,
+  public.mission_generation_kind,
+  uuid,
+  text,
+  text
+) to service_role;
