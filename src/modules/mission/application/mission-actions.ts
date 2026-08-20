@@ -31,6 +31,8 @@ export async function generateMissionAction(
   }
   const result = await generateCurrentMission(parsed.data);
   if (!result.ok) return { status: "error", message: result.message };
+  revalidatePath("/mission");
+  revalidatePath("/onboarding/discovery/profile/complete");
   redirect("/mission");
 }
 
@@ -44,5 +46,7 @@ export async function activateMissionAction(formData: FormData) {
   });
   if (error || !data) return;
   revalidatePath("/mission");
-  redirect("/mission");
+  revalidatePath("/journey");
+  revalidatePath("/onboarding/discovery/profile/complete");
+  redirect("/journey");
 }
