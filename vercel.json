@@ -10,7 +10,8 @@
       "agent/stage-22-proof-finalization": false,
       "fix/stage22-mobile-proof-contrast": false,
       "fix/stage22-onboarding-ai-results": false,
-      "fix/path-switch-experience-audit": false
+      "fix/path-switch-experience-audit": false,
+      "hotfix/build-after-path-switch": false
     }
   }
 }

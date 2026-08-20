@@ -17,10 +17,10 @@ export default async function BuildPage() {
   if (state.quest || state.snapshot.journeyStatus === "active") {
     redirect("/quests");
   }
-  if (state.snapshot.completedProjectId) {
-    redirect("/projects");
-  }
-  redirect(
-    state.destination.path === "/app" ? "/projects" : state.destination.path,
-  );
+
+  // Build is a permanent workspace, not a progression redirect. After a Path
+  // change there is intentionally no current Mission/Journey yet, but the
+  // Builder must still be able to review completed/archived Builds and see the
+  // next Build requirement instead of being bounced back to Mission.
+  redirect("/projects");
 }
