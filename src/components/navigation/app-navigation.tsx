@@ -59,8 +59,8 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
       <ul
         className={
           mobile
-            ? "grid grid-cols-5 px-1.5"
-            : "flex items-center gap-1 rounded-full border border-[#e5e8f0] bg-[#f7f8fc] p-1"
+            ? "grid grid-cols-5 px-1"
+            : "border-border bg-panel/95 flex items-center gap-1 rounded-2xl border p-1 shadow-sm"
         }
       >
         {items.map((item) => {
@@ -75,24 +75,20 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 className={
                   mobile
                     ? primaryBuild
-                      ? `relative -mt-3 flex min-h-[4.7rem] w-full touch-manipulation flex-col items-center justify-center gap-0.5 px-1 text-[0.66rem] font-semibold transition-colors ${active ? "text-[#5757e8]" : "text-slate-500 active:text-[#5757e8]"}`
-                      : `flex min-h-[4.15rem] w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.66rem] font-semibold transition-colors ${active ? "text-[#5757e8]" : "text-slate-500 active:text-[#5757e8]"}`
-                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-full px-3.5 text-sm font-semibold transition-colors ${active ? "bg-white text-[#5757e8] shadow-sm" : "text-slate-500 hover:bg-white hover:text-[#5757e8]"}`
+                      ? `relative -mt-3 flex min-h-[4.75rem] w-full touch-manipulation flex-col items-center justify-center gap-0.5 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/80 active:text-white"}`
+                      : `flex min-h-[4.25rem] w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/75 active:text-white"}`
+                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary-light" : "hover:bg-primary-soft/70 text-blue-100/80 hover:text-white"}`
                 }
               >
                 {primaryBuild ? (
                   <span
                     aria-hidden="true"
-                    className="grid size-12 place-items-center rounded-full border border-[#5757e8] bg-gradient-to-br from-[#5757e8] to-[#777df6] text-white shadow-[0_12px_28px_-12px_rgba(87,87,232,0.85)]"
+                    className={`grid size-12 place-items-center rounded-full border shadow-[0_8px_26px_-10px_rgba(79,124,255,0.95)] ${active ? "border-primary-light bg-primary text-white" : "border-primary/50 bg-primary text-white"}`}
                   >
                     <NavigationIcon name={item.icon} active={active} />
                   </span>
                 ) : (
-                  <span
-                    className={`grid size-7 place-items-center rounded-full ${mobile && active ? "bg-[#eef0ff]" : ""}`}
-                  >
-                    <NavigationIcon name={item.icon} active={active} />
-                  </span>
+                  <NavigationIcon name={item.icon} active={active} />
                 )}
                 <span>{item.label}</span>
               </Link>

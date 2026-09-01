@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "PipuPath",
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
   },
   metadataBase: productionUrl,
   alternates: {
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light",
-  themeColor: "#ffffff",
+  colorScheme: "dark",
+  themeColor: "#020817",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
