@@ -111,7 +111,7 @@ export default async function HomePage() {
   );
   const completedGrowthCycle = Boolean(
     state.snapshot.completedProjectId &&
-    state.snapshot.journeyStatus === "completed",
+      state.snapshot.journeyStatus === "completed",
   );
   const adventureProgress = completedGrowthCycle
     ? 100
@@ -162,11 +162,12 @@ export default async function HomePage() {
               <p className="text-xs font-semibold tracking-[0.13em] text-indigo-100 uppercase">
                 {state.mission ? "Continue your mission" : "Your adventure"}
               </p>
-              <h1 className="mt-3 text-[1.75rem] font-bold leading-tight tracking-[-0.035em] sm:text-4xl">
+              <h1 className="mt-3 text-[1.75rem] leading-tight font-bold tracking-[-0.035em] sm:text-4xl">
                 {state.mission?.title ?? "Discover what you can become."}
               </h1>
               <p className="mt-2 line-clamp-2 text-sm leading-6 text-indigo-50/76">
-                {state.mission?.mission_statement ?? state.destination.description}
+                {state.mission?.mission_statement ??
+                  state.destination.description}
               </p>
             </div>
 
@@ -222,7 +223,8 @@ export default async function HomePage() {
 
               {adventureStages.map((stage, index) => {
                 const active = stage.key === currentStage;
-                const complete = completedGrowthCycle || index < currentStageIndex;
+                const complete =
+                  completedGrowthCycle || index < currentStageIndex;
                 return (
                   <Link
                     key={stage.key}
@@ -243,7 +245,7 @@ export default async function HomePage() {
                       </span>
                     </span>
                     <span
-                      className={`text-[0.7rem] font-semibold leading-4 ${active ? "text-[#4634c8]" : "text-[#343751]"}`}
+                      className={`text-[0.7rem] leading-4 font-semibold ${active ? "text-[#4634c8]" : "text-[#343751]"}`}
                     >
                       {stage.label}
                     </span>
@@ -253,12 +255,18 @@ export default async function HomePage() {
             </div>
           </nav>
 
-          <section className="pp-mobile-section mt-5" aria-labelledby="momentum-heading">
+          <section
+            className="pp-mobile-section mt-5"
+            aria-labelledby="momentum-heading"
+          >
             <div className="flex items-center justify-between gap-3 px-1">
               <h2 id="momentum-heading" className="pp-section-title text-xl">
                 Your momentum
               </h2>
-              <Link href="/profile" className="text-sm font-semibold text-[#5b3be0]">
+              <Link
+                href="/profile"
+                className="text-sm font-semibold text-[#5b3be0]"
+              >
                 See all
               </Link>
             </div>
@@ -282,7 +290,11 @@ export default async function HomePage() {
                       : "Your current real-world challenge is active."
                   }
                   href={`/quests/${state.quest.id}`}
-                  badge={state.quest.status === "evidence_submitted" ? "Reflect" : "Active"}
+                  badge={
+                    state.quest.status === "evidence_submitted"
+                      ? "Reflect"
+                      : "Active"
+                  }
                 />
               ) : null}
               {state.project?.id ? (
@@ -317,8 +329,12 @@ export default async function HomePage() {
               ✓
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-base font-bold text-[#25284a]">Today&apos;s Next Step</p>
-              <p className="mt-1 text-sm leading-5 text-[#6f768f]">{move.title}</p>
+              <p className="text-base font-bold text-[#25284a]">
+                Today&apos;s Next Step
+              </p>
+              <p className="mt-1 text-sm leading-5 text-[#6f768f]">
+                {move.title}
+              </p>
               <p className="mt-1 text-xs text-[#9299ad]">{move.signal}</p>
             </div>
             <ButtonLink href={move.href} className="shrink-0 rounded-full px-4">
@@ -338,7 +354,8 @@ export default async function HomePage() {
                 Need clarity, not more noise?
               </h2>
               <p className="mt-2 text-sm leading-6 text-[#747b90]">
-                Ask for private guidance grounded in your current evidence and next real action.
+                Ask for private guidance grounded in your current evidence and
+                next real action.
               </p>
             </Link>
             <Link
@@ -352,7 +369,8 @@ export default async function HomePage() {
                 Find people who complement your mission.
               </h2>
               <p className="mt-2 text-sm leading-6 text-[#747b90]">
-                No follower contest. Connect around capability, contribution and collaboration.
+                No follower contest. Connect around capability, contribution and
+                collaboration.
               </p>
             </Link>
           </section>
@@ -381,8 +399,12 @@ function MomentumRow({
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-bold text-[#2a2d4d]">{title}</span>
-        <span className="mt-1 block line-clamp-2 text-xs leading-5 text-[#777f96]">{detail}</span>
+        <span className="block truncate text-sm font-bold text-[#2a2d4d]">
+          {title}
+        </span>
+        <span className="mt-1 line-clamp-2 block text-xs leading-5 text-[#777f96]">
+          {detail}
+        </span>
       </span>
       <span className="shrink-0 rounded-full bg-[#f0ebff] px-2.5 py-1 text-[0.68rem] font-bold text-[#6243df]">
         {badge}
