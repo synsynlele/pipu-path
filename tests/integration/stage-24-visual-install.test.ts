@@ -42,16 +42,19 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     );
   });
 
-  it("makes installation proactively discoverable across entry and app surfaces", () => {
+  it("separates Android download, mobile app, and native desktop PWA installation", () => {
     expect(publicShell).toContain("InstallPwaButton compact autoNudge");
     expect(authShell).toContain("InstallPwaButton compact autoNudge");
     expect(appShell).toContain("InstallPwaButton autoNudge");
+    expect(layout).toContain("beforeinstallprompt");
+    expect(layout).toContain("android-app://");
     expect(install).toContain("beforeinstallprompt");
     expect(install).toContain("INSTALL_NUDGE_KEY");
     expect(install).toContain("NUDGE_COOLDOWN_MS");
-    expect(install).toContain("iPad|iPhone|iPod");
-    expect(install).toContain("Android");
-    expect(install).toContain("Add to Home Screen");
+    expect(install).toContain("Android|iPhone|iPad|iPod|Mobile");
+    expect(install).toContain("desktopInstallable");
+    expect(install).toContain("isAndroidAppShell");
+    expect(install).not.toContain("Add to Home Screen");
     expect(install).toContain("Download PipuPath Lite");
     expect(install).toContain("/downloads/PipuPath-Lite-1.0.0.apk");
     expect(install).toContain("window.location.assign(ANDROID_APK_PATH)");

@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe("AppShell", () => {
-  it("keeps the full PipuPath identity and dedicated actions in the mobile header", () => {
+  it("keeps the full PipuPath identity and account action in the mobile header", () => {
     const { container } = render(
       <AppShell>
         <main id="main-content">Dashboard</main>
@@ -22,29 +22,31 @@ describe("AppShell", () => {
     const mobileHeader = container.querySelector("header.lg\\:hidden");
     expect(mobileHeader).not.toBeNull();
 
-    const button = within(mobileHeader as HTMLElement).getByRole("button", {
+    const mobileHeaderQueries = within(mobileHeader as HTMLElement);
+    const button = mobileHeaderQueries.getByRole("button", {
       name: "Sign out",
     });
     expect(button).toBeVisible();
     expect(button.closest("form")).not.toHaveClass("hidden");
     expect(
-      within(mobileHeader as HTMLElement).getByRole("link", {
+      mobileHeaderQueries.getByRole("link", {
         name: "PipuPath home",
       }),
     ).toBeVisible();
+    expect(mobileHeaderQueries.getByText("PipuPath")).toBeVisible();
     expect(
-      within(mobileHeader as HTMLElement).getByText("PipuPath"),
+      mobileHeaderQueries.getByText("University for Human Potential"),
     ).toBeVisible();
     expect(
-      within(mobileHeader as HTMLElement).getByText(
-        "University for Human Potential",
-      ),
-    ).toBeVisible();
-    expect(
-      within(mobileHeader as HTMLElement).getByRole("button", {
+      mobileHeaderQueries.queryByRole("button", {
         name: "Install PipuPath",
       }),
-    ).toBeVisible();
+    ).not.toBeInTheDocument();
+    expect(
+      mobileHeaderQueries.queryByRole("button", {
+        name: "Download PipuPath Lite",
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it("reserves the phone safe area below fixed mobile navigation", () => {
