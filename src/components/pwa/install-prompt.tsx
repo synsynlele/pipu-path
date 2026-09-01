@@ -123,7 +123,9 @@ function useInstallExperience() {
         installed,
         androidWebsite: !installed && isAndroidDevice(),
         desktopInstallable:
-          !installed && !mobile && Boolean(state.__pipupathDeferredInstallPrompt),
+          !installed &&
+          !mobile &&
+          Boolean(state.__pipupathDeferredInstallPrompt),
       });
     };
 
@@ -134,8 +136,7 @@ function useInstallExperience() {
       if (isStandalone() || isMobileDevice()) {
         state.__pipupathDeferredInstallPrompt = null;
       } else {
-        state.__pipupathDeferredInstallPrompt =
-          event as BeforeInstallPromptEvent;
+        state.__pipupathDeferredInstallPrompt = event as BeforeInstallPromptEvent;
       }
 
       syncInstallState();
@@ -300,8 +301,7 @@ export function InstallPwaButton({
 }) {
   const experience = useInstallExperience();
   const [showCoach, setShowCoach] = useState(false);
-  const eligible =
-    experience.androidWebsite || experience.desktopInstallable;
+  const eligible = experience.androidWebsite || experience.desktopInstallable;
 
   useEffect(() => {
     if (!autoNudge || !experience.ready || !eligible) return;
@@ -330,11 +330,15 @@ export function InstallPwaButton({
       <button
         type="button"
         onClick={() => void experience.install()}
-        aria-label={downloadMode ? "Download PipuPath Lite" : "Install PipuPath"}
+        aria-label={
+          downloadMode ? "Download PipuPath Lite" : "Install PipuPath"
+        }
         className={`pp-install-entry border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft touch-manipulation items-center justify-center gap-2 rounded-full border font-semibold shadow-sm transition-colors ${compact && !showLabel ? "inline-flex size-10 p-0" : "inline-flex min-h-10 px-3.5 text-sm"}`}
       >
         <InstallIcon />
-        {showLabel ? <span>{downloadMode ? "Download" : "Install"}</span> : null}
+        {showLabel ? (
+          <span>{downloadMode ? "Download" : "Install"}</span>
+        ) : null}
       </button>
 
       {showCoach ? (
@@ -350,8 +354,7 @@ export function InstallPwaButton({
 
 export function InstallPwaCard() {
   const experience = useInstallExperience();
-  const eligible =
-    experience.androidWebsite || experience.desktopInstallable;
+  const eligible = experience.androidWebsite || experience.desktopInstallable;
 
   if (!experience.ready || experience.installed || !eligible) return null;
 
