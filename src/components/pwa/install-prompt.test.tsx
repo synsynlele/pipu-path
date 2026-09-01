@@ -23,7 +23,9 @@ describe("PipuPath install experience", () => {
     expect(screen.getByRole("dialog")).toBeVisible();
     expect(screen.getByText("Add to your phone")).toBeVisible();
     expect(
-      screen.getByText(/Add to Home Screen|Install PipuPath/),
+      screen.getByText(
+        "Choose Install app, Add to Home Screen, or Create shortcut.",
+      ),
     ).toBeVisible();
   });
 
