@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { Surface } from "@/components/ui/surface";
 import {
   manageConnectionAction,
   saveConnectProfileAction,
@@ -20,9 +19,9 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const inputClass =
-  "border-border bg-white mt-2 min-h-12 w-full rounded-xl border px-3 text-sm text-slate-950 shadow-sm focus:border-primary";
+  "mt-2 min-h-12 w-full rounded-2xl border border-[#e1e2ea] bg-white px-3 text-sm text-[#25284a] shadow-sm focus:border-[#765fe8]";
 const textareaClass =
-  "border-border bg-white mt-2 min-h-24 w-full rounded-2xl border p-4 text-sm leading-6 text-slate-950 shadow-sm focus:border-primary";
+  "mt-2 min-h-24 w-full rounded-2xl border border-[#e1e2ea] bg-white p-4 text-sm leading-6 text-[#25284a] shadow-sm focus:border-[#765fe8]";
 
 function Notice({ status }: { status?: string }) {
   if (!status) return null;
@@ -30,10 +29,10 @@ function Notice({ status }: { status?: string }) {
   return (
     <p
       role={error ? "alert" : "status"}
-      className={`mt-5 rounded-2xl border p-4 text-sm ${
+      className={`mt-4 rounded-2xl border p-4 text-sm ${
         error
-          ? "border-error/30 bg-error/10 text-error"
-          : "border-success/30 bg-success/10 text-success"
+          ? "border-[#f4b7c1] bg-[#fff3f5] text-[#b33a50]"
+          : "border-[#b9e9df] bg-[#effbf8] text-[#147b6c]"
       }`}
     >
       {error
@@ -62,17 +61,9 @@ function ActionForm({
     <form action={manageConnectionAction}>
       <input type="hidden" name="action" value={action} />
       <input type="hidden" name="returnTo" value="/connect" />
-      {connectionId ? (
-        <input type="hidden" name="connectionId" value={connectionId} />
-      ) : null}
-      {targetUserId ? (
-        <input type="hidden" name="targetUserId" value={targetUserId} />
-      ) : null}
-      <Button
-        type="submit"
-        variant={variant}
-        className="min-h-9 px-3 py-1.5 text-xs"
-      >
+      {connectionId ? <input type="hidden" name="connectionId" value={connectionId} /> : null}
+      {targetUserId ? <input type="hidden" name="targetUserId" value={targetUserId} /> : null}
+      <Button type="submit" variant={variant} className="min-h-9 rounded-full px-3 py-1.5 text-xs">
         {label}
       </Button>
     </form>
@@ -81,108 +72,76 @@ function ActionForm({
 
 function BuilderCardView({ builder }: { builder: BuilderCard }) {
   return (
-    <Surface className="flex h-full w-[19rem] shrink-0 flex-col p-5 sm:w-[21rem]">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="border-primary/20 bg-primary-soft text-primary grid size-11 shrink-0 place-items-center rounded-2xl border text-sm font-bold"
-          >
-            ◈
+    <article className="pp-app-card pp-app-card-interactive flex h-full w-[19rem] shrink-0 flex-col p-4 sm:w-[21rem] sm:p-5">
+      <div className="flex items-start gap-3">
+        <span className="pp-story-ring shrink-0 rounded-full">
+          <span className="grid size-12 place-items-center rounded-full border-2 border-white bg-gradient-to-br from-[#6d5df5] to-[#2b236e] text-sm font-bold text-white">
+            {builder.preferredName.slice(0, 1).toUpperCase()}
           </span>
-          <div className="min-w-0">
-            <h3 className="text-navy truncate text-lg font-semibold">
-              {builder.preferredName}
-            </h3>
-            <p className="text-primary mt-0.5 truncate text-xs font-semibold">
-              @{builder.username}
-            </p>
-          </div>
-        </div>
-        <span className="border-border text-muted rounded-full border px-2.5 py-1 text-[0.62rem] font-semibold uppercase">
-          {builder.relationship === "none" ? "Discover" : builder.relationship}
         </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="truncate text-base font-bold text-[#282b4b]">{builder.preferredName}</h3>
+            {builder.relationship !== "none" ? (
+              <span className="shrink-0 rounded-full bg-[#f0ebff] px-2 py-0.5 text-[0.62rem] font-bold text-[#6042d8]">
+                {builder.relationship}
+              </span>
+            ) : null}
+          </div>
+          <p className="mt-0.5 truncate text-xs font-semibold text-[#6547db]">@{builder.username}</p>
+        </div>
       </div>
 
-      <p className="text-muted mt-4 line-clamp-3 text-sm leading-6">
-        {builder.missionStatement ??
-          "Building evidence around a practical mission."}
-      </p>
+      <div className="mt-4">
+        <p className="text-[0.66rem] font-bold tracking-[0.08em] text-[#8a90a4] uppercase">Mission</p>
+        <p className="mt-1 line-clamp-2 text-sm leading-5 font-semibold text-[#353857]">
+          {builder.missionStatement ?? builder.missionTitle ?? "Building evidence around a practical mission."}
+        </p>
+      </div>
 
-      {builder.capabilities.length > 0 ? (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {builder.capabilities.slice(0, 4).map((capability) => (
-            <span
-              key={capability}
-              className="bg-primary-soft text-primary rounded-full px-2.5 py-1 text-xs font-semibold"
-            >
-              {capability}
+      {builder.interests.length > 0 || builder.capabilities.length > 0 ? (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {[...builder.capabilities.slice(0, 2), ...builder.interests.slice(0, 2)].slice(0, 4).map((signal) => (
+            <span key={signal} className="rounded-full bg-[#f1eeff] px-2.5 py-1 text-[0.68rem] font-semibold text-[#5c43ce]">
+              {signal}
             </span>
           ))}
         </div>
       ) : null}
 
-      <div className="border-border mt-4 grid gap-2 border-t pt-4 text-xs">
-        <p className="text-muted line-clamp-2">
-          <strong className="text-navy">Can help:</strong>{" "}
-          {builder.canHelpWith || "Not stated yet"}
+      <div className="mt-4 grid gap-2 border-t border-[#ececf3] pt-4 text-xs">
+        <p className="line-clamp-2 leading-5 text-[#737a90]">
+          <strong className="text-[#159f8a]">Can help with:</strong> {builder.canHelpWith || "Not stated yet"}
         </p>
-        <p className="text-muted line-clamp-2">
-          <strong className="text-navy">Needs:</strong>{" "}
-          {builder.needsHelpWith || "Not stated yet"}
+        <p className="line-clamp-2 leading-5 text-[#737a90]">
+          <strong className="text-[#e25d55]">Needs help with:</strong> {builder.needsHelpWith || "Not stated yet"}
         </p>
       </div>
 
-      <ButtonLink
-        href={`/connect/builders/${builder.username}`}
-        className="mt-auto pt-5"
-        variant="secondary"
-      >
-        Meet This Builder →
+      <ButtonLink href={`/connect/builders/${builder.username}`} className="mt-4 w-full rounded-full" variant="secondary">
+        Meet this Builder →
       </ButtonLink>
-    </Surface>
+    </article>
   );
 }
 
-function RequestRow({
-  item,
-  type,
-}: {
-  item: NetworkItem;
-  type: "incoming" | "sent";
-}) {
+function RequestRow({ item, type }: { item: NetworkItem; type: "incoming" | "sent" }) {
   return (
-    <li className="border-border flex flex-wrap items-center justify-between gap-4 border-b py-4 last:border-0">
-      <div>
-        <Link
-          href={`/connect/builders/${item.username}`}
-          className="text-navy font-semibold hover:underline"
-        >
+    <li className="flex flex-wrap items-center justify-between gap-3 border-b border-[#ececf3] py-3 last:border-0">
+      <div className="min-w-0">
+        <Link href={`/connect/builders/${item.username}`} className="truncate text-sm font-bold text-[#303353] hover:underline">
           {item.preferredName}
         </Link>
-        <p className="text-muted mt-1 text-xs">@{item.username}</p>
+        <p className="mt-0.5 text-xs text-[#858b9f]">@{item.username}</p>
       </div>
       <div className="flex gap-2">
         {type === "incoming" ? (
           <>
-            <ActionForm
-              action="accept"
-              connectionId={item.connectionId}
-              label="Accept"
-              variant="primary"
-            />
-            <ActionForm
-              action="decline"
-              connectionId={item.connectionId}
-              label="Decline"
-            />
+            <ActionForm action="accept" connectionId={item.connectionId} label="Accept" variant="primary" />
+            <ActionForm action="decline" connectionId={item.connectionId} label="Decline" />
           </>
         ) : (
-          <ActionForm
-            action="cancel"
-            connectionId={item.connectionId}
-            label="Cancel"
-          />
+          <ActionForm action="cancel" connectionId={item.connectionId} label="Cancel" />
         )}
       </div>
     </li>
@@ -199,406 +158,273 @@ function ConnectionCard({
   profileHasWhatsapp: boolean;
 }) {
   return (
-    <Surface className="p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <Link
-            href={`/connect/builders/${item.username}`}
-            className="text-navy text-xl font-semibold hover:underline"
-          >
-            {item.preferredName}
-          </Link>
-          <p className="text-muted mt-1 text-xs">@{item.username}</p>
+    <article className="pp-app-card p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#e9e5ff] to-[#e7f8f5] text-sm font-bold text-[#5b3be0]">
+            {item.preferredName.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <Link href={`/connect/builders/${item.username}`} className="block truncate text-base font-bold text-[#303353] hover:underline">
+              {item.preferredName}
+            </Link>
+            <p className="mt-0.5 text-xs text-[#858b9f]">@{item.username}</p>
+          </div>
         </div>
-        <ActionForm
-          action="remove"
-          connectionId={item.connectionId}
-          label="Remove"
-          variant="ghost"
-        />
+        <ActionForm action="remove" connectionId={item.connectionId} label="Remove" variant="ghost" />
       </div>
 
-      <div className="border-border mt-4 rounded-xl border p-3 text-xs">
-        <p className="text-navy font-semibold">Contact shared with you</p>
-        <p className="text-muted mt-1.5 leading-5">
-          {(item.sharedEmail ?? item.sharedWhatsapp)
-            ? [item.sharedEmail, item.sharedWhatsapp]
-                .filter(Boolean)
-                .join(" · ")
+      <div className="mt-4 rounded-2xl border border-[#e8e8f0] bg-[#fafaff] p-3 text-xs">
+        <p className="font-bold text-[#303353]">Contact shared with you</p>
+        <p className="mt-1.5 leading-5 text-[#747b90]">
+          {item.sharedEmail ?? item.sharedWhatsapp
+            ? [item.sharedEmail, item.sharedWhatsapp].filter(Boolean).join(" · ")
             : "Nothing shared yet. A connection does not create private messaging access."}
         </p>
       </div>
 
-      <details className="border-border mt-4 border-t pt-4">
-        <summary className="text-navy cursor-pointer text-xs font-semibold">
-          Manage my contact consent
-        </summary>
+      <details className="mt-4 border-t border-[#ececf3] pt-4">
+        <summary className="cursor-pointer text-xs font-bold text-[#4b4f6e]">Manage my contact consent</summary>
         <form action={shareContactAction} className="mt-3">
           <input type="hidden" name="connectionId" value={item.connectionId} />
           <input type="hidden" name="returnTo" value="/connect" />
           <fieldset>
-            <legend className="text-xs font-semibold">
-              Explicit contact sharing
-            </legend>
-            <div className="mt-3 grid gap-2 text-xs">
+            <legend className="text-xs font-bold text-[#303353]">Explicit contact sharing</legend>
+            <div className="mt-3 grid gap-2 text-xs text-[#60677f]">
               <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="shareEmail"
-                  defaultChecked={item.myShareEmail}
-                  disabled={!profileHasEmail}
-                />
+                <input type="checkbox" name="shareEmail" defaultChecked={item.myShareEmail} disabled={!profileHasEmail} />
                 Share saved email
               </label>
               <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="shareWhatsapp"
-                  defaultChecked={item.myShareWhatsapp}
-                  disabled={!profileHasWhatsapp}
-                />
+                <input type="checkbox" name="shareWhatsapp" defaultChecked={item.myShareWhatsapp} disabled={!profileHasWhatsapp} />
                 Share saved WhatsApp
               </label>
             </div>
           </fieldset>
-          <Button
-            type="submit"
-            variant="secondary"
-            className="mt-3 min-h-9 px-3 py-1.5 text-xs"
-          >
+          <Button type="submit" variant="secondary" className="mt-3 min-h-9 rounded-full px-3 py-1.5 text-xs">
             Update consent
           </Button>
         </form>
       </details>
-    </Surface>
+    </article>
   );
 }
 
 export default async function ConnectPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; q?: string }>;
 }) {
   const [state, query] = await Promise.all([getConnectState(), searchParams]);
   const pendingCount = state.incoming.length + state.sent.length;
+  const search = query.q?.trim().toLocaleLowerCase() ?? "";
+  const builders = search
+    ? state.discover.filter((builder) =>
+        [
+          builder.preferredName,
+          builder.username,
+          builder.missionTitle,
+          builder.missionStatement,
+          builder.canHelpWith,
+          builder.needsHelpWith,
+          ...builder.interests,
+          ...builder.capabilities,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLocaleLowerCase()
+          .includes(search),
+      )
+    : state.discover;
 
   return (
-    <main
-      id="main-content"
-      className="mx-auto max-w-7xl px-4 py-7 sm:px-8 sm:py-12 lg:px-10"
-    >
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-6 text-white sm:p-9">
-        <div
-          aria-hidden="true"
-          className="absolute -top-28 -right-20 size-72 rounded-full border border-white/10"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute right-12 -bottom-36 size-72 rounded-full bg-[#4f7cff]/18 blur-3xl"
-        />
-        <div className="relative max-w-4xl">
-          <p className="text-xs font-semibold tracking-[0.18em] text-[#f3c86b] uppercase">
-            Connect · Builder World
-          </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-            Find people to build with—not people to impress.
-          </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-6 text-blue-50/75 sm:text-base">
-            PipuPath connects complementary missions and capabilities without
-            follower counts, popularity scores or unrestricted private
-            messaging.
-          </p>
-          {state.eligible ? (
-            <div className="mt-6 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full border border-white/15 bg-white/8 px-3 py-1.5 text-blue-50">
-                {state.discover.length} discoverable{" "}
-                {state.discover.length === 1 ? "Builder" : "Builders"}
-              </span>
-              <span className="rounded-full border border-white/15 px-3 py-1.5 text-blue-100">
-                {state.connections.length} accepted{" "}
-                {state.connections.length === 1 ? "connection" : "connections"}
-              </span>
-              {pendingCount > 0 ? (
-                <span className="rounded-full border border-[#f3c86b]/25 bg-[#f3c86b]/8 px-3 py-1.5 font-semibold text-[#f3c86b]">
-                  {pendingCount} pending
-                </span>
-              ) : null}
+    <main id="main-content" className="w-full pb-8">
+      <section className="bg-[#201b59] px-4 pt-5 pb-12 text-white sm:px-6 sm:pt-8 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <div className="flex items-start justify-between gap-4 px-1">
+            <div>
+              <h1 className="text-[2rem] font-bold tracking-[-0.04em] sm:text-4xl">Connect</h1>
+              <p className="mt-1 text-sm text-indigo-100/72">Find people to build with—not people to impress.</p>
             </div>
+            {state.eligible ? (
+              <span className="rounded-full border border-white/12 bg-white/8 px-3 py-2 text-xs font-semibold text-indigo-50">
+                {state.connections.length} connected
+              </span>
+            ) : null}
+          </div>
+
+          {state.eligible ? (
+            <form action="/connect" method="get" className="mt-5 flex items-center gap-2">
+              <label className="sr-only" htmlFor="builder-search">Search builders</label>
+              <div className="flex min-h-12 flex-1 items-center gap-2 rounded-2xl border border-white/12 bg-white/9 px-3 backdrop-blur-sm">
+                <span aria-hidden="true" className="text-indigo-100/70">⌕</span>
+                <input
+                  id="builder-search"
+                  name="q"
+                  defaultValue={query.q ?? ""}
+                  placeholder="Search builders, skills, missions…"
+                  className="w-full bg-transparent text-sm text-white outline-none placeholder:text-indigo-100/55"
+                />
+              </div>
+              <Button type="submit" variant="ghost" className="min-h-12 rounded-2xl border border-white/12 bg-white/8 px-4 text-white hover:bg-white/14">
+                Search
+              </Button>
+            </form>
+          ) : null}
+
+          {state.eligible ? (
+            <nav aria-label="Connect sections" className="pp-stage26-scroll mt-4 overflow-x-auto pb-1">
+              <div className="flex w-max gap-2">
+                <a href="#builders" className="rounded-full bg-white px-4 py-2 text-xs font-bold text-[#4330b8]">Builders</a>
+                <a href="#network" className="rounded-full border border-white/14 bg-white/7 px-4 py-2 text-xs font-semibold text-indigo-50">My Network</a>
+                <a href="#requests" className="rounded-full border border-white/14 bg-white/7 px-4 py-2 text-xs font-semibold text-indigo-50">Requests {pendingCount ? `· ${pendingCount}` : ""}</a>
+                <a href="#privacy" className="rounded-full border border-white/14 bg-white/7 px-4 py-2 text-xs font-semibold text-indigo-50">Privacy</a>
+              </div>
+            </nav>
           ) : null}
         </div>
       </section>
-      <Notice status={query.status} />
 
-      {!state.eligible ? (
-        <Surface className="border-gold/30 bg-gold/5 mt-6 p-6 sm:p-8">
-          <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
-            Builder World protected by safeguarding
-          </p>
-          <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-            Public discovery and direct contact sharing stay closed for younger
-            Builders.
-          </h2>
-          <p className="text-muted mt-3 max-w-3xl text-sm leading-6">
-            Your complete private PipuPath adventure remains available. Youth
-            networking needs a dedicated guardian and institutional safeguarding
-            system, so PipuPath will not reduce that protection to a checkbox.
-          </p>
-          <ButtonLink href="/journey" className="mt-5">
-            Continue My Adventure →
-          </ButtonLink>
-        </Surface>
-      ) : (
-        <>
-          <section className="mt-7" aria-labelledby="discover-builders-heading">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
-                  Explore the Builder World
-                </p>
-                <h2
-                  id="discover-builders-heading"
-                  className="text-navy mt-2 text-3xl font-semibold tracking-tight"
-                >
-                  Complementary people. No popularity contest.
-                </h2>
-              </div>
-              <span className="text-muted max-w-sm text-xs leading-5">
-                Discovery is opt-in. Safe profile fields appear only when a
-                Builder deliberately enables visibility.
-              </span>
-            </div>
+      <div className="relative -mt-5 rounded-t-[2rem] bg-[#f7f8fc] pt-5">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <Notice status={query.status} />
 
-            {state.discover.length ? (
-              <div className="mt-5 flex [scrollbar-width:thin] gap-4 overflow-x-auto pb-3">
-                {state.discover.map((builder) => (
-                  <BuilderCardView key={builder.userId} builder={builder} />
-                ))}
-              </div>
-            ) : (
-              <Surface className="mt-5 p-6">
-                <p className="text-muted text-sm leading-6">
-                  The Builder World is quiet right now. No other adult Builder
-                  has deliberately enabled discoverability yet.
-                </p>
-              </Surface>
-            )}
-          </section>
-
-          <section className="mt-8 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
-            <div>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                  <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
-                    My Network
-                  </p>
-                  <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-                    People you deliberately connected with
-                  </h2>
+          {!state.eligible ? (
+            <section className="pp-app-card pp-mobile-section mt-4 p-6 sm:p-8">
+              <span className="grid size-14 place-items-center rounded-full bg-[#fff5da] text-xl text-[#a87d20]">◇</span>
+              <p className="mt-4 text-xs font-bold tracking-[0.12em] text-[#9a7520] uppercase">Builder World protected by safeguarding</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-[#25284a]">Public discovery and direct contact sharing stay closed for younger Builders.</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-[#747b90]">
+                Your complete private PipuPath adventure remains available. Youth networking needs dedicated guardian and institutional safeguarding, so PipuPath will not reduce that protection to a checkbox.
+              </p>
+              <ButtonLink href="/build" className="mt-5 rounded-full">Continue my adventure →</ButtonLink>
+            </section>
+          ) : (
+            <>
+              <section id="builders" className="pp-mobile-section mt-4 scroll-mt-28" aria-labelledby="discover-builders-heading">
+                <div className="flex items-end justify-between gap-4 px-1">
+                  <div>
+                    <p className="text-xs font-bold tracking-[0.12em] text-[#6848dc] uppercase">Active Builders</p>
+                    <h2 id="discover-builders-heading" className="pp-section-title mt-1 text-xl sm:text-2xl">
+                      Complementary people
+                    </h2>
+                  </div>
+                  <span className="text-xs font-semibold text-[#8a90a4]">{builders.length} shown</span>
                 </div>
-                <ButtonLink
-                  href="/connect/collaborations"
-                  variant="secondary"
-                  className="min-h-10"
-                >
-                  Collaborations →
-                </ButtonLink>
-              </div>
+                <p className="mt-2 px-1 text-xs leading-5 text-[#858b9f]">Discovery is opt-in. Only safe fields deliberately made discoverable appear here.</p>
 
-              {state.connections.length ? (
-                <div className="mt-5 grid gap-4 md:grid-cols-2">
-                  {state.connections.map((item) => (
-                    <ConnectionCard
-                      key={item.connectionId}
-                      item={item}
-                      profileHasEmail={Boolean(state.profile?.contactEmail)}
-                      profileHasWhatsapp={Boolean(
-                        state.profile?.contactWhatsapp,
-                      )}
-                    />
-                  ))}
+                {builders.length ? (
+                  <div className="pp-stage26-scroll -mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0 lg:grid-cols-3">
+                    {builders.map((builder) => <BuilderCardView key={builder.userId} builder={builder} />)}
+                  </div>
+                ) : (
+                  <div className="pp-app-card mt-3 p-5">
+                    <p className="text-sm leading-6 text-[#747b90]">
+                      {search ? "No discoverable Builder matches that search yet." : "The Builder World is quiet right now. No other eligible Builder has deliberately enabled discoverability yet."}
+                    </p>
+                    {search ? <Link href="/connect" className="mt-3 inline-block text-sm font-bold text-[#5b3be0]">Clear search →</Link> : null}
+                  </div>
+                )}
+              </section>
+
+              <section id="network" className="pp-mobile-section mt-6 scroll-mt-28">
+                <div className="flex items-end justify-between gap-3 px-1">
+                  <div>
+                    <p className="text-xs font-bold tracking-[0.12em] text-[#16a28f] uppercase">My Network</p>
+                    <h2 className="pp-section-title mt-1 text-xl sm:text-2xl">People you deliberately connected with</h2>
+                  </div>
+                  <ButtonLink href="/connect/collaborations" variant="secondary" className="min-h-10 shrink-0 rounded-full">Collaborate</ButtonLink>
                 </div>
-              ) : (
-                <Surface className="mt-5 p-5">
-                  <p className="text-muted text-sm leading-6">
-                    No accepted connections yet. Connection does not create
-                    messaging access; it opens only the relationship and consent
-                    controls PipuPath explicitly supports.
-                  </p>
-                </Surface>
-              )}
-            </div>
 
-            <aside className="space-y-5">
-              <Surface className="p-5 sm:p-6">
+                {state.connections.length ? (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {state.connections.map((item) => (
+                      <ConnectionCard
+                        key={item.connectionId}
+                        item={item}
+                        profileHasEmail={Boolean(state.profile?.contactEmail)}
+                        profileHasWhatsapp={Boolean(state.profile?.contactWhatsapp)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="pp-app-card mt-3 p-5">
+                    <p className="text-sm leading-6 text-[#747b90]">No accepted connections yet. Connecting creates a deliberate relationship and consent controls—not unrestricted private messaging.</p>
+                  </div>
+                )}
+              </section>
+
+              <section id="requests" className="pp-app-card pp-mobile-section mt-4 scroll-mt-28 p-5 sm:p-6">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                      Requests
-                    </p>
-                    <h3 className="text-navy mt-1 text-lg font-semibold">
-                      {pendingCount > 0
-                        ? `${pendingCount} waiting`
-                        : "Nothing waiting"}
-                    </h3>
+                    <p className="text-xs font-bold tracking-[0.12em] text-[#6848dc] uppercase">Requests</p>
+                    <h2 className="mt-1 text-lg font-bold text-[#303353]">{pendingCount > 0 ? `${pendingCount} waiting` : "Nothing waiting"}</h2>
                   </div>
-                  <span className="border-border text-muted grid size-10 place-items-center rounded-xl border text-xs font-bold">
-                    {pendingCount}
-                  </span>
+                  <span className="grid size-10 place-items-center rounded-full bg-[#f0ebff] text-xs font-bold text-[#5b3be0]">{pendingCount}</span>
                 </div>
-
                 {state.incoming.length > 0 ? (
-                  <>
-                    <p className="text-muted mt-4 text-[0.68rem] font-semibold tracking-wide uppercase">
-                      Incoming
-                    </p>
-                    <ul>
-                      {state.incoming.map((item) => (
-                        <RequestRow
-                          key={item.connectionId}
-                          item={item}
-                          type="incoming"
-                        />
-                      ))}
-                    </ul>
-                  </>
+                  <div className="mt-4">
+                    <p className="text-[0.66rem] font-bold tracking-[0.08em] text-[#8a90a4] uppercase">Incoming</p>
+                    <ul>{state.incoming.map((item) => <RequestRow key={item.connectionId} item={item} type="incoming" />)}</ul>
+                  </div>
                 ) : null}
-
                 {state.sent.length > 0 ? (
-                  <>
-                    <p className="text-muted mt-4 text-[0.68rem] font-semibold tracking-wide uppercase">
-                      Sent
-                    </p>
-                    <ul>
-                      {state.sent.map((item) => (
-                        <RequestRow
-                          key={item.connectionId}
-                          item={item}
-                          type="sent"
-                        />
-                      ))}
-                    </ul>
-                  </>
+                  <div className="mt-4">
+                    <p className="text-[0.66rem] font-bold tracking-[0.08em] text-[#8a90a4] uppercase">Sent</p>
+                    <ul>{state.sent.map((item) => <RequestRow key={item.connectionId} item={item} type="sent" />)}</ul>
+                  </div>
                 ) : null}
-              </Surface>
+                {pendingCount === 0 ? <p className="mt-3 text-sm leading-6 text-[#747b90]">When someone deliberately requests a connection, it will appear here for you to accept or decline.</p> : null}
+              </section>
 
-              <details className="border-border bg-panel rounded-2xl border p-5">
-                <summary className="text-navy cursor-pointer text-sm font-semibold">
-                  My discovery profile & privacy
-                </summary>
-                <form
-                  action={saveConnectProfileAction}
-                  className="mt-5 grid gap-4"
-                >
+              <details id="privacy" className="pp-app-card pp-mobile-section mt-4 scroll-mt-28 p-5 sm:p-6">
+                <summary className="cursor-pointer text-sm font-bold text-[#303353]">My discovery profile & privacy</summary>
+                <p className="mt-2 text-xs leading-5 text-[#7d8398]">You decide whether your safe Builder fields are discoverable. Contact details remain private unless you explicitly share them with an accepted connection.</p>
+                <form action={saveConnectProfileAction} className="mt-5 grid gap-4">
                   <input type="hidden" name="returnTo" value="/connect" />
-                  <label className="text-sm font-semibold">
-                    Interests{" "}
-                    <span className="text-muted">(comma separated)</span>
-                    <input
-                      name="interests"
-                      required
-                      defaultValue={state.profile?.interests.join(", ") ?? ""}
-                      className={inputClass}
-                      placeholder="education, agriculture, technology"
-                    />
+                  <label className="text-sm font-bold text-[#303353]">
+                    Interests <span className="font-normal text-[#8a90a4]">(comma separated)</span>
+                    <input name="interests" required defaultValue={state.profile?.interests.join(", ") ?? ""} className={inputClass} placeholder="education, agriculture, technology" />
                   </label>
-                  <label className="text-sm font-semibold">
-                    Capabilities{" "}
-                    <span className="text-muted">(comma separated)</span>
-                    <input
-                      name="capabilities"
-                      required
-                      defaultValue={
-                        state.profile?.capabilities.join(", ") ?? ""
-                      }
-                      className={inputClass}
-                      placeholder="teaching, design, research"
-                    />
+                  <label className="text-sm font-bold text-[#303353]">
+                    Capabilities <span className="font-normal text-[#8a90a4]">(comma separated)</span>
+                    <input name="capabilities" required defaultValue={state.profile?.capabilities.join(", ") ?? ""} className={inputClass} placeholder="teaching, design, research" />
                   </label>
-                  <label className="text-sm font-semibold">
-                    I can help with
-                    <textarea
-                      name="canHelpWith"
-                      maxLength={320}
-                      defaultValue={state.profile?.canHelpWith ?? ""}
-                      className={textareaClass}
-                    />
-                  </label>
-                  <label className="text-sm font-semibold">
-                    I need help with
-                    <textarea
-                      name="needsHelpWith"
-                      maxLength={320}
-                      defaultValue={state.profile?.needsHelpWith ?? ""}
-                      className={textareaClass}
-                    />
-                  </label>
-                  <label className="text-sm font-semibold">
-                    Private contact email
-                    <input
-                      name="contactEmail"
-                      type="email"
-                      defaultValue={state.profile?.contactEmail ?? ""}
-                      className={inputClass}
-                    />
-                  </label>
-                  <label className="text-sm font-semibold">
-                    Private WhatsApp number
-                    <input
-                      name="contactWhatsapp"
-                      defaultValue={state.profile?.contactWhatsapp ?? ""}
-                      className={inputClass}
-                    />
-                  </label>
-                  <label className="text-sm font-semibold">
+                  <label className="text-sm font-bold text-[#303353]">I can help with<textarea name="canHelpWith" maxLength={320} defaultValue={state.profile?.canHelpWith ?? ""} className={textareaClass} /></label>
+                  <label className="text-sm font-bold text-[#303353]">I need help with<textarea name="needsHelpWith" maxLength={320} defaultValue={state.profile?.needsHelpWith ?? ""} className={textareaClass} /></label>
+                  <label className="text-sm font-bold text-[#303353]">Private contact email<input name="contactEmail" type="email" defaultValue={state.profile?.contactEmail ?? ""} className={inputClass} /></label>
+                  <label className="text-sm font-bold text-[#303353]">Private WhatsApp number<input name="contactWhatsapp" defaultValue={state.profile?.contactWhatsapp ?? ""} className={inputClass} /></label>
+                  <label className="text-sm font-bold text-[#303353]">
                     Discovery visibility
-                    <select
-                      name="visibility"
-                      defaultValue={state.profile?.visibility ?? "private"}
-                      className={inputClass}
-                    >
-                      <option value="private">
-                        Private — not discoverable
-                      </option>
-                      <option value="discoverable">
-                        Discoverable — show safe Builder fields
-                      </option>
+                    <select name="visibility" defaultValue={state.profile?.visibility ?? "private"} className={inputClass}>
+                      <option value="private">Private — not discoverable</option>
+                      <option value="discoverable">Discoverable — show safe Builder fields</option>
                     </select>
                   </label>
-                  <Button type="submit">Save Builder World Profile</Button>
+                  <Button type="submit" className="rounded-full">Save Builder World profile</Button>
                 </form>
               </details>
-            </aside>
-          </section>
 
-          {state.blocked.length ? (
-            <details className="border-border bg-panel mt-7 rounded-2xl border p-5 sm:p-6">
-              <summary className="text-navy cursor-pointer text-sm font-semibold">
-                Blocked Builders · {state.blocked.length}
-              </summary>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {state.blocked.map((builder) => (
-                  <Surface
-                    key={builder.userId}
-                    className="flex items-center justify-between gap-4 p-4"
-                  >
-                    <div>
-                      <p className="text-navy font-semibold">
-                        {builder.preferredName}
-                      </p>
-                      <p className="text-muted text-xs">@{builder.username}</p>
-                    </div>
-                    <ActionForm
-                      action="unblock"
-                      targetUserId={builder.userId}
-                      label="Unblock"
-                    />
-                  </Surface>
-                ))}
-              </div>
-            </details>
-          ) : null}
-        </>
-      )}
+              {state.blocked.length ? (
+                <details className="pp-app-card pp-mobile-section mt-4 p-5 sm:p-6">
+                  <summary className="cursor-pointer text-sm font-bold text-[#303353]">Blocked Builders · {state.blocked.length}</summary>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {state.blocked.map((builder) => (
+                      <div key={builder.userId} className="flex items-center justify-between gap-4 rounded-2xl border border-[#e8e8f0] bg-[#fafaff] p-4">
+                        <div className="min-w-0">
+                          <p className="truncate font-bold text-[#303353]">{builder.preferredName}</p>
+                          <p className="text-xs text-[#858b9f]">@{builder.username}</p>
+                        </div>
+                        <ActionForm action="unblock" targetUserId={builder.userId} label="Unblock" />
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              ) : null}
+            </>
+          )}
+        </div>
+      </div>
     </main>
   );
 }
