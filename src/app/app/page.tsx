@@ -126,9 +126,9 @@ export default async function HomePage() {
     <main id="main-content" className="w-full pb-8">
       <section className="relative overflow-hidden bg-[#201b59] px-4 pt-5 pb-14 text-white sm:px-6 sm:pt-8 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <div className="flex items-start justify-between gap-4 px-1">
-            <div>
-              <p className="text-[1.7rem] font-bold tracking-[-0.035em] sm:text-3xl">
+          <div className="flex items-start justify-between gap-3 px-1">
+            <div className="min-w-0 flex-1">
+              <p className="text-[1.55rem] leading-tight font-bold tracking-[-0.035em] break-words sm:text-3xl">
                 Good to see you, {state.preferredName}.
               </p>
               <p className="mt-1 text-sm text-indigo-100/75 sm:text-base">
@@ -158,11 +158,11 @@ export default async function HomePage() {
           ) : null}
 
           <section className="pp-app-hero pp-mobile-section mt-5 min-h-[15.5rem] p-5 sm:p-7">
-            <div className="relative z-10 max-w-[65%] sm:max-w-[58%]">
+            <div className="relative z-10 max-w-[68%] min-w-0 sm:max-w-[58%]">
               <p className="text-xs font-semibold tracking-[0.13em] text-indigo-100 uppercase">
                 {state.mission ? "Continue your mission" : "Your adventure"}
               </p>
-              <h1 className="mt-3 text-[1.75rem] leading-tight font-bold tracking-[-0.035em] sm:text-4xl">
+              <h1 className="mt-3 text-[1.55rem] leading-[1.18] font-bold tracking-[-0.035em] break-words sm:text-4xl sm:leading-tight">
                 {state.mission?.title ?? "Discover what you can become."}
               </h1>
               <p className="mt-2 line-clamp-2 text-sm leading-6 text-indigo-50/76">
@@ -180,7 +180,7 @@ export default async function HomePage() {
               className="pointer-events-none absolute right-[-4.2rem] bottom-[-1rem] z-0 w-[72%] max-w-[25rem] opacity-95 sm:right-[-1rem] sm:w-[56%]"
             />
 
-            <div className="absolute right-5 bottom-5 left-5 z-10 sm:right-7 sm:bottom-7 sm:left-7">
+            <div className="relative z-10 mt-8 sm:mt-10">
               <div className="h-2.5 overflow-hidden rounded-full bg-white/18">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[#2bd5c1] via-[#6c7bf8] to-[#b277ff]"
@@ -192,7 +192,7 @@ export default async function HomePage() {
                 <Link
                   href={move.href}
                   aria-label={move.label}
-                  className="grid size-11 shrink-0 place-items-center rounded-full bg-white text-xl font-bold text-[#281d69] shadow-lg transition-transform active:scale-95"
+                  className="pp-hero-white-action grid size-11 shrink-0 place-items-center rounded-full text-xl font-bold shadow-lg transition-transform active:scale-95"
                 >
                   ›
                 </Link>
@@ -324,7 +324,7 @@ export default async function HomePage() {
             </div>
           </section>
 
-          <section className="pp-app-card pp-mobile-section mt-4 flex items-center gap-4 p-4 sm:p-5">
+          <section className="pp-app-card pp-mobile-section pp-responsive-action-row mt-4 flex items-center gap-4 p-4 sm:p-5">
             <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-[#f0ebff] text-2xl text-[#593bd7]">
               ✓
             </span>
@@ -337,7 +337,10 @@ export default async function HomePage() {
               </p>
               <p className="mt-1 text-xs text-[#9299ad]">{move.signal}</p>
             </div>
-            <ButtonLink href={move.href} className="shrink-0 rounded-full px-4">
+            <ButtonLink
+              href={move.href}
+              className="pp-action-button shrink-0 rounded-full px-4"
+            >
               {move.label}
             </ButtonLink>
           </section>

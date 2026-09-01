@@ -2,13 +2,13 @@
 
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild
 
-**Stage status:** VISUAL PERFECTION RELEASE CANDIDATE — Stage 26 is released; the user-requested cross-app consistency correction is locally green and awaits exact-Preview proof, merge and production smoke verification.
+**Stage status:** MOBILE QA CORRECTION RELEASE CANDIDATE — Stage 26 and its shared-design correction are released; gold-P branding, install visibility, narrow-screen collision and client-error gates are locally green and await exact-Preview proof.
 
-**Latest released baseline:** Stage 26 merged to `main` as `a31f950b478b7e3a9d483c351865e72c884d5bc2`.
+**Latest released baseline:** Stage 26 visual consistency correction merged to `main` as `e5fbee6ccf503c77ae006b2da116eb1d6497a190`.
 
 **Stage 26 production application head:** `a31f950b478b7e3a9d483c351865e72c884d5bc2`.
 
-**Visual perfection branch:** `agent/stage-26-visual-perfection`.
+**Mobile QA branch:** `agent/stage-26-mobile-polish`.
 
 **Stage 26 authority:** `docs/stages/stage-26-exact-mobile-experience-rebuild.md`.
 

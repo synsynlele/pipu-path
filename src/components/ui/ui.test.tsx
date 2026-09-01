@@ -13,6 +13,18 @@ describe("design-system primitives", () => {
     );
   });
 
+  it("provides an explicit high-contrast light action", () => {
+    render(
+      <ButtonLink href="/discover" variant="light">
+        Continue Discover
+      </ButtonLink>,
+    );
+
+    expect(screen.getByRole("link", { name: "Continue Discover" })).toHaveClass(
+      "pp-button-light",
+    );
+  });
+
   it("renders secondary actions and handles activation", () => {
     const onClick = vi.fn();
     render(

@@ -80,3 +80,7 @@ The correction keeps all backend and domain behaviour intact and makes the appro
 - placing Build, Guide and Institution inside the common AppShell;
 - removing duplicate Connect/Profile toolbars while retaining access from their concept-matched page controls;
 - validating the entire unit, integration and production-build suite before Preview.
+
+### Mobile QA hardening
+
+The final phone pass restores the gold-P mobile identity, exposes Install as a compact header action, prevents personalised Home/Discover/Build copy from colliding with fixed hero content, stacks narrow action cards and locks white-button text contrast. The authenticated release traversal now also records uncaught client page errors so a browser crash cannot be hidden by clean server telemetry.

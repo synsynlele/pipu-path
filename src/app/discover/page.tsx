@@ -33,8 +33,8 @@ export default async function DiscoverPage() {
     <main id="main-content" className="w-full pb-8">
       <section className="bg-[#201b59] px-4 pt-5 pb-12 text-white sm:px-6 sm:pt-8 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <div className="flex items-center justify-between gap-4 px-1">
-            <div>
+          <div className="flex items-start justify-between gap-3 px-1">
+            <div className="min-w-0 flex-1">
               <h1 className="text-[2rem] font-bold tracking-[-0.04em] sm:text-4xl">
                 Discover
               </h1>
@@ -44,18 +44,18 @@ export default async function DiscoverPage() {
             </div>
             <Link
               href="/profile"
-              className="rounded-full border border-white/12 bg-white/8 px-3 py-2 text-xs font-semibold text-indigo-50"
+              className="shrink-0 rounded-full border border-white/12 bg-white/8 px-3 py-2 text-xs font-semibold text-indigo-50"
             >
               {level.current} · {state.totalXp} XP
             </Link>
           </div>
 
           <section className="pp-app-hero pp-mobile-section mt-5 min-h-[17rem] p-5 sm:p-7">
-            <div className="relative z-10 max-w-[64%] sm:max-w-[56%]">
+            <div className="relative z-10 max-w-[68%] min-w-0 sm:max-w-[56%]">
               <p className="text-xs font-semibold tracking-[0.13em] text-[#d5c9ff] uppercase">
                 What drives you?
               </p>
-              <h2 className="mt-3 text-[1.8rem] leading-tight font-bold tracking-[-0.035em] sm:text-4xl">
+              <h2 className="mt-3 text-[1.55rem] leading-[1.18] font-bold tracking-[-0.035em] break-words sm:text-4xl sm:leading-tight">
                 {discovering
                   ? "Keep uncovering the signals that matter."
                   : "Your real work is sharpening the picture of you."}
@@ -66,7 +66,8 @@ export default async function DiscoverPage() {
               </p>
               <ButtonLink
                 href={primaryHref}
-                className="mt-5 rounded-full bg-white text-[#4934c8] hover:bg-white/90"
+                variant="light"
+                className="mt-5 max-w-full rounded-full px-4 text-center"
               >
                 {primaryLabel}
               </ButtonLink>

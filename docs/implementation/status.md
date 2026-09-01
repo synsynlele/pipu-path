@@ -1,9 +1,9 @@
 # Implementation status
 
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild  
-**Stage status:** VISUAL PERFECTION RELEASE CANDIDATE — Stage 26 is released; cross-app consistency correction is locally green and awaits exact-Preview proof.
-**Stage 26 production:** `a31f950b478b7e3a9d483c351865e72c884d5bc2`
-**Correction branch:** `agent/stage-26-visual-perfection`
+**Stage status:** MOBILE QA CORRECTION RELEASE CANDIDATE — Stage 26 and visual consistency are released; final phone branding, install, collision and client-error corrections await exact-Preview proof.
+**Stage 26 production:** `e5fbee6ccf503c77ae006b2da116eb1d6497a190`
+**Correction branch:** `agent/stage-26-mobile-polish`
 **Stage authority:** `docs/stages/stage-26-exact-mobile-experience-rebuild.md`  
 **Last updated:** 2026-09-01
 
@@ -72,7 +72,11 @@ The correction:
 - removes redundant Connect/Profile layout toolbars without removing destination access;
 - keeps every Supabase action, DAL, domain rule, route and safeguard unchanged.
 
-Local evidence: formatting, zero-warning lint, strict TypeScript, 334 unit/coverage tests, 225 integration/regression tests and the Next.js production build pass.
+Local evidence: formatting, zero-warning lint, strict TypeScript, 335 unit/coverage tests, 226 integration/regression tests and the Next.js production build pass.
+
+## Mobile QA correction
+
+Direct production use identified four phone-specific presentation defects and one transient client crash report. The correction restores the gold-P brand mark in the mobile shell, keeps a compact Install control visible in browser mode, gives light actions an explicit high-contrast variant, moves personalised hero progress into normal document flow and stacks action rows below 430px. Authenticated browser traversal now fails on uncaught client page errors in addition to route, overflow and application-error checks. Production server telemetry showed no runtime error cluster or 5xx response during the reported crash window.
 
 > **The screen is not the game. Life is the game.**
 

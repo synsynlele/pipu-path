@@ -42,16 +42,31 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
+function captureClientErrors(page: Page) {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  return errors;
+}
+
 test("Stage 23 Builder shell, onboarding and navigation are production-ready", async ({
   page,
   isMobile,
 }) => {
+  const clientErrors = captureClientErrors(page);
   await signIn(page);
 
   await page.goto("/app");
   await expect(page.locator("main#main-content")).toBeVisible();
   await expectFiveDestinationNavigation(page, isMobile);
   await expectNoHorizontalOverflow(page);
+  if (isMobile) {
+    await expect(
+      page.getByRole("link", { name: "PipuPath home" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Install PipuPath" }),
+    ).toBeVisible();
+  }
 
   await page.goto("/onboarding/discovery");
   await expect(
@@ -79,12 +94,14 @@ test("Stage 23 Builder shell, onboarding and navigation are production-ready", a
     await completionLink.click();
     await expect(page).toHaveURL(/\/onboarding\/discovery\/complete/);
   }
+  expect(clientErrors).toEqual([]);
 });
 
 test("Stage 23 safeguarding, operator isolation and deep product assets hold", async ({
   page,
   isMobile,
 }) => {
+  const clientErrors = captureClientErrors(page);
   await signIn(page);
 
   await page.goto("/connect");
@@ -160,6 +177,7 @@ test("Stage 23 safeguarding, operator isolation and deep product assets hold", a
     await expect(page.getByText("Application error")).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
   }
+  expect(clientErrors).toEqual([]);
 });
 
 test("Stage 23 PWA contract is installable without caching private Builder data", async ({

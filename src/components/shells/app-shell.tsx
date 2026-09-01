@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { ContextBackLink } from "@/components/navigation/context-back-link";
 import { AppNavigation } from "@/components/navigation/app-navigation";
@@ -18,18 +17,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <header className="pp-mobile-topbar sticky top-0 z-50 border-b border-white/10 text-white shadow-[0_12px_32px_-24px_rgba(30,25,95,0.85)] lg:hidden">
         <div className="mx-auto flex min-h-[4.65rem] max-w-3xl items-center justify-between gap-3 px-4 pt-[env(safe-area-inset-top)]">
-          <div className="flex min-w-0 items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
             <ContextBackLink />
-            <Link
-              href="/app"
-              className="truncate text-[1.45rem] font-bold tracking-[-0.035em] text-white"
-            >
-              PipuPath
-            </Link>
+            <BrandMark compact inverse href="/app" className="shrink-0" />
           </div>
 
           <div className="flex items-center gap-1.5">
-            <InstallPwaButton autoNudge />
+            <InstallPwaButton compact autoNudge />
             <form action={signOutAction}>
               <Button
                 type="submit"
