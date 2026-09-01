@@ -1,9 +1,9 @@
 # Implementation status
 
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild  
-**Stage status:** MOBILE QA CORRECTION RELEASE CANDIDATE — Stage 26 and visual consistency are released; final phone branding, install, collision and client-error corrections await exact-Preview proof.
+**Stage status:** MOBILE RENDERER STABILITY RELEASE CANDIDATE — repeated Android Lite renderer crashes are now a release blocker; the correction is isolated for CI and exact-Preview proof.
 **Stage 26 production:** `e5fbee6ccf503c77ae006b2da116eb1d6497a190`
-**Correction branch:** `agent/stage-26-mobile-polish`
+**Correction branch:** `agent/stage-26-mobile-renderer-stability`
 **Stage authority:** `docs/stages/stage-26-exact-mobile-experience-rebuild.md`  
 **Last updated:** 2026-09-01
 
@@ -77,6 +77,22 @@ Local evidence: formatting, zero-warning lint, strict TypeScript, 335 unit/cover
 ## Mobile QA correction
 
 Direct production use identified four phone-specific presentation defects and one transient client crash report. The correction restores the gold-P brand mark in the mobile shell, keeps a compact Install control visible in browser mode, gives light actions an explicit high-contrast variant, moves personalised hero progress into normal document flow and stacks action rows below 430px. Authenticated browser traversal now fails on uncaught client page errors in addition to route, overflow and application-error checks. Production server telemetry showed no runtime error cluster or 5xx response during the reported crash window.
+
+## Mobile renderer stability correction
+
+Repeated Android Lite `tab crashed / reload` reports on 2026-09-01 elevate the earlier transient report to a release blocker. Android Lite is a Chromium Trusted Web Activity, so this message represents loss of the browser renderer process rather than a normal Next.js error boundary.
+
+Production telemetry during the repeat-crash window showed successful application traffic and no 5xx cluster, but it did expose `refresh_token_not_found` from Supabase middleware for a stale client session. The Stage 26 authenticated surface also kept a live `backdrop-filter: blur(22px)` on the fixed mobile navigation and a second large CSS `filter: blur(34px)` hero layer, both of which force extra compositing on constrained Android renderers.
+
+The isolated correction therefore:
+
+- removes live backdrop filtering from fixed mobile navigation while preserving the same opaque white visual hierarchy;
+- replaces the phone hero CSS filter with a non-filtered radial gradient;
+- treats only Supabase `refresh_token_not_found` as an expired local session, clears stale Supabase auth cookies and returns the user to the normal signed-out routing path;
+- preserves all other auth failures as errors rather than swallowing them;
+- changes no domain, persistence, safeguarding or migration contract.
+
+Canonical CI and exact-Preview phone proof are required before this correction can merge.
 
 > **The screen is not the game. Life is the game.**
 
