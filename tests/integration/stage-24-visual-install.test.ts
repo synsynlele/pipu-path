@@ -52,7 +52,10 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(install).toContain("iPad|iPhone|iPod");
     expect(install).toContain("Android");
     expect(install).toContain("Add to Home Screen");
-    expect(install).toContain("Install app or Add to Home screen");
+    expect(install).toContain("Download PipuPath Lite");
+    expect(install).toContain("/downloads/PipuPath-Lite-1.0.0.apk");
+    expect(install).toContain("window.location.assign(ANDROID_APK_PATH)");
+    expect(install).toContain("await promptEvent.prompt()");
     expect(globals).toContain("@media (display-mode: standalone)");
   });
 
