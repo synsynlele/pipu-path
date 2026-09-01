@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,54 +19,11 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Apply final Stage 26 source corrections
-        if: github.event_name == 'pull_request'
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          connect = Path("src/app/connect/page.tsx")
-          source = connect.read_text()
-          connect.write_text(source.replace("Active Builders", "Discoverable Builders"))
-          PY
-          npx prettier --write \
-            src/app/app/page.tsx \
-            src/app/build/page.tsx \
-            src/app/connect/page.tsx \
-            src/app/discover/page.tsx \
-            src/app/profile/page.tsx \
-            src/app/stage26.css \
-            src/components/navigation/app-navigation.tsx \
-            src/components/onboarding/onboarding-shell.tsx \
-            src/components/ui/app-page-skeleton.tsx
-      - name: Commit canonical Stage 26 source
-        if: github.event_name == 'pull_request'
-        run: |
-          if git diff --quiet; then
-            echo "Stage 26 source is already canonical."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            src/app/app/page.tsx \
-            src/app/build/page.tsx \
-            src/app/connect/page.tsx \
-            src/app/discover/page.tsx \
-            src/app/profile/page.tsx \
-            src/app/stage26.css \
-            src/components/navigation/app-navigation.tsx \
-            src/components/onboarding/onboarding-shell.tsx \
-            src/components/ui/app-page-skeleton.tsx
-          git commit -m "Stage 26: apply canonical source formatting"
-          git push origin HEAD:${{ github.head_ref }}
       - run: npm run validate
 
   staging-e2e:
