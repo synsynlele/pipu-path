@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe("AppShell", () => {
-  it("keeps a dedicated sign-out action in the mobile header", () => {
+  it("keeps the full PipuPath identity and dedicated actions in the mobile header", () => {
     const { container } = render(
       <AppShell>
         <main id="main-content">Dashboard</main>
@@ -31,6 +31,14 @@ describe("AppShell", () => {
       within(mobileHeader as HTMLElement).getByRole("link", {
         name: "PipuPath home",
       }),
+    ).toBeVisible();
+    expect(
+      within(mobileHeader as HTMLElement).getByText("PipuPath"),
+    ).toBeVisible();
+    expect(
+      within(mobileHeader as HTMLElement).getByText(
+        "University for Human Potential",
+      ),
     ).toBeVisible();
     expect(
       within(mobileHeader as HTMLElement).getByRole("button", {

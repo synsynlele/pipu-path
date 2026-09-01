@@ -17,12 +17,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <header className="pp-mobile-topbar sticky top-0 z-50 border-b border-white/10 text-white shadow-[0_12px_32px_-24px_rgba(30,25,95,0.85)] lg:hidden">
         <div className="mx-auto flex min-h-[4.65rem] max-w-3xl items-center justify-between gap-3 px-4 pt-[env(safe-area-inset-top)]">
-          <div className="flex min-w-0 items-center gap-1.5">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5">
             <ContextBackLink />
-            <BrandMark compact inverse href="/app" className="shrink-0" />
+            <div className="flex min-w-0 items-center gap-1.5">
+              <BrandMark compact inverse href="/app" className="shrink-0" />
+              <span className="min-w-0 leading-none" aria-hidden="true">
+                <span className="block text-[0.72rem] font-bold tracking-[0.02em] text-white">
+                  PipuPath
+                </span>
+                <span className="mt-0.5 block max-w-[6.75rem] text-[0.5rem] leading-[1.12] font-medium tracking-[0.02em] text-blue-100 sm:max-w-none sm:whitespace-nowrap">
+                  University for Human Potential
+                </span>
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             <InstallPwaButton compact autoNudge />
             <form action={signOutAction}>
               <Button
