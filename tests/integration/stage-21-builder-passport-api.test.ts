@@ -147,7 +147,7 @@ describe("Stage 21 Builder Passport/API structure", () => {
     expect(projectState).toContain("Stages 0–22");
     expect(implementationStatus).toContain("Stages 0–22 are released");
     expect(implementationStatus).toContain(
-      "one deliberate Vercel Preview is reserved",
+      "A deliberate Preview is reserved for the exact green release candidate",
     );
   });
 });
