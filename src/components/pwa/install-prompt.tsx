@@ -29,7 +29,9 @@ function isStandalone() {
     window.matchMedia("(display-mode: standalone)").matches;
   const iosStandalone =
     "standalone" in window.navigator &&
-    Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
+    Boolean(
+      (window.navigator as Navigator & { standalone?: boolean }).standalone,
+    );
 
   return displayMode || iosStandalone;
 }
@@ -90,7 +92,10 @@ function recentlyDismissedNudge() {
     const raw = window.localStorage.getItem(INSTALL_NUDGE_KEY);
     if (!raw) return false;
     const dismissedAt = Number(raw);
-    return Number.isFinite(dismissedAt) && Date.now() - dismissedAt < NUDGE_COOLDOWN_MS;
+    return (
+      Number.isFinite(dismissedAt) &&
+      Date.now() - dismissedAt < NUDGE_COOLDOWN_MS
+    );
   } catch {
     return false;
   }
