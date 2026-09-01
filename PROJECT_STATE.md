@@ -4,7 +4,7 @@
 
 **Stage status:** RELEASED — PR #52 is the Stage 24 production release after canonical CI and exact-tree Preview proof.
 
-**Released baseline entering Stage 24:** Stage 23 merged to `main` as `a2b50dcf23bc437086d842d684d06af5ed76160a`.
+**Latest released baseline:** Stage 23 merged to `main` as `a2b50dcf23bc437086d842d684d06af5ed76160a` — the baseline entering the Stage 24 release.
 
 **Stage 24 validated application head:** `53ab9cc2303bb4b02160108f343837db2090d419`.
 
