@@ -24,7 +24,19 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Stage 23 canonical format diagnostic
+        run: |
+          npx prettier --write src/app/app/page.tsx src/app/discover/page.tsx src/components/pwa/install-prompt.tsx
+          echo '===== STAGE23_HOME_BEGIN ====='
+          cat src/app/app/page.tsx
+          echo '===== STAGE23_HOME_END ====='
+          echo '===== STAGE23_DISCOVER_BEGIN ====='
+          cat src/app/discover/page.tsx
+          echo '===== STAGE23_DISCOVER_END ====='
+          echo '===== STAGE23_INSTALL_BEGIN ====='
+          cat src/components/pwa/install-prompt.tsx
+          echo '===== STAGE23_INSTALL_END ====='
+          exit 1
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
