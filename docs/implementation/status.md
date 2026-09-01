@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild  
-**Stage status:** IN PROGRESS — implementation branch opened from the exact Stage 25 production merge; first presentation-layer rebuild slice is being validated before any Preview deployment.  
+**Stage status:** RELEASE CANDIDATE — canonical validation and exact-Preview authenticated desktop/mobile proof are green; merge and production smoke verification remain.  
 **Stage 26 base:** `ebbc4e54dd8408b8392eea55f4e36c026b428cc9`  
 **Stage 26 branch:** `agent/stage-26-exact-mobile-experience`  
 **Stage authority:** `docs/stages/stage-26-exact-mobile-experience-rebuild.md`  
@@ -51,7 +51,13 @@ No Supabase migration is introduced by this slice. Existing RLS, onboarding, Hum
 
 ## Release posture
 
-No Vercel Preview should be created until the implementation branch passes canonical validation. After that, create exactly one deliberate Preview checkpoint, inspect the real deployed UI against the approved concept, run authenticated mobile flows, fix meaningful mismatches and only then merge.
+Canonical CI #1225 passed on repaired application/test head `5bf1e49e2acf845a274f3bae985245a703cd3d72` after stale presentation assertions and nondeterministic React test teardown were corrected.
+
+Exact application Preview deployment `dpl_C31pZv8xczmqC49tWVjb12z4gjeH` reached READY at `https://pipu-path-ma0g7xpk1-copyartint-2860s-projects.vercel.app`.
+
+Authenticated Preview CI #1226 passed the release browser matrix on desktop Chrome and iPhone 13. It verified the five primary destinations, onboarding privacy, safeguarding, Admin isolation, deep product routes, horizontal overflow boundaries and PWA manifest behaviour. Public browser inspection also confirmed install access, protected `/app` routing with its return target and no PipuPath-originated console errors.
+
+No Supabase migration is required. The final operational gates are merge, production deployment readiness and production smoke verification.
 
 > **The screen is not the game. Life is the game.**
 

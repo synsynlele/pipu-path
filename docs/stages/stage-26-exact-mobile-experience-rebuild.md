@@ -1,6 +1,6 @@
 # Stage 26 — Exact Mobile Experience Rebuild
 
-**Status:** IN PROGRESS  
+**Status:** RELEASE CANDIDATE  
 **Authority:** User-authorised Stage 26 execution  
 **Base production commit:** `ebbc4e54dd8408b8392eea55f4e36c026b428cc9`  
 **Branch:** `agent/stage-26-exact-mobile-experience`  
@@ -57,3 +57,13 @@ The first Stage 26 implementation slice:
 - leaves Stage 25 PWA implementation untouched.
 
 Further visual proof and any remaining Connect/Profile recomposition are release work inside this same stage, not a new product stage.
+
+## Release evidence
+
+- Canonical CI #1225: PASS on repaired head `5bf1e49e2acf845a274f3bae985245a703cd3d72`.
+- Exact application Preview: `dpl_C31pZv8xczmqC49tWVjb12z4gjeH` — READY.
+- Authenticated Preview CI #1226: PASS on desktop Chrome and iPhone 13.
+- Unit/coverage: 334 tests passed.
+- Integration/regression: 225 tests passed.
+- Production Next.js build: PASS.
+- No Supabase migration.
