@@ -1,0 +1,25 @@
+name: Stage 23 Format Extract
+
+on:
+  push:
+    branches: [verify/stage23-format]
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write tests/e2e/stage23-release-gate.spec.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stage23-formatted-release-gate
+          path: tests/e2e/stage23-release-gate.spec.ts
+          if-no-files-found: error
