@@ -67,7 +67,9 @@ export function OnboardingShell({
                     >
                       {completed ? "✓" : step.number}
                     </span>
-                    <span className={`mt-2 block text-[0.68rem] font-semibold ${current ? "text-[#4931c4]" : "text-[#8b91a5]"}`}>
+                    <span
+                      className={`mt-2 block text-[0.68rem] font-semibold ${current ? "text-[#4931c4]" : "text-[#8b91a5]"}`}
+                    >
                       {step.label}
                     </span>
                   </li>
@@ -92,7 +94,8 @@ export function OnboardingShell({
         </section>
 
         <p className="mx-auto mt-5 max-w-xl text-center text-xs leading-5 text-[#858b9e]">
-          Your answers guide your development. Private developmental data is not made public by default.
+          Your answers guide your development. Private developmental data is not
+          made public by default.
         </p>
       </div>
     </main>
