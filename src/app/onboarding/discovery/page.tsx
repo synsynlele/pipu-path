@@ -70,10 +70,22 @@ export default async function DiscoveryIntroductionPage({
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <DiscoveryPromise title="Private by default" detail="Your answers are not a public profile." />
-              <DiscoveryPromise title="No instant labels" detail="One answer never becomes your identity." />
-              <DiscoveryPromise title="Sensitive is optional" detail="Optional reflection can be skipped." />
-              <DiscoveryPromise title="No AI judgement here" detail="Discovery first gathers your own evidence." />
+              <DiscoveryPromise
+                title="Private by default"
+                detail="Your answers are not a public profile."
+              />
+              <DiscoveryPromise
+                title="No instant labels"
+                detail="One answer never becomes your identity."
+              />
+              <DiscoveryPromise
+                title="Sensitive is optional"
+                detail="Optional reflection can be skipped."
+              />
+              <DiscoveryPromise
+                title="No AI judgement here"
+                detail="Discovery first gathers your own evidence."
+              />
             </div>
 
             <form action={startDiscoveryAction} className="mt-7">
@@ -156,7 +168,13 @@ export default async function DiscoveryIntroductionPage({
   );
 }
 
-function DiscoveryPromise({ title, detail }: { title: string; detail: string }) {
+function DiscoveryPromise({
+  title,
+  detail,
+}: {
+  title: string;
+  detail: string;
+}) {
   return (
     <div className="border-border bg-panel-raised/65 rounded-2xl border p-4">
       <p className="text-navy text-sm font-semibold">{title}</p>
