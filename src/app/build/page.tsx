@@ -37,7 +37,8 @@ function currentAction(state: HomeState) {
     const progress =
       state.projectProgress && state.projectProgress.total > 0
         ? Math.round(
-            (state.projectProgress.completed / state.projectProgress.total) * 100,
+            (state.projectProgress.completed / state.projectProgress.total) *
+              100,
           )
         : null;
     return {
