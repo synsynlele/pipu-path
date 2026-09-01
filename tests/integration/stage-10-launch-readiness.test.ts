@@ -92,6 +92,7 @@ describe("Stage 10 MVP launch-readiness contract", () => {
       "/app",
       "/build",
       "/continue",
+      "/discover",
       "/onboarding",
       "/mission",
       "/journey",
@@ -115,26 +116,14 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 
-  it("preserves six stable destinations while Stage 22 uses adventure-facing labels", () => {
-    for (const label of [
-      "Home",
-      "Journey",
-      "Build",
-      "Vault",
-      "Connect",
-      "Me",
-    ]) {
+  it("preserves the complete product beneath Stage 23 five-destination navigation", () => {
+    for (const label of ["Home", "Discover", "Build", "Connect", "Profile"]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
-    expect(navigation).toContain(
-      '{ label: "Vault", href: "/portfolio", icon: "portfolio" }',
-    );
-    expect(navigation).toContain(
-      '{ label: "Me", href: "/profile", icon: "profile" }',
-    );
-    expect(navigation.match(/label: "/g)).toHaveLength(6);
-    expect(navigation).not.toContain("Builders");
-    expect(navigation).not.toContain("Discovery");
+    expect(navigation.match(/label: "/g)).toHaveLength(5);
+    expect(navigation).toContain('pathname.startsWith("/journey")');
+    expect(navigation).toContain('pathname.startsWith("/portfolio")');
+    expect(navigation).toContain('pathname.startsWith("/opportunities")');
     expect(navigation).toContain("PipuPath mobile navigation");
   });
 
