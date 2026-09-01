@@ -15,7 +15,8 @@
       "hotfix/build-after-path-switch": false,
       "hotfix/path-pivot-handoff": false,
       "hotfix/current-quest-direct-and-ai-contract": false,
-      "hotfix/active-quest-direct-entry": false
+      "hotfix/active-quest-direct-entry": false,
+      "verify/stage23-format": false
     }
   }
 }
