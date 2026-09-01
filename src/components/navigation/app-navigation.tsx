@@ -59,7 +59,7 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
       <ul
         className={
           mobile
-            ? "grid grid-cols-5 px-1"
+            ? "grid grid-cols-5 px-1.5"
             : "border-border bg-panel/95 flex items-center gap-1 rounded-2xl border p-1 shadow-sm"
         }
       >
@@ -75,20 +75,25 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 className={
                   mobile
                     ? primaryBuild
-                      ? `relative -mt-3 flex min-h-[4.75rem] w-full touch-manipulation flex-col items-center justify-center gap-0.5 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/80 active:text-white"}`
-                      : `flex min-h-[4.25rem] w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/75 active:text-white"}`
-                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary-light" : "hover:bg-primary-soft/70 text-blue-100/80 hover:text-white"}`
+                      ? `relative -mt-4 flex min-h-[5rem] w-full touch-manipulation flex-col items-center justify-center gap-0.5 px-1 text-[0.68rem] font-semibold transition-[color,transform] active:scale-[0.97] ${active ? "text-[#5436df]" : "text-[#646b82]"}`
+                      : `flex min-h-[4.5rem] w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-[color,transform] active:scale-[0.97] ${active ? "text-[#5436df]" : "text-[#747b90]"}`
+                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary" : "text-[#747b90] hover:bg-primary-soft/70 hover:text-primary"}`
                 }
               >
                 {primaryBuild ? (
                   <span
                     aria-hidden="true"
-                    className={`grid size-12 place-items-center rounded-full border shadow-[0_8px_26px_-10px_rgba(79,124,255,0.95)] ${active ? "border-primary-light bg-primary text-white" : "border-primary/50 bg-primary text-white"}`}
+                    className={`grid size-14 place-items-center rounded-full border-[5px] border-white bg-gradient-to-br from-[#6d5df5] to-[#5436df] text-white shadow-[0_12px_28px_-12px_rgba(84,54,223,0.85)] ${active ? "scale-105" : ""}`}
                   >
                     <NavigationIcon name={item.icon} active={active} />
                   </span>
                 ) : (
-                  <NavigationIcon name={item.icon} active={active} />
+                  <span
+                    aria-hidden="true"
+                    className={`grid size-8 place-items-center rounded-xl transition-colors ${active ? "bg-[#eeeaff]" : ""}`}
+                  >
+                    <NavigationIcon name={item.icon} active={active} />
+                  </span>
                 )}
                 <span>{item.label}</span>
               </Link>
@@ -107,7 +112,7 @@ function NavigationIcon({
   name: (typeof items)[number]["icon"];
   active: boolean;
 }) {
-  const className = `size-5 ${active ? "stroke-[2.2]" : "stroke-[1.8]"}`;
+  const className = `size-5 ${active ? "stroke-[2.35]" : "stroke-[1.9]"}`;
   const common = {
     className,
     viewBox: "0 0 24 24",

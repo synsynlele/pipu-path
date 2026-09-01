@@ -29,7 +29,7 @@ describe("AppNavigation", () => {
     ).toHaveAttribute("href", "/profile");
   });
 
-  it("keeps inactive desktop destinations visible before hover", () => {
+  it("uses the Stage 26 light desktop navigation grammar", () => {
     const { container } = render(<AppNavigation />);
     const navigation = within(container).getByRole("navigation", {
       name: "PipuPath application",
@@ -39,9 +39,8 @@ describe("AppNavigation", () => {
     const build = within(navigation).getByRole("link", { name: "Build" });
 
     expect(list).toHaveClass("bg-panel/95");
-    expect(list).not.toHaveClass("bg-white/90");
-    expect(home).toHaveClass("text-blue-100/80");
-    expect(build).toHaveClass("text-primary-light");
+    expect(home).toHaveClass("text-[#747b90]");
+    expect(build).toHaveClass("text-primary");
   });
 
   it("gives every mobile destination a full touch target and elevates Build", () => {
@@ -59,7 +58,7 @@ describe("AppNavigation", () => {
 
     const build = within(navigation).getByRole("link", { name: "Build" });
     expect(build.querySelector("span[aria-hidden='true']")).toHaveClass(
-      "size-12",
+      "size-14",
       "rounded-full",
     );
   });

@@ -1,5 +1,5 @@
-import { PageLoading } from "@/components/feedback/page-loading";
+import { AppPageSkeleton } from "@/components/ui/app-page-skeleton";
 
 export default function Loading() {
-  return <PageLoading label="Loading Builder Connect" />;
+  return <AppPageSkeleton />;
 }

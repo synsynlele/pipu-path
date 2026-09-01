@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 360" fill="none">
+  <defs>
+    <linearGradient id="sea" x1="63" y1="311" x2="470" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2E2B87"/>
+      <stop offset="1" stop-color="#171954"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="288" y1="105" x2="491" y2="62" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD985" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#FFD985" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="rock" x1="201" y1="123" x2="347" y2="314" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7049E1"/>
+      <stop offset="1" stop-color="#201D68"/>
+    </linearGradient>
+  </defs>
+  <path d="M28 318c95-38 160-42 236-14 83 31 141 26 228-9v41H28v-18Z" fill="url(#sea)"/>
+  <path d="M132 314 248 171l41 45 43-66 69 164H132Z" fill="url(#rock)"/>
+  <path d="M291 107 490 49l-14 91-185 7v-40Z" fill="url(#beam)"/>
+  <path d="M276 113h32v120h-32z" fill="#F7F1EA"/>
+  <path d="M276 130h32v18h-32zM276 171h32v18h-32z" fill="#F0647D"/>
+  <path d="m270 113 22-24 22 24h-44Z" fill="#E95A70"/>
+  <path d="M274 231h36l8 25h-52l8-25Z" fill="#252469"/>
+  <circle cx="292" cy="107" r="7" fill="#FFF0B2"/>
+  <g fill="#FFF4CE"><circle cx="94" cy="83" r="3"/><circle cx="391" cy="71" r="3"/><circle cx="436" cy="171" r="2.5"/></g>
+  <g stroke="#FFF4CE" stroke-linecap="round"><path d="M117 130v12M111 136h12"/><path d="M384 112v10M379 117h10"/></g>
+</svg>

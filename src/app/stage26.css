@@ -1,0 +1,218 @@
+.pp-app-experience {
+  --background: #f6f7fb;
+  --foreground: #171a3f;
+  --muted: #747c98;
+  --border: #e6e8f1;
+  --color-panel: #ffffff;
+  --color-panel-raised: #ffffff;
+  --color-primary-100: #eeeaff;
+  --color-primary-500: #6d5df5;
+  --color-primary-700: #5436df;
+  --color-navy: #171a3f;
+  --color-text: #171a3f;
+  color-scheme: light;
+  background:
+    radial-gradient(circle at 12% 8%, rgb(93 74 228 / 7%), transparent 24rem),
+    linear-gradient(180deg, #f7f8fc 0%, #f6f7fb 100%);
+  color: #171a3f;
+}
+
+.pp-app-experience .bg-white {
+  background-color: #ffffff;
+}
+
+.pp-app-experience .text-navy {
+  color: #171a3f;
+}
+
+.pp-app-experience input,
+.pp-app-experience select,
+.pp-app-experience textarea {
+  color: #171a3f;
+}
+
+.pp-app-experience input::placeholder,
+.pp-app-experience textarea::placeholder {
+  color: #9ba2b7;
+}
+
+.pp-app-experience select option {
+  background: #ffffff;
+  color: #171a3f;
+}
+
+.pp-app-experience .pp-button-primary {
+  border-color: #5b3be0;
+  background: linear-gradient(135deg, #6d5df5 0%, #5436df 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 26px -18px rgb(84 54 223 / 80%);
+}
+
+.pp-app-experience .pp-button-primary:hover {
+  border-color: #6d5df5;
+  background: #6d5df5;
+  color: #ffffff;
+}
+
+.pp-app-experience .pp-button-secondary {
+  border-color: #ddd8f7;
+  background: #f3f0ff;
+  color: #5136ca;
+  box-shadow: none;
+}
+
+.pp-app-experience .pp-button-secondary:hover {
+  border-color: #c8bef6;
+  background: #ebe6ff;
+  color: #4329b8;
+}
+
+.pp-app-experience .pp-button-ghost {
+  color: #535a73;
+}
+
+.pp-app-experience .pp-button-ghost:hover {
+  border-color: #e3e1f0;
+  background: #f0eff7;
+  color: #302c63;
+}
+
+.pp-app-experience .pp-button-premium {
+  border-color: #5b3be0;
+  background: linear-gradient(135deg, #725af0 0%, #5436df 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 26px -18px rgb(84 54 223 / 78%);
+}
+
+.pp-app-experience .pp-button-premium:hover {
+  border-color: #6d5df5;
+  background: #6d5df5;
+  color: #ffffff;
+}
+
+.pp-app-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 82% 18%, rgb(151 108 255 / 34%), transparent 15rem),
+    linear-gradient(135deg, #25205f 0%, #352175 45%, #241c63 100%);
+  color: #ffffff;
+  box-shadow: 0 24px 54px -34px rgb(62 45 150 / 70%);
+}
+
+.pp-app-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -18% -48% 28%;
+  height: 18rem;
+  border-radius: 999px;
+  background: rgb(126 91 255 / 18%);
+  filter: blur(34px);
+  pointer-events: none;
+}
+
+.pp-app-card {
+  border: 1px solid #ececf4;
+  border-radius: 1.55rem;
+  background: #ffffff;
+  box-shadow: 0 18px 42px -34px rgb(37 32 95 / 38%);
+}
+
+.pp-app-card-interactive {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.pp-app-card-interactive:hover {
+  border-color: rgb(93 74 228 / 24%);
+  box-shadow: 0 22px 48px -34px rgb(84 54 223 / 45%);
+}
+
+.pp-app-card-interactive:active {
+  transform: scale(0.985);
+}
+
+.pp-story-ring {
+  background: linear-gradient(145deg, #27d7c5 0%, #6f5df5 48%, #ec79bf 100%);
+  padding: 3px;
+}
+
+.pp-stage26-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.pp-stage26-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.pp-mobile-topbar {
+  background:
+    radial-gradient(circle at 86% 20%, rgb(112 84 255 / 24%), transparent 11rem),
+    linear-gradient(135deg, #17164e 0%, #24205f 56%, #1d1957 100%);
+}
+
+.pp-bottom-navigation {
+  background: rgb(255 255 255 / 96%);
+  box-shadow: 0 -16px 40px -30px rgb(29 25 87 / 45%);
+  backdrop-filter: blur(22px);
+}
+
+.pp-section-title {
+  color: #171a3f;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.pp-soft-chip {
+  border: 1px solid #e9e8f4;
+  background: #ffffff;
+  color: #33375c;
+  box-shadow: 0 8px 22px -18px rgb(37 32 95 / 45%);
+}
+
+.pp-progress-track {
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8e7f2;
+}
+
+.pp-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #25d1bd 0%, #4b69ec 52%, #7957ef 100%);
+}
+
+.pp-mobile-section {
+  animation: pp-rise 320ms ease both;
+}
+
+@keyframes pp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1023px) {
+  .pp-app-experience main {
+    max-width: 46rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-mobile-section {
+    animation: none;
+  }
+
+  .pp-app-card-interactive {
+    transition: none;
+  }
+}
