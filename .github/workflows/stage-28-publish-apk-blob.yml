@@ -1,4 +1,4 @@
-name: Stage 28 Publish APK Blob
+name: Stage 28 Canonical Format Helper
 
 on:
   push:
@@ -8,66 +8,36 @@ on:
       - ".github/workflows/stage-28-publish-apk-blob.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  publish-apk-blob:
-    name: Create public APK Git blob
+  format-download-page:
+    name: Canonically format Stage 28 download page
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: Download verified production artifact
+      - name: Check out Stage 28 release branch
+        uses: actions/checkout@v5
+        with:
+          ref: stage-28-pipupath-lite-production
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Format download page with repository toolchain
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          curl --fail --location --silent --show-error \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/9818108750/zip" \
-            --output /tmp/pipupath-lite-production.zip
-          mkdir -p /tmp/pipupath-lite-production
-          unzip -q /tmp/pipupath-lite-production.zip \
-            -d /tmp/pipupath-lite-production
-          echo "fb12c675a80c23b2957e927a2a26829b9c2b6ec7854d293cff790043ab1e396a  /tmp/pipupath-lite-production/PipuPath-Lite-1.0.0.apk" \
-            | sha256sum --check --strict
-
-      - name: Create orphan Git blob for official APK
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import base64
-          import json
-          import os
-          import urllib.request
-          from pathlib import Path
-
-          repo = os.environ["GITHUB_REPOSITORY"]
-          token = os.environ["GH_TOKEN"]
-          apk = Path("/tmp/pipupath-lite-production/PipuPath-Lite-1.0.0.apk")
-          payload = json.dumps(
-              {
-                  "content": base64.b64encode(apk.read_bytes()).decode("ascii"),
-                  "encoding": "base64",
-              }
-          ).encode("utf-8")
-          request = urllib.request.Request(
-              f"https://api.github.com/repos/{repo}/git/blobs",
-              data=payload,
-              method="POST",
-              headers={
-                  "Authorization": f"Bearer {token}",
-                  "Accept": "application/vnd.github+json",
-                  "Content-Type": "application/json",
-                  "X-GitHub-Api-Version": "2022-11-28",
-              },
-          )
-          with urllib.request.urlopen(request) as response:
-              result = json.load(response)
-          print(f"PIPUPATH_PRODUCTION_APK_BLOB_SHA={result['sha']}")
-          PY
+          npx prettier src/app/download/page.tsx --write
+          npx prettier src/app/download/page.tsx --check
+          echo "PIPUPATH_FORMATTED_PAGE_BASE64_BEGIN"
+          base64 -w 0 src/app/download/page.tsx
+          echo
+          echo "PIPUPATH_FORMATTED_PAGE_BASE64_END"
