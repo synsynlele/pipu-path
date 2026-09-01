@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2">
-            <InstallPwaButton />
+            <InstallPwaButton autoNudge />
             <form action={signOutAction}>
               <Button
                 type="submit"

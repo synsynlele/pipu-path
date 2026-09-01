@@ -194,6 +194,12 @@ select option {
   background-color: #07142f;
 }
 
+@media (display-mode: standalone) {
+  .pp-install-entry {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
