@@ -14,6 +14,12 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#07142f",
     orientation: "portrait-primary",
     categories: ["education", "productivity", "lifestyle"],
+    related_applications: [
+      {
+        platform: "play",
+        id: "ng.name.pipupath.lite",
+      },
+    ],
     icons: [
       {
         src: "/pwa/icon-192",
