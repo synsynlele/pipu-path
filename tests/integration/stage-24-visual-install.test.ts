@@ -8,9 +8,7 @@ const discover = read("src/app/discover/page.tsx");
 const appShell = read("src/components/shells/app-shell.tsx");
 const publicShell = read("src/components/shells/public-shell.tsx");
 const authShell = read("src/components/shells/auth-shell.tsx");
-const distribution = read(
-  "src/components/pwa/landing-distribution-button.tsx",
-);
+const distribution = read("src/components/pwa/landing-distribution-button.tsx");
 const layout = read("src/app/layout.tsx");
 const manifest = read("src/app/manifest.ts");
 const button = read("src/components/ui/button.tsx");
