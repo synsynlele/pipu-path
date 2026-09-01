@@ -57,7 +57,9 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(distribution).toContain("Android|iPhone|iPad|iPod|Mobile");
     expect(distribution).toContain("isDesktopChromium");
     expect(distribution).toContain("isAndroidAppShell");
-    expect(distribution).toContain('DistributionMode = "hidden" | "android" | "desktop"');
+    expect(distribution).toContain(
+      'DistributionMode = "hidden" | "android" | "desktop"',
+    );
     expect(distribution).toContain("Download PipuPath Lite");
     expect(distribution).toContain("Install PipuPath");
     expect(distribution).toContain("/downloads/PipuPath-Lite-1.0.0.apk");

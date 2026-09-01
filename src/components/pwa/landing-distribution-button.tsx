@@ -81,8 +81,7 @@ export function LandingDistributionButton() {
   useEffect(() => {
     const sync = () => {
       const state = installWindow();
-      const installed =
-        isStandalone() || state.__pipupathAppInstalled === true;
+      const installed = isStandalone() || state.__pipupathAppInstalled === true;
 
       if (installed) {
         setMode("hidden");
@@ -174,24 +173,24 @@ export function LandingDistributionButton() {
   }
 
   const androidMode = mode === "android";
-  const label = androidMode
-    ? "Download"
-    : waitingForBrowser && !nativeReady
-      ? "Install when ready"
-      : "Install";
+  let label = "Install";
+  if (androidMode) {
+    label = "Download";
+  } else if (waitingForBrowser && !nativeReady) {
+    label = "Install when ready";
+  }
+
+  const title =
+    !androidMode && !nativeReady
+      ? "Chrome or Edge will enable the native installer when PipuPath is ready to install."
+      : undefined;
 
   return (
     <button
       type="button"
       onClick={() => void runDistributionAction()}
-      aria-label={
-        androidMode ? "Download PipuPath Lite" : "Install PipuPath"
-      }
-      title={
-        !androidMode && !nativeReady
-          ? "Chrome or Edge will enable the native installer when PipuPath is ready to install."
-          : undefined
-      }
+      aria-label={androidMode ? "Download PipuPath Lite" : "Install PipuPath"}
+      title={title}
       className="border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft inline-flex min-h-10 touch-manipulation items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold shadow-sm transition-colors"
     >
       <svg
