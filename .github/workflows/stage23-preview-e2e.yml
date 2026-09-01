@@ -47,7 +47,8 @@ jobs:
             process.exit(1);
           });
           NODE
-      - run: npm run test:e2e
+      - name: Run Stage 23 release browser gate
+        run: npx playwright test tests/e2e/stage23-release-gate.spec.ts tests/e2e/stage22-builder-a-to-z.spec.ts
         env:
           E2E_BASE_URL: https://pipu-path-9sg0h7wzn-copyartint-2860s-projects.vercel.app
           E2E_VERCEL_STORAGE_STATE: .stage23-vercel-auth.json
