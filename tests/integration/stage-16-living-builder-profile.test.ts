@@ -64,10 +64,13 @@ describe("Stage 16 Living Builder Profile structure", () => {
   it("ships a private profile route and keeps Discovery accessible as baseline", () => {
     const page = read("src/app/profile/page.tsx");
     const nav = read("src/components/navigation/app-navigation.tsx");
-    expect(page).toContain("Living Builder Profile");
+    expect(page).toContain('title: "Living Builder Profile"');
+    expect(page).toContain("Living Builder identity");
     expect(page).toContain("/onboarding/discovery/profile");
-    expect(page).toContain("Private development space");
-    expect(page).toContain("Nothing here becomes");
+    expect(page).toContain("Private by default");
+    expect(page.replace(/\s+/g, " ")).toContain(
+      "Nothing in your private development space becomes public automatically.",
+    );
     expect(nav).toContain('{ label: "Profile", href: "/profile"');
     expect(nav).toContain('pathname.startsWith("/portfolio")');
   });

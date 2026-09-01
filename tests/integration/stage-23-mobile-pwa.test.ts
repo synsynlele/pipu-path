@@ -22,10 +22,12 @@ describe("Stage 23 social-grade mobile and PWA foundation", () => {
 
   it("keeps Home and Discover action-led instead of introducing an infinite social feed", () => {
     expect(home).toContain("nextMove(");
-    expect(home).toContain("Your next move");
+    expect(home).toContain("Today&apos;s Next Step");
     expect(home).toContain("Your momentum");
     expect(home).toContain("requireAuthenticatedHomeState");
-    expect(discover).toContain("Useful places, not an endless feed");
+    expect(discover).toContain(
+      "Useful places based on your current adventure.",
+    );
     expect(discover).toContain("requireAuthenticatedHomeState");
     expect(home).not.toContain("infinite-scroll");
     expect(discover).not.toContain("infinite-scroll");
