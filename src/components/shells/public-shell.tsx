@@ -15,6 +15,13 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-8 lg:px-12">
           <BrandMark />
           <div className="flex items-center gap-1.5 sm:gap-3">
+            <ButtonLink
+              href="/download"
+              variant="ghost"
+              className="hidden px-3 md:inline-flex"
+            >
+              Android Lite
+            </ButtonLink>
             <InstallPwaButton compact autoNudge />
             <ButtonLink
               href="/login"
@@ -39,7 +46,10 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             </p>
             <p className="mt-1">© {new Date().getFullYear()} PipuPath</p>
           </div>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap gap-5">
+            <a href="/download" className="hover:text-primary-light">
+              Android Lite
+            </a>
             <a href="/privacy" className="hover:text-primary-light">
               Privacy
             </a>

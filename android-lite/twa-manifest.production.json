@@ -1,0 +1,46 @@
+{
+  "packageId": "ng.name.pipupath.lite",
+  "host": "www.pipupath.name.ng",
+  "name": "PipuPath Lite",
+  "launcherName": "PipuPath Lite",
+  "display": "standalone",
+  "themeColor": "#07142f",
+  "themeColorDark": "#020817",
+  "navigationColor": "#07142f",
+  "navigationColorDark": "#020817",
+  "navigationDividerColor": "#07142f",
+  "navigationDividerColorDark": "#020817",
+  "backgroundColor": "#020817",
+  "enableNotifications": false,
+  "startUrl": "/continue",
+  "iconUrl": "https://www.pipupath.name.ng/pwa/icon-512",
+  "maskableIconUrl": "https://www.pipupath.name.ng/pwa/icon-512",
+  "splashScreenFadeOutDuration": 250,
+  "signingKey": {
+    "path": "./pipupath-lite-production.keystore",
+    "alias": "pipupath-lite"
+  },
+  "appVersionCode": 1,
+  "appVersion": "1.0.0",
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://www.pipupath.name.ng/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": false,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "minSdkVersion": 21,
+  "orientation": "portrait-primary",
+  "fingerprints": [
+    {
+      "name": "PipuPath Lite production key",
+      "value": "C6:53:47:58:AD:D0:F1:AB:9E:26:87:F5:C5:52:D8:B3:B3:6F:7C:77:30:4B:D5:EE:B6:A5:33:E4:C2:10:51:1A"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": []
+}

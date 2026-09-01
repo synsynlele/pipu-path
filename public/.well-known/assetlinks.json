@@ -3,6 +3,16 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
+      "package_name": "ng.name.pipupath.lite",
+      "sha256_cert_fingerprints": [
+        "C6:53:47:58:AD:D0:F1:AB:9E:26:87:F5:C5:52:D8:B3:B3:6F:7C:77:30:4B:D5:EE:B6:A5:33:E4:C2:10:51:1A"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
       "package_name": "ng.name.pipupath.lite.dev",
       "sha256_cert_fingerprints": [
         "F8:C5:EE:FC:73:F3:F1:D6:68:91:6A:A8:EC:09:66:70:73:69:F2:4C:EB:66:7D:D2:1B:EC:81:F5:41:F5:F1:88"

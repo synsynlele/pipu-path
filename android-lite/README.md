@@ -6,45 +6,67 @@ launches the production PipuPath origin in a fullscreen, app-like surface while
 the existing Next.js, Supabase, authentication and product logic remain the
 single source of truth.
 
-## Why TWA
-
-- Keeps the Android binary small.
-- Preserves browser-grade authentication, including Google sign-in.
-- Does not fork or duplicate PipuPath backend/domain logic.
-- Lets most product updates ship through the existing web deployment.
-- Supports normal Android launcher identity, splash behavior and deep links.
-- Can later be distributed directly as an APK or through Google Play.
-
-## Current development package
+## Production release
 
 - Display name: `PipuPath Lite`
-- Development package ID: `ng.name.pipupath.lite.dev`
+- Production package ID: `ng.name.pipupath.lite`
+- Current version: `1.0.0`
+- Version code: `1`
 - Production origin: `https://www.pipupath.name.ng`
 - Start route: `/continue`
 - Minimum Android API: 21
 - Orientation: portrait-primary
 - Bubblewrap toolchain: `1.25.0`
+- APK: `/downloads/PipuPath-Lite-1.0.0.apk`
+- Release metadata: `/downloads/pipupath-lite.json`
 
-The committed development signing key is deliberately scoped to the `.dev`
-package only. It exists so CI can create repeatable installable preview builds
-and so Digital Asset Links can verify the preview TWA. It must never be reused
-for the public production package.
+The permanent production certificate fingerprint is public and pinned in both
+`twa-manifest.production.json` and `public/.well-known/assetlinks.json`.
 
-## Build
+The production keystore and passwords are deliberately **not** stored in this
+repository. They are required for every future direct-download APK upgrade and
+must remain protected outside Git history.
 
-GitHub Actions runs `.github/workflows/android-lite.yml`. On a relevant push it:
+## Development package
 
-1. verifies the live PWA manifest contract;
-2. generates an Android project from `twa-manifest.json`;
-3. builds a signed development APK and AAB with Bubblewrap;
-4. publishes both files as a GitHub Actions artifact.
+The development package remains `ng.name.pipupath.lite.dev`. Its committed
+`.dev` signing key exists only so CI can create repeatable test builds. It must
+never be used for the public production package.
 
-## Production signing
+## Why TWA
 
-Before public distribution, create a private release keystore for the permanent
-package ID `ng.name.pipupath.lite`. Store that key outside the repository and in
-the release CI secret store. Add its SHA-256 certificate fingerprint to
-`public/.well-known/assetlinks.json`, then change the TWA manifest package ID and
-signing configuration for the production release.
+- Keeps the Android binary small.
+- Preserves browser-grade authentication, including Google sign-in.
+- Does not fork or duplicate PipuPath backend/domain logic.
+- Lets normal product updates ship through the existing web deployment.
+- Supports normal Android launcher identity, splash behavior and deep links.
+- Can later be distributed through Google Play using the same product.
 
-Do not commit the production keystore or its passwords.
+## Update model
+
+PipuPath Lite uses a web-first update model. Normal product, content and backend
+changes ship through the live PipuPath deployment and therefore do not require
+another APK installation.
+
+When the Android wrapper itself changes:
+
+1. increment `appVersionCode` in `twa-manifest.production.json`;
+2. update `appVersion`;
+3. build with the exact permanent production signing key;
+4. verify the pinned SHA-256 certificate fingerprint;
+5. replace the website APK and update `/downloads/pipupath-lite.json`;
+6. users install the newer APK over the existing app without uninstalling it.
+
+## Production release CI
+
+`.github/workflows/android-lite-release.yml` is the protected production build
+path. It expects these GitHub Actions secrets:
+
+- `PIPUPATH_ANDROID_KEYSTORE_B64`
+- `PIPUPATH_ANDROID_KEYSTORE_PASSWORD`
+- `PIPUPATH_ANDROID_KEY_PASSWORD`
+
+The workflow refuses to build if the restored key does not match the permanent
+PipuPath Lite production certificate.
+
+Never commit the production keystore or its passwords.
