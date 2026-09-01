@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import {
@@ -29,61 +30,88 @@ export default async function DiscoveryIntroductionPage({
   const current = state.questions.find(
     (question) => question.stableKey === session?.current_question_key,
   );
+
   if (
     query.resume === "1" &&
     session?.status === "in_progress" &&
     missing.length > 0 &&
     current
-  )
+  ) {
     redirect(
       `/onboarding/discovery/${current.sectionKey}?question=${current.stableKey}`,
     );
+  }
 
   return (
-    <main
-      id="main-content"
-      className="mx-auto max-w-3xl px-5 py-10 sm:px-8 sm:py-16"
+    <OnboardingShell
+      activeStep={2}
+      title="Now discover the patterns worth exploring."
+      description="This is a private conversation about what energises you, what you notice and what may be worth testing in real life. PipuPath does not reduce you to a label."
     >
-      <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
-        Discovery
-      </p>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
-        A conversation about what may be worth exploring.
-      </h1>
-      <p className="text-muted mt-5 max-w-2xl text-lg leading-8">
-        Discovery gathers your own evidence. It will not label you or pretend
-        one answer reveals your purpose. You can pause, return and edit.
-      </p>
-
-      <Surface className="mt-10 p-6 sm:p-8">
+      <Surface className="p-5 sm:p-7">
         {!session ? (
           <>
-            <h2 className="text-xl font-semibold">Before you begin</h2>
-            <ul className="text-muted mt-4 space-y-2 leading-7">
-              <li>Seven short sections, one focused question at a time.</li>
-              <li>Your answers remain private and save to your account.</li>
-              <li>Sensitive reflection is optional and may be skipped.</li>
-              <li>No AI interpretation happens in this stage.</li>
-            </ul>
+            <div className="flex items-start gap-3">
+              <span
+                aria-hidden="true"
+                className="bg-primary-soft text-primary-light grid size-10 shrink-0 place-items-center rounded-full text-sm font-bold"
+              >
+                2
+              </span>
+              <div>
+                <h2 className="text-navy text-lg font-semibold">
+                  Discovery takes one question at a time.
+                </h2>
+                <p className="text-muted mt-1 text-sm leading-6">
+                  Seven short sections. Pause whenever you need to; your answers
+                  save to your private account.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <DiscoveryPromise
+                title="Private by default"
+                detail="Your answers are not a public profile."
+              />
+              <DiscoveryPromise
+                title="No instant labels"
+                detail="One answer never becomes your identity."
+              />
+              <DiscoveryPromise
+                title="Sensitive is optional"
+                detail="Optional reflection can be skipped."
+              />
+              <DiscoveryPromise
+                title="No AI judgement here"
+                detail="Discovery first gathers your own evidence."
+              />
+            </div>
+
             <form action={startDiscoveryAction} className="mt-7">
               <button
                 type="submit"
-                className="bg-primary hover:bg-primary-light inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
+                className="bg-primary hover:bg-primary-light inline-flex min-h-12 w-full touch-manipulation items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold text-white sm:w-auto"
               >
-                Begin Discovery
+                Begin Discovery →
               </button>
             </form>
           </>
         ) : session.status === "completed" ? (
           <>
-            <h2 className="text-xl font-semibold">Discovery completed</h2>
+            <p className="text-success text-xs font-semibold tracking-[0.14em] uppercase">
+              Discovery complete
+            </p>
+            <h2 className="text-navy mt-2 text-xl font-semibold">
+              Your answers are safely preserved.
+            </h2>
             <p className="text-muted mt-3 leading-7">
-              Your answers are preserved with question-set version{" "}
-              {session.question_set_version}. No potential profile has been
-              generated.
+              PipuPath has your Discovery evidence from question-set version{" "}
+              {session.question_set_version}. Continue to the next step when you
+              are ready.
             </p>
             <ButtonLink href="/onboarding/discovery/complete" className="mt-6">
-              View completion
+              Continue →
             </ButtonLink>
           </>
         ) : (
@@ -92,15 +120,30 @@ export default async function DiscoveryIntroductionPage({
               value={session.progress_percent}
               label="Discovery progress"
             />
-            <p className="text-muted mt-5 leading-7">
-              {session.status === "review"
-                ? "Your answers are ready for final review."
-                : `${state.answers.length} answers saved. ${missing.length} required questions remain.`}
-            </p>
+            <div className="mt-5 flex items-start gap-3">
+              <span
+                aria-hidden="true"
+                className="bg-primary-soft text-primary-light grid size-10 shrink-0 place-items-center rounded-full text-sm font-bold"
+              >
+                {session.progress_percent}%
+              </span>
+              <div>
+                <h2 className="text-navy font-semibold">
+                  {session.status === "review"
+                    ? "Your Discovery is ready for review."
+                    : "Pick up exactly where you stopped."}
+                </h2>
+                <p className="text-muted mt-1 text-sm leading-6">
+                  {session.status === "review"
+                    ? "Review your own answers before PipuPath moves forward."
+                    : `${state.answers.length} answers saved. ${missing.length} required questions remain.`}
+                </p>
+              </div>
+            </div>
             <div className="mt-6 flex flex-wrap gap-3">
               {session.status === "review" ? (
                 <ButtonLink href="/onboarding/discovery/review">
-                  Continue review
+                  Continue review →
                 </ButtonLink>
               ) : missing.length === 0 ? (
                 <DiscoveryTransitionForm
@@ -114,13 +157,28 @@ export default async function DiscoveryIntroductionPage({
                 <ButtonLink
                   href={`/onboarding/discovery/${current.sectionKey}?question=${current.stableKey}`}
                 >
-                  Continue Discovery
+                  Continue Discovery →
                 </ButtonLink>
               ) : null}
             </div>
           </>
         )}
       </Surface>
-    </main>
+    </OnboardingShell>
+  );
+}
+
+function DiscoveryPromise({
+  title,
+  detail,
+}: {
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="border-border bg-panel-raised/65 rounded-2xl border p-4">
+      <p className="text-navy text-sm font-semibold">{title}</p>
+      <p className="text-muted mt-1 text-xs leading-5">{detail}</p>
+    </div>
   );
 }

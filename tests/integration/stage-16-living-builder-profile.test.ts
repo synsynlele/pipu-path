@@ -68,6 +68,7 @@ describe("Stage 16 Living Builder Profile structure", () => {
     expect(page).toContain("/onboarding/discovery/profile");
     expect(page).toContain("Private development space");
     expect(page).toContain("Nothing here becomes");
-    expect(nav).toContain('{ label: "Me", href: "/profile"');
+    expect(nav).toContain('{ label: "Profile", href: "/profile"');
+    expect(nav).toContain('pathname.startsWith("/portfolio")');
   });
 });

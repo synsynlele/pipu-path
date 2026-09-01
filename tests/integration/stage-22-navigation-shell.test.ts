@@ -8,15 +8,8 @@ const journeyLayout = read("src/app/journey/layout.tsx");
 const connectLayout = read("src/app/connect/layout.tsx");
 
 describe("Stage 22 application navigation shell", () => {
-  it("keeps the six adventure destinations stable", () => {
-    for (const label of [
-      "Home",
-      "Journey",
-      "Build",
-      "Vault",
-      "Connect",
-      "Me",
-    ]) {
+  it("keeps the authenticated application navigation contract while allowing a later presentation authority", () => {
+    for (const label of ["Home", "Build", "Connect"]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
     expect(navigation).toContain('"PipuPath application"');

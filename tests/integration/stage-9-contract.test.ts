@@ -150,9 +150,8 @@ describe("Stage 9 selective Project portfolio structural contract", () => {
 
   it("integrates Portfolio into the complete Builder shell", () => {
     expect(shell).toContain("<AppNavigation />");
-    expect(navigation).toContain(
-      '{ label: "Vault", href: "/portfolio", icon: "portfolio" }',
-    );
+    expect(navigation).toContain('{ label: "Profile", href: "/profile"');
+    expect(navigation).toContain('pathname.startsWith("/portfolio")');
     expect(portfolioPage).toContain(
       "Your real builds live here. You decide what leaves the Vault.",
     );

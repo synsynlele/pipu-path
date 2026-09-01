@@ -31,7 +31,7 @@ describe("AppShell", () => {
     });
 
     expect(container.firstElementChild).toHaveClass(
-      "pb-[calc(5rem+env(safe-area-inset-bottom))]",
+      "pb-[calc(5.5rem+env(safe-area-inset-bottom))]",
     );
     expect(mobileNavigation.parentElement).toHaveClass(
       "pb-[env(safe-area-inset-bottom)]",

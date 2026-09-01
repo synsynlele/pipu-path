@@ -2,27 +2,59 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PipuPath — The University for Human Potential",
+    id: "/pipupath",
+    name: "PipuPath",
     short_name: "PipuPath",
     description:
-      "Discover who you are, develop what you carry and deploy it through real-world action.",
-    start_url: "/",
+      "Discover, develop and deploy your potential through real-world action.",
+    start_url: "/continue",
+    scope: "/",
     display: "standalone",
     background_color: "#020817",
-    theme_color: "#020817",
+    theme_color: "#07142f",
     orientation: "portrait-primary",
+    categories: ["education", "productivity", "lifestyle"],
     icons: [
       {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/pwa/icon-192",
+        sizes: "192x192",
+        type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/pwa/icon-512",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/pwa/icon-192",
+        sizes: "192x192",
+        type: "image/png",
         purpose: "maskable",
+      },
+      {
+        src: "/pwa/icon-512",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+    ],
+    shortcuts: [
+      {
+        name: "Home",
+        short_name: "Home",
+        url: "/app",
+      },
+      {
+        name: "Build",
+        short_name: "Build",
+        url: "/build",
+      },
+      {
+        name: "Connect",
+        short_name: "Connect",
+        url: "/connect",
       },
     ],
   };

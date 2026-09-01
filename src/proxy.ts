@@ -7,14 +7,15 @@ const authRoutes = ["/login", "/signup"];
 const protectedPrefixes = [
   "/app",
   "/build",
+  "/connect",
   "/continue",
+  "/discover",
   "/onboarding",
   "/mission",
   "/journey",
   "/quests",
   "/projects",
   "/portfolio",
-  "/connect",
   "/profile",
   "/institution",
   "/passport",
@@ -77,5 +78,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon.svg|manifest.webmanifest|apple-icon|pwa/).*)",
+  ],
 };

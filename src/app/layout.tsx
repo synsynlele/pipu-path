@@ -13,6 +13,12 @@ export const metadata: Metadata = {
   description:
     "Discover who you are, develop what you carry and deploy it through real-world action.",
   applicationName: "PipuPath",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "PipuPath",
+    statusBarStyle: "black-translucent",
+  },
   metadataBase: productionUrl,
   alternates: {
     canonical: "/",
@@ -20,7 +26,6 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: "/icon.svg", type: "image/svg+xml", sizes: "any" }],
     shortcut: "/icon.svg",
-    apple: [{ url: "/icon.svg", type: "image/svg+xml", sizes: "any" }],
   },
   robots: {
     index: true,
@@ -33,6 +38,7 @@ export const viewport: Viewport = {
   themeColor: "#020817",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
