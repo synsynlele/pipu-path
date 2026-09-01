@@ -40,9 +40,6 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             <p className="mt-1">© {new Date().getFullYear()} PipuPath</p>
           </div>
           <div className="flex flex-wrap gap-5">
-            <a href="/download" className="hover:text-primary-light">
-              Android Lite
-            </a>
             <a href="/privacy" className="hover:text-primary-light">
               Privacy
             </a>
