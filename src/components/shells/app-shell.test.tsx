@@ -8,14 +8,19 @@ vi.mock("@/modules/identity/application/auth-actions", () => ({
 }));
 
 describe("AppShell", () => {
-  it("keeps the sign-out action visible on mobile", () => {
+  it("keeps a dedicated sign-out action in the mobile header", () => {
     const { container } = render(
       <AppShell>
         <main id="main-content">Dashboard</main>
       </AppShell>,
     );
 
-    const button = within(container).getByRole("button", { name: "Sign out" });
+    const mobileHeader = container.querySelector("header.lg\\:hidden");
+    expect(mobileHeader).not.toBeNull();
+
+    const button = within(mobileHeader as HTMLElement).getByRole("button", {
+      name: "Sign out",
+    });
     expect(button).toBeVisible();
     expect(button.closest("form")).not.toHaveClass("hidden");
   });
