@@ -56,7 +56,9 @@ function isMobileDevice() {
 }
 
 function isAndroidDevice() {
-  return typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
+  return (
+    typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent)
+  );
 }
 
 function subscribeToDeviceSnapshot() {
