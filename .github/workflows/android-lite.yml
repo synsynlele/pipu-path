@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Verify the production PWA contract
         shell: bash
@@ -89,12 +89,23 @@ jobs:
             -e BUBBLEWRAP_KEY_PASSWORD \
             -v "${PWD}/android-lite/generated:/workspace" \
             -w /workspace \
+            --entrypoint bash \
             ghcr.io/googlechromelabs/bubblewrap:1.25.0 \
-            build \
-            --skipPwaValidation \
-            --manifest=/workspace/twa-manifest.json \
-            --signingKeyPath=/workspace/pipupath-lite-dev.keystore \
-            --signingKeyAlias=pipupath-lite-dev
+            -lc '
+              set -eu
+              SDKMANAGER="$(find /root/.bubblewrap/android_sdk -type f -name sdkmanager | head -n 1)"
+              test -n "$SDKMANAGER"
+              yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+              "$SDKMANAGER" \
+                "platforms;android-36" \
+                "build-tools;35.0.0" \
+                "build-tools;36.1.0"
+              bubblewrap build \
+                --skipPwaValidation \
+                --manifest=/workspace/twa-manifest.json \
+                --signingKeyPath=/workspace/pipupath-lite-dev.keystore \
+                --signingKeyAlias=pipupath-lite-dev
+            '
 
       - name: Package distributable artifacts
         shell: bash
