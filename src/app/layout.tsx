@@ -10,12 +10,47 @@ const pwaInstallCaptureScript = `
   if (window.__pipupathInstallCaptureReady) return;
   window.__pipupathInstallCaptureReady = true;
 
+  const isAndroidAppShell = () =>
+    document.referrer.startsWith("android-app://");
+
+  const isStandalone = () => {
+    const displayMode =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(display-mode: standalone)").matches;
+    const iosStandalone = window.navigator.standalone === true;
+    return displayMode || iosStandalone || isAndroidAppShell();
+  };
+
+  const isMobile = () => {
+    const ua = navigator.userAgent;
+    const regularMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+    const iPadDesktopMode =
+      /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+    return regularMobile || iPadDesktopMode;
+  };
+
   const publishInstallState = () => {
     window.dispatchEvent(new Event("pipupath:install-state"));
   };
 
+  if (isStandalone()) {
+    window.__pipupathAppInstalled = true;
+    window.__pipupathDeferredInstallPrompt = null;
+  }
+
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
+
+    // Mobile installation is handled by the Android app download. Never keep
+    // a browser PWA prompt for mobile or for an already-installed app shell.
+    if (isStandalone() || isMobile()) {
+      window.__pipupathDeferredInstallPrompt = null;
+      publishInstallState();
+      return;
+    }
+
+    // Capture this before React hydration so desktop never loses the browser's
+    // one-use native install event and falls back to manual instructions.
     window.__pipupathDeferredInstallPrompt = event;
     publishInstallState();
   });
