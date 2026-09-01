@@ -2,9 +2,9 @@
 
 **Current stage:** Stage 24 — Visual Fidelity & Mobile Install Experience
 
-**Stage status:** RELEASED — PR #52 is the Stage 24 production release after canonical CI and exact-tree Preview proof.
+**Stage status:** RELEASE CANDIDATE — canonical application validation and exact-tree Preview proof are complete; PR merge and production smoke verification remain.
 
-**Latest released baseline:** Stage 23 merged to `main` as `a2b50dcf23bc437086d842d684d06af5ed76160a` — the baseline entering the Stage 24 release.
+**Latest released baseline:** Stage 23 merged to `main` as `a2b50dcf23bc437086d842d684d06af5ed76160a` — the production baseline until Stage 24 is merged and verified.
 
 **Stage 24 validated application head:** `53ab9cc2303bb4b02160108f343837db2090d419`.
 
@@ -28,9 +28,9 @@
 
 Stage 23 proved the five-destination navigation, onboarding/Admin integration and installable-web architecture. Stage 24 closes the remaining fidelity gap between that structure and the approved premium mobile concept while keeping the developmental engine unchanged.
 
-## Stage 24 released experience
+## Stage 24 release-candidate experience
 
-PipuPath is now bright-first and visually consistent across public access, authentication, onboarding and the authenticated application:
+The Stage 24 candidate is bright-first and visually consistent across public access, authentication, onboarding and the authenticated application:
 
 - bright neutral canvas;
 - white cards;
@@ -61,7 +61,7 @@ The Stage 23 install control depended on the browser firing `beforeinstallprompt
 
 ## Release evidence
 
-Canonical CI passed on exact application head `53ab9cc2303bb4b02160108f343837db2090d419`:
+The application tree at `53ab9cc2303bb4b02160108f343837db2090d419` passed the canonical validation chain:
 
 - Prettier;
 - zero-warning ESLint;
@@ -70,7 +70,7 @@ Canonical CI passed on exact application head `53ab9cc2303bb4b02160108f343837db2
 - **225 integration/regression tests**;
 - production build.
 
-One deliberate exact-tree Vercel Preview was created through carrier commit `9f4a168d01b89da0db796447376eb8ce0e1e81e6`, which points to the same application tree as the green candidate. Deployment `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY.
+One deliberate exact-tree Vercel Preview was created through carrier commit `9f4a168d01b89da0db796447376eb8ce0e1e81e6`. The carrier has the exact same tree as the validated application head. Deployment `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY.
 
 Deployed proof confirmed:
 
@@ -83,7 +83,7 @@ Deployed proof confirmed:
 - unauthenticated `/app` isolation to `/login?next=/app`;
 - no Preview error/fatal runtime logs during release verification.
 
-Production smoke verification is the final operational check after PR #52 reaches `main`.
+PR #52 still requires a green final branch validation after release-ledger/test-only edits. Production smoke verification is the final operational check after that verified PR reaches `main`.
 
 ## Safety / anti-dark-pattern boundary
 
