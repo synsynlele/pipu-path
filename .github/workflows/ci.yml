@@ -29,7 +29,9 @@ jobs:
           npx prettier --write
           src/app/app/page.tsx
           src/app/build/page.tsx
+          src/app/connect/page.tsx
           src/app/discover/page.tsx
+          src/app/profile/page.tsx
           src/app/stage26.css
           src/components/navigation/app-navigation.tsx
           src/components/onboarding/onboarding-shell.tsx
@@ -41,7 +43,9 @@ jobs:
           path: |
             src/app/app/page.tsx
             src/app/build/page.tsx
+            src/app/connect/page.tsx
             src/app/discover/page.tsx
+            src/app/profile/page.tsx
             src/app/stage26.css
             src/components/navigation/app-navigation.tsx
             src/components/onboarding/onboarding-shell.tsx
