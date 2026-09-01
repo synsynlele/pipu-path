@@ -101,7 +101,6 @@ export default async function HomePage() {
     state.snapshot.completedProjectId &&
     state.snapshot.journeyStatus === "completed",
   );
-  const portfolioPublished = state.portfolio?.status === "published";
   const adventureProgress = completedGrowthCycle
     ? 100
     : Math.max(
