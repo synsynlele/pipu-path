@@ -190,10 +190,11 @@ export default async function AdminPage({
             Data before feature opinion.
           </h2>
           <p className="text-muted mt-4 leading-7">
-            Feature telemetry begins with Stage 14. Historical funnel counts can
-            be reconstructed from durable product state, but PipuPath will not
-            pretend it has historical feature-retention data that was never
-            captured.
+            Feature telemetry begins with Stage 14. Day-7 and Day-30 retention
+            require cohort-age history that was not captured retroactively.
+            Historical funnel counts can be reconstructed from durable product
+            state, but PipuPath will not pretend it has historical
+            feature-retention data that was never captured.
           </p>
           <div className="border-gold/25 bg-gold/5 mt-6 rounded-2xl border p-5">
             <p className="text-navy text-sm font-semibold">
