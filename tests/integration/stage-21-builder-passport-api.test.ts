@@ -145,7 +145,7 @@ describe("Stage 21 Builder Passport/API structure", () => {
     );
     expect(projectState).toContain("Latest released baseline:");
     expect(implementationStatus).toContain(
-      "Stage 25 — Restore blue UI and perfect mobile install is released in production",
+      "Stage 26 — Exact Mobile Experience Rebuild is released in production",
     );
     expect(implementationStatus).toContain(
       "Stage 26 — Exact Mobile Experience Rebuild",

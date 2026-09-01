@@ -6,6 +6,7 @@ const navigation = read("src/components/navigation/app-navigation.tsx");
 const missionLayout = read("src/app/mission/layout.tsx");
 const journeyLayout = read("src/app/journey/layout.tsx");
 const connectLayout = read("src/app/connect/layout.tsx");
+const connectPage = read("src/app/connect/page.tsx");
 
 describe("Stage 22 application navigation shell", () => {
   it("keeps the authenticated application navigation contract while allowing a later presentation authority", () => {
@@ -23,7 +24,7 @@ describe("Stage 22 application navigation shell", () => {
       expect(layout).toContain("await requireAuthenticatedIdentity()");
     }
 
-    expect(connectLayout).toContain("Builder Network");
-    expect(connectLayout).toContain("Collaborations");
+    expect(connectPage).toContain('href="/connect/collaborations"');
+    expect(connectPage).toContain("Collaborate");
   });
 });

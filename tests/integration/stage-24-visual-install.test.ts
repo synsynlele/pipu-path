@@ -11,12 +11,18 @@ const authShell = read("src/components/shells/auth-shell.tsx");
 const install = read("src/components/pwa/install-prompt.tsx");
 const layout = read("src/app/layout.tsx");
 const manifest = read("src/app/manifest.ts");
+const button = read("src/components/ui/button.tsx");
+const surface = read("src/components/ui/surface.tsx");
+const stage26 = read("src/app/stage26.css");
+const buildLayout = read("src/app/build/layout.tsx");
+const guideLayout = read("src/app/guide/layout.tsx");
 
 describe("Stage 25 blue restoration and mobile installation", () => {
   it("preserves the released blue identity beneath the Stage 26 mobile surface", () => {
     expect(globals).toContain("--background: #020817");
     expect(globals).toContain("color-scheme: dark");
-    expect(globals).toContain("--color-panel: #07142f");
+    expect(globals).toContain("--panel: #07142f");
+    expect(globals).toContain("--color-panel: var(--panel)");
     expect(globals).toContain(".bg-white {\n  background-color: #07142f;");
     expect(layout).toContain('colorScheme: "dark"');
     expect(layout).toContain('themeColor: "#020817"');
@@ -55,5 +61,18 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(manifest).toContain('theme_color: "#07142f"');
     expect(manifest).toContain('name: "Discover"');
     expect(manifest).toContain('name: "Profile"');
+  });
+
+  it("lets the Stage 26 authenticated scope own colours across every Builder route", () => {
+    expect(button).not.toContain("fallbackStyles");
+    expect(button).not.toContain("backgroundColor");
+    expect(surface).not.toContain("backgroundColor");
+    expect(stage26).toContain("--panel: #ffffff");
+    expect(stage26).toContain("-webkit-text-fill-color: #ffffff");
+
+    for (const layout of [buildLayout, guideLayout]) {
+      expect(layout).toContain("AppShell");
+      expect(layout).toContain("requireAuthenticatedIdentity");
+    }
   });
 });

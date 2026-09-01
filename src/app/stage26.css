@@ -10,11 +10,37 @@
   --color-primary-700: #5436df;
   --color-navy: #171a3f;
   --color-text: #171a3f;
+  --panel: #ffffff;
+  --panel-raised: #ffffff;
+  --soft-surface: #f0eff8;
+  --soft-blue-surface: #eef2fb;
   color-scheme: light;
   background:
     radial-gradient(circle at 12% 8%, rgb(93 74 228 / 7%), transparent 24rem),
     linear-gradient(180deg, #f7f8fc 0%, #f6f7fb 100%);
   color: #171a3f;
+}
+
+.pp-app-experience main {
+  color: #171a3f;
+}
+
+/*
+ * Authenticated routes still use the shared semantic utilities introduced by
+ * earlier stages. Keep those utilities, but resolve them to the Stage 26 light
+ * canvas inside AppShell so every deep route inherits the same visual system.
+ */
+.pp-app-experience .text-foreground,
+.pp-app-experience .text-navy {
+  color: #171a3f;
+}
+
+.pp-app-experience .text-muted {
+  color: #687089;
+}
+
+.pp-app-experience .border-border {
+  border-color: #e3e5ef;
 }
 
 .pp-app-experience .bg-white {
@@ -48,6 +74,11 @@
   box-shadow: 0 12px 26px -18px rgb(84 54 223 / 80%);
 }
 
+.pp-app-experience .pp-button-primary,
+.pp-app-experience .pp-button-premium {
+  -webkit-text-fill-color: #ffffff;
+}
+
 .pp-app-experience .pp-button-primary:hover {
   border-color: #6d5df5;
   background: #6d5df5;
@@ -61,6 +92,10 @@
   box-shadow: none;
 }
 
+.pp-app-experience .pp-button-secondary {
+  -webkit-text-fill-color: #5136ca;
+}
+
 .pp-app-experience .pp-button-secondary:hover {
   border-color: #c8bef6;
   background: #ebe6ff;
@@ -69,6 +104,7 @@
 
 .pp-app-experience .pp-button-ghost {
   color: #535a73;
+  -webkit-text-fill-color: #535a73;
 }
 
 .pp-app-experience .pp-button-ghost:hover {
@@ -163,10 +199,32 @@
     linear-gradient(135deg, #17164e 0%, #24205f 56%, #1d1957 100%);
 }
 
+.pp-mobile-topbar .pp-button-ghost {
+  border-color: rgb(255 255 255 / 10%);
+  background: rgb(255 255 255 / 8%);
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+}
+
+.pp-mobile-topbar .pp-button-ghost:hover {
+  border-color: rgb(255 255 255 / 16%);
+  background: rgb(255 255 255 / 14%);
+  color: #ffffff;
+}
+
 .pp-bottom-navigation {
   background: rgb(255 255 255 / 96%);
   box-shadow: 0 -16px 40px -30px rgb(29 25 87 / 45%);
   backdrop-filter: blur(22px);
+}
+
+.pp-app-experience input[type="checkbox"],
+.pp-app-experience input[type="radio"] {
+  accent-color: #5b3be0;
+}
+
+.pp-app-experience details > summary {
+  color: #25284a;
 }
 
 .pp-section-title {
@@ -212,6 +270,7 @@
 @media (max-width: 1023px) {
   .pp-app-experience main {
     max-width: 46rem;
+    margin-inline: auto;
   }
 }
 

@@ -19,6 +19,10 @@
   --foreground: var(--color-text);
   --muted: var(--color-muted);
   --border: #1a2d55;
+  --panel: #07142f;
+  --panel-raised: #0c1c3c;
+  --soft-surface: var(--color-soft);
+  --soft-blue-surface: var(--color-soft-blue-grey);
   --radius-sm: 0.5rem;
   --radius-md: 0.875rem;
   --radius-lg: 1.5rem;
@@ -35,10 +39,10 @@
   --color-navy: var(--color-navy);
   --color-gold: var(--color-gold-400);
   --color-gold-light: var(--color-gold-300);
-  --color-panel: #07142f;
-  --color-panel-raised: #0c1c3c;
-  --color-soft: var(--color-soft);
-  --color-soft-blue: var(--color-soft-blue-grey);
+  --color-panel: var(--panel);
+  --color-panel-raised: var(--panel-raised);
+  --color-soft: var(--soft-surface);
+  --color-soft-blue: var(--soft-blue-surface);
   --color-border: var(--border);
   --color-success: var(--color-success);
   --color-error: var(--color-danger);

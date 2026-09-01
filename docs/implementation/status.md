@@ -1,15 +1,15 @@
 # Implementation status
 
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild  
-**Stage status:** RELEASE CANDIDATE — canonical validation and exact-Preview authenticated desktop/mobile proof are green; merge and production smoke verification remain.  
-**Stage 26 base:** `ebbc4e54dd8408b8392eea55f4e36c026b428cc9`  
-**Stage 26 branch:** `agent/stage-26-exact-mobile-experience`  
+**Stage status:** VISUAL PERFECTION RELEASE CANDIDATE — Stage 26 is released; cross-app consistency correction is locally green and awaits exact-Preview proof.
+**Stage 26 production:** `a31f950b478b7e3a9d483c351865e72c884d5bc2`
+**Correction branch:** `agent/stage-26-visual-perfection`
 **Stage authority:** `docs/stages/stage-26-exact-mobile-experience-rebuild.md`  
 **Last updated:** 2026-09-01
 
 ## Released baseline
 
-Stage 25 — Restore blue UI and perfect mobile install is released in production from merge commit `ebbc4e54dd8408b8392eea55f4e36c026b428cc9` and is the authority beneath Stage 26.
+Stage 26 — Exact Mobile Experience Rebuild is released in production from merge commit `a31f950b478b7e3a9d483c351865e72c884d5bc2`.
 
 Stage 25 preserves the complete Stage 0–24 developmental engine and leaves PipuPath as one installable responsive Next.js/PWA product. Android/Chromium installation continues to use the browser-native prompt when available, iOS continues to require explicit Add to Home Screen guidance, and `/continue` remains the installed-app start URL.
 
@@ -57,7 +57,22 @@ Exact application Preview deployment `dpl_C31pZv8xczmqC49tWVjb12z4gjeH` reached 
 
 Authenticated Preview CI #1226 passed the release browser matrix on desktop Chrome and iPhone 13. It verified the five primary destinations, onboarding privacy, safeguarding, Admin isolation, deep product routes, horizontal overflow boundaries and PWA manifest behaviour. Public browser inspection also confirmed install access, protected `/app` routing with its return target and no PipuPath-originated console errors.
 
-No Supabase migration is required. The final operational gates are merge, production deployment readiness and production smoke verification.
+No Supabase migration is required.
+
+## Visual perfection correction
+
+Post-release visual inspection identified that Stage 23 inline fallback colours in the shared Button and Surface primitives were overriding Stage 26 CSS on deep routes. Build and Guide also lacked the shared authenticated shell, while Connect and Profile layouts added redundant secondary navigation above their concept-matched pages.
+
+The correction:
+
+- removes inline visual authority from Button and Surface primitives so CSS scopes can work predictably;
+- resolves shared panel, raised-panel, soft-surface, foreground, muted and border semantics through the Stage 26 AppShell scope;
+- preserves the Stage 23 dark identity for public/auth surfaces outside AppShell;
+- restores the five-tab AppShell to Build, Guide and Institution;
+- removes redundant Connect/Profile layout toolbars without removing destination access;
+- keeps every Supabase action, DAL, domain rule, route and safeguard unchanged.
+
+Local evidence: formatting, zero-warning lint, strict TypeScript, 334 unit/coverage tests, 225 integration/regression tests and the Next.js production build pass.
 
 > **The screen is not the game. Life is the game.**
 
