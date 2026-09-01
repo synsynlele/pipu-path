@@ -16,7 +16,11 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
           <BrandMark />
           <div className="flex items-center gap-1.5 sm:gap-3">
             <InstallPwaButton compact autoNudge />
-            <ButtonLink href="/login" variant="ghost" className="px-2.5 sm:px-4">
+            <ButtonLink
+              href="/login"
+              variant="ghost"
+              className="px-2.5 sm:px-4"
+            >
               Sign In
             </ButtonLink>
             <ButtonLink href="/signup" className="px-3 sm:px-5">
