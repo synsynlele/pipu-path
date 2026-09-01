@@ -1,104 +1,63 @@
 # Implementation status
 
-**Current stage:** Stage 24 — Visual Fidelity & Mobile Install Experience  
-**Stage status:** RELEASE CANDIDATE — application validation and exact-tree Preview proof are complete; final PR validation, merge and production smoke verification remain.  
-**Stage 24 base:** `a2b50dcf23bc437086d842d684d06af5ed76160a`  
-**Validated application head:** `53ab9cc2303bb4b02160108f343837db2090d419`  
-**Stage 24 branch:** `agent/stage-24-visual-fidelity-mobile-install`  
-**Stage authority:** `docs/stages/stage-24-visual-fidelity-mobile-install.md`  
+**Current stage:** Stage 26 — Exact Mobile Experience Rebuild  
+**Stage status:** RELEASE CANDIDATE — canonical validation and exact-Preview authenticated desktop/mobile proof are green; merge and production smoke verification remain.  
+**Stage 26 base:** `ebbc4e54dd8408b8392eea55f4e36c026b428cc9`  
+**Stage 26 branch:** `agent/stage-26-exact-mobile-experience`  
+**Stage authority:** `docs/stages/stage-26-exact-mobile-experience-rebuild.md`  
 **Last updated:** 2026-09-01
 
 ## Released baseline
 
-Stage 23 — Social-Grade Mobile UX & Installable PWA is released in production from merge commit `a2b50dcf23bc437086d842d684d06af5ed76160a` and remains the production baseline until Stage 24 is merged and verified.
+Stage 25 — Restore blue UI and perfect mobile install is released in production from merge commit `ebbc4e54dd8408b8392eea55f4e36c026b428cc9` and is the authority beneath Stage 26.
 
-Stage 24 retains that complete developmental engine, privacy model, RLS, safeguarding, evidence lifecycle, five-destination information architecture and resume-first PWA architecture while replacing the remaining dark-first visual treatment and fixing mobile-install discoverability.
+Stage 25 preserves the complete Stage 0–24 developmental engine and leaves PipuPath as one installable responsive Next.js/PWA product. Android/Chromium installation continues to use the browser-native prompt when available, iOS continues to require explicit Add to Home Screen guidance, and `/continue` remains the installed-app start URL.
 
-## Stage 24 release-candidate visual system
+## Stage 26 direction
 
-The shared product candidate uses:
+The approved mobile concept is now a release specification rather than inspiration. Stage 26 therefore rebuilds screen composition and interaction hierarchy instead of decorating the former dashboard layouts.
 
-- `#f7f8fc` bright neutral background;
-- white application surfaces;
-- deep navy text;
-- indigo/blue actions;
-- restrained gold accents;
-- soft borders/shadows;
-- rounded social-style cards;
-- dark navy/indigo as deliberate accents rather than the global canvas.
+The mobile experience is organised around:
 
-Shared `Surface`, `Button`, public shell, auth shell, onboarding shell, application shell and navigation use the same visual grammar so deep routes inherit the experience without duplicating domain logic.
+- Home — real Builder state, Mission, next move and truthful momentum;
+- Discover — living evidence-led self-understanding;
+- Build — Journey, Quest, evidence, reflection and Projects presented as one action centre;
+- Connect — safe relevant Builder discovery and collaboration without popularity mechanics or unrestricted messaging;
+- Profile — the Living Builder identity, proof, Vault, Passport, Projects and developmental signals;
+- Onboarding — Account → Identity → Discovery → Direction → first meaningful Home state;
+- Admin / Mission Control — preserved as a separate operator layer.
 
-### Home
+## First implementation slice
 
-Home is organized around:
+The first Stage 26 implementation slice is intentionally presentation-first and does not add Supabase migrations.
 
-- clear personal greeting and Builder progress;
-- Mission context;
-- one high-contrast Next Move card;
-- circular horizontally scrollable path stages;
-- truthful momentum rows;
-- Builder Guide and Connect support;
-- an explicit install card that turns return-to-action into one tap.
+It includes:
 
-### Discover
+- a scoped light consumer-product surface system under the authenticated AppShell while preserving the PipuPath indigo/navy identity;
+- premium mobile top chrome and a white fixed five-tab bottom navigation with elevated Build action;
+- custom concept-matched vector illustration assets;
+- a recomposed Home screen using only saved Builder state;
+- a recomposed Discover screen;
+- a new unified `/build` action centre rather than a redirect-only route;
+- upgraded shared onboarding shell;
+- route skeleton/loading treatment for the five primary Builder destinations;
+- reduced-motion and safe-area support.
 
-Discover uses:
-
-- bounded circular lenses;
-- living evidence-led insight;
-- direction/Journey context;
-- lightweight personalised cards;
-- no endless feed or personality-ranking mechanics.
-
-## Mobile installation
-
-Installation is always discoverable.
-
-- If `beforeinstallprompt` is available, PipuPath triggers the browser-native install prompt from a user action.
-- Otherwise, PipuPath opens a platform-aware instruction sheet.
-- iOS guidance uses Share → Add to Home Screen / Open as Web App.
-- Android fallback guidance uses Install app / Add to Home screen.
-- public and authenticated shells expose an install entry;
-- authenticated Home exposes a full install card;
-- installed standalone mode hides redundant install entries through display-mode CSS.
-
-The web manifest remains resume-first at `/continue` and uses the bright Stage 24 background/theme colors plus five-destination shortcuts.
-
-## Release validation ledger
-
-The application tree at `53ab9cc2303bb4b02160108f343837db2090d419` passed:
-
-- Prettier ✅
-- zero-warning ESLint ✅
-- strict TypeScript ✅
-- **335 unit/coverage tests** ✅
-- **225 integration/regression tests** ✅
-- production build ✅
-
-The exact application tree was then deployed once through Preview carrier commit `9f4a168d01b89da0db796447376eb8ce0e1e81e6`. The carrier commit contains no file changes and has the same tree SHA as the validated application head.
-
-Preview proof is complete: one deliberate exact-head Vercel Preview is READY. Deployment `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY and deployed verification confirmed:
-
-- bright rendered public and authentication surfaces;
-- light theme metadata;
-- always-visible public Install control;
-- valid `standalone` manifest;
-- `/continue` installed-app start URL;
-- 192/512 any + maskable icons;
-- Home, Discover, Build, Connect and Profile shortcuts;
-- unauthenticated `/app` protection with return target preserved;
-- no error/fatal Preview runtime logs during release proof.
-
-The branch now requires one final canonical CI pass for the release-ledger/test-only edits. Production smoke verification follows the PR #52 merge and is the final operational release check.
+Connect and Profile already inherit the new authenticated surface grammar in this slice; any remaining structural mismatch identified during Stage 26 visual proof must be corrected before release.
 
 ## Data / migration state
 
-No Supabase migration is required. Existing RLS, onboarding, evidence, progression, safeguarding, Connect, Living Profile, Opportunities, Passport and Admin authorization remain unchanged.
+No Supabase migration is introduced by this slice. Existing RLS, onboarding, Human Potential Profile, Mission, Journey, Quest, evidence, reflection, progression, Projects, Connect, collaboration, Opportunities, Living Profile, Portfolio, Passport, safeguarding and Admin authorization remain authoritative.
 
 ## Release posture
 
-Stage 24 changes presentation and installation discoverability, not developmental truth or data authority. Production is not declared until the merge deployment and smoke checks pass.
+Canonical CI #1225 passed on repaired application/test head `5bf1e49e2acf845a274f3bae985245a703cd3d72` after stale presentation assertions and nondeterministic React test teardown were corrected.
+
+Exact application Preview deployment `dpl_C31pZv8xczmqC49tWVjb12z4gjeH` reached READY at `https://pipu-path-ma0g7xpk1-copyartint-2860s-projects.vercel.app`.
+
+Authenticated Preview CI #1226 passed the release browser matrix on desktop Chrome and iPhone 13. It verified the five primary destinations, onboarding privacy, safeguarding, Admin isolation, deep product routes, horizontal overflow boundaries and PWA manifest behaviour. Public browser inspection also confirmed install access, protected `/app` routing with its return target and no PipuPath-originated console errors.
+
+No Supabase migration is required. The final operational gates are merge, production deployment readiness and production smoke verification.
 
 > **The screen is not the game. Life is the game.**
 

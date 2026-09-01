@@ -89,14 +89,10 @@ test("Stage 23 safeguarding, operator isolation and deep product assets hold", a
 
   await page.goto("/connect");
   await expect(
-    page.getByRole("heading", {
-      name: "Find people to build with—not people to impress.",
-    }),
+    page.getByRole("heading", { name: "Connect", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText(
-      /without follower counts, popularity scores or unrestricted private messaging/i,
-    ),
+    page.getByText("Find people to build with—not people to impress."),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", {
@@ -149,7 +145,15 @@ test("Stage 23 safeguarding, operator isolation and deep product assets hold", a
   ).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  for (const route of ["/build", "/projects", "/profile", "/passport"]) {
+  for (const route of [
+    "/app",
+    "/discover",
+    "/build",
+    "/connect",
+    "/projects",
+    "/profile",
+    "/passport",
+  ]) {
     const response = await page.goto(route, { waitUntil: "domcontentloaded" });
     expect(response?.status()).toBeLessThan(400);
     await expect(page.locator("main#main-content")).toBeVisible();

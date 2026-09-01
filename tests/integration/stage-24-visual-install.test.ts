@@ -13,22 +13,26 @@ const layout = read("src/app/layout.tsx");
 const manifest = read("src/app/manifest.ts");
 
 describe("Stage 25 blue restoration and mobile installation", () => {
-  it("restores the released blue-first PipuPath visual system", () => {
+  it("preserves the released blue identity beneath the Stage 26 mobile surface", () => {
     expect(globals).toContain("--background: #020817");
     expect(globals).toContain("color-scheme: dark");
     expect(globals).toContain("--color-panel: #07142f");
     expect(globals).toContain(".bg-white {\n  background-color: #07142f;");
     expect(layout).toContain('colorScheme: "dark"');
     expect(layout).toContain('themeColor: "#020817"');
-    expect(appShell).toContain("bg-panel/90");
+    expect(appShell).toContain("pp-app-experience");
+    expect(appShell).toContain("pp-mobile-topbar");
+    expect(appShell).toContain("pp-bottom-navigation");
   });
 
   it("keeps the Stage 23 Home and Discover interaction grammar", () => {
-    expect(home).toContain("Your path");
-    expect(home).toContain("Next move");
+    expect(home).toContain('aria-label="Your growth path"');
+    expect(home).toContain("Today&apos;s Next Step");
     expect(home).toContain("Your momentum");
-    expect(discover).toContain("Evidence-led, not a personality box");
-    expect(discover).toContain("Useful places, not an endless feed");
+    expect(discover).toContain("Your living insight");
+    expect(discover).toContain(
+      "Useful places based on your current adventure.",
+    );
   });
 
   it("makes installation proactively discoverable across entry and app surfaces", () => {

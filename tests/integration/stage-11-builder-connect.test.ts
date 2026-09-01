@@ -101,8 +101,10 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
       expect(migration).toContain(functionName);
     }
     expect(normalizedConnectPage).toContain(
-      "without follower counts, popularity scores or unrestricted private messaging.",
+      "deliberate relationship and consent controls—not unrestricted private messaging.",
     );
+    expect(connectPage).not.toContain("followerCount");
+    expect(connectPage).not.toContain("popularityScore");
     expect(migration).not.toContain("message_body");
     expect(migration).not.toContain("chat_message");
     expect(migration).toContain("::public.builder_connection_status");

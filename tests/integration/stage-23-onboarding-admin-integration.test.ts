@@ -5,6 +5,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 const continuePage = read("src/app/continue/page.tsx");
 const progress = read("src/modules/identity/domain/progress.ts");
 const onboardingShell = read("src/components/onboarding/onboarding-shell.tsx");
+const normalizedOnboardingShell = onboardingShell.replace(/\s+/g, " ");
 const identityPage = read("src/app/onboarding/identity/page.tsx");
 const discoveryPage = read("src/app/onboarding/discovery/page.tsx");
 const discoveryQuestion = read(
@@ -45,7 +46,9 @@ describe("Stage 23 onboarding and Mission Control integration", () => {
     expect(discoveryPage).toContain("No instant labels");
     expect(discoveryPage).toContain("Sensitive is optional");
     expect(discoveryPage).toContain("No AI judgement here");
-    expect(onboardingShell).toContain("not made public by default");
+    expect(normalizedOnboardingShell).toContain(
+      "Private developmental data is not made public by default.",
+    );
     expect(discoveryQuestion).toContain("no score to chase");
   });
 

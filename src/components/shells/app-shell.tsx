@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { ContextBackLink } from "@/components/navigation/context-back-link";
 import { AppNavigation } from "@/components/navigation/app-navigation";
@@ -7,7 +8,7 @@ import { signOutAction } from "@/modules/identity/application/auth-actions";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+    <div className="pp-app-experience min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom))] lg:pb-0">
       <a
         href="#main-content"
         className="bg-primary fixed top-3 left-3 z-[70] -translate-y-20 rounded-xl px-4 py-2 font-semibold text-white shadow-lg focus:translate-y-0"
@@ -15,25 +16,50 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         Skip to content
       </a>
 
-      <header className="border-border bg-panel/90 sticky top-0 z-50 border-b backdrop-blur-2xl">
-        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:min-h-18 sm:px-6 lg:px-8">
-          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+      <header className="pp-mobile-topbar sticky top-0 z-50 border-b border-white/10 text-white shadow-[0_12px_32px_-24px_rgba(30,25,95,0.85)] lg:hidden">
+        <div className="mx-auto flex min-h-[4.65rem] max-w-3xl items-center justify-between gap-3 px-4 pt-[env(safe-area-inset-top)]">
+          <div className="flex min-w-0 items-center gap-2">
             <ContextBackLink />
-            <BrandMark href="/app" />
+            <Link
+              href="/app"
+              className="truncate text-[1.45rem] font-bold tracking-[-0.035em] text-white"
+            >
+              PipuPath
+            </Link>
           </div>
 
-          <div className="hidden lg:block">
-            <AppNavigation />
-          </div>
-
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1.5">
             <InstallPwaButton autoNudge />
             <form action={signOutAction}>
               <Button
                 type="submit"
                 variant="ghost"
-                className="min-h-10 px-2.5 whitespace-nowrap sm:px-3.5"
+                aria-label="Sign out"
+                className="grid min-h-10 min-w-10 place-items-center rounded-full border border-white/10 bg-white/8 px-0 text-white hover:bg-white/14"
               >
+                <span aria-hidden="true" className="text-base leading-none">
+                  ↗
+                </span>
+                <span className="sr-only">Sign out</span>
+              </Button>
+            </form>
+          </div>
+        </div>
+      </header>
+
+      <header className="border-border bg-panel/92 sticky top-0 z-50 hidden border-b backdrop-blur-2xl lg:block">
+        <div className="mx-auto flex min-h-18 max-w-6xl items-center justify-between gap-3 px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <ContextBackLink />
+            <BrandMark href="/app" />
+          </div>
+
+          <AppNavigation />
+
+          <div className="flex items-center gap-2">
+            <InstallPwaButton autoNudge />
+            <form action={signOutAction}>
+              <Button type="submit" variant="ghost" className="min-h-10 px-3.5">
                 Sign out
               </Button>
             </form>
@@ -43,7 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="min-w-0">{children}</div>
 
-      <div className="border-border bg-panel/96 fixed inset-x-0 bottom-0 z-50 border-t pb-[env(safe-area-inset-bottom)] shadow-[0_-16px_40px_-26px_rgba(79,124,255,0.7)] backdrop-blur-2xl lg:hidden">
+      <div className="pp-bottom-navigation border-border fixed inset-x-0 bottom-0 z-50 border-t pb-[env(safe-area-inset-bottom)] lg:hidden">
         <AppNavigation mobile />
       </div>
     </div>
