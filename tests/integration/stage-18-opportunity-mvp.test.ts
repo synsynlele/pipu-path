@@ -30,7 +30,6 @@ const trackedCard = builderPage.slice(
 const normalizedTrackedCard = trackedCard.replace(/\s+/g, " ");
 const adminPage = read("src/app/admin/opportunities/page.tsx");
 const navigation = read("src/components/navigation/app-navigation.tsx");
-const adventureHome = read("src/app/app/page.tsx");
 const productEvents = read(
   "src/modules/analytics/infrastructure/product-events.ts",
 );
@@ -147,12 +146,13 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(builderPage).toContain("Save outcome");
   });
 
-  it("reuses the central product-event stream and adds no primary navigation item", () => {
+  it("reuses the central product-event stream without creating a sixth Stage 23 destination", () => {
     expect(productEvents).toContain('"opportunity_saved"');
     expect(productEvents).toContain('"opportunity_external_clicked"');
     expect(productEvents).toContain('"opportunities"');
     expect(migration).toContain("alter table public.product_events");
     expect(navigation).not.toMatch(/href:\s*["']\/opportunities["']/);
-    expect(adventureHome).toContain('<ToolkitLink href="/opportunities"');
+    expect(navigation).toContain('pathname.startsWith("/opportunities")');
+    expect(navigation).toContain('{ label: "Connect", href: "/connect"');
   });
 });
