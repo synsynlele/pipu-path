@@ -8,7 +8,9 @@ const discover = read("src/app/discover/page.tsx");
 const appShell = read("src/components/shells/app-shell.tsx");
 const publicShell = read("src/components/shells/public-shell.tsx");
 const authShell = read("src/components/shells/auth-shell.tsx");
-const install = read("src/components/pwa/install-prompt.tsx");
+const distribution = read(
+  "src/components/pwa/landing-distribution-button.tsx",
+);
 const layout = read("src/app/layout.tsx");
 const manifest = read("src/app/manifest.ts");
 const button = read("src/components/ui/button.tsx");
@@ -42,29 +44,26 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     );
   });
 
-  it("separates Android website, app, and desktop PWA installation", () => {
-    expect(publicShell).toContain("InstallPwaButton compact autoNudge");
-    expect(publicShell).not.toContain('href="/download"');
-    expect(publicShell).not.toContain("Android Lite");
-    expect(authShell).toContain("InstallPwaButton compact autoNudge");
-    expect(appShell).toContain("InstallPwaButton autoNudge");
+  it("keeps distribution on the landing page and out of the product", () => {
+    expect(publicShell).toContain("LandingDistributionButton");
+    expect(publicShell).not.toContain("InstallPwaButton");
+    expect(authShell).not.toContain("InstallPwaButton");
+    expect(authShell).not.toContain("LandingDistributionButton");
+    expect(appShell).not.toContain("InstallPwaButton");
+    expect(appShell).not.toContain("LandingDistributionButton");
     expect(layout).toContain("beforeinstallprompt");
     expect(layout).toContain("android-app://");
-    expect(install).toContain("beforeinstallprompt");
-    expect(install).toContain("INSTALL_NUDGE_KEY");
-    expect(install).toContain("NUDGE_COOLDOWN_MS");
-    expect(install).toContain("Android|iPhone|iPad|iPod|Mobile");
-    expect(install).toContain("desktopInstallable");
-    expect(install).toContain("isAndroidAppShell");
-    expect(install).toContain("getInstalledRelatedApps");
-    expect(install).toContain(
-      'ANDROID_APP_PACKAGE_ID = "ng.name.pipupath.lite"',
-    );
-    expect(install).not.toContain("Add to Home Screen");
-    expect(install).toContain("Download PipuPath Lite");
-    expect(install).toContain("/downloads/PipuPath-Lite-1.0.0.apk");
-    expect(install).toContain("window.location.assign(ANDROID_APK_PATH)");
-    expect(install).toContain("await promptEvent.prompt()");
+    expect(distribution).toContain("beforeinstallprompt");
+    expect(distribution).toContain("Android|iPhone|iPad|iPod|Mobile");
+    expect(distribution).toContain("isDesktopChromium");
+    expect(distribution).toContain("isAndroidAppShell");
+    expect(distribution).toContain('DistributionMode = "hidden" | "android" | "desktop"');
+    expect(distribution).toContain("Download PipuPath Lite");
+    expect(distribution).toContain("Install PipuPath");
+    expect(distribution).toContain("/downloads/PipuPath-Lite-1.0.0.apk");
+    expect(distribution).toContain("window.location.assign(ANDROID_APK_PATH)");
+    expect(distribution).toContain("await promptEvent.prompt()");
+    expect(distribution).not.toContain("getInstalledRelatedApps");
     expect(manifest).toContain("related_applications");
     expect(manifest).toContain('platform: "play"');
     expect(manifest).toContain('id: "ng.name.pipupath.lite"');
@@ -85,11 +84,10 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(surface).not.toContain("backgroundColor");
     expect(stage26).toContain("--panel: #ffffff");
     expect(stage26).toContain("-webkit-text-fill-color: #ffffff");
-    expect(stage26).toContain(".pp-mobile-topbar .pp-install-entry");
     expect(stage26).toContain(".pp-responsive-action-row");
     expect(button).toContain('light: "pp-button-light"');
     expect(appShell).toContain("<BrandMark compact inverse");
-    expect(appShell).toContain("<InstallPwaButton compact autoNudge");
+    expect(appShell).not.toContain("InstallPwaButton");
     expect(home).not.toContain(
       'className="absolute right-5 bottom-5 left-5 z-10',
     );
@@ -97,9 +95,9 @@ describe("Stage 25 blue restoration and mobile installation", () => {
       'className="absolute right-5 bottom-5 left-5 z-10',
     );
 
-    for (const layout of [buildLayout, guideLayout]) {
-      expect(layout).toContain("AppShell");
-      expect(layout).toContain("requireAuthenticatedIdentity");
+    for (const routeLayout of [buildLayout, guideLayout]) {
+      expect(routeLayout).toContain("AppShell");
+      expect(routeLayout).toContain("requireAuthenticatedIdentity");
     }
   });
 });
