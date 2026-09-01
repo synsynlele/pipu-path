@@ -24,16 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Stage 25 canonical format diagnostic
-        run: |
-          npx prettier --write src/components/pwa/install-prompt.tsx src/components/shells/public-shell.tsx
-          echo '===== INSTALL_BEGIN ====='
-          cat src/components/pwa/install-prompt.tsx
-          echo '===== INSTALL_END ====='
-          echo '===== PUBLIC_BEGIN ====='
-          cat src/components/shells/public-shell.tsx
-          echo '===== PUBLIC_END ====='
-          exit 1
+      - run: npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
