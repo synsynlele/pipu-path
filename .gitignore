@@ -50,3 +50,6 @@ next-env.d.ts
 # PipuPath Lite generated Android outputs
 /android-lite/generated/
 /android-lite/dist/
+/android-lite/generated-production/
+/android-lite/dist-production/
+/android-lite/pipupath-lite-production.keystore
