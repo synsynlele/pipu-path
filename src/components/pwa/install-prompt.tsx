@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
 type InstallChoice = {
   outcome: "accepted" | "dismissed";
@@ -17,10 +17,11 @@ type PwaInstallWindow = Window & {
   __pipupathAppInstalled?: boolean;
 };
 
-type InstallInstructions = {
-  title: string;
-  intro: string;
-  steps: string[];
+type InstallExperience = {
+  ready: boolean;
+  installed: boolean;
+  androidWebsite: boolean;
+  desktopInstallable: boolean;
 };
 
 const INSTALL_NUDGE_KEY = "pipupath-install-nudge-dismissed-at";
@@ -36,6 +37,13 @@ function publishInstallState() {
   window.dispatchEvent(new Event(INSTALL_STATE_EVENT));
 }
 
+function isAndroidAppShell() {
+  return (
+    typeof document !== "undefined" &&
+    document.referrer.startsWith("android-app://")
+  );
+}
+
 function isStandalone() {
   if (typeof window === "undefined") return false;
 
@@ -48,11 +56,7 @@ function isStandalone() {
       (window.navigator as Navigator & { standalone?: boolean }).standalone,
     );
 
-  return displayMode || iosStandalone;
-}
-
-function isMobileDevice() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return displayMode || iosStandalone || isAndroidAppShell();
 }
 
 function isAndroidDevice() {
@@ -61,55 +65,15 @@ function isAndroidDevice() {
   );
 }
 
-function subscribeToDeviceSnapshot() {
-  return () => undefined;
-}
+function isMobileDevice() {
+  if (typeof navigator === "undefined") return false;
 
-function useAndroidDevice() {
-  return useSyncExternalStore(
-    subscribeToDeviceSnapshot,
-    isAndroidDevice,
-    () => false,
-  );
-}
-
-function instructionsForCurrentDevice(): InstallInstructions {
   const ua = navigator.userAgent;
-  const ios = /iPad|iPhone|iPod/.test(ua);
-  const android = /Android/.test(ua);
+  const regularMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+  const iPadDesktopMode =
+    /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
 
-  if (ios) {
-    return {
-      title: "Add PipuPath to your Home Screen",
-      intro:
-        "Apple requires you to confirm Home Screen installation from the browser. It only takes two taps from the Share menu.",
-      steps: [
-        "Tap the Share button in your browser — the square with the upward arrow.",
-        "Choose Add to Home Screen, then tap Add. If shown, keep Open as Web App enabled.",
-      ],
-    };
-  }
-
-  if (android) {
-    return {
-      title: "Download PipuPath Lite",
-      intro:
-        "Download the official signed PipuPath Lite Android app directly from PipuPath.",
-      steps: [
-        "Tap Download and open the APK when the download finishes.",
-        "If Android asks, allow installation from your browser or Files app, then tap Install.",
-      ],
-    };
-  }
-
-  return {
-    title: "Install PipuPath",
-    intro: "Keep PipuPath one tap away and open it in its own app window.",
-    steps: [
-      "Open your browser menu.",
-      "Choose Install app, Add to Home Screen, or Create shortcut, then confirm.",
-    ],
-  };
+  return regularMobile || iPadDesktopMode;
 }
 
 function rememberNudgeDismissal() {
@@ -132,6 +96,104 @@ function recentlyDismissedNudge() {
   } catch {
     return false;
   }
+}
+
+function useInstallExperience() {
+  const [experience, setExperience] = useState<InstallExperience>({
+    ready: false,
+    installed: false,
+    androidWebsite: false,
+    desktopInstallable: false,
+  });
+
+  useEffect(() => {
+    const syncInstallState = () => {
+      const state = installWindow();
+      const installed = isStandalone() || state.__pipupathAppInstalled === true;
+      const mobile = isMobileDevice();
+
+      // Mobile now uses the Android app rather than PWA installation. Drop any
+      // deferred browser PWA prompt on mobile so only the APK download remains.
+      if (mobile) {
+        state.__pipupathDeferredInstallPrompt = null;
+      }
+
+      setExperience({
+        ready: true,
+        installed,
+        androidWebsite: !installed && isAndroidDevice(),
+        desktopInstallable:
+          !installed && !mobile && Boolean(state.__pipupathDeferredInstallPrompt),
+      });
+    };
+
+    const handlePrompt = (event: Event) => {
+      event.preventDefault();
+      const state = installWindow();
+
+      if (isStandalone() || isMobileDevice()) {
+        state.__pipupathDeferredInstallPrompt = null;
+      } else {
+        state.__pipupathDeferredInstallPrompt =
+          event as BeforeInstallPromptEvent;
+      }
+
+      syncInstallState();
+    };
+
+    const handleInstalled = () => {
+      const state = installWindow();
+      state.__pipupathDeferredInstallPrompt = null;
+      state.__pipupathAppInstalled = true;
+      syncInstallState();
+    };
+
+    syncInstallState();
+    window.addEventListener(INSTALL_STATE_EVENT, syncInstallState);
+    window.addEventListener("beforeinstallprompt", handlePrompt);
+    window.addEventListener("appinstalled", handleInstalled);
+
+    return () => {
+      window.removeEventListener(INSTALL_STATE_EVENT, syncInstallState);
+      window.removeEventListener("beforeinstallprompt", handlePrompt);
+      window.removeEventListener("appinstalled", handleInstalled);
+    };
+  }, []);
+
+  async function install() {
+    if (!experience.ready || experience.installed) return;
+
+    if (experience.androidWebsite) {
+      window.location.assign(ANDROID_APK_PATH);
+      return;
+    }
+
+    if (!experience.desktopInstallable) return;
+
+    const state = installWindow();
+    const promptEvent = state.__pipupathDeferredInstallPrompt;
+    if (!promptEvent) return;
+
+    // beforeinstallprompt events are single-use. Remove it before opening the
+    // native browser dialog so a stale event can never produce an instruction fallback.
+    state.__pipupathDeferredInstallPrompt = null;
+    publishInstallState();
+
+    try {
+      await promptEvent.prompt();
+      const choice = await promptEvent.userChoice;
+
+      if (choice.outcome === "accepted") {
+        state.__pipupathAppInstalled = true;
+      } else {
+        rememberNudgeDismissal();
+      }
+    } finally {
+      publishInstallState();
+    }
+  }
+
+  return { ...experience, install };
 }
 
 function InstallIcon() {
@@ -163,72 +225,6 @@ function CloseButton({ onClose }: { onClose: () => void }) {
     >
       ×
     </button>
-  );
-}
-
-function InstallInstructionsSheet({
-  instructions,
-  onClose,
-}: {
-  instructions: InstallInstructions;
-  onClose: () => void;
-}) {
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="install-pipupath-title"
-      className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/65 p-3 backdrop-blur-[3px] sm:items-center"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white shadow-2xl sm:p-6"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="bg-primary grid size-11 place-items-center rounded-2xl text-white shadow-lg shadow-blue-950/40">
-              <InstallIcon />
-            </span>
-            <div>
-              <p className="text-primary-light text-xs font-semibold tracking-[0.12em] uppercase">
-                Put PipuPath on your phone
-              </p>
-              <h2
-                id="install-pipupath-title"
-                className="mt-1 text-xl font-semibold text-white"
-              >
-                {instructions.title}
-              </h2>
-            </div>
-          </div>
-          <CloseButton onClose={onClose} />
-        </div>
-
-        <p className="mt-4 text-sm leading-6 text-blue-100/80">
-          {instructions.intro}
-        </p>
-
-        <ol className="mt-5 space-y-3">
-          {instructions.steps.map((step, index) => (
-            <li
-              key={step}
-              className="flex gap-3 text-sm leading-6 text-blue-50/85"
-            >
-              <span className="bg-primary grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold text-white">
-                {index + 1}
-              </span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
-
-        <p className="bg-primary-soft/65 mt-5 rounded-2xl border border-white/8 p-4 text-xs leading-5 text-blue-100/75">
-          After installation, PipuPath opens like an app and resumes from your
-          exact next step through Continue.
-        </p>
-      </div>
-    </div>
   );
 }
 
@@ -268,12 +264,12 @@ function InstallCoach({
         >
           {downloadMode
             ? "Download PipuPath Lite."
-            : "Keep PipuPath on your device."}
+            : "Install PipuPath on this computer."}
         </h2>
         <p className="mt-3 text-sm leading-6 text-blue-100/80">
           {downloadMode
-            ? "Get the official lightweight Android app and keep your PipuPath account, Mission and progress in sync."
-            : "Open your Mission, Quest or next move without searching for the website again."}
+            ? "Get the official lightweight Android app and keep your account, Mission and progress in sync."
+            : "Use the browser's real app installer so PipuPath opens in its own desktop window."}
         </p>
         <button
           type="button"
@@ -302,136 +298,50 @@ export function InstallPwaButton({
   compact?: boolean;
   autoNudge?: boolean;
 }) {
-  const [installed, setInstalled] = useState(false);
-  const androidDevice = useAndroidDevice();
-  const [instructions, setInstructions] = useState<InstallInstructions | null>(
-    null,
-  );
+  const experience = useInstallExperience();
   const [showCoach, setShowCoach] = useState(false);
+  const eligible =
+    experience.androidWebsite || experience.desktopInstallable;
 
   useEffect(() => {
-    const syncInstallState = () => {
-      const nextInstalled =
-        isStandalone() || installWindow().__pipupathAppInstalled === true;
-      setInstalled(nextInstalled);
-
-      if (nextInstalled) {
-        setInstructions(null);
-        setShowCoach(false);
-      }
-    };
-
-    const handlePrompt = (event: Event) => {
-      event.preventDefault();
-      installWindow().__pipupathDeferredInstallPrompt =
-        event as BeforeInstallPromptEvent;
-      publishInstallState();
-    };
-
-    const handleInstalled = () => {
-      installWindow().__pipupathDeferredInstallPrompt = null;
-      installWindow().__pipupathAppInstalled = true;
-      syncInstallState();
-      publishInstallState();
-    };
-
-    syncInstallState();
-    window.addEventListener(INSTALL_STATE_EVENT, syncInstallState);
-    window.addEventListener("beforeinstallprompt", handlePrompt);
-    window.addEventListener("appinstalled", handleInstalled);
-
-    return () => {
-      window.removeEventListener(INSTALL_STATE_EVENT, syncInstallState);
-      window.removeEventListener("beforeinstallprompt", handlePrompt);
-      window.removeEventListener("appinstalled", handleInstalled);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!autoNudge || isStandalone() || !isMobileDevice()) return;
+    if (!autoNudge || !experience.ready || !eligible) return;
     if (recentlyDismissedNudge()) return;
 
     const timer = window.setTimeout(() => setShowCoach(true), 2800);
     return () => window.clearTimeout(timer);
-  }, [autoNudge]);
+  }, [autoNudge, eligible, experience.ready]);
 
-  if (installed) return null;
+  useEffect(() => {
+    if (!eligible) setShowCoach(false);
+  }, [eligible]);
+
+  if (!experience.ready || experience.installed || !eligible) return null;
 
   function closeCoach() {
     rememberNudgeDismissal();
     setShowCoach(false);
   }
 
-  async function install() {
-    setShowCoach(false);
-
-    if (isStandalone()) {
-      setInstalled(true);
-      return;
-    }
-
-    if (isAndroidDevice()) {
-      window.location.assign(ANDROID_APK_PATH);
-      return;
-    }
-
-    const promptEvent = installWindow().__pipupathDeferredInstallPrompt;
-    if (promptEvent) {
-      installWindow().__pipupathDeferredInstallPrompt = null;
-      publishInstallState();
-
-      try {
-        await promptEvent.prompt();
-        const choice = await promptEvent.userChoice;
-
-        if (choice.outcome === "accepted") {
-          setInstalled(true);
-          setInstructions(null);
-        } else {
-          rememberNudgeDismissal();
-        }
-      } catch {
-        setInstructions(instructionsForCurrentDevice());
-      }
-      return;
-    }
-
-    setInstructions(instructionsForCurrentDevice());
-  }
-
-  const showAndroidLabel = compact && androidDevice;
+  const downloadMode = experience.androidWebsite;
+  const showLabel = !compact || downloadMode;
 
   return (
     <>
       <button
         type="button"
-        onClick={() => void install()}
-        aria-label={
-          androidDevice ? "Download PipuPath Lite" : "Install PipuPath"
-        }
-        className={`pp-install-entry border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft touch-manipulation items-center justify-center gap-2 rounded-full border font-semibold shadow-sm transition-colors ${compact && !showAndroidLabel ? "inline-flex size-10 p-0" : "inline-flex min-h-10 px-3.5 text-sm"}`}
+        onClick={() => void experience.install()}
+        aria-label={downloadMode ? "Download PipuPath Lite" : "Install PipuPath"}
+        className={`pp-install-entry border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft touch-manipulation items-center justify-center gap-2 rounded-full border font-semibold shadow-sm transition-colors ${compact && !showLabel ? "inline-flex size-10 p-0" : "inline-flex min-h-10 px-3.5 text-sm"}`}
       >
         <InstallIcon />
-        {compact && !showAndroidLabel ? null : (
-          <span>{androidDevice ? "Download" : "Install"}</span>
-        )}
+        {showLabel ? <span>{downloadMode ? "Download" : "Install"}</span> : null}
       </button>
 
       {showCoach ? (
         <InstallCoach
-          onInstall={() => void install()}
+          onInstall={() => void experience.install()}
           onClose={closeCoach}
-          downloadMode={androidDevice}
-        />
-      ) : null}
-
-      {instructions ? (
-        <InstallInstructionsSheet
-          instructions={instructions}
-          onClose={() => {
-            rememberNudgeDismissal();
-            setInstructions(null);
-          }}
+          downloadMode={downloadMode}
         />
       ) : null}
     </>
@@ -439,7 +349,13 @@ export function InstallPwaButton({
 }
 
 export function InstallPwaCard() {
-  const androidDevice = useAndroidDevice();
+  const experience = useInstallExperience();
+  const eligible =
+    experience.androidWebsite || experience.desktopInstallable;
+
+  if (!experience.ready || experience.installed || !eligible) return null;
+
+  const downloadMode = experience.androidWebsite;
 
   return (
     <section className="pp-install-entry border-primary/25 bg-panel w-full rounded-[1.75rem] border p-5 shadow-[0_18px_46px_-34px_rgba(79,124,255,0.55)] sm:p-6">
@@ -449,15 +365,17 @@ export function InstallPwaCard() {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-primary-light text-xs font-semibold tracking-[0.12em] uppercase">
-            Put PipuPath on your phone
+            {downloadMode ? "PipuPath for Android" : "PipuPath for desktop"}
           </p>
           <h2 className="mt-1 text-lg font-semibold tracking-tight text-white">
-            Come back to your next move in one tap.
+            {downloadMode
+              ? "Download the app to your phone."
+              : "Install PipuPath on this computer."}
           </h2>
           <p className="text-muted mt-2 text-sm leading-6">
-            {androidDevice
+            {downloadMode
               ? "Download the official PipuPath Lite Android app. Your account and progress stay connected to the same PipuPath experience."
-              : "Install the same PipuPath web app on your Home Screen. No app store is required."}
+              : "Install the PWA through your browser's native app prompt and open PipuPath in its own desktop window."}
           </p>
           <div className="mt-4">
             <InstallPwaButton />
