@@ -14,6 +14,13 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#07142f",
     orientation: "portrait-primary",
     categories: ["education", "productivity", "lifestyle"],
+    related_applications: [
+      {
+        platform: "play",
+        url: "https://play.google.com/store/apps/details?id=ng.name.pipupath.lite",
+        id: "ng.name.pipupath.lite",
+      },
+    ],
     icons: [
       {
         src: "/pwa/icon-192",

@@ -12,6 +12,15 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<InstallChoice>;
 }
 
+type InstalledRelatedApp = {
+  id?: string;
+  platform?: string;
+};
+
+type NavigatorWithRelatedApps = Navigator & {
+  getInstalledRelatedApps?: () => Promise<InstalledRelatedApp[]>;
+};
+
 type PwaInstallWindow = Window & {
   __pipupathDeferredInstallPrompt?: BeforeInstallPromptEvent | null;
   __pipupathAppInstalled?: boolean;
@@ -28,6 +37,7 @@ const INSTALL_NUDGE_KEY = "pipupath-install-nudge-dismissed-at";
 const INSTALL_STATE_EVENT = "pipupath:install-state";
 const NUDGE_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
 const ANDROID_APK_PATH = "/downloads/PipuPath-Lite-1.0.0.apk";
+const ANDROID_APP_PACKAGE_ID = "ng.name.pipupath.lite";
 
 function installWindow() {
   return window as PwaInstallWindow;
@@ -75,6 +85,24 @@ function isMobileDevice() {
   return regularMobile || iPadDesktopMode;
 }
 
+async function isRelatedAndroidAppInstalled() {
+  if (!isAndroidDevice()) return false;
+
+  const relatedAppsNavigator = navigator as NavigatorWithRelatedApps;
+  if (typeof relatedAppsNavigator.getInstalledRelatedApps !== "function") {
+    return false;
+  }
+
+  try {
+    const installedApps = await relatedAppsNavigator.getInstalledRelatedApps();
+    return installedApps.some((app) => {
+      return app.platform === "play" && app.id === ANDROID_APP_PACKAGE_ID;
+    });
+  } catch {
+    return false;
+  }
+}
+
 function rememberNudgeDismissal() {
   try {
     window.localStorage.setItem(INSTALL_NUDGE_KEY, String(Date.now()));
@@ -106,13 +134,22 @@ function useInstallExperience() {
   });
 
   useEffect(() => {
-    const syncInstallState = () => {
-      const state = installWindow();
-      const installed = isStandalone() || state.__pipupathAppInstalled === true;
-      const mobile = isMobileDevice();
+    let active = true;
 
-      // Mobile now uses the Android app rather than PWA installation. Drop any
-      // deferred browser PWA prompt on mobile so only the APK download remains.
+    const syncInstallState = async () => {
+      const state = installWindow();
+      const mobile = isMobileDevice();
+      const relatedAndroidAppInstalled = await isRelatedAndroidAppInstalled();
+      if (!active) return;
+
+      const installed =
+        isStandalone() ||
+        state.__pipupathAppInstalled === true ||
+        relatedAndroidAppInstalled;
+
+      // Mobile uses the Android app rather than browser PWA installation. Drop
+      // any deferred PWA prompt so an installed Android package never receives
+      // another install or download offer.
       if (mobile) {
         state.__pipupathDeferredInstallPrompt = null;
       }
@@ -139,22 +176,23 @@ function useInstallExperience() {
           event as BeforeInstallPromptEvent;
       }
 
-      syncInstallState();
+      void syncInstallState();
     };
 
     const handleInstalled = () => {
       const state = installWindow();
       state.__pipupathDeferredInstallPrompt = null;
       state.__pipupathAppInstalled = true;
-      syncInstallState();
+      void syncInstallState();
     };
 
-    syncInstallState();
+    void syncInstallState();
     window.addEventListener(INSTALL_STATE_EVENT, syncInstallState);
     window.addEventListener("beforeinstallprompt", handlePrompt);
     window.addEventListener("appinstalled", handleInstalled);
 
     return () => {
+      active = false;
       window.removeEventListener(INSTALL_STATE_EVENT, syncInstallState);
       window.removeEventListener("beforeinstallprompt", handlePrompt);
       window.removeEventListener("appinstalled", handleInstalled);

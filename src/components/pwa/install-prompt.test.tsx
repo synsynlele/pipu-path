@@ -19,8 +19,19 @@ type TestInstallWindow = Window & {
   __pipupathAppInstalled?: boolean;
 };
 
+type InstalledRelatedApp = {
+  id?: string;
+  platform?: string;
+};
+
+type TestNavigator = Navigator & {
+  getInstalledRelatedApps?: () => Promise<InstalledRelatedApp[]>;
+};
+
+const testNavigator = navigator as TestNavigator;
 const originalUserAgent = navigator.userAgent;
 const originalReferrer = document.referrer;
+const originalGetInstalledRelatedApps = testNavigator.getInstalledRelatedApps;
 
 function setUserAgent(value: string) {
   Object.defineProperty(window.navigator, "userAgent", {
@@ -36,6 +47,15 @@ function setReferrer(value: string) {
   });
 }
 
+function setGetInstalledRelatedApps(
+  value: TestNavigator["getInstalledRelatedApps"],
+) {
+  Object.defineProperty(window.navigator, "getInstalledRelatedApps", {
+    configurable: true,
+    value,
+  });
+}
+
 function testInstallWindow() {
   return window as TestInstallWindow;
 }
@@ -44,6 +64,7 @@ afterEach(() => {
   cleanup();
   setUserAgent(originalUserAgent);
   setReferrer(originalReferrer);
+  setGetInstalledRelatedApps(originalGetInstalledRelatedApps);
   testInstallWindow().__pipupathDeferredInstallPrompt = null;
   testInstallWindow().__pipupathAppInstalled = false;
   window.localStorage.clear();
@@ -81,10 +102,11 @@ describe("PipuPath install experience", () => {
     );
   });
 
-  it("keeps the Android download on the mobile website", async () => {
+  it("keeps the Android download on the mobile website when the app is absent", async () => {
     setUserAgent(
       "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/128.0 Mobile Safari/537.36",
     );
+    setGetInstalledRelatedApps(vi.fn().mockResolvedValue([]));
 
     render(<InstallPwaButton />);
 
@@ -93,6 +115,28 @@ describe("PipuPath install experience", () => {
     ).toBeVisible();
     expect(
       screen.queryByRole("button", { name: "Install PipuPath" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("never shows download when the PipuPath Lite Android package is installed", async () => {
+    setUserAgent(
+      "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/128.0 Mobile Safari/537.36",
+    );
+    const getInstalledRelatedApps = vi.fn().mockResolvedValue([
+      {
+        platform: "play",
+        id: "ng.name.pipupath.lite",
+      },
+    ]);
+    setGetInstalledRelatedApps(getInstalledRelatedApps);
+
+    render(<InstallPwaButton />);
+
+    await waitFor(() => {
+      expect(getInstalledRelatedApps).toHaveBeenCalledTimes(1);
+    });
+    expect(
+      screen.queryByRole("button", { name: "Download PipuPath Lite" }),
     ).not.toBeInTheDocument();
   });
 
