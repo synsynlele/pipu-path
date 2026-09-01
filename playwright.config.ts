@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const externalBaseURL = process.env.E2E_BASE_URL;
+const storageState = process.env.E2E_VERCEL_STORAGE_STATE;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -12,6 +13,7 @@ export default defineConfig({
   use: {
     baseURL: externalBaseURL ?? "http://127.0.0.1:3000",
     trace: "retain-on-failure",
+    ...(storageState ? { storageState } : {}),
   },
   webServer: externalBaseURL
     ? undefined
