@@ -1,150 +1,105 @@
 # Implementation status
 
-**Current stage:** Stage 23 — Social-Grade Mobile UX & Installable PWA  
-**Stage status:** IN PROGRESS — integrated shell/onboarding/admin candidate under validation  
-**Stage 23 base:** `7002c4652700a9fd7812c804f88203446efd2999`  
-**Stage 23 branch:** `agent/stage-23-social-grade-mobile-pwa`  
-**Stage authority:** `docs/stages/stage-23-social-grade-mobile-pwa.md`  
-**Product experience authority:** `docs/product/social-grade-mobile-experience-direction.md`  
-**Underlying adventure authority:** `docs/product/human-potential-adventure-direction.md`  
+**Current stage:** Stage 24 — Visual Fidelity & Mobile Install Experience  
+**Stage status:** RELEASE CANDIDATE — application validation and exact-tree Preview proof are complete; final PR validation, merge and production smoke verification remain.  
+**Stage 24 base:** `a2b50dcf23bc437086d842d684d06af5ed76160a`  
+**Validated application head:** `53ab9cc2303bb4b02160108f343837db2090d419`  
+**Stage 24 branch:** `agent/stage-24-visual-fidelity-mobile-install`  
+**Stage authority:** `docs/stages/stage-24-visual-fidelity-mobile-install.md`  
 **Last updated:** 2026-09-01
 
-## Current release position
+## Released baseline
 
-Stages 0–22 are released. Stage 23 is an experience and installability layer over the released developmental engine; it does not replace domain persistence, evidence, privacy, authorization or progression contracts.
+Stage 23 — Social-Grade Mobile UX & Installable PWA is released in production from merge commit `a2b50dcf23bc437086d842d684d06af5ed76160a` and remains the production baseline until Stage 24 is merged and verified.
 
-The authoritative developmental engine remains:
+Stage 24 retains that complete developmental engine, privacy model, RLS, safeguarding, evidence lifecycle, five-destination information architecture and resume-first PWA architecture while replacing the remaining dark-first visual treatment and fixing mobile-install discoverability.
 
-`Discovery → Human Potential Profile → Possible Paths → Mission → Journey → Quest → Evidence → Reflection → Capability → Project → Portfolio / Connect → Collaboration → Living Builder Profile → AI Builder Guide → Capability Verification → Institution / Opportunity → Builder Passport`
+## Stage 24 release-candidate visual system
 
-The governing doctrine remains:
+The shared product candidate uses:
+
+- `#f7f8fc` bright neutral background;
+- white application surfaces;
+- deep navy text;
+- indigo/blue actions;
+- restrained gold accents;
+- soft borders/shadows;
+- rounded social-style cards;
+- dark navy/indigo as deliberate accents rather than the global canvas.
+
+Shared `Surface`, `Button`, public shell, auth shell, onboarding shell, application shell and navigation use the same visual grammar so deep routes inherit the experience without duplicating domain logic.
+
+### Home
+
+Home is organized around:
+
+- clear personal greeting and Builder progress;
+- Mission context;
+- one high-contrast Next Move card;
+- circular horizontally scrollable path stages;
+- truthful momentum rows;
+- Builder Guide and Connect support;
+- an explicit install card that turns return-to-action into one tap.
+
+### Discover
+
+Discover uses:
+
+- bounded circular lenses;
+- living evidence-led insight;
+- direction/Journey context;
+- lightweight personalised cards;
+- no endless feed or personality-ranking mechanics.
+
+## Mobile installation
+
+Installation is always discoverable.
+
+- If `beforeinstallprompt` is available, PipuPath triggers the browser-native install prompt from a user action.
+- Otherwise, PipuPath opens a platform-aware instruction sheet.
+- iOS guidance uses Share → Add to Home Screen / Open as Web App.
+- Android fallback guidance uses Install app / Add to Home screen.
+- public and authenticated shells expose an install entry;
+- authenticated Home exposes a full install card;
+- installed standalone mode hides redundant install entries through display-mode CSS.
+
+The web manifest remains resume-first at `/continue` and uses the bright Stage 24 background/theme colors plus five-destination shortcuts.
+
+## Release validation ledger
+
+The application tree at `53ab9cc2303bb4b02160108f343837db2090d419` passed:
+
+- Prettier ✅
+- zero-warning ESLint ✅
+- strict TypeScript ✅
+- **335 unit/coverage tests** ✅
+- **225 integration/regression tests** ✅
+- production build ✅
+
+The exact application tree was then deployed once through Preview carrier commit `9f4a168d01b89da0db796447376eb8ce0e1e81e6`. The carrier commit contains no file changes and has the same tree SHA as the validated application head.
+
+Preview proof is complete: one deliberate exact-head Vercel Preview is READY. Deployment `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY and deployed verification confirmed:
+
+- bright rendered public and authentication surfaces;
+- light theme metadata;
+- always-visible public Install control;
+- valid `standalone` manifest;
+- `/continue` installed-app start URL;
+- 192/512 any + maskable icons;
+- Home, Discover, Build, Connect and Profile shortcuts;
+- unauthenticated `/app` protection with return target preserved;
+- no error/fatal Preview runtime logs during release proof.
+
+The branch now requires one final canonical CI pass for the release-ledger/test-only edits. Production smoke verification follows the PR #52 merge and is the final operational release check.
+
+## Data / migration state
+
+No Supabase migration is required. Existing RLS, onboarding, evidence, progression, safeguarding, Connect, Living Profile, Opportunities, Passport and Admin authorization remain unchanged.
+
+## Release posture
+
+Stage 24 changes presentation and installation discoverability, not developmental truth or data authority. Production is not declared until the merge deployment and smoke checks pass.
 
 > **The screen is not the game. Life is the game.**
 
-Stage 23 adds:
-
 > **Make building feel as natural as socialising. Keep life as the game.**
-
-## Stage 23 active slice
-
-### Five human destinations
-
-Primary navigation is being simplified from six architecture-facing destinations to five user-facing destinations:
-
-- **Home** — current context and one dominant next move;
-- **Discover** — Discovery, Mission, identity and contextual growth insight;
-- **Build** — Journey, Quest, proof, reflection and Projects;
-- **Connect** — Builder network, collaboration and Opportunities;
-- **Profile** — Living Profile, Builder Vault/Portfolio, Growth Library, Guide and Passport.
-
-This is presentation consolidation only. Existing deep routes and domain entities remain authoritative.
-
-### Social-grade Home
-
-Authenticated Home is being rebuilt around:
-
-- truthful Builder level/XP;
-- current Mission/Campaign;
-- one dominant Next Move;
-- bounded adventure shortcuts;
-- truthful momentum from saved Quest, Project, achievement and level state;
-- Builder Guide and Connect as secondary support;
-- a Mission Control entry that appears only when an active platform-admin role is present.
-
-No fabricated social feed, streak, activity or popularity signal is introduced.
-
-### Discover hub
-
-A new authenticated `/discover` surface uses the existing Home/progression state to present evolving self-understanding, Mission direction, Growth Pack and Builder Guide access without simulating new AI claims or persistence.
-
-### Onboarding integration
-
-The existing `/continue` resolver remains the single routing authority for new and returning Builders. Stage 23 does not bypass or duplicate progression logic.
-
-Identity and Discovery now share a mobile-first onboarding shell with:
-
-- visible `Identity → Discover → Direction` progress;
-- one focused task per screen;
-- clear saved-progress feedback;
-- privacy reassurance;
-- no score-chasing or instant personality labels;
-- Discovery questions still saved and resumed through the existing server-authoritative flow.
-
-A Builder with incomplete onboarding continues to be routed to the exact unfinished stage before general Home access.
-
-### Mission Control integration
-
-The released Admin dashboard remains a separate role-gated operator surface, not a sixth Builder destination.
-
-Mission Control now exposes its released workspaces in a consistent operator navigation:
-
-- Overview;
-- Institutions;
-- Opportunities;
-- Providers;
-- Exit to PipuPath.
-
-Admin authorization still reads active `platform_admins` state. Dashboard intelligence remains aggregate-only and explicitly excludes private Discovery answers, Human Potential Profile prose, reflections, evidence and contact details.
-
-### Installable PWA foundation
-
-The existing Next.js web product is gaining:
-
-- a web-app manifest;
-- install icons;
-- standalone display metadata;
-- a browser installation affordance when the platform exposes it;
-- phone safe-area support retained in the shared shell.
-
-No service worker caches private Builder state in this slice. Sensitive authenticated data remains server-authoritative.
-
-### Data / migration state
-
-No Supabase migration is required. Existing RLS, evidence lifecycle, onboarding persistence, profile state, authorization and progression rules remain unchanged.
-
-### Resource control
-
-`agent/stage-23-social-grade-mobile-pwa` remains Vercel-deployment suppressed during implementation. A deliberate Preview is reserved for the exact green release candidate after canonical validation.
-
-## Validation ledger — current Stage 23 candidate work
-
-- Prettier passed on the previous Stage 23 candidate;
-- zero-warning ESLint passed after making PWA installation state event-driven;
-- strict TypeScript passed after aligning manifest icon-purpose metadata with Next.js 16 types;
-- unit/coverage suite passed: **62 files / 331 tests**;
-- six integration failures were identified as obsolete presentation/status assertions that still froze Stage 9/10/16/18/20/21 to old labels or the Stage 22 current-stage string;
-- those legacy assertions are being superseded to preserve the released capabilities while accepting Stage 23's explicit presentation authority;
-- a new Stage 23 onboarding/Admin integration regression contract now protects `/continue`, the shared onboarding experience, active-role Mission Control access, aggregate-only analytics and operator workspace navigation.
-
-A fresh canonical validation run is required after these corrections.
-
-## Stage 22 released baseline
-
-Stage 22 — Human Potential Adventure & Reliability is released and remains the underlying experience/domain authority where Stage 23 does not explicitly supersede presentation.
-
-Key Stage 22 release facts:
-
-- Stage 22 release PR #38 merged as `cae7533cd2616c52547389612e9644773fc7eae0`;
-- final premium proof-flow correction landed through PR #40;
-- post-release Path-switch and Quest-handoff hotfixes advanced main through `7002c4652700a9fd7812c804f88203446efd2999`;
-- the evidence lifecycle remains private by default;
-- Quest follows `Understand → Act → Prove → Reflect → Reveal`;
-- Builder Projects remain Major Builds/Boss Builds at the experience layer;
-- Portfolio remains the private-by-default Builder Vault;
-- Connect remains safeguarding-bounded;
-- Opportunity and Passport semantics remain unchanged;
-- Growth Pack remains contextual and does not become a generic content feed.
-
-## Validation requirement
-
-Stage 23 cannot be declared complete until the exact candidate passes the repository's canonical validation chain:
-
-- Prettier format check;
-- zero-warning lint;
-- strict TypeScript;
-- unit/coverage thresholds;
-- integration/regression tests;
-- production build;
-- authenticated mobile/browser proof on one deliberate exact-head Preview.
-
-Until those gates pass, Stage 23 remains **IN PROGRESS**.

@@ -28,135 +28,120 @@ export default async function DiscoverPage() {
   const primaryLabel = discovering
     ? state.destination.label
     : "Open your profile";
-  const primaryTitle = discovering
-    ? "Keep discovering what is already inside you."
-    : "Your evidence is turning into a clearer picture of you.";
 
   return (
     <main
       id="main-content"
       className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8"
     >
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white shadow-[0_30px_80px_-50px_rgba(79,124,255,0.85)] sm:p-8">
-        <div
-          aria-hidden="true"
-          className="absolute -top-16 -right-20 size-64 rounded-full bg-[#4f7cff]/18 blur-3xl"
-        />
-        <div className="relative max-w-3xl">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold tracking-[0.16em] text-blue-200 uppercase">
-                Discover
-              </p>
-              <p className="mt-2 text-sm text-blue-100/75">
-                {state.preferredName} · {level.current} · {state.totalXp} XP
-              </p>
-            </div>
-            <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1.5 text-xs font-semibold text-blue-50">
-              Evidence-led, not a personality box
-            </span>
-          </div>
-
-          <h1 className="mt-7 text-3xl font-semibold tracking-tight sm:text-4xl">
-            {primaryTitle}
+      <header className="flex items-start justify-between gap-4 px-1">
+        <div>
+          <p className="text-sm font-medium text-slate-500">Discover</p>
+          <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-[#18233d] sm:text-3xl">
+            Keep learning who you are by doing.
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-50/78 sm:text-base">
-            PipuPath keeps learning from what you choose, attempt, build, prove
-            and reflect on. You remain in control of the story.
-          </p>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <ButtonLink href={primaryHref} variant="premium">
-              {primaryLabel} →
-            </ButtonLink>
-            <Link
-              href="/guide"
-              className="text-sm font-semibold text-blue-100 underline-offset-4 hover:underline"
-            >
-              Ask Builder Guide
-            </Link>
-          </div>
         </div>
-      </section>
+        <span className="rounded-full border border-[#e4e6f0] bg-white px-3 py-2 text-xs font-semibold text-slate-500 shadow-sm">
+          {level.current} · {state.totalXp} XP
+        </span>
+      </header>
 
       <nav
-        aria-label="Discovery shortcuts"
-        className="-mx-4 mt-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
+        aria-label="Discovery lenses"
+        className="pp-scrollbar-hidden -mx-4 mt-5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0"
       >
-        <div className="flex w-max gap-3 sm:w-full">
-          <DiscoveryChip href="/profile" icon="◇" label="Strengths" />
-          <DiscoveryChip href="/profile" icon="◎" label="Interests" />
-          <DiscoveryChip href="/mission" icon="↗" label="Mission" />
-          <DiscoveryChip href="/growth" icon="△" label="Growth" />
-          <DiscoveryChip href="/guide" icon="✦" label="Guide" />
+        <div className="flex w-max gap-3">
+          <DiscoveryLens href="/profile" icon="◇" label="Strengths" />
+          <DiscoveryLens href="/profile" icon="◎" label="Interests" />
+          <DiscoveryLens href="/mission" icon="↗" label="Mission" />
+          <DiscoveryLens href="/growth" icon="△" label="Growth" />
+          <DiscoveryLens href="/guide" icon="✦" label="Guide" />
         </div>
       </nav>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <Surface className="p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
-                Current insight
+      <section className="mt-5 grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
+        <Surface className="relative overflow-hidden p-5 sm:p-7">
+          <div
+            aria-hidden="true"
+            className="absolute -top-16 -right-16 size-52 rounded-full bg-[#eef0ff] blur-2xl"
+          />
+          <div className="relative">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold tracking-[0.12em] text-[#6f79f7] uppercase">
+                Your living insight
               </p>
-              <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-                {state.mission?.title ?? state.destination.label}
-              </h2>
+              <span className="rounded-full bg-[#eef8f3] px-3 py-1 text-[0.66rem] font-semibold text-[#1f8d61]">
+                Evidence-led
+              </span>
             </div>
-            <span className="border-primary/20 bg-primary-soft/70 text-primary-light rounded-full border px-3 py-1 text-xs font-semibold">
-              Live
-            </span>
-          </div>
 
-          <p className="text-muted mt-3 text-sm leading-6 sm:text-base">
-            {state.mission?.mission_statement ?? state.destination.description}
-          </p>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight text-[#18233d] sm:text-3xl">
+              {state.mission?.title ?? state.destination.label}
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+              {state.mission?.mission_statement ??
+                state.destination.description}
+            </p>
 
-          <div className="border-border mt-5 border-t pt-5">
-            <p className="text-muted text-xs tracking-[0.12em] uppercase">
-              What updates this picture?
-            </p>
-            <p className="text-navy mt-2 text-sm leading-6 font-semibold">
-              Real Quest evidence, reflection, projects and verified capability
-              — not likes, scrolling or time spent in the app.
-            </p>
+            <div className="mt-5 rounded-[1.5rem] bg-[#f7f8fc] p-4">
+              <p className="text-xs font-semibold text-slate-400 uppercase">
+                What changes this picture?
+              </p>
+              <p className="mt-2 text-sm leading-6 font-semibold text-[#26324d]">
+                What you attempt, prove, reflect on and build. PipuPath keeps
+                updating the picture without reducing you to one AI label.
+              </p>
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <ButtonLink href={primaryHref} className="rounded-full">
+                {primaryLabel} →
+              </ButtonLink>
+              <ButtonLink
+                href="/guide"
+                variant="secondary"
+                className="rounded-full"
+              >
+                Ask Pipu
+              </ButtonLink>
+            </div>
           </div>
         </Surface>
 
         <Surface className="p-5 sm:p-6">
-          <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+          <p className="text-xs font-semibold tracking-[0.12em] text-[#c59a36] uppercase">
             Your direction
           </p>
-          <h2 className="text-navy mt-2 text-xl font-semibold tracking-tight">
+          <h2 className="mt-2 text-xl font-bold tracking-tight text-[#18233d]">
             {state.journey?.title ?? "Your next path is still opening"}
           </h2>
-          <p className="text-muted mt-3 text-sm leading-6">
+          <p className="mt-3 text-sm leading-6 text-slate-500">
             {state.journey
-              ? "Your current Journey converts self-discovery into real-world experiments and proof."
-              : "Keep moving through Discovery. PipuPath will reveal the next meaningful action when the evidence is ready."}
+              ? "Your current Journey turns self-discovery into experiments, evidence and useful proof."
+              : "Keep moving through Discovery. PipuPath reveals the next meaningful action when the evidence is ready."}
           </p>
           <ButtonLink
             href={state.journey ? "/journey" : primaryHref}
             variant="secondary"
-            className="mt-5"
+            className="mt-5 rounded-full"
           >
-            {state.journey ? "See the Journey" : "Continue Discovery"}
+            {state.journey ? "See Journey" : "Continue Discovery"}
           </ButtonLink>
         </Surface>
       </section>
 
-      <section className="mt-5">
+      <section className="mt-6">
         <div className="mb-3 flex items-end justify-between gap-3 px-1">
           <div>
-            <p className="text-muted text-xs font-semibold tracking-[0.14em] uppercase">
+            <p className="text-xs font-semibold tracking-[0.12em] text-[#6f79f7] uppercase">
               For you
             </p>
-            <h2 className="text-navy mt-1 text-lg font-semibold">
-              Useful places, not an endless feed
+            <h2 className="mt-1 text-xl font-bold text-[#18233d]">
+              Small places to understand yourself better
             </h2>
           </div>
-          <span className="text-muted hidden text-xs sm:inline">
-            Learn only what helps the current adventure.
+          <span className="hidden text-xs text-slate-400 sm:inline">
+            Useful, bounded, no endless feed.
           </span>
         </div>
 
@@ -164,34 +149,47 @@ export default async function DiscoverPage() {
           <DiscoveryCard
             href="/profile"
             title="Living Profile"
-            detail="See evidence-backed capabilities and signals."
+            detail="Evidence-backed capabilities and signals."
             icon="◉"
           />
           <DiscoveryCard
             href="/mission"
             title="Possible Paths"
-            detail="Revisit direction and the Mission you are testing."
+            detail="Direction and the Mission you are testing."
             icon="↗"
           />
           <DiscoveryCard
             href="/growth"
             title="Growth Pack"
-            detail="Learn or practise only what helps your next move."
+            detail="Learn only what helps your next move."
             icon="△"
           />
           <DiscoveryCard
             href="/guide"
             title="Builder Guide"
-            detail="Get private guidance grounded in your PipuPath evidence."
+            detail="Private guidance grounded in your evidence."
             icon="✦"
           />
         </div>
+      </section>
+
+      <section className="mt-6 rounded-[1.75rem] bg-gradient-to-br from-[#18233d] to-[#27365c] p-5 text-white sm:p-6">
+        <p className="text-xs font-semibold tracking-[0.12em] text-indigo-200 uppercase">
+          A healthier discovery habit
+        </p>
+        <h2 className="mt-2 text-xl font-bold">
+          Open PipuPath to notice, test and move—not to compare yourself.
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
+          There are no personality rankings or popularity scores here. Your
+          clearest picture comes from repeated real-world evidence.
+        </p>
       </section>
     </main>
   );
 }
 
-function DiscoveryChip({
+function DiscoveryLens({
   href,
   icon,
   label,
@@ -203,12 +201,12 @@ function DiscoveryChip({
   return (
     <Link
       href={href}
-      className="border-border bg-panel hover:border-primary/35 hover:bg-primary-soft/45 flex min-h-12 min-w-28 touch-manipulation items-center justify-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:flex-1"
+      className="flex min-w-[5.6rem] flex-col items-center gap-2 rounded-[1.5rem] border border-[#e6e8ef] bg-white px-3 py-4 shadow-sm transition-transform hover:-translate-y-0.5"
     >
-      <span className="text-primary-light" aria-hidden="true">
+      <span className="grid size-11 place-items-center rounded-full bg-[#eef0ff] text-[#5757e8]">
         {icon}
       </span>
-      <span>{label}</span>
+      <span className="text-xs font-semibold text-[#26324d]">{label}</span>
     </Link>
   );
 }
@@ -227,16 +225,13 @@ function DiscoveryCard({
   return (
     <Link
       href={href}
-      className="border-border bg-panel hover:border-primary/35 group rounded-3xl border p-5 transition-colors"
+      className="group rounded-[1.65rem] border border-[#e6e8ef] bg-white p-5 shadow-[0_18px_40px_-34px_rgba(36,48,78,0.4)] transition-transform hover:-translate-y-0.5"
     >
-      <span
-        aria-hidden="true"
-        className="border-primary/20 bg-primary-soft/65 text-primary-light grid size-11 place-items-center rounded-2xl border text-base transition-transform motion-safe:group-hover:-translate-y-0.5"
-      >
+      <span className="grid size-11 place-items-center rounded-2xl bg-[#eef0ff] text-[#5757e8]">
         {icon}
       </span>
-      <h3 className="text-navy mt-4 font-semibold">{title}</h3>
-      <p className="text-muted mt-2 text-sm leading-5">{detail}</p>
+      <h3 className="mt-4 font-bold text-[#18233d]">{title}</h3>
+      <p className="mt-2 text-sm leading-5 text-slate-500">{detail}</p>
     </Link>
   );
 }

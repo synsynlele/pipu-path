@@ -116,7 +116,7 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 
-  it("preserves the complete product beneath Stage 23 five-destination navigation", () => {
+  it("preserves the complete product beneath the five-destination navigation", () => {
     for (const label of ["Home", "Discover", "Build", "Connect", "Profile"]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
@@ -130,9 +130,11 @@ describe("Stage 10 MVP launch-readiness contract", () => {
   it("builds Home from persisted data and one next destination", () => {
     expect(home).toContain("requireAuthenticatedHomeState");
     expect(home).toContain("state.destination.path");
+    expect(home).toContain("state.snapshot");
     expect(home).toContain("state.totalXp");
     expect(home).toContain("state.recentAchievement");
-    expect(home).toContain("state.portfolio");
+    expect(home).toContain("state.quest");
+    expect(home).toContain("state.project");
     expect(home).not.toContain("fake");
   });
 
@@ -153,9 +155,10 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(navigation).toContain('aria-current={active ? "page"');
     expect(css).toContain(":focus-visible");
     expect(css).toContain("prefers-reduced-motion");
-    expect(css).toContain("--color-primary-700: #4f7cff");
-    expect(css).toContain("--color-gold-400: #c9a54d");
-    expect(css).toContain(".bg-white");
+    expect(css).toContain("--color-primary-700: #5757e8");
+    expect(css).toContain("--color-gold-400: #c59a36");
+    expect(css).toContain("color-scheme: light");
+    expect(css).toContain(".pp-social-card");
   });
 
   it("removes external font build dependencies", () => {

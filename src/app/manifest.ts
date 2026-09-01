@@ -10,8 +10,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/continue",
     scope: "/",
     display: "standalone",
-    background_color: "#020817",
-    theme_color: "#07142f",
+    background_color: "#f7f8fc",
+    theme_color: "#ffffff",
     orientation: "portrait-primary",
     categories: ["education", "productivity", "lifestyle"],
     icons: [
@@ -47,6 +47,11 @@ export default function manifest(): MetadataRoute.Manifest {
         url: "/app",
       },
       {
+        name: "Discover",
+        short_name: "Discover",
+        url: "/discover",
+      },
+      {
         name: "Build",
         short_name: "Build",
         url: "/build",
@@ -55,6 +60,11 @@ export default function manifest(): MetadataRoute.Manifest {
         name: "Connect",
         short_name: "Connect",
         url: "/connect",
+      },
+      {
+        name: "Profile",
+        short_name: "Profile",
+        url: "/profile",
       },
     ],
   };

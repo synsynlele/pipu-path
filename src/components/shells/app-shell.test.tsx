@@ -1,11 +1,15 @@
-import { render, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, render, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/app" }));
 vi.mock("@/modules/identity/application/auth-actions", () => ({
   signOutAction: vi.fn(),
 }));
+
+afterEach(() => {
+  cleanup();
+});
 
 describe("AppShell", () => {
   it("keeps the sign-out action visible on mobile", () => {
@@ -31,10 +35,25 @@ describe("AppShell", () => {
     });
 
     expect(container.firstElementChild).toHaveClass(
-      "pb-[calc(5.5rem+env(safe-area-inset-bottom))]",
+      "pb-[calc(5.35rem+env(safe-area-inset-bottom))]",
     );
     expect(mobileNavigation.parentElement).toHaveClass(
       "pb-[env(safe-area-inset-bottom)]",
     );
+  });
+
+  it("uses a bright app chrome rather than the old full-dark shell", () => {
+    const { container } = render(
+      <AppShell>
+        <main id="main-content">Dashboard</main>
+      </AppShell>,
+    );
+    const header = container.querySelector("header");
+    const mobileNavigation = within(container).getByRole("navigation", {
+      name: "PipuPath mobile navigation",
+    });
+
+    expect(header).toHaveClass("bg-white/92");
+    expect(mobileNavigation.parentElement).toHaveClass("bg-white/96");
   });
 });

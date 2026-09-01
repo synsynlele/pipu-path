@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { InstallPwaCard } from "@/components/pwa/install-prompt";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import { getCurrentPlatformAdminRole } from "@/modules/admin/infrastructure/admin-dal";
@@ -14,13 +15,13 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const adventureStages = [
-  { key: "discovery", label: "Discover" },
-  { key: "potential-profile", label: "Profile" },
-  { key: "mission", label: "Mission" },
-  { key: "journey", label: "Journey" },
-  { key: "quests", label: "Quest" },
-  { key: "project", label: "Build" },
-  { key: "portfolio", label: "Prove" },
+  { key: "discovery", label: "Discover", icon: "◇" },
+  { key: "potential-profile", label: "Profile", icon: "◉" },
+  { key: "mission", label: "Mission", icon: "↗" },
+  { key: "journey", label: "Journey", icon: "⌁" },
+  { key: "quests", label: "Quest", icon: "⚡" },
+  { key: "project", label: "Build", icon: "＋" },
+  { key: "portfolio", label: "Prove", icon: "▣" },
 ] as const;
 
 type AdventureStageKey = (typeof adventureStages)[number]["key"];
@@ -56,11 +57,11 @@ function nextMove(
       title: state.quest.title,
       detail:
         state.quest.status === "evidence_submitted"
-          ? "Your proof is saved. Reflect on what happened and unlock what comes next."
-          : "Take this challenge into real life. Come back with honest proof of what happened.",
+          ? "Your proof is saved. Reflect on what happened and reveal what comes next."
+          : "Take this into real life, then return with honest proof of what happened.",
       href: `/quests/${state.quest.id}`,
       label: questAction(state.quest.status) ?? "Open Quest",
-      signal: "Real-world challenge",
+      signal: "Your next real-world move",
     };
   }
 
@@ -72,7 +73,7 @@ function nextMove(
         : "Advance the next evidence-backed milestone in your active Build.",
       href: `/projects/${state.project.id}`,
       label: "Continue Build",
-      signal: "Major build",
+      signal: "Continue where you left off",
     };
   }
 
@@ -100,7 +101,6 @@ export default async function HomePage() {
     state.snapshot.completedProjectId &&
     state.snapshot.journeyStatus === "completed",
   );
-  const portfolioPublished = state.portfolio?.status === "published";
   const adventureProgress = completedGrowthCycle
     ? 100
     : Math.max(
@@ -115,158 +115,170 @@ export default async function HomePage() {
       id="main-content"
       className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8"
     >
+      <div className="mb-5 flex items-start justify-between gap-4 px-1">
+        <div>
+          <p className="text-sm font-medium text-slate-500">Welcome back</p>
+          <h1 className="mt-0.5 text-2xl font-bold tracking-tight text-[#18233d] sm:text-3xl">
+            {state.preferredName}
+          </h1>
+        </div>
+        <Link
+          href="/profile"
+          className="flex items-center gap-2 rounded-full border border-[#e4e6f0] bg-white px-3 py-2 shadow-sm"
+        >
+          <span className="grid size-8 place-items-center rounded-full bg-[#eef0ff] text-xs font-bold text-[#5757e8]">
+            {level.progressPercent}%
+          </span>
+          <span className="hidden text-left sm:block">
+            <span className="block text-xs font-semibold text-[#18233d]">
+              {level.current}
+            </span>
+            <span className="block text-[0.65rem] text-slate-500">
+              {state.totalXp} XP
+            </span>
+          </span>
+        </Link>
+      </div>
+
       {adminRole ? (
-        <section className="border-gold/30 bg-gold/8 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3">
+        <section className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eadfbf] bg-[#fffaf0] px-4 py-3">
           <div>
-            <p className="text-navy text-sm font-semibold">Mission Control</p>
-            <p className="text-muted mt-0.5 text-xs capitalize">
+            <p className="text-sm font-semibold text-[#5d4920]">
+              Mission Control
+            </p>
+            <p className="mt-0.5 text-xs text-[#8a7446] capitalize">
               Platform {adminRole}
             </p>
           </div>
-          <ButtonLink href="/admin" variant="secondary" className="min-h-10">
-            Open
+          <ButtonLink
+            href="/admin"
+            variant="secondary"
+            className="min-h-10 rounded-full"
+          >
+            Open admin
           </ButtonLink>
         </section>
       ) : null}
 
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white shadow-[0_32px_90px_-52px_rgba(79,124,255,0.9)] sm:p-8">
+      <section className="pp-social-card relative overflow-hidden rounded-[2rem] p-5 sm:p-7">
         <div
           aria-hidden="true"
-          className="absolute -top-20 -right-14 size-64 rounded-full bg-[#4f7cff]/20 blur-3xl"
+          className="absolute -top-24 -right-20 size-72 rounded-full bg-[#eef0ff] blur-2xl"
         />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 -left-14 size-60 rounded-full bg-[#c9a54d]/10 blur-3xl"
-        />
-
         <div className="relative">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold tracking-[0.15em] text-blue-200 uppercase">
-                Welcome back, {state.preferredName}
+              <p className="text-xs font-semibold tracking-[0.13em] text-[#6f79f7] uppercase">
+                {state.mission ? "Your mission" : "Your adventure"}
               </p>
-              <p className="mt-2 text-sm text-blue-100/72">
-                {level.current} · {state.totalXp} verified XP
-              </p>
+              <h2 className="mt-2 max-w-3xl text-2xl font-bold tracking-tight text-[#18233d] sm:text-3xl">
+                {state.mission?.title ??
+                  "Discover what you can become by building."}
+              </h2>
             </div>
-            <div
-              className="border-primary-light/25 grid size-12 shrink-0 place-items-center rounded-full border bg-white/8 text-xs font-bold text-blue-50"
-              aria-label={`${level.progressPercent}% through ${level.current}`}
-            >
-              {level.progressPercent}%
-            </div>
+            <span className="rounded-full bg-[#f2f3f8] px-3 py-1.5 text-xs font-semibold text-slate-500">
+              {adventureProgress}% path
+            </span>
           </div>
 
-          <div className="mt-7 max-w-3xl">
-            <p className="text-xs font-semibold tracking-[0.15em] text-[#e5c96f] uppercase">
-              {state.mission ? "Your mission" : "Your adventure"}
+          {state.mission?.mission_statement ? (
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+              {state.mission.mission_statement}
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              {state.mission?.title ??
-                "Discover what you can become by building."}
-            </h1>
-            {state.mission?.mission_statement ? (
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-50/78 sm:text-base">
-                {state.mission.mission_statement}
-              </p>
-            ) : null}
+          ) : null}
+
+          <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#edf0f6]">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#5757e8] via-[#7278f2] to-[#d4aa4c] transition-[width] motion-reduce:transition-none"
+              style={{ width: `${adventureProgress}%` }}
+            />
           </div>
 
-          <div className="mt-6">
-            <div className="flex items-center justify-between gap-3 text-xs text-blue-100/75">
-              <span>Your path</span>
-              <span>{adventureProgress}%</span>
-            </div>
-            <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-[#79a8ff] to-[#e5c96f] transition-[width] motion-reduce:transition-none"
-                style={{ width: `${adventureProgress}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="mt-6 rounded-[1.65rem] border border-white/12 bg-white/7 p-4 backdrop-blur-sm sm:p-5">
+          <div className="mt-6 overflow-hidden rounded-[1.65rem] bg-gradient-to-br from-[#5556e8] via-[#646cf0] to-[#7a7ff5] p-5 text-white shadow-[0_20px_44px_-24px_rgba(87,87,232,0.75)] sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-xs font-semibold tracking-[0.14em] text-[#e5c96f] uppercase">
-                ⚡ Next move
-              </p>
-              <span className="rounded-full border border-white/12 px-3 py-1 text-[0.7rem] font-semibold text-blue-100">
+              <p className="text-xs font-semibold tracking-[0.13em] text-indigo-100 uppercase">
                 {move.signal}
+              </p>
+              <span className="rounded-full bg-white/12 px-3 py-1 text-[0.68rem] font-semibold text-white/90">
+                Ready when you are
               </span>
             </div>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
               {move.title}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-50/74">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-indigo-50/90">
               {move.detail}
             </p>
-            <ButtonLink
+            <Link
               href={move.href}
-              variant="premium"
-              className="mt-5 min-w-40"
+              className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-white px-5 text-sm font-bold text-[#5757e8] shadow-sm transition-transform hover:-translate-y-0.5"
             >
               {move.label} →
-            </ButtonLink>
+            </Link>
           </div>
         </div>
       </section>
 
-      <nav
-        aria-label="Adventure shortcuts"
-        className="-mx-4 mt-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
-      >
-        <div className="flex w-max gap-3">
-          <AdventureShortcut
+      <section className="mt-5" aria-labelledby="path-heading">
+        <div className="mb-3 flex items-center justify-between gap-3 px-1">
+          <h2 id="path-heading" className="text-sm font-bold text-[#18233d]">
+            Your path
+          </h2>
+          <Link
             href="/discover"
-            icon="◇"
-            title="Discover"
-            detail={currentStageIndex <= 1 ? "Current" : "Insights"}
-          />
-          <AdventureShortcut
-            href="/journey"
-            icon="↗"
-            title="Journey"
-            detail={state.journey ? "Active" : "Next"}
-          />
-          <AdventureShortcut
-            href={state.quest?.id ? `/quests/${state.quest.id}` : "/build"}
-            icon="⚡"
-            title="Quest"
-            detail={state.quest ? "Continue" : "Prepare"}
-          />
-          <AdventureShortcut
-            href={
-              state.project?.id ? `/projects/${state.project.id}` : "/build"
-            }
-            icon="＋"
-            title="Build"
-            detail={state.project ? "In progress" : "Create"}
-          />
-          <AdventureShortcut
-            href="/portfolio"
-            icon="▣"
-            title="Vault"
-            detail={portfolioPublished ? "Published" : "Private"}
-          />
+            className="text-xs font-semibold text-[#5757e8]"
+          >
+            Explore →
+          </Link>
         </div>
-      </nav>
+        <div className="pp-scrollbar-hidden -mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
+          {adventureStages.map((stage, index) => {
+            const active = stage.key === currentStage;
+            const complete = completedGrowthCycle || index < currentStageIndex;
+            return (
+              <Link
+                key={stage.key}
+                href={stageHref(stage.key, state)}
+                className="flex w-[4.8rem] shrink-0 flex-col items-center gap-2 text-center"
+              >
+                <span
+                  className={`grid size-14 place-items-center rounded-full border text-base font-bold shadow-sm ${
+                    active
+                      ? "border-[#5757e8] bg-[#5757e8] text-white"
+                      : complete
+                        ? "border-[#dadcf4] bg-[#eef0ff] text-[#5757e8]"
+                        : "border-[#e7e9ef] bg-white text-slate-400"
+                  }`}
+                >
+                  {complete && !active ? "✓" : stage.icon}
+                </span>
+                <span
+                  className={`text-[0.68rem] font-semibold ${active ? "text-[#5757e8]" : "text-slate-500"}`}
+                >
+                  {stage.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
-      <section className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+      <section className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <Surface className="overflow-hidden p-0">
           <div className="flex items-center justify-between gap-3 px-5 pt-5 sm:px-6 sm:pt-6">
             <div>
-              <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+              <p className="text-xs font-semibold tracking-[0.12em] text-[#6f79f7] uppercase">
                 Your momentum
               </p>
-              <h2 className="text-navy mt-1 text-xl font-semibold tracking-tight">
-                What is moving because you acted
+              <h2 className="mt-1 text-xl font-bold tracking-tight text-[#18233d]">
+                Progress that came from action
               </h2>
             </div>
             <Link
               href="/profile"
-              className="text-primary text-sm font-semibold"
+              className="text-sm font-semibold text-[#5757e8]"
             >
-              See profile →
+              Profile →
             </Link>
           </div>
 
@@ -316,7 +328,7 @@ export default async function HomePage() {
               detail={
                 level.next
                   ? `${level.xpToNext} verified XP until ${level.next}.`
-                  : "Current highest Builder level reached. Keep building for evidence and impact."
+                  : "Highest Builder level reached. Keep building for evidence and impact."
               }
               href="/profile"
             />
@@ -324,71 +336,86 @@ export default async function HomePage() {
         </Surface>
 
         <div className="grid gap-4">
+          <InstallPwaCard />
+
           <Surface className="p-5 sm:p-6">
-            <p className="text-gold text-xs font-semibold tracking-[0.14em] uppercase">
+            <p className="text-xs font-semibold tracking-[0.12em] text-[#c59a36] uppercase">
               Builder Guide
             </p>
-            <h2 className="text-navy mt-2 text-xl font-semibold tracking-tight">
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-[#18233d]">
               Need clarity, not more noise?
             </h2>
-            <p className="text-muted mt-3 text-sm leading-6">
-              Ask for private guidance grounded in your current evidence and
-              next real-world action.
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Ask for private guidance grounded in your evidence and next
+              real-world action.
             </p>
-            <ButtonLink href="/guide" variant="secondary" className="mt-5">
+            <ButtonLink
+              href="/guide"
+              variant="secondary"
+              className="mt-4 rounded-full"
+            >
               Ask Pipu
             </ButtonLink>
           </Surface>
 
           <Surface className="p-5 sm:p-6">
-            <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+            <p className="text-xs font-semibold tracking-[0.12em] text-[#6f79f7] uppercase">
               Builder world
             </p>
-            <h2 className="text-navy mt-2 text-xl font-semibold tracking-tight">
+            <h2 className="mt-2 text-xl font-bold tracking-tight text-[#18233d]">
               Find people who complement what you are building.
             </h2>
-            <p className="text-muted mt-3 text-sm leading-6">
+            <p className="mt-2 text-sm leading-6 text-slate-500">
               No follower contest. Connect around missions, capabilities and
               useful collaboration.
             </p>
-            <ButtonLink href="/connect" variant="secondary" className="mt-5">
+            <ButtonLink
+              href="/connect"
+              variant="secondary"
+              className="mt-4 rounded-full"
+            >
               Explore Connect
             </ButtonLink>
           </Surface>
+        </div>
+      </section>
+
+      <section className="mt-5 rounded-[1.75rem] border border-[#e8eaf2] bg-white p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.12em] text-[#6f79f7] uppercase">
+              Come back for movement
+            </p>
+            <h2 className="mt-1 text-lg font-bold text-[#18233d]">
+              PipuPath should always reopen at the next useful thing.
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              We measure return by action—Quest progress, proof, reflection,
+              building and collaboration—not by how long you scroll.
+            </p>
+          </div>
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#eef0ff] text-[#5757e8]">
+            ↻
+          </span>
         </div>
       </section>
     </main>
   );
 }
 
-function AdventureShortcut({
-  href,
-  icon,
-  title,
-  detail,
-}: {
-  href: string;
-  icon: string;
-  title: string;
-  detail: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="border-border bg-panel hover:border-primary/35 group flex min-h-24 w-28 touch-manipulation flex-col justify-between rounded-3xl border p-3.5 transition-colors sm:w-32"
-    >
-      <span
-        aria-hidden="true"
-        className="border-primary/20 bg-primary-soft/70 text-primary-light grid size-9 place-items-center rounded-full border text-sm transition-transform motion-safe:group-hover:-translate-y-0.5"
-      >
-        {icon}
-      </span>
-      <span>
-        <span className="text-navy block text-sm font-semibold">{title}</span>
-        <span className="text-muted mt-0.5 block text-[0.7rem]">{detail}</span>
-      </span>
-    </Link>
-  );
+function stageHref(
+  stage: AdventureStageKey,
+  state: Awaited<ReturnType<typeof requireAuthenticatedHomeState>>,
+) {
+  if (stage === "discovery" || stage === "potential-profile")
+    return "/discover";
+  if (stage === "mission") return "/mission";
+  if (stage === "journey") return "/journey";
+  if (stage === "quests")
+    return state.quest?.id ? `/quests/${state.quest.id}` : "/quests";
+  if (stage === "project")
+    return state.project?.id ? `/projects/${state.project.id}` : "/projects";
+  return "/portfolio";
 }
 
 function MomentumRow({
@@ -410,21 +437,25 @@ function MomentumRow({
     <>
       <span
         aria-hidden="true"
-        className={`grid size-10 shrink-0 place-items-center rounded-full border text-sm ${accent === "gold" ? "border-gold/25 bg-gold/10 text-gold-light" : "border-primary/20 bg-primary-soft/65 text-primary-light"}`}
+        className={`grid size-10 shrink-0 place-items-center rounded-full border text-sm ${
+          accent === "gold"
+            ? "border-[#eadfbf] bg-[#fff8e7] text-[#b2872e]"
+            : "border-[#dedff7] bg-[#eef0ff] text-[#5757e8]"
+        }`}
       >
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="text-muted block text-[0.68rem] font-semibold tracking-[0.1em] uppercase">
+        <span className="block text-[0.66rem] font-semibold tracking-[0.1em] text-slate-400 uppercase">
           {eyebrow}
         </span>
-        <span className="text-navy mt-1 block font-semibold">{title}</span>
-        <span className="text-muted mt-1 block text-sm leading-5">
+        <span className="mt-1 block font-semibold text-[#18233d]">{title}</span>
+        <span className="mt-1 block text-sm leading-5 text-slate-500">
           {detail}
         </span>
       </span>
       {href ? (
-        <span className="text-primary shrink-0 text-lg" aria-hidden="true">
+        <span className="shrink-0 text-lg text-[#5757e8]" aria-hidden="true">
           ›
         </span>
       ) : null}
@@ -432,7 +463,7 @@ function MomentumRow({
   );
 
   const classes =
-    "border-border flex items-center gap-3 border-b py-4 last:border-b-0";
+    "flex items-center gap-3 border-b border-[#eef0f4] py-4 last:border-b-0";
 
   if (!href) return <div className={classes}>{content}</div>;
 
