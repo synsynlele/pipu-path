@@ -25,7 +25,9 @@ export default async function DiscoverPage() {
   const level = getBuilderLevelProgress(state.totalXp);
   const discovering = discoveryStages.has(state.destination.stage);
   const primaryHref = discovering ? state.destination.path : "/profile";
-  const primaryLabel = discovering ? state.destination.label : "Open your profile";
+  const primaryLabel = discovering
+    ? state.destination.label
+    : "Open your profile";
   const primaryTitle = discovering
     ? "Keep discovering what is already inside you."
     : "Your evidence is turning into a clearer picture of you.";
@@ -79,7 +81,7 @@ export default async function DiscoverPage() {
 
       <nav
         aria-label="Discovery shortcuts"
-        className="mt-4 -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
+        className="-mx-4 mt-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
       >
         <div className="flex w-max gap-3 sm:w-full">
           <DiscoveryChip href="/profile" icon="◇" label="Strengths" />
@@ -114,9 +116,9 @@ export default async function DiscoverPage() {
             <p className="text-muted text-xs tracking-[0.12em] uppercase">
               What updates this picture?
             </p>
-            <p className="text-navy mt-2 text-sm font-semibold leading-6">
-              Real Quest evidence, reflection, projects and verified capability —
-              not likes, scrolling or time spent in the app.
+            <p className="text-navy mt-2 text-sm leading-6 font-semibold">
+              Real Quest evidence, reflection, projects and verified capability
+              — not likes, scrolling or time spent in the app.
             </p>
           </div>
         </Surface>

@@ -105,7 +105,9 @@ export default async function HomePage() {
     ? 100
     : Math.max(
         8,
-        Math.round(((Math.max(0, currentStageIndex) + 1) / adventureStages.length) * 100),
+        Math.round(
+          ((Math.max(0, currentStageIndex) + 1) / adventureStages.length) * 100,
+        ),
       );
 
   return (
@@ -148,7 +150,7 @@ export default async function HomePage() {
               </p>
             </div>
             <div
-              className="border-primary-light/25 bg-white/8 grid size-12 shrink-0 place-items-center rounded-full border text-xs font-bold text-blue-50"
+              className="border-primary-light/25 grid size-12 shrink-0 place-items-center rounded-full border bg-white/8 text-xs font-bold text-blue-50"
               aria-label={`${level.progressPercent}% through ${level.current}`}
             >
               {level.progressPercent}%
@@ -160,7 +162,8 @@ export default async function HomePage() {
               {state.mission ? "Your mission" : "Your adventure"}
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
-              {state.mission?.title ?? "Discover what you can become by building."}
+              {state.mission?.title ??
+                "Discover what you can become by building."}
             </h1>
             {state.mission?.mission_statement ? (
               <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-50/78 sm:text-base">
@@ -197,7 +200,11 @@ export default async function HomePage() {
             <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-50/74">
               {move.detail}
             </p>
-            <ButtonLink href={move.href} variant="premium" className="mt-5 min-w-40">
+            <ButtonLink
+              href={move.href}
+              variant="premium"
+              className="mt-5 min-w-40"
+            >
               {move.label} →
             </ButtonLink>
           </div>
@@ -206,7 +213,7 @@ export default async function HomePage() {
 
       <nav
         aria-label="Adventure shortcuts"
-        className="mt-4 -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
+        className="-mx-4 mt-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
       >
         <div className="flex w-max gap-3">
           <AdventureShortcut
@@ -228,7 +235,9 @@ export default async function HomePage() {
             detail={state.quest ? "Continue" : "Prepare"}
           />
           <AdventureShortcut
-            href={state.project?.id ? `/projects/${state.project.id}` : "/build"}
+            href={
+              state.project?.id ? `/projects/${state.project.id}` : "/build"
+            }
             icon="＋"
             title="Build"
             detail={state.project ? "In progress" : "Create"}
@@ -253,7 +262,10 @@ export default async function HomePage() {
                 What is moving because you acted
               </h2>
             </div>
-            <Link href="/profile" className="text-primary text-sm font-semibold">
+            <Link
+              href="/profile"
+              className="text-primary text-sm font-semibold"
+            >
               See profile →
             </Link>
           </div>
@@ -320,8 +332,8 @@ export default async function HomePage() {
               Need clarity, not more noise?
             </h2>
             <p className="text-muted mt-3 text-sm leading-6">
-              Ask for private guidance grounded in your current evidence and next
-              real-world action.
+              Ask for private guidance grounded in your current evidence and
+              next real-world action.
             </p>
             <ButtonLink href="/guide" variant="secondary" className="mt-5">
               Ask Pipu
@@ -407,7 +419,9 @@ function MomentumRow({
           {eyebrow}
         </span>
         <span className="text-navy mt-1 block font-semibold">{title}</span>
-        <span className="text-muted mt-1 block text-sm leading-5">{detail}</span>
+        <span className="text-muted mt-1 block text-sm leading-5">
+          {detail}
+        </span>
       </span>
       {href ? (
         <span className="text-primary shrink-0 text-lg" aria-hidden="true">
