@@ -1,9 +1,9 @@
 # Stage 26 — Exact Mobile Experience Rebuild
 
-**Status:** RELEASED — VISUAL PERFECTION CORRECTION IN RELEASE VALIDATION
+**Status:** RELEASED — MOBILE RENDERER STABILITY CORRECTION IN RELEASE VALIDATION
 **Authority:** User-authorised Stage 26 execution  
 **Base production commit:** `ebbc4e54dd8408b8392eea55f4e36c026b428cc9`  
-**Branch:** `agent/stage-26-exact-mobile-experience`  
+**Branch:** `agent/stage-26-mobile-renderer-stability`  
 **Effective:** 2026-09-01
 
 ## Objective
@@ -84,3 +84,11 @@ The correction keeps all backend and domain behaviour intact and makes the appro
 ### Mobile QA hardening
 
 The final phone pass restores the gold-P mobile identity, exposes Install as a compact header action, prevents personalised Home/Discover/Build copy from colliding with fixed hero content, stacks narrow action cards and locks white-button text contrast. The authenticated release traversal now also records uncaught client page errors so a browser crash cannot be hidden by clean server telemetry.
+
+### Android Lite renderer stability hardening
+
+Repeated production reports of Chromium's native `tab crashed / reload` screen mean the earlier crash can no longer be treated as transient. Server telemetry during the repeat-crash window contains no 5xx cluster, so this correction targets renderer pressure and stale-session recovery without changing application domain behaviour.
+
+The correction removes GPU-expensive live backdrop blur from the fixed phone navigation, replaces the large filtered hero glow with a non-filtered gradient on mobile, and recovers specifically from Supabase `refresh_token_not_found` by clearing stale local auth cookies and following the existing signed-out routing path. Other auth exceptions continue to fail loudly.
+
+This correction must pass canonical CI and exact Android-sized Preview proof before merge.
