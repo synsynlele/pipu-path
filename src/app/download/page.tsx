@@ -133,11 +133,12 @@ export default function DownloadPipuPathLitePage() {
               Most PipuPath improvements arrive without another APK download.
             </h2>
             <p className="text-muted mt-5 max-w-3xl text-base leading-7">
-              PipuPath Lite uses the live PipuPath product, so normal product and
-              content improvements arrive through the web automatically. When
-              the Android wrapper itself changes, download the newest official
-              APK here. The permanent package and signing identity allow Android
-              to install it as an upgrade over your existing PipuPath Lite app.
+              PipuPath Lite uses the live PipuPath product, so normal product
+              and content improvements arrive through the web automatically.
+              When the Android wrapper itself changes, download the newest
+              official APK here. The permanent package and signing identity
+              allow Android to install it as an upgrade over your existing
+              PipuPath Lite app.
             </p>
           </Surface>
         </section>
@@ -150,7 +151,9 @@ function ReleaseFact({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className="text-muted text-xs font-semibold uppercase">{label}</p>
-      <p className="text-navy mt-2 break-words text-sm font-semibold">{value}</p>
+      <p className="text-navy mt-2 text-sm font-semibold break-words">
+        {value}
+      </p>
     </div>
   );
 }
