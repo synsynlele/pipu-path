@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { Surface } from "@/components/ui/surface";
 import { requireActiveDiscovery } from "@/modules/discovery/infrastructure/discovery-dal";
 import { DiscoveryProgress } from "@/modules/discovery/ui/discovery-progress";
@@ -27,16 +28,19 @@ export default async function DiscoverySectionPage({
     (candidate) =>
       candidate.sectionKey === section && candidate.stableKey === requestedKey,
   );
+
   if (!question) {
     const current = state.questions.find(
       (candidate) => candidate.stableKey === state.session.current_question_key,
     );
-    if (current)
+    if (current) {
       redirect(
         `/onboarding/discovery/${current.sectionKey}?question=${current.stableKey}`,
       );
+    }
     notFound();
   }
+
   const index = state.questions.findIndex(
     (candidate) => candidate.id === question.id,
   );
@@ -44,19 +48,26 @@ export default async function DiscoverySectionPage({
   const answer = state.answers.find(
     (candidate) => candidate.questionId === question.id,
   );
+
   return (
-    <main
-      id="main-content"
-      className="mx-auto max-w-3xl px-5 py-8 sm:px-8 sm:py-12"
+    <OnboardingShell
+      activeStep={2}
+      title={question.sectionTitle}
+      description="Stay with one honest answer at a time. There is no perfect response and no score to chase."
     >
       <DiscoveryProgress
         value={state.session.progress_percent}
-        label={question.sectionTitle}
+        label="Discovery progress"
       />
-      <p className="text-gold mt-8 font-mono text-xs tracking-[0.16em] uppercase">
-        Question {index + 1} of {state.questions.length}
-      </p>
-      <Surface className="mt-4 p-6 sm:p-8">
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <p className="text-primary-light text-xs font-semibold tracking-[0.12em] uppercase">
+          Question {index + 1} of {state.questions.length}
+        </p>
+        <span className="text-muted text-xs">
+          {state.session.progress_percent}% saved
+        </span>
+      </div>
+      <Surface className="mt-4 p-5 sm:p-7">
         <DiscoveryQuestionForm
           sessionId={state.session.id}
           version={state.session.version}
@@ -70,6 +81,6 @@ export default async function DiscoverySectionPage({
           returnTo={query.edit === "review" ? "review" : "flow"}
         />
       </Surface>
-    </main>
+    </OnboardingShell>
   );
 }
