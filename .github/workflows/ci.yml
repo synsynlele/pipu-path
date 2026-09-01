@@ -24,7 +24,18 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Diagnostic format check
+        run: npm run format:check
+      - name: Diagnostic lint
+        run: npm run lint
+      - name: Diagnostic typecheck
+        run: npm run typecheck
+      - name: Diagnostic unit coverage
+        run: npm run test:coverage
+      - name: Diagnostic integration tests
+        run: npm run test:integration
+      - name: Diagnostic production build
+        run: npm run build
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
