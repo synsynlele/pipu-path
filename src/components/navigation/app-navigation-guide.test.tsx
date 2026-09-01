@@ -5,14 +5,14 @@ import { AppNavigation } from "./app-navigation";
 vi.mock("next/navigation", () => ({ usePathname: () => "/guide" }));
 
 describe("AppNavigation Builder Guide orientation", () => {
-  it("keeps Me current while a Builder uses the personal Guide", () => {
+  it("keeps Profile current while a Builder uses the personal Guide", () => {
     const { container } = render(<AppNavigation />);
     const navigation = within(container).getByRole("navigation", {
       name: "PipuPath application",
     });
 
     expect(
-      within(navigation).getByRole("link", { name: "Me" }),
+      within(navigation).getByRole("link", { name: "Profile" }),
     ).toHaveAttribute("aria-current", "page");
   });
 });

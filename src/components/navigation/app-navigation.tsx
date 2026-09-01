@@ -5,36 +5,44 @@ import { usePathname } from "next/navigation";
 
 const items = [
   { label: "Home", href: "/app", icon: "home" },
-  { label: "Journey", href: "/journey", icon: "path" },
+  { label: "Discover", href: "/discover", icon: "discover" },
   { label: "Build", href: "/build", icon: "build" },
-  { label: "Vault", href: "/portfolio", icon: "portfolio" },
   { label: "Connect", href: "/connect", icon: "connect" },
-  { label: "Me", href: "/profile", icon: "profile" },
+  { label: "Profile", href: "/profile", icon: "profile" },
 ] as const;
 
 function isActive(pathname: string, href: string) {
   if (href === "/app") return pathname === "/app";
-  if (href === "/journey")
-    return pathname.startsWith("/journey") || pathname.startsWith("/mission");
-  if (href === "/build")
+  if (href === "/discover") {
+    return (
+      pathname.startsWith("/discover") ||
+      pathname.startsWith("/mission") ||
+      pathname.startsWith("/onboarding/discovery")
+    );
+  }
+  if (href === "/build") {
     return (
       pathname.startsWith("/build") ||
+      pathname.startsWith("/journey") ||
       pathname.startsWith("/quests") ||
       pathname.startsWith("/projects") ||
       pathname.startsWith("/proof")
     );
-  if (href === "/connect")
+  }
+  if (href === "/connect") {
     return (
       pathname.startsWith("/connect") || pathname.startsWith("/opportunities")
     );
-  if (href === "/profile")
+  }
+  if (href === "/profile") {
     return (
       pathname.startsWith("/profile") ||
+      pathname.startsWith("/portfolio") ||
       pathname.startsWith("/growth") ||
       pathname.startsWith("/guide") ||
-      pathname.startsWith("/passport") ||
-      pathname.startsWith("/onboarding/discovery/profile")
+      pathname.startsWith("/passport")
     );
+  }
   return pathname.startsWith(href);
 }
 
@@ -51,12 +59,14 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
       <ul
         className={
           mobile
-            ? "grid grid-cols-6"
+            ? "grid grid-cols-5 px-1"
             : "border-border bg-panel/95 flex items-center gap-1 rounded-2xl border p-1 shadow-sm"
         }
       >
         {items.map((item) => {
           const active = isActive(pathname, item.href);
+          const primaryBuild = mobile && item.href === "/build";
+
           return (
             <li key={item.href} className={mobile ? "min-w-0" : ""}>
               <Link
@@ -64,11 +74,22 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 aria-current={active ? "page" : undefined}
                 className={
                   mobile
-                    ? `flex min-h-16 w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/75 active:text-white"}`
+                    ? primaryBuild
+                      ? `relative -mt-3 flex min-h-[4.75rem] w-full touch-manipulation flex-col items-center justify-center gap-0.5 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/80 active:text-white"}`
+                      : `flex min-h-[4.25rem] w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-colors ${active ? "text-primary-light" : "text-blue-100/75 active:text-white"}`
                     : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary-light" : "hover:bg-primary-soft/70 text-blue-100/80 hover:text-white"}`
                 }
               >
-                <NavigationIcon name={item.icon} active={active} />
+                {primaryBuild ? (
+                  <span
+                    aria-hidden="true"
+                    className={`grid size-12 place-items-center rounded-full border shadow-[0_8px_26px_-10px_rgba(79,124,255,0.95)] ${active ? "border-primary-light bg-primary text-white" : "border-primary/50 bg-primary text-white"}`}
+                  >
+                    <NavigationIcon name={item.icon} active={active} />
+                  </span>
+                ) : (
+                  <NavigationIcon name={item.icon} active={active} />
+                )}
                 <span>{item.label}</span>
               </Link>
             </li>
@@ -97,7 +118,7 @@ function NavigationIcon({
     "aria-hidden": true,
   };
 
-  if (name === "home")
+  if (name === "home") {
     return (
       <svg {...common}>
         <path d="m3 11 9-8 9 8" />
@@ -105,29 +126,27 @@ function NavigationIcon({
         <path d="M9 20v-6h6v6" />
       </svg>
     );
-  if (name === "path")
+  }
+
+  if (name === "discover") {
     return (
       <svg {...common}>
-        <circle cx="6" cy="18" r="2" />
-        <circle cx="18" cy="6" r="2" />
-        <path d="M8 18h2a4 4 0 0 0 4-4V10a4 4 0 0 1 4-4" />
+        <circle cx="12" cy="12" r="9" />
+        <path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8z" />
       </svg>
     );
-  if (name === "build")
+  }
+
+  if (name === "build") {
     return (
       <svg {...common}>
-        <path d="M14.7 6.3a4 4 0 0 0-5 5L3 18v3h3l6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-3-3z" />
+        <path d="M12 5v14" />
+        <path d="M5 12h14" />
       </svg>
     );
-  if (name === "portfolio")
-    return (
-      <svg {...common}>
-        <rect x="3" y="6" width="18" height="14" rx="2" />
-        <path d="M8 6V4h8v2" />
-        <path d="M3 11h18" />
-      </svg>
-    );
-  if (name === "connect")
+  }
+
+  if (name === "connect") {
     return (
       <svg {...common}>
         <circle cx="8" cy="8" r="3" />
@@ -136,6 +155,8 @@ function NavigationIcon({
         <path d="M13 19a4.5 4.5 0 0 1 8.5-2" />
       </svg>
     );
+  }
+
   return (
     <svg {...common}>
       <circle cx="12" cy="8" r="4" />
