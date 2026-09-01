@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ng.name.pipupath.lite.dev",
+      "sha256_cert_fingerprints": [
+        "F8:C5:EE:FC:73:F3:F1:D6:68:91:6A:A8:EC:09:66:70:73:69:F2:4C:EB:66:7D:D2:1B:EC:81:F5:41:F5:F1:88"
+      ]
+    }
+  }
+]

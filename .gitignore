@@ -47,3 +47,6 @@ next-env.d.ts
 /playwright-report/
 /supabase/.temp/
 
+# PipuPath Lite generated Android outputs
+/android-lite/generated/
+/android-lite/dist/

@@ -1,0 +1,122 @@
+name: PipuPath Lite Android
+
+on:
+  push:
+    branches:
+      - main
+      - stage-27-pipupath-lite
+    paths:
+      - "android-lite/**"
+      - "public/.well-known/assetlinks.json"
+      - ".github/workflows/android-lite.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipupath-lite-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-lite-android:
+    name: Build PipuPath Lite APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify the production PWA contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            https://www.pipupath.name.ng/manifest.webmanifest \
+            --output /tmp/pipupath-manifest.json
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("/tmp/pipupath-manifest.json").read_text())
+          assert manifest["start_url"] == "/continue"
+          assert manifest["display"] == "standalone"
+          assert manifest["scope"] == "/"
+          sizes = {icon.get("sizes") for icon in manifest.get("icons", [])}
+          assert "192x192" in sizes
+          assert "512x512" in sizes
+          print("PipuPath production PWA contract verified.")
+          PY
+
+      - name: Prepare isolated Android project
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf android-lite/generated android-lite/dist
+          mkdir -p android-lite/generated android-lite/dist
+          cp android-lite/twa-manifest.json android-lite/generated/twa-manifest.json
+
+      - name: Generate Android project with Bubblewrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -v "${PWD}/android-lite/generated:/workspace" \
+            -w /workspace \
+            ghcr.io/googlechromelabs/bubblewrap:1.25.0 \
+            update \
+            --skipVersionUpgrade \
+            --manifest=/workspace/twa-manifest.json
+
+      - name: Add repeatable development signing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp android-lite/dev/pipupath-lite-dev.keystore \
+            android-lite/generated/pipupath-lite-dev.keystore
+
+      - name: Build signed development APK and Android App Bundle
+        shell: bash
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: pipupath-dev-only
+          BUBBLEWRAP_KEY_PASSWORD: pipupath-dev-only
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -e BUBBLEWRAP_KEYSTORE_PASSWORD \
+            -e BUBBLEWRAP_KEY_PASSWORD \
+            -v "${PWD}/android-lite/generated:/workspace" \
+            -w /workspace \
+            ghcr.io/googlechromelabs/bubblewrap:1.25.0 \
+            build \
+            --skipPwaValidation \
+            --manifest=/workspace/twa-manifest.json \
+            --signingKeyPath=/workspace/pipupath-lite-dev.keystore \
+            --signingKeyAlias=pipupath-lite-dev
+
+      - name: Package distributable artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f android-lite/generated/app-release-signed.apk
+          test -f android-lite/generated/app-release-bundle.aab
+
+          cp android-lite/generated/app-release-signed.apk \
+            android-lite/dist/PipuPath-Lite-Android.apk
+          cp android-lite/generated/app-release-bundle.aab \
+            android-lite/dist/PipuPath-Lite-Android.aab
+
+          sha256sum android-lite/dist/PipuPath-Lite-Android.apk \
+            | tee android-lite/dist/SHA256SUMS.txt
+          sha256sum android-lite/dist/PipuPath-Lite-Android.aab \
+            >> android-lite/dist/SHA256SUMS.txt
+
+      - name: Upload PipuPath Lite build
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipupath-lite-android-${{ github.sha }}
+          path: android-lite/dist/
+          if-no-files-found: error
+          retention-days: 14
