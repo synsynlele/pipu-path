@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 type InstallChoice = {
   outcome: "accepted" | "dismissed";
@@ -56,7 +56,19 @@ function isMobileDevice() {
 }
 
 function isAndroidDevice() {
-  return /Android/i.test(navigator.userAgent);
+  return typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
+}
+
+function subscribeToDeviceSnapshot() {
+  return () => undefined;
+}
+
+function useAndroidDevice() {
+  return useSyncExternalStore(
+    subscribeToDeviceSnapshot,
+    isAndroidDevice,
+    () => false,
+  );
 }
 
 function instructionsForCurrentDevice(): InstallInstructions {
@@ -289,15 +301,13 @@ export function InstallPwaButton({
   autoNudge?: boolean;
 }) {
   const [installed, setInstalled] = useState(false);
-  const [androidDevice, setAndroidDevice] = useState(false);
+  const androidDevice = useAndroidDevice();
   const [instructions, setInstructions] = useState<InstallInstructions | null>(
     null,
   );
   const [showCoach, setShowCoach] = useState(false);
 
   useEffect(() => {
-    setAndroidDevice(isAndroidDevice());
-
     const syncInstallState = () => {
       const nextInstalled =
         isStandalone() || installWindow().__pipupathAppInstalled === true;
@@ -427,11 +437,7 @@ export function InstallPwaButton({
 }
 
 export function InstallPwaCard() {
-  const [androidDevice, setAndroidDevice] = useState(false);
-
-  useEffect(() => {
-    setAndroidDevice(isAndroidDevice());
-  }, []);
+  const androidDevice = useAndroidDevice();
 
   return (
     <section className="pp-install-entry border-primary/25 bg-panel w-full rounded-[1.75rem] border p-5 shadow-[0_18px_46px_-34px_rgba(79,124,255,0.55)] sm:p-6">
