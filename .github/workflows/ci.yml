@@ -24,13 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Stage 23 onboarding test canonical format diagnostic
-        run: |
-          npx prettier --write tests/integration/stage-23-onboarding-admin-integration.test.ts
-          echo '===== STAGE23_ONBOARDING_ADMIN_TEST_BEGIN ====='
-          cat tests/integration/stage-23-onboarding-admin-integration.test.ts
-          echo '===== STAGE23_ONBOARDING_ADMIN_TEST_END ====='
-          exit 1
+      - run: npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
