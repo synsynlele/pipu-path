@@ -306,6 +306,28 @@
     max-width: 46rem;
     margin-inline: auto;
   }
+
+  /*
+   * Android Lite runs this surface inside a Chromium Trusted Web Activity.
+   * Live backdrop blur on fixed chrome and a large CSS filter layer both force
+   * continuous GPU compositing while the document scrolls. Keep the same
+   * visual hierarchy on phones without those expensive renderer layers.
+   */
+  .pp-bottom-navigation {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .pp-app-hero::after {
+    background: radial-gradient(
+      circle,
+      rgb(126 91 255 / 22%) 0%,
+      rgb(126 91 255 / 8%) 46%,
+      transparent 72%
+    );
+    filter: none;
+  }
 }
 
 @media (max-width: 430px) {
