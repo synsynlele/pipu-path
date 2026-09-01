@@ -170,7 +170,7 @@ test("Stage 23 PWA contract is installable without caching private Builder data"
   };
   expect(manifest.name).toContain("PipuPath");
   expect(manifest.display).toBe("standalone");
-  expect(manifest.start_url).toBe("/");
+  expect(manifest.start_url).toBe("/continue");
   expect(manifest.icons?.some((icon) => icon.sizes === "192x192")).toBe(true);
   expect(manifest.icons?.some((icon) => icon.sizes === "512x512")).toBe(true);
 
