@@ -7,45 +7,48 @@ const home = read("src/app/app/page.tsx");
 const discover = read("src/app/discover/page.tsx");
 const appShell = read("src/components/shells/app-shell.tsx");
 const publicShell = read("src/components/shells/public-shell.tsx");
+const authShell = read("src/components/shells/auth-shell.tsx");
 const install = read("src/components/pwa/install-prompt.tsx");
 const layout = read("src/app/layout.tsx");
 const manifest = read("src/app/manifest.ts");
 
-describe("Stage 24 visual fidelity and mobile installation", () => {
-  it("makes the application bright-first rather than globally dark", () => {
-    expect(globals).toContain("--background: #f7f8fc");
-    expect(globals).toContain("color-scheme: light");
-    expect(globals).toContain("--color-panel: #ffffff");
-    expect(globals).not.toContain(".bg-white {\n  background-color: #07142f;");
-    expect(layout).toContain('colorScheme: "light"');
-    expect(layout).toContain('themeColor: "#ffffff"');
-    expect(appShell).toContain("bg-white/92");
+describe("Stage 25 blue restoration and mobile installation", () => {
+  it("restores the released blue-first PipuPath visual system", () => {
+    expect(globals).toContain("--background: #020817");
+    expect(globals).toContain("color-scheme: dark");
+    expect(globals).toContain("--color-panel: #07142f");
+    expect(globals).toContain(".bg-white {\n  background-color: #07142f;");
+    expect(layout).toContain('colorScheme: "dark"');
+    expect(layout).toContain('themeColor: "#020817"');
+    expect(appShell).toContain("bg-panel/90");
   });
 
-  it("uses the approved social-grade interaction grammar on Home and Discover", () => {
+  it("keeps the Stage 23 Home and Discover interaction grammar", () => {
     expect(home).toContain("Your path");
-    expect(home).toContain("Ready when you are");
-    expect(home).toContain("InstallPwaCard");
-    expect(install).toContain("Come back to your next move in one tap.");
-    expect(discover).toContain("Keep learning who you are by doing.");
-    expect(discover).toContain("Small places to understand yourself better");
-    expect(discover).toContain("Useful, bounded, no endless feed.");
+    expect(home).toContain("Next move");
+    expect(home).toContain("Your momentum");
+    expect(discover).toContain("Evidence-led, not a personality box");
+    expect(discover).toContain("Useful places, not an endless feed");
   });
 
-  it("keeps installation visible on public and authenticated mobile surfaces", () => {
-    expect(publicShell).toContain("InstallPwaButton compact");
-    expect(appShell).toContain("InstallPwaButton compact");
+  it("makes installation proactively discoverable across entry and app surfaces", () => {
+    expect(publicShell).toContain("InstallPwaButton compact autoNudge");
+    expect(authShell).toContain("InstallPwaButton compact autoNudge");
+    expect(appShell).toContain("InstallPwaButton autoNudge");
     expect(install).toContain("beforeinstallprompt");
+    expect(install).toContain("INSTALL_NUDGE_KEY");
+    expect(install).toContain("NUDGE_COOLDOWN_MS");
     expect(install).toContain("iPad|iPhone|iPod");
     expect(install).toContain("Android");
     expect(install).toContain("Add to Home Screen");
     expect(install).toContain("Install app or Add to Home screen");
+    expect(globals).toContain("@media (display-mode: standalone)");
   });
 
-  it("keeps the installed app resume-first and visually aligned", () => {
+  it("keeps the installed app resume-first and blue-aligned", () => {
     expect(manifest).toContain('start_url: "/continue"');
-    expect(manifest).toContain('background_color: "#f7f8fc"');
-    expect(manifest).toContain('theme_color: "#ffffff"');
+    expect(manifest).toContain('background_color: "#020817"');
+    expect(manifest).toContain('theme_color: "#07142f"');
     expect(manifest).toContain('name: "Discover"');
     expect(manifest).toContain('name: "Profile"');
   });
