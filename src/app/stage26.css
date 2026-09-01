@@ -95,7 +95,11 @@
   overflow: hidden;
   border-radius: 2rem;
   background:
-    radial-gradient(circle at 82% 18%, rgb(151 108 255 / 34%), transparent 15rem),
+    radial-gradient(
+      circle at 82% 18%,
+      rgb(151 108 255 / 34%),
+      transparent 15rem
+    ),
     linear-gradient(135deg, #25205f 0%, #352175 45%, #241c63 100%);
   color: #ffffff;
   box-shadow: 0 24px 54px -34px rgb(62 45 150 / 70%);
@@ -151,7 +155,11 @@
 
 .pp-mobile-topbar {
   background:
-    radial-gradient(circle at 86% 20%, rgb(112 84 255 / 24%), transparent 11rem),
+    radial-gradient(
+      circle at 86% 20%,
+      rgb(112 84 255 / 24%),
+      transparent 11rem
+    ),
     linear-gradient(135deg, #17164e 0%, #24205f 56%, #1d1957 100%);
 }
 
