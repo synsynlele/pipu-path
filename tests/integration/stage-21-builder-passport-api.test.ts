@@ -139,15 +139,15 @@ describe("Stage 21 Builder Passport/API structure", () => {
     );
   });
 
-  it("keeps Stage 21 Preview deployment suppressed after the successful release proof", () => {
+  it("keeps Stage 21 Preview deployment suppressed after later-stage evolution", () => {
     expect(vercelConfig).toContain(
       '"agent/stage-21-builder-passport-api": false',
     );
-    expect(projectState).toContain("Stages 0–21 are released");
-    expect(projectState).toContain("Stage 21 release:** PR #37 squash-merged");
-    expect(implementationStatus).toContain("Released baseline:** Stages 0–21");
+    expect(projectState).toContain("Current stage:** Stage 23");
+    expect(projectState).toContain("Stages 0–22");
+    expect(implementationStatus).toContain("Stages 0–22 are released");
     expect(implementationStatus).toContain(
-      "one deliberate exact-head Preview is reserved",
+      "one deliberate Vercel Preview is reserved",
     );
   });
 });
