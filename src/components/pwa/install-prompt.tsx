@@ -26,6 +26,7 @@ type InstallInstructions = {
 const INSTALL_NUDGE_KEY = "pipupath-install-nudge-dismissed-at";
 const INSTALL_STATE_EVENT = "pipupath:install-state";
 const NUDGE_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+const ANDROID_APK_PATH = "/downloads/PipuPath-Lite-1.0.0.apk";
 
 function installWindow() {
   return window as PwaInstallWindow;
@@ -54,6 +55,10 @@ function isMobileDevice() {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
+function isAndroidDevice() {
+  return /Android/i.test(navigator.userAgent);
+}
+
 function instructionsForCurrentDevice(): InstallInstructions {
   const ua = navigator.userAgent;
   const ios = /iPad|iPhone|iPod/.test(ua);
@@ -73,12 +78,12 @@ function instructionsForCurrentDevice(): InstallInstructions {
 
   if (android) {
     return {
-      title: "Install PipuPath on your phone",
+      title: "Download PipuPath Lite",
       intro:
-        "Your browser can install PipuPath like an app. If the native Install box did not appear, use the browser menu.",
+        "Download the official signed PipuPath Lite Android app directly from PipuPath.",
       steps: [
-        "Open the browser menu (usually ⋮).",
-        "Choose Install app or Add to Home screen, then confirm Install.",
+        "Tap Download and open the APK when the download finishes.",
+        "If Android asks, allow installation from your browser or Files app, then tap Install.",
       ],
     };
   }
@@ -216,9 +221,11 @@ function InstallInstructionsSheet({
 function InstallCoach({
   onInstall,
   onClose,
+  downloadMode,
 }: {
   onInstall: () => void;
   onClose: () => void;
+  downloadMode: boolean;
 }) {
   return (
     <div
@@ -245,11 +252,14 @@ function InstallCoach({
           id="pipupath-install-coach-title"
           className="mt-2 text-2xl font-semibold tracking-tight"
         >
-          Keep PipuPath on your phone.
+          {downloadMode
+            ? "Download PipuPath Lite."
+            : "Keep PipuPath on your device."}
         </h2>
         <p className="mt-3 text-sm leading-6 text-blue-100/80">
-          Open your Mission, Quest or next move without searching for the
-          website again.
+          {downloadMode
+            ? "Get the official lightweight Android app and keep your PipuPath account, Mission and progress in sync."
+            : "Open your Mission, Quest or next move without searching for the website again."}
         </p>
         <button
           type="button"
@@ -257,7 +267,7 @@ function InstallCoach({
           className="bg-primary hover:bg-primary-light mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold text-white transition-colors"
         >
           <InstallIcon />
-          Install PipuPath
+          {downloadMode ? "Download PipuPath" : "Install PipuPath"}
         </button>
         <button
           type="button"
@@ -279,12 +289,15 @@ export function InstallPwaButton({
   autoNudge?: boolean;
 }) {
   const [installed, setInstalled] = useState(false);
+  const [androidDevice, setAndroidDevice] = useState(false);
   const [instructions, setInstructions] = useState<InstallInstructions | null>(
     null,
   );
   const [showCoach, setShowCoach] = useState(false);
 
   useEffect(() => {
+    setAndroidDevice(isAndroidDevice());
+
     const syncInstallState = () => {
       const nextInstalled =
         isStandalone() || installWindow().__pipupathAppInstalled === true;
@@ -345,6 +358,11 @@ export function InstallPwaButton({
       return;
     }
 
+    if (isAndroidDevice()) {
+      window.location.assign(ANDROID_APK_PATH);
+      return;
+    }
+
     const promptEvent = installWindow().__pipupathDeferredInstallPrompt;
     if (promptEvent) {
       installWindow().__pipupathDeferredInstallPrompt = null;
@@ -369,20 +387,30 @@ export function InstallPwaButton({
     setInstructions(instructionsForCurrentDevice());
   }
 
+  const showAndroidLabel = compact && androidDevice;
+
   return (
     <>
       <button
         type="button"
         onClick={() => void install()}
-        aria-label="Install PipuPath"
-        className={`pp-install-entry border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft touch-manipulation items-center justify-center gap-2 rounded-full border font-semibold shadow-sm transition-colors ${compact ? "inline-flex size-10 p-0" : "inline-flex min-h-10 px-3.5 text-sm"}`}
+        aria-label={
+          androidDevice ? "Download PipuPath Lite" : "Install PipuPath"
+        }
+        className={`pp-install-entry border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft touch-manipulation items-center justify-center gap-2 rounded-full border font-semibold shadow-sm transition-colors ${compact && !showAndroidLabel ? "inline-flex size-10 p-0" : "inline-flex min-h-10 px-3.5 text-sm"}`}
       >
         <InstallIcon />
-        {compact ? null : <span>Install</span>}
+        {compact && !showAndroidLabel ? null : (
+          <span>{androidDevice ? "Download" : "Install"}</span>
+        )}
       </button>
 
       {showCoach ? (
-        <InstallCoach onInstall={() => void install()} onClose={closeCoach} />
+        <InstallCoach
+          onInstall={() => void install()}
+          onClose={closeCoach}
+          downloadMode={androidDevice}
+        />
       ) : null}
 
       {instructions ? (
@@ -399,6 +427,12 @@ export function InstallPwaButton({
 }
 
 export function InstallPwaCard() {
+  const [androidDevice, setAndroidDevice] = useState(false);
+
+  useEffect(() => {
+    setAndroidDevice(isAndroidDevice());
+  }, []);
+
   return (
     <section className="pp-install-entry border-primary/25 bg-panel w-full rounded-[1.75rem] border p-5 shadow-[0_18px_46px_-34px_rgba(79,124,255,0.55)] sm:p-6">
       <div className="flex items-start gap-4">
@@ -413,8 +447,9 @@ export function InstallPwaCard() {
             Come back to your next move in one tap.
           </h2>
           <p className="text-muted mt-2 text-sm leading-6">
-            Install the same PipuPath web app on your Home Screen. No app store
-            is required.
+            {androidDevice
+              ? "Download the official PipuPath Lite Android app. Your account and progress stay connected to the same PipuPath experience."
+              : "Install the same PipuPath web app on your Home Screen. No app store is required."}
           </p>
           <div className="mt-4">
             <InstallPwaButton />
