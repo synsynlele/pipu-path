@@ -1,91 +1,61 @@
 # PipuPath project state
 
-**Current stage:** Stage 23 — Social-Grade Mobile UX & Installable PWA
+**Current stage:** Stage 24 — Visual Fidelity & Mobile Install Experience
 
-**Stage status:** IN PROGRESS — first vertical slice under validation
+**Stage status:** IN PROGRESS — implementation candidate under validation
 
-**Released baseline entering Stage 23:** Stages 0–22 plus post-release Stage 22 hotfixes are released.
+**Latest released baseline:** Stage 23 merged to `main` as `a2b50dcf23bc437086d842d684d06af5ed76160a` and is live in production.
 
-**Latest released main baseline:** `7002c4652700a9fd7812c804f88203446efd2999`.
+**Stage 24 branch:** `agent/stage-24-visual-fidelity-mobile-install`.
 
-**Stage 23 branch:** `agent/stage-23-social-grade-mobile-pwa`.
+**Stage 24 authority:** `docs/stages/stage-24-visual-fidelity-mobile-install.md`.
 
-**Stage 23 authority:** `docs/stages/stage-23-social-grade-mobile-pwa.md`.
-
-**Social-grade mobile authority:** `docs/product/social-grade-mobile-experience-direction.md`.
+**Social-grade product authority:** `docs/product/social-grade-mobile-experience-direction.md`.
 
 **Underlying Human Potential Adventure authority:** `docs/product/human-potential-adventure-direction.md`.
 
-**Growth Pack authority:** `docs/product/growth-pack-direction.md`.
-
-**Infrastructure:** authorised Supabase project `kvjcswnmhwegpakbtvlh`; Vercel project `copyartint-2860s-projects/pipu-path` linked to `synsynlele/pipu-path`.
+**Infrastructure:** Supabase project `kvjcswnmhwegpakbtvlh`; Vercel project `copyartint-2860s-projects/pipu-path`; repository `synsynlele/pipu-path`.
 
 **Last updated:** 2026-09-01
 
-## Product doctrine now in force
+## Product doctrine
 
 > **The screen is not the game. Life is the game.**
 
 > **Make building feel as natural as socialising. Keep life as the game.**
 
-PipuPath remains a **Human Potential Adventure System**. Stage 23 makes the interface dramatically easier to understand and navigate without turning the product into conventional social media.
+Stage 23 proved the navigation, onboarding/Admin integration and installable-web architecture. Stage 24 closes the remaining fidelity gap between that released structure and the approved premium mobile concept.
 
-The released developmental engine remains authoritative:
+## Stage 24 target
 
-`Discovery → Human Potential Profile → Possible Paths → Mission → Journey → Quest → Evidence → Reflection → Capability → Project → Portfolio / Connect → Collaboration → Living Builder Profile → AI Personal Builder Guide → Capability Verification → Institution / Opportunity → Builder Passport`
+PipuPath becomes bright-first and visually consistent across public access, onboarding and the authenticated application:
 
-Stage 23 changes presentation, navigation grouping and installability. It does not replace domain terminology, persistence, privacy, safeguarding, evidence or authorization boundaries.
+- bright neutral canvas;
+- white cards;
+- deep navy type;
+- indigo/blue primary actions;
+- restrained gold accents;
+- softer borders/shadows;
+- rounded social-style modules;
+- highly legible fixed bottom navigation;
+- bounded horizontal progress/lens rails;
+- one dominant next action;
+- dark sections only as deliberate accents.
 
-## Stage 23 navigation model
+## Mobile install correction
 
-Five human destinations now govern the primary experience:
+The Stage 23 install button depended on the browser firing `beforeinstallprompt`, which is not universally available on mobile. Stage 24 makes install visible regardless of that event and provides platform-appropriate guidance when a native prompt cannot be triggered.
 
-- **Home** — current Mission, progress and one dominant next move;
-- **Discover** — Discovery, Mission, self-understanding and contextual growth;
-- **Build** — Journey, Quest, proof, reflection and Projects;
-- **Connect** — Builder network, collaboration and Opportunities;
-- **Profile** — Living Profile, Builder Vault, Growth Library, Builder Guide and Passport.
-
-Deep routes remain available and are oriented beneath these destinations rather than removed.
-
-## Stage 23 first slice
-
-The active first slice includes:
-
-- five-destination desktop/mobile application navigation;
-- an elevated thumb-friendly Build action on mobile;
-- a redesigned Home using only real saved Builder state;
-- a new authenticated Discover hub;
-- PWA manifest, generated install icons and standalone app metadata;
-- browser installation affordance where supported;
-- preserved sign-out, safe-area, reduced-motion and authenticated-shell behaviour;
-- no new Supabase schema;
-- no service-worker cache of private authenticated Builder data;
-- Vercel implementation-branch deployment suppression until validation is green.
+The installed app still starts at `/continue` so PipuPath resumes the correct onboarding or developmental state.
 
 ## Safety / anti-dark-pattern boundary
 
-Stage 23 explicitly rejects using social-product familiarity as permission to build social-media addiction mechanics.
+Return motivation must come from meaningful progress and one-tap resumption, not compulsion. Stage 24 does not add infinite feeds, fake activity, shame streaks, popularity metrics, screen-time rewards or dark-pattern notifications.
 
-PipuPath does not introduce:
+## Data state
 
-- manipulative infinite feeds;
-- fabricated social activity;
-- child popularity leaderboards;
-- shame-based streaks;
-- screen-time rewards;
-- fake urgency;
-- unrestricted minor/adult messaging;
-- dark-pattern notifications;
-- public leakage of private evidence;
-- AI pretending to be a human friend or mentor.
-
-The goal is comfort, clarity and return-to-action — not compulsive screen consumption.
+No Supabase migration is required. Existing RLS, evidence, onboarding, authorization, progression, safeguarding and AI persistence contracts remain unchanged.
 
 ## Validation posture
 
-Stage 23 is not released yet. The first candidate must pass `npm run validate`, then one deliberate exact-head Vercel Preview and authenticated browser/mobile proof before release consideration.
-
-Until then, the operating state is:
-
-**build → validate → exact Preview → browser proof → release decision**.
+Stage 24 remains unreleased until canonical CI, one exact Preview, deployed mobile/browser proof and production smoke checks all pass.

@@ -12,24 +12,24 @@ type ButtonVariant = keyof typeof variants;
 
 const fallbackStyles = {
   primary: {
-    backgroundColor: "#4f7cff",
-    borderColor: "#4f7cff",
+    backgroundColor: "#5757e8",
+    borderColor: "#5757e8",
     color: "#ffffff",
   },
   secondary: {
-    backgroundColor: "#0c1c3c",
-    borderColor: "#1a2d55",
-    color: "#f8fafc",
+    backgroundColor: "#ffffff",
+    borderColor: "#dfe3ee",
+    color: "#26324d",
   },
   ghost: {
     backgroundColor: "transparent",
     borderColor: "transparent",
-    color: "#dbeafe",
+    color: "#65718a",
   },
   premium: {
-    backgroundColor: "#c9a54d",
-    borderColor: "#c9a54d",
-    color: "#061027",
+    backgroundColor: "#5757e8",
+    borderColor: "#5757e8",
+    color: "#ffffff",
   },
 } satisfies Record<ButtonVariant, CSSProperties>;
 

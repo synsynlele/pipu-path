@@ -29,7 +29,7 @@ describe("AppNavigation", () => {
     ).toHaveAttribute("href", "/profile");
   });
 
-  it("keeps inactive desktop destinations visible before hover", () => {
+  it("uses the bright social-grade desktop treatment without hiding inactive destinations", () => {
     const { container } = render(<AppNavigation />);
     const navigation = within(container).getByRole("navigation", {
       name: "PipuPath application",
@@ -38,10 +38,9 @@ describe("AppNavigation", () => {
     const home = within(navigation).getByRole("link", { name: "Home" });
     const build = within(navigation).getByRole("link", { name: "Build" });
 
-    expect(list).toHaveClass("bg-panel/95");
-    expect(list).not.toHaveClass("bg-white/90");
-    expect(home).toHaveClass("text-blue-100/80");
-    expect(build).toHaveClass("text-primary-light");
+    expect(list).toHaveClass("bg-[#f7f8fc]");
+    expect(home).toHaveClass("text-slate-500");
+    expect(build).toHaveClass("text-[#5757e8]");
   });
 
   it("gives every mobile destination a full touch target and elevates Build", () => {

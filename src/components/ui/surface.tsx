@@ -7,11 +7,11 @@ export function Surface({
 }: ComponentProps<"div">) {
   return (
     <div
-      className={`border-border bg-panel rounded-3xl border shadow-[0_18px_60px_-34px_rgba(29,78,216,0.38)] ${className}`}
+      className={`border-border bg-panel rounded-[1.75rem] border shadow-[0_20px_48px_-34px_rgba(36,48,78,0.42)] ${className}`}
       style={{
-        backgroundColor: "#07142f",
-        borderColor: "#1a2d55",
-        color: "#f8fafc",
+        backgroundColor: "#ffffff",
+        borderColor: "#e4e8f1",
+        color: "#18233d",
         ...style,
       }}
       {...props}
