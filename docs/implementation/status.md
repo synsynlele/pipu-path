@@ -10,7 +10,7 @@
 
 ## Released baseline
 
-Stage 23 — Social-Grade Mobile UX & Installable PWA entered Stage 24 from production merge `a2b50dcf23bc437086d842d684d06af5ed76160a`.
+Stage 23 — Social-Grade Mobile UX & Installable PWA is released in production from merge commit `a2b50dcf23bc437086d842d684d06af5ed76160a` and is the baseline Stage 24 supersedes at the presentation/installability layer.
 
 Stage 24 retains that complete developmental engine, privacy model, RLS, safeguarding, evidence lifecycle, five-destination information architecture and resume-first PWA architecture while replacing the remaining dark-first visual treatment and fixing mobile-install discoverability.
 
