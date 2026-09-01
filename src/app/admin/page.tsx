@@ -62,49 +62,58 @@ export default async function AdminPage({
   return (
     <main
       id="main-content"
-      className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14"
+      className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8"
     >
-      <section className="relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-10 text-white sm:px-10 sm:py-14">
+      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,#061027_0%,#0b1f47_58%,#173c82_100%)] px-5 py-8 text-white shadow-[0_28px_80px_-50px_rgba(79,124,255,0.85)] sm:px-8 sm:py-11">
         <div className="absolute -top-28 -right-16 size-72 rounded-full border border-white/10" />
         <div className="relative max-w-4xl">
-          <p className="text-gold font-mono text-xs tracking-[0.2em] uppercase">
-            PipuPath Mission Control
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-6xl">
-            Measure what makes Builders return and build.
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs font-semibold tracking-[0.18em] text-[#e5c96f] uppercase">
+              PipuPath Mission Control
+            </p>
+            <span className="rounded-full border border-white/12 bg-white/7 px-3 py-1.5 text-xs font-semibold text-blue-100">
+              Admin role: {state.role}
+            </span>
+          </div>
+          <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl">
+            Measure whether PipuPath is creating Builders, not screen time.
           </h1>
-          <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-blue-100/78 sm:text-base">
             Aggregate product intelligence only. Private Discovery answers,
             Human Potential Profile prose, reflections, evidence and contact
             details are not part of this dashboard.
           </p>
-          <p className="mt-5 text-sm font-semibold text-slate-400">
-            Admin role: {state.role}
-          </p>
         </div>
       </section>
 
-      <nav
-        aria-label="Analytics observation window"
-        className="mt-6 flex flex-wrap gap-2"
-      >
-        {windows.map((days) => (
-          <Link
-            key={days}
-            href={`/admin?window=${days}`}
-            aria-current={days === windowDays ? "page" : undefined}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-              days === windowDays
-                ? "border-primary bg-primary text-white"
-                : "border-border bg-white text-slate-700"
-            }`}
-          >
-            {days} days
-          </Link>
-        ))}
-      </nav>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-muted text-xs font-semibold tracking-[0.12em] uppercase">
+            Observation window
+          </p>
+          <p className="text-navy mt-1 text-sm font-semibold">
+            Separate signal from noise before making product decisions.
+          </p>
+        </div>
+        <nav aria-label="Analytics observation window" className="flex gap-2">
+          {windows.map((days) => (
+            <Link
+              key={days}
+              href={`/admin?window=${days}`}
+              aria-current={days === windowDays ? "page" : undefined}
+              className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                days === windowDays
+                  ? "border-primary bg-primary text-white"
+                  : "border-border bg-panel text-muted hover:border-primary/35 hover:text-white"
+              }`}
+            >
+              {days} days
+            </Link>
+          ))}
+        </nav>
+      </div>
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+      <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         <Metric
           label="Total Builders"
           value={snapshot.totals.builders}
@@ -137,28 +146,26 @@ export default async function AdminPage({
         />
       </section>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <Surface className="p-6 sm:p-8">
+      <section className="mt-6 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+        <Surface className="p-5 sm:p-7">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
                 Developmental funnel
               </p>
-              <h2 className="text-navy mt-3 text-3xl font-semibold tracking-tight">
+              <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
                 Where Builders currently reach
               </h2>
             </div>
-            <span className="text-muted text-sm">All-time truthful state</span>
+            <span className="text-muted text-xs">All-time truthful state</span>
           </div>
-          <ol className="mt-7 space-y-5">
+          <ol className="mt-6 space-y-4">
             {funnel.map(([label, value]) => {
               const share = percentage(value, snapshot.funnel.joined);
               return (
                 <li key={label}>
                   <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="font-semibold text-slate-800">
-                      {label}
-                    </span>
+                    <span className="text-navy font-semibold">{label}</span>
                     <span className="text-muted">
                       {number(value)} · {share}%
                     </span>
@@ -175,11 +182,11 @@ export default async function AdminPage({
           </ol>
         </Surface>
 
-        <Surface className="p-6 sm:p-8">
+        <Surface className="p-5 sm:p-7">
           <p className="text-gold text-xs font-semibold tracking-[0.16em] uppercase">
             Measurement rule
           </p>
-          <h2 className="text-navy mt-3 text-3xl font-semibold tracking-tight">
+          <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
             Data before feature opinion.
           </h2>
           <p className="text-muted mt-4 leading-7">
@@ -189,36 +196,36 @@ export default async function AdminPage({
             captured.
           </p>
           <div className="border-gold/25 bg-gold/5 mt-6 rounded-2xl border p-5">
-            <p className="text-sm font-semibold text-slate-800">
+            <p className="text-navy text-sm font-semibold">
               Current decision signal
             </p>
             <p className="text-muted mt-2 text-sm leading-6">
-              Compare distinct Builders and repeat Builders by feature. Later
-              Retention Experiment stages can promote this into cohort-based
-              Day-7 and Day-30 retention once enough observation time exists.
+              Compare distinct Builders and repeat Builders by feature. Future
+              retention experiments should promote only the behaviours that
+              correlate with real developmental progress.
             </p>
           </div>
         </Surface>
       </section>
 
-      <Surface className="mt-8 p-6 sm:p-8">
+      <Surface className="mt-6 p-5 sm:p-7">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-primary text-xs font-semibold tracking-[0.16em] uppercase">
               Feature intelligence
             </p>
-            <h2 className="text-navy mt-3 text-3xl font-semibold tracking-tight">
-              Which surfaces are earning repeat use?
+            <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
+              Which surfaces are earning useful repeat use?
             </h2>
           </div>
-          <span className="text-muted text-sm">Last {windowDays} days</span>
+          <span className="text-muted text-xs">Last {windowDays} days</span>
         </div>
 
         {featureUsage.length ? (
           <div className="mt-6 overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead>
-                <tr className="border-border border-b text-slate-500">
+                <tr className="border-border text-muted border-b">
                   <th className="py-3 pr-4 font-semibold">Feature</th>
                   <th className="px-4 py-3 font-semibold">Views</th>
                   <th className="px-4 py-3 font-semibold">Builders</th>
@@ -232,19 +239,19 @@ export default async function AdminPage({
                     key={row.featureKey}
                     className="border-border border-b last:border-0"
                   >
-                    <td className="py-4 pr-4 font-semibold text-slate-900 capitalize">
+                    <td className="text-navy py-4 pr-4 font-semibold capitalize">
                       {row.featureKey.replaceAll("_", " ")}
                     </td>
-                    <td className="px-4 py-4 text-slate-700">
+                    <td className="text-muted px-4 py-4">
                       {number(row.views)}
                     </td>
-                    <td className="px-4 py-4 text-slate-700">
+                    <td className="text-muted px-4 py-4">
                       {number(row.builders)}
                     </td>
-                    <td className="px-4 py-4 text-slate-700">
+                    <td className="text-muted px-4 py-4">
                       {number(row.repeatBuilders)}
                     </td>
-                    <td className="py-4 pl-4 font-semibold text-slate-900">
+                    <td className="text-navy py-4 pl-4 font-semibold">
                       {percentage(row.repeatBuilders, row.builders)}%
                     </td>
                   </tr>
@@ -254,13 +261,13 @@ export default async function AdminPage({
           </div>
         ) : (
           <div className="border-border mt-6 rounded-2xl border border-dashed p-6">
-            <p className="font-semibold text-slate-800">
-              Stage 14 feature telemetry has not accumulated yet.
+            <p className="text-navy font-semibold">
+              Feature telemetry has not accumulated enough signal yet.
             </p>
             <p className="text-muted mt-2 text-sm leading-6">
-              This table will populate as authenticated Builders use the
-              instrumented Home, Profile, Journey, Build, Portfolio and Connect
-              surfaces after Stage 14 is deployed.
+              This table populates as authenticated Builders use PipuPath. Stage
+              23 groups that experience into Home, Discover, Build, Connect and
+              Profile while preserving the deeper product events underneath.
             </p>
           </div>
         )}
