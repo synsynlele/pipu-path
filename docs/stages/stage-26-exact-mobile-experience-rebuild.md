@@ -1,6 +1,6 @@
 # Stage 26 — Exact Mobile Experience Rebuild
 
-**Status:** RELEASE CANDIDATE  
+**Status:** RELEASED — VISUAL PERFECTION CORRECTION IN RELEASE VALIDATION
 **Authority:** User-authorised Stage 26 execution  
 **Base production commit:** `ebbc4e54dd8408b8392eea55f4e36c026b428cc9`  
 **Branch:** `agent/stage-26-exact-mobile-experience`  
@@ -67,3 +67,16 @@ Further visual proof and any remaining Connect/Profile recomposition are release
 - Integration/regression: 225 tests passed.
 - Production Next.js build: PASS.
 - No Supabase migration.
+
+## Post-release visual perfection correction
+
+The first production release proved the product and navigation flows but exposed a cross-app design-system fault: legacy inline Button and Surface colours overrode the Stage 26 light authenticated scope, and several deep routes did not inherit the same shell/navigation grammar.
+
+The correction keeps all backend and domain behaviour intact and makes the approved concept a shared-system authority by:
+
+- removing inline colour fallbacks from shared UI primitives;
+- routing semantic panel and soft-surface tokens through the authenticated scope;
+- guaranteeing readable purple-on-light, white-on-purple and navy-on-white action contrast;
+- placing Build, Guide and Institution inside the common AppShell;
+- removing duplicate Connect/Profile toolbars while retaining access from their concept-matched page controls;
+- validating the entire unit, integration and production-build suite before Preview.

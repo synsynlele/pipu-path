@@ -139,7 +139,7 @@ describe("Stage 20 Opportunity Marketplace structure", () => {
 
   it("keeps the released Stage 20 branch deployment-suppressed under later product stages", () => {
     expect(projectState).toContain("Current stage:** Stage 26");
-    expect(projectState).toContain("Latest released baseline:** Stage 25");
+    expect(projectState).toContain("Latest released baseline:** Stage 26");
     expect(
       vercelConfig.git?.deploymentEnabled?.[
         "agent/stage-20-opportunity-marketplace"

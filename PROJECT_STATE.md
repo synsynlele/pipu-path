@@ -2,13 +2,13 @@
 
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild
 
-**Stage status:** RELEASE CANDIDATE — canonical validation and authenticated desktop/mobile Preview proof are green; merge and production smoke verification remain.
+**Stage status:** VISUAL PERFECTION RELEASE CANDIDATE — Stage 26 is released; the user-requested cross-app consistency correction is locally green and awaits exact-Preview proof, merge and production smoke verification.
 
-**Latest released baseline:** Stage 25 merged to `main` as `ebbc4e54dd8408b8392eea55f4e36c026b428cc9`.
+**Latest released baseline:** Stage 26 merged to `main` as `a31f950b478b7e3a9d483c351865e72c884d5bc2`.
 
-**Stage 26 validated application head:** `5bf1e49e2acf845a274f3bae985245a703cd3d72`.
+**Stage 26 production application head:** `a31f950b478b7e3a9d483c351865e72c884d5bc2`.
 
-**Stage 26 branch:** `agent/stage-26-exact-mobile-experience`.
+**Visual perfection branch:** `agent/stage-26-visual-perfection`.
 
 **Stage 26 authority:** `docs/stages/stage-26-exact-mobile-experience-rebuild.md`.
 
@@ -22,21 +22,23 @@
 
 > **Make building feel as natural as socialising. Keep life as the game.**
 
-Stage 26 rebuilds the presentation and interaction hierarchy around Home, Discover, Build, Connect and Profile while preserving the Stage 0–25 developmental engine, server authority, privacy, safeguarding, Admin isolation and installable-web architecture.
+Stage 26 rebuilds the presentation and interaction hierarchy around Home, Discover, Build, Connect and Profile while preserving the Stage 0–25 developmental engine, server authority, privacy, safeguarding, Admin isolation and installable-web architecture. The visual-perfection correction removes legacy inline theme overrides, resolves all authenticated semantic tokens through one light consumer system and restores missing AppShell coverage without changing domain behaviour.
 
 ## Release evidence
 
-- canonical CI #1225 passed;
+- Stage 26 production merge `a31f950b478b7e3a9d483c351865e72c884d5bc2` is READY on Vercel;
+- visual-perfection local canonical validation passed;
 - 334 unit/coverage tests passed;
 - 225 integration/regression tests passed;
 - strict TypeScript, zero-warning lint, formatting and production build passed;
-- exact application Preview `dpl_C31pZv8xczmqC49tWVjb12z4gjeH` reached READY;
-- authenticated Preview CI #1226 passed on desktop Chrome and iPhone 13;
+- shared Button and Surface primitives no longer carry legacy inline colours;
+- Build, Guide and Institution now inherit the authenticated five-tab AppShell;
+- redundant Connect and Profile secondary navigation bars were removed while their destinations remain available in the page experience;
 - protected-route, onboarding privacy, five-destination navigation, safeguarding, Admin isolation, PWA manifest and horizontal-overflow checks passed;
 - no Supabase migration is required.
 
 ## Final release gates
 
-1. Merge the verified Stage 26 pull request into `main`.
-2. Confirm the matching Vercel production deployment reaches READY.
-3. Smoke-test the canonical production domain and check runtime errors.
+1. Build and inspect one exact-head Preview on authenticated mobile and desktop routes.
+2. Merge the verified visual-perfection pull request into `main`.
+3. Confirm the matching Vercel production deployment reaches READY and smoke-test production telemetry.
