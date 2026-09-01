@@ -70,8 +70,7 @@ function isMobileDevice() {
 
   const ua = navigator.userAgent;
   const regularMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-  const iPadDesktopMode =
-    /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+  const iPadDesktopMode = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
 
   return regularMobile || iPadDesktopMode;
 }
@@ -136,7 +135,8 @@ function useInstallExperience() {
       if (isStandalone() || isMobileDevice()) {
         state.__pipupathDeferredInstallPrompt = null;
       } else {
-        state.__pipupathDeferredInstallPrompt = event as BeforeInstallPromptEvent;
+        state.__pipupathDeferredInstallPrompt =
+          event as BeforeInstallPromptEvent;
       }
 
       syncInstallState();
