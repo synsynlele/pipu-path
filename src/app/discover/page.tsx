@@ -79,14 +79,15 @@ export default async function DiscoverPage() {
               {state.mission?.title ?? state.destination.label}
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
-              {state.mission?.mission_statement ?? state.destination.description}
+              {state.mission?.mission_statement ??
+                state.destination.description}
             </p>
 
             <div className="mt-5 rounded-[1.5rem] bg-[#f7f8fc] p-4">
               <p className="text-xs font-semibold text-slate-400 uppercase">
                 What changes this picture?
               </p>
-              <p className="mt-2 text-sm font-semibold leading-6 text-[#26324d]">
+              <p className="mt-2 text-sm leading-6 font-semibold text-[#26324d]">
                 What you attempt, prove, reflect on and build. PipuPath keeps
                 updating the picture without reducing you to one AI label.
               </p>
@@ -96,7 +97,11 @@ export default async function DiscoverPage() {
               <ButtonLink href={primaryHref} className="rounded-full">
                 {primaryLabel} →
               </ButtonLink>
-              <ButtonLink href="/guide" variant="secondary" className="rounded-full">
+              <ButtonLink
+                href="/guide"
+                variant="secondary"
+                className="rounded-full"
+              >
                 Ask Pipu
               </ButtonLink>
             </div>

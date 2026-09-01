@@ -37,8 +37,12 @@ export function AuthShell({
           </div>
         </div>
         <div className="relative flex gap-2 text-xs font-semibold text-slate-500">
-          <span className="rounded-full bg-white/80 px-3 py-2">Private by default</span>
-          <span className="rounded-full bg-white/80 px-3 py-2">Progress through action</span>
+          <span className="rounded-full bg-white/80 px-3 py-2">
+            Private by default
+          </span>
+          <span className="rounded-full bg-white/80 px-3 py-2">
+            Progress through action
+          </span>
         </div>
       </section>
 

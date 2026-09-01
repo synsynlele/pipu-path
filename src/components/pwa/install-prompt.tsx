@@ -121,7 +121,10 @@ function InstallSheet({
 
         <ol className="mt-5 space-y-3">
           {instructions.steps.map((step, index) => (
-            <li key={step} className="flex gap-3 text-sm leading-6 text-slate-600">
+            <li
+              key={step}
+              className="flex gap-3 text-sm leading-6 text-slate-600"
+            >
               <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#5757e8] text-xs font-bold text-white">
                 {index + 1}
               </span>
@@ -143,8 +146,9 @@ export function InstallPwaButton({ compact = false }: { compact?: boolean }) {
   const [promptEvent, setPromptEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
-  const [instructions, setInstructions] =
-    useState<InstallInstructions | null>(null);
+  const [instructions, setInstructions] = useState<InstallInstructions | null>(
+    null,
+  );
 
   useEffect(() => {
     const handlePrompt = (event: Event) => {

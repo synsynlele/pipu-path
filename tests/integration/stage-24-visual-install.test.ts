@@ -13,7 +13,7 @@ const manifest = read("src/app/manifest.ts");
 
 describe("Stage 24 visual fidelity and mobile installation", () => {
   it("makes the application bright-first rather than globally dark", () => {
-    expect(globals).toContain('--background: #f7f8fc');
+    expect(globals).toContain("--background: #f7f8fc");
     expect(globals).toContain("color-scheme: light");
     expect(globals).toContain("--color-panel: #ffffff");
     expect(globals).not.toContain(".bg-white {\n  background-color: #07142f;");

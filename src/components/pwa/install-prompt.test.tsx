@@ -18,7 +18,9 @@ describe("PipuPath install experience", () => {
 
     expect(screen.getByRole("dialog")).toBeVisible();
     expect(screen.getByText("Add to your phone")).toBeVisible();
-    expect(screen.getByText(/Add to Home Screen|Install PipuPath/)).toBeVisible();
+    expect(
+      screen.getByText(/Add to Home Screen|Install PipuPath/),
+    ).toBeVisible();
   });
 
   it("offers a visible return-to-app install card on Home", () => {

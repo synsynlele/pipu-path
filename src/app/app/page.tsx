@@ -144,12 +144,18 @@ export default async function HomePage() {
       {adminRole ? (
         <section className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#eadfbf] bg-[#fffaf0] px-4 py-3">
           <div>
-            <p className="text-sm font-semibold text-[#5d4920]">Mission Control</p>
+            <p className="text-sm font-semibold text-[#5d4920]">
+              Mission Control
+            </p>
             <p className="mt-0.5 text-xs text-[#8a7446] capitalize">
               Platform {adminRole}
             </p>
           </div>
-          <ButtonLink href="/admin" variant="secondary" className="min-h-10 rounded-full">
+          <ButtonLink
+            href="/admin"
+            variant="secondary"
+            className="min-h-10 rounded-full"
+          >
             Open admin
           </ButtonLink>
         </section>
@@ -219,7 +225,10 @@ export default async function HomePage() {
           <h2 id="path-heading" className="text-sm font-bold text-[#18233d]">
             Your path
           </h2>
-          <Link href="/discover" className="text-xs font-semibold text-[#5757e8]">
+          <Link
+            href="/discover"
+            className="text-xs font-semibold text-[#5757e8]"
+          >
             Explore →
           </Link>
         </div>
@@ -266,7 +275,10 @@ export default async function HomePage() {
                 Progress that came from action
               </h2>
             </div>
-            <Link href="/profile" className="text-sm font-semibold text-[#5757e8]">
+            <Link
+              href="/profile"
+              className="text-sm font-semibold text-[#5757e8]"
+            >
               Profile →
             </Link>
           </div>
@@ -338,7 +350,11 @@ export default async function HomePage() {
               Ask for private guidance grounded in your evidence and next
               real-world action.
             </p>
-            <ButtonLink href="/guide" variant="secondary" className="mt-4 rounded-full">
+            <ButtonLink
+              href="/guide"
+              variant="secondary"
+              className="mt-4 rounded-full"
+            >
               Ask Pipu
             </ButtonLink>
           </Surface>
@@ -354,7 +370,11 @@ export default async function HomePage() {
               No follower contest. Connect around missions, capabilities and
               useful collaboration.
             </p>
-            <ButtonLink href="/connect" variant="secondary" className="mt-4 rounded-full">
+            <ButtonLink
+              href="/connect"
+              variant="secondary"
+              className="mt-4 rounded-full"
+            >
               Explore Connect
             </ButtonLink>
           </Surface>
@@ -388,11 +408,14 @@ function stageHref(
   stage: AdventureStageKey,
   state: Awaited<ReturnType<typeof requireAuthenticatedHomeState>>,
 ) {
-  if (stage === "discovery" || stage === "potential-profile") return "/discover";
+  if (stage === "discovery" || stage === "potential-profile")
+    return "/discover";
   if (stage === "mission") return "/mission";
   if (stage === "journey") return "/journey";
-  if (stage === "quests") return state.quest?.id ? `/quests/${state.quest.id}` : "/quests";
-  if (stage === "project") return state.project?.id ? `/projects/${state.project.id}` : "/projects";
+  if (stage === "quests")
+    return state.quest?.id ? `/quests/${state.quest.id}` : "/quests";
+  if (stage === "project")
+    return state.project?.id ? `/projects/${state.project.id}` : "/projects";
   return "/portfolio";
 }
 
