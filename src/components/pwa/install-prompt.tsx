@@ -12,6 +12,11 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<InstallChoice>;
 }
 
+type PwaInstallWindow = Window & {
+  __pipupathDeferredInstallPrompt?: BeforeInstallPromptEvent | null;
+  __pipupathAppInstalled?: boolean;
+};
+
 type InstallInstructions = {
   title: string;
   intro: string;
@@ -19,7 +24,16 @@ type InstallInstructions = {
 };
 
 const INSTALL_NUDGE_KEY = "pipupath-install-nudge-dismissed-at";
+const INSTALL_STATE_EVENT = "pipupath:install-state";
 const NUDGE_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+
+function installWindow() {
+  return window as PwaInstallWindow;
+}
+
+function publishInstallState() {
+  window.dispatchEvent(new Event(INSTALL_STATE_EVENT));
+}
 
 function isStandalone() {
   if (typeof window === "undefined") return false;
@@ -264,8 +278,6 @@ export function InstallPwaButton({
   compact?: boolean;
   autoNudge?: boolean;
 }) {
-  const [promptEvent, setPromptEvent] =
-    useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [instructions, setInstructions] = useState<InstallInstructions | null>(
     null,
@@ -273,21 +285,38 @@ export function InstallPwaButton({
   const [showCoach, setShowCoach] = useState(false);
 
   useEffect(() => {
-    const handlePrompt = (event: Event) => {
-      event.preventDefault();
-      setPromptEvent(event as BeforeInstallPromptEvent);
-    };
-    const handleInstalled = () => {
-      setInstalled(true);
-      setPromptEvent(null);
-      setInstructions(null);
-      setShowCoach(false);
+    const syncInstallState = () => {
+      const nextInstalled =
+        isStandalone() || installWindow().__pipupathAppInstalled === true;
+      setInstalled(nextInstalled);
+
+      if (nextInstalled) {
+        setInstructions(null);
+        setShowCoach(false);
+      }
     };
 
+    const handlePrompt = (event: Event) => {
+      event.preventDefault();
+      installWindow().__pipupathDeferredInstallPrompt =
+        event as BeforeInstallPromptEvent;
+      publishInstallState();
+    };
+
+    const handleInstalled = () => {
+      installWindow().__pipupathDeferredInstallPrompt = null;
+      installWindow().__pipupathAppInstalled = true;
+      syncInstallState();
+      publishInstallState();
+    };
+
+    syncInstallState();
+    window.addEventListener(INSTALL_STATE_EVENT, syncInstallState);
     window.addEventListener("beforeinstallprompt", handlePrompt);
     window.addEventListener("appinstalled", handleInstalled);
 
     return () => {
+      window.removeEventListener(INSTALL_STATE_EVENT, syncInstallState);
       window.removeEventListener("beforeinstallprompt", handlePrompt);
       window.removeEventListener("appinstalled", handleInstalled);
     };
@@ -316,15 +345,24 @@ export function InstallPwaButton({
       return;
     }
 
+    const promptEvent = installWindow().__pipupathDeferredInstallPrompt;
     if (promptEvent) {
-      await promptEvent.prompt();
-      const choice = await promptEvent.userChoice;
-      if (choice.outcome === "accepted") {
-        setInstalled(true);
-      } else {
-        rememberNudgeDismissal();
+      installWindow().__pipupathDeferredInstallPrompt = null;
+      publishInstallState();
+
+      try {
+        await promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+
+        if (choice.outcome === "accepted") {
+          setInstalled(true);
+          setInstructions(null);
+        } else {
+          rememberNudgeDismissal();
+        }
+      } catch {
+        setInstructions(instructionsForCurrentDevice());
       }
-      setPromptEvent(null);
       return;
     }
 

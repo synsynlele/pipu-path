@@ -5,6 +5,29 @@ import "./globals.css";
 
 const productionUrl = new URL("https://www.pipupath.name.ng");
 
+const pwaInstallCaptureScript = `
+(() => {
+  if (window.__pipupathInstallCaptureReady) return;
+  window.__pipupathInstallCaptureReady = true;
+
+  const publishInstallState = () => {
+    window.dispatchEvent(new Event("pipupath:install-state"));
+  };
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    window.__pipupathDeferredInstallPrompt = event;
+    publishInstallState();
+  });
+
+  window.addEventListener("appinstalled", () => {
+    window.__pipupathDeferredInstallPrompt = null;
+    window.__pipupathAppInstalled = true;
+    publishInstallState();
+  });
+})();
+`;
+
 export const metadata: Metadata = {
   title: {
     default: "PipuPath — The University for Human Potential",
@@ -49,6 +72,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <script dangerouslySetInnerHTML={{ __html: pwaInstallCaptureScript }} />
         <ProductTelemetry />
         {children}
       </body>
