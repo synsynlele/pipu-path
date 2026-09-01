@@ -95,10 +95,9 @@ async function isRelatedAndroidAppInstalled() {
 
   try {
     const installedApps = await relatedAppsNavigator.getInstalledRelatedApps();
-    return installedApps.some(
-      (app) =>
-        app.platform === "play" && app.id === ANDROID_APP_PACKAGE_ID,
-    );
+    return installedApps.some((app) => {
+      return app.platform === "play" && app.id === ANDROID_APP_PACKAGE_ID;
+    });
   } catch {
     return false;
   }

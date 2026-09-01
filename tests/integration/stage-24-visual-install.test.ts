@@ -42,7 +42,7 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     );
   });
 
-  it("separates Android download, installed mobile app, and native desktop PWA installation", () => {
+  it("separates Android website, app, and desktop PWA installation", () => {
     expect(publicShell).toContain("InstallPwaButton compact autoNudge");
     expect(publicShell).not.toContain(
       'href="/download"\n              variant="ghost"',
@@ -58,7 +58,9 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(install).toContain("desktopInstallable");
     expect(install).toContain("isAndroidAppShell");
     expect(install).toContain("getInstalledRelatedApps");
-    expect(install).toContain('ANDROID_APP_PACKAGE_ID = "ng.name.pipupath.lite"');
+    expect(install).toContain(
+      'ANDROID_APP_PACKAGE_ID = "ng.name.pipupath.lite"',
+    );
     expect(install).not.toContain("Add to Home Screen");
     expect(install).toContain("Download PipuPath Lite");
     expect(install).toContain("/downloads/PipuPath-Lite-1.0.0.apk");

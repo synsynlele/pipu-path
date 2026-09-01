@@ -19,17 +19,19 @@ type TestInstallWindow = Window & {
   __pipupathAppInstalled?: boolean;
 };
 
-type TestNavigator = Navigator & {
-  getInstalledRelatedApps?: () => Promise<
-    Array<{ id?: string; platform?: string }>
-  >;
+type InstalledRelatedApp = {
+  id?: string;
+  platform?: string;
 };
 
+type TestNavigator = Navigator & {
+  getInstalledRelatedApps?: () => Promise<InstalledRelatedApp[]>;
+};
+
+const testNavigator = navigator as TestNavigator;
 const originalUserAgent = navigator.userAgent;
 const originalReferrer = document.referrer;
-const originalGetInstalledRelatedApps = (
-  navigator as TestNavigator
-).getInstalledRelatedApps;
+const originalGetInstalledRelatedApps = testNavigator.getInstalledRelatedApps;
 
 function setUserAgent(value: string) {
   Object.defineProperty(window.navigator, "userAgent", {
@@ -130,7 +132,9 @@ describe("PipuPath install experience", () => {
 
     render(<InstallPwaButton />);
 
-    await waitFor(() => expect(getInstalledRelatedApps).toHaveBeenCalledTimes(1));
+    await waitFor(() => {
+      expect(getInstalledRelatedApps).toHaveBeenCalledTimes(1);
+    });
     expect(
       screen.queryByRole("button", { name: "Download PipuPath Lite" }),
     ).not.toBeInTheDocument();
