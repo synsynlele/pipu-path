@@ -78,7 +78,7 @@ The application tree at `53ab9cc2303bb4b02160108f343837db2090d419` passed:
 
 The exact application tree was then deployed once through Preview carrier commit `9f4a168d01b89da0db796447376eb8ce0e1e81e6`. The carrier commit contains no file changes and has the same tree SHA as the validated application head.
 
-One deliberate exact-head Vercel Preview is READY: `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY and deployed verification confirmed:
+Preview proof is complete: one deliberate exact-head Vercel Preview is READY. Deployment `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY and deployed verification confirmed:
 
 - bright rendered public and authentication surfaces;
 - light theme metadata;
