@@ -1,0 +1,62 @@
+name: Stage 23 Preview E2E
+
+on:
+  push:
+    branches: [verify/stage23-preview-e2e]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stage23-preview-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Establish Vercel Preview access
+        env:
+          E2E_PREVIEW_SHARE_URL: https://pipu-path-9sg0h7wzn-copyartint-2860s-projects.vercel.app/?_vercel_share=tqWEJ6128mHh0mqXiGKhgXiUBTRMhzzw
+        run: |
+          node <<'NODE'
+          const { chromium } = require('@playwright/test');
+
+          (async () => {
+            const browser = await chromium.launch();
+            const context = await browser.newContext();
+            const page = await context.newPage();
+            const response = await page.goto(process.env.E2E_PREVIEW_SHARE_URL, {
+              waitUntil: 'domcontentloaded',
+            });
+            if (!response || !response.ok()) {
+              throw new Error(`Could not establish Preview access: ${response?.status()}`);
+            }
+            await context.storageState({ path: '.stage23-vercel-auth.json' });
+            await browser.close();
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+      - run: npm run test:e2e
+        env:
+          E2E_BASE_URL: https://pipu-path-9sg0h7wzn-copyartint-2860s-projects.vercel.app
+          E2E_VERCEL_STORAGE_STATE: .stage23-vercel-auth.json
+          E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
+          E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage23-preview-playwright-traces
+          path: test-results
+          if-no-files-found: ignore
