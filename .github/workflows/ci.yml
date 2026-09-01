@@ -24,11 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Print canonical PWA Prettier diff
-        run: |
-          npx prettier --write src/components/pwa/install-prompt.tsx
-          git diff -- src/components/pwa/install-prompt.tsx
-          exit 1
+      - run: npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
