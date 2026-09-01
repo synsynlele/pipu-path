@@ -1,7 +1,7 @@
 # Implementation status
 
 **Current stage:** Stage 24 — Visual Fidelity & Mobile Install Experience  
-**Stage status:** RELEASED — PR #52 is the Stage 24 production release after canonical CI and exact-tree Preview proof.  
+**Stage status:** RELEASE CANDIDATE — application validation and exact-tree Preview proof are complete; final PR validation, merge and production smoke verification remain.  
 **Stage 24 base:** `a2b50dcf23bc437086d842d684d06af5ed76160a`  
 **Validated application head:** `53ab9cc2303bb4b02160108f343837db2090d419`  
 **Stage 24 branch:** `agent/stage-24-visual-fidelity-mobile-install`  
@@ -10,13 +10,13 @@
 
 ## Released baseline
 
-Stage 23 — Social-Grade Mobile UX & Installable PWA is released in production from merge commit `a2b50dcf23bc437086d842d684d06af5ed76160a` and is the baseline Stage 24 supersedes at the presentation/installability layer.
+Stage 23 — Social-Grade Mobile UX & Installable PWA is released in production from merge commit `a2b50dcf23bc437086d842d684d06af5ed76160a` and remains the production baseline until Stage 24 is merged and verified.
 
 Stage 24 retains that complete developmental engine, privacy model, RLS, safeguarding, evidence lifecycle, five-destination information architecture and resume-first PWA architecture while replacing the remaining dark-first visual treatment and fixing mobile-install discoverability.
 
-## Stage 24 released visual system
+## Stage 24 release-candidate visual system
 
-The shared product now uses:
+The shared product candidate uses:
 
 - `#f7f8fc` bright neutral background;
 - white application surfaces;
@@ -67,7 +67,7 @@ The web manifest remains resume-first at `/continue` and uses the bright Stage 2
 
 ## Release validation ledger
 
-Canonical CI passed on exact application head `53ab9cc2303bb4b02160108f343837db2090d419`:
+The application tree at `53ab9cc2303bb4b02160108f343837db2090d419` passed:
 
 - Prettier ✅
 - zero-warning ESLint ✅
@@ -76,9 +76,9 @@ Canonical CI passed on exact application head `53ab9cc2303bb4b02160108f343837db2
 - **225 integration/regression tests** ✅
 - production build ✅
 
-The exact application tree was then deployed once through Preview carrier commit `9f4a168d01b89da0db796447376eb8ce0e1e81e6`.
+The exact application tree was then deployed once through Preview carrier commit `9f4a168d01b89da0db796447376eb8ce0e1e81e6`. The carrier commit contains no file changes and has the same tree SHA as the validated application head.
 
-Vercel Preview `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY and deployed verification confirmed:
+One deliberate exact-head Vercel Preview is READY: `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY and deployed verification confirmed:
 
 - bright rendered public and authentication surfaces;
 - light theme metadata;
@@ -90,7 +90,7 @@ Vercel Preview `dpl_BRewpb2UroYufZjKMn3CZaTcLpp7` reached READY and deployed ver
 - unauthenticated `/app` protection with return target preserved;
 - no error/fatal Preview runtime logs during release proof.
 
-Production smoke verification follows the PR #52 merge and is the final operational release check.
+The branch now requires one final canonical CI pass for the release-ledger/test-only edits. Production smoke verification follows the PR #52 merge and is the final operational release check.
 
 ## Data / migration state
 
@@ -98,7 +98,7 @@ No Supabase migration is required. Existing RLS, onboarding, evidence, progressi
 
 ## Release posture
 
-Stage 24 changes presentation and installation discoverability, not developmental truth or data authority. The release is accepted only with the doctrine intact:
+Stage 24 changes presentation and installation discoverability, not developmental truth or data authority. Production is not declared until the merge deployment and smoke checks pass.
 
 > **The screen is not the game. Life is the game.**
 
