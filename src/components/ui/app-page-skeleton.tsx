@@ -16,7 +16,10 @@ export function AppPageSkeleton() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="flex gap-3 overflow-hidden">
             {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="size-16 shrink-0 rounded-full bg-[#e7e7f0]" />
+              <div
+                key={index}
+                className="size-16 shrink-0 rounded-full bg-[#e7e7f0]"
+              />
             ))}
           </div>
           <div className="mt-6 h-6 w-36 rounded-lg bg-[#e5e5ee]" />
