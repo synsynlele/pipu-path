@@ -6,6 +6,7 @@ const variants = {
   secondary: "pp-button-secondary",
   ghost: "pp-button-ghost",
   premium: "pp-button-premium",
+  light: "pp-button-light",
 } as const;
 
 type ButtonVariant = keyof typeof variants;

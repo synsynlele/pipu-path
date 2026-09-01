@@ -27,6 +27,16 @@ describe("AppShell", () => {
     });
     expect(button).toBeVisible();
     expect(button.closest("form")).not.toHaveClass("hidden");
+    expect(
+      within(mobileHeader as HTMLElement).getByRole("link", {
+        name: "PipuPath home",
+      }),
+    ).toBeVisible();
+    expect(
+      within(mobileHeader as HTMLElement).getByRole("button", {
+        name: "Install PipuPath",
+      }),
+    ).toBeVisible();
   });
 
   it("reserves the phone safe area below fixed mobile navigation", () => {

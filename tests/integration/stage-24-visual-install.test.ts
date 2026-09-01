@@ -16,6 +16,7 @@ const surface = read("src/components/ui/surface.tsx");
 const stage26 = read("src/app/stage26.css");
 const buildLayout = read("src/app/build/layout.tsx");
 const guideLayout = read("src/app/guide/layout.tsx");
+const build = read("src/app/build/page.tsx");
 
 describe("Stage 25 blue restoration and mobile installation", () => {
   it("preserves the released blue identity beneath the Stage 26 mobile surface", () => {
@@ -69,6 +70,17 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(surface).not.toContain("backgroundColor");
     expect(stage26).toContain("--panel: #ffffff");
     expect(stage26).toContain("-webkit-text-fill-color: #ffffff");
+    expect(stage26).toContain(".pp-mobile-topbar .pp-install-entry");
+    expect(stage26).toContain(".pp-responsive-action-row");
+    expect(button).toContain('light: "pp-button-light"');
+    expect(appShell).toContain("<BrandMark compact inverse");
+    expect(appShell).toContain("<InstallPwaButton compact autoNudge");
+    expect(home).not.toContain(
+      'className="absolute right-5 bottom-5 left-5 z-10',
+    );
+    expect(build).not.toContain(
+      'className="absolute right-5 bottom-5 left-5 z-10',
+    );
 
     for (const layout of [buildLayout, guideLayout]) {
       expect(layout).toContain("AppShell");

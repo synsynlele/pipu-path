@@ -97,6 +97,20 @@ a {
   -webkit-text-fill-color: currentColor;
 }
 
+.pp-button-light {
+  border-color: #ffffff;
+  background-color: #ffffff;
+  color: #243b78;
+  -webkit-text-fill-color: #243b78;
+  box-shadow: 0 10px 24px -16px rgb(2 8 23 / 65%);
+}
+
+.pp-button-light:hover {
+  border-color: #dbeafe;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
 .pp-button-primary {
   border-color: #4f7cff;
   background-color: #4f7cff;

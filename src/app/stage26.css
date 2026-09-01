@@ -79,6 +79,21 @@
   -webkit-text-fill-color: #ffffff;
 }
 
+.pp-app-experience .pp-button-light {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #4934c8;
+  -webkit-text-fill-color: #4934c8;
+  box-shadow: 0 12px 28px -18px rgb(20 16 74 / 74%);
+}
+
+.pp-app-experience .pp-button-light:hover {
+  border-color: #ffffff;
+  background: #f3f0ff;
+  color: #3d28b3;
+  -webkit-text-fill-color: #3d28b3;
+}
+
 .pp-app-experience .pp-button-primary:hover {
   border-color: #6d5df5;
   background: #6d5df5;
@@ -212,6 +227,25 @@
   color: #ffffff;
 }
 
+.pp-mobile-topbar .pp-install-entry {
+  border-color: rgb(255 255 255 / 28%);
+  background: #ffffff;
+  color: #5436df;
+  -webkit-text-fill-color: #5436df;
+  box-shadow: 0 10px 24px -16px rgb(7 5 42 / 85%);
+}
+
+.pp-mobile-topbar .pp-install-entry:hover {
+  background: #f3f0ff;
+  color: #4329b8;
+}
+
+.pp-hero-white-action {
+  background: #ffffff;
+  color: #281d69;
+  -webkit-text-fill-color: #281d69;
+}
+
 .pp-bottom-navigation {
   background: rgb(255 255 255 / 96%);
   box-shadow: 0 -16px 40px -30px rgb(29 25 87 / 45%);
@@ -271,6 +305,17 @@
   .pp-app-experience main {
     max-width: 46rem;
     margin-inline: auto;
+  }
+}
+
+@media (max-width: 430px) {
+  .pp-responsive-action-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pp-responsive-action-row > .pp-action-button {
+    width: 100%;
   }
 }
 
