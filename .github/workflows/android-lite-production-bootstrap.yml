@@ -1,0 +1,177 @@
+name: PipuPath Lite Production Bootstrap
+
+on:
+  push:
+    branches:
+      - stage-28-pipupath-lite-production-bootstrap
+    paths:
+      - "android-lite/twa-manifest.production.json"
+      - ".github/workflows/android-lite-production-bootstrap.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipupath-lite-production-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap-production-release:
+    name: Build permanent PipuPath Lite 1.0.0
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Verify production PWA contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            https://www.pipupath.name.ng/manifest.webmanifest \
+            --output /tmp/pipupath-manifest.json
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("/tmp/pipupath-manifest.json").read_text())
+          assert manifest["start_url"] == "/continue"
+          assert manifest["display"] == "standalone"
+          assert manifest["scope"] == "/"
+          sizes = {icon.get("sizes") for icon in manifest.get("icons", [])}
+          assert "192x192" in sizes
+          assert "512x512" in sizes
+          print("PipuPath production PWA contract verified.")
+          PY
+
+      - name: Prepare isolated production project
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf android-lite/generated-production android-lite/dist-production
+          mkdir -p android-lite/generated-production android-lite/dist-production
+          cp android-lite/twa-manifest.production.json \
+            android-lite/generated-production/twa-manifest.json
+
+      - name: Generate permanent production signing identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          PASSWORD="$(openssl rand -hex 24)"
+          echo "::add-mask::$PASSWORD"
+
+          keytool -genkeypair \
+            -keystore android-lite/generated-production/pipupath-lite-production.keystore \
+            -alias pipupath-lite \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass "$PASSWORD" \
+            -keypass "$PASSWORD" \
+            -dname "CN=PipuPath Lite, OU=PipuPath, O=KAEC-NG Ltd, L=Lagos, ST=Lagos, C=NG"
+
+          FINGERPRINT="$(keytool -list -v \
+            -keystore android-lite/generated-production/pipupath-lite-production.keystore \
+            -alias pipupath-lite \
+            -storepass "$PASSWORD" \
+            | awk -F': ' '/SHA256:/{print $2; exit}')"
+
+          test -n "$FINGERPRINT"
+          echo "PIPUPATH_PRODUCTION_FINGERPRINT=$FINGERPRINT" >> "$GITHUB_ENV"
+          echo "BUBBLEWRAP_KEYSTORE_PASSWORD=$PASSWORD" >> "$GITHUB_ENV"
+          echo "BUBBLEWRAP_KEY_PASSWORD=$PASSWORD" >> "$GITHUB_ENV"
+
+          cat > android-lite/dist-production/PRODUCTION-KEY-RECOVERY.txt <<EOF
+          PipuPath Lite Production Signing Key
+          ====================================
+          Package: ng.name.pipupath.lite
+          Version: 1.0.0
+          Version code: 1
+          Alias: pipupath-lite
+          Keystore password: $PASSWORD
+          Key password: $PASSWORD
+          SHA-256 certificate fingerprint: $FINGERPRINT
+
+          CRITICAL: Keep this keystore and password permanently. Every direct-download
+          upgrade of ng.name.pipupath.lite must be signed with this exact key.
+          Never commit the keystore or password to GitHub.
+          EOF
+
+          cp android-lite/generated-production/pipupath-lite-production.keystore \
+            android-lite/dist-production/pipupath-lite-production.keystore
+
+      - name: Publish production certificate fingerprint
+        shell: bash
+        run: |
+          printf '%s\n' "$PIPUPATH_PRODUCTION_FINGERPRINT"
+
+      - name: Generate Android project with Bubblewrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -v "${PWD}/android-lite/generated-production:/workspace" \
+            -w /workspace \
+            ghcr.io/googlechromelabs/bubblewrap:1.25.0 \
+            update \
+            --skipVersionUpgrade \
+            --manifest=/workspace/twa-manifest.json
+
+      - name: Build signed production APK and Android App Bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -e BUBBLEWRAP_KEYSTORE_PASSWORD \
+            -e BUBBLEWRAP_KEY_PASSWORD \
+            -v "${PWD}/android-lite/generated-production:/workspace" \
+            -w /workspace \
+            --entrypoint bash \
+            ghcr.io/googlechromelabs/bubblewrap:1.25.0 \
+            -lc '
+              set -eu
+              SDK_ROOT=/root/.bubblewrap/android_sdk
+              SDKMANAGER="$(find "$SDK_ROOT" -type f -name sdkmanager | head -n 1)"
+              test -n "$SDKMANAGER"
+              yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses >/dev/null 2>&1 || true
+              "$SDKMANAGER" \
+                --sdk_root="$SDK_ROOT" \
+                "platforms;android-36" \
+                "build-tools;35.0.0" \
+                "build-tools;36.1.0"
+              bubblewrap build \
+                --skipPwaValidation \
+                --manifest=/workspace/twa-manifest.json \
+                --signingKeyPath=/workspace/pipupath-lite-production.keystore \
+                --signingKeyAlias=pipupath-lite
+            '
+
+      - name: Package official release
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f android-lite/generated-production/app-release-signed.apk
+          test -f android-lite/generated-production/app-release-bundle.aab
+
+          cp android-lite/generated-production/app-release-signed.apk \
+            android-lite/dist-production/PipuPath-Lite-1.0.0.apk
+          cp android-lite/generated-production/app-release-bundle.aab \
+            android-lite/dist-production/PipuPath-Lite-1.0.0.aab
+
+          sha256sum android-lite/dist-production/PipuPath-Lite-1.0.0.apk \
+            | tee android-lite/dist-production/SHA256SUMS.txt
+          sha256sum android-lite/dist-production/PipuPath-Lite-1.0.0.aab \
+            >> android-lite/dist-production/SHA256SUMS.txt
+          sha256sum android-lite/dist-production/pipupath-lite-production.keystore \
+            >> android-lite/dist-production/SHA256SUMS.txt
+
+      - name: Upload official release and signing recovery kit
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipupath-lite-production-1.0.0-bootstrap
+          path: android-lite/dist-production/
+          if-no-files-found: error
+          retention-days: 2
