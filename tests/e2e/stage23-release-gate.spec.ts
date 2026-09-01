@@ -60,9 +60,7 @@ test("Stage 23 Builder shell, onboarding and navigation are production-ready", a
     }),
   ).toBeVisible();
   await expect(page.getByText("Private setup", { exact: true })).toBeVisible();
-  await expect(
-    page.getByText(/not made public by default/i),
-  ).toBeVisible();
+  await expect(page.getByText(/not made public by default/i)).toBeVisible();
 
   const completed = page.getByRole("heading", {
     name: "Your answers are safely preserved.",
@@ -96,7 +94,9 @@ test("Stage 23 safeguarding, operator isolation and deep product assets hold", a
     }),
   ).toBeVisible();
   await expect(
-    page.getByText(/without follower counts, popularity scores or unrestricted private messaging/i),
+    page.getByText(
+      /without follower counts, popularity scores or unrestricted private messaging/i,
+    ),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", {
@@ -117,13 +117,17 @@ test("Stage 23 safeguarding, operator isolation and deep product assets hold", a
   await expect(
     page.getByText(/not unrestricted chat, likes or popularity scores/i),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Open Collaboration" })).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Open Collaboration" }),
+  ).toHaveCount(0);
 
   await page.goto("/admin?window=30");
   await expect(
     page.getByRole("heading", { name: "This path is not available." }),
   ).toBeVisible();
-  await expect(page.getByText("PipuPath Mission Control", { exact: true })).toHaveCount(0);
+  await expect(
+    page.getByText("PipuPath Mission Control", { exact: true }),
+  ).toHaveCount(0);
 
   await page.goto("/portfolio");
   await expect(
@@ -131,9 +135,7 @@ test("Stage 23 safeguarding, operator isolation and deep product assets hold", a
       name: "Your real builds live here. You decide what leaves the Vault.",
     }),
   ).toBeVisible();
-  await expect(
-    page.getByText(/private by default/i).first(),
-  ).toBeVisible();
+  await expect(page.getByText(/private by default/i).first()).toBeVisible();
   await expectFiveDestinationNavigation(page, isMobile);
 
   await page.goto("/opportunities");
