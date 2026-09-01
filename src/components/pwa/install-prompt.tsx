@@ -14,8 +14,31 @@ interface BeforeInstallPromptEvent extends Event {
 
 type InstallInstructions = {
   title: string;
+  intro: string;
   steps: string[];
 };
+
+const INSTALL_NUDGE_KEY = "pipupath-install-nudge-dismissed-at";
+const NUDGE_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+
+function isStandalone() {
+  if (typeof window === "undefined") return false;
+
+  const displayMode =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(display-mode: standalone)").matches;
+  const iosStandalone =
+    "standalone" in window.navigator &&
+    Boolean(
+      (window.navigator as Navigator & { standalone?: boolean }).standalone,
+    );
+
+  return displayMode || iosStandalone;
+}
+
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
 function instructionsForCurrentDevice(): InstallInstructions {
   const ua = navigator.userAgent;
@@ -24,11 +47,12 @@ function instructionsForCurrentDevice(): InstallInstructions {
 
   if (ios) {
     return {
-      title: "Install PipuPath on your iPhone",
+      title: "Add PipuPath to your Home Screen",
+      intro:
+        "Apple requires you to confirm Home Screen installation from the browser. It only takes two taps from the Share menu.",
       steps: [
-        "Open the browser Share menu.",
-        "Choose Add to Home Screen.",
-        "Turn on Open as Web App if your iPhone shows that option, then tap Add.",
+        "Tap the Share button in your browser — the square with the upward arrow.",
+        "Choose Add to Home Screen, then tap Add. If shown, keep Open as Web App enabled.",
       ],
     };
   }
@@ -36,22 +60,45 @@ function instructionsForCurrentDevice(): InstallInstructions {
   if (android) {
     return {
       title: "Install PipuPath on your phone",
+      intro:
+        "Your browser can install PipuPath like an app. If the native Install box did not appear, use the browser menu.",
       steps: [
-        "Open your browser menu (usually ⋮).",
-        "Choose Install app or Add to Home screen.",
-        "Confirm Install so PipuPath appears with your other apps.",
+        "Open the browser menu (usually ⋮).",
+        "Choose Install app or Add to Home screen, then confirm Install.",
       ],
     };
   }
 
   return {
     title: "Install PipuPath",
+    intro: "Keep PipuPath one tap away and open it in its own app window.",
     steps: [
       "Open your browser menu.",
-      "Choose Install app, Add to Home Screen, or Create shortcut.",
-      "Confirm so PipuPath opens in its own app window.",
+      "Choose Install app, Add to Home Screen, or Create shortcut, then confirm.",
     ],
   };
+}
+
+function rememberNudgeDismissal() {
+  try {
+    window.localStorage.setItem(INSTALL_NUDGE_KEY, String(Date.now()));
+  } catch {
+    // Installation must still work when storage is unavailable.
+  }
+}
+
+function recentlyDismissedNudge() {
+  try {
+    const raw = window.localStorage.getItem(INSTALL_NUDGE_KEY);
+    if (!raw) return false;
+    const dismissedAt = Number(raw);
+    return (
+      Number.isFinite(dismissedAt) &&
+      Date.now() - dismissedAt < NUDGE_COOLDOWN_MS
+    );
+  } catch {
+    return false;
+  }
 }
 
 function InstallIcon() {
@@ -73,7 +120,20 @@ function InstallIcon() {
   );
 }
 
-function InstallSheet({
+function CloseButton({ onClose }: { onClose: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClose}
+      aria-label="Close install prompt"
+      className="grid size-9 place-items-center rounded-full border border-white/10 bg-white/8 text-blue-100 transition-colors hover:bg-white/12"
+    >
+      ×
+    </button>
+  );
+}
+
+function InstallInstructionsSheet({
   instructions,
   onClose,
 }: {
@@ -85,47 +145,44 @@ function InstallSheet({
       role="dialog"
       aria-modal="true"
       aria-labelledby="install-pipupath-title"
-      className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/35 p-3 backdrop-blur-[2px] sm:items-center"
+      className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-950/65 p-3 backdrop-blur-[3px] sm:items-center"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-[2rem] border border-slate-200 bg-white p-5 shadow-2xl sm:p-6"
+        className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white shadow-2xl sm:p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-2xl bg-[#eef0ff] text-[#5757e8]">
+            <span className="bg-primary grid size-11 place-items-center rounded-2xl text-white shadow-lg shadow-blue-950/40">
               <InstallIcon />
             </span>
             <div>
-              <p className="text-xs font-semibold tracking-[0.12em] text-[#6f79f7] uppercase">
-                Add to your phone
+              <p className="text-primary-light text-xs font-semibold tracking-[0.12em] uppercase">
+                Put PipuPath on your phone
               </p>
               <h2
                 id="install-pipupath-title"
-                className="mt-1 text-xl font-semibold text-[#18233d]"
+                className="mt-1 text-xl font-semibold text-white"
               >
                 {instructions.title}
               </h2>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close install instructions"
-            className="grid size-9 place-items-center rounded-full bg-slate-100 text-slate-500"
-          >
-            ×
-          </button>
+          <CloseButton onClose={onClose} />
         </div>
+
+        <p className="mt-4 text-sm leading-6 text-blue-100/80">
+          {instructions.intro}
+        </p>
 
         <ol className="mt-5 space-y-3">
           {instructions.steps.map((step, index) => (
             <li
               key={step}
-              className="flex gap-3 text-sm leading-6 text-slate-600"
+              className="flex gap-3 text-sm leading-6 text-blue-50/85"
             >
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#5757e8] text-xs font-bold text-white">
+              <span className="bg-primary grid size-7 shrink-0 place-items-center rounded-full text-xs font-bold text-white">
                 {index + 1}
               </span>
               <span>{step}</span>
@@ -133,22 +190,87 @@ function InstallSheet({
           ))}
         </ol>
 
-        <p className="mt-5 rounded-2xl bg-[#f6f7ff] p-4 text-xs leading-5 text-slate-500">
-          Once installed, PipuPath opens like an app and starts at your exact
-          next step through Continue.
+        <p className="bg-primary-soft/65 mt-5 rounded-2xl border border-white/8 p-4 text-xs leading-5 text-blue-100/75">
+          After installation, PipuPath opens like an app and resumes from your
+          exact next step through Continue.
         </p>
       </div>
     </div>
   );
 }
 
-export function InstallPwaButton({ compact = false }: { compact?: boolean }) {
+function InstallCoach({
+  onInstall,
+  onClose,
+}: {
+  onInstall: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pipupath-install-coach-title"
+      className="fixed inset-0 z-[89] flex items-end justify-center bg-slate-950/55 p-3 backdrop-blur-[2px] sm:items-center"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white shadow-2xl sm:p-6"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <span className="bg-primary grid size-12 place-items-center rounded-2xl text-white shadow-lg shadow-blue-950/40">
+            <InstallIcon />
+          </span>
+          <CloseButton onClose={onClose} />
+        </div>
+        <p className="text-gold mt-5 text-xs font-semibold tracking-[0.14em] uppercase">
+          One tap away
+        </p>
+        <h2
+          id="pipupath-install-coach-title"
+          className="mt-2 text-2xl font-semibold tracking-tight"
+        >
+          Keep PipuPath on your phone.
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-blue-100/80">
+          Open your Mission, Quest or next move without searching for the
+          website again.
+        </p>
+        <button
+          type="button"
+          onClick={onInstall}
+          className="bg-primary hover:bg-primary-light mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold text-white transition-colors"
+        >
+          <InstallIcon />
+          Install PipuPath
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-3 min-h-10 w-full text-sm font-semibold text-blue-100/70"
+        >
+          Maybe later
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function InstallPwaButton({
+  compact = false,
+  autoNudge = false,
+}: {
+  compact?: boolean;
+  autoNudge?: boolean;
+}) {
   const [promptEvent, setPromptEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [instructions, setInstructions] = useState<InstallInstructions | null>(
     null,
   );
+  const [showCoach, setShowCoach] = useState(false);
 
   useEffect(() => {
     const handlePrompt = (event: Event) => {
@@ -159,6 +281,7 @@ export function InstallPwaButton({ compact = false }: { compact?: boolean }) {
       setInstalled(true);
       setPromptEvent(null);
       setInstructions(null);
+      setShowCoach(false);
     };
 
     window.addEventListener("beforeinstallprompt", handlePrompt);
@@ -170,13 +293,25 @@ export function InstallPwaButton({ compact = false }: { compact?: boolean }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!autoNudge || isStandalone() || !isMobileDevice()) return;
+    if (recentlyDismissedNudge()) return;
+
+    const timer = window.setTimeout(() => setShowCoach(true), 2800);
+    return () => window.clearTimeout(timer);
+  }, [autoNudge]);
+
   if (installed) return null;
 
+  function closeCoach() {
+    rememberNudgeDismissal();
+    setShowCoach(false);
+  }
+
   async function install() {
-    if (
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(display-mode: standalone)").matches
-    ) {
+    setShowCoach(false);
+
+    if (isStandalone()) {
       setInstalled(true);
       return;
     }
@@ -184,7 +319,11 @@ export function InstallPwaButton({ compact = false }: { compact?: boolean }) {
     if (promptEvent) {
       await promptEvent.prompt();
       const choice = await promptEvent.userChoice;
-      if (choice.outcome === "accepted") setInstalled(true);
+      if (choice.outcome === "accepted") {
+        setInstalled(true);
+      } else {
+        rememberNudgeDismissal();
+      }
       setPromptEvent(null);
       return;
     }
@@ -198,16 +337,23 @@ export function InstallPwaButton({ compact = false }: { compact?: boolean }) {
         type="button"
         onClick={() => void install()}
         aria-label="Install PipuPath"
-        className={`pp-install-entry touch-manipulation items-center justify-center gap-2 rounded-full border border-[#dedff7] bg-white font-semibold text-[#5757e8] shadow-sm transition-colors hover:bg-[#f4f5ff] ${compact ? "size-10 p-0" : "min-h-10 px-3.5 text-sm"}`}
+        className={`pp-install-entry border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft touch-manipulation items-center justify-center gap-2 rounded-full border font-semibold shadow-sm transition-colors ${compact ? "inline-flex size-10 p-0" : "inline-flex min-h-10 px-3.5 text-sm"}`}
       >
         <InstallIcon />
         {compact ? null : <span>Install</span>}
       </button>
 
+      {showCoach ? (
+        <InstallCoach onInstall={() => void install()} onClose={closeCoach} />
+      ) : null}
+
       {instructions ? (
-        <InstallSheet
+        <InstallInstructionsSheet
           instructions={instructions}
-          onClose={() => setInstructions(null)}
+          onClose={() => {
+            rememberNudgeDismissal();
+            setInstructions(null);
+          }}
         />
       ) : null}
     </>
@@ -216,19 +362,19 @@ export function InstallPwaButton({ compact = false }: { compact?: boolean }) {
 
 export function InstallPwaCard() {
   return (
-    <section className="pp-install-entry w-full rounded-[1.75rem] border border-[#dedff7] bg-gradient-to-br from-[#f2f3ff] via-white to-[#fffaf0] p-5 shadow-[0_18px_46px_-34px_rgba(66,76,170,0.5)] sm:p-6">
+    <section className="pp-install-entry border-primary/25 bg-panel w-full rounded-[1.75rem] border p-5 shadow-[0_18px_46px_-34px_rgba(79,124,255,0.55)] sm:p-6">
       <div className="flex items-start gap-4">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#5757e8] text-white shadow-lg shadow-indigo-200/70">
+        <span className="bg-primary grid size-12 shrink-0 place-items-center rounded-2xl text-white shadow-lg shadow-blue-950/40">
           <InstallIcon />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold tracking-[0.12em] text-[#6f79f7] uppercase">
+          <p className="text-primary-light text-xs font-semibold tracking-[0.12em] uppercase">
             Put PipuPath on your phone
           </p>
-          <h2 className="mt-1 text-lg font-semibold tracking-tight text-[#18233d]">
+          <h2 className="mt-1 text-lg font-semibold tracking-tight text-white">
             Come back to your next move in one tap.
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="text-muted mt-2 text-sm leading-6">
             Install the same PipuPath web app on your Home Screen. No app store
             is required.
           </p>

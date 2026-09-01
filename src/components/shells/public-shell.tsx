@@ -11,11 +11,11 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       >
         Skip to content
       </a>
-      <header className="sticky top-0 z-40 border-b border-[#e8eaf1] bg-white/92 backdrop-blur-xl">
-        <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-3 px-4 sm:px-8 lg:px-12">
+      <header className="border-border bg-panel/90 sticky top-0 z-40 border-b backdrop-blur-xl">
+        <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-8 lg:px-12">
           <BrandMark />
           <div className="flex items-center gap-1.5 sm:gap-3">
-            <InstallPwaButton compact />
+            <InstallPwaButton compact autoNudge />
             <ButtonLink
               href="/login"
               variant="ghost"
@@ -31,19 +31,19 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       {children}
-      <footer className="border-t border-[#e8eaf1] bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-10 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
+      <footer className="border-border bg-panel border-t">
+        <div className="text-muted mx-auto flex max-w-7xl flex-col gap-5 px-5 py-10 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <div>
-            <p className="font-semibold text-[#18233d]">
+            <p className="text-navy font-semibold">
               Potential must become contribution.
             </p>
             <p className="mt-1">© {new Date().getFullYear()} PipuPath</p>
           </div>
           <div className="flex gap-5">
-            <a href="/privacy" className="hover:text-[#5757e8]">
+            <a href="/privacy" className="hover:text-primary-light">
               Privacy
             </a>
-            <a href="/terms" className="hover:text-[#5757e8]">
+            <a href="/terms" className="hover:text-primary-light">
               Terms
             </a>
           </div>

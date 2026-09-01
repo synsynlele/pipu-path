@@ -21,15 +21,15 @@ describe("PipuPath install experience", () => {
     fireEvent.click(screen.getByRole("button", { name: "Install PipuPath" }));
 
     expect(screen.getByRole("dialog")).toBeVisible();
-    expect(screen.getByText("Add to your phone")).toBeVisible();
+    expect(screen.getByText("Install PipuPath")).toBeVisible();
     expect(
       screen.getByText(
-        "Choose Install app, Add to Home Screen, or Create shortcut.",
+        "Choose Install app, Add to Home Screen, or Create shortcut, then confirm.",
       ),
     ).toBeVisible();
   });
 
-  it("offers a visible return-to-app install card on Home", () => {
+  it("offers a visible return-to-app install card when used on Home", () => {
     render(<InstallPwaCard />);
 
     expect(screen.getByText("Put PipuPath on your phone")).toBeVisible();
