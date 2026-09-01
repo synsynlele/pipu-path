@@ -1,7 +1,6 @@
 import { BrandMark } from "@/components/brand/brand-mark";
 import { ContextBackLink } from "@/components/navigation/context-back-link";
 import { AppNavigation } from "@/components/navigation/app-navigation";
-import { InstallPwaButton } from "@/components/pwa/install-prompt";
 import { Button } from "@/components/ui/button";
 import { signOutAction } from "@/modules/identity/application/auth-actions";
 
@@ -33,7 +32,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5">
-            <InstallPwaButton compact autoNudge />
             <form action={signOutAction}>
               <Button
                 type="submit"
@@ -61,7 +59,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <AppNavigation />
 
           <div className="flex items-center gap-2">
-            <InstallPwaButton autoNudge />
             <form action={signOutAction}>
               <Button type="submit" variant="ghost" className="min-h-10 px-3.5">
                 Sign out

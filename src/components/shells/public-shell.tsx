@@ -1,5 +1,5 @@
 import { BrandMark } from "@/components/brand/brand-mark";
-import { InstallPwaButton } from "@/components/pwa/install-prompt";
+import { LandingDistributionButton } from "@/components/pwa/landing-distribution-button";
 import { ButtonLink } from "@/components/ui/button";
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-8 lg:px-12">
           <BrandMark />
           <div className="flex items-center gap-1.5 sm:gap-3">
-            <InstallPwaButton compact autoNudge />
+            <LandingDistributionButton />
             <ButtonLink
               href="/login"
               variant="ghost"

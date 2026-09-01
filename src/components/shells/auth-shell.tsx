@@ -1,5 +1,4 @@
 import { BrandMark } from "@/components/brand/brand-mark";
-import { InstallPwaButton } from "@/components/pwa/install-prompt";
 import { Surface } from "@/components/ui/surface";
 
 export function AuthShell({
@@ -18,9 +17,6 @@ export function AuthShell({
     >
       <div className="absolute top-6 left-5 z-20 sm:left-8 lg:top-12 lg:left-12">
         <BrandMark />
-      </div>
-      <div className="absolute top-6 right-5 z-20 sm:right-8 lg:top-12 lg:right-12">
-        <InstallPwaButton compact autoNudge />
       </div>
 
       <section className="relative hidden overflow-hidden bg-[linear-gradient(145deg,#06132f_0%,#0a2251_58%,#173c82_100%)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
