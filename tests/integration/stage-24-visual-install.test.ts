@@ -24,9 +24,9 @@ describe("Stage 24 visual fidelity and mobile installation", () => {
 
   it("uses the approved social-grade interaction grammar on Home and Discover", () => {
     expect(home).toContain("Your path");
-    expect(home).toContain("Come back to your next move in one tap.");
     expect(home).toContain("Ready when you are");
     expect(home).toContain("InstallPwaCard");
+    expect(install).toContain("Come back to your next move in one tap.");
     expect(discover).toContain("Keep learning who you are by doing.");
     expect(discover).toContain("Small places to understand yourself better");
     expect(discover).toContain("Useful, bounded, no endless feed.");
