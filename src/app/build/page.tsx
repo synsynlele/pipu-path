@@ -29,23 +29,17 @@ function currentAction(state: HomeState) {
           : state.quest.status === "available"
             ? "Start Quest"
             : "Do Next Step",
-      progress:
-        state.quest.status === "evidence_submitted"
-          ? 82
-          : state.quest.status === "active"
-            ? 56
-            : 28,
+      progress: null,
     };
   }
 
   if (state.project?.id && state.project.status === "active") {
-    const progress = state.projectProgress
-      ? Math.round(
-          (state.projectProgress.completed /
-            Math.max(1, state.projectProgress.total)) *
-            100,
-        )
-      : 24;
+    const progress =
+      state.projectProgress && state.projectProgress.total > 0
+        ? Math.round(
+            (state.projectProgress.completed / state.projectProgress.total) * 100,
+          )
+        : null;
     return {
       title: state.project.title,
       detail: state.projectProgress
@@ -64,7 +58,7 @@ function currentAction(state: HomeState) {
         "Your Journey is the path. Open it and move into the next real-world challenge.",
       href: "/journey",
       label: "Open Journey",
-      progress: 18,
+      progress: null,
     };
   }
 
@@ -73,7 +67,7 @@ function currentAction(state: HomeState) {
     detail: state.destination.description,
     href: state.destination.path,
     label: state.destination.label,
-    progress: 8,
+    progress: null,
   };
 }
 
@@ -127,16 +121,24 @@ export default async function BuildPage() {
             />
 
             <div className="absolute right-5 bottom-5 left-5 z-10 sm:right-7 sm:bottom-7 sm:left-7">
-              <div className="h-2.5 overflow-hidden rounded-full bg-white/18">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#2bd5c1] via-[#6c7bf8] to-[#b277ff]"
-                  style={{ width: `${action.progress}%` }}
-                />
-              </div>
-              <div className="mt-2 flex items-center justify-between gap-3 text-xs text-indigo-50/85">
-                <span>Keep the momentum in real life.</span>
-                <span>{action.progress}%</span>
-              </div>
+              {action.progress !== null ? (
+                <>
+                  <div className="h-2.5 overflow-hidden rounded-full bg-white/18">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#2bd5c1] via-[#6c7bf8] to-[#b277ff]"
+                      style={{ width: `${action.progress}%` }}
+                    />
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-3 text-xs text-indigo-50/85">
+                    <span>Project milestone progress</span>
+                    <span>{action.progress}%</span>
+                  </div>
+                </>
+              ) : (
+                <div className="rounded-2xl border border-white/12 bg-white/8 px-3 py-2 text-xs font-semibold text-indigo-50/85 backdrop-blur-sm">
+                  Your next move comes from your saved Builder state.
+                </div>
+              )}
             </div>
           </section>
         </div>
