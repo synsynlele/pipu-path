@@ -1,8 +1,12 @@
-import { render, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, render, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppNavigation } from "./app-navigation";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/projects/active" }));
+
+afterEach(() => {
+  cleanup();
+});
 
 describe("AppNavigation", () => {
   it("exposes five human destinations and keeps Build current for project work", () => {
