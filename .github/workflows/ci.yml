@@ -24,6 +24,28 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Stage 26 formatting carrier
+        run: >-
+          npx prettier --write
+          src/app/app/page.tsx
+          src/app/build/page.tsx
+          src/app/discover/page.tsx
+          src/app/stage26.css
+          src/components/navigation/app-navigation.tsx
+          src/components/onboarding/onboarding-shell.tsx
+          src/components/ui/app-page-skeleton.tsx
+      - name: Upload Stage 26 formatted source
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage26-formatted-source
+          path: |
+            src/app/app/page.tsx
+            src/app/build/page.tsx
+            src/app/discover/page.tsx
+            src/app/stage26.css
+            src/components/navigation/app-navigation.tsx
+            src/components/onboarding/onboarding-shell.tsx
+            src/components/ui/app-page-skeleton.tsx
       - run: npm run validate
 
   staging-e2e:
