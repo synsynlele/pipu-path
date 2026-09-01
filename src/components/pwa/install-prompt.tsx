@@ -311,15 +311,16 @@ export function InstallPwaButton({
     return () => window.clearTimeout(timer);
   }, [autoNudge, eligible, experience.ready]);
 
-  useEffect(() => {
-    if (!eligible) setShowCoach(false);
-  }, [eligible]);
-
   if (!experience.ready || experience.installed || !eligible) return null;
 
   function closeCoach() {
     rememberNudgeDismissal();
     setShowCoach(false);
+  }
+
+  function runInstall() {
+    setShowCoach(false);
+    void experience.install();
   }
 
   const downloadMode = experience.androidWebsite;
@@ -329,7 +330,7 @@ export function InstallPwaButton({
     <>
       <button
         type="button"
-        onClick={() => void experience.install()}
+        onClick={runInstall}
         aria-label={
           downloadMode ? "Download PipuPath Lite" : "Install PipuPath"
         }
@@ -343,7 +344,7 @@ export function InstallPwaButton({
 
       {showCoach ? (
         <InstallCoach
-          onInstall={() => void experience.install()}
+          onInstall={runInstall}
           onClose={closeCoach}
           downloadMode={downloadMode}
         />
