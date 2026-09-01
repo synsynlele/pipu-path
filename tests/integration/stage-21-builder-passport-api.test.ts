@@ -143,11 +143,13 @@ describe("Stage 21 Builder Passport/API structure", () => {
     expect(vercelConfig).toContain(
       '"agent/stage-21-builder-passport-api": false',
     );
-    expect(projectState).toContain("Current stage:** Stage 23");
-    expect(projectState).toContain("Stages 0–22");
-    expect(implementationStatus).toContain("Stages 0–22 are released");
+    expect(projectState).toContain("Current stage:** Stage 24");
+    expect(projectState).toContain("Latest released baseline:** Stage 23");
     expect(implementationStatus).toContain(
-      "A deliberate Preview is reserved for the exact green release candidate",
+      "Stage 23 — Social-Grade Mobile UX & Installable PWA is released in production",
+    );
+    expect(implementationStatus).toContain(
+      "one deliberate exact-head Vercel Preview is READY",
     );
   });
 });
