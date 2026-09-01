@@ -27,7 +27,7 @@ jobs:
       - run: npm run validate
 
   staging-e2e:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -38,9 +38,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e
+      - run: npx playwright test tests/e2e/stage23-release-gate.spec.ts
         env:
-          E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+          E2E_BASE_URL: https://pipu-path-ma0g7xpk1-copyartint-2860s-projects.vercel.app
           E2E_STAGE3_EMAIL: ${{ secrets.E2E_STAGE3_EMAIL }}
           E2E_STAGE3_PASSWORD: ${{ secrets.E2E_STAGE3_PASSWORD }}
       - name: Upload browser traces on failure
