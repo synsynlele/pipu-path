@@ -24,7 +24,25 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Stage 24 canonical formatting diagnostic
+        run: |
+          npx prettier --write \
+            src/app/app/page.tsx \
+            src/app/discover/page.tsx \
+            src/components/pwa/install-prompt.test.tsx \
+            src/components/pwa/install-prompt.tsx \
+            src/components/shells/auth-shell.tsx \
+            src/components/shells/public-shell.tsx \
+            tests/integration/stage-24-visual-install.test.ts
+          git diff -- \
+            src/app/app/page.tsx \
+            src/app/discover/page.tsx \
+            src/components/pwa/install-prompt.test.tsx \
+            src/components/pwa/install-prompt.tsx \
+            src/components/shells/auth-shell.tsx \
+            src/components/shells/public-shell.tsx \
+            tests/integration/stage-24-visual-install.test.ts
+          exit 1
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
