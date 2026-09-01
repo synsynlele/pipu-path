@@ -21,7 +21,8 @@ describe("Stage 23 social-grade mobile and PWA foundation", () => {
   });
 
   it("keeps Home and Discover action-led instead of introducing an infinite social feed", () => {
-    expect(home).toContain("Next move");
+    expect(home).toContain("nextMove(");
+    expect(home).toContain("Your next move");
     expect(home).toContain("Your momentum");
     expect(home).toContain("requireAuthenticatedHomeState");
     expect(discover).toContain("Useful places, not an endless feed");
