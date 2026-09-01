@@ -44,9 +44,8 @@ describe("Stage 25 blue restoration and mobile installation", () => {
 
   it("separates Android website, app, and desktop PWA installation", () => {
     expect(publicShell).toContain("InstallPwaButton compact autoNudge");
-    expect(publicShell).not.toContain(
-      'href="/download"\n              variant="ghost"',
-    );
+    expect(publicShell).not.toContain('href="/download"');
+    expect(publicShell).not.toContain("Android Lite");
     expect(authShell).toContain("InstallPwaButton compact autoNudge");
     expect(appShell).toContain("InstallPwaButton autoNudge");
     expect(layout).toContain("beforeinstallprompt");
