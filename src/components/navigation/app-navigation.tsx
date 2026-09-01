@@ -77,7 +77,7 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                     ? primaryBuild
                       ? `relative -mt-4 flex min-h-[5rem] w-full touch-manipulation flex-col items-center justify-center gap-0.5 px-1 text-[0.68rem] font-semibold transition-[color,transform] active:scale-[0.97] ${active ? "text-[#5436df]" : "text-[#646b82]"}`
                       : `flex min-h-[4.5rem] w-full touch-manipulation flex-col items-center justify-center gap-1 px-1 text-[0.68rem] font-semibold transition-[color,transform] active:scale-[0.97] ${active ? "text-[#5436df]" : "text-[#747b90]"}`
-                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary" : "text-[#747b90] hover:bg-primary-soft/70 hover:text-primary"}`
+                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold transition-colors ${active ? "bg-primary-soft text-primary" : "hover:bg-primary-soft/70 hover:text-primary text-[#747b90]"}`
                 }
               >
                 {primaryBuild ? (
