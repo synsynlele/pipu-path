@@ -22,9 +22,129 @@ export function OnboardingShell({
   return (
     <main
       id="main-content"
-      className="min-h-screen bg-[#f7f8fc] text-[#171a3f]"
+      className="pp-onboarding-light min-h-screen bg-[#f7f8fc] text-[#171a3f]"
       style={{ colorScheme: "light" }}
     >
+      <style>{`
+        .pp-onboarding-light {
+          --foreground: #171a3f;
+          --muted: #747b90;
+          --border: #e3e5ef;
+          --panel: #ffffff;
+          --panel-raised: #fbfbfe;
+          --soft-surface: #f3f4f8;
+          --soft-blue-surface: #eef2fb;
+          --color-primary-100: #eeeaff;
+          --color-primary-500: #6547db;
+          --color-primary-700: #5b3be0;
+          --color-navy: #202344;
+          --color-text: #171a3f;
+          color: #171a3f;
+          color-scheme: light;
+        }
+
+        .pp-onboarding-light .bg-white,
+        .pp-onboarding-light .bg-panel {
+          background-color: #ffffff;
+        }
+
+        .pp-onboarding-light .bg-panel-raised {
+          background-color: #fbfbfe;
+        }
+
+        .pp-onboarding-light .bg-primary-soft {
+          background-color: #eeeaff;
+        }
+
+        .pp-onboarding-light .text-navy,
+        .pp-onboarding-light .text-foreground {
+          color: #202344;
+        }
+
+        .pp-onboarding-light .text-muted {
+          color: #747b90;
+        }
+
+        .pp-onboarding-light .text-primary-light {
+          color: #6547db;
+        }
+
+        .pp-onboarding-light .border-border {
+          border-color: #e3e5ef;
+        }
+
+        .pp-onboarding-light input,
+        .pp-onboarding-light select,
+        .pp-onboarding-light textarea {
+          color: #202344;
+          background-color: #ffffff;
+        }
+
+        .pp-onboarding-light input::placeholder,
+        .pp-onboarding-light textarea::placeholder {
+          color: #9ba2b7;
+        }
+
+        .pp-onboarding-light select option {
+          color: #202344;
+          background-color: #ffffff;
+        }
+
+        .pp-onboarding-light .pp-button-primary {
+          border-color: #5b3be0;
+          background: linear-gradient(135deg, #6d5df5 0%, #5436df 100%);
+          color: #ffffff;
+          -webkit-text-fill-color: #ffffff;
+        }
+
+        .pp-onboarding-light .pp-button-primary:hover {
+          border-color: #6d5df5;
+          background: #6d5df5;
+          color: #ffffff;
+          -webkit-text-fill-color: #ffffff;
+        }
+
+        .pp-onboarding-light .pp-button-secondary {
+          border-color: #ddd8f7;
+          background: #f3f0ff;
+          color: #5136ca;
+          -webkit-text-fill-color: #5136ca;
+          box-shadow: none;
+        }
+
+        .pp-onboarding-light .pp-button-secondary:hover {
+          border-color: #c8bef6;
+          background: #ebe6ff;
+          color: #4329b8;
+          -webkit-text-fill-color: #4329b8;
+        }
+
+        .pp-onboarding-light legend,
+        .pp-onboarding-light label,
+        .pp-onboarding-light p,
+        .pp-onboarding-light h1,
+        .pp-onboarding-light h2,
+        .pp-onboarding-light h3,
+        .pp-onboarding-light button,
+        .pp-onboarding-light a {
+          overflow-wrap: anywhere;
+        }
+
+        .pp-onboarding-light li,
+        .pp-onboarding-light fieldset,
+        .pp-onboarding-light form,
+        .pp-onboarding-light label {
+          min-width: 0;
+        }
+
+        .pp-onboarding-light button,
+        .pp-onboarding-light .pp-button-primary,
+        .pp-onboarding-light .pp-button-secondary {
+          max-width: 100%;
+          text-align: center;
+        }
+      `}</style>
+
       <header className="bg-gradient-to-br from-[#17164e] via-[#24205f] to-[#332071] px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-16 text-white sm:px-6">
         <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4">
           <Link href="/" className="text-2xl font-bold tracking-[-0.04em]">
@@ -36,7 +156,10 @@ export function OnboardingShell({
         </div>
       </header>
 
-      <div className="mx-auto -mt-9 w-full max-w-2xl px-4 pb-8 sm:px-6">
+      <div
+        className="mx-auto -mt-9 w-full max-w-2xl px-4 pb-8 sm:px-6"
+        style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
+      >
         <section className="rounded-[2rem] border border-[#ececf4] bg-white p-5 shadow-[0_24px_60px_-38px_rgba(37,32,95,0.45)] sm:p-8">
           <div className="flex items-center justify-between gap-3 text-xs font-semibold">
             <span className="text-[#6547db]">Step {activeStep} of 3</span>
