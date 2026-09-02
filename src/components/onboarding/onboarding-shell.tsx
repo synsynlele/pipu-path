@@ -130,6 +130,13 @@ export function OnboardingShell({
           overflow-wrap: anywhere;
         }
 
+        .pp-onboarding-light li,
+        .pp-onboarding-light fieldset,
+        .pp-onboarding-light form,
+        .pp-onboarding-light label {
+          min-width: 0;
+        }
+
         .pp-onboarding-light button,
         .pp-onboarding-light .pp-button-primary,
         .pp-onboarding-light .pp-button-secondary {
@@ -149,7 +156,10 @@ export function OnboardingShell({
         </div>
       </header>
 
-      <div className="mx-auto -mt-9 w-full max-w-2xl px-4 pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-6">
+      <div
+        className="mx-auto -mt-9 w-full max-w-2xl px-4 pb-8 sm:px-6"
+        style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
+      >
         <section className="rounded-[2rem] border border-[#ececf4] bg-white p-5 shadow-[0_24px_60px_-38px_rgba(37,32,95,0.45)] sm:p-8">
           <div className="flex items-center justify-between gap-3 text-xs font-semibold">
             <span className="text-[#6547db]">Step {activeStep} of 3</span>
@@ -168,7 +178,7 @@ export function OnboardingShell({
                 const completed = step.number < activeStep;
                 const current = step.number === activeStep;
                 return (
-                  <li key={step.number} className="min-w-0 text-center">
+                  <li key={step.number} className="text-center">
                     <span
                       className={`mx-auto grid size-9 place-items-center rounded-full text-xs font-bold ${
                         completed
@@ -181,7 +191,7 @@ export function OnboardingShell({
                       {completed ? "✓" : step.number}
                     </span>
                     <span
-                      className={`mt-2 block truncate text-[0.68rem] font-semibold ${current ? "text-[#4931c4]" : "text-[#8b91a5]"}`}
+                      className={`mt-2 block text-[0.68rem] font-semibold ${current ? "text-[#4931c4]" : "text-[#8b91a5]"}`}
                     >
                       {step.label}
                     </span>
@@ -195,15 +205,15 @@ export function OnboardingShell({
             <p className="text-xs font-bold tracking-[0.13em] text-[#6547db] uppercase">
               One step at a time
             </p>
-            <h1 className="mt-2 break-words text-3xl leading-tight font-bold tracking-[-0.04em] text-[#202344] sm:text-4xl">
+            <h1 className="mt-2 text-3xl font-bold tracking-[-0.04em] text-[#202344] sm:text-4xl">
               {title}
             </h1>
-            <p className="mx-auto mt-3 max-w-xl break-words text-sm leading-6 text-[#747b90] sm:text-base">
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[#747b90] sm:text-base">
               {description}
             </p>
           </section>
 
-          <div className="mt-6 min-w-0 sm:mt-8">{children}</div>
+          <div className="mt-6 sm:mt-8">{children}</div>
         </section>
 
         <p className="mx-auto mt-5 max-w-xl text-center text-xs leading-5 text-[#858b9e]">
