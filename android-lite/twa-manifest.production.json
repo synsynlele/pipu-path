@@ -1,8 +1,8 @@
 {
   "packageId": "ng.name.pipupath.lite",
   "host": "www.pipupath.name.ng",
-  "name": "PipuPath Lite",
-  "launcherName": "PipuPath Lite",
+  "name": "PipuPath",
+  "launcherName": "PipuPath",
   "display": "standalone",
   "themeColor": "#07142f",
   "themeColorDark": "#020817",
@@ -20,8 +20,8 @@
     "path": "./pipupath-lite-production.keystore",
     "alias": "pipupath-lite"
   },
-  "appVersionCode": 2,
-  "appVersion": "1.0.1",
+  "appVersionCode": 3,
+  "appVersion": "1.0.2",
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://www.pipupath.name.ng/manifest.webmanifest",
