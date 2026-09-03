@@ -52,6 +52,15 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: "/downloads/PipuPath-Lite-1.0.0.apk",
+        destination: "/downloads/latest",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
