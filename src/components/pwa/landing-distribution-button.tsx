@@ -19,7 +19,7 @@ type PwaInstallWindow = Window & {
 
 type DistributionMode = "hidden" | "android" | "desktop";
 
-const ANDROID_APK_PATH = "/downloads/PipuPath-Lite-1.0.0.apk";
+const ANDROID_DOWNLOAD_PATH = "/downloads/latest";
 const INSTALL_STATE_EVENT = "pipupath:install-state";
 
 function installWindow() {
@@ -144,7 +144,7 @@ export function LandingDistributionButton() {
 
   async function runDistributionAction() {
     if (mode === "android") {
-      window.location.assign(ANDROID_APK_PATH);
+      window.location.assign(ANDROID_DOWNLOAD_PATH);
       return;
     }
 

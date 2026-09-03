@@ -46,7 +46,7 @@ export default function DownloadPipuPathLitePage() {
               Projects, Connect and Profile stay in sync with the web.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <ButtonLink href={release.apk} download className="min-w-44">
+              <ButtonLink href="/downloads/latest" className="min-w-44">
                 Download PipuPath Lite
               </ButtonLink>
               <ButtonLink
