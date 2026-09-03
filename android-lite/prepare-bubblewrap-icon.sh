@@ -14,10 +14,10 @@ fi
 mkdir -p "${TARGET_DIR}"
 
 # Bubblewrap 1.25.0 decodes iconUrl with Jimp/pngjs. The checked-in artwork is
-# visually valid in browsers, but its PNG container has damaged CRC/chunk
-# structure. Recover the original compressed image stream without redrawing it,
-# verify it expands to the expected 512x512 raster, and wrap it in a minimal,
-# standards-compliant PNG container for the Android build only.
+# visually valid in browsers, but its PNG container is damaged after IDAT.
+# Recover the zlib image stream itself, validate the exact 512x512 scanline
+# payload, then rebuild a minimal standards-compliant PNG. This does not redraw
+# or alter the raster; it only repairs the container and compression wrapper.
 SOURCE_ICON="${SOURCE_ICON}" SANITIZED_ICON="${SANITIZED_ICON}" python3 - <<'PY'
 import math
 import os
@@ -31,7 +31,7 @@ data = source.read_bytes()
 signature = b"\x89PNG\r\n\x1a\n"
 assert data.startswith(signature), "Canonical PipuPath launcher icon is not a PNG."
 
-# IHDR is required to be the first PNG chunk and is still structurally intact.
+# IHDR is the first mandatory PNG chunk and is intact.
 ihdr_length = struct.unpack(">I", data[8:12])[0]
 assert ihdr_length == 13 and data[12:16] == b"IHDR", "Invalid PNG IHDR."
 ihdr = data[16:29]
@@ -40,33 +40,12 @@ width, height, bit_depth, color_type, compression, filter_method, interlace = st
 )
 assert width == 512 and height == 512, f"Expected 512x512 launcher icon; got {width}x{height}."
 assert compression == 0 and filter_method == 0, "Unsupported PNG compression/filter method."
+assert interlace == 0, "Expected non-interlaced PipuPath launcher icon."
 assert color_type in {0, 2, 3, 4, 6}, f"Unsupported PNG color type {color_type}."
 
-
-def scan_chunks(chunk_type: bytes, start: int = 8, stop: int | None = None):
-    stop = len(data) if stop is None else stop
-    found = []
-    pos = start
-    while True:
-        pos = data.find(chunk_type, pos, stop)
-        if pos < 0:
-            break
-        if pos >= 4:
-            length = struct.unpack(">I", data[pos - 4:pos])[0]
-            payload_start = pos + 4
-            payload_end = payload_start + length
-            if payload_end + 4 <= len(data):
-                found.append(
-                    {
-                        "chunk_start": pos - 4,
-                        "type_pos": pos,
-                        "length": length,
-                        "payload": data[payload_start:payload_end],
-                        "chunk_end": payload_end + 4,
-                    }
-                )
-        pos += 1
-    return found
+channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[color_type]
+row_bytes = math.ceil(width * channels * bit_depth / 8)
+expected_raw_size = (row_bytes + 1) * height
 
 
 def make_chunk(chunk_type: bytes, payload: bytes) -> bytes:
@@ -79,73 +58,99 @@ def make_chunk(chunk_type: bytes, payload: bytes) -> bytes:
         + struct.pack(">I", crc)
     )
 
+# Parse only the healthy prefix before IDAT. Palette/transparency live here.
+prefix_chunks = []
+offset = 8 + 4 + 4 + 13 + 4
+first_idat_payload_start = None
+while offset + 8 <= len(data):
+    length = struct.unpack(">I", data[offset:offset + 4])[0]
+    chunk_type = data[offset + 4:offset + 8]
+    payload_start = offset + 8
+    payload_end = payload_start + length
+    if chunk_type == b"IDAT":
+        first_idat_payload_start = payload_start
+        break
+    assert payload_end + 4 <= len(data), "PNG prefix became corrupt before IDAT."
+    prefix_chunks.append((chunk_type, data[payload_start:payload_end]))
+    offset = payload_end + 4
 
-iend_candidates = scan_chunks(b"IEND")
-assert iend_candidates, "PNG is missing a recoverable IEND chunk."
-iend_type_pos = iend_candidates[-1]["type_pos"]
+# If declared prefix parsing could not find IDAT, locate plausible raw markers.
+idat_starts = []
+if first_idat_payload_start is not None:
+    idat_starts.append(first_idat_payload_start)
+pos = 29
+while True:
+    pos = data.find(b"IDAT", pos)
+    if pos < 0:
+        break
+    candidate_start = pos + 4
+    if candidate_start not in idat_starts:
+        idat_starts.append(candidate_start)
+    pos += 4
 
-idat_candidates = [
-    candidate
-    for candidate in scan_chunks(b"IDAT", 29, iend_type_pos)
-    if candidate["length"] > 0 and candidate["chunk_end"] <= iend_type_pos
-]
-assert idat_candidates, "PNG is missing recoverable IDAT image data."
-idat_candidates.sort(key=lambda item: item["chunk_start"])
+assert idat_starts, "PNG is missing a recoverable IDAT marker."
 
-channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[color_type]
-expected_raw_size = None
-if interlace == 0:
-    row_bytes = math.ceil(width * channels * bit_depth / 8)
-    expected_raw_size = (row_bytes + 1) * height
-
-# Try the normal multi-IDAT stream first, then individual candidates. A false
-# "IDAT" byte sequence inside compressed data is therefore rejected by zlib or
-# by the exact decompressed raster-size check.
-attempts = [b"".join(item["payload"] for item in idat_candidates)]
-attempts.extend(item["payload"] for item in idat_candidates)
-compressed_pixels = None
+# A zlib stream carries its own EOF marker, so the damaged PNG length/CRC/IEND
+# metadata is irrelevant. Accept only a stream that reaches EOF and expands to
+# exactly the expected filtered scanline byte count.
 raw_pixels = None
-for candidate_payload in attempts:
+used_start = None
+unused_after_stream = None
+for start in idat_starts:
+    decompressor = zlib.decompressobj()
     try:
-        decoded = zlib.decompress(candidate_payload)
+        decoded = decompressor.decompress(data[start:])
+        decoded += decompressor.flush()
     except zlib.error:
         continue
-    if expected_raw_size is not None and len(decoded) != expected_raw_size:
+    if not decompressor.eof:
         continue
-    compressed_pixels = candidate_payload
+    if len(decoded) != expected_raw_size:
+        continue
     raw_pixels = decoded
+    used_start = start
+    unused_after_stream = len(decompressor.unused_data)
     break
 
-assert compressed_pixels is not None, "Could not recover a valid PNG deflate image stream."
+assert raw_pixels is not None, "Could not recover a complete 512x512 PNG zlib image stream."
+
+# Recompress the exact filtered scanline bytes. PNG filters and pixel indices/
+# channels are unchanged, so the decoded raster remains identical.
+clean_idat = zlib.compress(raw_pixels, level=9)
 
 out = bytearray(signature)
 out += make_chunk(b"IHDR", ihdr)
 
-# Indexed PNGs require PLTE; tRNS is preserved when present so transparency is
-# unchanged. For other color types tRNS is optional but also preserved.
-first_idat_start = idat_candidates[0]["chunk_start"]
+palette = next((payload for kind, payload in prefix_chunks if kind == b"PLTE"), None)
+transparency = next((payload for kind, payload in prefix_chunks if kind == b"tRNS"), None)
 if color_type == 3:
-    palettes = [
-        item
-        for item in scan_chunks(b"PLTE", 29, first_idat_start)
-        if 0 < item["length"] <= 768 and item["length"] % 3 == 0
-    ]
-    assert palettes, "Indexed PNG is missing a recoverable palette."
-    out += make_chunk(b"PLTE", palettes[0]["payload"])
+    assert palette is not None, "Indexed PNG is missing its palette before IDAT."
+    assert len(palette) % 3 == 0 and 0 < len(palette) <= 768, "Invalid indexed PNG palette."
+    out += make_chunk(b"PLTE", palette)
+elif palette is not None:
+    out += make_chunk(b"PLTE", palette)
+if transparency is not None:
+    out += make_chunk(b"tRNS", transparency)
 
-transparency = scan_chunks(b"tRNS", 29, first_idat_start)
-if transparency:
-    out += make_chunk(b"tRNS", transparency[0]["payload"])
-
-out += make_chunk(b"IDAT", compressed_pixels)
+out += make_chunk(b"IDAT", clean_idat)
 out += make_chunk(b"IEND", b"")
 target.write_bytes(bytes(out))
 
+# Validate our own rebuilt container and compressed payload before Bubblewrap.
+rebuilt = target.read_bytes()
+assert rebuilt.startswith(signature)
+rebuilt_idat_pos = rebuilt.find(b"IDAT")
+assert rebuilt_idat_pos >= 4
+rebuilt_len = struct.unpack(">I", rebuilt[rebuilt_idat_pos - 4:rebuilt_idat_pos])[0]
+rebuilt_payload = rebuilt[rebuilt_idat_pos + 4:rebuilt_idat_pos + 4 + rebuilt_len]
+assert zlib.decompress(rebuilt_payload) == raw_pixels
+assert rebuilt.endswith(make_chunk(b"IEND", b""))
+
 print(
-    "Canonical icon stream recovered: "
+    "Canonical icon recovered from its verified zlib raster: "
     f"{width}x{height}, bitDepth={bit_depth}, colorType={color_type}, "
-    f"interlace={interlace}, IDAT candidates={len(idat_candidates)}, "
-    f"decodedBytes={len(raw_pixels)}, repairedBytes={len(out)}."
+    f"decodedBytes={len(raw_pixels)}, sourceIDATOffset={used_start}, "
+    f"ignoredBytesAfterZlibEOF={unused_after_stream}, cleanBytes={len(rebuilt)}."
 )
 PY
 
