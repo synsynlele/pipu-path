@@ -9,6 +9,13 @@ const migration = readFileSync(
   ),
   "utf8",
 );
+const collaborationMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/202609030002_stage_29_school_collaboration.sql",
+  ),
+  "utf8",
+);
 const worldPage = readFileSync(
   join(process.cwd(), "src/app/connect/world/page.tsx"),
   "utf8",
@@ -70,6 +77,23 @@ describe("Stage 29 Builder Network structure", () => {
     expect(migration).toContain("stage29_pair_message_allowed");
     expect(messagesPage).toContain(
       "accepted, currently authorised Builder connections",
+    );
+  });
+
+  it("extends evidence-producing collaboration to protected school pairs without weakening Stage 11", () => {
+    expect(collaborationMigration).toContain(
+      "private.stage29_collaboration_pair_allowed",
+    );
+    expect(collaborationMigration).toContain("first_scope = 'school'");
+    expect(collaborationMigration).toContain("second_scope = 'school'");
+    expect(collaborationMigration).toContain(
+      "private.stage11_builder_connect_eligible(first_user)",
+    );
+    expect(collaborationMigration).toContain(
+      "private.stage15_connection_for_pair(first_user, second_user)",
+    );
+    expect(collaborationMigration).not.toContain(
+      "create or replace function private.stage11_builder_connect_eligible",
     );
   });
 
