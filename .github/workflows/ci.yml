@@ -26,41 +26,6 @@ jobs:
       - run: npm ci
       - run: npm run validate
 
-  stage29-format:
-    if: github.event_name == 'pull_request' && github.head_ref == 'agent/stage-29-builder-network'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Format Stage 29 files
-        run: >-
-          npx prettier --write
-          'src/app/connect/messages/[conversationId]/page.tsx'
-          'src/app/connect/messages/page.tsx'
-          'src/app/connect/world/page.tsx'
-          'src/app/institution/network/page.tsx'
-          'src/modules/builder-network/application/builder-network-actions.ts'
-          'src/modules/builder-network/infrastructure/builder-network-dal.ts'
-          'tests/integration/stage-29-builder-network.test.ts'
-      - uses: actions/upload-artifact@v4
-        with:
-          name: stage29-formatted-files
-          path: |
-            src/app/connect/messages/[conversationId]/page.tsx
-            src/app/connect/messages/page.tsx
-            src/app/connect/world/page.tsx
-            src/app/institution/network/page.tsx
-            src/modules/builder-network/application/builder-network-actions.ts
-            src/modules/builder-network/infrastructure/builder-network-dal.ts
-            tests/integration/stage-29-builder-network.test.ts
-          if-no-files-found: error
-          retention-days: 1
-
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest

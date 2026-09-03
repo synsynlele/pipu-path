@@ -29,7 +29,11 @@ export default async function BuilderMessagesPage() {
                 currently authorised Builder connections.
               </p>
             </div>
-            <ButtonLink href="/connect/world" variant="secondary" className="shrink-0 rounded-full">
+            <ButtonLink
+              href="/connect/world"
+              variant="secondary"
+              className="shrink-0 rounded-full"
+            >
               Builder World
             </ButtonLink>
           </div>
@@ -47,7 +51,9 @@ export default async function BuilderMessagesPage() {
                   className="pp-app-card pp-app-card-interactive flex items-center gap-4 p-4 sm:p-5"
                 >
                   <span className="grid size-12 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#6d5df5] to-[#2b236e] text-sm font-bold text-white">
-                    {conversation.otherUser.preferredName.slice(0, 1).toUpperCase()}
+                    {conversation.otherUser.preferredName
+                      .slice(0, 1)
+                      .toUpperCase()}
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-3">
@@ -66,7 +72,8 @@ export default async function BuilderMessagesPage() {
                       ) : null}
                     </div>
                     <p className="mt-2 truncate text-sm text-[#697086]">
-                      {conversation.lastMessage ?? "Conversation ready. Start with a useful reason to connect."}
+                      {conversation.lastMessage ??
+                        "Conversation ready. Start with a useful reason to connect."}
                     </p>
                   </div>
                 </Link>

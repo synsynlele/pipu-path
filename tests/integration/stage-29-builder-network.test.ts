@@ -68,11 +68,15 @@ describe("Stage 29 Builder Network structure", () => {
   it("requires an accepted relationship before private messaging", () => {
     expect(migration).toContain("connection.status = 'accepted'");
     expect(migration).toContain("stage29_pair_message_allowed");
-    expect(messagesPage).toContain("accepted, currently authorised Builder connections");
+    expect(messagesPage).toContain(
+      "accepted, currently authorised Builder connections",
+    );
   });
 
   it("uses a bounded developmental feed rather than popularity mechanics", () => {
-    expect(migration).toContain("limit greatest(1, least(coalesce(limit_input, 24), 40))");
+    expect(migration).toContain(
+      "limit greatest(1, least(coalesce(limit_input, 24), 40))",
+    );
     expect(worldPage).toContain("Finite feed · purposeful interaction");
     expect(worldPage).toContain("No popularity game");
     expect(worldPage).not.toContain("followers");

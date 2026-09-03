@@ -42,9 +42,7 @@ export async function joinBuilderNetworkAction(formData: FormData) {
 }
 
 export async function withdrawBuilderNetworkAction() {
-  const result = await runBuilderNetworkRpc(
-    "withdraw_stage29_builder_network",
-  );
+  const result = await runBuilderNetworkRpc("withdraw_stage29_builder_network");
   worldResult(result.error ? "error" : "updated");
 }
 
@@ -141,7 +139,9 @@ export async function manageBuilderNetworkConnectionAction(formData: FormData) {
   worldResult(result.error || !result.data ? "error" : "updated");
 }
 
-export async function startBuilderNetworkConversationAction(formData: FormData) {
+export async function startBuilderNetworkConversationAction(
+  formData: FormData,
+) {
   const parsed = builderNetworkConversationSchema.safeParse({
     targetUserId: formData.get("targetUserId"),
   });
@@ -180,9 +180,8 @@ export async function markBuilderNetworkConversationReadAction(
   formData: FormData,
 ) {
   const conversationId = String(formData.get("conversationId") ?? "");
-  const parsed = builderNetworkMessageSchema.shape.conversationId.safeParse(
-    conversationId,
-  );
+  const parsed =
+    builderNetworkMessageSchema.shape.conversationId.safeParse(conversationId);
   if (!parsed.success) messageResult(conversationId, "error");
   const result = await runBuilderNetworkRpc(
     "mark_stage29_builder_network_conversation_read",
@@ -201,18 +200,23 @@ export async function reportBuilderNetworkAction(formData: FormData) {
     messageId: formData.get("messageId") ?? "",
   });
   if (!parsed.success) worldResult("error");
-  const result = await runBuilderNetworkRpc("report_stage29_builder_network_user", {
-    target_user_id_input: parsed.data.targetUserId,
-    reason_code_input: parsed.data.reasonCode,
-    detail_input: parsed.data.detail || null,
-    post_id_input: parsed.data.postId || null,
-    comment_id_input: parsed.data.commentId || null,
-    message_id_input: parsed.data.messageId || null,
-  });
+  const result = await runBuilderNetworkRpc(
+    "report_stage29_builder_network_user",
+    {
+      target_user_id_input: parsed.data.targetUserId,
+      reason_code_input: parsed.data.reasonCode,
+      detail_input: parsed.data.detail || null,
+      post_id_input: parsed.data.postId || null,
+      comment_id_input: parsed.data.commentId || null,
+      message_id_input: parsed.data.messageId || null,
+    },
+  );
   worldResult(result.error || !result.data ? "error" : "updated");
 }
 
-export async function setSchoolBuilderNetworkSettingsAction(formData: FormData) {
+export async function setSchoolBuilderNetworkSettingsAction(
+  formData: FormData,
+) {
   const parsed = schoolBuilderNetworkSettingsSchema.safeParse({
     workspaceId: formData.get("workspaceId"),
     networkEnabled: formData.get("networkEnabled") === "on",

@@ -46,7 +46,11 @@ export default async function BuilderConversationPage({
                 @{conversation.otherUser.username}
               </p>
             </div>
-            <ButtonLink href="/connect/messages" variant="secondary" className="shrink-0 rounded-full">
+            <ButtonLink
+              href="/connect/messages"
+              variant="secondary"
+              className="shrink-0 rounded-full"
+            >
               Inbox
             </ButtonLink>
           </div>
@@ -56,7 +60,10 @@ export default async function BuilderConversationPage({
       <div className="relative -mt-4 rounded-t-[2rem] bg-[#f7f8fc] pt-5">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           {query.status === "error" ? (
-            <p role="alert" className="mb-4 rounded-2xl border border-[#f4b7c1] bg-[#fff3f5] p-4 text-sm text-[#a7354a]">
+            <p
+              role="alert"
+              className="mb-4 rounded-2xl border border-[#f4b7c1] bg-[#fff3f5] p-4 text-sm text-[#a7354a]"
+            >
               That message action could not be completed safely.
             </p>
           ) : null}
@@ -64,13 +71,21 @@ export default async function BuilderConversationPage({
           <section className="pp-app-card p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#ececf3] pb-4">
               <p className="text-xs leading-5 text-[#747b90]">
-                Keep conversation tied to learning, helping or building. Blocking,
-                removing the connection, or a school policy change can close
-                messaging access immediately.
+                Keep conversation tied to learning, helping or building.
+                Blocking, removing the connection, or a school policy change can
+                close messaging access immediately.
               </p>
               <form action={markBuilderNetworkConversationReadAction}>
-                <input type="hidden" name="conversationId" value={conversation.conversationId} />
-                <Button type="submit" variant="ghost" className="min-h-9 rounded-full px-3 text-xs">
+                <input
+                  type="hidden"
+                  name="conversationId"
+                  value={conversation.conversationId}
+                />
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  className="min-h-9 rounded-full px-3 text-xs"
+                >
                   Mark read
                 </Button>
               </form>
@@ -95,14 +110,22 @@ export default async function BuilderConversationPage({
                 })
               ) : (
                 <p className="rounded-2xl bg-[#f8f8fb] p-4 text-sm leading-6 text-[#747b90]">
-                  No messages yet. Start with a specific reason: an idea, a skill,
-                  a problem, a request for help, or a build you can move together.
+                  No messages yet. Start with a specific reason: an idea, a
+                  skill, a problem, a request for help, or a build you can move
+                  together.
                 </p>
               )}
             </div>
 
-            <form action={sendBuilderNetworkMessageAction} className="mt-5 flex items-end gap-2 border-t border-[#ececf3] pt-4">
-              <input type="hidden" name="conversationId" value={conversation.conversationId} />
+            <form
+              action={sendBuilderNetworkMessageAction}
+              className="mt-5 flex items-end gap-2 border-t border-[#ececf3] pt-4"
+            >
+              <input
+                type="hidden"
+                name="conversationId"
+                value={conversation.conversationId}
+              />
               <label className="sr-only" htmlFor="builder-message-body">
                 Message
               </label>

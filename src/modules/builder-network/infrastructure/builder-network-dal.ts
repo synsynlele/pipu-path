@@ -45,7 +45,8 @@ export type BuilderNetworkBuilder = BuilderNetworkPerson & {
   missionTitle: string | null;
   missionStatement: string | null;
   schoolName: string | null;
-  relationship: "none" | "pending" | "accepted" | "declined" | "cancelled" | "removed";
+  relationship:
+    "none" | "pending" | "accepted" | "declined" | "cancelled" | "removed";
 };
 
 export type BuilderNetworkRelationship = BuilderNetworkPerson & {

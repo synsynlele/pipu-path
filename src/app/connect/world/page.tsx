@@ -107,12 +107,17 @@ export default async function BuilderWorldPage({
                 variant="secondary"
                 className="shrink-0 rounded-full"
               >
-                Messages{state.unreadMessages ? ` · ${state.unreadMessages}` : ""}
+                Messages
+                {state.unreadMessages ? ` · ${state.unreadMessages}` : ""}
               </ButtonLink>
             ) : null}
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
-            <ButtonLink href="/connect" variant="ghost" className="rounded-full border border-white/15 bg-white/8 text-white">
+            <ButtonLink
+              href="/connect"
+              variant="ghost"
+              className="rounded-full border border-white/15 bg-white/8 text-white"
+            >
               Connect home
             </ButtonLink>
             <span className="rounded-full border border-white/12 bg-white/8 px-3 py-2 text-xs font-semibold text-indigo-50">
@@ -137,8 +142,8 @@ export default async function BuilderWorldPage({
               <p className="mt-3 max-w-3xl text-sm leading-6 text-[#747b90]">
                 Adults must meet the existing Connect safety requirements.
                 School Builders aged 13–17 also need an active school cohort and
-                their school must deliberately enable the School Builder Network.
-                Under-13 accounts remain outside this social layer.
+                their school must deliberately enable the School Builder
+                Network. Under-13 accounts remain outside this social layer.
               </p>
               <ButtonLink href="/build" className="mt-5 rounded-full">
                 Continue building →
@@ -167,8 +172,8 @@ export default async function BuilderWorldPage({
                   />
                   <span>
                     I understand Builder World is for purposeful building,
-                    collaboration and help—not popularity. I agree to the network
-                    safety rules.
+                    collaboration and help—not popularity. I agree to the
+                    network safety rules.
                   </span>
                 </label>
                 <Button type="submit" className="mt-4 rounded-full">
@@ -190,12 +195,19 @@ export default async function BuilderWorldPage({
                   </div>
                   <span className="rounded-full bg-[#f0ebff] px-3 py-1.5 text-xs font-bold text-[#6042d8]">
                     {state.scope === "school"
-                      ? state.schoolName ?? "School Builder"
+                      ? (state.schoolName ?? "School Builder")
                       : "Builder Network"}
                   </span>
                 </div>
-                <form action={createBuilderNetworkPostAction} className="mt-4 grid gap-3">
-                  <select name="kind" className={inputClass} defaultValue="build_update">
+                <form
+                  action={createBuilderNetworkPostAction}
+                  className="mt-4 grid gap-3"
+                >
+                  <select
+                    name="kind"
+                    className={inputClass}
+                    defaultValue="build_update"
+                  >
                     <option value="build_update">Build update</option>
                     <option value="milestone">Milestone</option>
                     <option value="help_request">I need help</option>
@@ -212,8 +224,8 @@ export default async function BuilderWorldPage({
                   />
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-xs leading-5 text-[#858b9f]">
-                      Private developmental evidence stays private. Post only what
-                      you deliberately want the Builder Network to see.
+                      Private developmental evidence stays private. Post only
+                      what you deliberately want the Builder Network to see.
                     </p>
                     <Button type="submit" className="shrink-0 rounded-full">
                       Share
@@ -229,7 +241,10 @@ export default async function BuilderWorldPage({
                       <p className="text-xs font-bold tracking-[0.12em] text-[#16a28f] uppercase">
                         Builder Feed
                       </p>
-                      <h2 id="builder-feed-heading" className="mt-1 text-xl font-bold text-[#303353]">
+                      <h2
+                        id="builder-feed-heading"
+                        className="mt-1 text-xl font-bold text-[#303353]"
+                      >
                         Movement, not performance
                       </h2>
                     </div>
@@ -241,10 +256,15 @@ export default async function BuilderWorldPage({
                   {state.feed.length ? (
                     <div className="mt-3 grid gap-4">
                       {state.feed.map((post) => (
-                        <article key={post.id} className="pp-app-card p-5 sm:p-6">
+                        <article
+                          key={post.id}
+                          className="pp-app-card p-5 sm:p-6"
+                        >
                           <div className="flex items-start gap-3">
                             <span className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#6d5df5] to-[#2b236e] text-sm font-bold text-white">
-                              {post.author.preferredName.slice(0, 1).toUpperCase()}
+                              {post.author.preferredName
+                                .slice(0, 1)
+                                .toUpperCase()}
                             </span>
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -266,12 +286,13 @@ export default async function BuilderWorldPage({
                             </div>
                           </div>
 
-                          <p className="mt-4 whitespace-pre-wrap text-[0.94rem] leading-7 text-[#41455f]">
+                          <p className="mt-4 text-[0.94rem] leading-7 whitespace-pre-wrap text-[#41455f]">
                             {post.body}
                           </p>
                           {post.project ? (
                             <div className="mt-4 rounded-2xl border border-[#e9e7f4] bg-[#faf9ff] p-3 text-xs text-[#5f6380]">
-                              Linked build: <strong>{post.project.title}</strong>
+                              Linked build:{" "}
+                              <strong>{post.project.title}</strong>
                             </div>
                           ) : null}
 
@@ -285,15 +306,27 @@ export default async function BuilderWorldPage({
                                     : post.reactions.keepBuilding;
                               const active = post.myReaction === reaction;
                               return (
-                                <form key={reaction} action={setBuilderNetworkReactionAction}>
-                                  <input type="hidden" name="postId" value={post.id} />
-                                  <input type="hidden" name="reaction" value={reaction} />
+                                <form
+                                  key={reaction}
+                                  action={setBuilderNetworkReactionAction}
+                                >
+                                  <input
+                                    type="hidden"
+                                    name="postId"
+                                    value={post.id}
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="reaction"
+                                    value={reaction}
+                                  />
                                   <Button
                                     type="submit"
                                     variant={active ? "primary" : "secondary"}
                                     className="min-h-9 rounded-full px-3 py-1.5 text-xs"
                                   >
-                                    {builderNetworkReactionLabel(reaction)}{count ? ` · ${count}` : ""}
+                                    {builderNetworkReactionLabel(reaction)}
+                                    {count ? ` · ${count}` : ""}
                                   </Button>
                                 </form>
                               );
@@ -303,7 +336,10 @@ export default async function BuilderWorldPage({
                           {post.comments.length ? (
                             <div className="mt-4 grid gap-2">
                               {post.comments.map((comment) => (
-                                <div key={comment.id} className="rounded-2xl bg-[#f7f7fb] p-3 text-xs leading-5 text-[#596078]">
+                                <div
+                                  key={comment.id}
+                                  className="rounded-2xl bg-[#f7f7fb] p-3 text-xs leading-5 text-[#596078]"
+                                >
                                   <strong className="text-[#353957]">
                                     {comment.author.preferredName}
                                   </strong>{" "}
@@ -312,13 +348,21 @@ export default async function BuilderWorldPage({
                               ))}
                               {post.commentCount > post.comments.length ? (
                                 <p className="text-xs text-[#8a90a4]">
-                                  {post.commentCount - post.comments.length} more comment(s)
+                                  {post.commentCount - post.comments.length}{" "}
+                                  more comment(s)
                                 </p>
                               ) : null}
                             </div>
                           ) : null}
-                          <form action={addBuilderNetworkCommentAction} className="mt-3 flex gap-2">
-                            <input type="hidden" name="postId" value={post.id} />
+                          <form
+                            action={addBuilderNetworkCommentAction}
+                            className="mt-3 flex gap-2"
+                          >
+                            <input
+                              type="hidden"
+                              name="postId"
+                              value={post.id}
+                            />
                             <input
                               name="body"
                               required
@@ -326,7 +370,11 @@ export default async function BuilderWorldPage({
                               placeholder="Add something useful…"
                               className={inputClass}
                             />
-                            <Button type="submit" variant="secondary" className="shrink-0 rounded-full">
+                            <Button
+                              type="submit"
+                              variant="secondary"
+                              className="shrink-0 rounded-full"
+                            >
                               Reply
                             </Button>
                           </form>
@@ -336,9 +384,9 @@ export default async function BuilderWorldPage({
                   ) : (
                     <div className="pp-app-card mt-3 p-6">
                       <p className="text-sm leading-6 text-[#747b90]">
-                        The feed is quiet. That is okay. Builder World only shows
-                        real posts from eligible people; PipuPath never fabricates
-                        activity to make the network look busy.
+                        The feed is quiet. That is okay. Builder World only
+                        shows real posts from eligible people; PipuPath never
+                        fabricates activity to make the network look busy.
                       </p>
                     </div>
                   )}
@@ -361,7 +409,10 @@ export default async function BuilderWorldPage({
                     </div>
                     <div className="mt-4 grid gap-3">
                       {state.builders.slice(0, 8).map((builder) => (
-                        <div key={builder.userId} className="rounded-2xl border border-[#e8e8f0] bg-[#fbfbfe] p-4">
+                        <div
+                          key={builder.userId}
+                          className="rounded-2xl border border-[#e8e8f0] bg-[#fbfbfe] p-4"
+                        >
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
                               <p className="truncate text-sm font-bold text-[#303353]">
@@ -369,14 +420,33 @@ export default async function BuilderWorldPage({
                               </p>
                               <p className="mt-0.5 truncate text-xs text-[#858b9f]">
                                 @{builder.username}
-                                {builder.schoolName ? ` · ${builder.schoolName}` : ""}
+                                {builder.schoolName
+                                  ? ` · ${builder.schoolName}`
+                                  : ""}
                               </p>
                             </div>
-                            {builder.relationship === "none" || ["declined", "cancelled", "removed"].includes(builder.relationship) ? (
-                              <form action={manageBuilderNetworkConnectionAction}>
-                                <input type="hidden" name="action" value="send" />
-                                <input type="hidden" name="targetUserId" value={builder.userId} />
-                                <Button type="submit" variant="secondary" className="min-h-8 rounded-full px-3 text-xs">
+                            {builder.relationship === "none" ||
+                            ["declined", "cancelled", "removed"].includes(
+                              builder.relationship,
+                            ) ? (
+                              <form
+                                action={manageBuilderNetworkConnectionAction}
+                              >
+                                <input
+                                  type="hidden"
+                                  name="action"
+                                  value="send"
+                                />
+                                <input
+                                  type="hidden"
+                                  name="targetUserId"
+                                  value={builder.userId}
+                                />
+                                <Button
+                                  type="submit"
+                                  variant="secondary"
+                                  className="min-h-8 rounded-full px-3 text-xs"
+                                >
                                   Connect
                                 </Button>
                               </form>
@@ -387,48 +457,85 @@ export default async function BuilderWorldPage({
                             )}
                           </div>
                           <p className="mt-3 line-clamp-3 text-xs leading-5 text-[#6f768d]">
-                            {builder.missionStatement ?? builder.missionTitle ?? "Building a practical mission."}
+                            {builder.missionStatement ??
+                              builder.missionTitle ??
+                              "Building a practical mission."}
                           </p>
                         </div>
                       ))}
                       {!state.builders.length ? (
                         <p className="text-sm leading-6 text-[#747b90]">
-                          No compatible Builder is visible yet. The network grows
-                          only from real opt-in participation.
+                          No compatible Builder is visible yet. The network
+                          grows only from real opt-in participation.
                         </p>
                       ) : null}
                     </div>
                   </section>
 
-                  {(state.incoming.length > 0 || state.sent.length > 0) ? (
+                  {state.incoming.length > 0 || state.sent.length > 0 ? (
                     <section className="pp-app-card p-5">
                       <p className="text-xs font-bold tracking-[0.12em] text-[#16a28f] uppercase">
                         Requests
                       </p>
                       {state.incoming.map((item) => (
-                        <div key={item.connectionId} className="mt-3 flex items-center justify-between gap-3 border-b border-[#ececf3] pb-3 last:border-0">
+                        <div
+                          key={item.connectionId}
+                          className="mt-3 flex items-center justify-between gap-3 border-b border-[#ececf3] pb-3 last:border-0"
+                        >
                           <div className="min-w-0">
                             <p className="truncate text-sm font-bold text-[#303353]">
                               {item.preferredName}
                             </p>
-                            <p className="text-xs text-[#858b9f]">@{item.username}</p>
+                            <p className="text-xs text-[#858b9f]">
+                              @{item.username}
+                            </p>
                           </div>
                           <div className="flex gap-1.5">
                             <form action={manageBuilderNetworkConnectionAction}>
-                              <input type="hidden" name="action" value="accept" />
-                              <input type="hidden" name="connectionId" value={item.connectionId} />
-                              <Button type="submit" className="min-h-8 rounded-full px-2.5 text-xs">Accept</Button>
+                              <input
+                                type="hidden"
+                                name="action"
+                                value="accept"
+                              />
+                              <input
+                                type="hidden"
+                                name="connectionId"
+                                value={item.connectionId}
+                              />
+                              <Button
+                                type="submit"
+                                className="min-h-8 rounded-full px-2.5 text-xs"
+                              >
+                                Accept
+                              </Button>
                             </form>
                             <form action={manageBuilderNetworkConnectionAction}>
-                              <input type="hidden" name="action" value="decline" />
-                              <input type="hidden" name="connectionId" value={item.connectionId} />
-                              <Button type="submit" variant="ghost" className="min-h-8 rounded-full px-2.5 text-xs">Decline</Button>
+                              <input
+                                type="hidden"
+                                name="action"
+                                value="decline"
+                              />
+                              <input
+                                type="hidden"
+                                name="connectionId"
+                                value={item.connectionId}
+                              />
+                              <Button
+                                type="submit"
+                                variant="ghost"
+                                className="min-h-8 rounded-full px-2.5 text-xs"
+                              >
+                                Decline
+                              </Button>
                             </form>
                           </div>
                         </div>
                       ))}
                       {state.sent.map((item) => (
-                        <div key={item.connectionId} className="mt-3 flex items-center justify-between gap-3 border-b border-[#ececf3] pb-3 last:border-0">
+                        <div
+                          key={item.connectionId}
+                          className="mt-3 flex items-center justify-between gap-3 border-b border-[#ececf3] pb-3 last:border-0"
+                        >
                           <div className="min-w-0">
                             <p className="truncate text-sm font-bold text-[#303353]">
                               {item.preferredName}
@@ -437,8 +544,18 @@ export default async function BuilderWorldPage({
                           </div>
                           <form action={manageBuilderNetworkConnectionAction}>
                             <input type="hidden" name="action" value="cancel" />
-                            <input type="hidden" name="connectionId" value={item.connectionId} />
-                            <Button type="submit" variant="ghost" className="min-h-8 rounded-full px-2.5 text-xs">Cancel</Button>
+                            <input
+                              type="hidden"
+                              name="connectionId"
+                              value={item.connectionId}
+                            />
+                            <Button
+                              type="submit"
+                              variant="ghost"
+                              className="min-h-8 rounded-full px-2.5 text-xs"
+                            >
+                              Cancel
+                            </Button>
                           </form>
                         </div>
                       ))}
@@ -461,18 +578,28 @@ export default async function BuilderWorldPage({
                     </div>
                     <div className="mt-4 grid gap-3">
                       {state.connections.map((item) => (
-                        <div key={item.connectionId} className="rounded-2xl border border-[#e8e8f0] p-4">
-                          <Link href={`/connect/world#${item.userId}`} className="text-sm font-bold text-[#303353]">
+                        <div
+                          key={item.connectionId}
+                          className="rounded-2xl border border-[#e8e8f0] p-4"
+                        >
+                          <Link
+                            href={`/connect/world#${item.userId}`}
+                            className="text-sm font-bold text-[#303353]"
+                          >
                             {item.preferredName}
                           </Link>
-                          <p className="mt-0.5 text-xs text-[#858b9f]">@{item.username}</p>
-                          <div className="mt-3"><RelationshipActions item={item} /></div>
+                          <p className="mt-0.5 text-xs text-[#858b9f]">
+                            @{item.username}
+                          </p>
+                          <div className="mt-3">
+                            <RelationshipActions item={item} />
+                          </div>
                         </div>
                       ))}
                       {!state.connections.length ? (
                         <p className="text-sm leading-6 text-[#747b90]">
-                          No accepted connection yet. Connect only when there is a
-                          real reason to learn, help or build together.
+                          No accepted connection yet. Connect only when there is
+                          a real reason to learn, help or build together.
                         </p>
                       ) : null}
                     </div>
@@ -483,11 +610,19 @@ export default async function BuilderWorldPage({
                       Control
                     </p>
                     <p className="mt-2 text-xs leading-5 text-[#747b90]">
-                      Leaving Builder World removes your live social eligibility.
-                      Your private PipuPath development record remains intact.
+                      Leaving Builder World removes your live social
+                      eligibility. Your private PipuPath development record
+                      remains intact.
                     </p>
-                    <form action={withdrawBuilderNetworkAction} className="mt-3">
-                      <Button type="submit" variant="ghost" className="rounded-full">
+                    <form
+                      action={withdrawBuilderNetworkAction}
+                      className="mt-3"
+                    >
+                      <Button
+                        type="submit"
+                        variant="ghost"
+                        className="rounded-full"
+                      >
                         Leave Builder World
                       </Button>
                     </form>
