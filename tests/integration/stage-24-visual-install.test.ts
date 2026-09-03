@@ -60,7 +60,9 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     );
     expect(distribution).toContain("Download PipuPath");
     expect(distribution).toContain("Install PipuPath");
-    expect(distribution).toContain('ANDROID_DOWNLOAD_PATH = "/downloads/latest"');
+    expect(distribution).toContain(
+      'ANDROID_DOWNLOAD_PATH = "/downloads/latest"',
+    );
     expect(distribution).toContain(
       "window.location.assign(ANDROID_DOWNLOAD_PATH)",
     );
