@@ -20,8 +20,8 @@
     "path": "./pipupath-lite-production.keystore",
     "alias": "pipupath-lite"
   },
-  "appVersionCode": 1,
-  "appVersion": "1.0.0",
+  "appVersionCode": 2,
+  "appVersion": "1.0.1",
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://www.pipupath.name.ng/manifest.webmanifest",
@@ -38,7 +38,7 @@
   "fingerprints": [
     {
       "name": "PipuPath Lite production key",
-      "value": "C6:53:47:58:AD:D0:F1:AB:9E:26:87:F5:C5:52:D8:B3:B3:6F:7C:77:30:4B:D5:EE:B6:A5:33:E4:C2:10:51:1A"
+      "value": "8E:24:7B:ED:BB:2E:5C:A7:D2:B6:CC:D1:88:E2:00:32:6C:7E:65:28:18:4C:76:EA:CE:96:BC:F0:3B:D2:59:8C"
     }
   ],
   "additionalTrustedOrigins": [],
