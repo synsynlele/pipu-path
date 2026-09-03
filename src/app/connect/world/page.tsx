@@ -312,10 +312,15 @@ export default async function BuilderWorldPage({
                   {state.feed.length ? (
                     <div className="mt-3 grid gap-4">
                       {state.feed.map((post) => (
-                        <article key={post.id} className="pp-app-card p-5 sm:p-6">
+                        <article
+                          key={post.id}
+                          className="pp-app-card p-5 sm:p-6"
+                        >
                           <div className="flex items-start gap-3">
                             <span className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#6d5df5] to-[#2b236e] text-sm font-bold text-white">
-                              {post.author.preferredName.slice(0, 1).toUpperCase()}
+                              {post.author.preferredName
+                                .slice(0, 1)
+                                .toUpperCase()}
                             </span>
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -342,7 +347,8 @@ export default async function BuilderWorldPage({
                           </p>
                           {post.project ? (
                             <div className="mt-4 rounded-2xl border border-[#e9e7f4] bg-[#faf9ff] p-3 text-xs text-[#5f6380]">
-                              Linked build: <strong>{post.project.title}</strong>
+                              Linked build:{" "}
+                              <strong>{post.project.title}</strong>
                             </div>
                           ) : null}
 
@@ -356,9 +362,20 @@ export default async function BuilderWorldPage({
                                     : post.reactions.keepBuilding;
                               const active = post.myReaction === reaction;
                               return (
-                                <form key={reaction} action={setBuilderNetworkReactionAction}>
-                                  <input type="hidden" name="postId" value={post.id} />
-                                  <input type="hidden" name="reaction" value={reaction} />
+                                <form
+                                  key={reaction}
+                                  action={setBuilderNetworkReactionAction}
+                                >
+                                  <input
+                                    type="hidden"
+                                    name="postId"
+                                    value={post.id}
+                                  />
+                                  <input
+                                    type="hidden"
+                                    name="reaction"
+                                    value={reaction}
+                                  />
                                   <Button
                                     type="submit"
                                     variant={active ? "primary" : "secondary"}
@@ -387,7 +404,8 @@ export default async function BuilderWorldPage({
                               ))}
                               {post.commentCount > post.comments.length ? (
                                 <p className="text-xs text-[#8a90a4]">
-                                  {post.commentCount - post.comments.length} more comment(s)
+                                  {post.commentCount - post.comments.length}{" "}
+                                  more comment(s)
                                 </p>
                               ) : null}
                             </div>
@@ -396,7 +414,11 @@ export default async function BuilderWorldPage({
                             action={addBuilderNetworkCommentAction}
                             className="mt-3 flex gap-2"
                           >
-                            <input type="hidden" name="postId" value={post.id} />
+                            <input
+                              type="hidden"
+                              name="postId"
+                              value={post.id}
+                            />
                             <input
                               name="body"
                               required
@@ -455,15 +477,23 @@ export default async function BuilderWorldPage({
                               </p>
                               <p className="mt-0.5 truncate text-xs text-[#858b9f]">
                                 @{builder.username}
-                                {builder.schoolName ? ` · ${builder.schoolName}` : ""}
+                                {builder.schoolName
+                                  ? ` · ${builder.schoolName}`
+                                  : ""}
                               </p>
                             </div>
                             {builder.relationship === "none" ||
                             ["declined", "cancelled", "removed"].includes(
                               builder.relationship,
                             ) ? (
-                              <form action={manageBuilderNetworkConnectionAction}>
-                                <input type="hidden" name="action" value="send" />
+                              <form
+                                action={manageBuilderNetworkConnectionAction}
+                              >
+                                <input
+                                  type="hidden"
+                                  name="action"
+                                  value="send"
+                                />
                                 <input
                                   type="hidden"
                                   name="targetUserId"
@@ -516,11 +546,17 @@ export default async function BuilderWorldPage({
                             <p className="truncate text-sm font-bold text-[#303353]">
                               {item.preferredName}
                             </p>
-                            <p className="text-xs text-[#858b9f]">@{item.username}</p>
+                            <p className="text-xs text-[#858b9f]">
+                              @{item.username}
+                            </p>
                           </div>
                           <div className="flex gap-1.5">
                             <form action={manageBuilderNetworkConnectionAction}>
-                              <input type="hidden" name="action" value="accept" />
+                              <input
+                                type="hidden"
+                                name="action"
+                                value="accept"
+                              />
                               <input
                                 type="hidden"
                                 name="connectionId"
@@ -534,7 +570,11 @@ export default async function BuilderWorldPage({
                               </Button>
                             </form>
                             <form action={manageBuilderNetworkConnectionAction}>
-                              <input type="hidden" name="action" value="decline" />
+                              <input
+                                type="hidden"
+                                name="action"
+                                value="decline"
+                              />
                               <input
                                 type="hidden"
                                 name="connectionId"
@@ -634,8 +674,15 @@ export default async function BuilderWorldPage({
                       eligibility. Your private PipuPath development record
                       remains intact.
                     </p>
-                    <form action={withdrawBuilderNetworkAction} className="mt-3">
-                      <Button type="submit" variant="ghost" className="rounded-full">
+                    <form
+                      action={withdrawBuilderNetworkAction}
+                      className="mt-3"
+                    >
+                      <Button
+                        type="submit"
+                        variant="ghost"
+                        className="rounded-full"
+                      >
                         Leave Builder World
                       </Button>
                     </form>

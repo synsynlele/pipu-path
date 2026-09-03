@@ -111,7 +111,9 @@ describe("Stage 29 Builder Network structure", () => {
   });
 
   it("allows evidence collaboration for protected school pairs without weakening Stage 11 contact sharing", () => {
-    expect(collaborationMigration).toContain("stage29_collaboration_pair_allowed");
+    expect(collaborationMigration).toContain(
+      "stage29_collaboration_pair_allowed",
+    );
     expect(collaborationMigration).toContain("stage29_pair_visible");
     expect(collaborationMigration).not.toContain("share_stage11_contact");
   });
@@ -122,21 +124,27 @@ describe("Stage 29 Builder Network structure", () => {
     expect(hardeningMigration).toContain("action_input = 'post'");
     expect(hardeningMigration).toContain("action_input = 'comment'");
     expect(hardeningMigration).toContain("action_input = 'message'");
-    expect(hardeningMigration).toContain("created_at >= now() - interval '10 minutes'");
+    expect(hardeningMigration).toContain(
+      "created_at >= now() - interval '10 minutes'",
+    );
   });
 
   it("validates report references against the reported Builder and visible context", () => {
     expect(hardeningMigration).toContain(
       "num_nonnulls(post_id_input, comment_id_input, message_id_input) > 1",
     );
-    expect(hardeningMigration).toContain("post.author_id = target_user_id_input");
+    expect(hardeningMigration).toContain(
+      "post.author_id = target_user_id_input",
+    );
     expect(hardeningMigration).toContain(
       "comment.author_id = target_user_id_input",
     );
     expect(hardeningMigration).toContain(
       "message.sender_id = target_user_id_input",
     );
-    expect(hardeningMigration).toContain("BUILDER_NETWORK_REPORT_CONTEXT_INVALID");
+    expect(hardeningMigration).toContain(
+      "BUILDER_NETWORK_REPORT_CONTEXT_INVALID",
+    );
   });
 
   it("returns the full visible comment total while keeping only a small preview", () => {
