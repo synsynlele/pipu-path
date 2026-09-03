@@ -1,11 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { signInWithGoogleAction } from "@/modules/identity/application/auth-actions";
 
 export function GoogleAuthForm({ next = "/app" }: { next?: string }) {
-  const action = signInWithGoogleAction.bind(null, next);
-
   return (
-    <form action={action}>
+    <form action="/auth/google" method="get">
+      <input type="hidden" name="next" value={next} />
       <Button type="submit" variant="secondary" className="w-full gap-3">
         <GoogleIcon />
         Continue with Google

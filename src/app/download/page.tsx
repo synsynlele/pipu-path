@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import release from "../../../public/downloads/pipupath-lite.json";
 import { PublicShell } from "@/components/shells/public-shell";
 import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
@@ -9,13 +10,6 @@ export const metadata: Metadata = {
   description:
     "Download the official lightweight PipuPath Android app and continue your Builder Path from your phone.",
 };
-
-const release = {
-  version: "1.0.0",
-  versionCode: 1,
-  packageId: "ng.name.pipupath.lite",
-  apk: "/downloads/PipuPath-Lite-1.0.0.apk",
-} as const;
 
 const installSteps = [
   ["Download", "Get the official PipuPath Lite APK from this page."],
