@@ -79,7 +79,7 @@ export default async function BuilderConversationPage({
             <div className="mt-4 grid gap-3">
               {conversation.messages.length ? (
                 conversation.messages.map((message) => {
-                  const mine = message.senderId === identity.id;
+                  const mine = message.senderId === identity.user.id;
                   return (
                     <div
                       key={message.id}
