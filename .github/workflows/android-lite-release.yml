@@ -128,7 +128,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          bash android-lite/prepare-bubblewrap-icon.sh android-lite/generated-production
           docker run --rm \
+            --network host \
             -v "${PWD}/android-lite/generated-production:/workspace" \
             -w /workspace \
             ghcr.io/googlechromelabs/bubblewrap:1.25.0 \
