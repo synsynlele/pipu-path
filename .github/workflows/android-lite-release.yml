@@ -6,11 +6,10 @@ on:
     branches:
       - release/android-lite-icon-refresh
     paths:
-      - android-lite/twa-manifest.production.json
-      - .github/workflows/android-lite-release.yml
+      - android-lite/RELEASE_NOW
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pipupath-lite-production-release
@@ -37,6 +36,35 @@ jobs:
           test -n "$KEYSTORE_B64" || { echo "Missing PIPUPATH_ANDROID_KEYSTORE_B64"; exit 1; }
           test -n "$KEYSTORE_PASSWORD" || { echo "Missing PIPUPATH_ANDROID_KEYSTORE_PASSWORD"; exit 1; }
           test -n "$KEY_PASSWORD" || { echo "Missing PIPUPATH_ANDROID_KEY_PASSWORD"; exit 1; }
+
+      - name: Verify permanent signing contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("android-lite/twa-manifest.production.json").read_text())
+          assetlinks = json.loads(Path("public/.well-known/assetlinks.json").read_text())
+
+          package_id = manifest["packageId"]
+          fingerprints = manifest.get("fingerprints", [])
+          assert len(fingerprints) == 1, "Production manifest must pin exactly one signing certificate."
+          expected = fingerprints[0]["value"].upper()
+
+          matches = [
+              item for item in assetlinks
+              if item.get("target", {}).get("namespace") == "android_app"
+              and item.get("target", {}).get("package_name") == package_id
+          ]
+          assert len(matches) == 1, f"Expected exactly one assetlinks entry for {package_id}."
+          linked = [value.upper() for value in matches[0]["target"].get("sha256_cert_fingerprints", [])]
+          assert linked == [expected], (
+              "assetlinks.json and twa-manifest.production.json must pin the same production certificate."
+          )
+          print(f"Permanent signing contract verified for {package_id}: {expected}")
+          PY
 
       - name: Verify production PWA contract
         shell: bash
@@ -87,11 +115,14 @@ jobs:
             -alias pipupath-lite \
             -storepass "$KEYSTORE_PASSWORD" \
             | awk -F': ' '/SHA256:/{print $2; exit}')"
-          EXPECTED="C6:53:47:58:AD:D0:F1:AB:9E:26:87:F5:C5:52:D8:B3:B3:6F:7C:77:30:4B:D5:EE:B6:A5:33:E4:C2:10:51:1A"
+          EXPECTED="$(python3 -c 'import json; print(json.load(open("android-lite/twa-manifest.production.json"))["fingerprints"][0]["value"])')"
           test "$FINGERPRINT" = "$EXPECTED" || {
-            echo "Production signing certificate does not match the pinned PipuPath Lite certificate."
+            echo "Production signing certificate does not match the certificate pinned in the production manifest."
+            echo "Expected: $EXPECTED"
+            echo "Actual:   $FINGERPRINT"
             exit 1
           }
+          echo "Production signing certificate verified."
 
       - name: Generate Android project with Bubblewrap
         shell: bash
@@ -138,19 +169,65 @@ jobs:
             '
 
       - name: Package release artifacts
+        id: package
         shell: bash
         run: |
           set -euo pipefail
           VERSION="$(python3 -c 'import json; print(json.load(open("android-lite/twa-manifest.production.json"))["appVersion"])')"
+          VERSION_CODE="$(python3 -c 'import json; print(json.load(open("android-lite/twa-manifest.production.json"))["appVersionCode"])')"
+          APK_NAME="PipuPath-Lite-${VERSION}.apk"
+
           test -f android-lite/generated-production/app-release-signed.apk
           test -f android-lite/generated-production/app-release-bundle.aab
 
           cp android-lite/generated-production/app-release-signed.apk \
-            "android-lite/dist-production/PipuPath-Lite-${VERSION}.apk"
+            "android-lite/dist-production/${APK_NAME}"
           cp android-lite/generated-production/app-release-bundle.aab \
             "android-lite/dist-production/PipuPath-Lite-${VERSION}.aab"
           sha256sum android-lite/dist-production/* \
             > android-lite/dist-production/SHA256SUMS.txt
+
+          mkdir -p public/downloads
+          cp "android-lite/dist-production/${APK_NAME}" "public/downloads/${APK_NAME}"
+
+          SHA256="$(sha256sum "public/downloads/${APK_NAME}" | awk '{print $1}')"
+          SIZE_BYTES="$(stat -c%s "public/downloads/${APK_NAME}")"
+          DATE_UTC="$(date -u +%F)"
+
+          VERSION="$VERSION" \
+          VERSION_CODE="$VERSION_CODE" \
+          APK_NAME="$APK_NAME" \
+          SHA256="$SHA256" \
+          SIZE_BYTES="$SIZE_BYTES" \
+          DATE_UTC="$DATE_UTC" \
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          metadata = {
+              "name": "PipuPath Lite",
+              "version": os.environ["VERSION"],
+              "versionCode": int(os.environ["VERSION_CODE"]),
+              "packageId": "ng.name.pipupath.lite",
+              "apk": f"/downloads/{os.environ['APK_NAME']}",
+              "releasedAt": os.environ["DATE_UTC"],
+              "sha256": os.environ["SHA256"],
+              "sizeBytes": int(os.environ["SIZE_BYTES"]),
+              "offline": False,
+              "notes": [
+                  "Production-signed Android Lite package.",
+                  "Uses the permanent PipuPath app icon in Android launcher and installed-app surfaces.",
+                  "Uses the same PWA experience as www.pipupath.name.ng."
+              ]
+          }
+          Path("public/downloads/pipupath-lite.json").write_text(
+              json.dumps(metadata, indent=2) + "\n"
+          )
+          PY
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Upload signed production build
         uses: actions/upload-artifact@v4
@@ -159,3 +236,19 @@ jobs:
           path: android-lite/dist-production/
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish download files to release branch
+        shell: bash
+        env:
+          VERSION: ${{ steps.package.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/downloads/
+          if git diff --cached --quiet; then
+            echo "No download changes to publish."
+          else
+            git commit -m "release(android): publish PipuPath Lite ${VERSION} [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
