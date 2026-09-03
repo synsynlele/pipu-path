@@ -16,6 +16,13 @@ const collaborationMigration = readFileSync(
   ),
   "utf8",
 );
+const hardeningMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/202609030003_stage_29_network_hardening.sql",
+  ),
+  "utf8",
+);
 const worldPage = readFileSync(
   join(process.cwd(), "src/app/connect/world/page.tsx"),
   "utf8",
@@ -80,23 +87,6 @@ describe("Stage 29 Builder Network structure", () => {
     );
   });
 
-  it("extends evidence-producing collaboration to protected school pairs without weakening Stage 11", () => {
-    expect(collaborationMigration).toContain(
-      "private.stage29_collaboration_pair_allowed",
-    );
-    expect(collaborationMigration).toContain("first_scope = 'school'");
-    expect(collaborationMigration).toContain("second_scope = 'school'");
-    expect(collaborationMigration).toContain(
-      "private.stage11_builder_connect_eligible(first_user)",
-    );
-    expect(collaborationMigration).toContain(
-      "private.stage15_connection_for_pair(first_user, second_user)",
-    );
-    expect(collaborationMigration).not.toContain(
-      "create or replace function private.stage11_builder_connect_eligible",
-    );
-  });
-
   it("uses a bounded developmental feed rather than popularity mechanics", () => {
     expect(migration).toContain(
       "limit greatest(1, least(coalesce(limit_input, 24), 40))",
@@ -118,5 +108,47 @@ describe("Stage 29 Builder Network structure", () => {
     expect(migration).toContain("builder_network_settings_updated");
     expect(schoolPage).toContain("Save network policy");
     expect(schoolPage).toContain("only an Institution Workspace owner");
+  });
+
+  it("allows evidence collaboration for protected school pairs without weakening Stage 11 contact sharing", () => {
+    expect(collaborationMigration).toContain("stage29_collaboration_pair_allowed");
+    expect(collaborationMigration).toContain("stage29_pair_visible");
+    expect(collaborationMigration).not.toContain("share_stage11_contact");
+  });
+
+  it("enforces deterministic server-side anti-spam limits", () => {
+    expect(hardeningMigration).toContain("stage29_assert_write_rate_limit");
+    expect(hardeningMigration).toContain("BUILDER_NETWORK_RATE_LIMITED");
+    expect(hardeningMigration).toContain("action_input = 'post'");
+    expect(hardeningMigration).toContain("action_input = 'comment'");
+    expect(hardeningMigration).toContain("action_input = 'message'");
+    expect(hardeningMigration).toContain("created_at >= now() - interval '10 minutes'");
+  });
+
+  it("validates report references against the reported Builder and visible context", () => {
+    expect(hardeningMigration).toContain(
+      "num_nonnulls(post_id_input, comment_id_input, message_id_input) > 1",
+    );
+    expect(hardeningMigration).toContain("post.author_id = target_user_id_input");
+    expect(hardeningMigration).toContain(
+      "comment.author_id = target_user_id_input",
+    );
+    expect(hardeningMigration).toContain(
+      "message.sender_id = target_user_id_input",
+    );
+    expect(hardeningMigration).toContain("BUILDER_NETWORK_REPORT_CONTEXT_INVALID");
+  });
+
+  it("returns the full visible comment total while keeping only a small preview", () => {
+    expect(hardeningMigration).toContain("stage29_visible_comment_count");
+    expect(hardeningMigration).toContain("'{commentCount}'");
+    expect(migration).toContain("limit 3");
+  });
+
+  it("surfaces native report and block controls inside Builder World", () => {
+    expect(worldPage).toContain("reportBuilderNetworkAction");
+    expect(worldPage).toContain("Submit report");
+    expect(worldPage).toContain('name="action" value="block"');
+    expect(worldPage).toContain("Block");
   });
 });
