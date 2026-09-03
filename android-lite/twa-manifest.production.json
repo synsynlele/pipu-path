@@ -13,8 +13,8 @@
   "backgroundColor": "#020817",
   "enableNotifications": false,
   "startUrl": "/continue",
-  "iconUrl": "https://www.pipupath.name.ng/pwa/icon-512",
-  "maskableIconUrl": "https://www.pipupath.name.ng/pwa/icon-512",
+  "iconUrl": "https://www.pipupath.name.ng/brand/pipupath-icon-512.png",
+  "maskableIconUrl": "https://www.pipupath.name.ng/brand/pipupath-icon-512.png",
   "splashScreenFadeOutDuration": 250,
   "signingKey": {
     "path": "./pipupath-lite-production.keystore",

@@ -3,35 +3,51 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const renderIcon = readFileSync(
-  join(root, "src/lib/pwa/render-icon.ts"),
-  "utf8",
-);
 const layout = readFileSync(join(root, "src/app/layout.tsx"), "utf8");
 const manifest = readFileSync(join(root, "src/app/manifest.ts"), "utf8");
 const twaManifest = readFileSync(
+  join(root, "android-lite/twa-manifest.json"),
+  "utf8",
+);
+const productionTwaManifest = readFileSync(
   join(root, "android-lite/twa-manifest.production.json"),
   "utf8",
 );
 
 describe("PipuPath brand icon consistency", () => {
-  it("uses the canonical in-app PipuPath logo for generated app icons", () => {
-    expect(renderIcon).toContain("PIPUPATH_LOGO_DATA_URI");
-    expect(renderIcon).not.toContain('"P",');
-  });
-
-  it("uses the generated canonical icon for browser and Apple metadata", () => {
-    expect(layout).toContain('url: "/pwa/icon-192"');
-    expect(layout).toContain('url: "/apple-icon"');
+  it("uses static canonical PipuPath logo assets for browser and Apple metadata", () => {
+    expect(layout).toContain('url: "/brand/pipupath-icon-192.png"');
     expect(layout).not.toContain('url: "/icon.svg"');
     expect(existsSync(join(root, "src/app/icon.svg"))).toBe(false);
+    expect(existsSync(join(root, "src/app/apple-icon.tsx"))).toBe(false);
   });
 
-  it("keeps PWA and Android Lite launcher icons on the same source", () => {
-    expect(manifest).toContain('src: "/pwa/icon-192"');
-    expect(manifest).toContain('src: "/pwa/icon-512"');
-    expect(twaManifest).toContain(
-      '"iconUrl": "https://www.pipupath.name.ng/pwa/icon-512"',
+  it("uses the same canonical static icon assets in the PWA manifest", () => {
+    expect(manifest).toContain('src: "/brand/pipupath-icon-192.png"');
+    expect(manifest).toContain('src: "/brand/pipupath-icon-512.png"');
+    expect(existsSync(join(root, "public/brand/pipupath-icon-192.png"))).toBe(
+      true,
     );
+    expect(existsSync(join(root, "public/brand/pipupath-icon-512.png"))).toBe(
+      true,
+    );
+  });
+
+  it("keeps Android Lite launcher icons on the canonical 512px asset", () => {
+    const canonicalUrl =
+      '"iconUrl": "https://www.pipupath.name.ng/brand/pipupath-icon-512.png"';
+    const canonicalMaskableUrl =
+      '"maskableIconUrl": "https://www.pipupath.name.ng/brand/pipupath-icon-512.png"';
+
+    expect(twaManifest).toContain(canonicalUrl);
+    expect(twaManifest).toContain(canonicalMaskableUrl);
+    expect(productionTwaManifest).toContain(canonicalUrl);
+    expect(productionTwaManifest).toContain(canonicalMaskableUrl);
+  });
+
+  it("does not keep a second runtime-generated icon implementation", () => {
+    expect(existsSync(join(root, "src/lib/pwa/render-icon.ts"))).toBe(false);
+    expect(existsSync(join(root, "src/app/pwa/icon-192/route.ts"))).toBe(false);
+    expect(existsSync(join(root, "src/app/pwa/icon-512/route.ts"))).toBe(false);
   });
 });
