@@ -2,6 +2,12 @@ name: PipuPath Lite Production Release
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - release/android-lite-icon-refresh
+    paths:
+      - android-lite/twa-manifest.production.json
+      - .github/workflows/android-lite-release.yml
 
 permissions:
   contents: read
@@ -51,6 +57,9 @@ jobs:
           sizes = {icon.get("sizes") for icon in manifest.get("icons", [])}
           assert "192x192" in sizes
           assert "512x512" in sizes
+          sources = {icon.get("src") for icon in manifest.get("icons", [])}
+          assert "/brand/pipupath-icon-192.png" in sources
+          assert "/brand/pipupath-icon-512.png" in sources
           print("PipuPath production PWA contract verified.")
           PY
 
