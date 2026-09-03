@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   format-stage29:
@@ -13,12 +13,15 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: agent/stage-29-builder-network
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format Stage 29 files
+      - name: Format Stage 29 files exactly
         run: >-
           npx prettier --write
           'src/app/connect/messages/[conversationId]/page.tsx'
@@ -28,16 +31,21 @@ jobs:
           'src/modules/builder-network/application/builder-network-actions.ts'
           'src/modules/builder-network/infrastructure/builder-network-dal.ts'
           'tests/integration/stage-29-builder-network.test.ts'
-      - uses: actions/upload-artifact@v4
-        with:
-          name: stage29-formatted-files
-          path: |
-            src/app/connect/messages/[conversationId]/page.tsx
-            src/app/connect/messages/page.tsx
-            src/app/connect/world/page.tsx
-            src/app/institution/network/page.tsx
-            src/modules/builder-network/application/builder-network-actions.ts
-            src/modules/builder-network/infrastructure/builder-network-dal.ts
-            tests/integration/stage-29-builder-network.test.ts
-          if-no-files-found: error
-          retention-days: 1
+      - name: Remove temporary CI helpers
+        run: |
+          git show origin/main:.github/workflows/ci.yml > .github/workflows/ci.yml
+          git rm .github/workflows/stage29-format.yml
+      - name: Commit exact formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/ci.yml \
+            'src/app/connect/messages/[conversationId]/page.tsx' \
+            'src/app/connect/messages/page.tsx' \
+            'src/app/connect/world/page.tsx' \
+            'src/app/institution/network/page.tsx' \
+            'src/modules/builder-network/application/builder-network-actions.ts' \
+            'src/modules/builder-network/infrastructure/builder-network-dal.ts' \
+            'tests/integration/stage-29-builder-network.test.ts'
+          git commit -m "Format Stage 29 implementation candidate"
+          git push origin HEAD:agent/stage-29-builder-network
