@@ -3,7 +3,9 @@ set -euo pipefail
 
 TARGET_DIR="${1:-android-lite/generated-production}"
 SOURCE_ICON="public/brand/pipupath-icon-512.png"
-SANITIZED_ICON="${TARGET_DIR}/pipupath-icon-512-sanitized.png"
+SANITIZED_ICON_512="${TARGET_DIR}/pipupath-icon-512-sanitized.png"
+SANITIZED_ICON_192="${TARGET_DIR}/pipupath-icon-192-sanitized.png"
+LOCAL_WEB_MANIFEST="${TARGET_DIR}/manifest.webmanifest"
 PORT="8765"
 
 if [[ ! -f "${SOURCE_ICON}" ]]; then
@@ -13,12 +15,10 @@ fi
 
 mkdir -p "${TARGET_DIR}"
 
-# Bubblewrap 1.25.0 decodes iconUrl with Jimp/pngjs. The checked-in artwork is
-# visually valid in browsers, but its PNG container is damaged after IDAT.
-# Recover the zlib image stream itself, validate the exact 512x512 scanline
-# payload, then rebuild a minimal standards-compliant PNG. This does not redraw
-# or alter the raster; it only repairs the container and compression wrapper.
-SOURCE_ICON="${SOURCE_ICON}" SANITIZED_ICON="${SANITIZED_ICON}" python3 - <<'PY'
+# Bubblewrap 1.25.0 decodes Android/PWA icon assets with a stricter PNG parser
+# than browsers. Repair the canonical 512 artwork by recovering its exact zlib
+# scanline stream and rebuilding a minimal standards-compliant PNG container.
+SOURCE_ICON="${SOURCE_ICON}" SANITIZED_ICON_512="${SANITIZED_ICON_512}" python3 - <<'PY'
 import math
 import os
 import struct
@@ -26,12 +26,11 @@ import zlib
 from pathlib import Path
 
 source = Path(os.environ["SOURCE_ICON"])
-target = Path(os.environ["SANITIZED_ICON"])
+target = Path(os.environ["SANITIZED_ICON_512"])
 data = source.read_bytes()
 signature = b"\x89PNG\r\n\x1a\n"
 assert data.startswith(signature), "Canonical PipuPath launcher icon is not a PNG."
 
-# IHDR is the first mandatory PNG chunk and is intact.
 ihdr_length = struct.unpack(">I", data[8:12])[0]
 assert ihdr_length == 13 and data[12:16] == b"IHDR", "Invalid PNG IHDR."
 ihdr = data[16:29]
@@ -51,14 +50,8 @@ expected_raw_size = (row_bytes + 1) * height
 def make_chunk(chunk_type: bytes, payload: bytes) -> bytes:
     crc = zlib.crc32(chunk_type)
     crc = zlib.crc32(payload, crc) & 0xFFFFFFFF
-    return (
-        struct.pack(">I", len(payload))
-        + chunk_type
-        + payload
-        + struct.pack(">I", crc)
-    )
+    return struct.pack(">I", len(payload)) + chunk_type + payload + struct.pack(">I", crc)
 
-# Parse only the healthy prefix before IDAT. Palette/transparency live here.
 prefix_chunks = []
 offset = 8 + 4 + 4 + 13 + 4
 first_idat_payload_start = None
@@ -74,7 +67,6 @@ while offset + 8 <= len(data):
     prefix_chunks.append((chunk_type, data[payload_start:payload_end]))
     offset = payload_end + 4
 
-# If declared prefix parsing could not find IDAT, locate plausible raw markers.
 idat_starts = []
 if first_idat_payload_start is not None:
     idat_starts.append(first_idat_payload_start)
@@ -89,10 +81,6 @@ while True:
     pos += 4
 
 assert idat_starts, "PNG is missing a recoverable IDAT marker."
-
-# A zlib stream carries its own EOF marker, so the damaged PNG length/CRC/IEND
-# metadata is irrelevant. Accept only a stream that reaches EOF and expands to
-# exactly the expected filtered scanline byte count.
 raw_pixels = None
 used_start = None
 unused_after_stream = None
@@ -103,9 +91,7 @@ for start in idat_starts:
         decoded += decompressor.flush()
     except zlib.error:
         continue
-    if not decompressor.eof:
-        continue
-    if len(decoded) != expected_raw_size:
+    if not decompressor.eof or len(decoded) != expected_raw_size:
         continue
     raw_pixels = decoded
     used_start = start
@@ -113,11 +99,7 @@ for start in idat_starts:
     break
 
 assert raw_pixels is not None, "Could not recover a complete 512x512 PNG zlib image stream."
-
-# Recompress the exact filtered scanline bytes. PNG filters and pixel indices/
-# channels are unchanged, so the decoded raster remains identical.
 clean_idat = zlib.compress(raw_pixels, level=9)
-
 out = bytearray(signature)
 out += make_chunk(b"IHDR", ihdr)
 
@@ -136,43 +118,84 @@ out += make_chunk(b"IDAT", clean_idat)
 out += make_chunk(b"IEND", b"")
 target.write_bytes(bytes(out))
 
-# Validate our own rebuilt container and compressed payload before Bubblewrap.
 rebuilt = target.read_bytes()
 assert rebuilt.startswith(signature)
-rebuilt_idat_pos = rebuilt.find(b"IDAT")
-assert rebuilt_idat_pos >= 4
-rebuilt_len = struct.unpack(">I", rebuilt[rebuilt_idat_pos - 4:rebuilt_idat_pos])[0]
-rebuilt_payload = rebuilt[rebuilt_idat_pos + 4:rebuilt_idat_pos + 4 + rebuilt_len]
-assert zlib.decompress(rebuilt_payload) == raw_pixels
 assert rebuilt.endswith(make_chunk(b"IEND", b""))
-
 print(
-    "Canonical icon recovered from its verified zlib raster: "
-    f"{width}x{height}, bitDepth={bit_depth}, colorType={color_type}, "
+    "Canonical 512 icon recovered: "
     f"decodedBytes={len(raw_pixels)}, sourceIDATOffset={used_start}, "
     f"ignoredBytesAfterZlibEOF={unused_after_stream}, cleanBytes={len(rebuilt)}."
 )
 PY
 
-# Change only the generated build manifest. The committed production manifest
-# continues to point at the public PipuPath origin.
+# Derive the 192 PWA icon from the repaired canonical raster. This is build-only
+# input for Bubblewrap; the checked-in/live brand assets remain untouched.
+SANITIZED_ICON_512="${SANITIZED_ICON_512}" SANITIZED_ICON_192="${SANITIZED_ICON_192}" python3 - <<'PY'
+import os
+from pathlib import Path
+from PIL import Image
+
+src = Path(os.environ["SANITIZED_ICON_512"])
+dst = Path(os.environ["SANITIZED_ICON_192"])
+with Image.open(src) as image:
+    image.load()
+    assert image.size == (512, 512)
+    image = image.convert("RGBA")
+    image.resize((192, 192), Image.Resampling.LANCZOS).save(dst, format="PNG", optimize=True)
+with Image.open(dst) as check:
+    check.verify()
+with Image.open(dst) as check:
+    assert check.size == (192, 192)
+print("Clean 192x192 Bubblewrap icon generated from repaired canonical raster.")
+PY
+
+# Serve a completely local, clean web manifest as well as both clean icons.
+# This prevents Bubblewrap from parsing any production PNG while generating the
+# native Android wrapper. URLs used by the final app still target PipuPath.
 TARGET_DIR="${TARGET_DIR}" PORT="${PORT}" python3 - <<'PY'
 import json
 import os
 from pathlib import Path
 
 target_dir = Path(os.environ["TARGET_DIR"])
+port = os.environ["PORT"]
+base = f"http://127.0.0.1:{port}"
+
+web_manifest = {
+    "name": "PipuPath",
+    "short_name": "PipuPath",
+    "description": "Discover, develop and deploy your potential.",
+    "start_url": "https://www.pipupath.name.ng/continue",
+    "scope": "https://www.pipupath.name.ng/",
+    "display": "standalone",
+    "theme_color": "#07142f",
+    "background_color": "#020817",
+    "icons": [
+        {
+            "src": f"{base}/pipupath-icon-192-sanitized.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": f"{base}/pipupath-icon-512-sanitized.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
+(target_dir / "manifest.webmanifest").write_text(json.dumps(web_manifest, indent=2) + "\n")
+
 manifest_path = target_dir / "twa-manifest.json"
 manifest = json.loads(manifest_path.read_text())
-local_icon = f"http://127.0.0.1:{os.environ['PORT']}/pipupath-icon-512-sanitized.png"
-manifest["iconUrl"] = local_icon
-manifest["maskableIconUrl"] = local_icon
+manifest["iconUrl"] = f"{base}/pipupath-icon-512-sanitized.png"
+manifest["maskableIconUrl"] = f"{base}/pipupath-icon-512-sanitized.png"
+manifest["webManifestUrl"] = f"{base}/manifest.webmanifest"
 manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
-print(f"Bubblewrap build icon prepared at {local_icon}")
+print("Bubblewrap manifest isolated from live image assets.")
 PY
 
-# Bubblewrap runs inside Docker. --network host lets Jimp fetch this build-only
-# repaired icon from the runner without changing any production URL.
 nohup python3 -m http.server "${PORT}" \
   --bind 127.0.0.1 \
   --directory "${TARGET_DIR}" \
@@ -180,19 +203,18 @@ nohup python3 -m http.server "${PORT}" \
 echo $! >/tmp/pipupath-bubblewrap-icon-server.pid
 
 for _ in {1..20}; do
-  if curl --fail --silent \
-    "http://127.0.0.1:${PORT}/pipupath-icon-512-sanitized.png" \
-    --output /tmp/pipupath-icon-probe.png; then
-    cmp -s /tmp/pipupath-icon-probe.png "${SANITIZED_ICON}" || {
-      echo "Recovered icon server returned unexpected bytes." >&2
-      exit 1
-    }
-    echo "Recovered Bubblewrap icon server is ready (512x512)."
+  if curl --fail --silent "http://127.0.0.1:${PORT}/manifest.webmanifest" --output /tmp/pipupath-manifest-probe.json \
+    && curl --fail --silent "http://127.0.0.1:${PORT}/pipupath-icon-192-sanitized.png" --output /tmp/pipupath-icon-192-probe.png \
+    && curl --fail --silent "http://127.0.0.1:${PORT}/pipupath-icon-512-sanitized.png" --output /tmp/pipupath-icon-512-probe.png; then
+    cmp -s /tmp/pipupath-icon-192-probe.png "${SANITIZED_ICON_192}" || exit 1
+    cmp -s /tmp/pipupath-icon-512-probe.png "${SANITIZED_ICON_512}" || exit 1
+    python3 -m json.tool /tmp/pipupath-manifest-probe.json >/dev/null
+    echo "Local clean Bubblewrap PWA contract is ready (192 + 512 + manifest)."
     exit 0
   fi
   sleep 0.25
 done
 
-echo "Recovered icon server did not become ready." >&2
+echo "Local clean Bubblewrap PWA server did not become ready." >&2
 cat /tmp/pipupath-bubblewrap-icon-server.log >&2 || true
 exit 1
