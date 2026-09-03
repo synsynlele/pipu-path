@@ -13,9 +13,10 @@ fi
 
 mkdir -p "${TARGET_DIR}"
 
-# Bubblewrap 1.25.0 decodes iconUrl with Jimp/pngjs. pngjs rejects otherwise
-# valid PNGs when bytes exist after the terminal IEND chunk. Browsers tolerate
-# those bytes. Trim only that trailing payload; do not decode or redraw pixels.
+# Bubblewrap 1.25.0 decodes iconUrl with Jimp/pngjs. The canonical artwork is
+# retained exactly, but its PNG container contains invalid chunk CRC metadata
+# and may contain bytes after IEND. Rebuild only the PNG container: preserve all
+# chunk payload bytes, recalculate CRCs, and stop at IEND. Pixel data is untouched.
 SOURCE_ICON="${SOURCE_ICON}" SANITIZED_ICON="${SANITIZED_ICON}" python3 - <<'PY'
 import os
 import struct
@@ -30,8 +31,10 @@ assert data.startswith(signature), "Canonical PipuPath launcher icon is not a PN
 
 offset = len(signature)
 width = height = None
-iend_end = None
 chunks = []
+crc_repairs = []
+out = bytearray(signature)
+iend_end = None
 
 while offset < len(data):
     assert offset + 12 <= len(data), "Truncated PNG chunk header."
@@ -44,9 +47,16 @@ while offset < len(data):
     stored_crc = struct.unpack(">I", data[offset + 8 + length:chunk_end])[0]
     actual_crc = zlib.crc32(chunk_type)
     actual_crc = zlib.crc32(chunk_data, actual_crc) & 0xFFFFFFFF
-    assert stored_crc == actual_crc, f"CRC mismatch in PNG chunk {chunk_type.decode('ascii', 'replace')}."
+    chunk_name = chunk_type.decode("ascii", "replace")
+    if stored_crc != actual_crc:
+        crc_repairs.append(chunk_name)
 
-    chunks.append(chunk_type.decode("ascii", "replace"))
+    out += struct.pack(">I", length)
+    out += chunk_type
+    out += chunk_data
+    out += struct.pack(">I", actual_crc)
+    chunks.append(chunk_name)
+
     if chunk_type == b"IHDR":
         assert length == 13, "Invalid PNG IHDR length."
         width, height = struct.unpack(">II", chunk_data[:8])
@@ -60,9 +70,13 @@ assert width == 512 and height == 512, f"Expected 512x512 launcher icon; got {wi
 assert iend_end is not None, "PNG is missing its IEND chunk."
 assert "IDAT" in chunks, "PNG is missing image data."
 
-target.write_bytes(data[:iend_end])
+target.write_bytes(bytes(out))
 removed = len(data) - iend_end
-print(f"Canonical icon verified at {width}x{height}; removed {removed} trailing byte(s) after IEND.")
+print(
+    f"Canonical icon repaired at {width}x{height}; "
+    f"CRC repaired in {crc_repairs or 'no'} chunk(s); "
+    f"removed {removed} trailing byte(s) after IEND."
+)
 PY
 
 # Change only the generated build manifest. The committed production manifest
@@ -83,7 +97,7 @@ print(f"Bubblewrap build icon prepared at {local_icon}")
 PY
 
 # Bubblewrap runs inside Docker. --network host lets Jimp fetch this build-only
-# sanitized icon from the runner without changing any production URL.
+# repaired icon from the runner without changing any production URL.
 nohup python3 -m http.server "${PORT}" \
   --bind 127.0.0.1 \
   --directory "${TARGET_DIR}" \
@@ -95,15 +109,15 @@ for _ in {1..20}; do
     "http://127.0.0.1:${PORT}/pipupath-icon-512-sanitized.png" \
     --output /tmp/pipupath-icon-probe.png; then
     cmp -s /tmp/pipupath-icon-probe.png "${SANITIZED_ICON}" || {
-      echo "Sanitized icon server returned unexpected bytes." >&2
+      echo "Repaired icon server returned unexpected bytes." >&2
       exit 1
     }
-    echo "Sanitized Bubblewrap icon server is ready (512x512)."
+    echo "Repaired Bubblewrap icon server is ready (512x512)."
     exit 0
   fi
   sleep 0.25
 done
 
-echo "Sanitized icon server did not become ready." >&2
+echo "Repaired icon server did not become ready." >&2
 cat /tmp/pipupath-bubblewrap-icon-server.log >&2 || true
 exit 1
