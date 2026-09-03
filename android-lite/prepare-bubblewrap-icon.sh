@@ -13,11 +13,13 @@ fi
 
 mkdir -p "${TARGET_DIR}"
 
-# Bubblewrap 1.25.0 decodes iconUrl with Jimp/pngjs. The canonical artwork is
-# retained exactly, but its PNG container contains invalid chunk CRC metadata
-# and may contain bytes after IEND. Rebuild only the PNG container: preserve all
-# chunk payload bytes, recalculate CRCs, and stop at IEND. Pixel data is untouched.
+# Bubblewrap 1.25.0 decodes iconUrl with Jimp/pngjs. The checked-in artwork is
+# visually valid in browsers, but its PNG container has damaged CRC/chunk
+# structure. Recover the original compressed image stream without redrawing it,
+# verify it expands to the expected 512x512 raster, and wrap it in a minimal,
+# standards-compliant PNG container for the Android build only.
 SOURCE_ICON="${SOURCE_ICON}" SANITIZED_ICON="${SANITIZED_ICON}" python3 - <<'PY'
+import math
 import os
 import struct
 import zlib
@@ -29,53 +31,121 @@ data = source.read_bytes()
 signature = b"\x89PNG\r\n\x1a\n"
 assert data.startswith(signature), "Canonical PipuPath launcher icon is not a PNG."
 
-offset = len(signature)
-width = height = None
-chunks = []
-crc_repairs = []
-out = bytearray(signature)
-iend_end = None
-
-while offset < len(data):
-    assert offset + 12 <= len(data), "Truncated PNG chunk header."
-    length = struct.unpack(">I", data[offset:offset + 4])[0]
-    chunk_type = data[offset + 4:offset + 8]
-    chunk_end = offset + 12 + length
-    assert chunk_end <= len(data), f"Truncated PNG chunk {chunk_type!r}."
-
-    chunk_data = data[offset + 8:offset + 8 + length]
-    stored_crc = struct.unpack(">I", data[offset + 8 + length:chunk_end])[0]
-    actual_crc = zlib.crc32(chunk_type)
-    actual_crc = zlib.crc32(chunk_data, actual_crc) & 0xFFFFFFFF
-    chunk_name = chunk_type.decode("ascii", "replace")
-    if stored_crc != actual_crc:
-        crc_repairs.append(chunk_name)
-
-    out += struct.pack(">I", length)
-    out += chunk_type
-    out += chunk_data
-    out += struct.pack(">I", actual_crc)
-    chunks.append(chunk_name)
-
-    if chunk_type == b"IHDR":
-        assert length == 13, "Invalid PNG IHDR length."
-        width, height = struct.unpack(">II", chunk_data[:8])
-    if chunk_type == b"IEND":
-        assert length == 0, "Invalid PNG IEND chunk."
-        iend_end = chunk_end
-        break
-    offset = chunk_end
-
+# IHDR is required to be the first PNG chunk and is still structurally intact.
+ihdr_length = struct.unpack(">I", data[8:12])[0]
+assert ihdr_length == 13 and data[12:16] == b"IHDR", "Invalid PNG IHDR."
+ihdr = data[16:29]
+width, height, bit_depth, color_type, compression, filter_method, interlace = struct.unpack(
+    ">IIBBBBB", ihdr
+)
 assert width == 512 and height == 512, f"Expected 512x512 launcher icon; got {width}x{height}."
-assert iend_end is not None, "PNG is missing its IEND chunk."
-assert "IDAT" in chunks, "PNG is missing image data."
+assert compression == 0 and filter_method == 0, "Unsupported PNG compression/filter method."
+assert color_type in {0, 2, 3, 4, 6}, f"Unsupported PNG color type {color_type}."
 
+
+def scan_chunks(chunk_type: bytes, start: int = 8, stop: int | None = None):
+    stop = len(data) if stop is None else stop
+    found = []
+    pos = start
+    while True:
+        pos = data.find(chunk_type, pos, stop)
+        if pos < 0:
+            break
+        if pos >= 4:
+            length = struct.unpack(">I", data[pos - 4:pos])[0]
+            payload_start = pos + 4
+            payload_end = payload_start + length
+            if payload_end + 4 <= len(data):
+                found.append(
+                    {
+                        "chunk_start": pos - 4,
+                        "type_pos": pos,
+                        "length": length,
+                        "payload": data[payload_start:payload_end],
+                        "chunk_end": payload_end + 4,
+                    }
+                )
+        pos += 1
+    return found
+
+
+def make_chunk(chunk_type: bytes, payload: bytes) -> bytes:
+    crc = zlib.crc32(chunk_type)
+    crc = zlib.crc32(payload, crc) & 0xFFFFFFFF
+    return (
+        struct.pack(">I", len(payload))
+        + chunk_type
+        + payload
+        + struct.pack(">I", crc)
+    )
+
+
+iend_candidates = scan_chunks(b"IEND")
+assert iend_candidates, "PNG is missing a recoverable IEND chunk."
+iend_type_pos = iend_candidates[-1]["type_pos"]
+
+idat_candidates = [
+    candidate
+    for candidate in scan_chunks(b"IDAT", 29, iend_type_pos)
+    if candidate["length"] > 0 and candidate["chunk_end"] <= iend_type_pos
+]
+assert idat_candidates, "PNG is missing recoverable IDAT image data."
+idat_candidates.sort(key=lambda item: item["chunk_start"])
+
+channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[color_type]
+expected_raw_size = None
+if interlace == 0:
+    row_bytes = math.ceil(width * channels * bit_depth / 8)
+    expected_raw_size = (row_bytes + 1) * height
+
+# Try the normal multi-IDAT stream first, then individual candidates. A false
+# "IDAT" byte sequence inside compressed data is therefore rejected by zlib or
+# by the exact decompressed raster-size check.
+attempts = [b"".join(item["payload"] for item in idat_candidates)]
+attempts.extend(item["payload"] for item in idat_candidates)
+compressed_pixels = None
+raw_pixels = None
+for candidate_payload in attempts:
+    try:
+        decoded = zlib.decompress(candidate_payload)
+    except zlib.error:
+        continue
+    if expected_raw_size is not None and len(decoded) != expected_raw_size:
+        continue
+    compressed_pixels = candidate_payload
+    raw_pixels = decoded
+    break
+
+assert compressed_pixels is not None, "Could not recover a valid PNG deflate image stream."
+
+out = bytearray(signature)
+out += make_chunk(b"IHDR", ihdr)
+
+# Indexed PNGs require PLTE; tRNS is preserved when present so transparency is
+# unchanged. For other color types tRNS is optional but also preserved.
+first_idat_start = idat_candidates[0]["chunk_start"]
+if color_type == 3:
+    palettes = [
+        item
+        for item in scan_chunks(b"PLTE", 29, first_idat_start)
+        if 0 < item["length"] <= 768 and item["length"] % 3 == 0
+    ]
+    assert palettes, "Indexed PNG is missing a recoverable palette."
+    out += make_chunk(b"PLTE", palettes[0]["payload"])
+
+transparency = scan_chunks(b"tRNS", 29, first_idat_start)
+if transparency:
+    out += make_chunk(b"tRNS", transparency[0]["payload"])
+
+out += make_chunk(b"IDAT", compressed_pixels)
+out += make_chunk(b"IEND", b"")
 target.write_bytes(bytes(out))
-removed = len(data) - iend_end
+
 print(
-    f"Canonical icon repaired at {width}x{height}; "
-    f"CRC repaired in {crc_repairs or 'no'} chunk(s); "
-    f"removed {removed} trailing byte(s) after IEND."
+    "Canonical icon stream recovered: "
+    f"{width}x{height}, bitDepth={bit_depth}, colorType={color_type}, "
+    f"interlace={interlace}, IDAT candidates={len(idat_candidates)}, "
+    f"decodedBytes={len(raw_pixels)}, repairedBytes={len(out)}."
 )
 PY
 
@@ -109,15 +179,15 @@ for _ in {1..20}; do
     "http://127.0.0.1:${PORT}/pipupath-icon-512-sanitized.png" \
     --output /tmp/pipupath-icon-probe.png; then
     cmp -s /tmp/pipupath-icon-probe.png "${SANITIZED_ICON}" || {
-      echo "Repaired icon server returned unexpected bytes." >&2
+      echo "Recovered icon server returned unexpected bytes." >&2
       exit 1
     }
-    echo "Repaired Bubblewrap icon server is ready (512x512)."
+    echo "Recovered Bubblewrap icon server is ready (512x512)."
     exit 0
   fi
   sleep 0.25
 done
 
-echo "Repaired icon server did not become ready." >&2
+echo "Recovered icon server did not become ready." >&2
 cat /tmp/pipupath-bubblewrap-icon-server.log >&2 || true
 exit 1
