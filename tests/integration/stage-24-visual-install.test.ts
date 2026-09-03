@@ -58,10 +58,12 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(distribution).toContain(
       'DistributionMode = "hidden" | "android" | "desktop"',
     );
-    expect(distribution).toContain("Download PipuPath Lite");
+    expect(distribution).toContain("Download PipuPath");
     expect(distribution).toContain("Install PipuPath");
-    expect(distribution).toContain("/downloads/PipuPath-Lite-1.0.0.apk");
-    expect(distribution).toContain("window.location.assign(ANDROID_APK_PATH)");
+    expect(distribution).toContain('ANDROID_DOWNLOAD_PATH = "/downloads/latest"');
+    expect(distribution).toContain(
+      "window.location.assign(ANDROID_DOWNLOAD_PATH)",
+    );
     expect(distribution).toContain("await promptEvent.prompt()");
     expect(distribution).not.toContain("getInstalledRelatedApps");
     expect(manifest).toContain("related_applications");

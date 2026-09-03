@@ -18,6 +18,7 @@ const googleAuthForm = readFileSync(
   "src/modules/identity/ui/google-auth-form.tsx",
   "utf8",
 );
+const googleAuthRoute = readFileSync("src/app/auth/google/route.ts", "utf8");
 
 describe("Stage 2 structural security contract", () => {
   it.each([
@@ -70,9 +71,12 @@ describe("Stage 2 structural security contract", () => {
   });
 
   it("initiates Google OAuth through the server boundary", () => {
-    expect(googleAuthForm).toContain("signInWithGoogleAction");
-    expect(googleAuthForm).toContain("<form action={action}>");
+    expect(googleAuthForm).toContain("/auth/google?next=");
+    expect(googleAuthForm).toContain("href={googleAuthHref}");
     expect(googleAuthForm).not.toContain('"use client"');
     expect(googleAuthForm).not.toContain("createBrowserSupabaseClient");
+    expect(googleAuthRoute).toContain("createServerSupabaseClient");
+    expect(googleAuthRoute).toContain("client.auth.signInWithOAuth");
+    expect(googleAuthRoute).toContain('provider: "google"');
   });
 });

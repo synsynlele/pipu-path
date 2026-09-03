@@ -189,7 +189,7 @@ export function LandingDistributionButton() {
     <button
       type="button"
       onClick={() => void runDistributionAction()}
-      aria-label={androidMode ? "Download PipuPath Lite" : "Install PipuPath"}
+      aria-label={androidMode ? "Download PipuPath" : "Install PipuPath"}
       title={title}
       className="border-primary/30 bg-primary-soft/65 text-primary-light hover:bg-primary-soft inline-flex min-h-10 touch-manipulation items-center justify-center gap-2 rounded-full border px-3.5 text-sm font-semibold shadow-sm transition-colors"
       style={{ flexShrink: 0, whiteSpace: "nowrap" }}
