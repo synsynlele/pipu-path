@@ -1,0 +1,36 @@
+name: Stage 29 release formatter
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  format-stage29-release:
+    if: github.head_ref == 'agent/stage-29-builder-network'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format release files
+        run: >-
+          npx prettier --write
+          'src/app/connect/world/page.tsx'
+          'src/components/navigation/app-navigation.test.tsx'
+          'tests/integration/stage-29-builder-network.test.ts'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stage29-release-formatted
+          path: |
+            src/app/connect/world/page.tsx
+            src/components/navigation/app-navigation.test.tsx
+            tests/integration/stage-29-builder-network.test.ts
+          if-no-files-found: error
+          retention-days: 1
