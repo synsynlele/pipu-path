@@ -124,7 +124,7 @@ jobs:
           }
           echo "Production signing certificate verified."
 
-      - name: Generate Android project with Bubblewrap
+      - name: Generate canonical app icons and Android project
         shell: bash
         run: |
           set -euo pipefail
@@ -219,7 +219,7 @@ jobs:
               "offline": False,
               "notes": [
                   "Production-signed Android Lite package.",
-                  "Uses the permanent PipuPath app icon in Android launcher and installed-app surfaces.",
+                  "Uses the canonical PipuPath 2.0 logo in Android launcher and installed-app surfaces.",
                   "Uses the same PWA experience as www.pipupath.name.ng."
               ]
           }
@@ -239,7 +239,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Publish download files to release branch
+      - name: Publish release and canonical icon assets to release branch
         shell: bash
         env:
           VERSION: ${{ steps.package.outputs.version }}
@@ -247,10 +247,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/downloads/
+          git add public/downloads/ public/brand/pipupath-icon-192.png public/brand/pipupath-icon-512.png
           if git diff --cached --quiet; then
-            echo "No download changes to publish."
+            echo "No release changes to publish."
           else
-            git commit -m "release(android): publish PipuPath Lite ${VERSION} [skip ci]"
+            git commit -m "release(android): publish PipuPath Lite ${VERSION} and canonical icons [skip ci]"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
