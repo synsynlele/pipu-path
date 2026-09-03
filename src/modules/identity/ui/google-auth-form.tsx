@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-
 export function GoogleAuthForm({ next = "/app" }: { next?: string }) {
+  const googleAuthHref = `/auth/google?next=${encodeURIComponent(next)}`;
+
   return (
-    <form action="/auth/google" method="get">
-      <input type="hidden" name="next" value={next} />
-      <Button type="submit" variant="secondary" className="w-full gap-3">
-        <GoogleIcon />
-        Continue with Google
-      </Button>
-    </form>
+    <a
+      href={googleAuthHref}
+      className="pp-button-secondary inline-flex min-h-11 w-full items-center justify-center gap-3 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-[background-color,border-color,color,transform,box-shadow] duration-200 hover:-translate-y-0.5"
+    >
+      <GoogleIcon />
+      Continue with Google
+    </a>
   );
 }
 
