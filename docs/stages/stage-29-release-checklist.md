@@ -1,0 +1,23 @@
+# Stage 29 release checklist
+
+- [x] Branch from exact production head
+- [x] Builder Network domain contract
+- [x] Staging migration applied successfully
+- [x] RLS/no direct authenticated CRUD designed
+- [x] Adult/school scope separation
+- [x] Under-13 exclusion
+- [x] Mutual cross-school policy
+- [x] Accepted-connection messaging authority
+- [x] Builder World finite feed UI
+- [x] Purposeful reactions/comments
+- [x] Message inbox and conversation UI
+- [x] School owner network controls
+- [x] Primary Connect navigation points to Builder World
+- [x] Structural and domain regression tests added
+- [ ] Canonical CI green
+- [ ] TypeScript/build defects repaired
+- [ ] Stage 15 school collaboration eligibility hardening
+- [ ] Supabase security/performance verification
+- [ ] Exact-head Vercel Preview accepted
+- [ ] Authenticated desktop/mobile E2E
+- [ ] Production merge

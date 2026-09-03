@@ -27,7 +27,7 @@ describe("AppNavigation", () => {
     ).toHaveAttribute("aria-current", "page");
     expect(
       within(navigation).getByRole("link", { name: "Connect" }),
-    ).toHaveAttribute("href", "/connect");
+    ).toHaveAttribute("href", "/connect/world");
     expect(
       within(navigation).getByRole("link", { name: "Profile" }),
     ).toHaveAttribute("href", "/profile");
