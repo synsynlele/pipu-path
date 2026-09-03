@@ -82,9 +82,27 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/pwa/icon-192", type: "image/png", sizes: "192x192" }],
-    shortcut: [{ url: "/pwa/icon-192", type: "image/png", sizes: "192x192" }],
-    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
+    icon: [
+      {
+        url: "/brand/pipupath-icon-192.png",
+        type: "image/png",
+        sizes: "192x192",
+      },
+    ],
+    shortcut: [
+      {
+        url: "/brand/pipupath-icon-192.png",
+        type: "image/png",
+        sizes: "192x192",
+      },
+    ],
+    apple: [
+      {
+        url: "/brand/pipupath-icon-192.png",
+        type: "image/png",
+        sizes: "192x192",
+      },
+    ],
   },
   robots: {
     index: true,
