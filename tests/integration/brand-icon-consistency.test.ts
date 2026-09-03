@@ -3,7 +3,10 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const renderIcon = readFileSync(join(root, "src/lib/pwa/render-icon.ts"), "utf8");
+const renderIcon = readFileSync(
+  join(root, "src/lib/pwa/render-icon.ts"),
+  "utf8",
+);
 const layout = readFileSync(join(root, "src/app/layout.tsx"), "utf8");
 const manifest = readFileSync(join(root, "src/app/manifest.ts"), "utf8");
 const twaManifest = readFileSync(
