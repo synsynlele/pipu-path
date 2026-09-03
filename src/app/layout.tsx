@@ -82,8 +82,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml", sizes: "any" }],
-    shortcut: "/icon.svg",
+    icon: [{ url: "/pwa/icon-192", type: "image/png", sizes: "192x192" }],
+    shortcut: [{ url: "/pwa/icon-192", type: "image/png", sizes: "192x192" }],
+    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
   },
   robots: {
     index: true,
