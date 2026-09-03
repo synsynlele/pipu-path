@@ -153,6 +153,6 @@ describe("Stage 18 Opportunity MVP", () => {
     expect(migration).toContain("alter table public.product_events");
     expect(navigation).not.toMatch(/href:\s*["']\/opportunities["']/);
     expect(navigation).toContain('pathname.startsWith("/opportunities")');
-    expect(navigation).toContain('{ label: "Connect", href: "/connect"');
+    expect(navigation).toContain('{ label: "Connect", href: "/connect/world"');
   });
 });

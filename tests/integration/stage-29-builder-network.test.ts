@@ -31,6 +31,7 @@ const messagesPage = readFileSync(
   join(process.cwd(), "src/app/connect/messages/page.tsx"),
   "utf8",
 );
+const normalizedMessagesPage = messagesPage.replace(/\s+/g, " ");
 const schoolPage = readFileSync(
   join(process.cwd(), "src/app/institution/network/page.tsx"),
   "utf8",
@@ -82,7 +83,7 @@ describe("Stage 29 Builder Network structure", () => {
   it("requires an accepted relationship before private messaging", () => {
     expect(migration).toContain("connection.status = 'accepted'");
     expect(migration).toContain("stage29_pair_message_allowed");
-    expect(messagesPage).toContain(
+    expect(normalizedMessagesPage).toContain(
       "accepted, currently authorised Builder connections",
     );
   });
