@@ -20,11 +20,7 @@ export async function startDiscoveryRetakeForUser(
     { data: activeSession, error: activeError },
     { data: completedSession, error: completedError },
   ] = await Promise.all([
-    service
-      .from("profiles")
-      .select("age_band")
-      .eq("id", userId)
-      .single(),
+    service.from("profiles").select("age_band").eq("id", userId).single(),
     service
       .from("discovery_sessions")
       .select("id,status")
