@@ -6,6 +6,7 @@ const rpc = vi.fn();
 const requireAuthenticatedIdentity = vi.fn();
 const getStage4DiscoveryHandoff = vi.fn();
 const normalizeCompletedDiscoveryHandoff = vi.fn();
+const supersedePriorDiscoveryEvidence = vi.fn();
 
 vi.mock("@/lib/supabase/server", () => ({
   createServerSupabaseClient: vi.fn(async () => ({ rpc })),
@@ -19,6 +20,9 @@ vi.mock("@/modules/discovery/infrastructure/discovery-dal", () => ({
 vi.mock("./evidence-normalization", () => ({
   normalizeCompletedDiscoveryHandoff,
 }));
+vi.mock("../infrastructure/evidence-lifecycle-dal", () => ({
+  supersedePriorDiscoveryEvidence,
+}));
 
 const {
   createCurrentInterpretationRequest,
@@ -31,8 +35,12 @@ describe("Stage 4.1 interpretation requests", () => {
     requireAuthenticatedIdentity.mockResolvedValue({
       user: { id: "00000000-0000-4000-8000-000000000001" },
     });
-    getStage4DiscoveryHandoff.mockResolvedValue({ sessionId: "session" });
+    getStage4DiscoveryHandoff.mockResolvedValue({
+      sessionId: "session",
+      responses: [{ sourceId: "response-1" }, { sourceId: "response-2" }],
+    });
     normalizeCompletedDiscoveryHandoff.mockReturnValue([{}, {}]);
+    supersedePriorDiscoveryEvidence.mockResolvedValue(0);
   });
 
   it("returns a safe prerequisite error without making a write", async () => {
@@ -54,6 +62,24 @@ describe("Stage 4.1 interpretation requests", () => {
       value: { normalizedCount: 2, localEvidenceCount: 2 },
     });
     expect(rpc).toHaveBeenCalledWith("normalize_stage4_discovery_evidence");
+    expect(supersedePriorDiscoveryEvidence).toHaveBeenCalledWith(
+      "00000000-0000-4000-8000-000000000001",
+      ["response-1", "response-2"],
+    );
+  });
+
+  it("fails safely if prior Discovery evidence cannot be superseded", async () => {
+    rpc.mockResolvedValueOnce({ data: 2, error: null });
+    supersedePriorDiscoveryEvidence.mockRejectedValueOnce(
+      new Error("lifecycle unavailable"),
+    );
+
+    await expect(normalizeCurrentDiscoveryEvidence()).resolves.toEqual({
+      ok: false,
+      code: "HPI_EVIDENCE_SNAPSHOT_FAILED",
+      message:
+        "PipuPath could not prepare your latest Discovery evidence. Please try again.",
+    });
   });
 
   it("creates a request only after successful normalization", async () => {

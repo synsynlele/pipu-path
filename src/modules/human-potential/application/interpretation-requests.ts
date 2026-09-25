@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { getStage4DiscoveryHandoff } from "@/modules/discovery/infrastructure/discovery-dal";
+import { supersedePriorDiscoveryEvidence } from "../infrastructure/evidence-lifecycle-dal";
 import { normalizeCompletedDiscoveryHandoff } from "./evidence-normalization";
 
 export type HpiApplicationResult<T> =
@@ -17,6 +18,8 @@ const safeMessages: Record<string, string> = {
     "Interpretation is not available for this account at the moment.",
   HPI_REQUEST_ALREADY_EXISTS:
     "An interpretation request is already being prepared.",
+  HPI_EVIDENCE_SNAPSHOT_FAILED:
+    "PipuPath could not prepare your latest Discovery evidence. Please try again.",
 };
 
 function safeError(
@@ -47,6 +50,16 @@ export async function normalizeCurrentDiscoveryEvidence(): Promise<
     "normalize_stage4_discovery_evidence",
   );
   if (error) return safeError(error);
+
+  try {
+    await supersedePriorDiscoveryEvidence(
+      user.id,
+      handoff.responses.map((response) => response.sourceId),
+    );
+  } catch {
+    return safeError({ message: "HPI_EVIDENCE_SNAPSHOT_FAILED" });
+  }
+
   return {
     ok: true,
     value: { normalizedCount: data, localEvidenceCount: localEvidence.length },

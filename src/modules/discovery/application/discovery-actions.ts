@@ -3,8 +3,10 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import { validateDiscoveryInput } from "../domain/discovery";
 import { requireActiveDiscovery } from "../infrastructure/discovery-dal";
+import { startDiscoveryRetakeForUser } from "../infrastructure/retake-dal";
 import { safeDiscoveryError } from "./discovery-errors";
 import type { DiscoveryFormState } from "./discovery-form-state";
 
@@ -22,6 +24,16 @@ export async function startDiscoveryAction() {
   const { error } = await client.rpc("start_or_resume_discovery");
   if (error) redirect("/onboarding/discovery?error=unavailable");
   redirect("/onboarding/discovery");
+}
+
+export async function retakeDiscoveryAction() {
+  const { user } = await requireAuthenticatedIdentity();
+  try {
+    await startDiscoveryRetakeForUser(user.id);
+  } catch {
+    redirect("/onboarding/discovery/retake?error=unavailable");
+  }
+  redirect("/onboarding/discovery?resume=1");
 }
 
 export async function saveDiscoveryResponseAction(

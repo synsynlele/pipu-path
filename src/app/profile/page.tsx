@@ -89,15 +89,34 @@ export default async function LivingBuilderProfilePage() {
 
               <div className="mt-5 flex flex-wrap gap-2.5">
                 {baseline ? (
-                  <form action={refreshLivingBuilderProfileAction}>
-                    <Button
-                      type="submit"
-                      variant="premium"
+                  <>
+                    <form action={refreshLivingBuilderProfileAction}>
+                      <Button
+                        type="submit"
+                        variant="premium"
+                        className="rounded-full"
+                      >
+                        {profile ? "Refresh my profile" : "Build my profile"}
+                      </Button>
+                    </form>
+                    <ButtonLink
+                      href={
+                        home.snapshot.discoveryStatus === "review"
+                          ? "/onboarding/discovery/review"
+                          : home.snapshot.discoveryStatus === "in_progress"
+                            ? "/onboarding/discovery"
+                            : "/onboarding/discovery/retake"
+                      }
+                      variant="secondary"
                       className="rounded-full"
                     >
-                      {profile ? "Refresh my profile" : "Build my profile"}
-                    </Button>
-                  </form>
+                      {home.snapshot.discoveryStatus === "review"
+                        ? "Review Discovery"
+                        : home.snapshot.discoveryStatus === "in_progress"
+                          ? "Continue Discovery"
+                          : "Retake Discovery"}
+                    </ButtonLink>
+                  </>
                 ) : (
                   <ButtonLink
                     href="/onboarding/discovery"

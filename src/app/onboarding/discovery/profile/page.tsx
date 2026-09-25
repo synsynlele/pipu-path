@@ -56,6 +56,10 @@ export default async function HumanPotentialProfilePage() {
   const pathways = profile
     ? await getCurrentEconomicPathwayState(profile.id)
     : null;
+  const hasNewerDiscovery = Boolean(
+    profile &&
+      Date.parse(handoff.completedAt) > Date.parse(profile.createdAt),
+  );
   if (pathways) {
     await recordProductEventForUser(user.id, "possible_paths_viewed", {
       recommendationId: pathways.id,
@@ -111,7 +115,28 @@ export default async function HumanPotentialProfilePage() {
         </Surface>
       ) : (
         <>
-          <Surface className="mt-9 overflow-hidden p-0">
+          {hasNewerDiscovery ? (
+            <Surface className="mt-9 grid gap-5 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div>
+                <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+                  New Discovery ready
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold">
+                  Build an updated Potential Profile from your latest answers.
+                </h2>
+                <p className="text-muted mt-3 max-w-2xl leading-7">
+                  Your previous profile stays preserved in history. The new
+                  profile will use your latest completed Discovery as its current
+                  evidence base.
+                </p>
+              </div>
+              <ProfileGenerationForm buttonLabel="Build updated profile" />
+            </Surface>
+          ) : null}
+
+          <Surface
+            className={`${hasNewerDiscovery ? "mt-5" : "mt-9"} overflow-hidden p-0`}
+          >
             <div className="grid lg:grid-cols-[1.4fr_0.6fr]">
               <div className="p-6 sm:p-8">
                 <p className="text-gold text-xs font-semibold tracking-wide uppercase">
