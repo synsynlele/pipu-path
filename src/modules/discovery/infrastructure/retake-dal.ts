@@ -76,9 +76,7 @@ export async function startDiscoveryRetakeForUser(
 
   const { data: questions, error: questionError } = await service
     .from("discovery_questions")
-    .select(
-      "stable_key,section_key,display_order,eligible_age_bands,is_active",
-    )
+    .select("stable_key,section_key,display_order,eligible_age_bands,is_active")
     .eq("question_set_id", questionSet.id)
     .eq("is_active", true)
     .order("display_order");

@@ -57,8 +57,7 @@ export default async function HumanPotentialProfilePage() {
     ? await getCurrentEconomicPathwayState(profile.id)
     : null;
   const hasNewerDiscovery = Boolean(
-    profile &&
-      Date.parse(handoff.completedAt) > Date.parse(profile.createdAt),
+    profile && Date.parse(handoff.completedAt) > Date.parse(profile.createdAt),
   );
   if (pathways) {
     await recordProductEventForUser(user.id, "possible_paths_viewed", {
@@ -126,8 +125,8 @@ export default async function HumanPotentialProfilePage() {
                 </h2>
                 <p className="text-muted mt-3 max-w-2xl leading-7">
                   Your previous profile stays preserved in history. The new
-                  profile will use your latest completed Discovery as its current
-                  evidence base.
+                  profile will use your latest completed Discovery as its
+                  current evidence base.
                 </p>
               </div>
               <ProfileGenerationForm buttonLabel="Build updated profile" />

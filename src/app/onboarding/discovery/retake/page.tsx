@@ -71,8 +71,8 @@ export default async function RetakeDiscoveryPage({
                 role="alert"
                 className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
               >
-                PipuPath could not start a new Discovery right now. Your existing
-                profile is unchanged. Please try again.
+                PipuPath could not start a new Discovery right now. Your
+                existing profile is unchanged. Please try again.
               </p>
             ) : null}
 
