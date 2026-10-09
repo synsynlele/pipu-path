@@ -2,6 +2,13 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Button, ButtonLink } from "./button";
 import { Surface } from "./surface";
+import type { ComponentProps } from "react";
+
+// These tests cover primitive styling and semantics. Next's router schedules
+// browser work that can outlive jsdom teardown; exercise routing separately.
+vi.mock("next/link", () => ({
+  default: (props: ComponentProps<"a">) => <a {...props} />,
+}));
 
 describe("design-system primitives", () => {
   it("renders an accessible navigation action", () => {
