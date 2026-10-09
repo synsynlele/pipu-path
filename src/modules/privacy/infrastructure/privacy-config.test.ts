@@ -4,6 +4,14 @@ vi.mock("server-only", () => ({}));
 
 afterEach(() => vi.unstubAllEnvs());
 describe("privacy operations configuration", () => {
+  it("publishes the owner-supplied contact without enabling requests", () => {
+    vi.stubEnv("PRIVACY_CONTACT_EMAIL", undefined);
+    vi.stubEnv("PRIVACY_REQUESTS_ENABLED", "false");
+    expect(privacyOperationsConfig()).toEqual({
+      enabled: false,
+      email: "copyartint@gmail.com",
+    });
+  });
   it("requires a valid contact even when enabled", () => {
     vi.stubEnv("PRIVACY_REQUESTS_ENABLED", "true");
     vi.stubEnv("PRIVACY_CONTACT_EMAIL", "");

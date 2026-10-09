@@ -625,6 +625,13 @@ remains disabled for the Stage 18 development branch.
 
 # 9 October 2026 — Play release foundation
 
+Follow-up: owner supplied `copyartint@gmail.com` for public privacy requests.
+The public fallback and environment template now use that address, with the
+online form still disabled. GitHub CI #1316 passed on published head `36c0292`.
+Remote staging verification is blocked: Vercel returned a scope-access denial
+for the recorded PipuPath team; the connected Supabase project list did not
+include the recorded PipuPath database. No unrelated project was modified.
+
 Added public web and Profile entry points for account-deletion requests, durable
 server-only persistence and an owner/operator review queue. Requests cannot
 target another account, bypass authentication or claim deletion completion.

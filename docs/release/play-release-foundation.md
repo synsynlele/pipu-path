@@ -3,6 +3,18 @@
 Date: 9 October 2026. Baseline: `19509ee` on `main`.
 Status: implementation candidate; not deployed or store-ready.
 
+Owner-confirmed privacy contact: `copyartint@gmail.com`. This is the public
+fallback contact and may be overridden by server configuration. Online request
+enablement still requires explicit configuration and the staging/operations gates.
+
+Remote checks: GitHub CI #1316 passed on initial published head `36c0292`.
+Vercel rejected access to the recorded `copyartint-2860s-projects/pipu-path`
+scope; no Vercel CLI credential fallback is available in this workspace.
+The connected Supabase account did not list recorded project
+`kvjcswnmhwegpakbtvlh`. These are connection/access blockers, not proof that
+the application or database is unavailable to its owner. No remote mutation
+or deployment was attempted after those checks.
+
 Local validation: `npm run validate` passed (371 unit/coverage tests, 242
 integration tests, formatting, zero-warning lint, TypeScript and production
 build). Coverage thresholds passed. Thirteen PostgreSQL checks in PGlite passed
