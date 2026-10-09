@@ -685,3 +685,14 @@ Proxy redirects now preserve refreshed and cleared session cookies, including
 cookie options. Three regression tests cover rotation, expiry and account
 deletion continuation. Full validation is required before release. This code
 repair does not replace the required hosted Auth redirect configuration.
+
+## Play readiness tidy-up — 9 October 2026
+
+Delivered service-only, read-only account deletion dependency inventory and
+owner/operator inspection route. Database fixture and execution grants passed
+in rollback; no real user data changed. Applied account_deletion_preflight.
+Full local validation passed: 392 unit/component tests, 242 integration tests,
+format, lint, types and production build. Updated Quest E2E for sequential
+reflection; formatting/types passed, authenticated execution remains blocked
+by missing test credentials. See docs/release/play-readiness-gates.md for
+remaining release gates. No deletion executor or Play submission is claimed.

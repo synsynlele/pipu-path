@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentPlatformAdminRole } from "@/modules/admin/infrastructure/admin-dal";
 import { listOpenDeletionRequests } from "@/modules/privacy/infrastructure/deletion-requests";
 import { privacyOperationsConfig } from "@/modules/privacy/infrastructure/privacy-config";
@@ -50,6 +51,12 @@ export default async function PrivacyQueuePage() {
             <p className="mt-2">
               Received: {request.created_at.slice(0, 10)} · {request.status}
             </p>
+            <Link
+              href={`/admin/privacy/${request.id}`}
+              className="mt-4 inline-flex min-h-11 items-center underline"
+            >
+              Inspect deletion dependencies
+            </Link>
             {request.status === "pending" ? (
               <form action={reviewDeletionRequest} className="mt-4">
                 <input type="hidden" name="request_id" value={request.id} />
