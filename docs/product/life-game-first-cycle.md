@@ -69,3 +69,24 @@ completion and return-to-action across two cycles. Compare against the earlier
 interface; no improvement is claimed until observed. Weekly findings improve
 the shared quest templates so facilitators can scale delivery without requiring
 the founder to motivate every participant.
+
+## Activation record — 9 October 2026
+
+Applied `life_game_discovery` to the connected PipuPath database after GitHub
+CI run 1325 passed validation at commit
+`4797a8b1037e1e87bb51b0fc3f4dadecbc8f4651`. Staging E2E was skipped;
+no signed-in end-to-end result is claimed.
+
+Post-migration SQL verified eight active questions for each of the five age
+bands, with seven required and one optional. Version 1 retains its original
+16 stored question rows; existing sessions and responses were not rewritten.
+The version 2 set contains nine stored rows because minor and adult support
+questions have mutually exclusive age eligibility. The shared database change
+applies to new sessions on both the existing site and the preview; the new UI
+remains a preview and has not been promoted to production.
+
+Latest preview:
+https://pipu-path-2u9fetb2j-copyartint-2860s-projects.vercel.app
+
+For a clean test, use a new test account, or Profile → retake Discovery after
+completing an existing session. Resumed sessions retain their original questions.
