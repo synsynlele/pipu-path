@@ -696,3 +696,22 @@ format, lint, types and production build. Updated Quest E2E for sequential
 reflection; formatting/types passed, authenticated execution remains blocked
 by missing test credentials. See docs/release/play-readiness-gates.md for
 remaining release gates. No deletion executor or Play submission is claimed.
+
+## Account deletion fulfilment candidate — 9 October 2026
+
+Implemented operator-confirmed, retryable deletion with exclusive renewable
+leases, atomic linked-record purge, Storage API removal and Auth Admin removal.
+Only verified absence can fulfil a request; failed jobs retain phase and retry
+state. Backup takeover cannot interrupt an active lease. Protected organisation,
+admin and safeguarding cases require manual review. Added stale-JWT evidence
+guard. Applied fulfilment and review-handover migrations; both rollout flags
+remain disabled. No real account was deleted.
+
+Full local validation passed: 416 unit/component tests, 242 integration tests,
+format, lint, types and production build. Rollback database fixtures proved
+circular Mission/Journey and Passport removal, role/report guards, exclusive
+leases, incomplete-verification denial, retry after Auth removal, backup takeover
+and unrelated-account preservation. External Auth Admin and Storage APIs were
+mocked in adapter tests, not exercised live. See the account-deletion operations
+runbook for activation, policy and provider/backup gates. No public release or
+Google Play submission is claimed.

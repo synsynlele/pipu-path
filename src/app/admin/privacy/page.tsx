@@ -1,9 +1,13 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { DeletionFulfilmentForm } from "@/modules/privacy/ui/deletion-fulfilment-form";
 import { getCurrentPlatformAdminRole } from "@/modules/admin/infrastructure/admin-dal";
 import { listOpenDeletionRequests } from "@/modules/privacy/infrastructure/deletion-requests";
 import { privacyOperationsConfig } from "@/modules/privacy/infrastructure/privacy-config";
-import { reviewDeletionRequest } from "@/modules/privacy/application/deletion-actions";
+import {
+  reviewDeletionRequest,
+  takeOverDeletionReviewAction,
+} from "@/modules/privacy/application/deletion-actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -51,12 +55,44 @@ export default async function PrivacyQueuePage() {
             <p className="mt-2">
               Received: {request.created_at.slice(0, 10)} · {request.status}
             </p>
-            <Link
-              href={`/admin/privacy/${request.id}`}
-              className="mt-4 inline-flex min-h-11 items-center underline"
-            >
-              Inspect deletion dependencies
-            </Link>
+            {request.job ? (
+              <p className="mt-2">
+                Processing: {request.job.state} · last phase:{" "}
+                {request.job.phase} · attempts: {request.job.attempts}. A failed
+                run may have partially removed data.
+              </p>
+            ) : null}
+            {request.status === "reviewing" ? (
+              <form action={takeOverDeletionReviewAction} className="mt-4">
+                <input type="hidden" name="request_id" value={request.id} />
+                <button
+                  type="submit"
+                  className="min-h-11 rounded-lg border border-white/30 px-4"
+                >
+                  Take over review
+                </button>
+                <p className="mt-2 text-sm">
+                  For a backup operator. Active processing cannot be reassigned.
+                </p>
+              </form>
+            ) : null}
+            {request.user_id ? (
+              <Link
+                href={`/admin/privacy/${request.id}`}
+                className="mt-4 inline-flex min-h-11 items-center underline"
+              >
+                Inspect deletion dependencies
+              </Link>
+            ) : (
+              <p className="mt-4">
+                Authentication was removed; retry the same request to verify
+                completion.
+              </p>
+            )}
+            {request.status === "reviewing" &&
+            process.env.PRIVACY_FULFILMENT_ENABLED === "true" ? (
+              <DeletionFulfilmentForm requestId={request.id} />
+            ) : null}
             {request.status === "pending" ? (
               <form action={reviewDeletionRequest} className="mt-4">
                 <input type="hidden" name="request_id" value={request.id} />

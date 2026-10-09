@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   requestAccountDeletion,
   reviewDeletionRequest,
+  fulfilAccountDeletion,
+  takeOverDeletionReviewAction,
 } from "./deletion-actions";
 
 const mocks = vi.hoisted(() => ({
@@ -13,6 +15,8 @@ const mocks = vi.hoisted(() => ({
   } | null,
   save: vi.fn(),
   claim: vi.fn(),
+  fulfil: vi.fn(),
+  takeover: vi.fn(),
   revalidate: vi.fn(),
 }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.revalidate }));
@@ -33,6 +37,10 @@ vi.mock("../infrastructure/deletion-requests", () => ({
   saveDeletionRequest: mocks.save,
   claimDeletionRequest: mocks.claim,
 }));
+vi.mock("../infrastructure/deletion-fulfilment", () => ({
+  fulfilDeletionRequest: mocks.fulfil,
+  takeOverDeletionReview: mocks.takeover,
+}));
 
 function form(confirmed = true) {
   const data = new FormData();
@@ -48,6 +56,8 @@ describe("privacy request boundaries", () => {
     mocks.user = { id: "owner-account", email_confirmed_at: "2026-01-01" };
     mocks.save.mockResolvedValue({ id: "request-1" });
     mocks.claim.mockResolvedValue(undefined);
+    vi.stubEnv("PRIVACY_FULFILMENT_ENABLED", "true");
+    mocks.fulfil.mockResolvedValue(undefined);
   });
   it("saves only the authenticated account, ignoring a forged target", async () => {
     const result = await requestAccountDeletion({ status: "idle" }, form());
@@ -113,5 +123,88 @@ describe("privacy request boundaries", () => {
     await expect(reviewDeletionRequest(form())).rejects.toThrow(
       "PRIVACY_OPERATIONS_DISABLED",
     );
+  });
+});
+
+describe("deletion fulfilment authorisation", () => {
+  function approval() {
+    const data = new FormData();
+    data.set("request_id", "10000000-0000-4000-8000-000000000001");
+    data.set("confirm_request_id", "10000000-0000-4000-8000-000000000001");
+    data.set("review_complete", "on");
+    data.set("operator_id", "forged-operator");
+    return data;
+  }
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.role = "operator";
+    mocks.enabled = true;
+    mocks.user = { id: "owner-account", email_confirmed_at: "2026-01-01" };
+    vi.stubEnv("PRIVACY_FULFILMENT_ENABLED", "true");
+    mocks.fulfil.mockResolvedValue(undefined);
+  });
+  it.each([null, "moderator", "analyst"])(
+    "blocks %s before processing",
+    async (role) => {
+      mocks.role = role;
+      expect(
+        (await fulfilAccountDeletion({ status: "idle" }, approval())).status,
+      ).toBe("error");
+      expect(mocks.fulfil).not.toHaveBeenCalled();
+    },
+  );
+  it("requires the rollout gate", async () => {
+    vi.stubEnv("PRIVACY_FULFILMENT_ENABLED", "false");
+    expect(
+      (await fulfilAccountDeletion({ status: "idle" }, approval())).status,
+    ).toBe("error");
+    expect(mocks.fulfil).not.toHaveBeenCalled();
+  });
+  it.each(["confirm_request_id", "review_complete"])(
+    "requires %s",
+    async (field) => {
+      const data = approval();
+      data.delete(field);
+      expect(
+        (await fulfilAccountDeletion({ status: "idle" }, data)).status,
+      ).toBe("error");
+      expect(mocks.fulfil).not.toHaveBeenCalled();
+    },
+  );
+  it("uses the verified operator rather than form identity", async () => {
+    expect(
+      (await fulfilAccountDeletion({ status: "idle" }, approval())).status,
+    ).toBe("success");
+    expect(mocks.fulfil).toHaveBeenCalledWith(
+      "10000000-0000-4000-8000-000000000001",
+      "owner-account",
+    );
+  });
+  it("requires verified sign-in", async () => {
+    mocks.user = null;
+    expect(
+      (await fulfilAccountDeletion({ status: "idle" }, approval())).status,
+    ).toBe("error");
+    expect(mocks.fulfil).not.toHaveBeenCalled();
+  });
+  it("never reports fulfilment when processing fails", async () => {
+    mocks.fulfil.mockRejectedValue(new Error("partial"));
+    const result = await fulfilAccountDeletion({ status: "idle" }, approval());
+    expect(result.status).toBe("error");
+    expect(result.message).toContain("not confirmed");
+  });
+  it("lets a verified backup take over using their session identity", async () => {
+    await takeOverDeletionReviewAction(approval());
+    expect(mocks.takeover).toHaveBeenCalledWith(
+      "10000000-0000-4000-8000-000000000001",
+      "owner-account",
+    );
+  });
+  it("blocks unauthorised handover", async () => {
+    mocks.role = "analyst";
+    await expect(takeOverDeletionReviewAction(approval())).rejects.toThrow(
+      "FORBIDDEN",
+    );
+    expect(mocks.takeover).not.toHaveBeenCalled();
   });
 });

@@ -3,9 +3,15 @@ import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 export type DeletionRequest = {
   id: string;
-  user_id: string;
+  user_id: string | null;
   status: "pending" | "reviewing" | "fulfilled";
   created_at: string;
+  job?: {
+    state: string;
+    phase: string;
+    attempts: number;
+    updated_at: string;
+  } | null;
 };
 
 // A server-only adapter until database types are regenerated after staging migration.
@@ -51,7 +57,9 @@ export async function saveDeletionRequest(userId: string) {
 
 export async function listOpenDeletionRequests() {
   const { data, error } = await requests()
-    .select("id,user_id,status,created_at")
+    .select(
+      "id,user_id,status,created_at,job:account_deletion_jobs(state,phase,attempts,updated_at)",
+    )
     .in("status", ["pending", "reviewing"])
     .order("created_at", { ascending: true })
     .limit(100);
