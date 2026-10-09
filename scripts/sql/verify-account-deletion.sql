@@ -51,6 +51,13 @@ begin
     perform public.take_over_account_deletion_review(r,op);
     raise exception 'Active worker lease reassigned';
   exception when others then if sqlerrm <> 'PRIVACY_JOB_BUSY' then raise; end if; end;
+  update public.platform_admins set status='revoked',revoked_at=now() where user_id=op;
+  begin
+    perform public.purge_account_deletion_data(r,token);
+    raise exception 'Revoked operator continued processing';
+  exception when others then if sqlerrm <> 'PRIVACY_OPERATOR_REVOKED' then raise; end if; end;
+  if not exists(select 1 from public.profiles where id=u) then raise exception 'Revoked operator removed data'; end if;
+  update public.platform_admins set status='active',revoked_at=null where user_id=op;
   perform public.purge_account_deletion_data(r,token);
   if exists(select 1 from public.builder_passport_versions where id=passport)
     or exists(select 1 from public.builder_profile_versions where id=builder_profile)

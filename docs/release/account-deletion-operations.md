@@ -5,7 +5,7 @@ Owner: authorised privacy operator. Backup: another owner/operator.
 
 ## Activation gates
 
-Apply fulfilment and review-handover migrations. Approve retention, exceptions
+Apply fulfilment, review-handover and schema-guard migrations. Approve retention, exceptions
 and child/guardian ownership procedures. Verify actual Storage and Auth Admin
 APIs on a designated disposable account. Database-only fixtures and mocked
 adapters do not replace that external API proof.
@@ -79,3 +79,16 @@ Adapter tests cover success and failures at each processing boundary.
 Review the schema map whenever data-bearing tables or providers change. Free
 text in somebody else's records, provider logs and backups require a policy-aware
 review; an FK inventory is not universal personal-data discovery.
+
+## Schema and operator safeguards
+
+Processing checks the reviewed public FK graph before claiming, purging,
+listing files or completing a job. Changed relationships stop processing until
+the erasure map is reviewed and its fingerprint updated by an engineering
+migration. Do not update the fingerprint merely to bypass a failure. Changes
+to unlinked fields, free text and providers still need manual privacy review.
+
+Processing checkpoints also recheck the current operator role. Revocation stops
+the next database/storage checkpoint, preserves the incomplete job and permits
+an authorised backup to review and retry. The rollback fixture verified that a
+revoked operator cannot purge data.

@@ -184,3 +184,12 @@ and unrelated-account preservation. External Auth Admin and Storage APIs were
 mocked in adapter tests, not exercised live. See the account-deletion operations
 runbook for activation, policy and provider/backup gates. No public release or
 Google Play submission is claimed.
+
+### Deletion hardening verification
+
+The fulfilment code passed exact GitHub CI run 1329. Added a reviewed FK-graph
+guard at claim, purge, storage and completion checkpoints, plus current operator
+role rechecks. A changed graph requires engineering privacy review before
+processing. Applied account_deletion_schema_guard and re-ran rollback fixtures,
+including Passport records and a revoked-operator denial. Processing flags remain
+disabled; no live Storage/Auth API deletion or real-user deletion was performed.
