@@ -184,3 +184,12 @@ P2: visual polish after the developmental loop is understandable and reliable.
 - https://support.google.com/googleplay/android-developer/answer/13393723
 - https://support.google.com/googleplay/android-developer/answer/9893335
 - https://support.google.com/googleplay/android-developer/answer/11043825
+
+## Owner-reported tablet test — 9 October 2026
+
+Owner confirmed all requested checks passed: installation, sign-in, golden P
+icon, readable text/buttons, navigation and return after leaving the app idle.
+This is owner-reported evidence on the tested Android tablet, not an automated
+or independently observed result. Device model, Android/browser version and
+idle duration were not supplied. It does not prove all-device compatibility,
+Play-delivered signing/trust, full developmental-flow QA or account reinstatement.
