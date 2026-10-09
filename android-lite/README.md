@@ -82,3 +82,12 @@ Add the verified Play app-signing certificate fingerprints to the production
 entry in `public/.well-known/assetlinks.json`; retain the existing direct-download
 fingerprint. Never substitute an upload-key fingerprint for the installed-app key.
 See `docs/release/play-release-foundation.md` for the complete release gates.
+
+## Verification builds
+
+Run **PipuPath Lite Production Release** on the release candidate branch with
+`publish=false` (the default). It verifies the signing contract and generated
+APK target SDK, then uploads signed APK/AAB artifacts without committing public
+download files. Inspect the AAB and test installed upgrades before publishing.
+Use `publish=true` only for an approved release; the existing RELEASE_NOW push
+trigger retains its publication behavior. Never download or expose signing keys.

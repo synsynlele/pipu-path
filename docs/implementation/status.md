@@ -111,3 +111,10 @@ Canonical CI and exact-Preview phone proof are required before this correction c
 > **The screen is not the game. Life is the game.**
 
 > **Make building feel as natural as socialising. Keep life as the game.**
+
+## 2026-10-09 — Android verification before publication
+
+The signed Android workflow now defaults manual runs to artifact-only verification.
+Publication requires `publish=true`; the existing RELEASE_NOW trigger remains
+a release action. Signing and APK target SDK gates still run before artifact upload.
+No signed workflow run, AAB inspection or physical-device result is claimed.

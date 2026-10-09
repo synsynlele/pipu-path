@@ -25,8 +25,9 @@ confirmed zero request rows. Signed-in browser and actual fulfilment tests
 remain pending. No users were deleted. Requests remain disabled.
 
 Android inspection: manifest is version 1.0.2, code 3; no Console comparison
-is available. The production workflow also commits/publishes APK assets,
-so it is not an isolated verification build. No workflow-dispatch tool,
+is available. Manual production-workflow runs now default to publish=false: signed artifacts
+are uploaded without committing APK downloads. Explicit publish=true or the
+existing RELEASE_NOW push trigger enables publication. No workflow-dispatch tool,
 Docker runtime, Android SDK/device, or signed artifact is available in this
 workspace. AAB/SDK/signature and device verification remain pending.
 

@@ -642,3 +642,10 @@ position and Build next-action copy, corrected the active AI-provider notice,
 and added Android target-SDK artifact validation and Play signing compatibility
 guidance. Implementation and outstanding release gates are recorded in
 `docs/release/play-release-foundation.md`; no production changes are claimed.
+
+## 2026-10-09 — Android verification before publication
+
+The signed Android workflow now defaults manual runs to artifact-only verification.
+Publication requires `publish=true`; the existing RELEASE_NOW trigger remains
+a release action. Signing and APK target SDK gates still run before artifact upload.
+No signed workflow run, AAB inspection or physical-device result is claimed.
