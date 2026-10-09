@@ -1,19 +1,40 @@
 # PipuPath Google Play release foundation
 
 Date: 9 October 2026. Baseline: `19509ee` on `main`.
-Status: implementation candidate; not deployed or store-ready.
+Status: preview deployed; database migration applied; not store-ready.
 
 Owner-confirmed privacy contact: `copyartint@gmail.com`. This is the public
 fallback contact and may be overridden by server configuration. Online request
 enablement still requires explicit configuration and the staging/operations gates.
 
-Remote checks: GitHub CI #1316 passed on initial published head `36c0292`.
-Vercel rejected access to the recorded `copyartint-2860s-projects/pipu-path`
-scope; no Vercel CLI credential fallback is available in this workspace.
-The connected Supabase account did not list recorded project
-`kvjcswnmhwegpakbtvlh`. These are connection/access blockers, not proof that
-the application or database is unavailable to its owner. No remote mutation
-or deployment was attempted after those checks.
+Remote checks (updated 9 October): access restored to the PipuPath Vercel
+project and Supabase project `kvjcswnmhwegpakbtvlh` (named pipupath-staging).
+GitHub CI #1317 passed on `a01bbd2`; its exact Vercel preview is READY.
+The preview /account-deletion route returned HTTP 200 with the owner contact
+and sign-in/recovery links. PRIVACY_CONTACT_EMAIL is configured for preview
+and production; existing deployments do not retroactively pick up env changes.
+
+Applied play_account_deletion_requests to that Supabase project. Catalog
+verification confirmed RLS enabled, no anonymous/authenticated read or insert
+access, and service CRUD access. Two remote pgTAP assertions confirmed
+anonymous and authenticated direct CRUD privileges are denied. The full
+nine-test script executed but the connector exposed only its ninth assertion;
+do not count the invisible results as verified. A separate rollback lifecycle
+attempt returned an expired request-state connector error; a later count
+confirmed zero request rows. Signed-in browser and actual fulfilment tests
+remain pending. No users were deleted. Requests remain disabled.
+
+Android inspection: manifest is version 1.0.2, code 3; no Console comparison
+is available. The production workflow also commits/publishes APK assets,
+so it is not an isolated verification build. No workflow-dispatch tool,
+Docker runtime, Android SDK/device, or signed artifact is available in this
+workspace. AAB/SDK/signature and device verification remain pending.
+
+Security advisor review: the request queue has the expected informational
+RLS-without-policy notice because direct client access is deliberately denied.
+Existing SECURITY DEFINER execution warnings require function-by-function
+review; they are not proof of an exploitable issue. Leaked-password protection
+is reported disabled; see https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection.
 
 Local validation: `npm run validate` passed (371 unit/coverage tests, 242
 integration tests, formatting, zero-warning lint, TypeScript and production
@@ -21,7 +42,7 @@ build). Coverage thresholds passed. Thirteen PostgreSQL checks in PGlite passed
 for migration execution, direct-client denial, service access, duplicate request
 constraints, truthful fulfilment timestamps and retained receipt after auth-user
 removal. Workflow YAML parsed and its Android build shell passed `bash -n`.
-The committed pgTAP suite has not run on Supabase in this environment.
+Remote pgTAP evidence and its result-visibility limitation are recorded above.
 
 ## Delivery decision
 
