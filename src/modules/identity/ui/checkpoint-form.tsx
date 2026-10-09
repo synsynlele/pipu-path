@@ -89,7 +89,7 @@ export function CheckpointForm() {
               Saving your identity…
             </>
           ) : (
-            "Complete identity checkpoint"
+            "Start my adventure →"
           )}
         </Button>
       </form>

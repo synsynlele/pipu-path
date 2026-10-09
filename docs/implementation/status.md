@@ -129,3 +129,16 @@ screenshots show a replacement document under review. Launch listing, data
 safety evidence worksheet, age/Families gates, device checks and a facilitator
 pilot are recorded in docs/release/play-launch-and-impact-pack.md. No store
 submission, final policy approval or measured impact is claimed.
+
+## 2026-10-09 — Game of life first cycle candidate
+
+Implemented a versioned eight-question Discovery (seven required plus optional
+age-specific support), concise onboarding, one-at-a-time Quest action guidance
+and five-step reflection with Back/answer preservation and guarded final submit.
+Safety is visible before starting. Guide navigation earns no progress. Existing
+authentication, evidence, completion and XP rules are unchanged. Documentation:
+docs/product/life-game-first-cycle.md. Full validation passed: 375 unit/component
+tests, 242 integration tests, coverage, lint, types, format and production build.
+Migration executed successfully in Supabase rollback with eight eligible
+questions per age; database still version 1 afterwards. No live migration,
+production deployment or newly measured user impact is claimed.

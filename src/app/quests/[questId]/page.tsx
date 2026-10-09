@@ -6,6 +6,7 @@ import {
   getQuestById,
   questStatusLabel,
 } from "@/modules/quest/infrastructure/quest-dal";
+import { QuestActionGuide } from "@/modules/quest/ui/quest-action-guide";
 import { QuestReflectionForm } from "@/modules/quest/ui/quest-reflection-form";
 import { QuestStartForm } from "@/modules/quest/ui/quest-start-form";
 
@@ -149,6 +150,20 @@ export default async function QuestFocusPage({
         </div>
       </section>
 
+      <Surface className="mt-5 p-5 sm:p-6">
+        <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
+          The challenge
+        </p>
+        <h2 className="text-navy mt-2 text-lg font-semibold">
+          Your action steps
+        </h2>
+        <QuestActionGuide steps={quest.action_steps} />
+        <p className="text-muted mt-5 border-t border-[var(--border)] pt-4 text-sm leading-6">
+          <strong className="text-error">Stay safe:</strong>{" "}
+          {quest.safety_guidance}
+        </p>
+      </Surface>
+
       <section className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-5">
           {quest.status === "available" ? (
@@ -157,11 +172,10 @@ export default async function QuestFocusPage({
                 Phase 1 · Understand
               </p>
               <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
-                Know the challenge. Then leave the screen.
+                Your next real-life challenge.
               </h2>
               <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                Read the action below, start when you are ready, and do the real
-                work outside PipuPath.
+                Start when you are ready. Your action happens outside the app.
               </p>
               <div className="mt-5">
                 <QuestStartForm questId={quest.id} />
@@ -264,8 +278,7 @@ export default async function QuestFocusPage({
                   What changed because you tried?
                 </h2>
                 <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-                  Success and failure both contain useful data. Reflection
-                  completes the developmental loop.
+                  A few short answers turn this attempt into your next move.
                 </p>
                 <QuestReflectionForm
                   questId={quest.id}
@@ -312,28 +325,6 @@ export default async function QuestFocusPage({
         </div>
 
         <aside className="space-y-5">
-          <Surface className="p-5 sm:p-6">
-            <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">
-              The challenge
-            </p>
-            <h2 className="text-navy mt-2 text-lg font-semibold">
-              Your action steps
-            </h2>
-            <ol className="mt-4 grid gap-3">
-              {quest.action_steps.map((step, index) => (
-                <li
-                  key={step}
-                  className="border-border flex gap-3 rounded-xl border p-3"
-                >
-                  <span className="border-primary/25 bg-primary-soft text-primary grid size-7 shrink-0 place-items-center rounded-full border text-xs font-bold">
-                    {index + 1}
-                  </span>
-                  <p className="text-muted pt-0.5 text-sm leading-5">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </Surface>
-
           <details className="border-border bg-panel rounded-2xl border p-5">
             <summary className="text-navy cursor-pointer text-sm font-semibold">
               Why this matters
@@ -383,15 +374,6 @@ export default async function QuestFocusPage({
               {quest.low_resource_alternative}
             </p>
           </details>
-
-          <Surface className="border-error/15 bg-error/5 p-5">
-            <p className="text-error text-xs font-semibold tracking-[0.14em] uppercase">
-              Safety boundary
-            </p>
-            <p className="text-muted mt-2 text-sm leading-6">
-              {quest.safety_guidance}
-            </p>
-          </Surface>
         </aside>
       </section>
     </main>

@@ -45,8 +45,8 @@ export default async function DiscoveryIntroductionPage({
   return (
     <OnboardingShell
       activeStep={2}
-      title="Now discover the patterns worth exploring."
-      description="This is a private conversation about what energises you, what you notice and what may be worth testing in real life. PipuPath does not reduce you to a label."
+      title="Find your starting point."
+      description="Discover what matters to you, then try something real."
     >
       <Surface className="p-5 sm:p-7">
         {!session ? (
@@ -63,8 +63,8 @@ export default async function DiscoveryIntroductionPage({
                   Discovery takes one question at a time.
                 </h2>
                 <p className="text-muted mt-1 text-sm leading-6">
-                  Seven short sections. Pause whenever you need to; your answers
-                  save to your private account.
+                  One question at a time. Continue to save each answer; come
+                  back whenever you need.
                 </p>
               </div>
             </div>

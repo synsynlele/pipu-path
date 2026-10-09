@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   completeQuestAction,
@@ -9,25 +9,14 @@ import {
 
 const initialState: QuestFormState = { status: "idle" };
 const fields = [
+  ["whatIDid", "What did you try?", "I tried…"],
+  ["whatHappened", "What happened?", "The result was…"],
+  ["whatILearned", "What did you learn?", "I discovered…"],
+  ["whatIWillChange", "What is your next move?", "Next time, I will…"],
   [
-    "whatIDid",
-    "What did you do?",
-    "Describe the action you took in your own words.",
-  ],
-  [
-    "whatHappened",
-    "What happened?",
-    "Describe the real response, result or difficulty you observed.",
-  ],
-  [
-    "whatILearned",
-    "What did you learn?",
-    "Name the capability, insight or truth this action revealed.",
-  ],
-  [
-    "whatIWillChange",
-    "What will you do differently next time?",
-    "Choose one specific improvement for your next Quest.",
+    "nortnspoilReflection",
+    "What helps you keep going?",
+    "Nothing spoil because…",
   ],
 ] as const;
 
@@ -42,65 +31,126 @@ export function QuestReflectionForm({
     completeQuestAction,
     initialState,
   );
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [error, setError] = useState("");
+  const [name, label, placeholder] = fields[step];
+  const ready = (answers[name] ?? "").trim().length >= 20;
+  const final = step === fields.length - 1;
+
+  function next() {
+    if (!ready) {
+      setError("Add a short, specific answer (at least 20 characters).");
+      return;
+    }
+    setError("");
+    setStep(step + 1);
+  }
 
   return (
-    <form action={action} aria-busy={pending} className="mt-6 grid gap-6">
+    <form
+      action={action}
+      aria-busy={pending}
+      className="mt-6 grid gap-5"
+      onSubmit={(event) => {
+        if (!final) {
+          event.preventDefault();
+          next();
+        } else if (
+          fields.some(([key]) => (answers[key] ?? "").trim().length < 20)
+        ) {
+          event.preventDefault();
+          setError("Answer each reflection before completing the Quest.");
+        }
+      }}
+    >
       <input type="hidden" name="questId" value={questId} />
-      {fields.map(([name, label, placeholder], index) => (
-        <div key={name}>
-          <label htmlFor={name} className="text-sm font-semibold">
-            {label}
-          </label>
-          {prompts[index] ? (
-            <p className="text-muted mt-1 text-sm">{prompts[index]}</p>
-          ) : null}
-          <textarea
-            id={name}
-            name={name}
-            required
-            minLength={20}
-            maxLength={1200}
-            placeholder={placeholder}
-            className="border-border bg-background mt-2 min-h-28 w-full rounded-2xl border p-4 text-sm leading-6"
+      {fields
+        .filter(([key]) => key !== name)
+        .map(([key]) => (
+          <input
+            key={key}
+            type="hidden"
+            name={key}
+            value={answers[key] ?? ""}
           />
-        </div>
-      ))}
-      <div className="border-gold/20 bg-gold/5 rounded-2xl border p-5">
-        <label
-          htmlFor="nortnspoilReflection"
-          className="text-gold text-sm font-semibold"
-        >
-          Nortnspoil reflection
+        ))}
+      <p className="text-primary text-sm font-semibold" role="status">
+        Reflection {step + 1} of {fields.length}
+      </p>
+      <div>
+        {final ? (
+          <p className="text-gold mb-2 text-xs font-semibold">
+            Nortnspoil reflection
+          </p>
+        ) : null}
+        <label htmlFor={name} className="text-navy text-xl font-semibold">
+          {label}
         </label>
-        <p className="text-muted mt-2 text-sm leading-6">
-          What did this Quest prove about your ability to continue, adapt or
-          begin again even when the result was imperfect?
+        <p className="text-muted mt-2 text-sm">
+          A couple of honest sentences is enough.
         </p>
         <textarea
-          id="nortnspoilReflection"
-          name="nortnspoilReflection"
+          key={name}
+          id={name}
+          name={name}
           required
           minLength={20}
           maxLength={1200}
-          placeholder="Nothing spoil because…"
-          className="border-border bg-background mt-3 min-h-28 w-full rounded-2xl border p-4 text-sm leading-6"
+          value={answers[name] ?? ""}
+          placeholder={placeholder}
+          rows={3}
+          onChange={(event) => {
+            setAnswers({ ...answers, [name]: event.target.value });
+            setError("");
+          }}
+          className="border-border bg-background mt-3 min-h-28 w-full rounded-2xl border p-4 text-base leading-6"
         />
-      </div>
-      <div>
-        <Button type="submit" disabled={pending}>
-          {pending ? "Completing Quest…" : "Complete Quest and Earn 50 XP"}
-        </Button>
-        {pending ? (
-          <p role="status" className="text-muted mt-3 text-sm">
-            PipuPath is recording your reflection and verified progress…
-          </p>
-        ) : null}
-        {state.status === "error" ? (
-          <p role="alert" className="text-error mt-3 text-sm">
-            {state.message}
-          </p>
+        {prompts[step] && !final ? (
+          <details className="text-muted mt-2 text-sm">
+            <summary className="cursor-pointer">Need a hint?</summary>
+            <p className="mt-2">{prompts[step]}</p>
+          </details>
         ) : null}
       </div>
+      {error ? (
+        <p role="alert" className="text-error text-sm">
+          {error}
+        </p>
+      ) : null}
+      <div className="flex flex-wrap gap-3">
+        {step > 0 ? (
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={pending}
+            onClick={() => {
+              setStep(step - 1);
+              setError("");
+            }}
+          >
+            Back
+          </Button>
+        ) : null}
+        {final ? (
+          <Button type="submit" disabled={pending || !ready}>
+            {pending ? "Saving your progress…" : "Complete Quest →"}
+          </Button>
+        ) : (
+          <Button type="button" disabled={pending} onClick={next}>
+            Next →
+          </Button>
+        )}
+      </div>
+      <p className="text-muted text-xs">
+        These answers are saved when you complete the Quest. Keep this page open
+        until then.
+      </p>
+      {state.status === "error" ? (
+        <p role="alert" className="text-error text-sm">
+          {state.message}
+        </p>
+      ) : null}
     </form>
   );
 }

@@ -64,10 +64,15 @@ export function DiscoveryQuestionForm({
           <legend className="text-2xl leading-tight font-semibold sm:text-3xl">
             {question.prompt}
           </legend>
-          <p id={descriptionId} className="text-muted leading-7">
-            {question.supportingText}
-            {!question.required ? " You may skip this question." : ""}
-          </p>
+          <div id={descriptionId} className="text-muted text-sm">
+            {!question.required ? <p>You can skip this one.</p> : null}
+            {question.supportingText ? (
+              <details>
+                <summary className="cursor-pointer">Need a hint?</summary>
+                <p className="mt-2 leading-6">{question.supportingText}</p>
+              </details>
+            ) : null}
+          </div>
 
           {question.responseType === "reflection" ? (
             <div>
@@ -80,8 +85,8 @@ export function DiscoveryQuestionForm({
                 required={question.required}
                 maxLength={question.maxTextLength ?? 1200}
                 defaultValue={answer?.text ?? ""}
-                rows={7}
-                className="border-border bg-panel-raised min-h-40 w-full resize-y rounded-xl border p-4 leading-7"
+                rows={3}
+                className="border-border bg-panel-raised min-h-28 w-full resize-y rounded-xl border p-4 leading-7"
               />
               <p className="text-muted mt-2 text-sm">
                 Up to {question.maxTextLength ?? 1200} characters.
@@ -160,7 +165,7 @@ export function DiscoveryQuestionForm({
         </fieldset>
 
         <p id={errorId} role="status" className="text-muted text-sm">
-          Your answer is saved only after the server confirms it.
+          Continue to save your answer.
         </p>
 
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
@@ -201,7 +206,7 @@ export function DiscoveryQuestionForm({
               ) : returnTo === "review" ? (
                 "Save edit"
               ) : (
-                "Save and continue"
+                "Continue →"
               )}
             </Button>
           </div>
