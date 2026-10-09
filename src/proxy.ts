@@ -59,12 +59,21 @@ export async function proxy(request: NextRequest) {
   }
 
   const { response, user } = await refreshSupabaseSession(request);
+  // Session refresh can rotate or clear cookies. Redirect responses must
+  // deliver those changes too, otherwise the next page sees stale auth.
+  function sessionRedirect(destination: URL) {
+    const redirected = NextResponse.redirect(destination);
+    response.cookies.getAll().forEach((cookie) => {
+      redirected.cookies.set(cookie);
+    });
+    return redirected;
+  }
 
   if (!user && protectedPrefixes.some((prefix) => path.startsWith(prefix))) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/login";
     destination.searchParams.set("next", path);
-    return NextResponse.redirect(destination);
+    return sessionRedirect(destination);
   }
 
   if (user && (path === "/" || authRoutes.includes(path))) {
@@ -76,7 +85,7 @@ export async function proxy(request: NextRequest) {
     )
       destination.pathname = "/account-deletion";
     destination.search = "";
-    return NextResponse.redirect(destination);
+    return sessionRedirect(destination);
   }
 
   return response;

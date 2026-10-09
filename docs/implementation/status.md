@@ -142,3 +142,15 @@ tests, 242 integration tests, coverage, lint, types, format and production build
 Migration executed successfully in Supabase rollback with eight eligible
 questions per age; database still version 1 afterwards. No live migration,
 production deployment or newly measured user impact is claimed.
+
+## Preview Google sign-in redirect repair — 9 October 2026
+
+Confirmed a synthetic Google authorization request for the preview callback
+stored the production site URL as its referrer in Auth flow state. No Google
+account was authenticated in this probe. The preview callback is not accepted
+by the hosted redirect allow list; its configuration remains pending.
+
+Proxy redirects now preserve refreshed and cleared session cookies, including
+cookie options. Three regression tests cover rotation, expiry and account
+deletion continuation. Full validation is required before release. This code
+repair does not replace the required hosted Auth redirect configuration.
