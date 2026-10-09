@@ -42,6 +42,7 @@ Explore your interests and strengths, choose a meaningful direction, then
 take your next step in the real world.
 
 With PipuPath, you can:
+
 - Explore your interests through guided Discovery questions.
 - Use AI-assisted guidance to plan missions and practical next steps.
 - Work through challenges and record evidence of what you tried.
@@ -74,14 +75,14 @@ Capture the real release candidate with a disposable test account and no
 student names, private reflections, contact details or fabricated achievements.
 Use the existing golden P branding. Do not fabricate app screens or testimonials.
 
-| Screen | What the image should demonstrate |
-| --- | --- |
-| Home | A clear next action |
-| Discover | Guided reflection on interests |
-| Build | An actual challenge and next step |
-| Evidence/reflection | How real-world work is recorded |
-| Project | Milestones with genuine test evidence |
-| Profile | Private development and account controls |
+| Screen              | What the image should demonstrate        |
+| ------------------- | ---------------------------------------- |
+| Home                | A clear next action                      |
+| Discover            | Guided reflection on interests           |
+| Build               | An actual challenge and next step        |
+| Evidence/reflection | How real-world work is recorded          |
+| Project             | Milestones with genuine test evidence    |
+| Profile             | Private development and account controls |
 
 Keep captions plain: Discover your direction; Take your next step; Bring back
 your proof; Learn from the experience; Build something useful.
@@ -93,29 +94,29 @@ Complete against current Google definitions and actual deployed flows,
 including service providers. Collection and sharing are different definitions;
 sending data to a processor cannot be classified without checking the exemption.
 
-| Area observed in source | Verification needed before answering Console |
-| --- | --- |
-| Account identity and age band | Required fields, purposes, retention, guardian handling |
-| Discovery and AI guidance | Exact payloads sent to OpenAI and actual provider settings |
-| Evidence, reflections and uploads | Text/images/links retained; private/public controls |
-| Connect and messages | Recipient access, age gates, adult controls, reports/blocking |
-| Portfolio and Passport | Publishing eligibility, preview/withdrawal and share expiry |
-| Product/operational events | Event fields, identifiers, vendor logs and retention |
-| Deletion request | Ownership verification, fulfilment, storage removal and exceptions |
+| Area observed in source           | Verification needed before answering Console                       |
+| --------------------------------- | ------------------------------------------------------------------ |
+| Account identity and age band     | Required fields, purposes, retention, guardian handling            |
+| Discovery and AI guidance         | Exact payloads sent to OpenAI and actual provider settings         |
+| Evidence, reflections and uploads | Text/images/links retained; private/public controls                |
+| Connect and messages              | Recipient access, age gates, adult controls, reports/blocking      |
+| Portfolio and Passport            | Publishing eligibility, preview/withdrawal and share expiry        |
+| Product/operational events        | Event fields, identifiers, vendor logs and retention               |
+| Deletion request                  | Ownership verification, fulfilment, storage removal and exceptions |
 
 ## Release gates and owners
 
-| Gate | Accountable owner | Evidence required |
-| --- | --- | --- |
-| Identity reinstatement | Account owner | Google email plus unrestricted Console |
-| Age/Families review | Safeguarding lead + product operator | Actual age screen, child-safe integrations and social controls |
-| Privacy/retention | Privacy operator + appropriate reviewer | Approved purposes, categories, time limits and exceptions |
-| Deletion fulfilment | Privacy operator and backup | Disposable-account lifecycle including storage/public links/sessions |
-| Android device QA | Test operator | Device/version and reproducible pass/fail evidence |
-| Play signing | Release operator | Correct app-signing fingerprint and upgrade compatibility |
-| Version code | Release operator | Code exceeds highest Console upload |
-| App access | Release operator | Controlled reviewer account with reproducible instructions |
-| Production pages | Release operator | Privacy/deletion links and candidate behavior on live domain |
+| Gate                   | Accountable owner                       | Evidence required                                                    |
+| ---------------------- | --------------------------------------- | -------------------------------------------------------------------- |
+| Identity reinstatement | Account owner                           | Google email plus unrestricted Console                               |
+| Age/Families review    | Safeguarding lead + product operator    | Actual age screen, child-safe integrations and social controls       |
+| Privacy/retention      | Privacy operator + appropriate reviewer | Approved purposes, categories, time limits and exceptions            |
+| Deletion fulfilment    | Privacy operator and backup             | Disposable-account lifecycle including storage/public links/sessions |
+| Android device QA      | Test operator                           | Device/version and reproducible pass/fail evidence                   |
+| Play signing           | Release operator                        | Correct app-signing fingerprint and upgrade compatibility            |
+| Version code           | Release operator                        | Code exceeds highest Console upload                                  |
+| App access             | Release operator                        | Controlled reviewer account with reproducible instructions           |
+| Production pages       | Release operator                        | Privacy/deletion links and candidate behavior on live domain         |
 
 Google Families rules apply when children are part of the target audience.
 Source includes under_13; do not relabel the app adult-only to avoid this review.
@@ -132,20 +133,21 @@ choose a useful challenge, act outside the app, submit evidence, reflect,
 choose the next step. Do not use participant data as public marketing material.
 
 Facilitator responsibilities:
+
 - Explain the task without operating the app for the learner.
 - Record where the learner hesitates, asks for help or loses saved work.
 - Check evidence and reflection for substance rather than XP or page views.
 - Log defects with device, steps, expected result and actual result.
 - Escalate safety/privacy problems immediately to the assigned operator.
 
-| Measure | Definition |
-| --- | --- |
-| First useful action | Time from starting to stating a specific achievable real-world step |
-| Independent start | Learners who can identify and start the next action without help / learners observed |
-| Evidence completion | Learners returning credible proof / learners starting the challenge |
-| Reflection quality | Can the learner explain what happened, what changed and the next step? |
-| Return to action | Learners taking another real-world step next cycle / eligible learners |
-| Persistence failures | Lost work, duplicates or misleading saved/success messages |
+| Measure              | Definition                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| First useful action  | Time from starting to stating a specific achievable real-world step                  |
+| Independent start    | Learners who can identify and start the next action without help / learners observed |
+| Evidence completion  | Learners returning credible proof / learners starting the challenge                  |
+| Reflection quality   | Can the learner explain what happened, what changed and the next step?               |
+| Return to action     | Learners taking another real-world step next cycle / eligible learners               |
+| Persistence failures | Lost work, duplicates or misleading saved/success messages                           |
 
 Set targets after observing the baseline; no achieved rates are claimed.
 Scale through a reusable facilitator script, operator queue and weekly defect
