@@ -15,11 +15,19 @@ const sections = [
   ],
   [
     "AI boundary",
-    "Google Gemini supports private interpretation and planning. PipuPath validates its output and does not treat AI as the authority on a person's identity.",
+    "OpenAI supports private interpretation and planning. Only the context needed for the requested feature is sent for processing. PipuPath validates AI output; it is guidance, not a fixed verdict on your identity. Google Gemini remains an inactive rollback provider in the current code.",
   ],
   [
     "Youth safeguarding",
     "Young people retain the private Builder journey. Public Portfolio publishing remains unavailable until a dedicated guardian-consent and moderation process is approved.",
+  ],
+  [
+    "Account deletion",
+    "You can request deletion of your account and associated developmental data at /account-deletion, from the website or your Profile. A saved request is not confirmation that deletion has finished. The privacy team must verify ownership, explain any required retention and confirm completion.",
+  ],
+  [
+    "Service providers",
+    "Supabase supports account authentication, database and file storage. Vercel hosts the application. OpenAI processes context for AI-assisted features. Operational and product events help diagnose faults and understand meaningful progress; they should not contain raw private developmental narratives.",
   ],
 ] as const;
 

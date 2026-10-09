@@ -44,9 +44,14 @@ export function ProductTelemetry() {
 
     const storageKey = `pipupath:feature-view:${pathname}`;
     const now = Date.now();
-    const previous = Number(sessionStorage.getItem(storageKey) ?? "0");
-    if (Number.isFinite(previous) && now - previous < 60_000) return;
-    sessionStorage.setItem(storageKey, String(now));
+    try {
+      const previous = Number(sessionStorage.getItem(storageKey) ?? "0");
+      if (Number.isFinite(previous) && now - previous < 60_000) return;
+      sessionStorage.setItem(storageKey, String(now));
+    } catch {
+      // Optional analytics must never interrupt a Builder when storage is blocked.
+      return;
+    }
 
     void fetch("/api/product-events/feature-view", {
       method: "POST",
@@ -55,7 +60,11 @@ export function ProductTelemetry() {
       body: JSON.stringify({ featureKey }),
       keepalive: true,
     }).catch(() => {
-      sessionStorage.removeItem(storageKey);
+      try {
+        sessionStorage.removeItem(storageKey);
+      } catch {
+        // Storage access can be revoked after the request starts.
+      }
     });
   }, [pathname]);
 

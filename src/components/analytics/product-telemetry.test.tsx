@@ -31,6 +31,7 @@ describe("ProductTelemetry", () => {
 
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
@@ -53,6 +54,24 @@ describe("ProductTelemetry", () => {
     navigation.pathname = "/privacy";
     render(<ProductTelemetry />);
     await Promise.resolve();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("leaves the app usable when browser storage is blocked", () => {
+    navigation.pathname = "/app";
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new DOMException("Storage blocked", "SecurityError");
+    });
+    expect(() => render(<ProductTelemetry />)).not.toThrow();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("does not send analytics when the storage marker cannot be written", () => {
+    navigation.pathname = "/app";
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("Storage full", "QuotaExceededError");
+    });
+    expect(() => render(<ProductTelemetry />)).not.toThrow();
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

@@ -137,7 +137,7 @@ export default async function BuildPage() {
                 </>
               ) : (
                 <div className="rounded-2xl border border-white/12 bg-white/8 px-3 py-2 text-xs font-semibold text-indigo-50/85 backdrop-blur-sm">
-                  Your next move comes from your saved Builder state.
+                  Take the next step, then bring back your proof.
                 </div>
               )}
             </div>

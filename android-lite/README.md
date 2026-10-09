@@ -10,14 +10,14 @@ single source of truth.
 
 - Display name: `PipuPath Lite`
 - Production package ID: `ng.name.pipupath.lite`
-- Current version: `1.0.0`
-- Version code: `1`
+- Current version: read `twa-manifest.production.json` (currently `1.0.2`)
+- Version code: read `twa-manifest.production.json` (currently `3`)
 - Production origin: `https://www.pipupath.name.ng`
 - Start route: `/continue`
 - Minimum Android API: 21
 - Orientation: portrait-primary
 - Bubblewrap toolchain: `1.25.0`
-- APK: `/downloads/PipuPath-Lite-1.0.0.apk`
+- Latest APK: `/downloads/latest` (resolved from release metadata)
 - Release metadata: `/downloads/pipupath-lite.json`
 
 The permanent production certificate fingerprint is public and pinned in both
@@ -70,3 +70,15 @@ The workflow refuses to build if the restored key does not match the permanent
 PipuPath Lite production certificate.
 
 Never commit the production keystore or its passwords.
+
+## Google Play readiness
+
+The production workflow also emits a signed `.aab`. It now checks the built
+APK's target SDK rather than assuming an installed SDK proves compliance.
+The AAB must still be inspected and tested through Play's internal testing track.
+Keep `ng.name.pipupath.lite` stable. Before the first Play release, choose the
+app-signing arrangement that preserves upgrades from existing sideloaded APKs.
+Add the verified Play app-signing certificate fingerprints to the production
+entry in `public/.well-known/assetlinks.json`; retain the existing direct-download
+fingerprint. Never substitute an upload-key fingerprint for the installed-app key.
+See `docs/release/play-release-foundation.md` for the complete release gates.

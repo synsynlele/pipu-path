@@ -73,6 +73,9 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
             <a href="/terms" className="hover:text-primary-light">
               Terms
             </a>
+            <a href="/account-deletion" className="hover:text-primary-light">
+              Delete account
+            </a>
           </div>
         </div>
       </footer>

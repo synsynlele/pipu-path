@@ -70,6 +70,11 @@ export async function proxy(request: NextRequest) {
   if (user && (path === "/" || authRoutes.includes(path))) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/continue";
+    if (
+      path === "/login" &&
+      request.nextUrl.searchParams.get("next") === "/account-deletion"
+    )
+      destination.pathname = "/account-deletion";
     destination.search = "";
     return NextResponse.redirect(destination);
   }

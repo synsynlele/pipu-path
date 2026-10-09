@@ -1,5 +1,19 @@
 # Implementation status
 
+## 9 October 2026 — Play release foundation candidate
+
+User authorised the release-readiness improvements after identifying the correct
+repository. The isolated candidate adds an authenticated deletion-request flow
+and an owner/operator queue, gated by a monitored contact and explicit server
+enablement. It also protects optional analytics from browser-storage exceptions,
+clarifies journey-position copy, corrects AI-provider disclosure and strengthens
+Android package/trust checks. See `docs/release/play-release-foundation.md`.
+
+This is not a production deployment or Play submission. Staging database proof,
+the actual monitored privacy address, an approved retention/fulfilment procedure,
+authenticated browser and physical Android proof remain release gates. The
+historical Stage 26 notes below are prior evidence, not the current release head.
+
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild  
 **Stage status:** MOBILE RENDERER STABILITY RELEASE CANDIDATE — repeated Android Lite renderer crashes are now a release blocker; the correction is isolated for CI and exact-Preview proof.
 **Stage 26 production:** `e5fbee6ccf503c77ae006b2da116eb1d6497a190`

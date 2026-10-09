@@ -188,7 +188,11 @@ export default async function HomePage() {
                 />
               </div>
               <div className="mt-2 flex items-center justify-between gap-3 text-xs font-medium text-indigo-50/88">
-                <span>{adventureProgress}% through this growth cycle</span>
+                <span>
+                  {completedGrowthCycle
+                    ? "Growth cycle complete"
+                    : `Stage ${currentStageIndex + 1} of ${adventureStages.length}`}
+                </span>
                 <Link
                   href={move.href}
                   aria-label={move.label}

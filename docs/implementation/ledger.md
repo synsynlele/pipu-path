@@ -622,3 +622,16 @@ marketplace behavior remain outside this closure.
 Status: VERIFIED STACKED RELEASE CANDIDATE. Stage 18 is not released and must not
 merge before Stage 17 completes its release sequence. Automatic Vercel deployment
 remains disabled for the Stage 18 development branch.
+
+# 9 October 2026 — Play release foundation
+
+Added public web and Profile entry points for account-deletion requests, durable
+server-only persistence and an owner/operator review queue. Requests cannot
+target another account, bypass authentication or claim deletion completion.
+Enablement requires a valid monitored contact and a staging-verified migration.
+Added action and persistence boundary tests and database privilege tests.
+Guarded browser-storage access in optional analytics, clarified Home stage
+position and Build next-action copy, corrected the active AI-provider notice,
+and added Android target-SDK artifact validation and Play signing compatibility
+guidance. Implementation and outstanding release gates are recorded in
+`docs/release/play-release-foundation.md`; no production changes are claimed.
