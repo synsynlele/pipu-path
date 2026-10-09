@@ -118,3 +118,14 @@ The signed Android workflow now defaults manual runs to artifact-only verificati
 Publication requires `publish=true`; the existing RELEASE_NOW trigger remains
 a release action. Signing and APK target SDK gates still run before artifact upload.
 No signed workflow run, AAB inspection or physical-device result is claimed.
+
+## 2026-10-09 — Verified AAB and launch/impact pack
+
+Uploaded candidate ce6a4f0 artifact hashes match. AAB manifest confirms package,
+version 1.0.2/code 3 and SDK 36. Production certificate matches; CMS signature,
+manifest and 465 signed payload digests verify. APK signing schemes and device
+behavior remain unverified. Play account is restricted for identity; owner
+screenshots show a replacement document under review. Launch listing, data
+safety evidence worksheet, age/Families gates, device checks and a facilitator
+pilot are recorded in docs/release/play-launch-and-impact-pack.md. No store
+submission, final policy approval or measured impact is claimed.
