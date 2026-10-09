@@ -1,17 +1,16 @@
 {
-  "name": "PipuPath",
+  "name": "PipuPath Lite",
   "version": "1.0.2",
   "versionCode": 3,
   "packageId": "ng.name.pipupath.lite",
   "apk": "/downloads/PipuPath-Lite-1.0.2.apk",
-  "releasedAt": "2026-09-03",
+  "releasedAt": "2026-10-09",
   "sha256": "0a90d017f429a1e8b9eb04f203d1d03e9c6eb551344ebbe84d4300965f244dde",
   "sizeBytes": 1499310,
   "offline": false,
   "notes": [
-    "Production-signed Android package.",
+    "Production-signed Android Lite package.",
     "Uses the canonical PipuPath 2.0 logo in Android launcher and installed-app surfaces.",
-    "Installed app name is PipuPath.",
     "Uses the same PWA experience as www.pipupath.name.ng."
   ]
 }
