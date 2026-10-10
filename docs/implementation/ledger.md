@@ -961,3 +961,12 @@ Owner screenshot confirms the exact Supabase project is on Free and the schedule
 backup page states project backups are not included. No restore points shown;
 PITR tab and external exports unverified. No plan upgrade or backup generated.
 See provider-and-youth-release-audit.md.
+
+## 2026-10-10 — Youth-and-adult release scope confirmed
+
+Owner chose to keep youth and adults and instructed completion/release. Supabase
+Free remains; paid backups are optional recovery work, not a publishing blocker.
+CI run 38060531896 passed on 0eec2c8f8c663b3bc39ef34535bd2e5540a76285.
+Remaining guardian functionality/provider settings are not verified complete.
+Console access remains automatically rejected; no bypass, submission or public
+release is claimed.

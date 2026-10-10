@@ -53,3 +53,15 @@ verification history. No achieved adoption or impact rate is claimed.
 Provider evidence and guardian implementation acceptance criteria are recorded in
 `provider-and-youth-release-audit.md`. Relevant child AI processing additionally
 requires verified OpenAI Zero Data Retention; store:false is not that control.
+
+## Owner release decision — 10 October 2026
+
+Owner explicitly chose to keep youth and adults for the first release. Do not
+restrict the app to 18+ or declare adults only in Console. Supabase Free does not
+block Play publishing; paid backup recovery is optional follow-up work, not a
+release prerequisite. The previously reported scheduled-backup evidence can be
+used for an accurate notice without purchasing a plan. Current head
+0eec2c8f8c663b3bc39ef34535bd2e5540a76285 passed CI run 38060531896.
+Guardian authorisation and applicable child-provider controls remain actual
+uncompleted functionality/settings, not discretionary backup improvements.
+No merge, production promotion or Console submission has been performed.

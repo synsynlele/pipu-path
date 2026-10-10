@@ -101,5 +101,7 @@ The page states the Free plan does not include project backups; no restore
 points are shown. This verifies no scheduled backup availability in that view.
 The Point in time tab was not inspected, and external manual exports remain
 unknown. Do not infer the project has no external copies or that an upgrade was
-purchased. A paid-plan or managed encrypted export decision is still needed for
-operational recovery; no retention window can be promised from this screenshot.
+purchased. Paid scheduled backups or managed encrypted exports are optional operational
+recovery improvements, not a Google Play publishing prerequisite. Supabase Free
+is retained for this release. No retention window can be promised from this
+screenshot, and no upgrade is authorised by the release request.
