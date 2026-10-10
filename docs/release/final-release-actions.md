@@ -8,7 +8,9 @@ CI run 38058203597: validate passed; staging-e2e skipped.
 
 - 424 unit/component and 242 integration tests, types, lint, formatting and build.
 - Actual Google preview return plus Quest/Home reload session persistence.
-- Focused action controls, private proof form and Back navigation observed.
+- Focused action controls and private proof form observed.
+- Owner browser Quest completion observed: persisted Completed/+50 XP;
+  next Quest In action persisted after reload. Back-state has component coverage.
 - Live learner API proof: all 18 checks passed; exactly-once 50 XP, next unlock,
   negative cases and cross-user privacy; both disposable accounts removed.
 - Existing production Android archive rechecked: APK/AAB hashes match the recorded
@@ -19,7 +21,7 @@ CI run 38058203597: validate passed; staging-e2e skipped.
 
 | Action                     | Responsible role                                        | Completion evidence                                                                                                                                                                                                |
 | -------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Candidate browser mutation | QA operator                                             | Secure sign-in to a designated disposable account; proof submission, reflection Back-state, completion, reload and next unlock on the candidate                                                                    |
+| Reflection Back regression | QA operator                                             | Independently exercise browser Back-state preservation on a designated QA account; owner happy-path completion and next-Quest reload are observed                                                                  |
 | Android regression         | QA operator with physical phone/tablet                  | New interface: Google return, readable actions, proof/reflection, Back navigation, idle/resume; device and Android/Chrome versions recorded                                                                        |
 | Provider controls          | Infrastructure custodian                                | Actual Supabase backup/PITR/export windows; Vercel log/drain retention; OpenAI organisation data controls; privacy notice accurately reflects verified settings                                                    |
 | Child authorisation        | Product/engineering and nominated safeguarding reviewer | Implemented and verified guardian authority/consent workflow before child recruitment or the relevant youth release                                                                                                |

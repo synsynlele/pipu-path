@@ -928,3 +928,16 @@ match recorded Android 1.0.2/code 3, package ng.name.pipupath.lite, target SDK 3
 Documented TWA update model: new web interface is not embedded in the wrapper
 and remains candidate-only until production promotion. Added exact outstanding
 actions in final-release-actions.md; no production merge or Console submission.
+
+## 2026-10-10 — Owner browser completion observed
+
+The owner manually submitted their own proof and reflection on the reviewed
+candidate. A fresh visit showed Quest 1 Completed, all five phases complete,
+and the reveal displaying +50 XP. Quest 2 was observed In action and retained
+that state after reload. The agent did not submit learning content or start
+Quest 2. No private proof/reflection narrative is retained in this record.
+Browser Back-state preservation was not independently exercised during this
+completion; existing component coverage remains its evidence. Exactly-once XP
+and negative cases remain supported by the separate disposable learner API run.
+This closes the observed happy-path browser completion gate, not Android,
+provider controls, child authorisation, production promotion or Play submission.

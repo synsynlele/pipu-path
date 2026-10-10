@@ -133,3 +133,16 @@ Sequential-reflection Back-state has component coverage; full candidate browser
 submission and physical Android regression remain pending. Standard validation
 passed: 424 unit/component + 242 integration, coverage, formatting, lint, types
 and build. No production promotion or Play submission occurred.
+
+## 2026-10-10 — Owner browser completion observed
+
+The owner manually submitted their own proof and reflection on the reviewed
+candidate. A fresh visit showed Quest 1 Completed, all five phases complete,
+and the reveal displaying +50 XP. Quest 2 was observed In action and retained
+that state after reload. The agent did not submit learning content or start
+Quest 2. No private proof/reflection narrative is retained in this record.
+Browser Back-state preservation was not independently exercised during this
+completion; existing component coverage remains its evidence. Exactly-once XP
+and negative cases remain supported by the separate disposable learner API run.
+This closes the observed happy-path browser completion gate, not Android,
+provider controls, child authorisation, production promotion or Play submission.
