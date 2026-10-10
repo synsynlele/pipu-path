@@ -1,5 +1,14 @@
 # Implementation status
 
+## 10 October 2026 — Founder-operated pilot preparation
+
+Owner waived backup practical handover as a release blocker and will operate
+privacy/support meanwhile. The handover stays unverified follow-up work. Pilot
+recruitment and feedback procedure are prepared; no public rollout, adult-only
+software restriction or Play submission is claimed. Core authentication, Quest,
+provider and relevant child safeguards remain separate gates. See
+`docs/release/founder-operated-pilot.md`.
+
 ## 10 October 2026 — Named reviewer
 
 Oluwatosin Adebayo is nominated as guardian reviewer. The supplied email is the

@@ -1,6 +1,7 @@
 # Release closure — 10 October 2026
 
-Status: candidate validated; public release not cleared. This record replaces
+Status: candidate validated; founder-operated pilot preparation authorised;
+public release not cleared. This record replaces
 fragmented progress updates as the operator handover.
 
 ## Completed evidence
@@ -38,7 +39,7 @@ Retention claim is made. Source: src/lib/ai/openai-structured-output.ts.
 | Gate                      | Accountable role                                    | Required completion evidence                                                                                                                                     |
 | ------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Guardian authorisation    | Product/engineering + safeguarding/privacy reviewer | Verified guardian authority/consent flow and child AI/onboarding review; not a child checkbox or a guardian_required declined record                             |
-| Privacy operations backup | Platform owner                                      | Adewale Ayanfe assigned through verified company account; sign-in owner-confirmed; complete controlled operational handover                                      |
+| Privacy operations backup | Platform owner                                      | Owner waived backup handover as blocker; founder operates meanwhile; Adewale practical handover remains follow-up                                                |
 | Provider retention        | Server-secret / infrastructure custodian            | Record actual dashboard settings and exported-copy locations; approve restore reconciliation and publish accurate notice                                         |
 | Hosted Google Auth        | Auth configuration custodian                        | Preserve production callback, allow exact approved preview callback; actual Google return stays on that preview; previous dashboard sign-in handoff was declined |
 | Browser lifecycle         | QA operator                                         | Fresh authorised fixture: login, action, evidence, reflection Back-state, exactly-once XP, next unlock and failure recovery on exact candidate                   |
@@ -69,7 +70,7 @@ existing platform operator role, granted under the owner nomination with a
 database audit event. Backup responsibility is assigned; the owner subsequently reported successful sign-in and Mission Control access.
 The controlled operational drill was paused after email-login failure: both
 operator accounts are Google-only without passwords. Actual Google preview
-return and human takeover remain required; see
+return remains required; human takeover is deferred by explicit owner decision. See
 docs/release/privacy-operator-handover.md. This role includes existing platform
 operator permissions, not a new privacy-only permission set.
 
@@ -81,7 +82,11 @@ named reviewers. Inspect Cron history and expired-receipt backlog. Keep request
 and fulfilment flags disabled until activation gates are complete. No automatic
 acknowledgement email or guardian verification is claimed.
 
-Founder involvement is limited to assigning accountable people and approving
+The owner explicitly accepted interim routine operations while backup handover
+is deferred. This is a temporary operating dependency, not completed delegation.
+Use docs/release/founder-operated-pilot.md to capture repeated issues and reduce
+founder involvement as verified operator coverage grows. Founder involvement in
+the mature system is limited to assigning accountable people and approving
 material policy changes. Routine verification uses the same repeatable test and
 recorded evidence at every release. This supports growth without relying on the
 founder as the testing or deletion operator.

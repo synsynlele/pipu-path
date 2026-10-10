@@ -863,3 +863,21 @@ configuration and actual Google preview-return proof remain required.
 Fixture cleanup completed through Storage/Auth APIs. Read-back confirmed Auth,
 profile, owned file and unused pending request absent; both active operator
 accounts preserved. This is fixture retirement, not a passed human handover.
+
+## 2026-10-10 — Founder-operated pilot decision and sign-in clarity
+
+Owner explicitly waived backup handover as a release blocker and accepted
+interim operations. Updated release records without inventing a handover pass;
+prepared adult recruitment scope, three-question feedback register and weekly
+Quest outcome review. No age restriction or new audience declaration was
+implemented. Login now distinguishes Google sign-in from account-password
+sign-in; signup identifies separate email account creation. No password,
+provider configuration, public deployment or deletion flag changed. Public
+candidate deletion contact route was observed in the cloud browser; full
+authenticated lifecycle remains unverified.
+
+Local canonical validation passed with 424 unit/component and 242 integration
+tests, coverage, formatting, lint, TypeScript and production build. React review
+kept both auth pages server-rendered, adding no client state, dependencies or
+authorisation changes. Hosted Auth setup instructions scope redirects to the
+reviewed branch origin, preserve production and remain unapplied.

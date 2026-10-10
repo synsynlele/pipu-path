@@ -11,7 +11,7 @@ Checked 10 October 2026. This is an operator handover, not a release certificate
 | Quest lifecycle browser proof | Sequential reflection E2E updated, no configured credentials in workspace                   | Pending authenticated run                         |
 | New interface on Android      | Prior tablet report predates this candidate                                                 | Pending physical regression                       |
 | Account deletion              | Real Auth/Storage fixture proof passed; processing disabled                                 | API proof passed; guardian/provider gates pending |
-| Retention and privacy         | Schedule approved; receipt expiry active; guardian/provider review pending                  | Remaining: operator/provider/guardian checks      |
+| Retention and privacy         | Schedule approved; receipt expiry active; guardian/provider review pending                  | Founder operates; provider/guardian checks remain |
 | Youth/social requirements     | Supports under-13 identity; social features need age/guardian policy proof                  | Pending Families review                           |
 | Store screenshots             | None captured from authenticated release candidate                                          | Pending                                           |
 | Google account                | Owner reports Console active; no independent dashboard inspection                           | Owner reported                                    |
@@ -48,7 +48,8 @@ transaction was rolled back. No existing user records were deleted.
 2. Configure an authorised disposable test account and run the current quest
    lifecycle, including evidence persistence, Back preservation, completion,
    exactly-once XP and the next unlock. Test failure paths too.
-3. Approve a retention schedule and exception ownership. Review nested/shared
+3. The 7/30/90 schedule is approved. Finalise exception handling and provider
+   retention facts. Review nested/shared
    dependencies, run the implemented deletion workflow and verify storage,
    public links, snapshots and authentication removal on disposable fixtures.
    Never mark a request fulfilled before verification completes.
@@ -57,8 +58,9 @@ transaction was rolled back. No existing user records were deleted.
 5. Retest Android, capture real screenshots, merge/promote the approved code,
    then run Play internal testing before requesting public review.
 
-Each gate needs an operator and backup, with evidence linked to the exact
-candidate. Facilitators run the same scripted user journey and report failures;
+The owner explicitly waived backup handover as a release blocker and will run
+operations meanwhile. Each remaining gate needs an accountable operator and
+evidence linked to the exact candidate. Facilitators run the same scripted user journey and report failures;
 founder approval is not the normal QA or request-processing step.
 
 Official requirements:
@@ -70,4 +72,6 @@ Official requirements:
 The concrete policy proposal is in `docs/release/privacy-retention-decision.md`.
 The owner approved its 7/30/90-day operational schedule. Receipt expiry is active
 and candidate deadline flags are implemented. Public promises, guardian controls,
-provider verification and backup ownership still require completion.
+provider verification remain gates. Backup practical handover is deferred
+follow-up work under the owner decision, not a claimed pass. See
+`docs/release/founder-operated-pilot.md`.

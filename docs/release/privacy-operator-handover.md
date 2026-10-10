@@ -100,3 +100,10 @@ for the exact reviewed preview, retaining production callback. Then verify the
 actual Google return and operator takeover. Email signup is not a substitute
 for an already authorised operator identity; the separate signup failure has
 no observed error evidence yet.
+
+## Owner deferral decision
+
+On 10 October, owner explicitly waived this practical handover as a release
+blocker and accepted interim operations. Keep the drill incomplete in evidence;
+complete it later once Google preview authentication works. Other release and
+privacy activation gates remain in force.

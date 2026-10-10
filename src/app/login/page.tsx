@@ -21,7 +21,12 @@ export default async function LoginPage({
       description="Continue your PipuPath securely."
     >
       <GoogleAuthForm next={next} />
-      <div className="text-muted my-5 text-center text-sm">or use email</div>
+      <div className="text-muted my-5 text-center text-sm">
+        or use your account password
+      </div>
+      <p className="text-muted mb-4 text-sm">
+        Joined with Google? Use Continue with Google above.
+      </p>
       <AuthForm action={signInAction} submitLabel="Sign in" next={next} />
       <div className="text-muted mt-6 flex justify-between text-sm">
         <Link href="/forgot-password">Forgot password?</Link>
