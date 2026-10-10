@@ -193,3 +193,24 @@ role rechecks. A changed graph requires engineering privacy review before
 processing. Applied account_deletion_schema_guard and re-ran rollback fixtures,
 including Passport records and a revoked-operator denial. Processing flags remain
 disabled; no live Storage/Auth API deletion or real-user deletion was performed.
+
+
+## 2026-10-10 — Repeatable deletion API proof harness
+
+Added a dedicated opt-in live test using the actual runDeletionJob adapter with
+real Supabase Auth and Storage clients. It can target only an account newly
+created by the test; requires an exact project-host match, explicit fixture mode
+and an existing verified active privacy operator. Checks login, file round trip,
+Auth/file/profile removal, receipt and job identity clearing, login rejection and
+operator preservation. Failed fixtures retain incomplete-job evidence for review;
+successful fixture receipts are removed. Ordinary CI excludes this live test.
+
+The missing-credentials preflight failed before network mutations as intended.
+No live API test, production enablement or Play submission is claimed. Workspace
+server credentials remain absent. The runbook records secure injection, execution
+and the limits of this proof; readiness instructions now refer to the implemented
+workflow rather than requesting it again.
+
+Full npm run validate passed: 416 unit/component tests, 242 integration tests,
+format, lint, typecheck, coverage and production build. External API proof is
+still pending and is not included in those passing totals.

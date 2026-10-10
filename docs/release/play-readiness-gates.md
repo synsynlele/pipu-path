@@ -48,8 +48,8 @@ transaction was rolled back. No existing user records were deleted.
 2. Configure an authorised disposable test account and run the current quest
    lifecycle, including evidence persistence, Back preservation, completion,
    exactly-once XP and the next unlock. Test failure paths too.
-3. Approve a retention schedule and exception ownership. Map nested/shared
-   dependencies, implement a retryable deletion workflow and verify storage,
+3. Approve a retention schedule and exception ownership. Review nested/shared
+   dependencies, run the implemented deletion workflow and verify storage,
    public links, snapshots and authentication removal on disposable fixtures.
    Never mark a request fulfilled before verification completes.
 4. Finalise privacy, target audience and Data safety from deployed behavior;

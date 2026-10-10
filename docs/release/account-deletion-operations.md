@@ -92,3 +92,26 @@ Processing checkpoints also recheck the current operator role. Revocation stops
 the next database/storage checkpoint, preserves the incomplete job and permits
 an authorised backup to review and retry. The rollback fixture verified that a
 revoked operator cannot purge data.
+
+## Repeatable external API proof
+
+Run `npx vitest run --config vitest.privacy-live.config.ts` in an authorised
+server environment with the Supabase URL, publishable/anon key and server-only
+service key injected securely. Also set `PRIVACY_TEST_PROJECT_REF` to the exact
+project reference, `PRIVACY_TEST_OPERATOR_ID` to an existing verified active
+owner/operator, and `PRIVACY_LIVE_TEST=create-and-delete-fixture`. Never paste
+keys into chat or commit them. The project reference must match the API host.
+
+The dedicated test is excluded from ordinary CI. It creates its own confirmed
+fixture account, proves password login, uploads and downloads a real tiny image,
+then calls the actual `runDeletionJob` adapter. It verifies missing Auth, missing
+file, missing profile, cleared target identity, fulfilled receipt, rejected login
+and preservation of the operator. It accepts no existing target account ID.
+Successful fixture receipts are cleaned up. Failed fixtures print only IDs for
+operator recovery and retain incomplete-job evidence; do not manually fulfil them.
+
+This proof bypasses the web action and does not enable production flags. It does
+not prove browser confirmation, guardian policy, public links, provider retention
+or erasure from backups. Add the exact commit, project, run result and reviewer
+to release evidence after a successful run. As of 10 October, it has not run
+against external APIs: the workspace has no injected server credentials.
