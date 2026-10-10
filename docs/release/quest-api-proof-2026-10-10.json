@@ -1,0 +1,77 @@
+{
+  "kind": "live learner API proof; not browser E2E",
+  "checks": [
+    {
+      "name": "foreign_quest_hidden",
+      "passed": true
+    },
+    {
+      "name": "foreign_start_denied",
+      "passed": true
+    },
+    {
+      "name": "locked_start_denied",
+      "passed": true
+    },
+    {
+      "name": "start_awards_no_xp",
+      "passed": true
+    },
+    {
+      "name": "completion_without_evidence_denied",
+      "passed": true
+    },
+    {
+      "name": "invalid_evidence_denied",
+      "passed": true
+    },
+    {
+      "name": "evidence_persisted",
+      "passed": true
+    },
+    {
+      "name": "evidence_awards_no_xp",
+      "passed": true
+    },
+    {
+      "name": "foreign_evidence_hidden",
+      "passed": true
+    },
+    {
+      "name": "invalid_reflection_denied",
+      "passed": true
+    },
+    {
+      "name": "exactly_once_50_xp",
+      "passed": true
+    },
+    {
+      "name": "one_reflection",
+      "passed": true
+    },
+    {
+      "name": "completed_persisted",
+      "passed": true
+    },
+    {
+      "name": "next_quest_unlocked",
+      "passed": true
+    },
+    {
+      "name": "later_quest_stays_locked",
+      "passed": true
+    },
+    {
+      "name": "next_quest_starts",
+      "passed": true
+    },
+    {
+      "name": "fixture_auth_removed",
+      "passed": true
+    },
+    {
+      "name": "fixture_auth_removed",
+      "passed": true
+    }
+  ]
+}

@@ -901,3 +901,21 @@ were made on the owner account. Added operator-owned quest-qa-checklist.md;
 full proof/reflection/exactly-once XP/next-unlock browser proof remains pending
 a disposable QA account. Updated closure with observed Google persistence.
 Documentation only; no production deployment or Play submission.
+
+## 2026-10-10 — Live learner API Quest proof
+
+Ran scripts/verify-live-quest.mjs against the connected backend using two freshly
+created disposable adult Auth accounts. Synthetic fixture setup used service
+permissions; lifecycle mutations and privacy reads used normal authenticated
+learner API clients. All 18 checks passed: foreign Quest/evidence hidden, foreign
+and locked starts denied, no XP for starting/evidence, premature completion and
+invalid evidence/reflection rejected, evidence/reflection persisted, exactly one
+50-XP transaction after repeat completion, next Quest unlocked and started, later
+Quest stayed locked, both fixture Auth accounts removed. No existing account was
+targeted. Fixtures and dependencies were retired; no credentials retained.
+
+This is live API proof, not browser/server-action E2E or AI-generation proof.
+Sequential-reflection Back-state has component coverage; full candidate browser
+submission and physical Android regression remain pending. Standard validation
+passed: 424 unit/component + 242 integration, coverage, formatting, lint, types
+and build. No production promotion or Play submission occurred.

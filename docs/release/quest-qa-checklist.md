@@ -42,3 +42,14 @@ Aggregate repeated failures by stage in pilot-feedback-template.csv. One operato
 can run the same release check for cohorts 100 times larger; participant volume
 changes the feedback count, not the release procedure. Keep fixes and verification
 evidence together so each release builds on the previous one.
+
+## Reusable live API check
+
+Supply existing approved Supabase URL/anon/service credentials through server
+environment variables, never through committed files or command arguments. Run
+`QUEST_QA=create-disposable-fixture node scripts/verify-live-quest.mjs`. It creates
+its own fixture accounts, accepts no existing target ID, uses learner RPCs for
+mutations and reads, then deletes only its own fixture graph and Auth accounts.
+The first live run passed all 18 checks; see quest-api-proof-2026-10-10.json.
+API execution does not replace secure browser sign-in, candidate server-action
+checks, reflection Back-state in a browser or physical-device verification.

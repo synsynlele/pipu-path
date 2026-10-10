@@ -2,20 +2,20 @@
 
 Checked 10 October 2026. This is an operator handover, not a release certificate.
 
-| Gate                          | Evidence                                                                                    | Status                                            |
-| ----------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| Short Discovery               | Owner completed onboarding; database verifies 8 questions per age band, 7 required          | Passed for reported test                          |
-| Signed Android candidate      | Verified 1.0.2/code 3 AAB; SDK 36; candidate predates new interface                         | Available for testing                             |
-| Core code                     | Local full validation passes, including private preflight                                   | Passed locally                                    |
-| Google login in preview       | Synthetic authorization flow stored production origin instead of requested preview callback | Blocked: hosted Auth allow-list                   |
-| Quest lifecycle browser proof | Sequential reflection E2E updated, no configured credentials in workspace                   | Pending authenticated run                         |
-| New interface on Android      | Prior tablet report predates this candidate                                                 | Pending physical regression                       |
-| Account deletion              | Real Auth/Storage fixture proof passed; processing disabled                                 | API proof passed; guardian/provider gates pending |
-| Retention and privacy         | Schedule approved; receipt expiry active; guardian/provider review pending                  | Founder operates; provider/guardian checks remain |
-| Youth/social requirements     | Supports under-13 identity; social features need age/guardian policy proof                  | Pending Families review                           |
-| Store screenshots             | None captured from authenticated release candidate                                          | Pending                                           |
-| Google account                | Owner reports Console active; no independent dashboard inspection                           | Owner reported                                    |
-| Store submission              | Browser security review rejected Console access                                             | Not submitted                                     |
+| Gate                          | Evidence                                                                              | Status                                            |
+| ----------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Short Discovery               | Owner completed onboarding; database verifies 8 questions per age band, 7 required    | Passed for reported test                          |
+| Signed Android candidate      | Verified 1.0.2/code 3 AAB; SDK 36; candidate predates new interface                   | Available for testing                             |
+| Core code                     | Local full validation passes, including private preflight                             | Passed locally                                    |
+| Google login in preview       | Actual reviewed-preview return; Quest/Home reload persistence observed                | Passed observed Google flow                       |
+| Quest lifecycle browser proof | Navigation observed; live learner API passes 18 checks; full browser mutation not run | API passed; browser submission pending            |
+| New interface on Android      | Prior tablet report predates this candidate                                           | Pending physical regression                       |
+| Account deletion              | Real Auth/Storage fixture proof passed; processing disabled                           | API proof passed; guardian/provider gates pending |
+| Retention and privacy         | Schedule approved; receipt expiry active; guardian/provider review pending            | Founder operates; provider/guardian checks remain |
+| Youth/social requirements     | Supports under-13 identity; social features need age/guardian policy proof            | Pending Families review                           |
+| Store screenshots             | None captured from authenticated release candidate                                    | Pending                                           |
+| Google account                | Owner reports Console active; no independent dashboard inspection                     | Owner reported                                    |
+| Store submission              | Browser security review rejected Console access                                       | Not submitted                                     |
 
 ## Deletion inventory delivered
 
