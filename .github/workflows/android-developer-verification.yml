@@ -69,9 +69,12 @@ jobs:
           "$BUILD_TOOLS_DIR/apksigner" sign             --ks "$RUNNER_TEMP/pipupath-ownership/signing.keystore"             --ks-key-alias pipupath-lite             --ks-pass env:KEYSTORE_PASSWORD             --key-pass env:KEY_PASSWORD             --out "$GITHUB_WORKSPACE/verification-output/PipuPath-Ownership-Verification.apk"             "$RUNNER_TEMP/pipupath-ownership/aligned.apk"
           APK="$GITHUB_WORKSPACE/verification-output/PipuPath-Ownership-Verification.apk"
           "$BUILD_TOOLS_DIR/apksigner" verify --verbose --print-certs "$APK"             > "$RUNNER_TEMP/pipupath-ownership/signature.txt"
-          CERT_SHA="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/pipupath-ownership/signature.txt" | head -n 1)"
           EXPECTED="$(printf '%s' "$EXPECTED_FINGERPRINT" | tr -d ':' | tr '[:upper:]' '[:lower:]')"
-          test "$CERT_SHA" = "$EXPECTED" || { echo "Incorrect signing certificate"; exit 1; }
+          grep -iF "certificate SHA-256 digest: $EXPECTED"             "$RUNNER_TEMP/pipupath-ownership/signature.txt" || {
+              echo "Signing certificate did not match."
+              cat "$RUNNER_TEMP/pipupath-ownership/signature.txt"
+              exit 1
+            }
           "$BUILD_TOOLS_DIR/zipalign" -c 4 "$APK"
           test "$(unzip -p "$APK" assets/adi-registration.properties)" = "$REGISTRATION_SNIPPET"
           "$BUILD_TOOLS_DIR/aapt" dump badging "$APK" | grep -F "package: name='$PACKAGE_ID'"
