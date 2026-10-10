@@ -97,8 +97,8 @@ export async function generateCurrentEconomicPathways(): Promise<EconomicPathway
   } else {
     generationMode = "evidence_fallback";
     fallbackReason = context.isMinor
-        ? "MINOR_EXTERNAL_AI_DISABLED"
-        : "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      ? "MINOR_EXTERNAL_AI_DISABLED"
+      : "OPENAI_ENVIRONMENT_UNAVAILABLE";
     output = buildEvidenceBasedEconomicPathways(context);
   }
 
