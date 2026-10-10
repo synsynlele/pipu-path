@@ -795,3 +795,17 @@ failed, linked and recently completed cases and verified client denial. Added
 operator deadline/escalation flags without pretending acknowledgement was sent.
 No public privacy promise, deletion flag or admin role was changed. Guardian,
 provider inventory and backup/exception ownership remain pending.
+
+## 2026-10-10 — Signed-link proof and consolidated release closure
+
+Extended the real deletion proof with a previously issued, still-valid signed
+file link: fetch succeeded before deletion and failed at the origin after
+deletion. The live test passed and cleaned up the fixture receipt. Recorded
+verified provider facts: Responses store:false, Supabase project/region and
+protected Vercel credentials; actual retention settings remain unverified.
+Prepared an explicit Home/reload/narrow Discovery login regression, but browser
+installation failed with invalid archives; no E2E pass is claimed. Consolidated
+all completion evidence and remaining gates in docs/release/release-closure.md.
+Guardian verification, named backup, provider settings, Google callback, full
+Quest/browser, Android and Console submission remain incomplete. No flags,
+audience, roles, credentials or production deployment changed.

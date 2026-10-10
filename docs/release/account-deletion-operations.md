@@ -201,3 +201,12 @@ observed; active schedule and function execution were verified separately.
 
 Provider/backup durations, guardian controls, named backup and exception reviewers
 remain activation gates. The public notice and deletion flags are unchanged.
+
+## Signed-link origin proof
+
+The extended live fixture test passed on 10 October (approximately 124 seconds).
+It created a 600-second signed URL, downloaded the fixture successfully before
+deleting it, then verified failure of the previously issued link with a fresh
+cacheNonce while its token was still within its lifetime. This proves origin
+withdrawal after deletion; it does not guarantee instant erasure from warmed
+CDN/browser caches. The successful fixture receipt was cleaned up.

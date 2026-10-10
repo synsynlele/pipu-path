@@ -89,6 +89,14 @@ it("removes a newly created fixture through real Storage and Auth APIs", async (
     expect(upload.error).toBeNull();
     const before = await admin.storage.from("quest-evidence").download(path);
     expect(before.error).toBeNull();
+    const signed = await admin.storage
+      .from("quest-evidence")
+      .createSignedUrl(path, 600);
+    expect(signed.error).toBeNull();
+    const signedUrl = signed.data!.signedUrl;
+    const signedBefore = await fetch(signedUrl);
+    expect(signedBefore.ok).toBe(true);
+    await signedBefore.arrayBuffer();
     const request = await admin
       .from("account_deletion_requests")
       .insert({
@@ -129,6 +137,13 @@ it("removes a newly created fixture through real Storage and Auth APIs", async (
     const file = await fresh.storage.from("quest-evidence").download(path);
     expect(file.data).toBeNull();
     expect(file.error).toBeTruthy();
+    // The original link is still within its 10-minute token lifetime. A fresh
+    // origin read must fail because deletion removed the object, not token expiry.
+    const signedAfterUrl = new URL(signedUrl);
+    signedAfterUrl.searchParams.set("cacheNonce", randomUUID());
+    const signedAfter = await fetch(signedAfterUrl, { cache: "no-store" });
+    expect(signedAfter.ok).toBe(false);
+    expect([400, 404]).toContain(signedAfter.status);
     const missingProfile = await admin
       .from("profiles")
       .select("id")
