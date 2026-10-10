@@ -881,3 +881,23 @@ tests, coverage, formatting, lint, TypeScript and production build. React review
 kept both auth pages server-rendered, adding no client state, dependencies or
 authorisation changes. Hosted Auth setup instructions scope redirects to the
 reviewed branch origin, preserve production and remain unapplied.
+
+## 2026-10-10 — Google preview sign-in observed
+
+Candidate da6cfed1ec0f9f7986127f7060118480a0c968c9, reviewed branch alias:
+Google phone approval returned to the authenticated Quest page; reload retained
+the session. Navigating Home and reloading displayed the owner Home with Sign
+out, Mission Control and Continue Quest. Owner reported adding the Supabase
+redirect. No password was set, no learning data was submitted and no XP was
+created by this verification. Full Quest lifecycle, provider retention settings,
+guardian authorisation for child recruitment, latest physical Android proof and
+Play submission remain unverified. Operator handover remains owner-waived.
+
+## 2026-10-10 — Quest navigation and repeatable QA
+
+Observed action Next/Previous, private Prove form and Back recovery on reviewed
+preview candidate da6cfed1ec0f9f7986127f7060118480a0c968c9. No learning mutations
+were made on the owner account. Added operator-owned quest-qa-checklist.md;
+full proof/reflection/exactly-once XP/next-unlock browser proof remains pending
+a disposable QA account. Updated closure with observed Google persistence.
+Documentation only; no production deployment or Play submission.

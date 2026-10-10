@@ -67,7 +67,7 @@ not app opens or fabricated XP, form the compounding evidence base.
 
 ## Remaining delivery gates
 
-- Exact-candidate Google return, session persistence and full Quest browser proof.
+- Full Quest browser proof; Google return and session persistence passed on 10 October.
 - Approved provider retention facts and accurate public privacy notice.
 - Guardian authorisation before child recruitment or applicable child release.
 - Physical phone/tablet regression, final signed artifact and screenshots for Play.
@@ -84,9 +84,11 @@ https://pipu-path-git-agent-life-game-0479e5-copyartint-2860s-projects.vercel.ap
 
 Test Google sign-in from that branch alias, not a different deployment hostname.
 The return must stay on the same origin and signed-in Home must survive reload.
-This setup remains unapplied; previous dashboard sign-in handoff was declined
-and the connected Supabase tools do not expose hosted Auth configuration. No
-Google Console callback or production Site URL change is proposed.
+The owner reported adding this redirect. On 10 October, Google approval returned
+the browser to the reviewed branch Quest page. Reload retained the session;
+Home then loaded with the owner identity and also survived reload. This proves
+the observed Google return/session path, not every hosted Auth setting or signup
+method. No Google Console callback or production Site URL change is claimed.
 
 Reference: https://supabase.com/docs/guides/auth/redirect-urls
 

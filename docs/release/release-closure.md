@@ -17,7 +17,7 @@ fragmented progress updates as the operator handover.
 - Approved 7-day acknowledgement / 30-day service target / 90-day receipt schedule.
 - Daily verified-receipt cleanup active at 03:10 UTC; rollback exclusions verified.
 - Candidate operator queue has deadline/escalation guidance and reviewed retry / backup handover.
-- Standard validation: 419 unit/component and 242 integration tests; production build.
+- Standard validation: 424 unit/component and 242 integration tests; production build.
 - Existing Android AAB inspected: 1.0.2, version code 3, SDK 36. This signed
   artifact predates the latest interface and is not the final tested candidate.
 
@@ -36,15 +36,15 @@ Retention claim is made. Source: src/lib/ai/openai-structured-output.ts.
 
 ## Work needed before public release
 
-| Gate                      | Accountable role                                    | Required completion evidence                                                                                                                                     |
-| ------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Guardian authorisation    | Product/engineering + safeguarding/privacy reviewer | Verified guardian authority/consent flow and child AI/onboarding review; not a child checkbox or a guardian_required declined record                             |
-| Privacy operations backup | Platform owner                                      | Owner waived backup handover as blocker; founder operates meanwhile; Adewale practical handover remains follow-up                                                |
-| Provider retention        | Server-secret / infrastructure custodian            | Record actual dashboard settings and exported-copy locations; approve restore reconciliation and publish accurate notice                                         |
-| Hosted Google Auth        | Auth configuration custodian                        | Preserve production callback, allow exact approved preview callback; actual Google return stays on that preview; previous dashboard sign-in handoff was declined |
-| Browser lifecycle         | QA operator                                         | Fresh authorised fixture: login, action, evidence, reflection Back-state, exactly-once XP, next unlock and failure recovery on exact candidate                   |
-| Android                   | QA operator with phone/tablet                       | Latest candidate: login return, narrow screens, navigation, proof, resume after idle, no renderer crash; capture real screenshots                                |
-| Play submission           | Console owner/release operator                      | Final signed candidate, accurate audience/Data safety/privacy/app access, internal test evidence, then review                                                    |
+| Gate                      | Accountable role                                    | Required completion evidence                                                                                                                   |
+| ------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Guardian authorisation    | Product/engineering + safeguarding/privacy reviewer | Verified guardian authority/consent flow and child AI/onboarding review; not a child checkbox or a guardian_required declined record           |
+| Privacy operations backup | Platform owner                                      | Owner waived backup handover as blocker; founder operates meanwhile; Adewale practical handover remains follow-up                              |
+| Provider retention        | Server-secret / infrastructure custodian            | Record actual dashboard settings and exported-copy locations; approve restore reconciliation and publish accurate notice                       |
+| Hosted Google Auth        | Auth configuration custodian                        | PASS: owner reported redirect added; actual Google return to reviewed preview and Quest/Home reload persistence observed on 10 October         |
+| Browser lifecycle         | QA operator                                         | Fresh authorised fixture: login, action, evidence, reflection Back-state, exactly-once XP, next unlock and failure recovery on exact candidate |
+| Android                   | QA operator with phone/tablet                       | Latest candidate: login return, narrow screens, navigation, proof, resume after idle, no renderer crash; capture real screenshots              |
+| Play submission           | Console owner/release operator                      | Final signed candidate, accurate audience/Data safety/privacy/app access, internal test evidence, then review                                  |
 
 Connect is currently adult-only and minors cannot publish public Portfolio proof.
 These safeguards do not replace lawful child account/AI authorisation. The product
@@ -70,7 +70,8 @@ existing platform operator role, granted under the owner nomination with a
 database audit event. Backup responsibility is assigned; the owner subsequently reported successful sign-in and Mission Control access.
 The controlled operational drill was paused after email-login failure: both
 operator accounts are Google-only without passwords. Actual Google preview
-return remains required; human takeover is deferred by explicit owner decision. See
+return and Quest/Home reload persistence passed on 10 October; human operator
+takeover is deferred by explicit owner decision. See
 docs/release/privacy-operator-handover.md. This role includes existing platform
 operator permissions, not a new privacy-only permission set.
 
@@ -105,3 +106,12 @@ existing global setup, then run:
 This check does not replace actual Google OAuth, the full Quest lifecycle or
 physical Android tests. Do not promote an existing learner account into QA
 without explicit authorisation.
+
+## Observed browser navigation — 10 October
+
+On candidate da6cfed1ec0f9f7986127f7060118480a0c968c9, Google device approval
+returned to the reviewed preview Quest page. Quest and Home survived reload
+with the owner session. Next/Previous action controls changed the visible
+instruction; Prove opened the private evidence form and Back returned to Act.
+No proof/reflection was submitted or XP awarded by this check. Full mutation
+lifecycle remains pending a disposable QA account.
