@@ -3,8 +3,10 @@
 ## 10 October 2026 — Named reviewer
 
 Oluwatosin Adebayo is nominated as guardian reviewer. The supplied email is the
-existing verified active owner; independent operator backup remains unfilled.
-No role or release flag changed. See `docs/release/release-closure.md`.
+existing verified active owner. Adewale Ayanfe now holds backup responsibility
+through the verified company account kaecng@gmail.com, granted the existing
+operator role with an audit event. Sign-in and handover remain pending. No
+release flag changed. See `docs/release/release-closure.md`.
 
 ## 9 October 2026 — Play release foundation candidate
 

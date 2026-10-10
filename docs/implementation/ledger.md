@@ -817,3 +817,12 @@ Auth/admin check confirmed the supplied email is the verified active owner, so
 it does not establish independent backup coverage. No role was granted or
 changed; a distinct adult account remains required. The nomination does not
 verify guardian authority or complete the child authorisation release gate.
+
+## 2026-10-10 — Named backup operator granted
+
+Owner identified Adewale Ayanfe as the distinct handler of kaecng@gmail.com.
+Verified confirmed Auth account and matching profile, then granted the existing
+operator role with owner attribution and a success audit event in one SQL
+statement. Read-back confirmed active operator status and verified email. No
+owner privilege, deletion feature flag or public release was enabled. Actual
+backup sign-in and handover remain unproven; guardian workflow remains incomplete.
