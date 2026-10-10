@@ -96,7 +96,7 @@ export type GuardianManagedBuilder = {
   schoolNetworkEnabled: boolean;
 };
 
-export async function listGuardianManagedBuilders(): Promise<GuardianManagedBuilder[]> {
+export async function listGuardianManagedBuilders() {
   const client = await createServerSupabaseClient();
   const rpc = client.rpc.bind(client) as unknown as UntypedRpc;
   const { data, error } = await rpc("list_guardian_authorizations");
