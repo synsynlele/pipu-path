@@ -822,3 +822,44 @@ revoke all on function public.complete_identity_checkpoint(
 grant execute on function public.complete_identity_checkpoint(
   text, text, public.age_band, text, boolean, boolean, boolean
 ) to authenticated;
+
+-- Stage 29 school network eligibility must enforce guardian approval
+-- in the database, not only in the web UI / server actions.
+create or replace function private.stage29_candidate_scope(user_id_input uuid)
+returns table(scope text, workspace_id uuid)
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if private.stage11_builder_connect_eligible(user_id_input) then
+    return query select 'adult'::text, null::uuid;
+    return;
+  end if;
+
+  return query
+  select 'school'::text, workspace.id
+  from public.profiles profile
+  join public.onboarding_checkpoints checkpoint
+    on checkpoint.user_id = profile.id and checkpoint.status = 'completed'
+  join public.khpos_school_cohort_memberships membership
+    on membership.user_id = profile.id and membership.status = 'active'
+  join public.khpos_school_cohorts cohort
+    on cohort.id = membership.cohort_id and cohort.status = 'active'
+  join public.institution_workspaces workspace
+    on workspace.cohort_id = cohort.id and workspace.status = 'active'
+  join public.builder_network_school_settings settings
+    on settings.workspace_id = workspace.id and settings.network_enabled
+  where profile.id = user_id_input
+    and profile.account_status = 'active'
+    and profile.age_band in ('13_15', '16_17')
+    and not coalesce(profile.safeguarding_review_required, false)
+    and profile.username is not null
+    and private.guardian_authorization_granted(user_id_input)
+  limit 1;
+end;
+$$;
+
+revoke all on function private.stage29_candidate_scope(uuid)
+  from public, anon, authenticated;

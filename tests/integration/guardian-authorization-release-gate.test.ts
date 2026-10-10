@@ -66,6 +66,32 @@ describe("guardian authorization release gate", () => {
     }
   });
 
+  it("requires active guardian approval for Stage 29 school network eligibility", () => {
+    expect(migration).toContain(
+      "create or replace function private.stage29_candidate_scope",
+    );
+    expect(migration).toContain(
+      "and private.guardian_authorization_granted(user_id_input)",
+    );
+    expect(migration).toContain("request_code ~ '^[A-Z0-9]{16}
+    expect(migration).toContain(
+      "alter table public.guardian_authorization_requests enable row level security",
+    );
+    expect(migration).toContain(
+      "revoke all on public.guardian_authorization_requests from public, anon, authenticated",
+    );
+    expect(migration).toContain(
+      "revoke all on function public.grant_guardian_authorization(text, text, text) from public, anon",
+    );
+  });
+});
+");
+    expect(migration).toContain(
+      "guardian_user_id uuid references public.profiles(id) on delete cascade",
+    );
+    expect(identityDal).toContain('rpc("get_guardian_authorization_state")');
+  });
+
   it("keeps guardian records private behind authenticated ownership-aware RPCs", () => {
     expect(migration).toContain(
       "alter table public.guardian_authorization_requests enable row level security",
