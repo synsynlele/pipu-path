@@ -919,3 +919,12 @@ Sequential-reflection Back-state has component coverage; full candidate browser
 submission and physical Android regression remain pending. Standard validation
 passed: 424 unit/component + 242 integration, coverage, formatting, lint, types
 and build. No production promotion or Play submission occurred.
+
+## 2026-10-10 — Final release reconciliation
+
+CI 38058203597 on e6867dcb6b1d4bb3a7f0b35d78f2513d58797a91: validate passed,
+staging-e2e skipped. Rechecked uploaded APK/AAB hashes and packaged badging: both
+match recorded Android 1.0.2/code 3, package ng.name.pipupath.lite, target SDK 36.
+Documented TWA update model: new web interface is not embedded in the wrapper
+and remains candidate-only until production promotion. Added exact outstanding
+actions in final-release-actions.md; no production merge or Console submission.
