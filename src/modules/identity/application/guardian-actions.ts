@@ -39,7 +39,7 @@ const grantSchema = z.object({
     .string()
     .trim()
     .transform((value) => value.replace(/[^a-z0-9]/gi, "").toUpperCase())
-    .pipe(z.string().regex(/^[A-Z0-9]{10}$/)),
+    .pipe(z.string().regex(/^[A-Z0-9]{16}$/)),
   relationship: z.enum(["parent", "legal_guardian"]),
   declaration: z.literal("on"),
 });

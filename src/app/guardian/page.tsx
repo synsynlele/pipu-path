@@ -63,12 +63,12 @@ export default async function GuardianApprovalPage({
             <input
               required
               name="code"
-              minLength={10}
-              maxLength={14}
+              minLength={16}
+              maxLength={20}
               autoCapitalize="characters"
               autoComplete="off"
               className="border-border bg-panel-raised focus:border-primary mt-2 min-h-12 w-full rounded-xl border px-3 font-mono tracking-[0.12em] uppercase"
-              placeholder="AB12CD34EF"
+              placeholder="AB12CD34EF56GH78"
             />
           </label>
 

@@ -37,15 +37,18 @@ type UntypedRpc = (
 
 export async function guardianAuthorizationGrantedForUser(userId: string) {
   const client = await createServerSupabaseClient();
-  const { data } = await client
-    .from("user_consents")
-    .select("status,withdrawn_at")
-    .eq("user_id", userId)
-    .eq("consent_type", "guardian_required")
-    .order("occurred_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  return Boolean(data?.status === "granted" && !data.withdrawn_at);
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  if (!user || user.id !== userId) return false;
+  const rpc = client.rpc.bind(client) as unknown as UntypedRpc;
+  const { data, error } = await rpc("get_guardian_authorization_state");
+  return Boolean(
+    !error &&
+      data &&
+      typeof data === "object" &&
+      (data as GuardianAuthorizationState).status === "granted",
+  );
 }
 
 export async function currentIdentityNeedsGuardianAuthorization() {
