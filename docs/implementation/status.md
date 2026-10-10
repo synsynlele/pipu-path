@@ -241,3 +241,10 @@ No existing user was targeted, no key printed/committed, and no production flag
 was enabled. Full local validation passed (416 unit/component and 242 integration
 tests plus format, lint, types, coverage and build). Retention/guardian approval,
 backup operator, browser/login and Android proofs remain release blockers.
+
+## 2026-10-10 — Concrete privacy decision ready for review
+
+The proposed retention/guardian operating rules are documented for owner review.
+The proposed 7/30/90-day schedule is not active or a claimed legal deadline.
+Provider inventory, backup operator, child authorisation and cleanup controls
+remain pending. API deletion proof remains passed; production remains disabled.

@@ -774,3 +774,14 @@ No existing user was targeted, no key printed/committed, and no production flag
 was enabled. Full local validation passed (416 unit/component and 242 integration
 tests plus format, lint, types, coverage and build). Retention/guardian approval,
 backup operator, browser/login and Android proofs remain release blockers.
+
+## 2026-10-10 — Retention and youth-handling proposal
+
+Prepared a concrete policy decision for owner review: 7-day acknowledgement,
+30-day service target and 90-day minimal receipt retention, all proposed rather
+than implemented or legally certified. Preserves adult-only Connect/minor public
+proof restrictions and the youth purpose; defines privacy/backup/exception roles,
+minimal external ownership checks and safeguarding-aware guardian requests.
+Provider durations, child onboarding authorisation and receipt cleanup remain
+explicit implementation gates. No notice, role, audience or production flag was
+changed. This proposal is in docs/release/privacy-retention-decision.md.

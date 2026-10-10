@@ -11,7 +11,7 @@ Checked 10 October 2026. This is an operator handover, not a release certificate
 | Quest lifecycle browser proof | Sequential reflection E2E updated, no configured credentials in workspace                   | Pending authenticated run                 |
 | New interface on Android      | Prior tablet report predates this candidate                                                 | Pending physical regression               |
 | Account deletion              | Real Auth/Storage fixture proof passed; processing disabled                                 | API proof passed; policy approval pending |
-| Retention and privacy         | Provisional notice; retention and exceptions unapproved                                     | Blocked: operator/legal decisions         |
+| Retention and privacy         | Concrete retention/guardian proposal prepared; unapproved                                   | Blocked: operator/legal decisions         |
 | Youth/social requirements     | Supports under-13 identity; social features need age/guardian policy proof                  | Pending Families review                   |
 | Store screenshots             | None captured from authenticated release candidate                                          | Pending                                   |
 | Google account                | Owner reports Console active; no independent dashboard inspection                           | Owner reported                            |
@@ -66,3 +66,7 @@ Official requirements:
 - https://support.google.com/googleplay/android-developer/answer/10144311
 - https://support.google.com/googleplay/android-developer/answer/13327111
 - https://support.google.com/googleplay/android-developer/answer/9893335
+
+The concrete policy proposal is in `docs/release/privacy-retention-decision.md`.
+Its 7/30/90-day values are proposed operational choices, not active promises or
+legal deadlines. Owner review precedes implementation and policy activation.
