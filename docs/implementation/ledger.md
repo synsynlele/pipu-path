@@ -809,3 +809,11 @@ all completion evidence and remaining gates in docs/release/release-closure.md.
 Guardian verification, named backup, provider settings, Google callback, full
 Quest/browser, Android and Console submission remain incomplete. No flags,
 audience, roles, credentials or production deployment changed.
+
+## 2026-10-10 — Reviewer nomination and backup account verification
+
+Recorded Oluwatosin Adebayo as the owner-nominated guardian reviewer. A targeted
+Auth/admin check confirmed the supplied email is the verified active owner, so
+it does not establish independent backup coverage. No role was granted or
+changed; a distinct adult account remains required. The nomination does not
+verify guardian authority or complete the child authorisation release gate.

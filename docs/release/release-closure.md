@@ -55,6 +55,18 @@ No app listing, upload or submission was completed. The Console owner must use
 its normal trusted session for the eventual submission; do not retry through a
 blocked route or alternate automation technique.
 
+## Named responsibility — 10 October 2026
+
+The owner nominated Oluwatosin Adebayo as the guardian reviewer. This records
+responsibility for reviewing guardian requests and the proposed child consent
+flow; it does not establish guardian authority for any learner or complete the
+required authorisation workflow.
+
+The supplied account, copyartint@gmail.com, is verified and already has an active
+owner role. No role change was needed or made. Independent privacy operations
+backup remains unfilled: a different trusted adult's registered account must be
+nominated and verified before assigning the existing operator role.
+
 ## Execution handover
 
 Use docs/release/account-deletion-operations.md for privacy execution and

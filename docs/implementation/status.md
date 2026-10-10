@@ -1,5 +1,11 @@
 # Implementation status
 
+## 10 October 2026 — Named reviewer
+
+Oluwatosin Adebayo is nominated as guardian reviewer. The supplied email is the
+existing verified active owner; independent operator backup remains unfilled.
+No role or release flag changed. See `docs/release/release-closure.md`.
+
 ## 9 October 2026 — Play release foundation candidate
 
 User authorised the release-readiness improvements after identifying the correct
