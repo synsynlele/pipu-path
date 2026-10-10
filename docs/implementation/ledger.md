@@ -848,3 +848,18 @@ Preflight confirms the pending adult fixture and one file. Human takeover and
 completion remain pending; preview email/password avoids unresolved Google
 callback routing. Existing deployment environment snapshots must be removed
 after practice, not assumed disabled by editing project variables alone.
+
+## 2026-10-10 — Handover authentication blocker
+
+Owner reported preview email login and attempted new-account signup failed,
+then asked to continue. Targeted existing-account Auth checks confirmed verified
+Google-only identities without password credentials. Human handover remains
+incomplete; no belief-based pass recorded. Set preview branch request and
+fulfilment flags false and retire the untouched disposable fixture. Existing
+deployment snapshots do not change with project environment edits. No password
+change, email, new operator or Google callback change was made. Hosted callback
+configuration and actual Google preview-return proof remain required.
+
+Fixture cleanup completed through Storage/Auth APIs. Read-back confirmed Auth,
+profile, owned file and unused pending request absent; both active operator
+accounts preserved. This is fixture retirement, not a passed human handover.

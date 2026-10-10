@@ -68,7 +68,7 @@ agent/life-game-first-cycle only. No production or global preview activation.
 Local validation passed: 424 unit/component and 242 integration tests, lint,
 types, formatting, coverage and production build. Human practice is pending.
 
-## Ready preview and validation evidence
+## Historical ready preview and validation evidence
 
 Exact drill deployment: dpl_3miwTYw4phUGcmgAFvhPuudzTTY4, READY, preview target.
 URL: https://pipu-path-cotckwv45-copyartint-2860s-projects.vercel.app
@@ -78,3 +78,25 @@ Unauthenticated deployment fetch responded successfully; no authenticated web
 action is claimed. Preflight confirms adult fixture, existing account and one
 storage object; request remains pending. Use email/password on this exact
 preview: Google callback preview preservation is still unresolved.
+
+## Drill paused after login blocker — 10 October 2026
+
+Owner could not sign into the preview using email/password and asked to continue.
+Targeted Auth inspection confirmed both existing operator accounts have Google
+provider only and no password set. Earlier email/password drill instructions
+were unsuitable for these accounts. No password was inspected or changed; no
+new account, email, owner session or Google configuration was created.
+
+The human drill is incomplete and must not be counted as passed on belief.
+Preview request/fulfilment branch variables were changed to false. The original
+deployment retains its old environment snapshot; its fixture request/account
+and harmless file were removed through Auth/Storage APIs; read-back confirmed
+Auth, profile, file and unused pending request absence, with both operators
+preserved. This retires that exact drill without claiming human execution. Do not reuse the historical link.
+A new drill requires a fresh fixture and working operator authentication.
+
+Next authentication work: authorised hosted callback allowlist configuration
+for the exact reviewed preview, retaining production callback. Then verify the
+actual Google return and operator takeover. Email signup is not a substitute
+for an already authorised operator identity; the separate signup failure has
+no observed error evidence yet.

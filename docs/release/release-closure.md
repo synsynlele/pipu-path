@@ -67,7 +67,9 @@ owner role. No role change was needed or made. The owner subsequently identified
 the verified company account kaecng@gmail.com. That account now has the active
 existing platform operator role, granted under the owner nomination with a
 database audit event. Backup responsibility is assigned; the owner subsequently reported successful sign-in and Mission Control access.
-The controlled operational drill remains required; see
+The controlled operational drill was paused after email-login failure: both
+operator accounts are Google-only without passwords. Actual Google preview
+return and human takeover remain required; see
 docs/release/privacy-operator-handover.md. This role includes existing platform
 operator permissions, not a new privacy-only permission set.
 
