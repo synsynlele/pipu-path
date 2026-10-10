@@ -4,7 +4,10 @@ import Link from "next/link";
 import { DeletionFulfilmentForm } from "@/modules/privacy/ui/deletion-fulfilment-form";
 import { getCurrentPlatformAdminRole } from "@/modules/admin/infrastructure/admin-dal";
 import { listOpenDeletionRequests } from "@/modules/privacy/infrastructure/deletion-requests";
-import { privacyOperationsConfig } from "@/modules/privacy/infrastructure/privacy-config";
+import {
+  privacyDrillScope,
+  privacyOperationsConfig,
+} from "@/modules/privacy/infrastructure/privacy-config";
 import {
   reviewDeletionRequest,
   takeOverDeletionReviewAction,
@@ -36,10 +39,18 @@ export default async function PrivacyQueuePage() {
         </p>
       </main>
     );
+  const drill = privacyDrillScope();
   const requests = await listOpenDeletionRequests();
   return (
     <main className="mx-auto max-w-4xl p-6 text-white">
       <h1 className="text-3xl font-semibold">Account deletion requests</h1>
+      {drill ? (
+        <p className="mt-4 rounded-xl border border-amber-300 p-4">
+          Handover practice: only the designated disposable request is
+          available. Record the review, takeover and verified result with your
+          release operator.
+        </p>
+      ) : null}
       <p className="mt-4 leading-7">
         Oldest first, up to 100 open requests. Start review, verify ownership
         and follow the deletion runbook. Starting review does not delete data or

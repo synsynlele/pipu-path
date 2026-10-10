@@ -5,7 +5,8 @@
 Oluwatosin Adebayo is nominated as guardian reviewer. The supplied email is the
 existing verified active owner. Adewale Ayanfe now holds backup responsibility
 through the verified company account kaecng@gmail.com, granted the existing
-operator role with an audit event. Sign-in and handover remain pending. No
+operator role with an audit event. Owner reported successful sign-in and Mission Control access. The controlled
+preview drill is being prepared; operational handover remains pending. No
 release flag changed. See `docs/release/release-closure.md`.
 
 ## 9 October 2026 — Play release foundation candidate

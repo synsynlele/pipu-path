@@ -38,7 +38,7 @@ Retention claim is made. Source: src/lib/ai/openai-structured-output.ts.
 | Gate                      | Accountable role                                    | Required completion evidence                                                                                                                                     |
 | ------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Guardian authorisation    | Product/engineering + safeguarding/privacy reviewer | Verified guardian authority/consent flow and child AI/onboarding review; not a child checkbox or a guardian_required declined record                             |
-| Privacy operations backup | Platform owner                                      | Adewale Ayanfe assigned through verified company account; complete actual sign-in and operational handover                                                       |
+| Privacy operations backup | Platform owner                                      | Adewale Ayanfe assigned through verified company account; sign-in owner-confirmed; complete controlled operational handover                                      |
 | Provider retention        | Server-secret / infrastructure custodian            | Record actual dashboard settings and exported-copy locations; approve restore reconciliation and publish accurate notice                                         |
 | Hosted Google Auth        | Auth configuration custodian                        | Preserve production callback, allow exact approved preview callback; actual Google return stays on that preview; previous dashboard sign-in handoff was declined |
 | Browser lifecycle         | QA operator                                         | Fresh authorised fixture: login, action, evidence, reflection Back-state, exactly-once XP, next unlock and failure recovery on exact candidate                   |
@@ -66,8 +66,9 @@ The supplied account, copyartint@gmail.com, is verified and already has an activ
 owner role. No role change was needed or made. The owner subsequently identified Adewale Ayanfe as the distinct person handling
 the verified company account kaecng@gmail.com. That account now has the active
 existing platform operator role, granted under the owner nomination with a
-database audit event. Backup responsibility is assigned; an actual sign-in and
-operational handover are still required. This role includes existing platform
+database audit event. Backup responsibility is assigned; the owner subsequently reported successful sign-in and Mission Control access.
+The controlled operational drill remains required; see
+docs/release/privacy-operator-handover.md. This role includes existing platform
 operator permissions, not a new privacy-only permission set.
 
 ## Execution handover

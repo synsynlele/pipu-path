@@ -1,4 +1,5 @@
 import "server-only";
+import { assertPrivacyDrillRequest, privacyDrillScope } from "./privacy-config";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
 export type DeletionRequest = {
@@ -34,6 +35,8 @@ function requests() {
 }
 
 export async function getOwnDeletionRequest(userId: string) {
+  const scope = privacyDrillScope();
+  if (scope && scope.userId !== userId) return null;
   const result = await requests()
     .select("id,user_id,status,created_at")
     .eq("user_id", userId)
@@ -43,7 +46,15 @@ export async function getOwnDeletionRequest(userId: string) {
 }
 
 export async function saveDeletionRequest(userId: string) {
+  const scope = privacyDrillScope();
+  if (scope && scope.userId !== userId)
+    throw new Error("PRIVACY_DRILL_USER_DENIED");
   const existing = await getOwnDeletionRequest(userId);
+  if (scope) {
+    if (existing?.id !== scope.requestId)
+      throw new Error("PRIVACY_DRILL_REQUEST_DENIED");
+    return existing;
+  }
   if (existing) return existing;
   const { data, error } = await requests()
     .insert({ user_id: userId })
@@ -56,7 +67,10 @@ export async function saveDeletionRequest(userId: string) {
 }
 
 export async function listOpenDeletionRequests() {
-  const { data, error } = await requests()
+  const scope = privacyDrillScope();
+  let query = requests();
+  if (scope) query = query.eq("id", scope.requestId);
+  const { data, error } = await query
     .select(
       "id,user_id,status,created_at,job:account_deletion_jobs(state,phase,attempts,updated_at)",
     )
@@ -71,6 +85,7 @@ export async function claimDeletionRequest(
   requestId: string,
   operatorId: string,
 ) {
+  assertPrivacyDrillRequest(requestId);
   const { data, error } = await requests()
     .update({
       status: "reviewing",

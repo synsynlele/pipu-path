@@ -826,3 +826,17 @@ operator role with owner attribution and a success audit event in one SQL
 statement. Read-back confirmed active operator status and verified email. No
 owner privilege, deletion feature flag or public release was enabled. Actual
 backup sign-in and handover remain unproven; guardian workflow remains incomplete.
+
+## 2026-10-10 — Controlled operator handover preparation
+
+Owner reported Adewale signed in and Mission Control opened. Added preview-only
+fixture scope to private request/queue/inventory/review/takeover and worker
+boundaries; mismatched target is refused before destructive operations. Prepared
+a server-only disposable adult fixture provisioning script and repeatable human
+handover checklist. Production remains disabled; human drill not yet completed.
+
+Provisioned disposable adult bc5c55d2-3955-4f35-b03a-4841be50889d and pending
+request 90bf9f41-8a9d-44af-bc29-d54c1404e236 with one harmless owned image.
+Preview branch alone receives the five fixture/activation settings; production
+and other preview branches remain unactivated. Local validation passed with
+424 unit/component + 242 integration tests and production build.

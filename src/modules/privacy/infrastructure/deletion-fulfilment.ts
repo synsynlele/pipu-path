@@ -1,4 +1,5 @@
 import "server-only";
+import { assertPrivacyDrillRequest, privacyDrillScope } from "./privacy-config";
 import { z } from "zod";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
@@ -30,6 +31,7 @@ export async function runDeletionJob(
   operatorId: string,
   client: DeletionClient,
 ): Promise<void> {
+  assertPrivacyDrillRequest(requestId);
   z.uuid().parse(requestId);
   z.uuid().parse(operatorId);
   const claimed = await client.rpc("claim_account_deletion_job", {
@@ -48,6 +50,9 @@ export async function runDeletionJob(
     return result.data;
   }
   try {
+    const scope = privacyDrillScope();
+    if (scope && scope.userId !== lease.userId)
+      throw new Error("PRIVACY_DRILL_USER_DENIED");
     const ban = await client.auth.admin.updateUserById(lease.userId, {
       ban_duration: "876000h",
     });
@@ -103,6 +108,7 @@ export async function takeOverDeletionReview(
   requestId: string,
   operatorId: string,
 ) {
+  assertPrivacyDrillRequest(requestId);
   const client = createServiceRoleSupabaseClient() as unknown as DeletionClient;
   const { error } = await client.rpc("take_over_account_deletion_review", {
     request_id_input: z.uuid().parse(requestId),

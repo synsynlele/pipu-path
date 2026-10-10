@@ -158,3 +158,26 @@ describe("verified retryable account deletion", () => {
     expect(mocks.rpc).not.toHaveBeenCalled();
   });
 });
+
+it("rejects a mismatched fixture before any Auth or Storage removal", async () => {
+  vi.stubEnv("PRIVACY_DRILL_MODE", "true");
+  vi.stubEnv("VERCEL_ENV", "preview");
+  vi.stubEnv("PRIVACY_DRILL_REQUEST_ID", requestId);
+  vi.stubEnv("PRIVACY_DRILL_USER_ID", operatorId);
+  vi.clearAllMocks();
+  mocks.rpc.mockResolvedValue({ data: { userId, leaseToken }, error: null });
+  try {
+    await expect(runDeletionJob(requestId, operatorId, client)).rejects.toThrow(
+      "PRIVACY_DELETION_NOT_CONFIRMED",
+    );
+    expect(mocks.ban).not.toHaveBeenCalled();
+    expect(mocks.removeUser).not.toHaveBeenCalled();
+    expect(mocks.removeFiles).not.toHaveBeenCalled();
+    expect(mocks.rpc.mock.calls.map((x) => x[0])).toEqual([
+      "claim_account_deletion_job",
+      "fail_account_deletion_job",
+    ]);
+  } finally {
+    vi.unstubAllEnvs();
+  }
+});

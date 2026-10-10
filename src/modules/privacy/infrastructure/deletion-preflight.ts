@@ -1,4 +1,5 @@
 import "server-only";
+import { assertPrivacyDrillRequest } from "./privacy-config";
 import { z } from "zod";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
 
@@ -30,6 +31,7 @@ export type DeletionInventory = z.infer<typeof inventorySchema>;
 export async function getDeletionInventory(
   requestId: string,
 ): Promise<DeletionInventory> {
+  assertPrivacyDrillRequest(requestId);
   z.uuid().parse(requestId);
   const client = createServiceRoleSupabaseClient() as unknown as {
     rpc(

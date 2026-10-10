@@ -116,3 +116,27 @@ describe("deletion request persistence", () => {
     );
   });
 });
+
+it("scopes the drill queue and denies other account submissions and reviews", async () => {
+  const id = "10000000-0000-4000-8000-000000000001";
+  vi.stubEnv("PRIVACY_DRILL_MODE", "true");
+  vi.stubEnv("VERCEL_ENV", "preview");
+  vi.stubEnv("PRIVACY_DRILL_REQUEST_ID", id);
+  vi.stubEnv("PRIVACY_DRILL_USER_ID", "10000000-0000-4000-8000-000000000002");
+  vi.clearAllMocks();
+  mock.result = { data: [], error: null };
+  try {
+    await listOpenDeletionRequests();
+    expect(mock.eq).toHaveBeenCalledWith("id", id);
+    await expect(saveDeletionRequest("u1")).rejects.toThrow(
+      "PRIVACY_DRILL_USER_DENIED",
+    );
+    await expect(claimDeletionRequest("r1", "op1")).rejects.toThrow(
+      "PRIVACY_DRILL_REQUEST_DENIED",
+    );
+    expect(mock.insert).not.toHaveBeenCalled();
+    expect(mock.update).not.toHaveBeenCalled();
+  } finally {
+    vi.unstubAllEnvs();
+  }
+});
