@@ -90,7 +90,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
 
   // OpenAI is primary, while the validated fallback guarantees availability.
   let model = "evidence-fallback-v1";
-  let openAIAvailable = true;
+  let openAIAvailable = !context.isMinor;
   try {
     ({ model } = requireOpenAIEnvironment());
   } catch {
@@ -139,7 +139,9 @@ export async function generateCurrentQuestPack(): Promise<Result> {
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = context.isMinor
+        ? "MINOR_EXTERNAL_AI_DISABLED"
+        : "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedQuestPack(context);
     }
 

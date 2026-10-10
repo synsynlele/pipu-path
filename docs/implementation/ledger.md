@@ -622,3 +622,351 @@ marketplace behavior remain outside this closure.
 Status: VERIFIED STACKED RELEASE CANDIDATE. Stage 18 is not released and must not
 merge before Stage 17 completes its release sequence. Automatic Vercel deployment
 remains disabled for the Stage 18 development branch.
+
+# 9 October 2026 — Play release foundation
+
+Follow-up: owner supplied `copyartint@gmail.com` for public privacy requests.
+The public fallback and environment template now use that address, with the
+online form still disabled. GitHub CI #1316 passed on published head `36c0292`.
+Remote staging verification is blocked: Vercel returned a scope-access denial
+for the recorded PipuPath team; the connected Supabase project list did not
+include the recorded PipuPath database. No unrelated project was modified.
+
+Added public web and Profile entry points for account-deletion requests, durable
+server-only persistence and an owner/operator review queue. Requests cannot
+target another account, bypass authentication or claim deletion completion.
+Enablement requires a valid monitored contact and a staging-verified migration.
+Added action and persistence boundary tests and database privilege tests.
+Guarded browser-storage access in optional analytics, clarified Home stage
+position and Build next-action copy, corrected the active AI-provider notice,
+and added Android target-SDK artifact validation and Play signing compatibility
+guidance. Implementation and outstanding release gates are recorded in
+`docs/release/play-release-foundation.md`; no production changes are claimed.
+
+## 2026-10-09 — Android verification before publication
+
+The signed Android workflow now defaults manual runs to artifact-only verification.
+Publication requires `publish=true`; the existing RELEASE_NOW trigger remains
+a release action. Signing and APK target SDK gates still run before artifact upload.
+No signed workflow run, AAB inspection or physical-device result is claimed.
+
+## 2026-10-09 — Verified AAB and launch/impact pack
+
+Uploaded candidate ce6a4f0 artifact hashes match. AAB manifest confirms package,
+version 1.0.2/code 3 and SDK 36. Production certificate matches; CMS signature,
+manifest and 465 signed payload digests verify. APK signing schemes and device
+behavior remain unverified. Play account is restricted for identity; owner
+screenshots show a replacement document under review. Launch listing, data
+safety evidence worksheet, age/Families gates, device checks and a facilitator
+pilot are recorded in docs/release/play-launch-and-impact-pack.md. No store
+submission, final policy approval or measured impact is claimed.
+
+## 2026-10-09 — Game of life first cycle candidate
+
+Implemented a versioned eight-question Discovery (seven required plus optional
+age-specific support), concise onboarding, one-at-a-time Quest action guidance
+and five-step reflection with Back/answer preservation and guarded final submit.
+Safety is visible before starting. Guide navigation earns no progress. Existing
+authentication, evidence, completion and XP rules are unchanged. Documentation:
+docs/product/life-game-first-cycle.md. Full validation passed: 375 unit/component
+tests, 242 integration tests, coverage, lint, types, format and production build.
+Migration executed successfully in Supabase rollback with eight eligible
+questions per age; database still version 1 afterwards. No live migration,
+production deployment or newly measured user impact is claimed.
+
+## Preview Google sign-in redirect repair — 9 October 2026
+
+Confirmed a synthetic Google authorization request for the preview callback
+stored the production site URL as its referrer in Auth flow state. No Google
+account was authenticated in this probe. The preview callback is not accepted
+by the hosted redirect allow list; its configuration remains pending.
+
+Proxy redirects now preserve refreshed and cleared session cookies, including
+cookie options. Three regression tests cover rotation, expiry and account
+deletion continuation. Full validation is required before release. This code
+repair does not replace the required hosted Auth redirect configuration.
+
+## Play readiness tidy-up — 9 October 2026
+
+Delivered service-only, read-only account deletion dependency inventory and
+owner/operator inspection route. Database fixture and execution grants passed
+in rollback; no real user data changed. Applied account_deletion_preflight.
+Full local validation passed: 392 unit/component tests, 242 integration tests,
+format, lint, types and production build. Updated Quest E2E for sequential
+reflection; formatting/types passed, authenticated execution remains blocked
+by missing test credentials. See docs/release/play-readiness-gates.md for
+remaining release gates. No deletion executor or Play submission is claimed.
+
+## Account deletion fulfilment candidate — 9 October 2026
+
+Implemented operator-confirmed, retryable deletion with exclusive renewable
+leases, atomic linked-record purge, Storage API removal and Auth Admin removal.
+Only verified absence can fulfil a request; failed jobs retain phase and retry
+state. Backup takeover cannot interrupt an active lease. Protected organisation,
+admin and safeguarding cases require manual review. Added stale-JWT evidence
+guard. Applied fulfilment and review-handover migrations; both rollout flags
+remain disabled. No real account was deleted.
+
+Full local validation passed: 416 unit/component tests, 242 integration tests,
+format, lint, types and production build. Rollback database fixtures proved
+circular Mission/Journey and Passport removal, role/report guards, exclusive
+leases, incomplete-verification denial, retry after Auth removal, backup takeover
+and unrelated-account preservation. External Auth Admin and Storage APIs were
+mocked in adapter tests, not exercised live. See the account-deletion operations
+runbook for activation, policy and provider/backup gates. No public release or
+Google Play submission is claimed.
+
+### Deletion hardening verification
+
+The fulfilment code passed exact GitHub CI run 1329. Added a reviewed FK-graph
+guard at claim, purge, storage and completion checkpoints, plus current operator
+role rechecks. A changed graph requires engineering privacy review before
+processing. Applied account_deletion_schema_guard and re-ran rollback fixtures,
+including Passport records and a revoked-operator denial. Processing flags remain
+disabled; no live Storage/Auth API deletion or real-user deletion was performed.
+
+## 2026-10-10 — Repeatable deletion API proof harness
+
+Added a dedicated opt-in live test using the actual runDeletionJob adapter with
+real Supabase Auth and Storage clients. It can target only an account newly
+created by the test; requires an exact project-host match, explicit fixture mode
+and an existing verified active privacy operator. Checks login, file round trip,
+Auth/file/profile removal, receipt and job identity clearing, login rejection and
+operator preservation. Failed fixtures retain incomplete-job evidence for review;
+successful fixture receipts are removed. Ordinary CI excludes this live test.
+
+The missing-credentials preflight failed before network mutations as intended.
+No live API test, production enablement or Play submission is claimed. Workspace
+server credentials remain absent. The runbook records secure injection, execution
+and the limits of this proof; readiness instructions now refer to the implemented
+workflow rather than requesting it again.
+
+Full npm run validate passed: 416 unit/component tests, 242 integration tests,
+format, lint, typecheck, coverage and production build. External API proof is
+still pending and is not included in those passing totals.
+
+## 2026-10-10 — Operator-run deletion proof workflow
+
+Added a manual-only GitHub workflow for the disposable Auth/Storage test with a
+separate privacy-verification environment, exact reviewed-commit gate, read-only
+repository permission, bounded runtime and serial execution without cancelling
+an active run. The runbook maps every required secret/config value and records
+that the workflow is candidate-only and unexecuted. Vercel metadata confirmed the
+service key is protected and returned no value; it was not extracted, changed or
+reclassified. Live API proof and production activation remain pending.
+
+A read-only database check found one verified active privacy owner/operator. A
+second authorised operator has not been appointed; no roles were granted by
+this work. Backup coverage remains an operational activation requirement.
+
+## 2026-10-10 — Real account deletion API proof passed
+
+Owner-uploaded project credentials were injected only into the test process.
+Both JWT project references/roles and API hostname matched PipuPath. The initial
+run deleted the fixture and produced a verified receipt, but a warmed cached
+image response failed immediate-download verification. Supabase documents CDN
+invalidation latency. The harness now verifies the origin with a unique
+cacheNonce; test timeout accommodates real API latency. The second real-API test
+passed: fixture login/upload, Auth/file/profile removal, fulfilled receipt,
+cleared target identity, rejected login and operator preservation. Fixture
+receipts were cleaned up and a database check found zero fixture accounts.
+No existing user was targeted, no key printed/committed, and no production flag
+was enabled. Full local validation passed (416 unit/component and 242 integration
+tests plus format, lint, types, coverage and build). Retention/guardian approval,
+backup operator, browser/login and Android proofs remain release blockers.
+
+## 2026-10-10 — Retention and youth-handling proposal
+
+Prepared a concrete policy decision for owner review: 7-day acknowledgement,
+30-day service target and 90-day minimal receipt retention, all proposed rather
+than implemented or legally certified. Preserves adult-only Connect/minor public
+proof restrictions and the youth purpose; defines privacy/backup/exception roles,
+minimal external ownership checks and safeguarding-aware guardian requests.
+Provider durations, child onboarding authorisation and receipt cleanup remain
+explicit implementation gates. No notice, role, audience or production flag was
+changed. This proposal is in docs/release/privacy-retention-decision.md.
+
+## 2026-10-10 — Approved retention controls
+
+Owner approved the 7/30/90-day operating schedule. Applied the private receipt
+expiry migration and active daily pg_cron job (03:10 UTC), bounded to 1,000
+verified identity-cleared expired receipts. Rollback fixtures preserved fresh,
+failed, linked and recently completed cases and verified client denial. Added
+operator deadline/escalation flags without pretending acknowledgement was sent.
+No public privacy promise, deletion flag or admin role was changed. Guardian,
+provider inventory and backup/exception ownership remain pending.
+
+## 2026-10-10 — Signed-link proof and consolidated release closure
+
+Extended the real deletion proof with a previously issued, still-valid signed
+file link: fetch succeeded before deletion and failed at the origin after
+deletion. The live test passed and cleaned up the fixture receipt. Recorded
+verified provider facts: Responses store:false, Supabase project/region and
+protected Vercel credentials; actual retention settings remain unverified.
+Prepared an explicit Home/reload/narrow Discovery login regression, but browser
+installation failed with invalid archives; no E2E pass is claimed. Consolidated
+all completion evidence and remaining gates in docs/release/release-closure.md.
+Guardian verification, named backup, provider settings, Google callback, full
+Quest/browser, Android and Console submission remain incomplete. No flags,
+audience, roles, credentials or production deployment changed.
+
+## 2026-10-10 — Reviewer nomination and backup account verification
+
+Recorded Oluwatosin Adebayo as the owner-nominated guardian reviewer. A targeted
+Auth/admin check confirmed the supplied email is the verified active owner, so
+it does not establish independent backup coverage. No role was granted or
+changed; a distinct adult account remains required. The nomination does not
+verify guardian authority or complete the child authorisation release gate.
+
+## 2026-10-10 — Named backup operator granted
+
+Owner identified Adewale Ayanfe as the distinct handler of kaecng@gmail.com.
+Verified confirmed Auth account and matching profile, then granted the existing
+operator role with owner attribution and a success audit event in one SQL
+statement. Read-back confirmed active operator status and verified email. No
+owner privilege, deletion feature flag or public release was enabled. Actual
+backup sign-in and handover remain unproven; guardian workflow remains incomplete.
+
+## 2026-10-10 — Controlled operator handover preparation
+
+Owner reported Adewale signed in and Mission Control opened. Added preview-only
+fixture scope to private request/queue/inventory/review/takeover and worker
+boundaries; mismatched target is refused before destructive operations. Prepared
+a server-only disposable adult fixture provisioning script and repeatable human
+handover checklist. Production remains disabled; human drill not yet completed.
+
+Provisioned disposable adult bc5c55d2-3955-4f35-b03a-4841be50889d and pending
+request 90bf9f41-8a9d-44af-bc29-d54c1404e236 with one harmless owned image.
+Preview branch alone receives the five fixture/activation settings; production
+and other preview branches remain unactivated. Local validation passed with
+424 unit/component + 242 integration tests and production build.
+
+The exact fixture-scoped preview 16a36927236897b4f873df4f0d592ed5f755b5c8 is
+READY at pipu-path-cotckwv45-copyartint-2860s-projects.vercel.app, deployment
+dpl_3miwTYw4phUGcmgAFvhPuudzTTY4. CI 1341 validate succeeded; E2E skipped.
+Preflight confirms the pending adult fixture and one file. Human takeover and
+completion remain pending; preview email/password avoids unresolved Google
+callback routing. Existing deployment environment snapshots must be removed
+after practice, not assumed disabled by editing project variables alone.
+
+## 2026-10-10 — Handover authentication blocker
+
+Owner reported preview email login and attempted new-account signup failed,
+then asked to continue. Targeted existing-account Auth checks confirmed verified
+Google-only identities without password credentials. Human handover remains
+incomplete; no belief-based pass recorded. Set preview branch request and
+fulfilment flags false and retire the untouched disposable fixture. Existing
+deployment snapshots do not change with project environment edits. No password
+change, email, new operator or Google callback change was made. Hosted callback
+configuration and actual Google preview-return proof remain required.
+
+Fixture cleanup completed through Storage/Auth APIs. Read-back confirmed Auth,
+profile, owned file and unused pending request absent; both active operator
+accounts preserved. This is fixture retirement, not a passed human handover.
+
+## 2026-10-10 — Founder-operated pilot decision and sign-in clarity
+
+Owner explicitly waived backup handover as a release blocker and accepted
+interim operations. Updated release records without inventing a handover pass;
+prepared adult recruitment scope, three-question feedback register and weekly
+Quest outcome review. No age restriction or new audience declaration was
+implemented. Login now distinguishes Google sign-in from account-password
+sign-in; signup identifies separate email account creation. No password,
+provider configuration, public deployment or deletion flag changed. Public
+candidate deletion contact route was observed in the cloud browser; full
+authenticated lifecycle remains unverified.
+
+Local canonical validation passed with 424 unit/component and 242 integration
+tests, coverage, formatting, lint, TypeScript and production build. React review
+kept both auth pages server-rendered, adding no client state, dependencies or
+authorisation changes. Hosted Auth setup instructions scope redirects to the
+reviewed branch origin, preserve production and remain unapplied.
+
+## 2026-10-10 — Google preview sign-in observed
+
+Candidate da6cfed1ec0f9f7986127f7060118480a0c968c9, reviewed branch alias:
+Google phone approval returned to the authenticated Quest page; reload retained
+the session. Navigating Home and reloading displayed the owner Home with Sign
+out, Mission Control and Continue Quest. Owner reported adding the Supabase
+redirect. No password was set, no learning data was submitted and no XP was
+created by this verification. Full Quest lifecycle, provider retention settings,
+guardian authorisation for child recruitment, latest physical Android proof and
+Play submission remain unverified. Operator handover remains owner-waived.
+
+## 2026-10-10 — Quest navigation and repeatable QA
+
+Observed action Next/Previous, private Prove form and Back recovery on reviewed
+preview candidate da6cfed1ec0f9f7986127f7060118480a0c968c9. No learning mutations
+were made on the owner account. Added operator-owned quest-qa-checklist.md;
+full proof/reflection/exactly-once XP/next-unlock browser proof remains pending
+a disposable QA account. Updated closure with observed Google persistence.
+Documentation only; no production deployment or Play submission.
+
+## 2026-10-10 — Live learner API Quest proof
+
+Ran scripts/verify-live-quest.mjs against the connected backend using two freshly
+created disposable adult Auth accounts. Synthetic fixture setup used service
+permissions; lifecycle mutations and privacy reads used normal authenticated
+learner API clients. All 18 checks passed: foreign Quest/evidence hidden, foreign
+and locked starts denied, no XP for starting/evidence, premature completion and
+invalid evidence/reflection rejected, evidence/reflection persisted, exactly one
+50-XP transaction after repeat completion, next Quest unlocked and started, later
+Quest stayed locked, both fixture Auth accounts removed. No existing account was
+targeted. Fixtures and dependencies were retired; no credentials retained.
+
+This is live API proof, not browser/server-action E2E or AI-generation proof.
+Sequential-reflection Back-state has component coverage; full candidate browser
+submission and physical Android regression remain pending. Standard validation
+passed: 424 unit/component + 242 integration, coverage, formatting, lint, types
+and build. No production promotion or Play submission occurred.
+
+## 2026-10-10 — Final release reconciliation
+
+CI 38058203597 on e6867dcb6b1d4bb3a7f0b35d78f2513d58797a91: validate passed,
+staging-e2e skipped. Rechecked uploaded APK/AAB hashes and packaged badging: both
+match recorded Android 1.0.2/code 3, package ng.name.pipupath.lite, target SDK 36.
+Documented TWA update model: new web interface is not embedded in the wrapper
+and remains candidate-only until production promotion. Added exact outstanding
+actions in final-release-actions.md; no production merge or Console submission.
+
+## 2026-10-10 — Owner browser completion observed
+
+The owner manually submitted their own proof and reflection on the reviewed
+candidate. A fresh visit showed Quest 1 Completed, all five phases complete,
+and the reveal displaying +50 XP. Quest 2 was observed In action and retained
+that state after reload. The agent did not submit learning content or start
+Quest 2. No private proof/reflection narrative is retained in this record.
+Browser Back-state preservation was not independently exercised during this
+completion; existing component coverage remains its evidence. Exactly-once XP
+and negative cases remain supported by the separate disposable learner API run.
+This closes the observed happy-path browser completion gate, not Android,
+provider controls, child authorisation, production promotion or Play submission.
+
+## 2026-10-10 — Provider and youth release audit
+
+Read-only provider queries verified healthy shared Supabase project and no drains
+reported by the project-scoped Vercel API. Actual backup/PITR windows, Vercel
+plan/add-on and OpenAI organisation/project controls remain unexposed by available
+connectors. Live identity/interpretation functions verify learner AI consent but
+not guardian authority. Current OpenAI under-18 guidance additionally requires
+verified Zero Data Retention before processing relevant child personal data;
+store:false alone is insufficient. Six provider paths share the Responses adapter.
+See provider-and-youth-release-audit.md for exact settings evidence and the
+unimplemented guardian acceptance contract. No live setting, role, user data,
+release flag or deployment changed. Public/youth release remains pending.
+
+## 2026-10-10 — Scheduled backup screenshot evidence
+
+Owner screenshot confirms the exact Supabase project is on Free and the scheduled
+backup page states project backups are not included. No restore points shown;
+PITR tab and external exports unverified. No plan upgrade or backup generated.
+See provider-and-youth-release-audit.md.
+
+## 2026-10-10 — Youth-and-adult release scope confirmed
+
+Owner chose to keep youth and adults and instructed completion/release. Supabase
+Free remains; paid backups are optional recovery work, not a publishing blocker.
+CI run 38060531896 passed on 0eec2c8f8c663b3bc39ef34535bd2e5540a76285.
+Remaining guardian functionality/provider settings are not verified complete.
+Console access remains automatically rejected; no bypass, submission or public
+release is claimed.

@@ -2,6 +2,12 @@ name: PipuPath Lite Production Release
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish APK assets to the branch after verification"
+        type: boolean
+        default: false
+        required: true
   push:
     branches:
       - release/android-lite-icon-refresh
@@ -60,8 +66,8 @@ jobs:
           ]
           assert len(matches) == 1, f"Expected exactly one assetlinks entry for {package_id}."
           linked = [value.upper() for value in matches[0]["target"].get("sha256_cert_fingerprints", [])]
-          assert linked == [expected], (
-              "assetlinks.json and twa-manifest.production.json must pin the same production certificate."
+          assert expected in linked and len(linked) == len(set(linked)), (
+              "assetlinks.json must retain the direct-download production certificate; additional verified Play app-signing certificates are allowed."
           )
           print(f"Permanent signing contract verified for {package_id}: {expected}")
           PY
@@ -168,11 +174,19 @@ jobs:
                 --manifest=/workspace/twa-manifest.json \
                 --signingKeyPath=/workspace/pipupath-lite-production.keystore \
                 --signingKeyAlias=pipupath-lite
+              "$SDK_ROOT/build-tools/36.1.0/aapt" dump badging /workspace/app-release-signed.apk > /workspace/android-package-badging.txt
+              TARGET="$(sed -n "s/^targetSdkVersion:\x27\([0-9]*\)\x27$/\1/p" /workspace/android-package-badging.txt)"
+              test -n "$TARGET" && test "$TARGET" -ge 36 || {
+                echo "Generated APK targetSdkVersion must be at least 36; actual: $TARGET"
+                exit 1
+              }
             '
 
       - name: Package release artifacts
         id: package
         shell: bash
+        env:
+          PUBLISH_RELEASE: ${{ github.event_name == 'push' || inputs.publish == true }}
         run: |
           set -euo pipefail
           VERSION="$(python3 -c 'import json; print(json.load(open("android-lite/twa-manifest.production.json"))["appVersion"])')"
@@ -186,8 +200,17 @@ jobs:
             "android-lite/dist-production/${APK_NAME}"
           cp android-lite/generated-production/app-release-bundle.aab \
             "android-lite/dist-production/PipuPath-Lite-${VERSION}.aab"
+          cp android-lite/generated-production/android-package-badging.txt \
+            android-lite/dist-production/android-package-badging.txt
           sha256sum android-lite/dist-production/* \
             > android-lite/dist-production/SHA256SUMS.txt
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
+          if [ "$PUBLISH_RELEASE" != "true" ]; then
+            echo "Verification build: signed artifacts only; publication disabled."
+            exit 0
+          fi
 
           mkdir -p public/downloads
           cp "android-lite/dist-production/${APK_NAME}" "public/downloads/${APK_NAME}"
@@ -240,6 +263,7 @@ jobs:
           retention-days: 14
 
       - name: Publish release and canonical icon assets to release branch
+        if: github.event_name == 'push' || inputs.publish == true
         shell: bash
         env:
           VERSION: ${{ steps.package.outputs.version }}

@@ -80,7 +80,7 @@ export async function generateCurrentJourney(input: {
   const context = await getJourneyContext();
   if (!context) return fail("JOURNEY_MISSION_REQUIRED");
   let model = "evidence-fallback-v1";
-  let openAIAvailable = true;
+  let openAIAvailable = !context.isMinor;
   try {
     ({ model } = requireOpenAIEnvironment());
   } catch {
@@ -188,7 +188,9 @@ export async function generateCurrentJourney(input: {
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = context.isMinor
+        ? "MINOR_EXTERNAL_AI_DISABLED"
+        : "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedJourney({
         context,
         currentJourney,

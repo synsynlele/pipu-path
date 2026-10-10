@@ -1,4 +1,5 @@
 const allowedExactPaths = new Set([
+  "/account-deletion",
   "/app",
   "/build",
   "/onboarding/identity",
@@ -43,7 +44,11 @@ export function postAuthDestination(
   requestedPath: string | null | undefined,
 ) {
   const safeRequestedPath = safeNextPath(requestedPath);
-  if (safeRequestedPath === "/reset-password") return safeRequestedPath;
+  if (
+    safeRequestedPath === "/reset-password" ||
+    safeRequestedPath === "/account-deletion"
+  )
+    return safeRequestedPath;
   if (requiredPath !== "/app") return requiredPath;
   return safeRequestedPath;
 }

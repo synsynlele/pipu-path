@@ -19,6 +19,13 @@ describe("safeNextPath", () => {
 });
 
 describe("postAuthDestination", () => {
+  it("allows account deletion before onboarding is complete", () => {
+    expect(
+      postAuthDestination("/onboarding/identity", "/account-deletion"),
+    ).toBe("/account-deletion");
+    expect(safeNextPath("/account-deletion")).toBe("/account-deletion");
+    expect(safeNextPath("/account-deletion-evil")).toBe("/app");
+  });
   it("prioritises the next incomplete developmental stage", () => {
     expect(postAuthDestination("/onboarding/identity", "/projects")).toBe(
       "/onboarding/identity",

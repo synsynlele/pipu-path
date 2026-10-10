@@ -127,6 +127,7 @@ describe("Stage 4 profile generation orchestration", () => {
     vi.clearAllMocks();
     requireAuthenticatedIdentity.mockResolvedValue({
       user: { id: "33333333-3333-4333-8333-333333333333" },
+      profile: { is_minor: false, age_band: "18_24" },
     });
     requireOpenAIEnvironment.mockReturnValue({
       apiKey: "not-used-by-double",
@@ -261,6 +262,32 @@ describe("Stage 4 profile generation orchestration", () => {
     expect(rpc).not.toHaveBeenCalledWith(
       "fail_stage4_interpretation_request",
       expect.anything(),
+    );
+  });
+  it("never calls external OpenAI for an under-18 profile", async () => {
+    requireAuthenticatedIdentity.mockResolvedValue({
+      user: { id: "33333333-3333-4333-8333-333333333333" },
+      profile: { is_minor: true, age_band: "16_17" },
+    });
+
+    await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
+      ok: true,
+      profileId: "55555555-5555-4555-8555-555555555555",
+    });
+    expect(interpret).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenNthCalledWith(
+      1,
+      "claim_stage4_interpretation_request",
+      expect.objectContaining({ provider_input: "evidence_fallback" }),
+    );
+    expect(rpc).toHaveBeenNthCalledWith(
+      2,
+      "persist_stage4_human_potential_profile",
+      expect.objectContaining({
+        profile_metadata_input: expect.objectContaining({
+          fallback_reason: "MINOR_EXTERNAL_AI_DISABLED",
+        }),
+      }),
     );
   });
 });

@@ -6,6 +6,7 @@ const adminDestinations = [
   { href: "/admin/institutions", label: "Institutions" },
   { href: "/admin/opportunities", label: "Opportunities" },
   { href: "/admin/providers", label: "Providers" },
+  { href: "/admin/privacy", label: "Privacy requests" },
 ] as const;
 
 export default function AdminLayout({

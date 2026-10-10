@@ -1,0 +1,16 @@
+begin;
+select plan(9);
+select has_table('public', 'account_deletion_requests', 'request queue exists');
+select isnt_empty($$select 1 from pg_class where relname='account_deletion_requests' and relrowsecurity$$, 'queue has RLS');
+set local role anon;
+select throws_ok($$select * from public.account_deletion_requests$$, '42501', null, 'anonymous users cannot read requests');
+select throws_ok($$insert into public.account_deletion_requests(user_id) values(null)$$, '42501', null, 'anonymous users cannot submit directly');
+set local role authenticated;
+select throws_ok($$select * from public.account_deletion_requests$$, '42501', null, 'authenticated users cannot read the queue directly');
+select throws_ok($$insert into public.account_deletion_requests(user_id) values(null)$$, '42501', null, 'authenticated users cannot forge direct requests');
+select throws_ok($$update public.account_deletion_requests set status='fulfilled', fulfilled_at=now()$$, '42501', null, 'authenticated users cannot forge fulfilment');
+select throws_ok($$delete from public.account_deletion_requests$$, '42501', null, 'authenticated users cannot erase requests');
+set local role service_role;
+select lives_ok($$select * from public.account_deletion_requests$$, 'service operations can read the queue');
+select * from finish();
+rollback;

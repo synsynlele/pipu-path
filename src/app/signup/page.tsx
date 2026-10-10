@@ -16,7 +16,9 @@ export default function SignupPage() {
       description="Create a private account. Discovery begins only after your identity checkpoint."
     >
       <GoogleAuthForm next="/onboarding/identity" />
-      <div className="text-muted my-5 text-center text-sm">or use email</div>
+      <div className="text-muted my-5 text-center text-sm">
+        or create an email account
+      </div>
       <AuthForm action={signUpAction} submitLabel="Create account" />
       <p className="text-muted mt-6 text-center text-sm">
         Already registered? <Link href="/login">Sign in</Link>

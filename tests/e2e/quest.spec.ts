@@ -63,7 +63,7 @@ test("authenticated Builder completes or verifies the current Quest with exactly
   await openCurrentQuestForVerification(page);
 
   const start = page.getByRole("button", { name: "Start This Quest" });
-  const reflection = page.getByLabel("What did you do?");
+  const reflection = page.getByLabel("What did you try?");
   const completed = page.getByRole("heading", {
     name: "Proof created. Progress earned.",
   });
@@ -106,29 +106,36 @@ test("authenticated Builder completes or verifies the current Quest with exactly
     await reflection.fill(
       "I followed the Quest steps and created the small real-world result with resources already available to me.",
     );
+    await page.getByRole("button", { name: "Next →", exact: true }).click();
+    await page.getByRole("button", { name: "Back", exact: true }).click();
+    await expect(reflection).toHaveValue(
+      "I followed the Quest steps and created the small real-world result with resources already available to me.",
+    );
+    await page.getByRole("button", { name: "Next →", exact: true }).click();
     await page
       .getByLabel("What happened?")
       .fill(
         "The trusted participant used the result and gave a clear response that showed what worked and what needed improvement.",
       );
+    await page.getByRole("button", { name: "Next →", exact: true }).click();
     await page
       .getByLabel("What did you learn?")
       .fill(
         "I learned that a small tested action gives more useful direction than continuing to plan without evidence.",
       );
+    await page.getByRole("button", { name: "Next →", exact: true }).click();
     await page
-      .getByLabel("What will you do differently next time?")
+      .getByLabel("What is your next move?")
       .fill(
         "Next time I will ask one more focused question and record the response immediately so the evidence is clearer.",
       );
+    await page.getByRole("button", { name: "Next →", exact: true }).click();
     await page
-      .getByLabel("Nortnspoil reflection")
+      .getByLabel("What helps you keep going?")
       .fill(
         "Nothing spoil because the imperfect first result gave me evidence, courage and a specific way to improve the next action.",
       );
-    await page
-      .getByRole("button", { name: "Complete Quest and Earn 50 XP" })
-      .click();
+    await page.getByRole("button", { name: "Complete Quest →" }).click();
     await expect(page).toHaveURL(/\/quests\/[0-9a-f-]+\/complete$/, {
       timeout: 60_000,
     });

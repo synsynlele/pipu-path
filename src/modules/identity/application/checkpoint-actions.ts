@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { FormState } from "./form-state";
-import { ageBands, normalizeUsername } from "../domain/identity";
+import { ageBands, isMinor, normalizeUsername } from "../domain/identity";
 
 const schema = z.object({
   preferred_name: z.string().trim().min(1).max(80),
@@ -15,7 +15,7 @@ const schema = z.object({
   age_band: z.enum(ageBands),
   accept_terms: z.literal("on"),
   accept_privacy: z.literal("on"),
-  accept_ai: z.literal("on"),
+  accept_ai: z.string().optional(),
 });
 
 export async function completeIdentityAction(
@@ -30,6 +30,15 @@ export async function completeIdentityAction(
       fieldErrors: z.flattenError(parsed.error).fieldErrors,
     };
   }
+  const minor = isMinor(parsed.data.age_band);
+  if (!minor && parsed.data.accept_ai !== "on") {
+    return {
+      status: "error",
+      message: "Adults must consent to AI processing before continuing.",
+      fieldErrors: { accept_ai: ["AI processing consent is required."] },
+    };
+  }
+
   const client = await createServerSupabaseClient();
   const {
     data: { user },
@@ -42,7 +51,7 @@ export async function completeIdentityAction(
     policy_version_input: "2026-07-24",
     accept_terms: true,
     accept_privacy: true,
-    accept_ai: true,
+    accept_ai: !minor,
   });
   if (error) {
     return {

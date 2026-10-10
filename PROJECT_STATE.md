@@ -1,5 +1,17 @@
 # PipuPath project state
 
+## Current delivery candidate — 9 October 2026
+
+Play release foundation is implemented on an isolated branch from main `19509ee`.
+It adds a gated deletion-request flow and operator queue, mobile reliability and
+copy corrections, and Android release checks. Local canonical validation passed:
+371 unit/coverage tests, 242 integration tests, lint, types, formatting and build.
+Thirteen PostgreSQL migration/privilege/constraint checks passed in PGlite; this
+does not replace staging Supabase verification. No migration or deployment has
+been applied remotely. Formal policies, monitored contact, fulfilment proof,
+authenticated browser and physical Android gates remain open. See
+`docs/release/play-release-foundation.md`. Stage 26 notes below are historical.
+
 **Current stage:** Stage 26 — Exact Mobile Experience Rebuild
 
 **Stage status:** MOBILE QA CORRECTION RELEASE CANDIDATE — Stage 26 and its shared-design correction are released; gold-P branding, install visibility, narrow-screen collision and client-error gates are locally green and await exact-Preview proof.
