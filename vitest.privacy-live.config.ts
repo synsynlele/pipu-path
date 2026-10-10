@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     include: ["tests/live/account-deletion.test.ts"],
     environment: "node",
-    testTimeout: 120_000,
+    testTimeout: 240_000,
     fileParallelism: false,
   },
 });

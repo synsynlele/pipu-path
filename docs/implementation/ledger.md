@@ -758,3 +758,19 @@ reclassified. Live API proof and production activation remain pending.
 A read-only database check found one verified active privacy owner/operator. A
 second authorised operator has not been appointed; no roles were granted by
 this work. Backup coverage remains an operational activation requirement.
+
+## 2026-10-10 — Real account deletion API proof passed
+
+Owner-uploaded project credentials were injected only into the test process.
+Both JWT project references/roles and API hostname matched PipuPath. The initial
+run deleted the fixture and produced a verified receipt, but a warmed cached
+image response failed immediate-download verification. Supabase documents CDN
+invalidation latency. The harness now verifies the origin with a unique
+cacheNonce; test timeout accommodates real API latency. The second real-API test
+passed: fixture login/upload, Auth/file/profile removal, fulfilled receipt,
+cleared target identity, rejected login and operator preservation. Fixture
+receipts were cleaned up and a database check found zero fixture accounts.
+No existing user was targeted, no key printed/committed, and no production flag
+was enabled. Full local validation passed (416 unit/component and 242 integration
+tests plus format, lint, types, coverage and build). Retention/guardian approval,
+backup operator, browser/login and Android proofs remain release blockers.

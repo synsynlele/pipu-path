@@ -1,21 +1,21 @@
 # PipuPath public release gates
 
-Checked 9 October 2026. This is an operator handover, not a release certificate.
+Checked 10 October 2026. This is an operator handover, not a release certificate.
 
-| Gate                          | Evidence                                                                                    | Status                                 |
-| ----------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------- |
-| Short Discovery               | Owner completed onboarding; database verifies 8 questions per age band, 7 required          | Passed for reported test               |
-| Signed Android candidate      | Verified 1.0.2/code 3 AAB; SDK 36; candidate predates new interface                         | Available for testing                  |
-| Core code                     | Local full validation passes, including private preflight                                   | Passed locally                         |
-| Google login in preview       | Synthetic authorization flow stored production origin instead of requested preview callback | Blocked: hosted Auth allow-list        |
-| Quest lifecycle browser proof | Sequential reflection E2E updated, no configured credentials in workspace                   | Pending authenticated run              |
-| New interface on Android      | Prior tablet report predates this candidate                                                 | Pending physical regression            |
-| Account deletion              | Reviewed, retryable executor and inventory; processing disabled                             | Blocked: API proof and policy approval |
-| Retention and privacy         | Provisional notice; retention and exceptions unapproved                                     | Blocked: operator/legal decisions      |
-| Youth/social requirements     | Supports under-13 identity; social features need age/guardian policy proof                  | Pending Families review                |
-| Store screenshots             | None captured from authenticated release candidate                                          | Pending                                |
-| Google account                | Owner reports Console active; no independent dashboard inspection                           | Owner reported                         |
-| Store submission              | Browser security review rejected Console access                                             | Not submitted                          |
+| Gate                          | Evidence                                                                                    | Status                                    |
+| ----------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Short Discovery               | Owner completed onboarding; database verifies 8 questions per age band, 7 required          | Passed for reported test                  |
+| Signed Android candidate      | Verified 1.0.2/code 3 AAB; SDK 36; candidate predates new interface                         | Available for testing                     |
+| Core code                     | Local full validation passes, including private preflight                                   | Passed locally                            |
+| Google login in preview       | Synthetic authorization flow stored production origin instead of requested preview callback | Blocked: hosted Auth allow-list           |
+| Quest lifecycle browser proof | Sequential reflection E2E updated, no configured credentials in workspace                   | Pending authenticated run                 |
+| New interface on Android      | Prior tablet report predates this candidate                                                 | Pending physical regression               |
+| Account deletion              | Real Auth/Storage fixture proof passed; processing disabled                                 | API proof passed; policy approval pending |
+| Retention and privacy         | Provisional notice; retention and exceptions unapproved                                     | Blocked: operator/legal decisions         |
+| Youth/social requirements     | Supports under-13 identity; social features need age/guardian policy proof                  | Pending Families review                   |
+| Store screenshots             | None captured from authenticated release candidate                                          | Pending                                   |
+| Google account                | Owner reports Console active; no independent dashboard inspection                           | Owner reported                            |
+| Store submission              | Browser security review rejected Console access                                             | Not submitted                             |
 
 ## Deletion inventory delivered
 

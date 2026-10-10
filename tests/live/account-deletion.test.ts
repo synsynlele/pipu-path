@@ -109,7 +109,24 @@ it("removes a newly created fixture through real Storage and Auth APIs", async (
     const auth = await admin.auth.admin.getUserById(targetId);
     expect(auth.data.user).toBeNull();
     expect(auth.error?.status).toBe(404);
-    const file = await admin.storage.from("quest-evidence").download(path);
+    // Supabase CDN invalidation is asynchronous. A unique cacheNonce checks
+    // the origin rather than accepting a warmed response as file existence.
+    const fresh = createClient(
+      url.origin,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        ...options,
+        global: {
+          fetch: (input, init) => {
+            const requestUrl = new URL(String(input));
+            if (requestUrl.pathname.includes("/storage/v1/object/"))
+              requestUrl.searchParams.set("cacheNonce", randomUUID());
+            return fetch(requestUrl, { ...init, cache: "no-store" });
+          },
+        },
+      },
+    );
+    const file = await fresh.storage.from("quest-evidence").download(path);
     expect(file.data).toBeNull();
     expect(file.error).toBeTruthy();
     const missingProfile = await admin

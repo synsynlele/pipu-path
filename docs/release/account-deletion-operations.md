@@ -73,7 +73,7 @@ profile, cyclic Mission/Journey and Passport fixtures, then rolls everything bac
 It passed on the connected database: report holds, role denial, exclusive leases,
 premature-completion denial, retry after Auth removal, backup takeover and
 unrelated-account preservation. Auth removal there is simulated in SQL; the
-external Auth endpoint and actual Storage object deletion remain unverified.
+external APIs are verified separately by the live proof below.
 Adapter tests cover success and failures at each processing boundary.
 
 Review the schema map whenever data-bearing tables or providers change. Free
@@ -113,8 +113,8 @@ operator recovery and retain incomplete-job evidence; do not manually fulfil the
 This proof bypasses the web action and does not enable production flags. It does
 not prove browser confirmation, guardian policy, public links, provider retention
 or erasure from backups. Add the exact commit, project, run result and reviewer
-to release evidence after a successful run. As of 10 October, it has not run
-against external APIs: the workspace has no injected server credentials.
+to release evidence after a successful run. On 10 October, the owner supplied the credentials file. The fresh-origin live
+proof passed against the connected project; no keys were printed or committed.
 
 ## GitHub operator execution
 
@@ -144,3 +144,35 @@ A green ordinary CI run is not a green deletion proof. The workflow is currently
 published only on the candidate branch, not merged into the default branch, and
 has not been dispatched. Protected Vercel secrets cannot be read back through
 the connected environment API; no secret was extracted or reclassified.
+
+## Storage cache verification
+
+The first real fixture run removed Auth and Storage metadata and produced a
+fulfilled receipt, but a warmed download still returned the tiny test image.
+This failed the initial immediate-download assertion; it is not evidence that
+the downloaded response vanished instantly. Supabase documents asynchronous
+CDN invalidation (up to 60 seconds) and independent browser cache retention.
+The live harness now uses a unique `cacheNonce` to verify absence at the origin.
+Previously downloaded copies cannot be recalled. Do not promise instant global
+cache erasure. Signed links, browser-cache behavior and approved retention
+disclosure remain separate release checks.
+
+Reference: https://supabase.com/docs/guides/storage/cdn/smart-cdn
+
+## 10 October live proof result
+
+The dedicated real-API test passed (one test, approximately 104 seconds) on
+`kvjcswnmhwegpakbtvlh`. It verified newly created fixture login, real file upload
+and download, actual worker execution, Auth 404, fresh-origin file denial,
+profile absence, fulfilled request, verified job with target identity cleared,
+login rejection and operator preservation. The successful fixture receipt was
+removed. The earlier cache-assertion fixture receipt was also removed only after
+confirming fulfilled state and cleared target identity; no fixture Auth accounts
+remain. No existing account was targeted.
+
+This is the API proof gate, not production activation. Requests and fulfilment
+flags remain disabled. Retention/guardian approval, backup operator appointment,
+web-action/browser checks, signed-link/cache checks and physical Android testing
+remain pending. The uploaded credentials were injected into the test process;
+no additional credential file was written into the repository. GitHub environment
+secret configuration for repeat runs remains pending.
