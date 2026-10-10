@@ -47,7 +47,9 @@ per drill. Require actual verified owner/operator login; no bypass credentials.
 7. Engineering verifies Auth missing, profile/file absence, fulfilled request,
    verified job and cleared target identity through the existing real APIs. A
    disappearing open-queue row alone does not prove deletion completion.
-8. Disable the preview request/fulfilment switches after the drill. Preserve
+8. Disable the preview request/fulfilment switches and remove the drill deployment
+   after the drill. Existing deployments retain their environment snapshot;
+   changing project variables alone does not disable an already built deployment. Preserve
    minimal receipt evidence under the approved 90-day schedule. Record exact
    deployment, operator, date, outcome and any exceptions.
 
@@ -65,3 +67,14 @@ Five configuration values are scoped to preview branch
 agent/life-game-first-cycle only. No production or global preview activation.
 Local validation passed: 424 unit/component and 242 integration tests, lint,
 types, formatting, coverage and production build. Human practice is pending.
+
+## Ready preview and validation evidence
+
+Exact drill deployment: dpl_3miwTYw4phUGcmgAFvhPuudzTTY4, READY, preview target.
+URL: https://pipu-path-cotckwv45-copyartint-2860s-projects.vercel.app
+Code commit: 16a36927236897b4f873df4f0d592ed5f755b5c8.
+GitHub CI 1341 (38052727608): validate succeeded; staging-e2e skipped.
+Unauthenticated deployment fetch responded successfully; no authenticated web
+action is claimed. Preflight confirms adult fixture, existing account and one
+storage object; request remains pending. Use email/password on this exact
+preview: Google callback preview preservation is still unresolved.

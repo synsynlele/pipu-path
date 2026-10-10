@@ -840,3 +840,11 @@ request 90bf9f41-8a9d-44af-bc29-d54c1404e236 with one harmless owned image.
 Preview branch alone receives the five fixture/activation settings; production
 and other preview branches remain unactivated. Local validation passed with
 424 unit/component + 242 integration tests and production build.
+
+The exact fixture-scoped preview 16a36927236897b4f873df4f0d592ed5f755b5c8 is
+READY at pipu-path-cotckwv45-copyartint-2860s-projects.vercel.app, deployment
+dpl_3miwTYw4phUGcmgAFvhPuudzTTY4. CI 1341 validate succeeded; E2E skipped.
+Preflight confirms the pending adult fixture and one file. Human takeover and
+completion remain pending; preview email/password avoids unresolved Google
+callback routing. Existing deployment environment snapshots must be removed
+after practice, not assumed disabled by editing project variables alone.
