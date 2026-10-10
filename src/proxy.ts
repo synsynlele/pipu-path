@@ -17,6 +17,7 @@ const protectedPrefixes = [
   "/projects",
   "/portfolio",
   "/profile",
+  "/guardian",
   "/institution",
   "/passport",
 ];

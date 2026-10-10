@@ -75,7 +75,7 @@ export async function generateCurrentEconomicPathways(): Promise<EconomicPathway
   }
 
   let model = "evidence-fallback-v1";
-  let openAIAvailable = true;
+  let openAIAvailable = !context.isMinor;
   try {
     ({ model } = requireOpenAIEnvironment());
   } catch {
@@ -96,7 +96,7 @@ export async function generateCurrentEconomicPathways(): Promise<EconomicPathway
     }
   } else {
     generationMode = "evidence_fallback";
-    fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
+    fallbackReason = context.isMinor ? "MINOR_EXTERNAL_AI_DISABLED" : "OPENAI_ENVIRONMENT_UNAVAILABLE";
     output = buildEvidenceBasedEconomicPathways(context);
   }
 

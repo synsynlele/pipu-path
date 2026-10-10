@@ -67,10 +67,10 @@ export function projectStructuredEvidenceValue(value: unknown) {
 }
 
 export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExecutionResult> {
-  const { user } = await requireAuthenticatedIdentity();
+  const { user, profile } = await requireAuthenticatedIdentity();
 
   let model = "evidence-fallback-v1";
-  let openAIAvailable = true;
+  let openAIAvailable = !profile.is_minor;
   try {
     ({ model } = requireOpenAIEnvironment());
   } catch {
@@ -185,7 +185,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = profile.is_minor ? "MINOR_EXTERNAL_AI_DISABLED" : "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedFallbackProfile(providerInput);
     }
 

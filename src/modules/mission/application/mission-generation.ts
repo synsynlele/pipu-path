@@ -78,7 +78,7 @@ export async function generateCurrentMission(input: {
   if (!context) return fail("MISSION_PROFILE_REQUIRED");
 
   let model = "evidence-fallback-v1";
-  let openAIAvailable = true;
+  let openAIAvailable = !context.isMinor;
   try {
     ({ model } = requireOpenAIEnvironment());
   } catch {
@@ -161,7 +161,7 @@ export async function generateCurrentMission(input: {
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = context.isMinor ? "MINOR_EXTERNAL_AI_DISABLED" : "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedMission({ context, currentMission });
     }
 

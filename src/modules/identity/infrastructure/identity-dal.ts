@@ -21,11 +21,64 @@ export async function getIdentityState() {
   return { user, profile, checkpoint };
 }
 
+export type GuardianAuthorizationState = {
+  required: boolean;
+  status: "not_required" | "pending" | "granted" | "expired" | "missing";
+  requestId: string | null;
+  code: string | null;
+  expiresAt: string | null;
+};
+
+type RpcResult = { data: unknown; error: { message?: string } | null };
+type UntypedRpc = (
+  functionName: string,
+  args?: Record<string, unknown>,
+) => PromiseLike<RpcResult>;
+
+export async function guardianAuthorizationGrantedForUser(userId: string) {
+  const client = await createServerSupabaseClient();
+  const { data } = await client
+    .from("user_consents")
+    .select("status,withdrawn_at")
+    .eq("user_id", userId)
+    .eq("consent_type", "guardian_required")
+    .order("occurred_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return Boolean(data?.status === "granted" && !data.withdrawn_at);
+}
+
+export async function currentIdentityNeedsGuardianAuthorization() {
+  const state = await getIdentityState();
+  if (!state.user || !state.profile?.is_minor) return false;
+  return !(await guardianAuthorizationGrantedForUser(state.user.id));
+}
+
+export async function getGuardianAuthorizationState(): Promise<GuardianAuthorizationState | null> {
+  const client = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  if (!user) return null;
+  const rpc = client.rpc.bind(client) as unknown as UntypedRpc;
+  const { data, error } = await rpc("get_guardian_authorization_state");
+  if (error || !data || typeof data !== "object") {
+    throw new Error(error?.message ?? "GUARDIAN_STATE_UNAVAILABLE");
+  }
+  return data as GuardianAuthorizationState;
+}
+
 export async function requireAuthenticatedIdentity() {
   const state = await getIdentityState();
   if (!state.user) redirect("/login?next=/app");
   if (!state.profile || state.checkpoint?.status !== "completed")
     redirect("/onboarding/identity");
+  if (
+    state.profile.is_minor &&
+    !(await guardianAuthorizationGrantedForUser(state.user.id))
+  ) {
+    redirect("/onboarding/guardian");
+  }
   return {
     user: state.user,
     profile: state.profile,

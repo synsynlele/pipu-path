@@ -89,7 +89,7 @@ export async function generateBuilderGuide(
   if (recentCount >= dailyGenerationLimit) return fail("GUIDE_RATE_LIMITED");
 
   let model = "evidence-fallback-v1";
-  let openAIAvailable = true;
+  let openAIAvailable = !context.isMinor;
   try {
     ({ model } = requireOpenAIEnvironment());
   } catch {
@@ -110,7 +110,7 @@ export async function generateBuilderGuide(
     }
   } else {
     provider = "evidence_fallback";
-    fallbackReason = "OPENAI_ENVIRONMENT_UNAVAILABLE";
+    fallbackReason = context.isMinor ? "MINOR_EXTERNAL_AI_DISABLED" : "OPENAI_ENVIRONMENT_UNAVAILABLE";
     output = buildEvidenceBasedBuilderGuide(context, intent);
   }
 

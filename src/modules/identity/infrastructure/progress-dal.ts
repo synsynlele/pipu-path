@@ -7,6 +7,7 @@ import {
   type AuthenticatedProgressSnapshot,
   type PortfolioProgressStatus,
 } from "../domain/progress";
+import { currentIdentityNeedsGuardianAuthorization } from "./identity-dal";
 import { createProgressServerClient } from "./progress-client";
 
 const logger = createLogger();
@@ -303,6 +304,9 @@ export async function requireAuthenticatedHomeState() {
   try {
     const state = await getAuthenticatedHomeState();
     if (!state) redirect("/login?next=/app");
+    if (await currentIdentityNeedsGuardianAuthorization()) {
+      redirect("/onboarding/guardian");
+    }
     return state;
   } catch (error) {
     logger.error("authenticated_progress_load_failed", {
@@ -314,5 +318,11 @@ export async function requireAuthenticatedHomeState() {
 
 export async function resolveAuthenticatedDestination() {
   const state = await getAuthenticatedHomeState();
+  if (
+    state?.snapshot.identityComplete &&
+    (await currentIdentityNeedsGuardianAuthorization())
+  ) {
+    return "/onboarding/guardian";
+  }
   return state?.destination.path ?? "/login";
 }

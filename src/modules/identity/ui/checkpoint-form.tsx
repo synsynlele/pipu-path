@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { completeIdentityAction } from "../application/checkpoint-actions";
@@ -19,6 +19,9 @@ export function CheckpointForm() {
     completeIdentityAction,
     initialFormState,
   );
+  const [ageBand, setAgeBand] = useState("");
+  const minorSelected = ["under_13", "13_15", "16_17"].includes(ageBand);
+  const adultSelected = ["18_24", "25_plus"].includes(ageBand);
   return (
     <>
       <form action={action} className="space-y-5" aria-busy={pending}>
@@ -50,6 +53,7 @@ export function CheckpointForm() {
             required
             name="age_band"
             defaultValue=""
+            onChange={(event) => setAgeBand(event.target.value)}
             className="border-border bg-panel-raised focus:border-primary mt-2 min-h-12 w-full rounded-xl border px-3 shadow-sm transition-colors"
           >
             <option value="" disabled>
@@ -70,9 +74,20 @@ export function CheckpointForm() {
           <Consent name="accept_privacy">
             I accept the <Link href="/privacy">Privacy Notice</Link>.
           </Consent>
-          <Consent name="accept_ai">
-            I consent to the documented use of AI processing in later stages.
-          </Consent>
+          {adultSelected ? (
+            <Consent name="accept_ai">
+              I consent to the documented use of AI processing in later stages.
+            </Consent>
+          ) : null}
+          {minorSelected ? (
+            <div className="border-border bg-panel-raised rounded-xl border p-4 text-sm leading-6">
+              <p className="font-semibold">A parent or legal guardian must approve this account.</p>
+              <p className="text-muted mt-1">
+                Under-18 accounts do not use external AI providers at launch. After this step,
+                PipuPath will give you a one-time guardian code to share with a parent or legal guardian.
+              </p>
+            </div>
+          ) : null}
         </fieldset>
         {state.message ? (
           <p role="alert" className="text-error">
