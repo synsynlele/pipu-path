@@ -176,3 +176,28 @@ web-action/browser checks, signed-link/cache checks and physical Android testing
 remain pending. The uploaded credentials were injected into the test process;
 no additional credential file was written into the repository. GitHub environment
 secret configuration for repeat runs remains pending.
+
+## Approved operating schedule and receipt expiry
+
+The owner approved acknowledgement within 7 days, a 30-day completion service
+target and 90-day minimal receipt retention on 10 October. These are operational
+targets, not a claim of legal deadlines. The candidate queue shows deadline dates
+and escalation text; it does not track or send acknowledgement emails. Operators
+must record/send responses using the approved monitored-contact procedure.
+
+`privacy-receipt-expiry` is active on the connected database at 03:10 UTC daily
+(04:10 Lagos). It deletes up to 1,000 receipts per run only when both request and
+job have been completed for more than 90 days, the job is verified, target/user
+identity has cleared and there is no lease. Jobs are removed by the request FK
+cascade. Pending, failed, processing, linked and recently completed cases remain.
+The private function is unavailable to anon/authenticated clients. Rollback
+fixtures verified expiry, exclusions and privileges without persistent test data.
+
+Check Supabase Cron job history weekly for failures and expired-receipt backlog.
+A failed cron does not guarantee timely expiry; resolve failures and rerun the
+private function through authorised database operations. Never change the cutoff
+or remove incomplete records to clear a backlog. No scheduler tick has yet been
+observed; active schedule and function execution were verified separately.
+
+Provider/backup durations, guardian controls, named backup and exception reviewers
+remain activation gates. The public notice and deletion flags are unchanged.

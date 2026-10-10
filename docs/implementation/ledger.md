@@ -785,3 +785,13 @@ minimal external ownership checks and safeguarding-aware guardian requests.
 Provider durations, child onboarding authorisation and receipt cleanup remain
 explicit implementation gates. No notice, role, audience or production flag was
 changed. This proposal is in docs/release/privacy-retention-decision.md.
+
+## 2026-10-10 — Approved retention controls
+
+Owner approved the 7/30/90-day operating schedule. Applied the private receipt
+expiry migration and active daily pg_cron job (03:10 UTC), bounded to 1,000
+verified identity-cleared expired receipts. Rollback fixtures preserved fresh,
+failed, linked and recently completed cases and verified client denial. Added
+operator deadline/escalation flags without pretending acknowledgement was sent.
+No public privacy promise, deletion flag or admin role was changed. Guardian,
+provider inventory and backup/exception ownership remain pending.

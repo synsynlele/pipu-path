@@ -248,3 +248,13 @@ The proposed retention/guardian operating rules are documented for owner review.
 The proposed 7/30/90-day schedule is not active or a claimed legal deadline.
 Provider inventory, backup operator, child authorisation and cleanup controls
 remain pending. API deletion proof remains passed; production remains disabled.
+
+## 2026-10-10 — Approved retention controls
+
+Owner approved the 7/30/90-day operating schedule. Applied the private receipt
+expiry migration and active daily pg_cron job (03:10 UTC), bounded to 1,000
+verified identity-cleared expired receipts. Rollback fixtures preserved fresh,
+failed, linked and recently completed cases and verified client denial. Added
+operator deadline/escalation flags without pretending acknowledgement was sent.
+No public privacy promise, deletion flag or admin role was changed. Guardian,
+provider inventory and backup/exception ownership remain pending.

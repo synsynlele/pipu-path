@@ -1,7 +1,9 @@
 # Privacy and retention decision for release
 
-Status: proposal for owner review, 10 October 2026. Not approved, activated or
-published as user-facing policy. This document does not certify legal compliance.
+Status: 7/30/90-day operating schedule approved by the owner on 10 October 2026.
+Receipt cleanup implemented; queue deadlines implemented on the candidate.
+Public policy activation and remaining guardian/provider controls are pending.
+This document does not certify legal compliance.
 
 ## Recommended operating decision
 
@@ -15,16 +17,17 @@ Do not silently change the audience to adults to bypass the youth launch gate.
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | Active private development data | Keep while the account is active and needed for its journey; delete on a verified request                    | Executor API proof passed; no blanket expiry is implemented                                                       |
 | Request response                | Acknowledge within 7 calendar days; target completion within 30 calendar days of receiving the request       | Operational targets, not legal deadlines; ownership/holds must be resolved and delays explained                   |
-| Completion receipt              | Keep only request ID, timestamps, outcome and operator attribution for 90 days after completion, then remove | Target identity already clears; receipt cleanup scheduling is not implemented                                     |
+| Completion receipt              | Keep only request ID, timestamps, outcome and operator attribution for 90 days after completion, then remove | Target identity clears; daily expiry removes verified receipts and linked jobs after 90 days                      |
 | Verification documents          | Prefer verified account access; do not routinely collect government-ID images or private learning narratives | External ownership cases need a documented minimal verification procedure                                         |
 | Safeguarding or legal hold      | Restrict access; retain only necessary records with a specific reason, accountable reviewer and review date  | Executor refuses relevant cases; hold register, legal review and transfer/redaction workflow remain to be defined |
 | Provider and backup records     | Disclose the verified provider-specific duration; no universal erasure deadline                              | Actual backup plan/PITR, exports, Vercel log drains and OpenAI endpoint settings must be inventoried              |
 | Cached/downloaded files         | Verify origin removal; disclose cache propagation and inability to recall copies already downloaded          | Origin test passed; signed-link/cache regression remains pending                                                  |
 | Inactive accounts               | No automatic inactivity deletion in this release                                                             | Avoid destroying a learner's history under an unannounced rule; review future minimisation separately             |
 
-The 7/30/90-day values are proposed management choices. They must be reviewed
+The 7/30/90-day values are owner-approved management choices. They must be reviewed
 against applicable obligations, capacity and implemented cleanup before becoming
-public promises. A hold is not permission to retain everything indefinitely.
+public promises. Daily receipt expiry runs at 03:10 UTC (04:10 Lagos), in batches
+of up to 1,000; expiry occurs on the first successful run after 90 days. A hold is not permission to retain everything indefinitely.
 If a shorter applicable deadline exists, it takes precedence.
 
 ## Ownership and everyday execution
@@ -85,7 +88,7 @@ claim Zero Data Retention or a universal 30-day guarantee without verification.
 
 - Approve or amend this schedule and assign privacy, backup and exception owners.
 - Verify provider durations and external verification/safeguarding procedures.
-- Implement and test receipt expiry, escalation and any required hold handling.
+- Receipt expiry and deadline flags are implemented/tested; assign escalation ownership and complete hold handling.
 - Complete child authorisation/safeguarding review for the intended launch audience.
 - Publish an accurate notice, including retention exceptions and monitored contact.
 - Test web request/operator actions, public-link withdrawal and cache behavior.
