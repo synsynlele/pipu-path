@@ -194,7 +194,6 @@ processing. Applied account_deletion_schema_guard and re-ran rollback fixtures,
 including Passport records and a revoked-operator denial. Processing flags remain
 disabled; no live Storage/Auth API deletion or real-user deletion was performed.
 
-
 ## 2026-10-10 — Repeatable deletion API proof harness
 
 Added a dedicated opt-in live test using the actual runDeletionJob adapter with
