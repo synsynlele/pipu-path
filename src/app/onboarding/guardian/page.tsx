@@ -66,9 +66,12 @@ export default async function GuardianOnboardingPage() {
           <p className="font-semibold">What stays protected</p>
           <p className="text-muted mt-1">
             External AI providers are disabled for under-18 accounts at launch.
-            Builder Connect and collaboration remain adult-only. Your core
-            PipuPath journey can continue after guardian approval using
-            PipuPath&apos;s evidence-based youth-safe guidance.
+            Public networking remains restricted for minors. School-based
+            Builder Network access for eligible 13–17-year-olds also requires
+            an active school membership and guardian approval. Under-13 accounts
+            cannot join school networking. Your core PipuPath journey can
+            continue after approval using PipuPath&apos;s evidence-based youth-safe
+            guidance.
           </p>
         </div>
 

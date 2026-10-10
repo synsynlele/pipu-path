@@ -376,7 +376,7 @@ begin
         jsonb_build_object('reason', 'guardian_authorization_required')
       );
 
-    guardian_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 10));
+    guardian_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 16));
     insert into public.guardian_authorization_requests(minor_user_id, request_code)
     values (actor, guardian_code);
   else

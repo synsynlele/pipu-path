@@ -80,6 +80,20 @@ describe("guardian authorization release gate", () => {
     expect(identityDal).toContain('rpc("get_guardian_authorization_state")');
   });
 
+  it("issues compatible 16-character codes during signup and request renewal", () => {
+    const issuanceLengths = Array.from(
+      migration.matchAll(
+        /(?:new_code|guardian_code)\s*:=\s*upper\(substr\(replace\(gen_random_uuid\(\)::text, '-', ''\), 1, (\d+)\)\);/g,
+      ),
+      (match) => Number(match[1]),
+    );
+    expect(issuanceLengths).toEqual([16, 16]);
+    expect(migration).toContain("request_code ~ '^[A-Z0-9]{16}$'");
+    expect(
+      read("src/modules/identity/application/guardian-actions.ts"),
+    ).toContain("pipe(z.string().regex(/^[A-Z0-9]{16}$/))");
+  });
+
   it("keeps guardian records private behind authenticated ownership-aware RPCs", () => {
     expect(migration).toContain(
       "alter table public.guardian_authorization_requests enable row level security",
