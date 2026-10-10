@@ -92,3 +92,14 @@ The same controls apply to larger cohorts without individual founder sign-off.
 - https://vercel.com/docs/logs/runtime
 - https://developers.openai.com/api/docs/guides/your-data
 - https://developers.openai.com/api/docs/guides/safety-checks/under-18-api-guidance
+
+## Owner screenshot — Supabase scheduled backups
+
+On 10 October the owner supplied image(5).png showing pipupath-staging,
+main/PRODUCTION, FREE plan and the Database Backups > Scheduled backups tab.
+The page states the Free plan does not include project backups; no restore
+points are shown. This verifies no scheduled backup availability in that view.
+The Point in time tab was not inspected, and external manual exports remain
+unknown. Do not infer the project has no external copies or that an upgrade was
+purchased. A paid-plan or managed encrypted export decision is still needed for
+operational recovery; no retention window can be promised from this screenshot.

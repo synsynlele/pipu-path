@@ -954,3 +954,10 @@ store:false alone is insufficient. Six provider paths share the Responses adapte
 See provider-and-youth-release-audit.md for exact settings evidence and the
 unimplemented guardian acceptance contract. No live setting, role, user data,
 release flag or deployment changed. Public/youth release remains pending.
+
+## 2026-10-10 — Scheduled backup screenshot evidence
+
+Owner screenshot confirms the exact Supabase project is on Free and the scheduled
+backup page states project backups are not included. No restore points shown;
+PITR tab and external exports unverified. No plan upgrade or backup generated.
+See provider-and-youth-release-audit.md.
