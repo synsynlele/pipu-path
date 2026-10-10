@@ -45,9 +45,9 @@ export async function guardianAuthorizationGrantedForUser(userId: string) {
   const { data, error } = await rpc("get_guardian_authorization_state");
   return Boolean(
     !error &&
-      data &&
-      typeof data === "object" &&
-      (data as GuardianAuthorizationState).status === "granted",
+    data &&
+    typeof data === "object" &&
+    (data as GuardianAuthorizationState).status === "granted",
   );
 }
 
