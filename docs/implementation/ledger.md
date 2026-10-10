@@ -941,3 +941,16 @@ completion; existing component coverage remains its evidence. Exactly-once XP
 and negative cases remain supported by the separate disposable learner API run.
 This closes the observed happy-path browser completion gate, not Android,
 provider controls, child authorisation, production promotion or Play submission.
+
+## 2026-10-10 — Provider and youth release audit
+
+Read-only provider queries verified healthy shared Supabase project and no drains
+reported by the project-scoped Vercel API. Actual backup/PITR windows, Vercel
+plan/add-on and OpenAI organisation/project controls remain unexposed by available
+connectors. Live identity/interpretation functions verify learner AI consent but
+not guardian authority. Current OpenAI under-18 guidance additionally requires
+verified Zero Data Retention before processing relevant child personal data;
+store:false alone is insufficient. Six provider paths share the Responses adapter.
+See provider-and-youth-release-audit.md for exact settings evidence and the
+unimplemented guardian acceptance contract. No live setting, role, user data,
+release flag or deployment changed. Public/youth release remains pending.

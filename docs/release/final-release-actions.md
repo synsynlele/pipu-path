@@ -49,3 +49,7 @@ failures; the founder resolves policy decisions rather than repeating QA. Group
 feedback by failed stage, fix the most common blocked action, then recheck. The
 same process serves cohorts 100 times larger and builds a reusable defect and
 verification history. No achieved adoption or impact rate is claimed.
+
+Provider evidence and guardian implementation acceptance criteria are recorded in
+`provider-and-youth-release-audit.md`. Relevant child AI processing additionally
+requires verified OpenAI Zero Data Retention; store:false is not that control.
