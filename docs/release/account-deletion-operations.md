@@ -115,3 +115,32 @@ not prove browser confirmation, guardian policy, public links, provider retentio
 or erasure from backups. Add the exact commit, project, run result and reviewer
 to release evidence after a successful run. As of 10 October, it has not run
 against external APIs: the workspace has no injected server credentials.
+
+## GitHub operator execution
+
+The manual `Disposable account deletion proof` workflow uses the dedicated
+`privacy-verification` GitHub environment. It has no push, pull-request or
+scheduled trigger; jobs are serialised without cancelling an active deletion.
+Only a commit matching the environment variable `PRIVACY_REVIEWED_SHA` may run.
+The environment should restrict deployment branches to the reviewed release
+branch. Do not run arbitrary branch code with these secrets.
+
+Configure these environment values through GitHub Settings → Environments →
+privacy-verification. A release operator owns this configuration and execution;
+credentials must come from the authorised server-secret custodian.
+
+| Kind     | Name                                   | Value                                           |
+| -------- | -------------------------------------- | ----------------------------------------------- |
+| Variable | PRIVACY_REVIEWED_SHA                   | Full reviewed commit SHA selected for this test |
+| Variable | PRIVACY_TEST_SUPABASE_URL              | Exact authorised Supabase HTTPS API URL         |
+| Variable | PRIVACY_TEST_PROJECT_REF               | Reference matching that URL                     |
+| Variable | PRIVACY_TEST_OPERATOR_ID               | Existing active verified owner/operator UUID    |
+| Secret   | PRIVACY_TEST_SUPABASE_ANON_KEY         | Publishable/legacy anon key for fixture login   |
+| Secret   | PRIVACY_TEST_SUPABASE_SERVICE_ROLE_KEY | Server-only key for the same project            |
+
+Once the workflow is available in Actions, select the reviewed branch and run it
+with `create-and-delete-fixture`. Record the run URL and exact SHA as evidence.
+A green ordinary CI run is not a green deletion proof. The workflow is currently
+published only on the candidate branch, not merged into the default branch, and
+has not been dispatched. Protected Vercel secrets cannot be read back through
+the connected environment API; no secret was extracted or reclassified.

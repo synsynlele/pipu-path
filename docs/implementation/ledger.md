@@ -744,3 +744,17 @@ workflow rather than requesting it again.
 Full npm run validate passed: 416 unit/component tests, 242 integration tests,
 format, lint, typecheck, coverage and production build. External API proof is
 still pending and is not included in those passing totals.
+
+## 2026-10-10 — Operator-run deletion proof workflow
+
+Added a manual-only GitHub workflow for the disposable Auth/Storage test with a
+separate privacy-verification environment, exact reviewed-commit gate, read-only
+repository permission, bounded runtime and serial execution without cancelling
+an active run. The runbook maps every required secret/config value and records
+that the workflow is candidate-only and unexecuted. Vercel metadata confirmed the
+service key is protected and returned no value; it was not extracted, changed or
+reclassified. Live API proof and production activation remain pending.
+
+A read-only database check found one verified active privacy owner/operator. A
+second authorised operator has not been appointed; no roles were granted by
+this work. Backup coverage remains an operational activation requirement.

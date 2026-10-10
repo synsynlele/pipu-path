@@ -213,3 +213,15 @@ workflow rather than requesting it again.
 Full npm run validate passed: 416 unit/component tests, 242 integration tests,
 format, lint, typecheck, coverage and production build. External API proof is
 still pending and is not included in those passing totals.
+
+## 2026-10-10 — Privacy proof operator handover
+
+The disposable deletion proof now has a manual GitHub runner with scoped
+credentials and an exact reviewed-commit gate. No automatic trigger can run it.
+An authorised secret custodian must configure privacy-verification before an
+operator can execute it. Existing protected Vercel secrets returned no readable
+value. No live proof, flag enablement, merge or Play submission is claimed.
+
+A read-only database check found one verified active privacy owner/operator. A
+second authorised operator has not been appointed; no roles were granted by
+this work. Backup coverage remains an operational activation requirement.

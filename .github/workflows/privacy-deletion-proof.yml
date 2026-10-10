@@ -1,0 +1,50 @@
+name: Disposable account deletion proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      fixture_mode:
+        description: Create and permanently delete only this run's new fixture account
+        required: true
+        type: choice
+        options:
+          - create-and-delete-fixture
+
+permissions:
+  contents: read
+
+concurrency:
+  group: privacy-deletion-proof
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: privacy-verification
+    steps:
+      - name: Require reviewed candidate
+        env:
+          REVIEWED_SHA: ${{ vars.PRIVACY_REVIEWED_SHA }}
+        run: |
+          test -n "$REVIEWED_SHA" || { echo "Configure PRIVACY_REVIEWED_SHA in privacy-verification"; exit 1; }
+          test "$REVIEWED_SHA" = "$GITHUB_SHA" || { echo "This commit is not the reviewed candidate"; exit 1; }
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Verify real Auth and Storage removal
+        run: npx vitest run --config vitest.privacy-live.config.ts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.PRIVACY_TEST_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PRIVACY_TEST_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PRIVACY_TEST_SUPABASE_SERVICE_ROLE_KEY }}
+          PRIVACY_TEST_PROJECT_REF: ${{ vars.PRIVACY_TEST_PROJECT_REF }}
+          PRIVACY_TEST_OPERATOR_ID: ${{ vars.PRIVACY_TEST_OPERATOR_ID }}
+          PRIVACY_LIVE_TEST: ${{ inputs.fixture_mode }}
+      - name: Record scope of successful proof
+        if: success()
+        run: |
+          printf '%s\n' "Verified candidate: $GITHUB_SHA" "Passed: disposable Auth, Storage, profile and verified receipt." "Production deletion flags were not changed. Guardian policy, retention and browser proof remain separate gates." >> "$GITHUB_STEP_SUMMARY"
