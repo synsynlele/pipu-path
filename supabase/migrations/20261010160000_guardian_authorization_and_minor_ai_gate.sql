@@ -18,6 +18,7 @@ create table public.guardian_authorization_requests (
   expires_at timestamptz not null default (now() + interval '7 days'),
   granted_at timestamptz,
   revoked_at timestamptz,
+  school_network_enabled boolean not null default false,
   updated_at timestamptz not null default now(),
   constraint guardian_authorization_actor_distinct
     check (guardian_user_id is null or guardian_user_id <> minor_user_id),
@@ -305,6 +306,56 @@ grant execute on function public.get_guardian_authorization_state() to authentic
 grant execute on function public.ensure_guardian_authorization_request() to authenticated;
 grant execute on function public.grant_guardian_authorization(text, text, text) to authenticated;
 
+
+-- School networking needs separate, revocable guardian approval.
+create or replace function public.list_guardian_authorizations()
+returns jsonb language sql stable security definer set search_path = ''
+as $$
+ select coalesce(jsonb_agg(jsonb_build_object(
+  'requestId', r.id, 'minorName', coalesce(p.preferred_name,p.display_name,'Young Builder'),
+  'ageBand', p.age_band, 'schoolNetworkEnabled', r.school_network_enabled
+ ) order by r.granted_at desc), '[]'::jsonb)
+ from public.guardian_authorization_requests r
+ join public.profiles p on p.id = r.minor_user_id
+ where r.guardian_user_id=auth.uid() and r.status='granted' and r.revoked_at is null;
+$$;
+
+create or replace function public.set_guardian_school_network(request_id_input uuid, enabled_input boolean)
+returns void language plpgsql security definer set search_path = ''
+as $$
+declare
+  actor uuid := auth.uid();
+  approval public.guardian_authorization_requests%rowtype;
+  child_age public.age_band;
+begin
+  if actor is null then raise exception 'GUARDIAN_ACCESS_DENIED'; end if;
+  if not exists (
+    select 1 from public.profiles p
+    join public.onboarding_checkpoints c on c.user_id=p.id and c.status='completed'
+    where p.id=actor and p.age_band in ('18_24','25_plus')
+      and not p.safeguarding_review_required
+  ) then raise exception 'GUARDIAN_ADULT_REQUIRED'; end if;
+
+  select * into approval from public.guardian_authorization_requests
+  where id=request_id_input and guardian_user_id=actor and status='granted'
+    and revoked_at is null for update;
+  if approval.id is null then raise exception 'GUARDIAN_REQUEST_DENIED'; end if;
+  select age_band into child_age from public.profiles where id=approval.minor_user_id;
+  if enabled_input and child_age not in ('13_15','16_17') then
+    raise exception 'GUARDIAN_SCHOOL_NETWORK_AGE_DENIED';
+  end if;
+  update public.guardian_authorization_requests
+    set school_network_enabled=enabled_input where id=approval.id;
+  insert into public.identity_audit_events(user_id,operation,result,metadata)
+    values (approval.minor_user_id,'guardian_school_network_updated','success',
+      jsonb_build_object('guardian_user_id',actor,'enabled',enabled_input));
+end;
+$$;
+revoke all on function public.list_guardian_authorizations() from public, anon;
+revoke all on function public.set_guardian_school_network(uuid,boolean) from public, anon;
+grant execute on function public.list_guardian_authorizations() to authenticated;
+grant execute on function public.set_guardian_school_network(uuid,boolean) to authenticated;
+
 create or replace function public.complete_identity_checkpoint(
   preferred_name_input text,
   username_input text,
@@ -448,6 +499,13 @@ begin
     and not coalesce(profile.safeguarding_review_required, false)
     and profile.username is not null
     and private.guardian_authorization_granted(user_id_input)
+    and exists (
+      select 1 from public.guardian_authorization_requests approval
+      where approval.minor_user_id = user_id_input
+        and approval.status = 'granted'
+        and approval.revoked_at is null
+        and approval.school_network_enabled
+    )
   limit 1;
 end;
 $$;

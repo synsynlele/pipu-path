@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
-import { grantGuardianAuthorizationAction } from "@/modules/identity/application/guardian-actions";
-import { getIdentityState } from "@/modules/identity/infrastructure/identity-dal";
+import {
+  grantGuardianAuthorizationAction,
+  setGuardianSchoolNetworkAction,
+} from "@/modules/identity/application/guardian-actions";
+import {
+  getIdentityState,
+  listGuardianManagedBuilders,
+} from "@/modules/identity/infrastructure/identity-dal";
 
 export const metadata: Metadata = {
   title: "Guardian approval",
@@ -24,7 +30,10 @@ export default async function GuardianApprovalPage({
   }
   if (identity.profile.is_minor) redirect("/onboarding/guardian");
 
-  const params = await searchParams;
+  const [params, builders] = await Promise.all([
+    searchParams,
+    listGuardianManagedBuilders(),
+  ]);
 
   return (
     <main className="mx-auto w-full max-w-xl px-4 py-10 sm:px-6">
@@ -46,6 +55,11 @@ export default async function GuardianApprovalPage({
             Approval recorded. The young Builder can now refresh PipuPath and
             continue.
           </div>
+        ) : null}
+        {params.status === "social_updated" ? (
+          <p role="status" className="mt-4 text-sm">
+            School networking permission updated.
+          </p>
         ) : null}
         {params.error ? (
           <div className="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">
@@ -106,6 +120,54 @@ export default async function GuardianApprovalPage({
             Approve young Builder
           </Button>
         </form>
+        {builders.length > 0 ? (
+          <section className="mt-8 border-t pt-6">
+            <h2 className="text-navy text-xl font-semibold">
+              Manage school networking
+            </h2>
+            <p className="text-muted mt-2 text-sm leading-6">
+              School networking is off by default. Only you can enable or
+              disable it for an approved Builder aged 13–17 who attends a
+              participating school. Under-13s cannot use it.
+            </p>
+            <div className="mt-4 space-y-4">
+              {builders.map((builder) => (
+                <div
+                  key={builder.requestId}
+                  className="border-border rounded-xl border p-4"
+                >
+                  <p className="font-semibold">{builder.minorName}</p>
+                  <p className="text-muted mt-1 text-sm">
+                    School network:{" "}
+                    {builder.schoolNetworkEnabled ? "Enabled" : "Disabled"}
+                  </p>
+                  {builder.ageBand !== "under_13" ? (
+                    <form
+                      action={setGuardianSchoolNetworkAction}
+                      className="mt-3"
+                    >
+                      <input
+                        type="hidden"
+                        name="requestId"
+                        value={builder.requestId}
+                      />
+                      <input
+                        type="hidden"
+                        name="enabled"
+                        value={builder.schoolNetworkEnabled ? "false" : "true"}
+                      />
+                      <Button type="submit" variant="secondary">
+                        {builder.schoolNetworkEnabled
+                          ? "Disable school networking"
+                          : "Enable school networking"}
+                      </Button>
+                    </form>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </Surface>
     </main>
   );

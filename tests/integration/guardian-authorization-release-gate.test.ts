@@ -94,6 +94,23 @@ describe("guardian authorization release gate", () => {
     ).toContain("pipe(z.string().regex(/^[A-Z0-9]{16}$/))");
   });
 
+  it("requires an adult-managed opt-in before school networking", () => {
+    const guardianPage = read("src/app/guardian/page.tsx");
+    const guardianActions = read(
+      "src/modules/identity/application/guardian-actions.ts",
+    );
+    const connectLayout = read("src/app/connect/layout.tsx");
+    expect(migration).toContain(
+      "school_network_enabled boolean not null default false",
+    );
+    expect(migration).toContain("and approval.school_network_enabled");
+    expect(migration).toContain("guardian_user_id=actor");
+    expect(migration).toContain("GUARDIAN_SCHOOL_NETWORK_AGE_DENIED");
+    expect(guardianPage).toContain("Disable school networking");
+    expect(guardianActions).toContain("set_guardian_school_network");
+    expect(connectLayout).toContain("Stay safe while connecting.");
+  });
+
   it("keeps guardian records private behind authenticated ownership-aware RPCs", () => {
     expect(migration).toContain(
       "alter table public.guardian_authorization_requests enable row level security",

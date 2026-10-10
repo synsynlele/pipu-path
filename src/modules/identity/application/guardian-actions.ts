@@ -69,3 +69,31 @@ export async function grantGuardianAuthorizationAction(formData: FormData) {
   revalidatePath("/guardian");
   redirect("/guardian?status=approved");
 }
+
+const schoolAccessSchema = z.object({
+  requestId: z.uuid(),
+  enabled: z.enum(["true", "false"]),
+});
+
+export async function setGuardianSchoolNetworkAction(formData: FormData) {
+  const state = await getIdentityState();
+  if (!state.user) redirect("/login?next=/guardian");
+  if (!state.profile || state.checkpoint?.status !== "completed") {
+    redirect("/onboarding/identity");
+  }
+  if (state.profile.is_minor) redirect("/onboarding/guardian");
+
+  const parsed = schoolAccessSchema.safeParse({
+    requestId: formData.get("requestId"),
+    enabled: formData.get("enabled"),
+  });
+  if (!parsed.success) redirect("/guardian?error=invalid");
+
+  const { error } = await invoke("set_guardian_school_network", {
+    request_id_input: parsed.data.requestId,
+    enabled_input: parsed.data.enabled === "true",
+  });
+  if (error) redirect("/guardian?error=social_denied");
+  revalidatePath("/guardian");
+  redirect("/guardian?status=social_updated");
+}

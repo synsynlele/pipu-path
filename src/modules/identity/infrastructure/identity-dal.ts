@@ -88,3 +88,20 @@ export async function requireAuthenticatedIdentity() {
     checkpoint: state.checkpoint,
   };
 }
+
+export type GuardianManagedBuilder = {
+  requestId: string;
+  minorName: string;
+  ageBand: string;
+  schoolNetworkEnabled: boolean;
+};
+
+export async function listGuardianManagedBuilders(): Promise<GuardianManagedBuilder[]> {
+  const client = await createServerSupabaseClient();
+  const rpc = client.rpc.bind(client) as unknown as UntypedRpc;
+  const { data, error } = await rpc("list_guardian_authorizations");
+  if (error || !Array.isArray(data)) {
+    throw new Error(error?.message ?? "GUARDIAN_LIST_UNAVAILABLE");
+  }
+  return data as GuardianManagedBuilder[];
+}
