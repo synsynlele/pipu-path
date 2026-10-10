@@ -1,0 +1,87 @@
+name: PipuPath Android Package Ownership Verification
+
+on:
+  push:
+    branches:
+      - agent/android-developer-verification
+    paths:
+      - .github/workflows/android-developer-verification.yml
+
+permissions:
+  contents: read
+
+jobs:
+  prove-android-signing-key:
+    name: Create signed ownership-proof APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PACKAGE_ID: ng.name.pipupath.lite
+      EXPECTED_FINGERPRINT: 8E:24:7B:ED:BB:2E:5C:A7:D2:B6:CC:D1:88:E2:00:32:6C:7E:65:28:18:4C:76:EA:CE:96:BC:F0:3B:D2:59:8C
+      BASE_APK_SHA256: 0a90d017f429a1e8b9eb04f203d1d03e9c6eb551344ebbe84d4300965f244dde
+      REGISTRATION_SNIPPET: D63EK35KYHB4OAAAAAAAAAAAAA
+      KEYSTORE_PASSWORD: ${{ secrets.PIPUPATH_ANDROID_KEYSTORE_PASSWORD }}
+      KEY_PASSWORD: ${{ secrets.PIPUPATH_ANDROID_KEY_PASSWORD }}
+    steps:
+      - name: Checkout verification source
+        uses: actions/checkout@v4
+
+      - name: Verify ownership challenge and protected signing credentials
+        shell: bash
+        env:
+          KEYSTORE_B64: ${{ secrets.PIPUPATH_ANDROID_KEYSTORE_B64 }}
+        run: |
+          set -euo pipefail
+          test "${#REGISTRATION_SNIPPET}" -eq 26
+          test -n "$KEYSTORE_B64" && test -n "$KEYSTORE_PASSWORD" && test -n "$KEY_PASSWORD"
+          mkdir -p "$RUNNER_TEMP/pipupath-ownership/assets" "$GITHUB_WORKSPACE/verification-output"
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/pipupath-ownership/signing.keystore"
+          chmod 600 "$RUNNER_TEMP/pipupath-ownership/signing.keystore"
+          printf '%s' "$REGISTRATION_SNIPPET" > "$RUNNER_TEMP/pipupath-ownership/assets/adi-registration.properties"
+          keytool -list -v -keystore "$RUNNER_TEMP/pipupath-ownership/signing.keystore"             -alias pipupath-lite -storepass "$KEYSTORE_PASSWORD"             | grep -F "SHA256: $EXPECTED_FINGERPRINT"
+          echo "Play challenge and existing signing certificate verified."
+
+      - name: Download exact published PipuPath APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --silent --show-error             "https://www.pipupath.name.ng/downloads/PipuPath-Lite-1.0.2.apk"             --output "$RUNNER_TEMP/pipupath-ownership/unaligned.apk"
+          echo "$BASE_APK_SHA256  $RUNNER_TEMP/pipupath-ownership/unaligned.apk" | sha256sum --check
+          echo "Exact original APK verified by SHA-256."
+
+      - name: Embed Google ownership challenge
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/pipupath-ownership"
+          zip -q -0 unaligned.apk assets/adi-registration.properties
+          test "$(unzip -p unaligned.apk assets/adi-registration.properties)" = "$REGISTRATION_SNIPPET"
+          echo "Google challenge embedded at assets/adi-registration.properties."
+
+      - name: Sign verification APK using protected production key
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUILD_TOOLS_DIR="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+          test -x "$BUILD_TOOLS_DIR/zipalign"
+          test -x "$BUILD_TOOLS_DIR/apksigner"
+          "$BUILD_TOOLS_DIR/zipalign" -f 4             "$RUNNER_TEMP/pipupath-ownership/unaligned.apk"             "$RUNNER_TEMP/pipupath-ownership/aligned.apk"
+          "$BUILD_TOOLS_DIR/apksigner" sign             --ks "$RUNNER_TEMP/pipupath-ownership/signing.keystore"             --ks-key-alias pipupath-lite             --ks-pass env:KEYSTORE_PASSWORD             --key-pass env:KEY_PASSWORD             --out "$GITHUB_WORKSPACE/verification-output/PipuPath-Ownership-Verification.apk"             "$RUNNER_TEMP/pipupath-ownership/aligned.apk"
+          APK="$GITHUB_WORKSPACE/verification-output/PipuPath-Ownership-Verification.apk"
+          "$BUILD_TOOLS_DIR/apksigner" verify --verbose --print-certs "$APK"             > "$RUNNER_TEMP/pipupath-ownership/signature.txt"
+          CERT_SHA="$(sed -n 's/^Signer #1 certificate SHA-256 digest: //p' "$RUNNER_TEMP/pipupath-ownership/signature.txt" | head -n 1)"
+          EXPECTED="$(printf '%s' "$EXPECTED_FINGERPRINT" | tr -d ':' | tr '[:upper:]' '[:lower:]')"
+          test "$CERT_SHA" = "$EXPECTED" || { echo "Incorrect signing certificate"; exit 1; }
+          "$BUILD_TOOLS_DIR/zipalign" -c 4 "$APK"
+          test "$(unzip -p "$APK" assets/adi-registration.properties)" = "$REGISTRATION_SNIPPET"
+          "$BUILD_TOOLS_DIR/aapt" dump badging "$APK" | grep -F "package: name='$PACKAGE_ID'"
+          echo "Signed APK ownership proof verified: matching package, certificate, and challenge."
+          sha256sum "$APK"
+
+      - name: Upload Google verification APK only
+        uses: actions/upload-artifact@v4
+        with:
+          name: PipuPath-Android-Ownership-Verification
+          path: verification-output/PipuPath-Ownership-Verification.apk
+          if-no-files-found: error
+          retention-days: 7
