@@ -81,10 +81,13 @@ export function CheckpointForm() {
           ) : null}
           {minorSelected ? (
             <div className="border-border bg-panel-raised rounded-xl border p-4 text-sm leading-6">
-              <p className="font-semibold">A parent or legal guardian must approve this account.</p>
+              <p className="font-semibold">
+                A parent or legal guardian must approve this account.
+              </p>
               <p className="text-muted mt-1">
-                Under-18 accounts do not use external AI providers at launch. After this step,
-                PipuPath will give you a one-time guardian code to share with a parent or legal guardian.
+                Under-18 accounts do not use external AI providers at launch.
+                After this step, PipuPath will give you a one-time guardian code
+                to share with a parent or legal guardian.
               </p>
             </div>
           ) : null}

@@ -139,7 +139,9 @@ export async function generateCurrentQuestPack(): Promise<Result> {
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = context.isMinor ? "MINOR_EXTERNAL_AI_DISABLED" : "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = context.isMinor
+        ? "MINOR_EXTERNAL_AI_DISABLED"
+        : "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedQuestPack(context);
     }
 

@@ -185,7 +185,9 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = profile.is_minor ? "MINOR_EXTERNAL_AI_DISABLED" : "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = profile.is_minor
+        ? "MINOR_EXTERNAL_AI_DISABLED"
+        : "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedFallbackProfile(providerInput);
     }
 

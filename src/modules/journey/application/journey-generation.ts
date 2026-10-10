@@ -188,7 +188,9 @@ export async function generateCurrentJourney(input: {
       }
     } else {
       generationMode = "evidence_fallback";
-      fallbackReason = context.isMinor ? "MINOR_EXTERNAL_AI_DISABLED" : "OPENAI_ENVIRONMENT_UNAVAILABLE";
+      fallbackReason = context.isMinor
+        ? "MINOR_EXTERNAL_AI_DISABLED"
+        : "OPENAI_ENVIRONMENT_UNAVAILABLE";
       output = buildEvidenceBasedJourney({
         context,
         currentJourney,

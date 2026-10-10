@@ -26,18 +26,28 @@ const externalAiGenerationFiles = [
 
 describe("guardian authorization release gate", () => {
   it("requires independently authenticated adult approval rather than child self-approval", () => {
-    expect(migration).toContain("create table public.guardian_authorization_requests");
+    expect(migration).toContain(
+      "create table public.guardian_authorization_requests",
+    );
     expect(migration).toContain("GUARDIAN_ADULT_REQUIRED");
     expect(migration).toContain("GUARDIAN_SELF_APPROVAL_DENIED");
-    expect(migration).toContain("guardian_profile.age_band not in ('18_24', '25_plus')");
-    expect(migration).toContain("'guardian_required', policy_version_input, 'granted', 'guardian'");
+    expect(migration).toContain(
+      "guardian_profile.age_band not in ('18_24', '25_plus')",
+    );
+    expect(migration).toContain(
+      "'guardian_required', policy_version_input, 'granted', 'guardian'",
+    );
   });
 
   it("does not make a minor self-consent to AI during identity setup", () => {
     expect(checkpointAction).toContain("accept_ai: z.string().optional()");
     expect(checkpointAction).toContain("accept_ai: !minor");
-    expect(checkpointForm).toContain("Under-18 accounts do not use external AI providers at launch");
-    expect(migration).toContain("'ai_processing', policy_version_input, 'declined', 'identity_checkpoint'");
+    expect(checkpointForm).toContain(
+      "Under-18 accounts do not use external AI providers at launch",
+    );
+    expect(migration).toContain(
+      "'ai_processing', policy_version_input, 'declined', 'identity_checkpoint'",
+    );
   });
 
   it("blocks authenticated minors from bypassing the guardian gate", () => {
@@ -49,7 +59,9 @@ describe("guardian authorization release gate", () => {
   it("fails closed across every current OpenAI generation path for minors", () => {
     for (const file of externalAiGenerationFiles) {
       const source = read(file);
-      expect(source).toMatch(/let openAIAvailable = !(?:context\.isMinor|profile\.is_minor);/);
+      expect(source).toMatch(
+        /let openAIAvailable = !(?:context\.isMinor|profile\.is_minor);/,
+      );
       expect(source).toContain("MINOR_EXTERNAL_AI_DISABLED");
     }
   });
