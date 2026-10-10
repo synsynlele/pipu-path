@@ -37,4 +37,47 @@ export default function TermsPage() {
               locations, school identifiers or contact details without proper
               authorisation. Do not harass, threaten, impersonate, exploit or
               solicit other users, or post sexual, hateful, violent or otherwise
-       ...[truncated]
+              unsafe material. Do not attempt to bypass age, consent,
+              safeguarding or account-security controls.
+            </p>
+            <p>
+              Networking includes user-generated content. Report content or
+              contact that is unsafe or objectionable, and block users when
+              needed. KAEC-NG may review reports and remove content, restrict
+              features or suspend accounts to protect users and the platform.
+              Children should tell a trusted adult about unsafe contact and
+              should not share personal contact details without appropriate
+              adult action.
+            </p>
+            <p>
+              You control whether eligible Portfolio proof is made public.
+              Private Discovery answers and reflections are not public by
+              default. Other people may retain copies of content shared with
+              them. To understand data handling and request account deletion,
+              read the{" "}
+              <Link className="text-primary underline" href="/privacy">
+                Privacy Policy
+              </Link>
+              , and visit the{" "}
+              <Link className="text-primary underline" href="/account-deletion">
+                account-deletion page
+              </Link>
+              .
+            </p>
+            <p>
+              Questions and safety concerns may be sent to{" "}
+              <a
+                className="text-primary underline"
+                href="mailto:copyartint@gmail.com"
+              >
+                copyartint@gmail.com
+              </a>
+              . Do not include passwords or unnecessary private evidence in
+              email.
+            </p>
+          </div>
+        </Surface>
+      </main>
+    </PublicShell>
+  );
+}
