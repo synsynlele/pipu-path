@@ -100,6 +100,11 @@ describe("OpenAIQuestProvider", () => {
     expect(request).toHaveBeenCalledWith(
       expect.objectContaining({ schemaName: "pipupath_quest_pack_v2" }),
     );
+    const prompt = request.mock.calls[0][0].prompt as string;
+    expect(prompt).toContain("adults of all ages");
+    expect(prompt).toContain("Never assume the user is a student");
+    expect(prompt).toContain("what I tried, what happened, what I learned");
+    expect(prompt).toContain(context.milestoneTitle);
     expect(output.quests.map((item) => item.sequence_order)).toEqual([1, 2, 3]);
   });
 });

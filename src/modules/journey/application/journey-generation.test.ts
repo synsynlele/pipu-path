@@ -104,7 +104,7 @@ describe("Journey generation orchestration", () => {
       "create_stage6_journey_request",
       expect.objectContaining({
         mission_id_input: context.missionId,
-        prompt_version_input: "journey-openai-v2",
+        prompt_version_input: "journey-plain-v3",
       }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(

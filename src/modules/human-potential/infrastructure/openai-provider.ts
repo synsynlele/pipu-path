@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requestOpenAIStructuredOutput } from "@/lib/ai/openai-structured-output";
 import { createLogger } from "@/lib/observability/logger";
 import type { z } from "zod";
@@ -148,6 +150,7 @@ const profileResponseSchema = {
 
 function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
   return [
+    builderLanguageInstructions,
     "Create a private, provisional Human Potential Profile from supplied Discovery evidence.",
     "Do not diagnose, predict the future, assign a fixed personality, life purpose, destiny, permanent career or certainty.",
     'Use cautious wording such as "Based on your answers..." or "You may...". Never invent evidence.',

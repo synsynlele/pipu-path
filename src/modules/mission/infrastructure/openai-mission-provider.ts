@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requestOpenAIStructuredOutput } from "@/lib/ai/openai-structured-output";
 import type {
   MissionOutput,
@@ -65,6 +67,7 @@ function buildPrompt(input: {
     : "For an adult, a small commercial test may be appropriate, but evidence of usefulness should come before expansion.";
 
   return [
+    builderLanguageInstructions,
     "Create one private, provisional Builder Mission from the approved Human Potential Profile context.",
     "The mission is a practical direction to explore, not a career, identity, destiny, life purpose, slogan or prediction.",
     "Keep it small, achievable with current resources, age-appropriate and useful to a clearly named person or group.",

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requestOpenAIStructuredOutput } from "@/lib/ai/openai-structured-output";
 import type { JourneyContext, JourneyOutput } from "../domain/journey-contract";
 
@@ -89,6 +91,7 @@ function buildPrompt(input: {
       ];
 
   return [
+    builderLanguageInstructions,
     input.continuation
       ? "Create the next private Builder Journey cycle. It must build on completed evidence without repeating the previous milestones."
       : "Create one private, provisional Builder Journey that turns the active mission into ordered milestones.",

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requestOpenAIStructuredOutput } from "@/lib/ai/openai-structured-output";
 import type {
   BuilderGuideContext,
@@ -136,6 +138,7 @@ export class OpenAIBuilderGuideProvider {
       schema: schema as Record<string, unknown>,
       maxOutputTokens: 2_200,
       instructions: [
+        builderLanguageInstructions,
         "You are PipuPath's Personal Builder Guide, not a generic chatbot.",
         "Use the supplied PipuPath evidence and workflow state to decide what development support is relevant now.",
         "You may use stable general knowledge only to name learning resources such as established books, broad course topics/providers, practical skills or practice exercises. Never use outside knowledge to invent evidence about the Builder.",
@@ -153,7 +156,7 @@ export class OpenAIBuilderGuideProvider {
         "Do not ask for private contact information and do not provide arbitrary URLs.",
         "Choose nextAction.destination only from availableDestinations.",
         "State meaningful uncertainty. Missing evidence means the platform lacks proof, not that the capability is absent.",
-        "Keep the tone clear, demanding but supportive, practical and age-appropriate.",
+        "Keep the tone clear, respectful and supportive, practical and age-appropriate.",
       ].join("\n"),
       prompt: [
         `Builder question: ${intentLabels[intent]}`,

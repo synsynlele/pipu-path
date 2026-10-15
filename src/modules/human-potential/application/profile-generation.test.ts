@@ -47,7 +47,7 @@ function requestQuery() {
           single: async () => ({
             data: {
               interpretation_schema_version: "hpi-profile-v1",
-              prompt_version: "hpi-openai-v1",
+              prompt_version: "hpi-plain-v2",
               question_set_version: 1,
               age_band: "18_24",
               is_minor: false,
@@ -167,7 +167,7 @@ describe("Stage 4 profile generation orchestration", () => {
     });
     expect(createCurrentInterpretationRequest).toHaveBeenCalledWith({
       schemaVersion: "hpi-profile-v1",
-      promptVersion: "hpi-openai-v1",
+      promptVersion: "hpi-plain-v2",
     });
     expect(rpc).toHaveBeenNthCalledWith(
       1,

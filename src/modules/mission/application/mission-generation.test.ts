@@ -118,7 +118,7 @@ describe("mission generation orchestration", () => {
       "create_stage5_mission_request",
       expect.objectContaining({
         profile_id_input: context.profileId,
-        prompt_version_input: "mission-openai-v1",
+        prompt_version_input: "mission-plain-v2",
       }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(

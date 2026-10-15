@@ -81,3 +81,20 @@ describe("life game quest", () => {
     expect(screen.getByRole("textbox")).toHaveValue(answers[4]);
   });
 });
+
+it("keeps legacy quest questions separate from fixed reflection fields", async () => {
+  const user = userEvent.setup();
+  render(
+    <QuestReflectionForm
+      questId="legacy"
+      prompts={["Which assumption changed?"]}
+    />,
+  );
+  expect(screen.getByRole("textbox")).toHaveAccessibleName("What did you try?");
+  await user.click(screen.getByText("Questions about this Quest"));
+  expect(screen.getByText("Which assumption changed?")).toBeVisible();
+  expect(
+    screen.getByText(/do not need to answer them separately/),
+  ).toBeVisible();
+  expect(screen.queryByText("Need a hint?")).not.toBeInTheDocument();
+});

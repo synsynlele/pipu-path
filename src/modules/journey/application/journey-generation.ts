@@ -148,7 +148,7 @@ export async function generateCurrentJourney(input: {
       ...(refinementInstruction
         ? { refinement_instruction_input: refinementInstruction }
         : {}),
-      prompt_version_input: "journey-openai-v2",
+      prompt_version_input: "journey-plain-v3",
     },
   );
   const requestId = typeof requestData === "string" ? requestData : null;

@@ -39,20 +39,20 @@ function nextInstruction(
     return `Continue “${context.current.quest.title}” and finish the required action, evidence and reflection before starting something new.`;
   }
   if (destination === "current_project" && context.current.project) {
-    return `Continue “${context.current.project.title}” and complete the next unfinished project milestone with observable proof.`;
+    return `Continue “${context.current.project.title}” and complete the next unfinished project milestone and save a short note or example of what happened.`;
   }
   if (destination === "journey" && context.current.journey) {
     return `Open “${context.current.journey.title}” and move the current milestone forward with one concrete action you can complete.`;
   }
   if (destination === "build") {
-    return "Choose one useful problem that fits your current direction and create a small project that can produce observable evidence.";
+    return "Choose a small problem you care about. Make or try one useful thing, then save what happened.";
   }
-  return "Review the evidence in your Living Builder Profile and choose one capability that needs another real-world test.";
+  return "Open your profile. Choose one skill you want to try in a real task.";
 }
 
 function evidenceToCreate(destination: BuilderGuideDestination) {
   if (destination === "current_quest") {
-    return "Complete the Quest evidence and Nortnspoil reflection required by PipuPath.";
+    return "Save what you did and what happened, then answer the Quest reflection questions.";
   }
   if (destination === "current_project") {
     return "Complete the next Project milestone and preserve the proof of what changed.";
@@ -63,7 +63,7 @@ function evidenceToCreate(destination: BuilderGuideDestination) {
   if (destination === "build") {
     return "Produce a small completed Project with observable evidence and a reflection on what you learned.";
   }
-  return "Create another completed action that can support or challenge one current capability claim.";
+  return "Try the skill in one real task. Save the result, including what did not work.";
 }
 
 function sortedCapabilities(context: BuilderGuideContext) {
@@ -160,7 +160,7 @@ export function buildEvidenceBasedBuilderGuide(
       intent,
       title: `Build a Growth Pack around ${focus}`,
       summary:
-        "Use learning as fuel for the current adventure, not as an escape from it. Choose one resource or practice, take only what helps the present challenge, then turn the learning into observable action.",
+        "Choose one thing to learn that helps your current task. Try it in your work and save what happened.",
       evidenceObservations,
       focus: {
         label: focus,
@@ -250,7 +250,7 @@ export function buildEvidenceBasedBuilderGuide(
       challenge:
         "Choose an action that could genuinely confirm or challenge the capability instead of designing a task that can only make you look successful.",
       uncertainty:
-        "Missing evidence in PipuPath does not mean the capability is absent; it means the platform does not yet have enough completed proof to support a stronger claim.",
+        "You may already have this skill. PipuPath just needs more examples of you using it.",
     };
   }
 
@@ -296,7 +296,7 @@ export function buildEvidenceBasedBuilderGuide(
         : "Turn your current direction into the next piece of evidence",
     summary: selectedPath
       ? `You have selected ${selectedPath.name}. The best next move is the nearest proof-bearing action already in your PipuPath journey, not a new abstract plan.`
-      : "The best next move is the nearest proof-bearing action already in your PipuPath journey, not another abstract plan.",
+      : "Start with the next unfinished action in your current Quest or project. Try it, then save what happened.",
     evidenceObservations,
     focus: {
       label: destinationLabel(destination),
@@ -310,9 +310,8 @@ export function buildEvidenceBasedBuilderGuide(
       destination,
     },
     growthPack: [],
-    challenge:
-      "Finish the smallest meaningful proof before expanding the scope or switching to a new direction.",
+    challenge: "Finish one small attempt before adding another goal.",
     uncertainty:
-      "This recommendation is based on your current PipuPath evidence and workflow state; it does not know constraints or opportunities you have not recorded here.",
+      "This uses what you have saved in PipuPath. It may miss other things happening in your life.",
   };
 }

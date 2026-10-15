@@ -109,7 +109,7 @@ describe("Stage 7 Quest generation orchestration", () => {
       "create_stage7_quest_request",
       expect.objectContaining({
         milestone_id_input: context.milestoneId,
-        prompt_version_input: "quest-openai-v1",
+        prompt_version_input: "quest-plain-v2",
       }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(

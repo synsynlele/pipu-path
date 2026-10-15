@@ -1,5 +1,15 @@
 # Implementation status
 
+## 15 October 2026 — Plain-language guidance candidate
+
+Shared prompts now explicitly serve adults of all ages and younger users, using
+short everyday language and supplied life context. Quest fallbacks now vary
+by milestone activity rather than repeating three planning exercises. Legacy
+reflection questions are separated from fixed form fields. No saved learning
+records or minor AI protections are changed. Validation and release evidence
+are recorded in the ledger; this candidate is not deployed. See
+`docs/product/plain-language-guidance.md`.
+
 ## 10 October 2026 — Founder-operated pilot preparation
 
 Owner waived backup practical handover as a release blocker and will operate
