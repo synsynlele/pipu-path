@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requestOpenAIStructuredOutput } from "@/lib/ai/openai-structured-output";
 import type { QuestContext } from "../domain/quest-contract";
 
@@ -73,12 +75,16 @@ const questPackResponseSchema = {
 
 function buildPrompt(input: { context: QuestContext }) {
   return [
+    builderLanguageInstructions,
     "Create one private HQLS Quest pack with exactly three ordered real-world Quests for the available Journey milestone.",
     "HQLS means action, honest evidence, reflection and improvement. A Quest must produce a small real-world result, not a lesson plan, motivational statement or quiz.",
     "Make every Quest realistic in Nigeria or another low-resource setting, age-appropriate, safe and possible with little or no money.",
     "Do not require purchases, public posting, contact with strangers, secret activity, personal addresses, dangerous activity, illegal activity or fabricated evidence.",
     "Use trusted people and resources already available. For minors, keep participation within trusted family, school or supervised community relationships.",
     "The array order is meaningful: Quest 1 creates a small result, Quest 2 tests or improves it, and Quest 3 demonstrates a stronger useful outcome.",
+    "Start the first action with something the person can do now, not an abstract plan. Keep the title concrete and the why_it_matters explanation to one or two short sentences.",
+    "Make every action name what to work on. Keep evidence_requirements consistent with the actions and completion_criteria; do not add a surprise task at the end.",
+    "The four reflection_prompts must respectively help answer: what I tried, what happened, what I learned, and what I will change. Use a short question grounded in this Quest for each.",
     "Give every Quest a distinct, specific title. Do not include sequence numbers in the title; PipuPath assigns sequence_order deterministically from array position.",
     `Approved active Journey and milestone context: ${JSON.stringify(input.context)}`,
   ].join("\n");

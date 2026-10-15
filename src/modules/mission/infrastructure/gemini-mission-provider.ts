@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import type {
   MissionOutput,
@@ -14,6 +16,7 @@ function buildPrompt(input: {
   refinementInstruction?: string;
 }) {
   return [
+    builderLanguageInstructions,
     "Create one private, provisional Builder Mission from the approved Human Potential Profile context.",
     "Return JSON only, with every required field. Do not use markdown.",
     "The mission is a practical direction to explore, not a career, identity, destiny, life purpose, slogan or prediction.",

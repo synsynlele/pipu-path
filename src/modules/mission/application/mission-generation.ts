@@ -125,7 +125,7 @@ export async function generateCurrentMission(input: {
       ...(refinementInstruction
         ? { refinement_instruction_input: refinementInstruction }
         : {}),
-      prompt_version_input: "mission-openai-v1",
+      prompt_version_input: "mission-plain-v2",
     },
   );
   if (createError || !requestId) return fail(extractMissionCode(createError));

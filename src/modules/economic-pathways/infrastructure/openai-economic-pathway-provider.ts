@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requestOpenAIStructuredOutput } from "@/lib/ai/openai-structured-output";
 import type { EconomicPathwayContext } from "../domain/economic-pathway-contract";
 
@@ -110,6 +112,7 @@ function buildPrompt(context: EconomicPathwayContext) {
       ];
 
   return [
+    builderLanguageInstructions,
     "Create a private Economic Pathways recommendation from the approved Human Potential Profile evidence.",
     "Generate 3 to 5 realistic Possible Paths and 3 to 5 Earn From Your Strengths suggestions.",
     "Possible paths may include careers, skills, entrepreneurship, creative work, professional services, trades, technology, leadership or other grounded directions.",

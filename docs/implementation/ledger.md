@@ -970,3 +970,19 @@ CI run 38060531896 passed on 0eec2c8f8c663b3bc39ef34535bd2e5540a76285.
 Remaining guardian functionality/provider settings are not verified complete.
 Console access remains automatically rejected; no bypass, submission or public
 release is claimed.
+
+## 2026-10-15 — Plain-language guidance candidate
+
+Owner clarified that PipuPath serves the general public, not only students.
+Added shared audience-aware conversational prompt instructions across six
+capabilities and retained Gemini providers. Versioned new generation requests.
+Replaced repeated planning-only Quest fallback with milestone-named research,
+practice and making templates; kept minors out of external AI and preserved all
+consent/evidence/XP rules. Simplified key Guide fallback instructions. Separated
+legacy Quest questions from fixed reflection field hints to avoid mismatches.
+
+Validation passed: npm run validate (428 unit/component tests, 250 integration
+tests, coverage thresholds, formatting, zero-warning lint, TypeScript and the
+production build). No live AI samples, user comprehension result, database mutation,
+production deployment or Play update is claimed. See
+`docs/product/plain-language-guidance.md` for evaluation and limitations.

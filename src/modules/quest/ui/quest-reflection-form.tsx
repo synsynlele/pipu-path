@@ -106,12 +106,6 @@ export function QuestReflectionForm({
           }}
           className="border-border bg-background mt-3 min-h-28 w-full rounded-2xl border p-4 text-base leading-6"
         />
-        {prompts[step] && !final ? (
-          <details className="text-muted mt-2 text-sm">
-            <summary className="cursor-pointer">Need a hint?</summary>
-            <p className="mt-2">{prompts[step]}</p>
-          </details>
-        ) : null}
       </div>
       {error ? (
         <p role="alert" className="text-error text-sm">
@@ -142,6 +136,22 @@ export function QuestReflectionForm({
           </Button>
         )}
       </div>
+      {prompts.length > 0 ? (
+        <details className="text-muted text-sm">
+          <summary className="cursor-pointer">
+            Questions about this Quest
+          </summary>
+          <p className="mt-2">
+            These may help you think back. You do not need to answer them
+            separately.
+          </p>
+          <ul className="mt-2 list-disc space-y-2 pl-5">
+            {prompts.map((prompt, index) => (
+              <li key={index}>{prompt}</li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
       <p className="text-muted text-xs">
         These answers are saved when you complete the Quest. Keep this page open
         until then.

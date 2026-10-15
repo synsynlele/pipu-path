@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import type { QuestContext, QuestPackOutput } from "../domain/quest-contract";
 
@@ -7,6 +9,7 @@ const timeoutMs = 45_000;
 
 function buildPrompt(input: { context: QuestContext }) {
   return [
+    builderLanguageInstructions,
     "Create one private HQLS Quest pack with exactly three ordered real-world Quests for the available Journey milestone.",
     "Return JSON only with every required field. Do not use markdown.",
     "HQLS means action, honest evidence, reflection and improvement. A Quest must produce a small real-world result, not a lesson plan, motivational statement or quiz.",
@@ -16,6 +19,8 @@ function buildPrompt(input: { context: QuestContext }) {
     "The three Quests must build progressively toward the milestone. Quest 1 creates a small result, Quest 2 tests or improves it, and Quest 3 demonstrates a stronger useful outcome.",
     "Every Quest requires: title, real_world_outcome, why_it_matters, estimated_minutes, action_steps, resources_needed, low_resource_alternative, evidence_requirements, safety_guidance, completion_criteria, reflection_prompts and sequence_order.",
     "estimated_minutes must be an integer from 15 to 240. action_steps must contain 3-6 clear steps. reflection_prompts must contain exactly four prompts.",
+    "Start with a concrete action the person can try now. Keep proof and completion requirements consistent with the steps.",
+    "The four reflection_prompts must respectively ask about what I tried, what happened, what I learned, and what I will change.",
     "Use sequence_order values 1, 2 and 3 without gaps. Required JSON shape: {quests:[...]}",
     `Approved active Journey and milestone context: ${JSON.stringify(input.context)}`,
   ].join("\n");

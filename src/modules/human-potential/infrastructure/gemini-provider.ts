@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import { createLogger } from "@/lib/observability/logger";
 import {
@@ -166,6 +168,7 @@ class GeminiHttpError extends Error {
 
 function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
   return [
+    builderLanguageInstructions,
     "You create a private, provisional Human Potential Profile from supplied Discovery evidence.",
     "Return JSON only, no markdown.",
     "Do not diagnose, predict the future, assign a fixed personality, life purpose, destiny, permanent career, or certainty.",

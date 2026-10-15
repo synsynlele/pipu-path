@@ -123,7 +123,7 @@ export async function generateCurrentEconomicPathways(): Promise<EconomicPathway
         earn_from_strengths: validated.value.earnFromStrengths,
         provider: generationMode,
         model: generationMode === "openai" ? model : "evidence-fallback-v1",
-        prompt_version: "economic-pathways-openai-v1",
+        prompt_version: "economic-pathways-plain-v2",
         consent_policy_version: consent.policy_version,
         age_band: context.ageBand,
         is_minor: context.isMinor,

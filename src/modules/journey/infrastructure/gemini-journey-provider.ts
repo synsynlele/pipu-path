@@ -1,5 +1,7 @@
 import "server-only";
 
+import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+
 import { requireGeminiEnvironment } from "@/lib/config/env";
 import type { JourneyContext, JourneyOutput } from "../domain/journey-contract";
 
@@ -12,6 +14,7 @@ function buildPrompt(input: {
   continuation?: boolean;
 }) {
   return [
+    builderLanguageInstructions,
     input.continuation
       ? "Create the next private Builder Journey cycle. It must build on completed evidence without repeating the previous milestones."
       : "Create one private, provisional Builder Journey that turns the active mission into four to six ordered milestones.",

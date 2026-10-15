@@ -283,7 +283,7 @@ export async function saveBuilderGuideRun(input: {
       context_fingerprint: input.fingerprint,
       provider: input.provider,
       model: input.model,
-      prompt_version: "stage17.v1",
+      prompt_version: "stage17.plain-v2",
       consent_policy_version: input.consentPolicyVersion,
       advice: input.advice,
     })

@@ -79,7 +79,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
 
   const created = await createCurrentInterpretationRequest({
     schemaVersion: "hpi-profile-v1",
-    promptVersion: "hpi-openai-v1",
+    promptVersion: "hpi-plain-v2",
   });
   if (!created.ok) return failure(created.code);
 

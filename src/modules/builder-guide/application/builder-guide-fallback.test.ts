@@ -155,9 +155,7 @@ describe("Stage 17 evidence fallback", () => {
   it("treats weak capability evidence as something to test, not an absent skill", () => {
     const result = buildEvidenceBasedBuilderGuide(context, "missing_evidence");
     expect(result.title).toContain("Communication");
-    expect(result.uncertainty).toMatch(
-      /does not mean the capability is absent/i,
-    );
+    expect(result.uncertainty).toMatch(/may already have this skill/i);
   });
 
   it("uses the active Project when no Quest is active", () => {
@@ -203,9 +201,7 @@ describe("Stage 17 evidence fallback", () => {
 
     expect(result.nextAction.destination).toBe("build");
     expect(result.nextAction.title).toBe("Create the next proof");
-    expect(result.nextAction.instruction).toContain(
-      "Choose one useful problem",
-    );
+    expect(result.nextAction.instruction).toContain("Choose a small problem");
   });
 
   it("falls back to Profile when there is no active work or Build access", () => {
@@ -217,7 +213,7 @@ describe("Stage 17 evidence fallback", () => {
 
     expect(result.nextAction.destination).toBe("profile");
     expect(result.nextAction.title).toBe("Review your evidence");
-    expect(result.nextAction.instruction).toContain("Living Builder Profile");
+    expect(result.nextAction.instruction).toContain("Open your profile");
   });
 
   it("stays conservative when no capability evidence or selected path exists", () => {
