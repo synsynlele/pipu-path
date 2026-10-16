@@ -156,7 +156,7 @@ export default async function LivingBuilderProfilePage() {
               <IdentityChip href="/passport" icon="◎" label="Passport" />
               <IdentityChip href="/projects" icon="+" label="Projects" />
               <IdentityChip
-                href="/account-deletion"
+                href="/account-privacy"
                 icon="⚙"
                 label="Account & privacy"
               />

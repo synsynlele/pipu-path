@@ -98,6 +98,7 @@ function retryDelayMs(error: unknown) {
 }
 
 async function requestOnce(input: {
+  timeoutMs: number;
   apiKey: string;
   model: string;
   instructions: string;
@@ -107,7 +108,7 @@ async function requestOnce(input: {
   maxOutputTokens: number;
 }) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
+  const timeout = setTimeout(() => controller.abort(), input.timeoutMs);
   const reasoningEffort = gpt5ReasoningEffort(input.model);
   const lowLatencyControls = reasoningEffort
     ? { reasoning: { effort: reasoningEffort } }
@@ -167,15 +168,27 @@ export async function requestOpenAIStructuredOutput(input: {
   maxOutputTokens: number;
 }) {
   const { apiKey, model } = requireOpenAIEnvironment();
+  const deadline = Date.now() + requestTimeoutMs;
   let lastError: unknown = new Error("OPENAI_HTTP_503");
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      return await requestOnce({ ...input, apiKey, model });
+      const remainingMs = deadline - Date.now();
+      if (remainingMs <= 0) throw new Error("OPENAI_TIMEOUT");
+      return await requestOnce({
+        ...input,
+        apiKey,
+        model,
+        timeoutMs: remainingMs,
+      });
     } catch (error) {
       lastError = error;
       const reason = retryReason(error);
-      if (reason && attempt === 0) {
+      if (
+        reason &&
+        attempt === 0 &&
+        Date.now() + retryDelayMs(error) < deadline
+      ) {
         logger.warn("openai_structured_request_retry", {
           attempt: attempt + 1,
           reason,

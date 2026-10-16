@@ -7,6 +7,8 @@ describe("safeNextPath", () => {
     expect(safeNextPath("/projects/123?tab=proof")).toBe(
       "/projects/123?tab=proof",
     );
+    expect(safeNextPath("/guardian")).toBe("/guardian");
+    expect(safeNextPath("/onboarding/guardian")).toBe("/onboarding/guardian");
     expect(safeNextPath("/reset-password")).toBe("/reset-password");
   });
 
@@ -26,6 +28,21 @@ describe("postAuthDestination", () => {
     expect(safeNextPath("/account-deletion")).toBe("/account-deletion");
     expect(safeNextPath("/account-deletion-evil")).toBe("/app");
   });
+  it("keeps privacy controls available before parent approval", () => {
+    expect(
+      postAuthDestination("/onboarding/guardian", "/account-privacy"),
+    ).toBe("/account-privacy");
+  });
+
+  it("lets an adult reach guardian approval after identity without completing their own adventure", () => {
+    expect(postAuthDestination("/onboarding/discovery", "/guardian")).toBe(
+      "/guardian",
+    );
+    expect(postAuthDestination("/onboarding/identity", "/guardian")).toBe(
+      "/onboarding/identity",
+    );
+  });
+
   it("prioritises the next incomplete developmental stage", () => {
     expect(postAuthDestination("/onboarding/identity", "/projects")).toBe(
       "/onboarding/identity",

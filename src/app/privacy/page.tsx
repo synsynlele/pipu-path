@@ -20,7 +20,7 @@ const sections = [
   ],
   [
     "Young Builders and guardians",
-    "Users under 18 require approval from a separately signed-in adult who declares that they are a parent or legal guardian. External AI providers are disabled for under-18 accounts. Public Portfolio publishing and adult-only Connect features are unavailable to minors. School networking is limited to eligible users aged 13–17 in participating schools and is disabled until an approved guardian explicitly enables it; the guardian can also turn it off. Under-13 users cannot use school networking.",
+    "Users under 18 need a parent or legal guardian to approve private learning on their account. The parent can enter their name and tick an approval declaration on the same device, without creating another account. We record the name, relationship, policy version and date as a self-declared parent approval, not independently verified identity. This approval can be withdrawn in privacy settings. External AI providers are disabled for under-18 accounts. Public Portfolio publishing and adult-only Connect features are unavailable to minors. School networking is limited to eligible users aged 13–17 in participating schools and is disabled until a separately signed-in adult guardian approves the account and explicitly enables it; the guardian can also turn it off. Under-13 users cannot use school networking.",
   ],
   [
     "AI guidance",
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
     <PublicShell>
       <main id="main-content" className="mx-auto max-w-4xl px-5 py-16 sm:px-8">
         <p className="text-primary text-sm font-semibold tracking-[0.15em] uppercase">
-          KAEC-NG Ltd · Effective 10 October 2026
+          KAEC-NG Ltd · Effective 16 October 2026
         </p>
         <h1 className="text-navy mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
           PipuPath Privacy Policy

@@ -1,8 +1,11 @@
 const allowedExactPaths = new Set([
   "/account-deletion",
+  "/account-privacy",
   "/app",
   "/build",
   "/onboarding/identity",
+  "/onboarding/guardian",
+  "/guardian",
   "/onboarding/discovery",
   "/onboarding/discovery/review",
   "/onboarding/discovery/profile",
@@ -46,9 +49,15 @@ export function postAuthDestination(
   const safeRequestedPath = safeNextPath(requestedPath);
   if (
     safeRequestedPath === "/reset-password" ||
-    safeRequestedPath === "/account-deletion"
+    safeRequestedPath === "/account-deletion" ||
+    safeRequestedPath === "/account-privacy"
   )
     return safeRequestedPath;
+  if (
+    safeRequestedPath === "/guardian" &&
+    requiredPath !== "/onboarding/identity"
+  )
+    return "/guardian";
   if (requiredPath !== "/app") return requiredPath;
   return safeRequestedPath;
 }

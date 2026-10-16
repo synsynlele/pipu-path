@@ -187,7 +187,7 @@ describe("OpenAI structured output client", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it("retries once after the provider request times out", async () => {
+  it("stops at the total timeout budget instead of starting another 45-second wait", async () => {
     vi.useFakeTimers();
     const fetchMock = vi
       .fn()
@@ -209,11 +209,36 @@ describe("OpenAI structured output client", () => {
       );
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = requestOpenAIStructuredOutput(requestInput());
+    const result = expect(
+      requestOpenAIStructuredOutput(requestInput()),
+    ).rejects.toThrow("OPENAI_TIMEOUT");
     await vi.advanceTimersByTimeAsync(45_000);
-    await vi.advanceTimersByTimeAsync(700);
+    await result;
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 
-    await expect(result).resolves.toEqual({ result: "after-timeout" });
+  it("gives a retry only the time remaining in the shared budget", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockImplementation(
+      (_url: string, init?: RequestInit) =>
+        new Promise<Response>((resolve, reject) => {
+          if (fetchMock.mock.calls.length === 1) {
+            setTimeout(() => resolve(response({}, 503)), 30_000);
+          } else {
+            init?.signal?.addEventListener("abort", () => {
+              const error = new Error("aborted");
+              error.name = "AbortError";
+              reject(error);
+            });
+          }
+        }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    const result = expect(
+      requestOpenAIStructuredOutput(requestInput()),
+    ).rejects.toThrow("OPENAI_TIMEOUT");
+    await vi.advanceTimersByTimeAsync(45_000);
+    await result;
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 

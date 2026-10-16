@@ -986,3 +986,16 @@ tests, coverage thresholds, formatting, zero-warning lint, TypeScript and the
 production build). No live AI samples, user comprehension result, database mutation,
 production deployment or Play update is claimed. See
 `docs/product/plain-language-guidance.md` for evaluation and limitations.
+
+## 2026-10-16 — Parent-on-device declaration and repeated loading checks
+
+Implemented a parent declaration on the young person's own device, with explicit
+unchecked approval, named parent/relationship and persisted policy/date/scope in
+the existing consent ledger. Distinct parent_declared status unlocks private
+learning only; withdrawal is available from Account and privacy. Independently
+signed-in guardian/networking authority and minor external-AI restrictions stay
+separate. Added request-scoped identity/guardian/home memoization and reuse;
+OpenAI retries share one 45-second budget. Added action, real React request-cache
+and embedded PostgreSQL boundary tests. See parent-approval-and-loading.md.
+PipuPath database access is unavailable in the current connector; no live
+migration, deployment or production latency claim is made.

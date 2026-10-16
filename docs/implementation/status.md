@@ -391,3 +391,15 @@ CI run 38060531896 passed on 0eec2c8f8c663b3bc39ef34535bd2e5540a76285.
 Remaining guardian functionality/provider settings are not verified complete.
 Console access remains automatically rejected; no bypass, submission or public
 release is claimed.
+
+## 2026-10-16 — Parent approval and loading improvements prepared
+
+Private learning now supports an explicit parent-on-device declaration without a
+second account, recorded as self-declared rather than independently verified.
+Approval withdrawal, profile/privacy navigation and parent-specific sign-in
+recovery are included. Page renders share identity/guardian/home checks within a
+request; fresh requests and auth callbacks retain fresh validation. OpenAI retries
+share a 45-second total budget. Tests cover persistence boundaries and request
+isolation. See parent-approval-and-loading.md for evidence and release order.
+Live release awaits restored access to the verified PipuPath database and
+verification against the production environment; no live change is claimed.
