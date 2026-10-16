@@ -86,8 +86,9 @@ export function CheckpointForm() {
               </p>
               <p className="text-muted mt-1">
                 Under-18 accounts do not use external AI providers at launch.
-                After this step, PipuPath will give you a one-time guardian code
-                to share with a parent or legal guardian.
+                After this step, hand this device to your parent or legal
+                guardian so they can approve private learning. They do not need
+                their own account.
               </p>
             </div>
           ) : null}

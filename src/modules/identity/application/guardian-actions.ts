@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { getIdentityState } from "../infrastructure/identity-dal";
+import {
+  getIdentityState,
+  getGuardianAuthorizationState,
+} from "../infrastructure/identity-dal";
 
 const policyVersion = "2026-10-10-guardian-v1";
 
@@ -96,4 +99,64 @@ export async function setGuardianSchoolNetworkAction(formData: FormData) {
   if (error) redirect("/guardian?error=social_denied");
   revalidatePath("/guardian");
   redirect("/guardian?status=social_updated");
+}
+
+const parentDeclarationSchema = z.object({
+  parentName: z.string().trim().min(2).max(80),
+  relationship: z.enum(["parent", "legal_guardian"]),
+  declaration: z.literal("on"),
+});
+
+export async function recordParentLearningAttestationAction(
+  _previous: { message: string },
+  formData: FormData,
+): Promise<{ message: string }> {
+  const state = await getIdentityState();
+  if (!state.user) redirect("/login?next=/onboarding/guardian");
+  if (!state.profile || state.checkpoint?.status !== "completed")
+    redirect("/onboarding/identity");
+  if (!state.profile.is_minor) redirect("/continue");
+  const parsed = parentDeclarationSchema.safeParse({
+    parentName: formData.get("parent_name"),
+    relationship: formData.get("relationship"),
+    declaration: formData.get("declaration"),
+  });
+  if (!parsed.success)
+    return {
+      message:
+        "Please ask your parent or legal guardian to fill in their name, choose their relationship and tick the approval box.",
+    };
+  const { error } = await invoke("record_parent_learning_attestation", {
+    parent_name_input: parsed.data.parentName,
+    relationship_input: parsed.data.relationship,
+    declaration_input: true,
+  });
+  if (error)
+    return {
+      message:
+        "We could not save the approval. Please try again. Your approval must be saved before you can continue.",
+    };
+  revalidatePath("/", "layout");
+  redirect("/continue");
+}
+
+export async function withdrawParentLearningAttestationAction(
+  _previous: { message: string },
+  formData: FormData,
+): Promise<{ message: string }> {
+  const state = await getIdentityState();
+  if (!state.user) redirect("/login?next=/account-privacy");
+  if (formData.get("withdraw") !== "on")
+    return { message: "Please confirm that private learning will pause." };
+  const approval = await getGuardianAuthorizationState();
+  if (approval?.status !== "parent_declared")
+    return { message: "There is no on-device parent approval to withdraw." };
+  const { error } = await invoke("withdraw_consent", {
+    consent_type_input: "guardian_required",
+    policy_version_input: "2026-10-16-parent-device-v1",
+  });
+  if (error)
+    return { message: "We could not withdraw the approval. Please try again." };
+  revalidatePath("/", "layout");
+  redirect("/onboarding/guardian");
 }

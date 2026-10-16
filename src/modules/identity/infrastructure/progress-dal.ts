@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createLogger } from "@/lib/observability/logger";
 import {
@@ -7,7 +8,10 @@ import {
   type AuthenticatedProgressSnapshot,
   type PortfolioProgressStatus,
 } from "../domain/progress";
-import { currentIdentityNeedsGuardianAuthorization } from "./identity-dal";
+import {
+  currentIdentityNeedsGuardianAuthorization,
+  getIdentityState,
+} from "./identity-dal";
 import { createProgressServerClient } from "./progress-client";
 
 const logger = createLogger();
@@ -87,26 +91,37 @@ function emptySnapshot(authenticated = false): AuthenticatedProgressSnapshot {
 export async function getAuthenticatedHomeState(
   clientInput?: Awaited<ReturnType<typeof createProgressServerClient>>,
 ): Promise<AuthenticatedHomeState | null> {
+  return clientInput
+    ? loadAuthenticatedHomeState(clientInput)
+    : getCachedHomeState();
+}
+
+const getCachedHomeState = cache(() => loadAuthenticatedHomeState());
+
+async function loadAuthenticatedHomeState(
+  clientInput?: Awaited<ReturnType<typeof createProgressServerClient>>,
+): Promise<AuthenticatedHomeState | null> {
   const client = clientInput ?? (await createProgressServerClient());
-  const {
-    data: { user },
-    error: userError,
-  } = await client.auth.getUser();
-
-  if (userError || !user) return null;
-
-  const [{ data: profile }, { data: checkpoint }] = await Promise.all([
-    client
-      .from("profiles")
-      .select("preferred_name,display_name")
-      .eq("id", user.id)
-      .maybeSingle(),
-    client
-      .from("onboarding_checkpoints")
-      .select("status")
-      .eq("user_id", user.id)
-      .maybeSingle(),
-  ]);
+  // Auth callbacks pass their newly authenticated client and must read fresh state.
+  // Page renders reuse the request-scoped identity read used by layouts and gates.
+  const identity = clientInput ? null : await getIdentityState();
+  const authResult = clientInput ? await client.auth.getUser() : null;
+  const user = identity?.user ?? authResult?.data.user;
+  if (authResult?.error || !user) return null;
+  const [{ data: profile }, { data: checkpoint }] = identity
+    ? [{ data: identity.profile }, { data: identity.checkpoint }]
+    : await Promise.all([
+        client
+          .from("profiles")
+          .select("preferred_name,display_name")
+          .eq("id", user.id)
+          .maybeSingle(),
+        client
+          .from("onboarding_checkpoints")
+          .select("status")
+          .eq("user_id", user.id)
+          .maybeSingle(),
+      ]);
 
   const identityComplete = Boolean(
     profile && checkpoint?.status === "completed",
