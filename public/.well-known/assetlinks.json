@@ -5,7 +5,10 @@
       "namespace": "android_app",
       "package_name": "ng.name.pipupath.lite",
       "sha256_cert_fingerprints": [
-        "8E:24:7B:ED:BB:2E:5C:A7:D2:B6:CC:D1:88:E2:00:32:6C:7E:65:28:18:4C:76:EA:CE:96:BC:F0:3B:D2:59:8C"
+        "8E:24:7B:ED:BB:2E:5C:A7:D2:B6:CC:D1:88:E2:00:32:6C:7E:65:28:18:4C:76:EA:CE:96:BC:F0:3B:D2:59:8C",
+        "AF:B1:29:E2:70:05:8F:50:BE:7E:1A:5C:F5:55:F4:BA:00:F9:31:1C:28:67:32:09:1B:AE:79:1E:95:22:18:24",
+        "3D:CA:99:31:5E:B1:52:DB:06:0E:E7:A7:99:39:B6:13:6C:94:54:BF:37:DC:D7:F8:A7:80:F2:72:FB:56:22:B1",
+        "54:99:1F:B8:3A:14:B4:6A:B4:7D:6A:3F:80:98:C0:D6:1E:0E:BC:DD:90:2B:C6:48:BC:2B:73:B4:C2:4A:55:1A"
       ]
     }
   },
