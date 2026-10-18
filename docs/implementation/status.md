@@ -403,3 +403,15 @@ share a 45-second total budget. Tests cover persistence boundaries and request
 isolation. See parent-approval-and-loading.md for evidence and release order.
 Live release awaits restored access to the verified PipuPath database and
 verification against the production environment; no live change is claimed.
+
+## 2026-10-18 — Play signing trust repair
+
+Owner supplied three Play app-signing SHA-256 fingerprints after reporting a
+Chrome Custom Tab toolbar in the installed Play Store app. Added all three to
+the existing production package entry in public/.well-known/assetlinks.json,
+retaining the direct-download signing certificate and development entry. No
+Android binary, package identity or signing key changes. Google previously read
+the www endpoint with only the direct-download certificate; the apex endpoint
+redirects and is not used by the current Android host configuration. Production
+verification must check the new associations through Google Digital Asset Links
+and a fresh launch of the Play-installed app. Android may cache verification.

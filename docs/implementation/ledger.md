@@ -999,3 +999,15 @@ OpenAI retries share one 45-second budget. Added action, real React request-cach
 and embedded PostgreSQL boundary tests. See parent-approval-and-loading.md.
 PipuPath database access is unavailable in the current connector; no live
 migration, deployment or production latency claim is made.
+
+## 2026-10-18 — Play signing trust repair
+
+Owner supplied three Play app-signing SHA-256 fingerprints after reporting a
+Chrome Custom Tab toolbar in the installed Play Store app. Added all three to
+the existing production package entry in public/.well-known/assetlinks.json,
+retaining the direct-download signing certificate and development entry. No
+Android binary, package identity or signing key changes. Google previously read
+the www endpoint with only the direct-download certificate; the apex endpoint
+redirects and is not used by the current Android host configuration. Production
+verification must check the new associations through Google Digital Asset Links
+and a fresh launch of the Play-installed app. Android may cache verification.
