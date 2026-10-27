@@ -1098,3 +1098,27 @@ forcing dark headings/numbers even after action labels were fixed. Added the
 more-specific dark-game main scope and summary foreground. Readable label/CTA
 pairs and the complete garden disruption/revision path were observed; full-screen
 contrast verification is repeated after this cascade correction.
+
+## 27 October — connected neighbourhood story slice
+
+Authority: user approved the proposed life-simulation-inspired direction. Added
+one original neighbourhood with tap/keyboard character movement, recurring
+fictional neighbours, three linked interaction types, visible creations and
+references to the earlier invitation motif. The opening sign, assembly and route
+puzzles introduce the new controls; entertainment/retention is not measured.
+
+Implemented a versioned, bounded, opt-in browser save scoped to authenticated user
+ID. Parse rejects malformed/oversized/invalid/inconsistent records. Saves contain
+only fictional enum/coordinate/tile/route state. Opt-out removes the save; unavailable
+storage never blocks play. No user profile/evidence/reflection/Quest narrative is
+stored. No cloud save, backend migration, multiplayer, XP or capability write.
+Actual Quest continuation is obtained server-side through the existing identity
+and progress DAL. An exact auth-return entry supports the protected new route.
+
+Focused city tests passed (32): full linked story, sequential gates, route blocking,
+assembly, corruption recovery, opt-in save/resume/opt-out, keyboard movement and
+storage failure. Types passed. Full validation and exact-preview checks follow.
+
+Full npm run validate passed: formatting, zero-warning lint, strict types, 476
+unit/component tests with coverage, 251 integration tests and production build.
+No physical-device, retention or real-life transfer result is claimed.

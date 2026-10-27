@@ -16,6 +16,8 @@ describe("safeNextPath", () => {
       "/build/play/neighbourhood-garden-v1",
     );
     expect(safeNextPath("/build/unknown")).toBe("/app");
+    expect(safeNextPath("/build/neighbourhood")).toBe("/build/neighbourhood");
+    expect(safeNextPath("/build/neighbourhood-evil")).toBe("/app");
   });
 
   it("rejects external, protocol-relative and unknown redirects", () => {

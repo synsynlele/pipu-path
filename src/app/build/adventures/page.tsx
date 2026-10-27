@@ -172,6 +172,29 @@ export default async function AdventureHubPage() {
           </div>
         </section>
 
+        <section
+          className="rounded-3xl border border-[#efc87f]/45 bg-[#142f3d] p-5 sm:p-7"
+          aria-labelledby="neighbourhood-heading"
+        >
+          <p className="text-xs font-bold tracking-widest text-[#efc87f] uppercase">
+            A connected story · Start here
+          </p>
+          <h2 id="neighbourhood-heading" className="mt-2 text-2xl font-bold">
+            Your character. Your neighbourhood.
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[#d0deeb]">
+            Walk the square. Help Ada show the way, assemble a stall with Timi,
+            then route Mama Jo&apos;s supplies. Your choices change what happens
+            next.
+          </p>
+          <Link
+            href="/build/neighbourhood"
+            className="adventure-action mt-4 inline-flex min-h-12 items-center rounded-full px-5 text-sm font-bold"
+          >
+            Enter my neighbourhood →
+          </Link>
+        </section>
+
         <section aria-labelledby="journey-route-heading">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>

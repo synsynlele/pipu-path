@@ -1,0 +1,80 @@
+.neighbourhood-map {
+  min-height: 440px;
+  aspect-ratio: 6 / 5;
+}
+.neighbourhood-avatar {
+  z-index: 20;
+  transition:
+    left 0.55s ease,
+    top 0.55s ease;
+}
+.neighbourhood .neighbourhood-place {
+  color: #f6f8fc;
+  min-height: 48px;
+  min-width: 84px;
+}
+.neighbourhood button:not(.adventure-action):not([class*="pp-button-"]) {
+  color: #f6f8fc;
+}
+.stall-piece {
+  display: block;
+  background: #dbb276;
+  box-shadow: inset -5px -4px 0 #75583a;
+}
+.stall-post {
+  width: 14px;
+  height: 58px;
+  border-radius: 3px;
+}
+.stall-counter {
+  width: 85%;
+  height: 25px;
+  border-radius: 4px;
+}
+.stall-roof {
+  width: 95%;
+  height: 34px;
+  background: repeating-linear-gradient(
+    90deg,
+    #dbb276 0 14px,
+    #72b8a5 14px 28px
+  );
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+}
+.invitation-runner {
+  left: 8%;
+  transition: left 1.2s ease;
+}
+.invitation-runner.invitation-right {
+  left: 85%;
+}
+.invitation-runner.invitation-wrong {
+  left: 0;
+}
+.route-running polyline {
+  stroke-dasharray: 4 2;
+  animation: route-flow 1s linear 3;
+}
+@keyframes route-flow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+@media (max-width: 400px) {
+  .neighbourhood-map {
+    min-height: 385px;
+  }
+  .neighbourhood .neighbourhood-place {
+    min-width: 72px;
+    padding: 8px 5px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .neighbourhood-avatar,
+  .invitation-runner {
+    transition: none;
+  }
+  .route-running polyline {
+    animation: none;
+  }
+}

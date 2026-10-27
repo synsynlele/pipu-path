@@ -6,6 +6,7 @@ const allowedExactPaths = new Set([
   "/build/adventures",
   "/build/play/neighbourhood-garden-v1",
   "/build/play",
+  "/build/neighbourhood",
   "/onboarding/identity",
   "/onboarding/guardian",
   "/guardian",

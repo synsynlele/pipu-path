@@ -147,7 +147,7 @@ export function JourneyPlayCard({
           ))}
         </ol>
         <Link
-          href="/build/adventures"
+          href="/build/neighbourhood"
           className="adventure-hub-link relative isolate flex min-h-[7rem] items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#b6a8d7] bg-[#172a40] p-4 text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6848dc]"
         >
           <CinematicImage
@@ -160,9 +160,11 @@ export function JourneyPlayCard({
               <CityIcon name="play" className="size-6" />
             </span>
             <span>
-              <strong className="block text-sm">Enter the Adventure Hub</strong>
+              <strong className="block text-sm">
+                Enter your neighbourhood
+              </strong>
               <span className="mt-1 block text-xs text-indigo-100">
-                Explore six worlds and respond to changing situations
+                Meet your neighbours. Build a story that continues.
               </span>
             </span>
           </span>

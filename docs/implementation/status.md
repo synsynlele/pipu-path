@@ -460,3 +460,14 @@ options are explained, and revised plans must pass the same resource evaluator.
 Attempt comparison shows changes in fictional reach/benefit. Practice writes no
 Quest evidence or XP. Enumeration verifies solvability and changed-plan demands.
 Full validation and exact-preview browser evidence are separate release checks.
+
+## 27 October — connected neighbourhood first story candidate
+
+User approved life-simulation inspiration. Added an original connected map with a
+movable/customisable character and Ada → Timi → Mama Jo encounters: invitation
+wayfinding, stall assembly and a supply route around a closed bridge. Choices
+appear in later dialogue and visible map changes. Adventure Hub/shared journey
+card link the new route to the same real Quest. Optional user-scoped device save
+supports returning on this browser; cloud saves and verified rewards are absent.
+See product/connected-neighbourhood.md. Browser/mobile/release status must be
+reported separately from source and automated checks.
