@@ -1,4 +1,7 @@
 .neighbourhood-map {
+  display: block;
+  width: 100%;
+  min-width: 0;
   min-height: 440px;
   aspect-ratio: 6 / 5;
 }
@@ -60,13 +63,37 @@
     stroke-dashoffset: -12;
   }
 }
-@media (max-width: 400px) {
+@media (max-width: 639px) {
+  /* Min-height + aspect-ratio previously expanded the map beyond a phone viewport.
+     Fit the game board inside its card before calculating its height. */
   .neighbourhood-map {
-    min-height: 385px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 3 / 4;
   }
   .neighbourhood .neighbourhood-place {
-    min-width: 72px;
-    padding: 8px 5px;
+    min-width: 0;
+    width: 25%;
+    max-width: 88px;
+    padding: 8px 4px;
+    font-size: 0.67rem;
+    overflow-wrap: anywhere;
+  }
+  .neighbourhood .neighbourhood-place > span {
+    max-width: 100%;
+    min-width: 0;
+  }
+  .neighbourhood .neighbourhood-place > span:last-child {
+    flex-wrap: wrap;
+    line-height: 1.1;
+  }
+}
+@media (max-width: 350px) {
+  .neighbourhood .neighbourhood-place {
+    width: 27%;
+    padding: 6px 3px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
