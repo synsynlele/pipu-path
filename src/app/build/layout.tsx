@@ -1,3 +1,5 @@
+import { GameDirectory } from "@/modules/city/ui/game-directory";
+import "@/modules/city/ui/adventure-theme.css";
 import { AppShell } from "@/components/shells/app-shell";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 
@@ -6,5 +8,10 @@ export default async function BuildLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   await requireAuthenticatedIdentity();
 
-  return <AppShell>{children}</AppShell>;
+  return (
+    <AppShell>
+      <GameDirectory />
+      {children}
+    </AppShell>
+  );
 }

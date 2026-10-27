@@ -71,3 +71,19 @@ closed-link/collection/move constraints and corrupt/inconsistent saves. Componen
 tests complete the three encounters, preserve the real Quest destination, verify
 opt-in save/resume/opt-out and storage failure recovery. Full repository validation
 and an exact deployed-preview walkthrough must be recorded independently.
+
+## Direct interaction revision — 27 October
+
+User feedback rejected hidden game navigation and static card selection. A Games
+shortcut is now in the authenticated header, and every Build screen exposes the
+complete bounded game directory. The hub starts with the neighbourhood.
+
+The stall workbench supports captured pointer dragging with mouse, pen or touch;
+materials follow the pointer, snap into the frame and can swap occupied cells.
+Outside drops and cancellation preserve the board. Keyboard/tap selection remains
+an equivalent alternative. Holdable direction controls move the character; walking,
+material landing and a delivery vehicle communicate motion and consequence.
+Reduced motion removes decorative movement. This remains a 2D scene, not a 3D
+world, collision/physics engine, or proof that the game is engaging. The other six
+worlds retain their existing planning interactions; they are not represented as
+converted to direct manipulation. No persistence or real Quest rules change.

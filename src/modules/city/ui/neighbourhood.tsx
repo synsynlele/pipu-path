@@ -4,6 +4,8 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { MovementPad } from "./movement-pad";
+import { StallWorkbench } from "./stall-workbench";
 import { CityIcon } from "./city-art";
 import {
   spots,
@@ -24,7 +26,7 @@ import "./adventure-theme.css";
 import "./neighbourhood.css";
 
 const coats = { gold: "#f0c579", indigo: "#b5a4ef", teal: "#8be0cb" };
-const pieces = { post: "Support", counter: "Counter", roof: "Roof" } as const;
+
 export function Neighbourhood({
   userId,
   questHref,
@@ -39,7 +41,6 @@ export function Neighbourhood({
   const [keep, setKeep] = useState(false);
   const [notice, setNotice] = useState("");
   const [feedback, setFeedback] = useState("");
-  const [piece, setPiece] = useState<"post" | "counter" | "roof">("post");
   const [signTested, setSignTested] = useState(false);
   const [running, setRunning] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -213,10 +214,14 @@ export function Neighbourhood({
                 alt=""
                 fill
                 sizes="(max-width: 1024px) 100vw, 600px"
-                className="pointer-events-none object-cover"
+                className="neighbourhood-backdrop pointer-events-none object-cover"
                 preload
               />
               <div className="pointer-events-none absolute inset-0 bg-[#071a29]/30" />
+              <div
+                aria-hidden="true"
+                className="scene-atmosphere pointer-events-none absolute inset-0"
+              />
               <svg
                 aria-hidden="true"
                 viewBox="0 0 100 100"
@@ -322,13 +327,29 @@ export function Neighbourhood({
                   top: `${state.position.y}%`,
                 }}
               >
-                <Player coat={coats[state.avatar]} />
+                <span
+                  key={`${state.position.x}-${state.position.y}`}
+                  className="walking-character block"
+                >
+                  <Player coat={coats[state.avatar]} />
+                </span>
                 <span className="block rounded-full bg-[#0a1d2e] px-2 text-center text-[10px] text-white">
                   You
                 </span>
               </div>
             </div>
-            <p className="px-4 py-3 text-xs leading-5 text-[#d0deeb]">
+            <MovementPad
+              onMove={(x, y) =>
+                update({
+                  ...state,
+                  position: {
+                    x: Math.max(6, Math.min(94, state.position.x + x)),
+                    y: Math.max(12, Math.min(90, state.position.y + y)),
+                  },
+                })
+              }
+            />
+            <p className="px-4 pb-3 text-xs leading-5 text-[#d0deeb]">
               Tap the ground to move. Tap a neighbour to talk. Keyboard: focus
               the map and use arrow keys.
             </p>
@@ -532,55 +553,13 @@ export function Neighbourhood({
                       make a stall: a roof across the top, a support on each
                       side, and a counter at the bottom.”
                     </p>
-                    <div
-                      className="grid grid-cols-3 gap-2"
-                      aria-label="Stall assembly board"
-                    >
-                      {state.build.map((cell, index) => (
-                        <button
-                          key={index}
-                          aria-label={`Row ${Math.floor(index / 3) + 1}, column ${(index % 3) + 1}: ${cell ?? "empty"}`}
-                          onClick={() => {
-                            const next = [...state.build];
-                            next[index] = cell === piece ? null : piece;
-                            update({ ...state, build: next });
-                            setFeedback("");
-                          }}
-                          className="stall-cell relative grid min-h-20 place-items-center overflow-hidden rounded-xl border border-white/25 bg-[#173640]"
-                        >
-                          <span className="absolute top-1 left-2 text-[10px] text-[#b6cbd6]">
-                            {index + 1}
-                          </span>
-                          {cell && (
-                            <span
-                              aria-hidden="true"
-                              className={`stall-piece stall-${cell}`}
-                            />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                    <div
-                      className="flex flex-wrap gap-2"
-                      aria-label="Choose a building piece"
-                    >
-                      {(Object.keys(pieces) as (keyof typeof pieces)[]).map(
-                        (id) => (
-                          <button
-                            key={id}
-                            aria-pressed={piece === id}
-                            onClick={() => setPiece(id)}
-                            className={`min-h-11 rounded-xl border px-4 text-sm ${piece === id ? "border-[#f1ce8e] bg-[#40505a]" : "border-white/25 bg-[#0b1e2d]"}`}
-                          >
-                            {pieces[id]}
-                          </button>
-                        ),
-                      )}
-                    </div>
-                    <p className="text-xs text-[#c6d6e2]">
-                      Choose a piece, then tap a square. Tap it again with the
-                      same piece to remove it.
-                    </p>
+                    <StallWorkbench
+                      build={state.build}
+                      onChange={(build) => {
+                        update({ ...state, build });
+                        setFeedback("");
+                      }}
+                    />
                     <Button
                       className="adventure-action rounded-full"
                       onClick={() => {
@@ -636,6 +615,39 @@ export function Neighbourhood({
                           strokeWidth="2"
                         />
                       </svg>
+                      {running && (
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 100 100"
+                          preserveAspectRatio="none"
+                          className="delivery-traveller pointer-events-none absolute inset-0 size-full"
+                        >
+                          <g>
+                            <animateMotion
+                              dur={`${Math.max(2, state.route.length * 0.65)}s`}
+                              fill="freeze"
+                              path={state.route
+                                .map((id, i) => {
+                                  const n = routeNodes.find(
+                                    (node) => node.id === id,
+                                  )!;
+                                  return `${i === 0 ? "M" : "L"}${n.x},${n.y}`;
+                                })
+                                .join(" ")}
+                            />
+                            <rect
+                              x="-4"
+                              y="-3"
+                              width="8"
+                              height="5"
+                              rx="1"
+                              fill="#f1ce8e"
+                            />
+                            <circle cx="-2" cy="3" r="1.5" fill="#fff" />
+                            <circle cx="2" cy="3" r="1.5" fill="#fff" />
+                          </g>
+                        </svg>
+                      )}
                       <span className="absolute top-1 left-[54%] text-[10px] text-[#ffc2c2]">
                         Bridge closed
                       </span>

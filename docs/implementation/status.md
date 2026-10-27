@@ -471,3 +471,12 @@ card link the new route to the same real Quest. Optional user-scoped device save
 supports returning on this browser; cloud saves and verified rewards are absent.
 See product/connected-neighbourhood.md. Browser/mobile/release status must be
 reported separately from source and automated checks.
+
+## 27 October — direct manipulation candidate
+
+Responding to user feedback, game access is exposed in the authenticated header
+and all Build routes. Neighbourhood stall assembly now supports touch/mouse/pen
+dragging, rearrangement and keyboard/tap alternatives. Hold-to-walk controls and a
+visible delivery vehicle improve motion feedback. These reusable controls are the
+foundation for further world conversions; existing six-world planning mechanics
+are unchanged. Full checks and preview verification are recorded in the ledger.

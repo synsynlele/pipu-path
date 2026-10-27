@@ -98,13 +98,6 @@ export default async function AdventureHubPage() {
   const steps = adventureTrail(quest);
   const level = getBuilderLevelProgress(state.totalXp);
   const questReady = quest?.status === "evidence_submitted";
-  const primaryLabel = questReady
-    ? "Reflect on your Quest"
-    : quest?.status === "active"
-      ? "Continue your real Quest"
-      : "Enter The Unbuilt City";
-  const primaryHref =
-    questReady || quest?.status === "active" ? next.actionHref : next.playHref;
 
   return (
     <main
@@ -153,10 +146,10 @@ export default async function AdventureHubPage() {
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
-                  href={primaryHref}
+                  href="/build/neighbourhood"
                   className="adventure-action inline-flex min-h-12 items-center rounded-full bg-[#efbe60] px-5 text-sm font-extrabold text-[#132033] shadow-lg transition hover:bg-[#ffd88a]"
                 >
-                  {primaryLabel}{" "}
+                  Enter my neighbourhood{" "}
                   <span className="ml-2" aria-hidden="true">
                     →
                   </span>

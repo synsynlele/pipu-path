@@ -1130,3 +1130,21 @@ reported success. Screenshot inspection found player/location-label overlap;
 spawn/arrival points now stand beside labels and neighbours have visible character
 markers. Full validation passed again (476 + 251 tests and production build).
 Save restoration and corrected-layout verification follow on the final preview.
+
+## 27 October — game discoverability and direct manipulation
+
+User requested visible game access, movement and building by moving objects.
+Added authenticated Games shortcuts and a complete directory across Build routes.
+The hub's first action enters the neighbourhood. Extracted reusable pointer-based
+stall workbench with touch capture, drag ghost, snap placement, swaps, outside-drop
+recovery and keyboard/tap parity. Added hold-to-walk controls, walking/arrival and
+placement motion, and an animated vehicle along the chosen delivery route.
+Reduced-motion alternatives preserve controls and route outcomes. No XP, evidence,
+profile, database or save-schema changes. Other worlds retain planning mechanics.
+Validation and deployed-browser results follow; no production release claimed.
+
+Full npm run validate passed: 478 unit/component tests, 251 integration tests,
+formatting, zero-warning lint, types and production build. Pointer tests cover
+material placement, swaps and outside drops; hold-control tests cover repeated
+movement, cancellation and timer cleanup. Existing linked-story/save tests pass.
+Deployed browser/touch/Android verification remains distinct from these checks.
