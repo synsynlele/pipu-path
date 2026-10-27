@@ -7,7 +7,10 @@ import { cityContinuation } from "@/modules/city/domain/continuation";
 import { CinematicImage } from "@/modules/city/ui/cinematic-art";
 import { adventureScenes } from "@/modules/city/ui/adventure-scenes";
 import { getGameChapter } from "@/modules/city/domain/chapters";
-import { worldDirectory, worldPresentations } from "@/modules/city/ui/world-presentation";
+import {
+  worldDirectory,
+  worldPresentations,
+} from "@/modules/city/ui/world-presentation";
 import { CityIcon, type IconName } from "@/modules/city/ui/city-art";
 
 export const metadata: Metadata = {
@@ -42,7 +45,7 @@ function AdventureTile({
 }) {
   const content = (
     <div
-      className={`group relative isolate flex min-h-[17rem] min-w-0 max-w-full flex-col justify-between overflow-hidden rounded-[1.5rem] border border-white/15 bg-[#102338] p-5 text-white shadow-[0_18px_50px_-30px_rgba(0,0,0,.8)] sm:min-h-[20rem] ${locked ? "opacity-75" : "transition-transform duration-300 hover:-translate-y-1"}`}
+      className={`group relative isolate flex min-h-[17rem] max-w-full min-w-0 flex-col justify-between overflow-hidden rounded-[1.5rem] border border-white/15 bg-[#102338] p-5 text-white shadow-[0_18px_50px_-30px_rgba(0,0,0,.8)] sm:min-h-[20rem] ${locked ? "opacity-75" : "transition-transform duration-300 hover:-translate-y-1"}`}
     >
       <CinematicImage
         src={src}
@@ -78,7 +81,7 @@ function AdventureTile({
     <Link
       href={href}
       aria-label={`Enter ${title}`}
-      className="block min-w-0 max-w-full rounded-[1.5rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e8bd68]"
+      className="block max-w-full min-w-0 rounded-[1.5rem] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e8bd68]"
     >
       {content}
     </Link>
@@ -105,9 +108,9 @@ export default async function AdventureHubPage() {
   return (
     <main
       id="main-content"
-      className="min-h-screen w-full min-w-0 max-w-full overflow-x-clip bg-[#09172a] pb-14 text-white"
+      className="min-h-screen w-full max-w-full min-w-0 overflow-x-clip bg-[#09172a] pb-14 text-white"
     >
-      <div className="mx-auto w-full min-w-0 max-w-6xl space-y-8 px-3 pt-4 sm:px-7 sm:pt-8">
+      <div className="mx-auto w-full max-w-6xl min-w-0 space-y-8 px-3 pt-4 sm:px-7 sm:pt-8">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold">
           <Link
             href="/build"
@@ -254,7 +257,7 @@ export default async function AdventureHubPage() {
               actions are what count.
             </p>
           </div>
-          <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+          <div className="grid min-w-0 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             <AdventureTile
               number="Adventure 01"
               title="The Unbuilt City"

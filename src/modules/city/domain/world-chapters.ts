@@ -38,7 +38,8 @@ function situation(
 export const riverChapter: GameChapter = {
   id: "river-renewal-v1",
   title: "The River Renewal",
-  description: "Bring life back to a neighbourhood stream with the people who depend on it.",
+  description:
+    "Bring life back to a neighbourhood stream with the people who depend on it.",
   choices: [
     action("cleanup", "Organise a safe clean-up", 2, 2, 2, 8, 2),
     action("testing", "Check water conditions", 2, 1, 1, 5, 2),
@@ -48,16 +49,38 @@ export const riverChapter: GameChapter = {
     action("invite", "Bring neighbours together", 1, 1, 1, 10, 1),
   ],
   scenarios: [
-    situation("waste", "A river full of waste", { cost: 9, time: 7, crew: 7 }, ["cleanup", "testing", "bins", "invite"], 26, 5),
-    situation("rain", "Rain is approaching", { cost: 9, time: 8, crew: 8 }, ["cleanup", "paths", "plants"], 21, 5),
-    situation("return", "Keep the change alive", { cost: 9, time: 7, crew: 8 }, ["testing", "bins", "plants", "invite"], 27, 6),
+    situation(
+      "waste",
+      "A river full of waste",
+      { cost: 9, time: 7, crew: 7 },
+      ["cleanup", "testing", "bins", "invite"],
+      26,
+      5,
+    ),
+    situation(
+      "rain",
+      "Rain is approaching",
+      { cost: 9, time: 8, crew: 8 },
+      ["cleanup", "paths", "plants"],
+      21,
+      5,
+    ),
+    situation(
+      "return",
+      "Keep the change alive",
+      { cost: 9, time: 7, crew: 8 },
+      ["testing", "bins", "plants", "invite"],
+      27,
+      6,
+    ),
   ],
 };
 
 export const learningChapter: GameChapter = {
   id: "learning-district-v1",
   title: "The Learning District",
-  description: "Give young people a welcoming space to learn—even when resources are tight.",
+  description:
+    "Give young people a welcoming space to learn—even when resources are tight.",
   choices: [
     action("reading", "Create a reading corner", 2, 2, 1, 8, 2),
     action("access", "Make the space accessible", 2, 1, 2, 7, 1),
@@ -67,16 +90,38 @@ export const learningChapter: GameChapter = {
     action("club", "Start peer learning circles", 2, 2, 2, 10, 2),
   ],
   scenarios: [
-    situation("opening", "The first class begins", { cost: 9, time: 7, crew: 7 }, ["reading", "access", "mentor"], 24, 5),
-    situation("exams", "Exams are near", { cost: 9, time: 7, crew: 7 }, ["supplies", "mentor", "club"], 26, 5),
-    situation("offline", "The internet goes down", { cost: 8, time: 7, crew: 7 }, ["reading", "supplies", "club"], 25, 5),
+    situation(
+      "opening",
+      "The first class begins",
+      { cost: 9, time: 7, crew: 7 },
+      ["reading", "access", "mentor"],
+      24,
+      5,
+    ),
+    situation(
+      "exams",
+      "Exams are near",
+      { cost: 9, time: 7, crew: 7 },
+      ["supplies", "mentor", "club"],
+      26,
+      5,
+    ),
+    situation(
+      "offline",
+      "The internet goes down",
+      { cost: 8, time: 7, crew: 7 },
+      ["reading", "supplies", "club"],
+      25,
+      5,
+    ),
   ],
 };
 
 export const makersChapter: GameChapter = {
   id: "makers-market-v1",
   title: "The Makers' Market",
-  description: "Help young creators turn promising skills into useful local businesses.",
+  description:
+    "Help young creators turn promising skills into useful local businesses.",
   choices: [
     action("stalls", "Set up shared stalls", 3, 2, 2, 9, 2),
     action("signs", "Invite local customers", 1, 1, 1, 8, 1),
@@ -86,16 +131,38 @@ export const makersChapter: GameChapter = {
     action("catalogue", "Create a product catalogue", 2, 2, 1, 10, 2),
   ],
   scenarios: [
-    situation("opening", "Opening weekend", { cost: 9, time: 7, crew: 7 }, ["stalls", "signs", "safety"], 24, 5),
-    situation("blackout", "The power goes out", { cost: 8, time: 6, crew: 6 }, ["stalls", "signs", "shade"], 24, 4),
-    situation("costs", "Costs are rising", { cost: 7, time: 7, crew: 6 }, ["signs", "mentors", "catalogue"], 27, 6),
+    situation(
+      "opening",
+      "Opening weekend",
+      { cost: 9, time: 7, crew: 7 },
+      ["stalls", "signs", "safety"],
+      24,
+      5,
+    ),
+    situation(
+      "blackout",
+      "The power goes out",
+      { cost: 8, time: 6, crew: 6 },
+      ["stalls", "signs", "shade"],
+      24,
+      4,
+    ),
+    situation(
+      "costs",
+      "Costs are rising",
+      { cost: 7, time: 7, crew: 6 },
+      ["signs", "mentors", "catalogue"],
+      27,
+      6,
+    ),
   ],
 };
 
 export const foodChapter: GameChapter = {
   id: "food-rescue-v1",
   title: "The Food Rescue",
-  description: "Build a trusted community network that helps good food reach people.",
+  description:
+    "Build a trusted community network that helps good food reach people.",
   choices: [
     action("collect", "Connect surplus food partners", 2, 2, 2, 9, 2),
     action("pack", "Use safe packaging", 2, 1, 1, 7, 2),
@@ -105,8 +172,29 @@ export const foodChapter: GameChapter = {
     action("map", "Map where help is needed", 1, 1, 1, 6, 1),
   ],
   scenarios: [
-    situation("first", "Food is going to waste", { cost: 9, time: 7, crew: 7 }, ["collect", "pack", "partners", "delivery"], 30, 6),
-    situation("heat", "A hot day changes the plan", { cost: 10, time: 7, crew: 7 }, ["collect", "pack", "storage", "delivery"], 31, 7),
-    situation("shortage", "The supply is smaller", { cost: 7, time: 6, crew: 6 }, ["partners", "map", "pack", "delivery"], 30, 5),
+    situation(
+      "first",
+      "Food is going to waste",
+      { cost: 9, time: 7, crew: 7 },
+      ["collect", "pack", "partners", "delivery"],
+      30,
+      6,
+    ),
+    situation(
+      "heat",
+      "A hot day changes the plan",
+      { cost: 10, time: 7, crew: 7 },
+      ["collect", "pack", "storage", "delivery"],
+      31,
+      7,
+    ),
+    situation(
+      "shortage",
+      "The supply is smaller",
+      { cost: 7, time: 6, crew: 6 },
+      ["partners", "map", "pack", "delivery"],
+      30,
+      5,
+    ),
   ],
 };

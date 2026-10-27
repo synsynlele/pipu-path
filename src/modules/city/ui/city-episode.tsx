@@ -157,7 +157,7 @@ export function CityEpisode({
   return (
     <main
       id="main-content"
-      className="w-full min-w-0 max-w-full overflow-x-clip bg-[#f7f8fc] pb-10 text-[#25284a]"
+      className="w-full max-w-full min-w-0 overflow-x-clip bg-[#f7f8fc] pb-10 text-[#25284a]"
     >
       <header className="bg-[#201b59] px-4 py-4 text-white sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
@@ -172,7 +172,7 @@ export function CityEpisode({
           </p>
         </div>
       </header>
-      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-4 px-3 pt-4 sm:px-6">
+      <div className="mx-auto w-full max-w-5xl min-w-0 space-y-4 px-3 pt-4 sm:px-6">
         <nav
           aria-label="Your connected adventure"
           className="grid min-w-0 grid-cols-4 gap-1 rounded-2xl border border-[#e1ddef] bg-white px-2 py-3 text-[0.65rem] font-semibold sm:gap-3 sm:px-3 sm:text-xs"
@@ -340,7 +340,9 @@ export function CityEpisode({
                     name={roleIcons[item.id]}
                     className="my-5 size-8 text-[#6343cc] sm:size-10"
                   />
-                  <strong className="max-w-full text-xs break-words sm:text-base">{item.title}</strong>
+                  <strong className="max-w-full text-xs break-words sm:text-base">
+                    {item.title}
+                  </strong>
                   <span className="sr-only">{item.detail}</span>
                 </label>
               ))}
@@ -452,7 +454,7 @@ export function CityEpisode({
                     aria-label={`${build.title}. ${build.cost} supplies, ${build.time} hours, ${build.crew} helpers. ${build.visitors} visitors, ${build.joy} enjoyment.`}
                     aria-pressed={plan.includes(build.id)}
                     onClick={() => toggle(build.id)}
-                    className={`city-site group relative flex min-h-0 min-w-0 max-w-full flex-col items-center justify-end overflow-hidden rounded-xl border px-1 py-2 sm:rounded-2xl focus-visible:outline-4 focus-visible:outline-white ${plan.includes(build.id) ? "border-[#eaca88] bg-[#261c50]/80 text-white" : "border-white/40 bg-[#201b59]/60 text-white"}`}
+                    className={`city-site group relative flex min-h-0 max-w-full min-w-0 flex-col items-center justify-end overflow-hidden rounded-xl border px-1 py-2 focus-visible:outline-4 focus-visible:outline-white sm:rounded-2xl ${plan.includes(build.id) ? "border-[#eaca88] bg-[#261c50]/80 text-white" : "border-white/40 bg-[#201b59]/60 text-white"}`}
                   >
                     <span
                       className="absolute top-1 right-2 text-sm text-[#ffe0a5]"

@@ -20,17 +20,25 @@ function ResourceGauge({
   tone: GaugeTone;
 }) {
   const over = used > limit;
-  const percentage = Math.min(100, Math.round((used / Math.max(1, limit)) * 100));
+  const percentage = Math.min(
+    100,
+    Math.round((used / Math.max(1, limit)) * 100),
+  );
   const tones: Record<GaugeTone, string> = {
     gold: "bg-[#f2c679]",
     teal: "bg-[#7ad5b8]",
     blue: "bg-[#8acaf4]",
   };
   return (
-    <div className={`min-w-0 overflow-hidden rounded-xl border px-2 py-3 sm:rounded-2xl sm:p-4 ${over ? "border-rose-300/50 bg-[#422b34]" : "border-white/15 bg-white/10"}`}>
-      <span className="block text-[0.65rem] font-semibold text-[#c8dceb] sm:text-xs">{label}</span>
-      <strong className="mt-1 block truncate text-base font-extrabold tabular-nums text-white sm:text-xl">
-        {used}<span className="font-normal text-[#b0c5d3]"> / {limit}</span>
+    <div
+      className={`min-w-0 overflow-hidden rounded-xl border px-2 py-3 sm:rounded-2xl sm:p-4 ${over ? "border-rose-300/50 bg-[#422b34]" : "border-white/15 bg-white/10"}`}
+    >
+      <span className="block text-[0.65rem] font-semibold text-[#c8dceb] sm:text-xs">
+        {label}
+      </span>
+      <strong className="mt-1 block truncate text-base font-extrabold text-white tabular-nums sm:text-xl">
+        {used}
+        <span className="font-normal text-[#b0c5d3]"> / {limit}</span>
       </strong>
       <div
         role="progressbar"
@@ -45,7 +53,11 @@ function ResourceGauge({
           style={{ width: `${percentage}%` }}
         />
       </div>
-      {over && <span className="mt-1 block text-[0.6rem] leading-3 text-rose-200">Over limit</span>}
+      {over && (
+        <span className="mt-1 block text-[0.6rem] leading-3 text-rose-200">
+          Over limit
+        </span>
+      )}
     </div>
   );
 }
@@ -61,12 +73,19 @@ function ImpactBar({
   goal: number;
   color: string;
 }) {
-  const percentage = Math.min(100, Math.round((value / Math.max(1, goal)) * 100));
+  const percentage = Math.min(
+    100,
+    Math.round((value / Math.max(1, goal)) * 100),
+  );
   return (
     <div className="min-w-0 rounded-2xl border border-white/15 bg-white/5 p-3">
       <div className="flex min-w-0 items-start justify-between gap-2">
-        <span className="min-w-0 text-xs font-semibold leading-4 text-[#cbdde9]">{label}</span>
-        <span className="shrink-0 text-xs font-bold tabular-nums">{value} / {goal}</span>
+        <span className="min-w-0 text-xs leading-4 font-semibold text-[#cbdde9]">
+          {label}
+        </span>
+        <span className="shrink-0 text-xs font-bold tabular-nums">
+          {value} / {goal}
+        </span>
       </div>
       <div
         role="progressbar"
@@ -76,7 +95,10 @@ function ImpactBar({
         aria-valuenow={value}
         className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/15"
       >
-        <div className="h-full rounded-full transition-[width] duration-300 motion-reduce:transition-none" style={{ width: `${percentage}%`, backgroundColor: color }} />
+        <div
+          className="h-full rounded-full transition-[width] duration-300 motion-reduce:transition-none"
+          style={{ width: `${percentage}%`, backgroundColor: color }}
+        />
       </div>
     </div>
   );
@@ -86,7 +108,10 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const [sceneIndex, setSceneIndex] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
   const [checked, setChecked] = useState(false);
-  const [previous, setPrevious] = useState<{ name: string; choices: number } | null>(null);
+  const [previous, setPrevious] = useState<{
+    name: string;
+    choices: number;
+  } | null>(null);
   const scenario = chapter.scenarios[sceneIndex];
   const world = getWorldPresentation(chapter.id);
   const scene = world?.scenes[scenario.id];
@@ -96,7 +121,10 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const failed = checked && !result.success;
   const cover = scene?.image ?? world?.image ?? "";
   const impactColor = world?.accent ?? "#ecca83";
-  const titleOnWin = chapter.id === "neighbourhood-garden-v1" ? "The garden comes alive." : "Your plan makes a difference.";
+  const titleOnWin =
+    chapter.id === "neighbourhood-garden-v1"
+      ? "The garden comes alive."
+      : "Your plan makes a difference.";
 
   function toggle(id: string) {
     setSelected((choices) =>
@@ -113,14 +141,25 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
     setSceneIndex((index) => index + 1);
     setSelected([]);
     setChecked(false);
-    window.scrollTo?.({ top: 0, behavior: "instant" });
+    document.getElementById("main-content")?.scrollIntoView?.({
+      block: "start",
+      behavior: "instant",
+    });
   }
 
   return (
-    <main id="main-content" className="w-full min-w-0 max-w-full overflow-x-clip bg-[#071a29] pb-16 text-white">
-      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-5 px-3 pt-3 sm:px-6 sm:pt-6">
+    <main
+      id="main-content"
+      className="w-full max-w-full min-w-0 overflow-x-clip bg-[#071a29] pb-16 text-white"
+    >
+      <div className="mx-auto w-full max-w-5xl min-w-0 space-y-5 px-3 pt-3 sm:px-6 sm:pt-6">
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs font-bold">
-          <Link href="/build/adventures" className="inline-flex min-h-11 min-w-0 items-center text-[#c3d7e6] hover:text-white">← All adventures</Link>
+          <Link
+            href="/build/adventures"
+            className="inline-flex min-h-11 min-w-0 items-center text-[#c3d7e6] hover:text-white"
+          >
+            ← All adventures
+          </Link>
           <span className="max-w-full rounded-full border border-[#edc778]/40 bg-[#f3d58b]/10 px-3 py-2 text-center text-[0.65rem] text-[#f9d88f] sm:text-xs">
             Practice world · No XP awarded
           </span>
@@ -128,11 +167,14 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
 
         <section className="relative isolate min-w-0 overflow-hidden rounded-[1.5rem] border border-white/15 bg-[#244b42] shadow-[0_20px_55px_-26px_rgba(0,0,0,.85)] sm:rounded-[1.8rem]">
           <div className="relative flex min-h-[19rem] flex-col justify-end p-4 sm:min-h-[25rem] sm:p-8">
-            {cover && <CinematicImage src={cover} priority className="object-center" />}
+            {cover && (
+              <CinematicImage src={cover} priority className="object-center" />
+            )}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#061820]/95 via-[#09202a]/70 to-[#071b2a]/15" />
-            <div className="relative min-w-0 max-w-2xl">
+            <div className="relative max-w-2xl min-w-0">
               <p className="text-[0.65rem] font-bold tracking-[.14em] text-[#f5d08d] uppercase sm:tracking-[.2em]">
-                {world?.category ?? "Real-life practice"} · Scene {sceneIndex + 1} of {chapter.scenarios.length}
+                {world?.category ?? "Real-life practice"} · Scene{" "}
+                {sceneIndex + 1} of {chapter.scenarios.length}
               </p>
               <h1 className="mt-2 max-w-full text-[1.8rem] leading-[1.08] font-extrabold tracking-tight break-words drop-shadow-lg sm:mt-3 sm:text-[3.25rem]">
                 {chapter.title}
@@ -141,16 +183,25 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                 {scene?.intro ?? chapter.description}
               </p>
               <div className="mt-4 flex min-w-0 flex-wrap items-center gap-2 text-[0.7rem] font-bold">
-                <span className="max-w-full rounded-full border border-white/25 bg-black/35 px-3 py-2 backdrop-blur-md">{scenario.label}</span>
+                <span className="max-w-full rounded-full border border-white/25 bg-black/35 px-3 py-2 backdrop-blur-md">
+                  {scenario.label}
+                </span>
                 <span className="rounded-full border border-white/25 bg-black/35 px-3 py-2 backdrop-blur-md">
                   {selected.length} selected
                 </span>
               </div>
             </div>
           </div>
-          <ol aria-label="Scene progress" className="relative flex gap-1.5 bg-black/40 px-4 py-3 sm:px-8">
+          <ol
+            aria-label="Scene progress"
+            className="relative flex gap-1.5 bg-black/40 px-4 py-3 sm:px-8"
+          >
             {chapter.scenarios.map((item, index) => (
-              <li key={item.id} aria-current={index === sceneIndex ? "step" : undefined} className={`h-1.5 min-w-0 flex-1 rounded-full ${index <= sceneIndex ? "bg-[#f3c779]" : "bg-white/20"}`}>
+              <li
+                key={item.id}
+                aria-current={index === sceneIndex ? "step" : undefined}
+                className={`h-1.5 min-w-0 flex-1 rounded-full ${index <= sceneIndex ? "bg-[#f3c779]" : "bg-white/20"}`}
+              >
                 <span className="sr-only">{item.label}</span>
               </li>
             ))}
@@ -159,22 +210,49 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
 
         {previous && (
           <p className="rounded-xl border border-[#b7dcbe]/20 bg-[#15322f] px-4 py-3 text-xs leading-5 text-[#cbe6d3]">
-            <strong>Situation changed.</strong> Last scene: {previous.name} with {previous.choices} choices.
-            Your plan has reset so you can respond to this new challenge.
+            <strong>Situation changed.</strong> Last scene: {previous.name} with{" "}
+            {previous.choices} choices. Your plan has reset so you can respond
+            to this new challenge.
           </p>
         )}
 
-        <section aria-labelledby="briefing-heading" className="min-w-0 rounded-[1.35rem] border border-[#f0cb7d]/25 bg-gradient-to-br from-[#1b3240] to-[#14252e] p-4 sm:p-6">
-          <p className="text-[0.68rem] font-extrabold tracking-[.15em] text-[#f3c981] uppercase">Your mission briefing</p>
-          <h2 id="briefing-heading" className="mt-1 text-lg font-extrabold leading-tight sm:text-xl">{scene?.challenge ?? chapter.description}</h2>
+        <section
+          aria-labelledby="briefing-heading"
+          className="min-w-0 rounded-[1.35rem] border border-[#f0cb7d]/25 bg-gradient-to-br from-[#1b3240] to-[#14252e] p-4 sm:p-6"
+        >
+          <p className="text-[0.68rem] font-extrabold tracking-[.15em] text-[#f3c981] uppercase">
+            Your mission briefing
+          </p>
+          <h2
+            id="briefing-heading"
+            className="mt-1 text-lg leading-tight font-extrabold sm:text-xl"
+          >
+            {scene?.challenge ?? chapter.description}
+          </h2>
           {scene && (
             <div className="mt-4 flex min-w-0 items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full border border-white/20 bg-[#33536a] text-base font-bold text-[#f2d18e]" aria-hidden="true">
+              <span
+                className="grid size-11 shrink-0 place-items-center rounded-full border border-white/20 bg-[#33536a] text-base font-bold text-[#f2d18e]"
+                aria-hidden="true"
+              >
                 {scene.person.slice(0, 1)}
               </span>
               <div className="min-w-0">
-                <p className="text-xs font-bold">{scene.person} <span className="font-normal text-[#a9c6d9]">· {scene.role}</span></p>
-                <p className="mt-1 text-sm leading-5 text-[#e5f0ef]">“{failed ? result.problems[0] : successful ? scene.goodNews : scene.quote}”</p>
+                <p className="text-xs font-bold">
+                  {scene.person}{" "}
+                  <span className="font-normal text-[#a9c6d9]">
+                    · {scene.role}
+                  </span>
+                </p>
+                <p className="mt-1 text-sm leading-5 text-[#e5f0ef]">
+                  “
+                  {failed
+                    ? result.problems[0]
+                    : successful
+                      ? scene.goodNews
+                      : scene.quote}
+                  ”
+                </p>
               </div>
             </div>
           )}
@@ -182,21 +260,47 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
 
         <section aria-labelledby="resources-heading" className="min-w-0">
           <div className="mb-3 flex min-w-0 flex-wrap items-end justify-between gap-2">
-            <h2 id="resources-heading" className="text-lg font-bold sm:text-xl">Your resources</h2>
-            <span className="text-xs text-[#a9c4d2]">Balance all three limits</span>
+            <h2 id="resources-heading" className="text-lg font-bold sm:text-xl">
+              Your resources
+            </h2>
+            <span className="text-xs text-[#a9c4d2]">
+              Balance all three limits
+            </span>
           </div>
           <div className="grid min-w-0 grid-cols-3 gap-1.5 sm:gap-3">
-            <ResourceGauge label="Supplies" tone="gold" used={result.totals.cost} limit={scenario.budget.cost} />
-            <ResourceGauge label="Hours" tone="teal" used={result.totals.time} limit={scenario.budget.time} />
-            <ResourceGauge label="Helpers" tone="blue" used={result.totals.crew} limit={scenario.budget.crew} />
+            <ResourceGauge
+              label="Supplies"
+              tone="gold"
+              used={result.totals.cost}
+              limit={scenario.budget.cost}
+            />
+            <ResourceGauge
+              label="Hours"
+              tone="teal"
+              used={result.totals.time}
+              limit={scenario.budget.time}
+            />
+            <ResourceGauge
+              label="Helpers"
+              tone="blue"
+              used={result.totals.crew}
+              limit={scenario.budget.crew}
+            />
           </div>
         </section>
 
         <section aria-labelledby="choices-heading" className="min-w-0">
           <div className="mb-4 flex min-w-0 flex-wrap items-end justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-xs font-bold tracking-[.15em] text-[#e9be79] uppercase">Make your move</p>
-              <h2 id="choices-heading" className="mt-1 text-xl font-bold sm:text-2xl">What will you do?</h2>
+              <p className="text-xs font-bold tracking-[.15em] text-[#e9be79] uppercase">
+                Make your move
+              </p>
+              <h2
+                id="choices-heading"
+                className="mt-1 text-xl font-bold sm:text-2xl"
+              >
+                What will you do?
+              </h2>
             </div>
             <p className="text-xs text-[#b4cbdb]">Tap a scene to select it</p>
           </div>
@@ -211,22 +315,34 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                   type="button"
                   onClick={() => toggle(choice.id)}
                   aria-pressed={active}
-                  className={`group relative isolate flex min-h-[10rem] min-w-0 max-w-full flex-col justify-between overflow-hidden rounded-[1.1rem] border-2 p-2.5 text-left shadow-lg transition-[border-color,transform] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffdc96] active:scale-[.98] motion-reduce:transition-none sm:min-h-[13rem] sm:rounded-[1.3rem] sm:p-4 ${active ? "border-[#f1ce85]" : "border-white/15 hover:border-white/50"}`}
+                  className={`group relative isolate flex min-h-[10rem] max-w-full min-w-0 flex-col justify-between overflow-hidden rounded-[1.1rem] border-2 p-2.5 text-left shadow-lg transition-[border-color,transform] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffdc96] active:scale-[.98] motion-reduce:transition-none sm:min-h-[13rem] sm:rounded-[1.3rem] sm:p-4 ${active ? "border-[#f1ce85]" : "border-white/15 hover:border-white/50"}`}
                 >
-                  {image && <CinematicImage src={image} sizes="(max-width: 640px) 48vw, 30vw" className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none" />}
+                  {image && (
+                    <CinematicImage
+                      src={image}
+                      sizes="(max-width: 640px) 48vw, 30vw"
+                      className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+                    />
+                  )}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07151c]/95 via-[#07151c]/60 to-[#07151c]/35" />
                   <span className="relative flex min-w-0 items-start justify-between gap-1">
                     <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-white/20 bg-black/45 text-[#f8d38c] sm:size-12">
                       <GardenSymbol name={icon} className="size-5 sm:size-7" />
                     </span>
-                    <span className={`grid size-6 shrink-0 place-items-center rounded-full border text-xs font-bold ${active ? "border-[#f6d38a] bg-[#f6d38a] text-[#153229]" : "border-white/50 bg-black/25"}`} aria-hidden="true">
+                    <span
+                      className={`grid size-6 shrink-0 place-items-center rounded-full border text-xs font-bold ${active ? "border-[#f6d38a] bg-[#f6d38a] text-[#153229]" : "border-white/50 bg-black/25"}`}
+                      aria-hidden="true"
+                    >
                       {active ? "✓" : "+"}
                     </span>
                   </span>
                   <span className="relative block min-w-0">
-                    <strong className="block text-[0.78rem] leading-[1.13rem] break-words sm:text-base sm:leading-5">{choice.label}</strong>
+                    <strong className="block text-[0.78rem] leading-[1.13rem] break-words sm:text-base sm:leading-5">
+                      {choice.label}
+                    </strong>
                     <span className="mt-2 block text-[0.61rem] leading-4 text-[#d1dce3] sm:text-xs">
-                      {choice.cost} supplies · {choice.time}h · {choice.crew} helpers
+                      {choice.cost} supplies · {choice.time}h · {choice.crew}{" "}
+                      helpers
                     </span>
                   </span>
                 </button>
@@ -235,22 +351,47 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
           </div>
         </section>
 
-        <section aria-labelledby="impact-heading" className="min-w-0 rounded-2xl border border-[#eac980]/20 bg-[#122e39] p-3 sm:p-5">
+        <section
+          aria-labelledby="impact-heading"
+          className="min-w-0 rounded-2xl border border-[#eac980]/20 bg-[#122e39] p-3 sm:p-5"
+        >
           <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 id="impact-heading" className="text-base font-bold sm:text-lg">Your plan's potential</h2>
-            <span className="text-[0.65rem] leading-4 text-[#a7c4d1]">Fictional game estimates, not real impact</span>
+            <h2 id="impact-heading" className="text-base font-bold sm:text-lg">
+              Your plan&apos;s potential
+            </h2>
+            <span className="text-[0.65rem] leading-4 text-[#a7c4d1]">
+              Fictional game estimates, not real impact
+            </span>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <ImpactBar label={world?.reachLabel ?? "People reached"} value={result.totals.visitors} goal={scenario.minimumVisitors} color="#8bdbb9" />
-            <ImpactBar label={world?.benefitLabel ?? "Community benefit"} value={result.totals.joy} goal={scenario.minimumJoy} color={impactColor} />
+            <ImpactBar
+              label={world?.reachLabel ?? "People reached"}
+              value={result.totals.visitors}
+              goal={scenario.minimumVisitors}
+              color="#8bdbb9"
+            />
+            <ImpactBar
+              label={world?.benefitLabel ?? "Community benefit"}
+              value={result.totals.joy}
+              goal={scenario.minimumJoy}
+              color={impactColor}
+            />
           </div>
         </section>
 
-        <section aria-labelledby="test-heading" className="min-w-0 rounded-[1.4rem] border border-white/15 bg-[#142d39] p-4 sm:p-6">
+        <section
+          aria-labelledby="test-heading"
+          className="min-w-0 rounded-[1.4rem] border border-white/15 bg-[#142d39] p-4 sm:p-6"
+        >
           <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <h2 id="test-heading" className="text-lg font-bold">Ready to test your plan?</h2>
-              <p className="mt-1 text-sm leading-5 text-[#b9d0df]">Every choice has a cost. See what happens when you put them together.</p>
+              <h2 id="test-heading" className="text-lg font-bold">
+                Ready to test your plan?
+              </h2>
+              <p className="mt-1 text-sm leading-5 text-[#b9d0df]">
+                Every choice has a cost. See what happens when you put them
+                together.
+              </p>
             </div>
             <Button
               className="min-h-12 w-full shrink-0 rounded-full bg-[#edc477] px-6 font-bold text-[#1c2c35] hover:bg-[#ffda91] sm:w-auto"
@@ -261,22 +402,45 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
             </Button>
           </div>
           {checked && (
-            <div role="status" aria-live="polite" className={`mt-4 min-w-0 rounded-2xl border p-4 ${result.success ? "border-[#60cfa5]/40 bg-[#114338]" : "border-[#ecc185]/40 bg-[#46372d]"}`}>
-              <h3 className="text-base font-bold">{successful ? titleOnWin : "Not quite. Try another combination."}</h3>
-              <p className="mt-1 text-sm leading-5 text-[#dce9e7]">{successful ? (scene?.goodNews ?? "You found a working plan.") : "The world changed. Rebalance your choices and try again."}</p>
+            <div
+              role="status"
+              aria-live="polite"
+              className={`mt-4 min-w-0 rounded-2xl border p-4 ${result.success ? "border-[#60cfa5]/40 bg-[#114338]" : "border-[#ecc185]/40 bg-[#46372d]"}`}
+            >
+              <h3 className="text-base font-bold">
+                {successful
+                  ? titleOnWin
+                  : "Not quite. Try another combination."}
+              </h3>
+              <p className="mt-1 text-sm leading-5 text-[#dce9e7]">
+                {successful
+                  ? (scene?.goodNews ?? "You found a working plan.")
+                  : "The world changed. Rebalance your choices and try again."}
+              </p>
               {result.problems.length > 0 && (
                 <ul className="mt-3 list-inside list-disc space-y-1 text-sm leading-5 text-[#f9dfbe]">
-                  {result.problems.map((problem) => <li key={problem}>{problem}</li>)}
+                  {result.problems.map((problem) => (
+                    <li key={problem}>{problem}</li>
+                  ))}
                 </ul>
               )}
               {successful && (
                 <div className="mt-4">
                   {!isLast ? (
-                    <Button onClick={next} className="min-h-11 w-full rounded-full bg-[#efd18b] px-5 text-[#1b2b35] sm:w-auto">
-                      {chapter.id === "neighbourhood-garden-v1" && sceneIndex === 0 ? "Face the dry week →" : "Next situation →"}
+                    <Button
+                      onClick={next}
+                      className="min-h-11 w-full rounded-full bg-[#efd18b] px-5 text-[#1b2b35] sm:w-auto"
+                    >
+                      {chapter.id === "neighbourhood-garden-v1" &&
+                      sceneIndex === 0
+                        ? "Face the dry week →"
+                        : "Next situation →"}
                     </Button>
                   ) : (
-                    <Link href="/quests" className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#efd18b] px-5 text-center text-sm font-bold text-[#1b2b35] sm:w-auto">
+                    <Link
+                      href="/quests"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#efd18b] px-5 text-center text-sm font-bold text-[#1b2b35] sm:w-auto"
+                    >
                       Find a real-world Quest →
                     </Link>
                   )}
@@ -287,8 +451,9 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
         </section>
 
         <p className="pb-3 text-xs leading-5 text-[#9bb5c5]">
-          PipuPath Adventures are fictional practice. They never create Quest evidence or grant verified XP.
-          Real progress comes from taking action, uploading honest proof and reflecting.
+          PipuPath Adventures are fictional practice. They never create Quest
+          evidence or grant verified XP. Real progress comes from taking action,
+          uploading honest proof and reflecting.
         </p>
       </div>
     </main>
