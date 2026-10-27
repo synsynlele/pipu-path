@@ -19,7 +19,8 @@ export function GameDirectory() {
             6 worlds + your neighbourhood
           </span>
         </Link>
-        <div className="flex flex-wrap gap-2">
+        <p className="mb-1 text-[0.65rem] text-[#b6cede] sm:hidden">Swipe sideways to choose a world</p>
+        <div className="flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
           <GameDirectoryLink href="/build/neighbourhood">
             ⌂ Neighbourhood · move & build
           </GameDirectoryLink>
