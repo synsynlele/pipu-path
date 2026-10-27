@@ -34,15 +34,21 @@ export function ResumePractice({ userId }: { userId: string }) {
             );
             return { chapter, checkpoint };
           })
-          .filter(({ checkpoint }) => checkpoint && practiceHasProgress(checkpoint))
-          .sort((a, b) => (b.checkpoint?.updatedAt ?? 0) - (a.checkpoint?.updatedAt ?? 0));
+          .filter(
+            ({ checkpoint }) => checkpoint && practiceHasProgress(checkpoint),
+          )
+          .sort(
+            (a, b) =>
+              (b.checkpoint?.updatedAt ?? 0) - (a.checkpoint?.updatedAt ?? 0),
+          );
         const latest = candidates[0];
         if (latest?.checkpoint) {
           const { chapter, checkpoint } = latest;
           setResume({
             href: `/build/play/${chapter.id}`,
             title: chapter.title,
-            scene: chapter.scenarios[checkpoint.sceneIndex]?.label ?? "Your mission",
+            scene:
+              chapter.scenarios[checkpoint.sceneIndex]?.label ?? "Your mission",
             progress: `Mission ${checkpoint.sceneIndex + 1} of ${chapter.scenarios.length}`,
           });
         } else {
@@ -53,18 +59,25 @@ export function ResumePractice({ userId }: { userId: string }) {
         setResume(null);
       }
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [userId]);
 
   if (!resume) return null;
 
   return (
-    <section aria-label="Resume your practice" className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-3xl border border-[#e6c078]/45 bg-gradient-to-r from-[#183c3c] to-[#10283b] p-4 text-white sm:p-6">
+    <section
+      aria-label="Resume your practice"
+      className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-3xl border border-[#e6c078]/45 bg-gradient-to-r from-[#183c3c] to-[#10283b] p-4 text-white sm:p-6"
+    >
       <div className="min-w-0 flex-1">
-        <p className="text-[0.7rem] font-extrabold uppercase tracking-widest text-[#f3cd8f]">
+        <p className="text-[0.7rem] font-extrabold tracking-widest text-[#f3cd8f] uppercase">
           Pick up where you left off
         </p>
-        <h2 className="mt-1 text-lg font-extrabold sm:text-xl">{resume.title}</h2>
+        <h2 className="mt-1 text-lg font-extrabold sm:text-xl">
+          {resume.title}
+        </h2>
         <p className="mt-1 text-xs leading-5 text-[#d3e3e9]">
           {resume.progress} · {resume.scene} · Device-only practice save
         </p>
