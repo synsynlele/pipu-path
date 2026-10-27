@@ -13,12 +13,20 @@ export function GameDirectory() {
           href="/build/adventures"
           className="inline-flex min-h-11 items-center gap-2 text-xs font-extrabold tracking-wide text-[#f3d58f] sm:text-sm"
         >
-          <span aria-hidden="true" className="text-lg">◈</span>
+          <span aria-hidden="true" className="text-lg">
+            ◈
+          </span>
           PipuPath Adventure
         </Link>
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5" role="group" aria-label="Adventure sections">
+        <div
+          className="flex min-w-0 flex-wrap items-center gap-1.5"
+          role="group"
+          aria-label="Adventure sections"
+        >
           <GameDirectoryLink href="/build/adventures">Path</GameDirectoryLink>
-          <GameDirectoryLink href="/build/neighbourhood">Explore</GameDirectoryLink>
+          <GameDirectoryLink href="/build/neighbourhood">
+            Explore
+          </GameDirectoryLink>
           <GameDirectoryLink href="/quests">Real Quest</GameDirectoryLink>
         </div>
       </div>
