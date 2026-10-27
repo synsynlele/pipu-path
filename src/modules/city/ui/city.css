@@ -8,7 +8,10 @@
     border-color 0.2s;
   touch-action: manipulation;
 }
-.city-site svg {\n  max-width: 100%;\n}\n.city-site:hover {
+.city-site svg {
+  max-width: 100%;
+}
+.city-site:hover {
   background-color: #3c2d69e6;
 }
 .city-built {
