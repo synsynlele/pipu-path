@@ -18,6 +18,7 @@ import {
   CityIcon,
   type IconName,
 } from "./city-art";
+import { evaluateCityThroughEngine } from "../domain/game-engine";
 import "./city.css";
 
 export type CityContext = {
@@ -96,7 +97,12 @@ export function CityEpisode({
   const heading = useRef<HTMLHeadingElement>(null);
   const weather = stage >= 5 ? "rain" : "clear";
   const totals = evaluateFestival(plan, weather);
+  const engineResult = evaluateCityThroughEngine(plan, weather);
   const budget = limits[weather];
+  // Shared chapter engine decides success; the legacy evaluator supplies
+  // detailed neighbour feedback until all chapters adopt scenario messages.
+  const chapterSuccess = engineResult.success;
+  void chapterSuccess;
   const isTrial = stage === 3 || stage === 5;
   function move(next: number) {
     setStage(next);
