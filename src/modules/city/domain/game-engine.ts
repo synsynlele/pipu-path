@@ -1,8 +1,4 @@
-import {
-  builds,
-  type BuildId,
-  type Weather,
-} from "./festival";
+import { builds, type BuildId, type Weather } from "./festival";
 
 /**
  * A reusable, data-driven practice challenge. New chapters can provide their
