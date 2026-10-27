@@ -77,11 +77,25 @@ it("places a material by pointer drag and leaves out-of-bounds drops untouched",
 
 it("tapping an occupied square removes its own piece even after changing tools", () => {
   render(<Example />);
-  fireEvent.click(screen.getByRole("button", { name: /Choose Plant seedlings/ }));
-  fireEvent.click(screen.getByRole("button", { name: "Garden square 1: empty" }));
-  fireEvent.click(screen.getByRole("button", { name: /Choose Set up watering/ }));
-  fireEvent.click(screen.getByRole("button", { name: "Garden square 1: Seedlings" }));
-  expect(screen.getByRole("button", { name: "Garden square 1: empty" })).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Garden square 1: empty" }));
-  expect(screen.getByRole("button", { name: "Garden square 1: Water" })).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: /Choose Plant seedlings/ }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Garden square 1: empty" }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: /Choose Set up watering/ }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Garden square 1: Seedlings" }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Garden square 1: empty" }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Garden square 1: empty" }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Garden square 1: Water" }),
+  ).toBeInTheDocument();
 });
