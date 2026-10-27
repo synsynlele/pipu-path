@@ -1,8 +1,73 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
+import { adventureTrail, type TrailStep, type TrailStepState } from "../domain/adventure-trail";
 import { cityContinuation, type QuestLink } from "../domain/continuation";
-import { CityIcon } from "./city-art";
+import { CityIcon, type IconName } from "./city-art";
 
+const stepIcons: Record<TrailStep["id"], IconName> = {
+  play: "play",
+  act: "art",
+  prove: "proof",
+  grow: "spark",
+};
+const stateLabels: Record<TrailStepState, string> = {
+  practice: "Practice",
+  ready: "Ready",
+  current: "Now",
+  next: "Next",
+  saved: "Saved",
+  waiting: "Later",
+};
+
+function TrailNode({ step, index }: { step: TrailStep; index: number }) {
+  const active = step.state === "current";
+  const earned = step.state === "saved";
+  const waiting = step.state === "waiting";
+  const tile = "relative flex min-h-32 flex-col items-center rounded-2xl border px-1.5 py-3 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6848dc] sm:min-h-40 sm:px-3";
+  const colour = earned
+    ? "border-[#8acfb7] bg-[#e8faf3] text-[#205c4c]"
+    : active
+      ? "border-[#8c71e8] bg-[#eee9ff] text-[#39237b]"
+      : waiting
+        ? "border-[#e5e4ed] bg-[#f6f6fa] text-[#85869a]"
+        : "border-[#ded5f1] bg-white text-[#493785]";
+  const contents = (
+    <>
+      <span className="absolute top-2 left-2 text-[10px] font-bold opacity-60" aria-hidden="true">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <span className={"mt-2 grid size-12 place-items-center rounded-2xl sm:size-14 " + (earned ? "bg-[#c8f0df]" : active ? "bg-[#d8cafa]" : "bg-[#eeeaf6]")}>
+        <CityIcon name={stepIcons[step.id]} className="size-7 sm:size-8" />
+      </span>
+      <strong className="mt-2 block text-xs leading-4 sm:text-sm">{step.label}</strong>
+      <span className="mt-1 text-[10px] leading-4 font-semibold sm:text-xs">
+        {stateLabels[step.state]}
+      </span>
+      <span className="sr-only">{step.hint}</span>
+    </>
+  );
+  return (
+    <li className="min-w-0">
+      {step.href ? (
+        <Link
+          href={step.href}
+          aria-label={step.label + ": " + stateLabels[step.state] + ". " + step.hint}
+          aria-current={active ? "step" : undefined}
+          className={tile + " " + colour}
+        >
+          {contents}
+        </Link>
+      ) : (
+        <div aria-label={step.label + ": " + step.hint} className={tile + " " + colour}>
+          {contents}
+        </div>
+      )}
+    </li>
+  );
+}
+
+/** One visual route, shared by Home, Journey, Quest and Build. Quest owns progress. */
 export function JourneyPlayCard({
   quest = null,
   journeyTitle,
@@ -11,12 +76,13 @@ export function JourneyPlayCard({
   journeyTitle?: string;
 }) {
   const next = cityContinuation(quest);
+  const trail = adventureTrail(quest);
+  const proofSaved =
+    quest?.status === "evidence_submitted" || quest?.status === "completed";
+
   return (
-    <section
-      aria-label="Play to real-world journey"
-      className="pp-app-card my-5 overflow-hidden"
-    >
-      <div className="relative flex min-h-44 items-end bg-[#201b59] p-5 text-white sm:min-h-52">
+    <section aria-label="Your playable PipuPath journey" className="pp-app-card my-5 overflow-hidden">
+      <div className="relative isolate min-h-48 overflow-hidden bg-[#201b59] p-5 text-white sm:min-h-56 sm:p-7">
         <Image
           src="/city/neighbourhood-dusk.webp"
           alt=""
@@ -24,63 +90,55 @@ export function JourneyPlayCard({
           sizes="(max-width: 768px) 100vw, 960px"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#181432]/95 via-[#181432]/65 to-transparent" />
-        <div className="relative max-w-sm">
-          <p className="text-xs font-semibold tracking-widest text-[#edcf96] uppercase">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#171331]/95 via-[#181432]/70 to-[#181432]/20" />
+        <div className="relative max-w-md">
+          <p className="text-xs font-bold tracking-widest text-[#f4d69b] uppercase">
             {journeyTitle ?? "Your PipuPath adventure"}
           </p>
-          <h2 className="mt-2 text-2xl font-bold">
-            Play an idea. Make it real.
+          <h2 className="mt-2 text-2xl leading-tight font-bold sm:text-3xl">
+            Your journey is the game.
           </h2>
-          <p className="mt-2 text-sm text-indigo-100">
-            Listen. Build a plan. See who it helps.
+          <p className="mt-3 line-clamp-2 text-sm text-indigo-100">
+            {quest?.title ?? "Explore the city, then choose what you want to build in real life."}
+          </p>
+          <p className="mt-4 inline-flex rounded-full border border-white/30 bg-[#201b59]/70 px-3 py-1.5 text-xs font-semibold">
+            {proofSaved ? "Real-world proof saved" : "Make moves in the world, not just on screen"}
           </p>
         </div>
       </div>
-      <div className="p-4 sm:p-5">
-        <ol
-          aria-label="Adventure cycle"
-          className="mb-4 grid grid-cols-4 gap-2 text-center text-xs font-semibold text-[#62547d]"
-        >
-          {(
-            [
-              ["play", "Play"],
-              ["art", "Act"],
-              ["proof", "Prove"],
-              ["spark", "Grow"],
-            ] as const
-          ).map(([icon, label]) => (
-            <li key={label} className="rounded-xl bg-[#f2eefb] p-2">
-              <CityIcon name={icon} className="mx-auto mb-1 size-5" />
-              {label}
-            </li>
+
+      <div className="space-y-4 p-4 sm:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-sm font-bold text-[#25284a] sm:text-base">Your adventure path</h3>
+          <span className="text-xs font-medium text-[#636782]">
+            Real actions unlock growth
+          </span>
+        </div>
+        <ol aria-label="Adventure route" className="grid grid-cols-4 gap-1.5 sm:gap-3">
+          {trail.map((step, index) => (
+            <TrailNode key={step.id} step={step} index={index} />
           ))}
         </ol>
-        <p className="mb-3 text-sm font-semibold text-[#25284a]">
-          {quest?.title ??
-            "Explore the city, then choose a real-world challenge."}
+        <p className="text-xs leading-5 text-[#626a80]">
+          Explore is an optional practice game. Only your saved Quest proof and
+          reflection change your actual progress.
         </p>
-        <div className="flex flex-wrap gap-3">
+
+        <div className="flex flex-col gap-2 sm:flex-row">
           <ButtonLink
             href={next.focus === "play" ? next.playHref : next.actionHref}
-            className="flex-1 rounded-full sm:flex-none"
+            className="w-full justify-center rounded-full sm:w-auto"
           >
-            {next.focus === "play" ? "Enter the city →" : next.actionLabel}
+            {next.focus === "play" ? "Enter the Unbuilt City →" : next.actionLabel}
           </ButtonLink>
           <ButtonLink
             variant="secondary"
             href={next.focus === "play" ? next.actionHref : next.playHref}
-            className="flex-1 rounded-full sm:flex-none"
+            className="w-full justify-center rounded-full sm:w-auto"
           >
-            {next.focus === "play"
-              ? "Continue real-world action"
-              : "Revisit the city"}
+            {next.focus === "play" ? "Go to my real-world Quest" : "Replay city practice"}
           </ButtonLink>
         </div>
-        <p className="mt-3 text-xs leading-5 text-[#626a80]">
-          A shared practice chapter for planning and listening. Your own Quest
-          supplies the real goal. Proof and reflection earn progress.
-        </p>
       </div>
     </section>
   );
