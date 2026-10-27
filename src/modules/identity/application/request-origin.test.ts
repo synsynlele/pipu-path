@@ -18,6 +18,21 @@ describe("trusted OAuth request origin", () => {
     ).toBe("https://pipu-path-git-agent-stage10.vercel.app");
   });
 
+  it("keeps the PipuPath Vercel preview domain instead of the production origin", () => {
+    const previewHost =
+      "pipu-path-git-feat-unbuilt-cit-3cc555-copyartint-2860s-projects.vercel.app";
+    expect(
+      resolveTrustedRequestOrigin(
+        requestHeaders({
+          host: previewHost,
+          "x-forwarded-host": previewHost,
+          "x-forwarded-proto": "https",
+        }),
+        "https://www.pipupath.name.ng",
+      ),
+    ).toBe(`https://${previewHost}`);
+  });
+
   it("allows localhost development", () => {
     expect(
       resolveTrustedRequestOrigin(
