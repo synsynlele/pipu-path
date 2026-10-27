@@ -106,8 +106,8 @@ export function GardenPlot({
         </p>
       </div>
       <p className="mb-3 text-xs leading-5 text-[#c7dce5]">
-        Drag a material onto the garden—or choose a material and tap a square.
-        Try more than one layout.
+        Drag a material onto the garden—or choose a material and tap an empty square.
+        Tap an occupied square to remove it. Try more than one layout.
       </p>
       <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
         <section
@@ -184,7 +184,10 @@ export function GardenPlot({
                         moved.current = false;
                         return;
                       }
-                      put(tool, index);
+                      // Tapping an occupied tile removes that piece regardless
+                      // of the tool last selected. Replacement is deliberate:
+                      // remove first, then place the new material.
+                      put(piece ?? tool, index);
                     }}
                     aria-label={`Garden square ${index + 1}: ${piece ? pieceNames[piece] : "empty"}`}
                     className={`garden-tile relative grid min-h-0 min-w-0 place-items-center overflow-hidden rounded-lg border border-white/15 focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[#f4d18b] ${piece ? "garden-filled bg-[#2b725e]" : "bg-[#426e49]/45 hover:bg-[#477e52]/70"}`}
