@@ -203,7 +203,7 @@ export function Neighbourhood({
         <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] items-start gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <section
             aria-label="Your neighbourhood map"
-            className="min-w-0 max-w-full overflow-hidden rounded-3xl border border-white/20 bg-[#102b3b]"
+            className="max-w-full min-w-0 overflow-hidden rounded-3xl border border-white/20 bg-[#102b3b]"
           >
             <div
               role="group"
@@ -384,7 +384,7 @@ export function Neighbourhood({
               the map and use arrow keys.
             </p>
           </section>
-          <section className="min-w-0 max-w-full rounded-3xl border border-white/20 bg-[#102b3b] p-4 sm:p-5">
+          <section className="max-w-full min-w-0 rounded-3xl border border-white/20 bg-[#102b3b] p-4 sm:p-5">
             <h2
               ref={heading}
               tabIndex={-1}
