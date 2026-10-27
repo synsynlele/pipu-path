@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function ChapterPage({ params }: { params: Promise<{ chapterId: string }> }) {
+export default async function ChapterPage({
+  params,
+}: {
+  params: Promise<{ chapterId: string }>;
+}) {
   await requireAuthenticatedHomeState();
   const { chapterId } = await params;
   // The original city has its own rich seven-stage experience.
