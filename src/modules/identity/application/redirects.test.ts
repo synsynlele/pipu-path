@@ -12,7 +12,9 @@ describe("safeNextPath", () => {
     expect(safeNextPath("/reset-password")).toBe("/reset-password");
     expect(safeNextPath("/build/play?quest=abc")).toBe("/build/play?quest=abc");
     expect(safeNextPath("/build/adventures")).toBe("/build/adventures");
-    expect(safeNextPath("/build/play/neighbourhood-garden-v1")).toBe("/build/play/neighbourhood-garden-v1");
+    expect(safeNextPath("/build/play/neighbourhood-garden-v1")).toBe(
+      "/build/play/neighbourhood-garden-v1",
+    );
     expect(safeNextPath("/build/unknown")).toBe("/app");
   });
 
@@ -55,6 +57,12 @@ describe("postAuthDestination", () => {
 
   it("honours a safe requested route after the developmental loop is ready", () => {
     expect(postAuthDestination("/app", "/portfolio")).toBe("/portfolio");
+    expect(postAuthDestination("/app", "/build/adventures")).toBe(
+      "/build/adventures",
+    );
+    expect(
+      postAuthDestination("/app", "/build/play/neighbourhood-garden-v1"),
+    ).toBe("/build/play/neighbourhood-garden-v1");
   });
 
   it("allows a verified recovery callback to reach password reset", () => {
