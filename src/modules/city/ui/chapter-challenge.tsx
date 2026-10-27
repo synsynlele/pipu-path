@@ -488,6 +488,7 @@ export function ChapterChallenge({
           </div>
           {isGarden ? (
             <GardenPlot
+              key={`${chapter.id}:${sceneIndex}`}
               choices={chapter.choices}
               plot={gardenPlot}
               onChange={(next) => {
