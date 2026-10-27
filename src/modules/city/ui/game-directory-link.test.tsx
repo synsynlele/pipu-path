@@ -36,9 +36,10 @@ it("highlights the current section and groups every game under the Path tab", ()
   }
   route.pathname = "/quests";
   view.rerender(<GameDirectory />);
-  expect(
-    screen.getByRole("link", { name: "Real Quest" }),
-  ).toHaveAttribute("aria-current", "page");
+  expect(screen.getByRole("link", { name: "Real Quest" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   route.pathname = "/build";
   view.rerender(<GameDirectory />);
   expect(
