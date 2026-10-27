@@ -8,11 +8,15 @@ afterEach(cleanup);
 function choose(name: string) {
   fireEvent.click(screen.getByRole("button", { name: new RegExp(name, "i") }));
 }
+function place(choice: string, square: number) {
+  choose(choice);
+  fireEvent.click(screen.getByRole("button", { name: new RegExp(`Garden square ${square}:`) }));
+}
 function makeWorkingPlan() {
-  choose("Plant seedlings");
-  choose("Clear accessible paths");
-  choose("Set up watering");
-  choose("Invite neighbours");
+  place("Plant seedlings", 1);
+  place("Clear accessible paths", 10);
+  place("Set up watering", 2);
+  place("Invite neighbours", 13);
 }
 describe("cinematic garden chapter", () => {
   it("completes two practice scenarios without granting XP", () => {
@@ -31,14 +35,12 @@ describe("cinematic garden chapter", () => {
       screen.getByRole("button", { name: /See what happens next/ }),
     );
     expect(screen.getByText(/Rain arrives/)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Plant seedlings/ }),
-    ).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /Garden square 1: Seedlings/ })).toBeInTheDocument();
     // The old solution no longer fits: swap watering for seating.
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText(/Not quite/)).toBeInTheDocument();
-    choose("Set up watering");
-    choose("Build seating");
+    place("Set up watering", 2);
+    place("Build seating", 11);
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Face the dry week/ }));
@@ -47,10 +49,10 @@ describe("cinematic garden chapter", () => {
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Next situation/ }));
-    choose("Plant seedlings");
-    choose("Clear accessible paths");
-    choose("Invite neighbours");
-    choose("Build seating");
+    place("Plant seedlings", 1);
+    place("Clear accessible paths", 10);
+    place("Invite neighbours", 13);
+    place("Build seating", 11);
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
     expect(
@@ -59,17 +61,17 @@ describe("cinematic garden chapter", () => {
   });
   it("clears stale feedback when a player changes a choice", () => {
     render(<ChapterChallenge chapter={gardenChapter} />);
-    choose("Plant seedlings");
+    place("Plant seedlings", 1);
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText(/Not quite/)).toBeInTheDocument();
-    choose("Clear accessible paths");
+    place("Clear accessible paths", 10);
     expect(screen.queryByText(/Not quite/)).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Clear accessible paths/ }),
-    ).toHaveAttribute("aria-pressed", "true");
-    choose("Clear accessible paths");
+      screen.getByRole("button", { name: /Garden square 10: Walkway/ }),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Garden square 10: Walkway/ }));
     expect(
-      screen.getByRole("button", { name: /Clear accessible paths/ }),
-    ).toHaveAttribute("aria-pressed", "false");
+      screen.getByRole("button", { name: /Garden square 10: empty/ }),
+    ).toBeInTheDocument();
   });
 });
