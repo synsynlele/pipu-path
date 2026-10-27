@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { adventureScenes } from "./adventure-scenes";
-import { CinematicImage, GardenSymbol, type GardenSymbolName } from "./cinematic-art";
+import {
+  CinematicImage,
+  GardenSymbol,
+  type GardenSymbolName,
+} from "./cinematic-art";
 import {
   projectAdventureMap,
   recommendedPathWorld,
@@ -64,22 +68,44 @@ function NodeMark({
         className={`adventure-stage-disc ${done ? "adventure-stage-done" : current ? "adventure-stage-current" : "adventure-stage-locked"}`}
       >
         {done ? (
-          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="size-9" aria-hidden="true">
+          <svg
+            viewBox="0 0 32 32"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="size-9"
+            aria-hidden="true"
+          >
             <path d="m7 16 6 6 13-14" />
           </svg>
         ) : current ? (
           <GardenSymbol name={icon} className="size-8 sm:size-9" />
         ) : (
-          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" className="size-7" aria-hidden="true">
+          <svg
+            viewBox="0 0 32 32"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="size-7"
+            aria-hidden="true"
+          >
             <rect x="7" y="14" width="18" height="14" rx="3" />
             <path d="M11 14v-4a5 5 0 0 1 10 0v4" />
           </svg>
         )}
       </span>
-      <strong className={`adventure-stage-title ${current ? "text-white" : done ? "text-[#aee3cc]" : "text-[#b7c6d4]"}`}>
+      <strong
+        className={`adventure-stage-title ${current ? "text-white" : done ? "text-[#aee3cc]" : "text-[#b7c6d4]"}`}
+      >
         {mission.title}
       </strong>
-      <span className={`adventure-stage-label ${current ? "text-[#f5d891]" : "text-[#a2b3c3]"}`}>
+      <span
+        className={`adventure-stage-label ${current ? "text-[#f5d891]" : "text-[#a2b3c3]"}`}
+      >
         {done ? "Complete" : current ? "Play now" : "Up next"}
       </span>
     </>
@@ -94,7 +120,9 @@ function NodeMark({
           aria-current={suggested ? "step" : undefined}
           aria-label={`${world.title}, ${mission.title}: Play now`}
           className="adventure-stage-control adventure-stage-link"
-          style={{ left: `${(offsets[stageIndex % offsets.length] / 360) * 100}%` }}
+          style={{
+            left: `${(offsets[stageIndex % offsets.length] / 360) * 100}%`,
+          }}
         >
           {button}
         </Link>
@@ -102,7 +130,9 @@ function NodeMark({
         <div
           aria-label={`${world.title}, ${mission.title}: ${done ? "Completed practice" : "Finish the previous mission first"}`}
           className="adventure-stage-control"
-          style={{ left: `${(offsets[stageIndex % offsets.length] / 360) * 100}%` }}
+          style={{
+            left: `${(offsets[stageIndex % offsets.length] / 360) * 100}%`,
+          }}
         >
           {button}
         </div>
@@ -111,7 +141,13 @@ function NodeMark({
   );
 }
 
-function WorldUnit({ world, recommended }: { world: PathWorld; recommended: boolean }) {
+function WorldUnit({
+  world,
+  recommended,
+}: {
+  world: PathWorld;
+  recommended: boolean;
+}) {
   const cover =
     world.id === "neighbourhood"
       ? "/city/neighbourhood-dusk.webp"
@@ -131,14 +167,16 @@ function WorldUnit({ world, recommended }: { world: PathWorld; recommended: bool
         <CinematicImage src={cover} sizes="(max-width: 640px) 100vw, 680px" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#091d2e]/95 via-[#0a2431]/85 to-[#0a2431]/45" />
         <div className="relative flex flex-wrap items-end justify-between gap-3">
-          <div className="min-w-0 max-w-[25rem] flex-1">
+          <div className="max-w-[25rem] min-w-0 flex-1">
             <p className="text-[0.68rem] font-bold tracking-[.12em] text-[#f3d086] uppercase">
               {world.eyebrow}
             </p>
             <h2 className="mt-2 text-xl leading-tight font-extrabold tracking-tight sm:text-2xl">
               {world.title}
             </h2>
-            <p className="mt-2 text-xs leading-5 text-[#e0e9ec] sm:text-sm">{world.description}</p>
+            <p className="mt-2 text-xs leading-5 text-[#e0e9ec] sm:text-sm">
+              {world.description}
+            </p>
           </div>
           <Link
             href={world.href}
@@ -217,7 +255,11 @@ export function AdventurePathMap({
     queueMicrotask(() => {
       if (!active) return;
       setWorlds(
-        projectAdventureMap(userId, (key) => localStorage.getItem(key), cityHref),
+        projectAdventureMap(
+          userId,
+          (key) => localStorage.getItem(key),
+          cityHref,
+        ),
       );
       setHydrated(true);
     });
@@ -227,7 +269,10 @@ export function AdventurePathMap({
   }, [userId, cityHref]);
 
   const recommended = recommendedPathWorld(worlds);
-  const totalMissions = worlds.reduce((n, world) => n + world.missions.length, 0);
+  const totalMissions = worlds.reduce(
+    (n, world) => n + world.missions.length,
+    0,
+  );
   const completed = worlds.reduce((n, world) => n + world.completed, 0);
 
   function goToNextMission() {
@@ -248,16 +293,27 @@ export function AdventurePathMap({
             <p className="text-[0.68rem] font-bold tracking-[.19em] text-[#f1d08c] uppercase">
               PipuPath · Your game-of-life path
             </p>
-            <h1 id="adventure-map-heading" className="mt-2 text-[1.75rem] leading-tight font-black tracking-tight text-white sm:text-3xl">
+            <h1
+              id="adventure-map-heading"
+              className="mt-2 text-[1.75rem] leading-tight font-black tracking-tight text-white sm:text-3xl"
+            >
               One mission at a time.
             </h1>
             <p className="mt-2 max-w-md text-sm leading-6 text-[#d1e0e9]">
-              Follow the winding path. Play a challenge, solve it, then take the next step.
+              Follow the winding path. Play a challenge, solve it, then take the
+              next step.
             </p>
           </div>
           <div className="shrink-0 rounded-2xl border border-white/20 bg-black/20 px-3 py-2 text-center">
-            <strong className="block text-lg font-extrabold tabular-nums text-[#f4d696]">{completed} <span className="text-xs font-normal text-[#cfdddf]">/ {totalMissions}</span></strong>
-            <span className="text-[0.65rem] font-semibold text-[#d6e3e8]">Practice steps</span>
+            <strong className="block text-lg font-extrabold text-[#f4d696] tabular-nums">
+              {completed}{" "}
+              <span className="text-xs font-normal text-[#cfdddf]">
+                / {totalMissions}
+              </span>
+            </strong>
+            <span className="text-[0.65rem] font-semibold text-[#d6e3e8]">
+              Practice steps
+            </span>
           </div>
         </div>
         <div
@@ -270,7 +326,9 @@ export function AdventurePathMap({
         >
           <div
             className="h-full rounded-full bg-[#8bd9ac] transition-[width] duration-300 motion-reduce:transition-none"
-            style={{ width: `${Math.round((completed / Math.max(1, totalMissions)) * 100)}%` }}
+            style={{
+              width: `${Math.round((completed / Math.max(1, totalMissions)) * 100)}%`,
+            }}
           />
         </div>
         <button
@@ -287,7 +345,10 @@ export function AdventurePathMap({
         </p>
       </section>
 
-      <nav aria-label="Adventure worlds" className="mt-4 flex min-w-0 gap-2 overflow-x-auto pb-2">
+      <nav
+        aria-label="Adventure worlds"
+        className="mt-4 flex min-w-0 gap-2 overflow-x-auto pb-2"
+      >
         {worlds.map((world, i) => (
           <a
             key={world.id}
@@ -309,7 +370,9 @@ export function AdventurePathMap({
         ))}
       </div>
       <p className="mt-7 rounded-2xl border border-white/15 bg-[#132b39] p-4 text-center text-xs leading-5 text-[#c4d7df]">
-        Practice levels are not verified XP. Turn learning into real-world action through your PipuPath Quest. Progress appears here only when device saving is enabled.
+        Practice levels are not verified XP. Turn learning into real-world
+        action through your PipuPath Quest. Progress appears here only when
+        device saving is enabled.
       </p>
     </div>
   );
