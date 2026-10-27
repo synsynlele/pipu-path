@@ -20,6 +20,7 @@ export type GameScenario = {
   requiredChoices: readonly string[];
   minimumVisitors: number;
   minimumJoy: number;
+  unavailableChoices?: readonly string[];
 };
 export type GameChapter = {
   id: string;
@@ -58,7 +59,11 @@ export function evaluateGame(
   }
   const totals = { cost: 0, time: 0, crew: 0, visitors: 0, joy: 0 };
   for (const choice of chapter.choices) {
-    if (!unique.has(choice.id)) continue;
+    if (
+      !unique.has(choice.id) ||
+      scenario.unavailableChoices?.includes(choice.id)
+    )
+      continue;
     totals.cost += choice.cost;
     totals.time += choice.time;
     totals.crew += choice.crew;
@@ -66,9 +71,17 @@ export function evaluateGame(
     totals.joy += choice.joy;
   }
   const problems: string[] = [];
+  for (const id of scenario.unavailableChoices ?? []) {
+    if (unique.has(id))
+      problems.push(
+        `${chapter.choices.find((choice) => choice.id === id)?.label ?? id} is unavailable. Replace it in your plan.`,
+      );
+  }
   for (const resource of ["cost", "time", "crew"] as const) {
     if (totals[resource] > scenario.budget[resource])
-      problems.push(`Not enough ${resource} for this plan.`);
+      problems.push(
+        `Your plan needs ${totals[resource] - scenario.budget[resource]} fewer ${{ cost: "supply tokens", time: "setup hours", crew: "helpers" }[resource]}.`,
+      );
   }
   for (const id of scenario.requiredChoices) {
     if (!unique.has(id))

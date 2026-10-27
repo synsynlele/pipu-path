@@ -27,6 +27,20 @@ describe("cinematic garden chapter", () => {
     makeWorkingPlan();
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: /See what happens next/ }),
+    );
+    expect(screen.getByText(/Rain arrives/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Plant seedlings/ }),
+    ).toHaveAttribute("aria-pressed", "true");
+    // The old solution no longer fits: swap watering for seating.
+    fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
+    expect(screen.getByText(/Not quite/)).toBeInTheDocument();
+    choose("Set up watering");
+    choose("Build seating");
+    fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
+    expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Face the dry week/ }));
     expect(screen.getByText(/dry week is coming/i)).toBeInTheDocument();
     makeWorkingPlan();

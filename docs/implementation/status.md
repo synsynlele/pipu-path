@@ -446,3 +446,17 @@ Practice cannot write completion, XP or evidence. Added owned-context/locked-ID,
 continuation and browser-auth return regression checks. Art is an optimised
 static project asset. Validation and exact-preview visual results are recorded
 in the ledger; no production deployment is implied.
+
+## 27 October — adventure contrast and adaptive consequences candidate
+
+Added scoped light/dark adventure surfaces to prevent shared global dark-theme
+rules from recolouring white cards and gold action links. Photo-backed choice
+labels now use solid dark plates; text fields and CTA states have explicit colour
+pairs. Hub, city, shared journey card and five chapter runners use the scopes.
+
+The five newer worlds now introduce a curated disruption after their opening
+success. Original choices stay visible, changed requirements and unavailable
+options are explained, and revised plans must pass the same resource evaluator.
+Attempt comparison shows changes in fictional reach/benefit. Practice writes no
+Quest evidence or XP. Enumeration verifies solvability and changed-plan demands.
+Full validation and exact-preview browser evidence are separate release checks.

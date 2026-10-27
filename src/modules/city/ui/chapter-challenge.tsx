@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { evaluateGame, type GameChapter } from "../domain/game-engine";
 import { CinematicImage, GardenSymbol } from "./cinematic-art";
 import { getWorldPresentation } from "./world-presentation";
+import { chapterWithDisruption, disruptions } from "../domain/disruptions";
+import "./adventure-theme.css";
 
 type GaugeTone = "gold" | "teal" | "blue";
 function ResourceGauge({
@@ -45,7 +47,7 @@ function ResourceGauge({
         aria-label={`${label} used`}
         aria-valuemin={0}
         aria-valuemax={limit}
-        aria-valuenow={used}
+        aria-valuenow={Math.min(used, limit)}
         className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/15"
       >
         <div
@@ -92,7 +94,7 @@ function ImpactBar({
         aria-label={label}
         aria-valuemin={0}
         aria-valuemax={goal}
-        aria-valuenow={value}
+        aria-valuenow={Math.min(value, goal)}
         className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/15"
       >
         <div
@@ -106,16 +108,29 @@ function ImpactBar({
 
 export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const [sceneIndex, setSceneIndex] = useState(0);
+  const [twistActive, setTwistActive] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lastTrial, setLastTrial] = useState<{
+    reach: number;
+    benefit: number;
+  } | null>(null);
+  const [comparison, setComparison] = useState<{
+    reach: number;
+    benefit: number;
+  } | null>(null);
+  const twist = disruptions[chapter.id];
+  const playable =
+    twistActive && sceneIndex === 0 ? chapterWithDisruption(chapter) : chapter;
   const [selected, setSelected] = useState<string[]>([]);
   const [checked, setChecked] = useState(false);
   const [previous, setPrevious] = useState<{
     name: string;
     choices: number;
   } | null>(null);
-  const scenario = chapter.scenarios[sceneIndex];
+  const scenario = playable.scenarios[sceneIndex];
   const world = getWorldPresentation(chapter.id);
   const scene = world?.scenes[scenario.id];
-  const result = evaluateGame(chapter, scenario.id, selected);
+  const result = evaluateGame(playable, scenario.id, selected);
   const isLast = sceneIndex === chapter.scenarios.length - 1;
   const successful = checked && result.success;
   const failed = checked && !result.success;
@@ -125,6 +140,25 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
     chapter.id === "neighbourhood-garden-v1"
       ? "The garden comes alive."
       : "Your plan makes a difference.";
+
+  function testPlan() {
+    setComparison(lastTrial);
+    setLastTrial({ reach: result.totals.visitors, benefit: result.totals.joy });
+    setAttempts((count) => count + 1);
+    setChecked(true);
+  }
+
+  function faceChange() {
+    setTwistActive(true);
+    requestAnimationFrame(() => {
+      const heading = document.getElementById("disruption-heading");
+      heading?.focus();
+      heading?.scrollIntoView?.({ block: "start", behavior: "instant" });
+    });
+    setChecked(false);
+    setLastTrial(null);
+    setComparison(null);
+  }
 
   function toggle(id: string) {
     setSelected((choices) =>
@@ -141,6 +175,9 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
     setSceneIndex((index) => index + 1);
     setSelected([]);
     setChecked(false);
+    setAttempts(0);
+    setLastTrial(null);
+    setComparison(null);
     document.getElementById("main-content")?.scrollIntoView?.({
       block: "start",
       behavior: "instant",
@@ -150,7 +187,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   return (
     <main
       id="main-content"
-      className="w-full max-w-full min-w-0 overflow-x-clip bg-[#071a29] pb-16 text-white"
+      className="adventure-dark w-full max-w-full min-w-0 overflow-x-clip bg-[#071a29] pb-16 text-white"
     >
       <div className="mx-auto w-full max-w-5xl min-w-0 space-y-5 px-3 pt-3 sm:px-6 sm:pt-6">
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs font-bold">
@@ -176,10 +213,10 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                 {world?.category ?? "Real-life practice"} · Scene{" "}
                 {sceneIndex + 1} of {chapter.scenarios.length}
               </p>
-              <h1 className="mt-2 max-w-full text-[1.8rem] leading-[1.08] font-extrabold tracking-tight break-words drop-shadow-lg sm:mt-3 sm:text-[3.25rem]">
+              <h1 className="adventure-photo-copy mt-2 max-w-full text-[1.8rem] leading-[1.08] font-extrabold tracking-tight break-words drop-shadow-lg sm:mt-3 sm:text-[3.25rem]">
                 {chapter.title}
               </h1>
-              <p className="mt-3 max-w-xl text-[0.83rem] leading-5 text-[#e4edf0] sm:text-base sm:leading-6">
+              <p className="adventure-photo-copy mt-3 max-w-xl text-[0.83rem] leading-5 text-[#e4edf0] sm:text-base sm:leading-6">
                 {scene?.intro ?? chapter.description}
               </p>
               <div className="mt-4 flex min-w-0 flex-wrap items-center gap-2 text-[0.7rem] font-bold">
@@ -207,6 +244,27 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
             ))}
           </ol>
         </section>
+
+        {twistActive && sceneIndex === 0 && twist && (
+          <section
+            role="status"
+            aria-label="Situation changed"
+            className="adventure-event rounded-2xl border p-4"
+          >
+            <p className="text-xs font-bold tracking-widest uppercase">
+              Plot twist · Your plan is still here
+            </p>
+            <h2
+              id="disruption-heading"
+              tabIndex={-1}
+              className="mt-2 scroll-mt-24 text-xl font-bold outline-none"
+            >
+              {twist.title}
+            </h2>
+            <p className="mt-2 text-sm leading-6">{twist.message}</p>
+            <p className="mt-2 text-sm font-semibold">{twist.consequence}</p>
+          </section>
+        )}
 
         {previous && (
           <p className="rounded-xl border border-[#b7dcbe]/20 bg-[#15322f] px-4 py-3 text-xs leading-5 text-[#cbe6d3]">
@@ -307,6 +365,8 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
           <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4">
             {chapter.choices.map((choice, index) => {
               const active = selected.includes(choice.id);
+              const blocked =
+                scenario.unavailableChoices?.includes(choice.id) ?? false;
               const icon = world?.actionIcons[index] ?? "seed";
               const image = index % 2 === 0 ? world?.secondImage : world?.image;
               return (
@@ -315,7 +375,11 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                   type="button"
                   onClick={() => toggle(choice.id)}
                   aria-pressed={active}
-                  className={`group relative isolate flex min-h-[10rem] max-w-full min-w-0 flex-col justify-between overflow-hidden rounded-[1.1rem] border-2 p-2.5 text-left shadow-lg transition-[border-color,transform] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffdc96] active:scale-[.98] motion-reduce:transition-none sm:min-h-[13rem] sm:rounded-[1.3rem] sm:p-4 ${active ? "border-[#f1ce85]" : "border-white/15 hover:border-white/50"}`}
+                  disabled={blocked && !active}
+                  aria-describedby={
+                    blocked ? `blocked-${choice.id}` : undefined
+                  }
+                  className={`adventure-choice group relative isolate flex min-h-[10rem] max-w-full min-w-0 flex-col justify-between overflow-hidden rounded-[1.1rem] border-2 p-2.5 text-left shadow-lg transition-[border-color,transform] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffdc96] active:scale-[.98] motion-reduce:transition-none sm:min-h-[13rem] sm:rounded-[1.3rem] sm:p-4 ${active ? "border-[#f1ce85]" : "border-white/15 hover:border-white/50"}`}
                 >
                   {image && (
                     <CinematicImage
@@ -336,15 +400,24 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                       {active ? "✓" : "+"}
                     </span>
                   </span>
-                  <span className="relative block min-w-0">
+                  <span className="adventure-choice-copy relative block min-w-0">
                     <strong className="block text-[0.78rem] leading-[1.13rem] break-words sm:text-base sm:leading-5">
                       {choice.label}
                     </strong>
                     <span className="mt-2 block text-[0.61rem] leading-4 text-[#d1dce3] sm:text-xs">
+                      {blocked
+                        ? "Unavailable · remove to replace"
+                        : `${choice.visitors} reach · ${choice.joy} benefit`}
+                      <br />
                       {choice.cost} supplies · {choice.time}h · {choice.crew}{" "}
                       helpers
                     </span>
                   </span>
+                  {blocked && (
+                    <span id={`blocked-${choice.id}`} className="sr-only">
+                      Unavailable in this situation. Remove it from your plan.
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -394,8 +467,8 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
               </p>
             </div>
             <Button
-              className="min-h-12 w-full shrink-0 rounded-full bg-[#edc477] px-6 font-bold text-[#1c2c35] hover:bg-[#ffda91] sm:w-auto"
-              onClick={() => setChecked(true)}
+              className="adventure-action min-h-12 w-full shrink-0 rounded-full bg-[#edc477] px-6 font-bold text-[#1c2c35] hover:bg-[#ffda91] sm:w-auto"
+              onClick={testPlan}
               disabled={selected.length === 0}
             >
               Test my plan →
@@ -407,6 +480,18 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
               aria-live="polite"
               className={`mt-4 min-w-0 rounded-2xl border p-4 ${result.success ? "border-[#60cfa5]/40 bg-[#114338]" : "border-[#ecc185]/40 bg-[#46372d]"}`}
             >
+              <p className="mb-2 text-xs font-semibold">
+                Attempt {attempts} · {selected.length} actions
+              </p>
+              {comparison && (
+                <p className="mb-3 text-xs">
+                  Compared with your last test: reach{" "}
+                  {result.totals.visitors - comparison.reach >= 0 ? "+" : ""}
+                  {result.totals.visitors - comparison.reach}; benefit{" "}
+                  {result.totals.joy - comparison.benefit >= 0 ? "+" : ""}
+                  {result.totals.joy - comparison.benefit}.
+                </p>
+              )}
               <h3 className="text-base font-bold">
                 {successful
                   ? titleOnWin
@@ -426,10 +511,23 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
               )}
               {successful && (
                 <div className="mt-4">
-                  {!isLast ? (
+                  {sceneIndex === 0 && twist && !twistActive ? (
+                    <div className="rounded-xl border border-white/25 bg-[#0c2e27] p-4">
+                      <p className="mb-3 text-sm font-semibold">
+                        {scene?.nextTeaser ?? "Something is about to change."}{" "}
+                        Can your plan adapt?
+                      </p>
+                      <Button
+                        onClick={faceChange}
+                        className="adventure-action w-full rounded-full sm:w-auto"
+                      >
+                        See what happens next →
+                      </Button>
+                    </div>
+                  ) : !isLast ? (
                     <Button
                       onClick={next}
-                      className="min-h-11 w-full rounded-full bg-[#efd18b] px-5 text-[#1b2b35] sm:w-auto"
+                      className="adventure-action min-h-11 w-full rounded-full bg-[#efd18b] px-5 text-[#1b2b35] sm:w-auto"
                     >
                       {chapter.id === "neighbourhood-garden-v1" &&
                       sceneIndex === 0
@@ -439,7 +537,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                   ) : (
                     <Link
                       href="/quests"
-                      className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#efd18b] px-5 text-center text-sm font-bold text-[#1b2b35] sm:w-auto"
+                      className="adventure-action inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#efd18b] px-5 text-center text-sm font-bold text-[#1b2b35] sm:w-auto"
                     >
                       Find a real-world Quest →
                     </Link>

@@ -1,3 +1,4 @@
+import "@/modules/city/ui/adventure-theme.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getBuilderLevelProgress } from "@/modules/identity/domain/builder-level";
@@ -64,10 +65,10 @@ function AdventureTile({
         </span>
       </div>
       <div className="relative">
-        <h3 className="text-2xl font-extrabold tracking-tight sm:text-[1.75rem]">
+        <h3 className="adventure-photo-copy text-2xl font-extrabold tracking-tight sm:text-[1.75rem]">
           {title}
         </h3>
-        <p className="mt-2 max-w-[19rem] text-sm leading-5 text-white/85">
+        <p className="adventure-photo-copy mt-2 max-w-[19rem] text-sm leading-5 text-white/85">
           {detail}
         </p>
         <span className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-[#f5d38b]">
@@ -108,7 +109,7 @@ export default async function AdventureHubPage() {
   return (
     <main
       id="main-content"
-      className="min-h-screen w-full max-w-full min-w-0 overflow-x-clip bg-[#09172a] pb-14 text-white"
+      className="adventure-dark min-h-screen w-full max-w-full min-w-0 overflow-x-clip bg-[#09172a] pb-14 text-white"
     >
       <div className="mx-auto w-full max-w-6xl min-w-0 space-y-8 px-3 pt-4 sm:px-7 sm:pt-8">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-semibold">
@@ -153,7 +154,7 @@ export default async function AdventureHubPage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href={primaryHref}
-                  className="inline-flex min-h-12 items-center rounded-full bg-[#efbe60] px-5 text-sm font-extrabold text-[#132033] shadow-lg transition hover:bg-[#ffd88a]"
+                  className="adventure-action inline-flex min-h-12 items-center rounded-full bg-[#efbe60] px-5 text-sm font-extrabold text-[#132033] shadow-lg transition hover:bg-[#ffd88a]"
                 >
                   {primaryLabel}{" "}
                   <span className="ml-2" aria-hidden="true">

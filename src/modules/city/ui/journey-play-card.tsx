@@ -1,3 +1,4 @@
+import "./adventure-theme.css";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import {
@@ -104,7 +105,7 @@ export function JourneyPlayCard({
   return (
     <section
       aria-label="Your playable PipuPath journey"
-      className="pp-app-card my-5 overflow-hidden"
+      className="adventure-light adventure-journey pp-app-card my-5 overflow-hidden"
     >
       <div className="relative isolate min-h-48 overflow-hidden bg-[#201b59] p-5 text-white sm:min-h-56 sm:p-7">
         <CinematicImage src={adventureScenes.city} />
@@ -147,7 +148,7 @@ export function JourneyPlayCard({
         </ol>
         <Link
           href="/build/adventures"
-          className="relative isolate flex min-h-[7rem] items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#b6a8d7] bg-[#172a40] p-4 text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6848dc]"
+          className="adventure-hub-link relative isolate flex min-h-[7rem] items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#b6a8d7] bg-[#172a40] p-4 text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6848dc]"
         >
           <CinematicImage
             src={adventureScenes.garden}
@@ -161,7 +162,7 @@ export function JourneyPlayCard({
             <span>
               <strong className="block text-sm">Enter the Adventure Hub</strong>
               <span className="mt-1 block text-xs text-indigo-100">
-                Explore The Unbuilt City and The Forgotten Garden
+                Explore six worlds and respond to changing situations
               </span>
             </span>
           </span>

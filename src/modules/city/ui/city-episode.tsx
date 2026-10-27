@@ -20,6 +20,7 @@ import {
 } from "./city-art";
 import { evaluateCityThroughEngine } from "../domain/game-engine";
 import "./city.css";
+import "./adventure-theme.css";
 
 export type CityContext = {
   questId: string;
@@ -157,7 +158,7 @@ export function CityEpisode({
   return (
     <main
       id="main-content"
-      className="w-full max-w-full min-w-0 overflow-x-clip bg-[#f7f8fc] pb-10 text-[#25284a]"
+      className="adventure-light w-full max-w-full min-w-0 overflow-x-clip bg-[#f7f8fc] pb-10 text-[#25284a]"
     >
       <header className="bg-[#201b59] px-4 py-4 text-white sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">

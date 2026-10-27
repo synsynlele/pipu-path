@@ -1064,3 +1064,31 @@ Validation: npm run validate passed: formatting, zero-warning lint, strict types
 build. Focused city/redirect tests passed (20). Exact new-preview browser proof
 is pending; the previous plain episode's browser success does not certify the
 new visuals. No production promotion or phone-device pass is claimed.
+
+## 27 October — contrast repair and adaptive world decisions
+
+User reported matching text/background colours and repetitive worlds. Root cause:
+unlayered global `.bg-white`, anchor inheritance and button theme rules can override
+Tailwind game surfaces and intended CTA colours. Added scoped adventure light/dark
+rules with explicit foreground/background pairs; protected photograph labels with
+dark plates and fixed field/placeholder/primary/secondary states. No global theme
+was changed. Shared JourneyPlayCard now advertises all six worlds.
+
+Added five curated first-scene twists using the existing runner, not five copies
+of the UI. A successful plan unlocks a disruption. Choices remain present; the
+player adapts to new requirements or blocked options. Blocked selected options
+can be removed but not re-added and contribute no fictional benefit. Result
+feedback compares the latest test with the previous test in the same conditions.
+Resources have plain-language errors. Progressbar accessible values are bounded.
+No timer, lost lives, AI inference, XP or real completion was added. Practice stays
+tab-local. These are richer variations of the planning mechanic, not five new
+genres or validated retention improvements.
+
+Focused tests passed: 26, including every possible selection for each disruption,
+changed-solution requirements and the garden flow through initial success,
+disruption, revision and later scenes. Full validation and exact-preview visual
+proof follow; no live release is implied.
+
+Full npm run validate passed: format, zero-warning lint, TypeScript, 470
+unit/component tests with coverage, 251 integration tests and production build.
+No browser contrast or new-twist walkthrough pass is implied by automated tests.

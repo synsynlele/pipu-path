@@ -1,0 +1,111 @@
+/* Explicit game surfaces: global dark-app overrides must not recolour these. */
+.adventure-dark {
+  color: #f6f8fc;
+  background-color: #071a29;
+  color-scheme: dark;
+}
+.adventure-dark a {
+  color: #f6f8fc;
+}
+.adventure-dark .adventure-action,
+.adventure-dark .adventure-action:hover,
+.adventure-dark .adventure-action:focus-visible {
+  background: #f1c97a;
+  color: #152538;
+  -webkit-text-fill-color: #152538;
+  border-color: #f1c97a;
+}
+.adventure-dark .adventure-action:disabled {
+  opacity: 1;
+  background: #c4af86;
+  color: #243348;
+  border-color: #c4af86;
+  -webkit-text-fill-color: #243348;
+}
+.adventure-dark .adventure-event {
+  background: #30291c;
+  border-color: #dfbe78;
+  color: #fff2d8;
+}
+.adventure-dark .adventure-choice {
+  color: #fff;
+  background: #102536;
+}
+.adventure-dark .adventure-choice-copy {
+  background: #0b1e2d;
+  border-radius: 0.65rem;
+  padding: 0.6rem;
+}
+.adventure-dark .adventure-choice-copy strong {
+  color: #fff;
+}
+.adventure-dark .adventure-choice-copy > span {
+  color: #dce8f2;
+}
+.adventure-dark .adventure-choice:disabled {
+  opacity: 1;
+  border-style: dashed;
+  border-color: #8e9aa7;
+}
+.adventure-dark .adventure-choice:disabled .adventure-choice-copy {
+  background: #26333f;
+}
+.adventure-dark .adventure-photo-copy {
+  width: fit-content;
+  max-width: 100%;
+  background: #0b1e2de8;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+  color: #fff;
+  box-decoration-break: clone;
+}
+.adventure-light {
+  color: #25284a;
+  color-scheme: light;
+}
+.adventure-light .pp-app-card,
+.adventure-light .bg-white {
+  background-color: #fff;
+  color: #25284a;
+}
+.adventure-light a:not([class*="pp-button-"]) {
+  color: #46338f;
+}
+.adventure-light header a:not([class*="pp-button-"]) {
+  color: #f4f0ff;
+}
+.adventure-light textarea {
+  color: #25284a;
+  background: #fff;
+  -webkit-text-fill-color: #25284a;
+}
+.adventure-light textarea::placeholder {
+  color: #555e74;
+}
+.adventure-light .pp-button-primary,
+.adventure-light .pp-button-secondary,
+.adventure-light .pp-button-primary:hover,
+.adventure-light .pp-button-secondary:hover {
+  background: #4b34ac;
+  border-color: #4b34ac;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+.adventure-light .pp-button-ghost {
+  color: #46338f;
+  -webkit-text-fill-color: #46338f;
+}
+.adventure-light button:focus-visible,
+.adventure-dark button:focus-visible,
+.adventure-dark a:focus-visible {
+  outline: 3px solid #e1aa32;
+  outline-offset: 3px;
+}
+
+.adventure-journey.pp-app-card {
+  background: #fff;
+  color: #25284a;
+}
+.adventure-light .adventure-hub-link {
+  color: #fff;
+}
