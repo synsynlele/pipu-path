@@ -146,6 +146,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
     ? evaluateGardenLayout(selected, gardenPlot, scenario.id)
     : { success: true, problems: [] as string[] };
   const planWorks = result.success && layout.success;
+  const problems = [...result.problems, ...layout.problems];
   const isLast = sceneIndex === chapter.scenarios.length - 1;
   const successful = checked && planWorks;
   const failed = checked && !planWorks;
@@ -182,6 +183,22 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
         : [...choices, id],
     );
     setChecked(false);
+  }
+
+  function replay() {
+    setSceneIndex(0);
+    setTwistActive(false);
+    setSelected([]);
+    setGardenPlot(emptyGardenPlot());
+    setChecked(false);
+    setPrevious(null);
+    setAttempts(0);
+    setLastTrial(null);
+    setComparison(null);
+    document.getElementById("main-content")?.scrollIntoView?.({
+      block: "start",
+      behavior: "instant",
+    });
   }
 
   function next() {
@@ -254,7 +271,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
             title: item.label,
             state:
               index < sceneIndex ||
-              (index === sceneIndex && successful && isLast)
+              (index === sceneIndex && successful)
                 ? "done"
                 : index === sceneIndex
                   ? "current"
@@ -322,7 +339,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                 <p className="mt-1 text-sm leading-5 text-[#e5f0ef]">
                   “
                   {failed
-                    ? result.problems[0]
+                    ? (problems[0] ?? "Try a different layout and test again.")
                     : successful
                       ? scene.goodNews
                       : scene.quote}
@@ -539,9 +556,9 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                   ? (scene?.goodNews ?? "You found a working plan.")
                   : "The world changed. Rebalance your choices and try again."}
               </p>
-              {(result.problems.length > 0 || layout.problems.length > 0) && (
+              {problems.length > 0 && (
                 <ul className="mt-3 list-inside list-disc space-y-1 text-sm leading-5 text-[#f9dfbe]">
-                  {[...result.problems, ...layout.problems].map((problem) => (
+                  {problems.map((problem) => (
                     <li key={problem}>{problem}</li>
                   ))}
                 </ul>
@@ -572,12 +589,22 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                         : "Next situation →"}
                     </Button>
                   ) : (
-                    <Link
-                      href="/quests"
-                      className="adventure-action inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#efd18b] px-5 text-center text-sm font-bold text-[#1b2b35] sm:w-auto"
-                    >
-                      Find a real-world Quest →
-                    </Link>
+                    <div className="flex min-w-0 flex-col flex-wrap gap-3 sm:flex-row">
+                      <Link
+                        href="/quests"
+                        className="adventure-action inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#efd18b] px-5 text-center text-sm font-bold text-[#1b2b35] sm:w-auto"
+                      >
+                        Find a real-world Quest →
+                      </Link>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={replay}
+                        className="min-h-11 w-full rounded-full border border-white/35 bg-white/10 px-5 text-white sm:w-auto"
+                      >
+                        Play this world again
+                      </Button>
+                    </div>
                   )}
                 </div>
               )}
