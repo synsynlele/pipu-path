@@ -11,6 +11,8 @@ describe("safeNextPath", () => {
     expect(safeNextPath("/onboarding/guardian")).toBe("/onboarding/guardian");
     expect(safeNextPath("/reset-password")).toBe("/reset-password");
     expect(safeNextPath("/build/play?quest=abc")).toBe("/build/play?quest=abc");
+    expect(safeNextPath("/build/adventures")).toBe("/build/adventures");
+    expect(safeNextPath("/build/play/neighbourhood-garden-v1")).toBe("/build/play/neighbourhood-garden-v1");
     expect(safeNextPath("/build/unknown")).toBe("/app");
   });
 
