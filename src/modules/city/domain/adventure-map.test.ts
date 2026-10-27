@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { freshNeighbourhood } from "./neighbourhood";
 import { gardenChapter } from "./chapters";
 import { riverChapter } from "./world-chapters";
-import { createPracticeCheckpoint, practiceStorageKey } from "./practice-checkpoint";
+import {
+  createPracticeCheckpoint,
+  practiceStorageKey,
+} from "./practice-checkpoint";
 import { emptyGardenPlot, placeGardenPiece } from "./garden-layout";
 import { projectAdventureMap, recommendedPathWorld } from "./adventure-map";
 
@@ -51,14 +54,20 @@ describe("Duolingo-style PipuPath adventure map", () => {
       1730000000000,
     );
     const river = createPracticeCheckpoint(
-      riverChapter, 1, true, ["cleanup"], emptyGardenPlot(), 1730000000300,
+      riverChapter,
+      1,
+      true,
+      ["cleanup"],
+      emptyGardenPlot(),
+      1730000000300,
     );
     // A twist may only be active in the first scene.
     river.sceneIndex = 0;
     const worlds = projectAdventureMap(
       "student",
       saved({
-        [practiceStorageKey("student", gardenChapter.id)]: JSON.stringify(checkpoint),
+        [practiceStorageKey("student", gardenChapter.id)]:
+          JSON.stringify(checkpoint),
         [practiceStorageKey("student", riverChapter.id)]: JSON.stringify(river),
       }),
     );
@@ -81,7 +90,9 @@ describe("Duolingo-style PipuPath adventure map", () => {
     neighbourhood.sign = "right";
     let worlds = projectAdventureMap(
       "student",
-      saved({ "pipupath.neighbourhood.v1:student": JSON.stringify(neighbourhood) }),
+      saved({
+        "pipupath.neighbourhood.v1:student": JSON.stringify(neighbourhood),
+      }),
     );
     expect(worlds[0].missions.map((mission) => mission.state)).toEqual([
       "done",
@@ -90,30 +101,54 @@ describe("Duolingo-style PipuPath adventure map", () => {
     ]);
     neighbourhood.completed = ["ada", "timi", "mama"];
     neighbourhood.build = [
-      "roof", "roof", "roof",
-      "post", null, "post",
-      null, "counter", null,
+      "roof",
+      "roof",
+      "roof",
+      "post",
+      null,
+      "post",
+      null,
+      "counter",
+      null,
     ];
-    neighbourhood.route = ["home", "stores", "bridge", "square", "lane", "market"];
+    neighbourhood.route = [
+      "home",
+      "stores",
+      "bridge",
+      "square",
+      "lane",
+      "market",
+    ];
     worlds = projectAdventureMap(
       "student",
-      saved({ "pipupath.neighbourhood.v1:student": JSON.stringify(neighbourhood) }),
+      saved({
+        "pipupath.neighbourhood.v1:student": JSON.stringify(neighbourhood),
+      }),
     );
     expect(worlds[0].completed).toBe(3);
-    expect(worlds[0].missions.every((mission) => mission.state === "done")).toBe(true);
+    expect(
+      worlds[0].missions.every((mission) => mission.state === "done"),
+    ).toBe(true);
     expect(recommendedPathWorld(worlds)).toBe("city");
   });
 
   it("isolates progress per account and survives unavailable storage", () => {
     const checkpoint = createPracticeCheckpoint(
-      gardenChapter, 1, false, [], emptyGardenPlot(), 1730000000000,
+      gardenChapter,
+      1,
+      false,
+      [],
+      emptyGardenPlot(),
+      1730000000000,
     );
     const store = {
       [practiceStorageKey("one", gardenChapter.id)]: JSON.stringify(checkpoint),
     };
     expect(projectAdventureMap("two", saved(store))[2].completed).toBe(0);
     expect(projectAdventureMap("one", saved(store))[2].completed).toBe(1);
-    const worlds = projectAdventureMap("one", () => { throw new Error("denied"); });
+    const worlds = projectAdventureMap("one", () => {
+      throw new Error("denied");
+    });
     expect(worlds).toHaveLength(7);
     expect(worlds[2].completed).toBe(0);
   });
