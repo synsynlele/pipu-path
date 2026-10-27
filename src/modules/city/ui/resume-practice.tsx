@@ -20,38 +20,40 @@ export function ResumePractice({ userId }: { userId: string }) {
   const [resume, setResume] = useState<ResumeDetails | null>(null);
 
   useEffect(() => {
-    try {
-      const candidates = gameChapters
-        // The Unbuilt City has its own seven-step runner and no local chapter save.
-        .filter((chapter) => chapter.id !== "unbuilt-city-night-market-v1")
-        .map((chapter) => {
-          const checkpoint = parsePracticeCheckpoint(
-            localStorage.getItem(practiceStorageKey(userId, chapter.id)),
-            chapter,
-          );
-          return { chapter, checkpoint };
-        })
-        .filter(
-          ({ checkpoint }) => checkpoint && practiceHasProgress(checkpoint),
-        )
-        .sort(
-          (a, b) =>
-            (b.checkpoint?.updatedAt ?? 0) -
-            (a.checkpoint?.updatedAt ?? 0),
-        );
-      const latest = candidates[0];
-      if (latest?.checkpoint) {
-        const { chapter, checkpoint } = latest;
-        setResume({
-          href: `/build/play/${chapter.id}`,
-          title: chapter.title,
-          scene: chapter.scenarios[checkpoint.sceneIndex]?.label ?? "Your mission",
-          progress: `Mission ${checkpoint.sceneIndex + 1} of ${chapter.scenarios.length}`,
-        });
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      try {
+        const candidates = gameChapters
+          // The Unbuilt City has its own seven-step runner and no local save.
+          .filter((chapter) => chapter.id !== "unbuilt-city-night-market-v1")
+          .map((chapter) => {
+            const checkpoint = parsePracticeCheckpoint(
+              localStorage.getItem(practiceStorageKey(userId, chapter.id)),
+              chapter,
+            );
+            return { chapter, checkpoint };
+          })
+          .filter(({ checkpoint }) => checkpoint && practiceHasProgress(checkpoint))
+          .sort((a, b) => (b.checkpoint?.updatedAt ?? 0) - (a.checkpoint?.updatedAt ?? 0));
+        const latest = candidates[0];
+        if (latest?.checkpoint) {
+          const { chapter, checkpoint } = latest;
+          setResume({
+            href: `/build/play/${chapter.id}`,
+            title: chapter.title,
+            scene: chapter.scenarios[checkpoint.sceneIndex]?.label ?? "Your mission",
+            progress: `Mission ${checkpoint.sceneIndex + 1} of ${chapter.scenarios.length}`,
+          });
+        } else {
+          setResume(null);
+        }
+      } catch {
+        // Device storage can be blocked. The Hub still works without it.
+        setResume(null);
       }
-    } catch {
-      // Device storage can be blocked. The rest of the Adventure Hub still works.
-    }
+    });
+    return () => { active = false; };
   }, [userId]);
 
   if (!resume) return null;
