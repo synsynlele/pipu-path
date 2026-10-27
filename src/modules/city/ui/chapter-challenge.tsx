@@ -7,6 +7,8 @@ import { evaluateGame, type GameChapter } from "../domain/game-engine";
 import { CinematicImage, GardenSymbol } from "./cinematic-art";
 import { getWorldPresentation } from "./world-presentation";
 import { chapterWithDisruption, disruptions } from "../domain/disruptions";
+import { emptyGardenPlot, evaluateGardenLayout, gardenPieces, type GardenPlotState } from "../domain/garden-layout";
+import { GardenPlot } from "./garden-plot";
 import "./adventure-theme.css";
 
 type GaugeTone = "gold" | "teal" | "blue";
@@ -122,6 +124,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const playable =
     twistActive && sceneIndex === 0 ? chapterWithDisruption(chapter) : chapter;
   const [selected, setSelected] = useState<string[]>([]);
+  const [gardenPlot, setGardenPlot] = useState<GardenPlotState>(emptyGardenPlot);
   const [checked, setChecked] = useState(false);
   const [previous, setPrevious] = useState<{
     name: string;
@@ -131,9 +134,12 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const world = getWorldPresentation(chapter.id);
   const scene = world?.scenes[scenario.id];
   const result = evaluateGame(playable, scenario.id, selected);
+  const isGarden = chapter.id === "neighbourhood-garden-v1";
+  const layout = isGarden ? evaluateGardenLayout(selected, gardenPlot, scenario.id) : { success: true, problems: [] as string[] };
+  const planWorks = result.success && layout.success;
   const isLast = sceneIndex === chapter.scenarios.length - 1;
-  const successful = checked && result.success;
-  const failed = checked && !result.success;
+  const successful = checked && planWorks;
+  const failed = checked && !planWorks;
   const cover = scene?.image ?? world?.image ?? "";
   const impactColor = world?.accent ?? "#ecca83";
   const titleOnWin =
@@ -170,10 +176,11 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   }
 
   function next() {
-    if (!result.success || !checked || isLast) return;
+    if (!planWorks || !checked || isLast) return;
     setPrevious({ name: scenario.label, choices: selected.length });
     setSceneIndex((index) => index + 1);
     setSelected([]);
+    setGardenPlot(emptyGardenPlot());
     setChecked(false);
     setAttempts(0);
     setLastTrial(null);
@@ -357,11 +364,22 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                 id="choices-heading"
                 className="mt-1 text-xl font-bold sm:text-2xl"
               >
-                What will you do?
+                {isGarden ? "Build your layout" : "What will you do?"}
               </h2>
             </div>
-            <p className="text-xs text-[#b4cbdb]">Tap a scene to select it</p>
+            <p className="text-xs text-[#b4cbdb]">{isGarden ? "Move pieces around the garden" : "Tap a scene to select it"}</p>
           </div>
+          {isGarden ? (
+            <GardenPlot
+              choices={chapter.choices}
+              plot={gardenPlot}
+              onChange={(next) => {
+                setGardenPlot(next);
+                setSelected(gardenPieces(next));
+                setChecked(false);
+              }}
+            />
+          ) : (
           <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4">
             {chapter.choices.map((choice, index) => {
               const active = selected.includes(choice.id);
@@ -422,6 +440,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
               );
             })}
           </div>
+          )}
         </section>
 
         <section
@@ -502,9 +521,9 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                   ? (scene?.goodNews ?? "You found a working plan.")
                   : "The world changed. Rebalance your choices and try again."}
               </p>
-              {result.problems.length > 0 && (
+              {(result.problems.length > 0 || layout.problems.length > 0) && (
                 <ul className="mt-3 list-inside list-disc space-y-1 text-sm leading-5 text-[#f9dfbe]">
-                  {result.problems.map((problem) => (
+                  {[...result.problems, ...layout.problems].map((problem) => (
                     <li key={problem}>{problem}</li>
                   ))}
                 </ul>
