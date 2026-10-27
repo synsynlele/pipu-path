@@ -111,9 +111,19 @@ export function GardenPlot({
             Your garden, your design
           </h3>
         </div>
-        <p className="text-xs text-[#b6cfd6]">
-          {gardenPieces(plot).length} / {choices.length} placed
-        </p>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="text-xs text-[#b6cfd6]">
+            {gardenPieces(plot).length} / {choices.length} placed
+          </span>
+          <button
+            type="button"
+            onClick={undo}
+            disabled={undoStack.length === 0}
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#eaca88]/45 bg-[#183b46] px-3 text-xs font-bold text-[#f2d89f] disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            ↶ Undo move
+          </button>
+        </div>
       </div>
       <p className="mb-3 text-xs leading-5 text-[#c7dce5]">
         Drag a material onto the garden—or choose a material and tap an empty
