@@ -1092,3 +1092,9 @@ proof follow; no live release is implied.
 Full npm run validate passed: format, zero-warning lint, TypeScript, 470
 unit/component tests with coverage, 251 integration tests and production build.
 No browser contrast or new-twist walkthrough pass is implied by automated tests.
+
+Exact-preview screenshot caught a second AppShell rule (`.pp-app-experience main`)
+forcing dark headings/numbers even after action labels were fixed. Added the
+more-specific dark-game main scope and summary foreground. Readable label/CTA
+pairs and the complete garden disruption/revision path were observed; full-screen
+contrast verification is repeated after this cascade correction.

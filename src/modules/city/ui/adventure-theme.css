@@ -109,3 +109,15 @@
 .adventure-light .adventure-hub-link {
   color: #fff;
 }
+
+/* AppShell's light-canvas rule targets main directly: inherit from the game,
+   never from that canvas, on dark adventure routes. */
+.pp-app-experience main.adventure-dark {
+  color: #f6f8fc;
+  --foreground: #f6f8fc;
+  --muted: #c7d6e4;
+  color-scheme: dark;
+}
+.pp-app-experience main.adventure-dark details > summary {
+  color: #f6f8fc;
+}
