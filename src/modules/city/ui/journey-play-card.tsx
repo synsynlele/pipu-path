@@ -149,7 +149,10 @@ export function JourneyPlayCard({
           href="/build/adventures"
           className="relative isolate flex min-h-[7rem] items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#b6a8d7] bg-[#172a40] p-4 text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6848dc]"
         >
-          <CinematicImage src={adventureScenes.garden} sizes="(max-width: 768px) 100vw, 720px" />
+          <CinematicImage
+            src={adventureScenes.garden}
+            sizes="(max-width: 768px) 100vw, 720px"
+          />
           <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#10243b]/95 via-[#10243b]/75 to-[#10243b]/30" />
           <span className="relative flex min-w-0 items-center gap-3">
             <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-white/30 bg-white/15 text-[#f5d28e]">
@@ -157,10 +160,17 @@ export function JourneyPlayCard({
             </span>
             <span>
               <strong className="block text-sm">Enter the Adventure Hub</strong>
-              <span className="mt-1 block text-xs text-indigo-100">Explore The Unbuilt City and The Forgotten Garden</span>
+              <span className="mt-1 block text-xs text-indigo-100">
+                Explore The Unbuilt City and The Forgotten Garden
+              </span>
             </span>
           </span>
-          <span className="relative shrink-0 font-bold text-[#f5d28e]" aria-hidden="true">→</span>
+          <span
+            className="relative shrink-0 font-bold text-[#f5d28e]"
+            aria-hidden="true"
+          >
+            →
+          </span>
         </Link>
         <p className="text-xs leading-5 text-[#626a80]">
           Explore is an optional practice game. Only your saved Quest proof and
