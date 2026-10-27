@@ -48,7 +48,7 @@ export default async function AdventureHubPage() {
           aria-labelledby="real-quest-heading"
           className="rounded-3xl border border-[#c3b080]/35 bg-[#142e39] p-5 sm:p-7"
         >
-          <p className="text-xs font-extrabold uppercase tracking-[.16em] text-[#f3cd8e]">
+          <p className="text-xs font-extrabold tracking-[.16em] text-[#f3cd8e] uppercase">
             Beyond the game
           </p>
           <h2 id="real-quest-heading" className="mt-2 text-xl font-extrabold">
@@ -63,7 +63,8 @@ export default async function AdventureHubPage() {
             href={next.actionHref}
             className="adventure-action mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-bold sm:w-auto"
           >
-            {proofSaved ? "Continue my real Quest" : "Open my real-world Quest"} →
+            {proofSaved ? "Continue my real Quest" : "Open my real-world Quest"}{" "}
+            →
           </Link>
         </section>
         <p className="pb-2 text-center text-[0.7rem] leading-5 text-[#8fa7b5]">
