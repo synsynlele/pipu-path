@@ -644,13 +644,16 @@ export function WorldSimulation({
                           !
                         </text>
                       )}
-                      <text
-                        x={x + 4}
-                        y={y + 12}
-                        fill="#d6e8de"
-                        opacity=".65"
-                        fontSize="8"
-                      >
+                      <rect
+                        x={x + 2}
+                        y={y + 2}
+                        width="21"
+                        height="14"
+                        rx="3"
+                        fill="#071a29"
+                        opacity=".85"
+                      />
+                      <text x={x + 4} y={y + 12} fill="#fff" fontSize="9">
                         {String.fromCharCode(65 + (i % WIDTH))}
                         {Math.floor(i / WIDTH) + 1}
                       </text>
@@ -969,7 +972,7 @@ function ModuleArt({
           strokeWidth="4"
         />
         <path
-          d={`M${x + 13} ${y + 20}h44l-4 25H9Z`}
+          d={`M${x + 13} ${y + 20}h44l-4 25H${x + 9}Z`}
           fill="#426f9f"
           stroke="#b3d6dd"
           strokeWidth="2"

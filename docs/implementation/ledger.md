@@ -1212,3 +1212,9 @@ shelters and access, then placed two barriers to restore the same system. Visual
 review found three SVG face coordinates using scene origin instead of module
 origin; corrected them so facilities remain within their own construction tiles.
 Final checks and corrected-preview review follow. No real Quest action was taken.
+
+Corrected-preview inspection confirmed building faces are local to their tiles,
+but found one remaining solar-panel path closing to the scene origin. Corrected
+that coordinate too, and gave grid coordinates dark plates for readability over
+light roads. Browser geometry bounds and final visual proof must be checked after
+this correction; earlier gameplay proof remains separate from final art proof.
