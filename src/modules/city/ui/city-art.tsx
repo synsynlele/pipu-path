@@ -193,14 +193,16 @@ export function CityBackdrop({
   children,
   rainy = false,
   celebrating = false,
+  interactive = false,
 }: {
   children?: React.ReactNode;
   rainy?: boolean;
   celebrating?: boolean;
+  interactive?: boolean;
 }) {
   return (
     <div
-      className={`city-scene relative isolate overflow-hidden rounded-3xl bg-[#292749] ${rainy ? "city-rain" : ""} ${celebrating ? "city-celebrate" : ""}`}
+      className={`city-scene relative isolate overflow-hidden rounded-3xl bg-[#292749] ${rainy ? "city-rain" : ""} ${celebrating ? "city-celebrate" : ""} ${interactive ? "city-scene-play" : ""}`}
     >
       <CinematicImage src={adventureScenes.city} priority />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#181633]/20 via-transparent to-[#181633]/50" />
