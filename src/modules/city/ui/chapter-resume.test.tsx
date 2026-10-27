@@ -55,7 +55,7 @@ describe("optional game resume", () => {
       ),
     );
     render(<ChapterChallenge chapter={gardenChapter} userId="builder-1" />);
-    expect(await screen.findAllByText(/The community arrives/)).toBeInTheDocument();
+    expect((await screen.findAllByText(/The community arrives/))[0]).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Garden square 10: Walkway" })).toBeInTheDocument();
     expect(screen.getByText("2 / 3 completed")).toBeInTheDocument();
     expect(screen.queryByText("The garden comes alive.")).not.toBeInTheDocument();
