@@ -87,3 +87,23 @@ architecture, trees, cafe and platform; mature game environment, no UI or text."
 Source was inspected and converted to public/city/neighbourhood-dusk.webp.
 All build sites, icons, characters, interaction and feedback are code-rendered;
 background illustration is not presented as a functioning game screenshot.
+
+## 27 October — Quest-owned adventure trail
+
+The shared entry now presents an illustrated, accessible four-step route:
+Explore → Act → Prove → Grow. Every tile links only to a real, unlocked
+action. Explore remains optional city practice and never displays an earned
+completion state. Ready/active/evidence-submitted/completed Quest statuses
+determine which real-world steps can be opened and which have actually been
+saved. Locked and absent Quests never expose a private Quest route.
+
+The same trail component already appears through the shared Home, Build,
+Journey and Quest composition. The hero uses the existing environment
+illustration and PipuPath design system. Backend records, XP rules, evidence,
+privacy and the mobile shell have not been replaced. Proof/replay are kept
+separate: a simulated city outcome never unlocks a real-world milestone.
+
+Four deterministic new domain tests cover no Quest, locked, available/active,
+evidence-submitted and completed transitions. Local TypeScript checks and the
+targeted tests passed; the full GitHub validation and authenticated mobile
+pilot must pass before public release.
