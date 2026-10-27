@@ -157,7 +157,9 @@ export function JourneyPlayCard({
           <span className="flex items-center gap-3">
             <span className="text-3xl" aria-hidden="true">🌿</span>
             <span>
-              <strong className="block text-sm">New adventure: The Forgotten Garden</strong>
+              <strong className="block text-sm">
+                New adventure: The Forgotten Garden
+              </strong>
               <span className="block text-xs">Build a place everyone can enjoy</span>
             </span>
           </span>
