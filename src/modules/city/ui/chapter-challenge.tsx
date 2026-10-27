@@ -270,8 +270,7 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
             id: item.id,
             title: item.label,
             state:
-              index < sceneIndex ||
-              (index === sceneIndex && successful)
+              index < sceneIndex || (index === sceneIndex && successful)
                 ? "done"
                 : index === sceneIndex
                   ? "current"
