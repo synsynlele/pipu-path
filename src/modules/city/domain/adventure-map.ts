@@ -1,5 +1,8 @@
 import { gameChapters } from "./chapters";
-import { parsePracticeCheckpoint, practiceStorageKey } from "./practice-checkpoint";
+import {
+  parsePracticeCheckpoint,
+  practiceStorageKey,
+} from "./practice-checkpoint";
 import { parseNeighbourhood } from "./neighbourhood";
 
 export type PathMissionState = "done" | "current" | "locked";
@@ -124,7 +127,10 @@ export function projectAdventureMap(
         href: sceneIndex === completed ? href : null,
       })),
       completed,
-      hasProgress: completed > 0 || Boolean(saved?.selected.length) || Boolean(saved?.twistActive),
+      hasProgress:
+        completed > 0 ||
+        Boolean(saved?.selected.length) ||
+        Boolean(saved?.twistActive),
       savedAt: saved?.updatedAt ?? 0,
     });
   }
