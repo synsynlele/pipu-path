@@ -157,7 +157,7 @@ export function CityEpisode({
   return (
     <main
       id="main-content"
-      className="w-full bg-[#f7f8fc] pb-10 text-[#25284a]"
+      className="w-full min-w-0 max-w-full overflow-x-clip bg-[#f7f8fc] pb-10 text-[#25284a]"
     >
       <header className="bg-[#201b59] px-4 py-4 text-white sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
@@ -172,10 +172,10 @@ export function CityEpisode({
           </p>
         </div>
       </header>
-      <div className="mx-auto max-w-5xl space-y-4 px-3 pt-4 sm:px-6">
+      <div className="mx-auto w-full min-w-0 max-w-5xl space-y-4 px-3 pt-4 sm:px-6">
         <nav
           aria-label="Your connected adventure"
-          className="flex items-center justify-between gap-2 rounded-2xl border border-[#e1ddef] bg-white px-3 py-3 text-xs font-semibold"
+          className="grid min-w-0 grid-cols-4 gap-1 rounded-2xl border border-[#e1ddef] bg-white px-2 py-3 text-[0.65rem] font-semibold sm:gap-3 sm:px-3 sm:text-xs"
         >
           {(
             [
@@ -188,7 +188,7 @@ export function CityEpisode({
             <span
               key={label}
               aria-current={current ? "step" : undefined}
-              className={`flex items-center gap-1.5 ${current ? "text-[#6343cc]" : "text-[#69728a]"}`}
+              className={`flex min-w-0 flex-col items-center justify-center gap-1 text-center sm:flex-row sm:gap-1.5 ${current ? "text-[#6343cc]" : "text-[#69728a]"}`}
             >
               <CityIcon name={icon} className="size-4" />
               {label}
@@ -201,8 +201,8 @@ export function CityEpisode({
             {context.questTitle}
           </p>
         )}
-        <div className="flex items-center justify-between gap-3">
-          <div>
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
             <p className="text-xs font-bold tracking-widest text-[#6848dc] uppercase">
               {stage === 5
                 ? "Night 02 · On your own"
@@ -212,12 +212,12 @@ export function CityEpisode({
             <h2
               ref={heading}
               tabIndex={-1}
-              className="mt-2 scroll-mt-24 text-2xl font-bold tracking-tight outline-none sm:text-3xl"
+              className="mt-2 max-w-full scroll-mt-24 text-[1.45rem] font-bold tracking-tight break-words outline-none sm:text-3xl"
             >
               {titles[stage]}
             </h2>
           </div>
-          <span className="shrink-0 rounded-full bg-[#ece8fa] p-3 text-[#6848dc]">
+          <span className="shrink-0 rounded-full bg-[#ece8fa] p-2 text-[#6848dc] sm:p-3">
             <CityIcon name={stage === 5 ? "shelter" : "spark"} />
           </span>
         </div>
@@ -338,9 +338,9 @@ export function CityEpisode({
                   />
                   <CityIcon
                     name={roleIcons[item.id]}
-                    className="my-5 size-10 text-[#6343cc]"
+                    className="my-5 size-8 text-[#6343cc] sm:size-10"
                   />
-                  <strong className="text-sm sm:text-base">{item.title}</strong>
+                  <strong className="max-w-full text-xs break-words sm:text-base">{item.title}</strong>
                   <span className="sr-only">{item.detail}</span>
                 </label>
               ))}
@@ -433,6 +433,7 @@ export function CityEpisode({
               )}
             </div>
             <CityBackdrop
+              interactive
               rainy={weather === "rain"}
               celebrating={!!result?.success}
             >
@@ -441,7 +442,7 @@ export function CityEpisode({
                 site
               </div>
               <div
-                className="city-sites absolute inset-x-3 top-[20%] bottom-[9%] grid grid-cols-3 grid-rows-2 gap-1 sm:inset-x-12 sm:top-[22%] sm:bottom-[13%] sm:gap-4"
+                className="city-sites absolute inset-x-2 top-[14%] bottom-[6%] grid grid-cols-2 grid-rows-3 gap-1.5 sm:inset-x-12 sm:top-[22%] sm:bottom-[13%] sm:grid-cols-3 sm:grid-rows-2 sm:gap-4"
                 aria-label="Build sites"
               >
                 {builds.map((build) => (
@@ -451,7 +452,7 @@ export function CityEpisode({
                     aria-label={`${build.title}. ${build.cost} supplies, ${build.time} hours, ${build.crew} helpers. ${build.visitors} visitors, ${build.joy} enjoyment.`}
                     aria-pressed={plan.includes(build.id)}
                     onClick={() => toggle(build.id)}
-                    className={`city-site group relative flex min-h-11 min-w-0 flex-col items-center justify-end rounded-2xl border py-2 focus-visible:outline-4 focus-visible:outline-white ${plan.includes(build.id) ? "border-[#eaca88] bg-[#261c50]/80 text-white" : "border-white/40 bg-[#201b59]/60 text-white"}`}
+                    className={`city-site group relative flex min-h-0 min-w-0 max-w-full flex-col items-center justify-end overflow-hidden rounded-xl border px-1 py-2 sm:rounded-2xl focus-visible:outline-4 focus-visible:outline-white ${plan.includes(build.id) ? "border-[#eaca88] bg-[#261c50]/80 text-white" : "border-white/40 bg-[#201b59]/60 text-white"}`}
                   >
                     <span
                       className="absolute top-1 right-2 text-sm text-[#ffe0a5]"
