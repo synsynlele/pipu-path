@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { MovementPad } from "./movement-pad";
 import { StallWorkbench } from "./stall-workbench";
+import { LessonPath } from "./lesson-path";
 import { CityIcon } from "./city-art";
 import {
   spots,
@@ -170,6 +171,35 @@ export function Neighbourhood({
             {state.completed.length} / 3 encounters resolved
           </p>
         </div>
+        <LessonPath
+          title="Your neighbourhood missions"
+          nodes={[
+            {
+              id: "ada",
+              title: "Find the way",
+              state: state.completed.includes("ada") ? "done" : "current",
+            },
+            {
+              id: "timi",
+              title: "Build the stall",
+              state: state.completed.includes("timi")
+                ? "done"
+                : state.completed.includes("ada")
+                  ? "current"
+                  : "locked",
+            },
+            {
+              id: "mama",
+              title: "Deliver supplies",
+              state: state.completed.includes("mama")
+                ? "done"
+                : state.completed.includes("timi")
+                  ? "current"
+                  : "locked",
+            },
+          ]}
+          onSelect={(id) => visit(id as Encounter)}
+        />
         <div className="grid items-start gap-5 lg:grid-cols-[1.15fr_1fr]">
           <section
             aria-label="Your neighbourhood map"
