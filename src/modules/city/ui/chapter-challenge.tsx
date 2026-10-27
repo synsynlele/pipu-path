@@ -9,6 +9,7 @@ import { getWorldPresentation } from "./world-presentation";
 import { chapterWithDisruption, disruptions } from "../domain/disruptions";
 import { emptyGardenPlot, evaluateGardenLayout, gardenPieces, type GardenPlotState } from "../domain/garden-layout";
 import { GardenPlot } from "./garden-plot";
+import { LessonPath } from "./lesson-path";
 import "./adventure-theme.css";
 
 type GaugeTone = "gold" | "teal" | "blue";
@@ -236,21 +237,21 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
               </div>
             </div>
           </div>
-          <ol
-            aria-label="Scene progress"
-            className="relative flex gap-1.5 bg-black/40 px-4 py-3 sm:px-8"
-          >
-            {chapter.scenarios.map((item, index) => (
-              <li
-                key={item.id}
-                aria-current={index === sceneIndex ? "step" : undefined}
-                className={`h-1.5 min-w-0 flex-1 rounded-full ${index <= sceneIndex ? "bg-[#f3c779]" : "bg-white/20"}`}
-              >
-                <span className="sr-only">{item.label}</span>
-              </li>
-            ))}
-          </ol>
         </section>
+
+        <LessonPath
+          title="Your story missions"
+          nodes={chapter.scenarios.map((item, index) => ({
+            id: item.id,
+            title: item.label,
+            state:
+              index < sceneIndex || (index === sceneIndex && successful && isLast)
+                ? "done"
+                : index === sceneIndex
+                  ? "current"
+                  : "locked",
+          }))}
+        />
 
         {twistActive && sceneIndex === 0 && twist && (
           <section
