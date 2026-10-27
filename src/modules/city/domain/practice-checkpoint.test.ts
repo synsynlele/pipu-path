@@ -48,7 +48,7 @@ describe("safe practice checkpoints", () => {
       { ...gardenSave, selected: ["seeds", "seeds"] },
       { ...gardenSave, selected: ["water"] },
       { ...gardenSave, gardenPlot: [null] },
-      { ...gardenSave, gardenPlot: [undefined, ...plot.slice(1)] },
+      { ...gardenSave, gardenPlot: [42, ...plot.slice(1)] },
       { ...gardenSave, gardenPlot: [...plot.slice(0, 2), "unsafe", ...plot.slice(3)] },
       { ...gardenSave, updatedAt: "bad" },
     ];
