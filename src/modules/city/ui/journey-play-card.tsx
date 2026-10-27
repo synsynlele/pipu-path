@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import {
@@ -8,6 +7,8 @@ import {
 } from "../domain/adventure-trail";
 import { cityContinuation, type QuestLink } from "../domain/continuation";
 import { CityIcon, type IconName } from "./city-art";
+import { CinematicImage } from "./cinematic-art";
+import { adventureScenes } from "./adventure-scenes";
 
 const stepIcons: Record<TrailStep["id"], IconName> = {
   play: "play",
@@ -95,7 +96,7 @@ export function JourneyPlayCard({
   quest?: QuestLink | null;
   journeyTitle?: string;
 }) {
-  const next = cityContinuation(quest);
+  const next = cityContinuation(quest?.status === "locked" ? null : quest);
   const trail = adventureTrail(quest);
   const proofSaved =
     quest?.status === "evidence_submitted" || quest?.status === "completed";
@@ -106,13 +107,7 @@ export function JourneyPlayCard({
       className="pp-app-card my-5 overflow-hidden"
     >
       <div className="relative isolate min-h-48 overflow-hidden bg-[#201b59] p-5 text-white sm:min-h-56 sm:p-7">
-        <Image
-          src="/city/neighbourhood-dusk.webp"
-          alt=""
-          fill
-          sizes="(max-width: 768px) 100vw, 960px"
-          className="object-cover"
-        />
+        <CinematicImage src={adventureScenes.city} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#171331]/95 via-[#181432]/70 to-[#181432]/20" />
         <div className="relative max-w-md">
           <p className="text-xs font-bold tracking-widest text-[#f4d69b] uppercase">
@@ -151,19 +146,21 @@ export function JourneyPlayCard({
           ))}
         </ol>
         <Link
-          href="/build/play/neighbourhood-garden-v1"
-          className="flex items-center justify-between gap-3 rounded-2xl border border-[#b7d9c3] bg-[#e8f6ec] p-3 text-[#275f46] transition-colors hover:bg-[#d7efde]"
+          href="/build/adventures"
+          className="relative isolate flex min-h-[7rem] items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#b6a8d7] bg-[#172a40] p-4 text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6848dc]"
         >
-          <span className="flex items-center gap-3">
-            <span className="text-3xl" aria-hidden="true">🌿</span>
+          <CinematicImage src={adventureScenes.garden} sizes="(max-width: 768px) 100vw, 720px" />
+          <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#10243b]/95 via-[#10243b]/75 to-[#10243b]/30" />
+          <span className="relative flex min-w-0 items-center gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-white/30 bg-white/15 text-[#f5d28e]">
+              <CityIcon name="play" className="size-6" />
+            </span>
             <span>
-              <strong className="block text-sm">
-                New adventure: The Forgotten Garden
-              </strong>
-              <span className="block text-xs">Build a place everyone can enjoy</span>
+              <strong className="block text-sm">Enter the Adventure Hub</strong>
+              <span className="mt-1 block text-xs text-indigo-100">Explore The Unbuilt City and The Forgotten Garden</span>
             </span>
           </span>
-          <span aria-hidden="true">→</span>
+          <span className="relative shrink-0 font-bold text-[#f5d28e]" aria-hidden="true">→</span>
         </Link>
         <p className="text-xs leading-5 text-[#626a80]">
           Explore is an optional practice game. Only your saved Quest proof and
