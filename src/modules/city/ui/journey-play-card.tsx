@@ -150,6 +150,19 @@ export function JourneyPlayCard({
             <TrailNode key={step.id} step={step} index={index} />
           ))}
         </ol>
+        <Link
+          href="/build/play/neighbourhood-garden-v1"
+          className="flex items-center justify-between gap-3 rounded-2xl border border-[#b7d9c3] bg-[#e8f6ec] p-3 text-[#275f46] transition-colors hover:bg-[#d7efde]"
+        >
+          <span className="flex items-center gap-3">
+            <span className="text-3xl" aria-hidden="true">🌿</span>
+            <span>
+              <strong className="block text-sm">New adventure: The Forgotten Garden</strong>
+              <span className="block text-xs">Build a place everyone can enjoy</span>
+            </span>
+          </span>
+          <span aria-hidden="true">→</span>
+        </Link>
         <p className="text-xs leading-5 text-[#626a80]">
           Explore is an optional practice game. Only your saved Quest proof and
           reflection change your actual progress.
