@@ -1148,3 +1148,12 @@ formatting, zero-warning lint, types and production build. Pointer tests cover
 material placement, swaps and outside drops; hold-control tests cover repeated
 movement, cancellation and timer cleanup. Existing linked-story/save tests pass.
 Deployed browser/touch/Android verification remains distinct from these checks.
+
+Authenticated preview fa706041: all seven game destinations and Games shortcut
+were present. Holding Walk right for 640ms moved the visible player from x42 to
+x60; releasing stopped the control. Native pointer drag placed a roof into cell
+1; dragging that placed roof to cell 2 moved it and emptied cell 1. No learner
+records were changed. Browser review caught low-contrast header shortcut text;
+explicit foreground fixes it. Drag threshold now measures from the gesture origin,
+so slow movements accumulate correctly. Final full validation and exact-preview
+review apply to these corrections; physical touch/Android proof remains pending.

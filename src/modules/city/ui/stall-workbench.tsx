@@ -26,6 +26,7 @@ export function StallWorkbench({
   } | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const moved = useRef(false);
+  const origin = useRef({ x: 0, y: 0 });
   function begin(
     event: PointerEvent<HTMLButtonElement>,
     piece: Piece,
@@ -34,12 +35,18 @@ export function StallWorkbench({
     if (event.button !== 0 || event.currentTarget.disabled) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     moved.current = false;
+    origin.current = { x: event.clientX, y: event.clientY };
     setSelected(piece);
     setDrag({ piece, source, x: event.clientX, y: event.clientY });
   }
   function move(event: PointerEvent<HTMLButtonElement>) {
     if (!drag) return;
-    if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 4)
+    if (
+      Math.hypot(
+        event.clientX - origin.current.x,
+        event.clientY - origin.current.y,
+      ) > 4
+    )
       moved.current = true;
     setDrag({ ...drag, x: event.clientX, y: event.clientY });
   }
@@ -117,7 +124,10 @@ export function StallWorkbench({
             type="button"
             {...handlers}
             onPointerDown={(event) => begin(event, id, null)}
-            onClick={() => setSelected(id)}
+            onClick={() => {
+              moved.current = false;
+              setSelected(id);
+            }}
             aria-pressed={selected === id}
             className={`flex min-h-24 min-w-0 flex-1 touch-none flex-col items-center justify-center gap-2 rounded-xl border p-2 text-xs ${selected === id ? "border-[#f1ce8e] bg-[#40505a]" : "border-white/25 bg-[#0b1e2d]"}`}
           >

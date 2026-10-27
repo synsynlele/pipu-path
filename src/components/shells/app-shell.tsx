@@ -35,6 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex shrink-0 items-center gap-1.5">
             <Link
               href="/build/adventures"
+              style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
               className="inline-flex min-h-11 items-center rounded-full border border-white/30 px-3 text-xs font-bold text-white"
             >
               ◈ Games
@@ -68,6 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2">
             <Link
               href="/build/adventures"
+              style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
               className="inline-flex min-h-11 items-center rounded-full bg-[#172a40] px-3 text-sm font-bold text-white"
             >
               ◈ Games
