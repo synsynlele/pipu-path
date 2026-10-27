@@ -11,7 +11,6 @@ Four new deterministic status tests and a TypeScript check passed locally.
 Full GitHub CI, authenticated browser/phone QA and production release are
 separate gates. No Supabase migration is required.
 
-
 ## 15 October 2026 — Plain-language guidance candidate
 
 Shared prompts now explicitly serve adults of all ages and younger users, using
