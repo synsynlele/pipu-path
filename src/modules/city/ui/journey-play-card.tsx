@@ -147,7 +147,7 @@ export function JourneyPlayCard({
           ))}
         </ol>
         <Link
-          href="/build/neighbourhood"
+          href="/build/adventures"
           className="adventure-hub-link relative isolate flex min-h-[7rem] items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[#b6a8d7] bg-[#172a40] p-4 text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#6848dc]"
         >
           <CinematicImage
@@ -161,10 +161,10 @@ export function JourneyPlayCard({
             </span>
             <span>
               <strong className="block text-sm">
-                Enter your neighbourhood
+                Follow my adventure path
               </strong>
               <span className="mt-1 block text-xs text-indigo-100">
-                Meet your neighbours. Build a story that continues.
+                Start with one mission, then follow your worlds.
               </span>
             </span>
           </span>
@@ -182,11 +182,11 @@ export function JourneyPlayCard({
 
         <div className="flex flex-col gap-2 sm:flex-row">
           <ButtonLink
-            href={next.focus === "play" ? next.playHref : next.actionHref}
+            href={next.focus === "play" ? "/build/adventures" : next.actionHref}
             className="w-full justify-center rounded-full sm:w-auto"
           >
             {next.focus === "play"
-              ? "Enter the Unbuilt City →"
+              ? "My adventure path →"
               : next.actionLabel}
           </ButtonLink>
           <ButtonLink
