@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { evaluateGame, type GameChapter } from "../domain/game-engine";
@@ -15,6 +15,12 @@ import {
 } from "../domain/garden-layout";
 import { GardenPlot } from "./garden-plot";
 import { LessonPath } from "./lesson-path";
+import {
+  createPracticeCheckpoint,
+  parsePracticeCheckpoint,
+  practiceHasProgress,
+  practiceStorageKey,
+} from "../domain/practice-checkpoint";
 import "./adventure-theme.css";
 
 type GaugeTone = "gold" | "teal" | "blue";
@@ -114,7 +120,13 @@ function ImpactBar({
   );
 }
 
-export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
+export function ChapterChallenge({
+  chapter,
+  userId,
+}: {
+  chapter: GameChapter;
+  userId?: string;
+}) {
   const [sceneIndex, setSceneIndex] = useState(0);
   const [twistActive, setTwistActive] = useState(false);
   const [attempts, setAttempts] = useState(0);
@@ -133,6 +145,9 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const [gardenPlot, setGardenPlot] =
     useState<GardenPlotState>(emptyGardenPlot);
   const [checked, setChecked] = useState(false);
+  const [keepPractice, setKeepPractice] = useState(false);
+  const [checkpointReady, setCheckpointReady] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
   const [previous, setPrevious] = useState<{
     name: string;
     choices: number;
@@ -156,6 +171,60 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
     chapter.id === "neighbourhood-garden-v1"
       ? "The garden comes alive."
       : "Your plan makes a difference.";
+
+  // Device-only practice state is opt-in and scoped to the signed-in player.
+  // Restoring never restores a success verdict: the player retests the plan.
+  useEffect(() => {
+    if (!userId) return;
+    try {
+      const raw = localStorage.getItem(practiceStorageKey(userId, chapter.id));
+      const saved = parsePracticeCheckpoint(raw, chapter);
+      if (saved && practiceHasProgress(saved)) {
+        setSceneIndex(saved.sceneIndex);
+        setTwistActive(saved.twistActive);
+        setSelected(saved.selected);
+        setGardenPlot(saved.gardenPlot);
+        setChecked(false);
+        setKeepPractice(true);
+        setSaveMessage("Your practice has resumed on this device.");
+      }
+    } catch {
+      // Browsers may disable local storage; gameplay still works without it.
+    }
+    setCheckpointReady(true);
+  }, [chapter, userId]);
+
+  useEffect(() => {
+    if (!userId || !checkpointReady || !keepPractice) return;
+    try {
+      const save = createPracticeCheckpoint(
+        chapter,
+        sceneIndex,
+        twistActive,
+        selected,
+        gardenPlot,
+      );
+      localStorage.setItem(practiceStorageKey(userId, chapter.id), JSON.stringify(save));
+    } catch {
+      setKeepPractice(false);
+      setSaveMessage("Device saving is unavailable. You can still play.");
+    }
+  }, [chapter, userId, checkpointReady, keepPractice, sceneIndex, twistActive, selected, gardenPlot]);
+
+  function toggleDeviceSave(checked: boolean) {
+    if (!userId) return;
+    setKeepPractice(checked);
+    if (checked) {
+      setSaveMessage("Your practice will be kept on this device only.");
+    } else {
+      try {
+        localStorage.removeItem(practiceStorageKey(userId, chapter.id));
+        setSaveMessage("Device save removed. Your current game remains open.");
+      } catch {
+        setSaveMessage("Couldn't clear the device save. Try again in your browser settings.");
+      }
+    }
+  }
 
   function testPlan() {
     setComparison(lastTrial);
@@ -263,6 +332,24 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
             </div>
           </div>
         </section>
+
+        {userId && checkpointReady && (
+          <section className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/15 bg-[#102b3b] px-4 py-3" aria-label="Save practice on this device">
+            <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-xs font-semibold text-[#dbe9f1] sm:text-sm">
+              <input
+                type="checkbox"
+                checked={keepPractice}
+                onChange={(event) => toggleDeviceSave(event.target.checked)}
+                className="size-5 shrink-0 accent-[#f1c97a]"
+              />
+              Keep my place on this device
+            </label>
+            <span className="text-[0.68rem] leading-4 text-[#abc2d2]">
+              {keepPractice ? "Saved as you play · Device only" : "Off · Practice stays in this tab"}
+            </span>
+            {saveMessage && <p className="w-full text-xs text-[#e5ce90]" role="status">{saveMessage}</p>}
+          </section>
+        )}
 
         <LessonPath
           title="Your story missions"
