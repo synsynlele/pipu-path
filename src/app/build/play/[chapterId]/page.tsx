@@ -14,11 +14,11 @@ export default async function ChapterPage({
 }: {
   params: Promise<{ chapterId: string }>;
 }) {
-  await requireAuthenticatedHomeState();
+  const state = await requireAuthenticatedHomeState();
   const { chapterId } = await params;
   // The original city has its own rich seven-stage experience.
   // New data-driven chapters are routed through this reusable runner.
   const chapter = getGameChapter(chapterId);
   if (!chapter || chapter.id === "unbuilt-city-night-market-v1") notFound();
-  return <ChapterChallenge chapter={chapter} />;
+  return <ChapterChallenge chapter={chapter} userId={state.userId} />;
 }
