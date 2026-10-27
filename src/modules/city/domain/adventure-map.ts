@@ -133,14 +133,11 @@ export function projectAdventureMap(
 
 /** Choose a saved active world before inviting a first-time player to start. */
 export function recommendedPathWorld(worlds: readonly PathWorld[]): string {
-  let candidate = worlds[0]?.id ?? "";
-  let latest = 0;
-  for (const world of worlds) {
-    if (world.savedAt > latest && world.hasProgress) {
-      candidate = world.id;
-      latest = world.savedAt;
-    }
-  }
-  if (latest === 0 && (worlds[0]?.hasProgress ?? false)) return worlds[0].id;
-  return candidate;
+  const available = worlds.filter((world) =>
+    world.missions.some((mission) => mission.state === "current"),
+  );
+  const saved = available
+    .filter((world) => world.hasProgress)
+    .sort((a, b) => b.savedAt - a.savedAt);
+  return saved[0]?.id ?? available[0]?.id ?? "";
 }
