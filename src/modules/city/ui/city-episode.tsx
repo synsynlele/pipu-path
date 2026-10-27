@@ -102,7 +102,9 @@ export function CityEpisode({
   // Shared chapter engine decides success; the legacy evaluator supplies
   // detailed neighbour feedback until all chapters adopt scenario messages.
   const chapterSuccess = engineResult.success;
-  void chapterSuccess;
+  if (chapterSuccess !== totals.success) {
+    throw new Error("Game chapter rules do not match the city episode");
+  }
   const isTrial = stage === 3 || stage === 5;
   function move(next: number) {
     setStage(next);
