@@ -105,15 +105,25 @@ it("lets players undo the last placement without clearing their earlier work", (
   fireEvent.click(
     screen.getByRole("button", { name: /Choose Plant seedlings/ }),
   );
-  fireEvent.click(screen.getByRole("button", { name: "Garden square 1: empty" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Garden square 1: empty" }),
+  );
   fireEvent.click(
     screen.getByRole("button", { name: /Choose Set up watering/ }),
   );
-  fireEvent.click(screen.getByRole("button", { name: "Garden square 2: empty" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Garden square 2: empty" }),
+  );
   fireEvent.click(screen.getByRole("button", { name: /Undo move/ }));
-  expect(screen.getByRole("button", { name: "Garden square 2: empty" })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Garden square 1: Seedlings" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Garden square 2: empty" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Garden square 1: Seedlings" }),
+  ).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: /Undo move/ }));
-  expect(screen.getByRole("button", { name: "Garden square 1: empty" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Garden square 1: empty" }),
+  ).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /Undo move/ })).toBeDisabled();
 });
