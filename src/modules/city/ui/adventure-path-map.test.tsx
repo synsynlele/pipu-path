@@ -15,7 +15,7 @@ describe("Adventure Hub winding path", () => {
   it("makes the next step visible, shows all seven worlds, and keeps future missions disabled", () => {
     render(<AdventurePathMap userId="student" />);
     expect(screen.getByRole("heading", { name: "One mission at a time." })).toBeInTheDocument();
-    expect(screen.getByText("0 / 19")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Practice missions completed" })).toHaveAttribute("aria-valuenow", "0");
     expect(screen.getByRole("link", { name: "Your Neighbourhood, Show the way: Play now" })).toHaveAttribute(
       "href", "/build/neighbourhood",
     );
@@ -41,7 +41,7 @@ describe("Adventure Hub winding path", () => {
       name: /The Forgotten Garden, The community arrives: Play now/,
     });
     await waitFor(() => expect(next).toHaveAttribute("id", "adventure-current-step"));
-    expect(screen.getByText("2 / 19")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Practice missions completed" })).toHaveAttribute("aria-valuenow", "2");
     expect(screen.getByLabelText(/The Forgotten Garden, First planting day: Completed practice/)).toBeInTheDocument();
     expect(screen.getByText("CONTINUE")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Jump to my next mission/ }));
