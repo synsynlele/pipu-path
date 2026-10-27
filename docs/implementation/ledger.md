@@ -1011,3 +1011,31 @@ the www endpoint with only the direct-download certificate; the apex endpoint
 redirects and is not used by the current Android host configuration. Production
 verification must check the new associations through Google Digital Asset Links
 and a fresh launch of the Play-installed app. Android may cache verification.
+
+## 27 October 2026 — The Unbuilt City first episode candidate
+
+User authorised a real game using the current PipuPath template. Added a Build
+entry and authenticated `/build/play` episode using existing AppShell and UI
+primitives. Pure simulation rules and separate React presentation provide a
+seven-part curiosity-to-reflection flow, clear/rain attempts, three orientation
+roles, resource feedback and an optional downloadable experiment. No backend,
+XP, learner profile, evidence or safeguarding change. No automatic persistence
+or real-world completion is claimed. See product/unbuilt-city-first-episode.md.
+Validation and release evidence follow below.
+
+Validation: formatting, zero-warning lint, TypeScript, 446 unit/component tests
+with coverage and 251 integration tests passed. The initial build encountered
+an executor-only external node_modules symlink; a local dependency tree resolved
+it and the unmodified Next.js production build passed. Managed browser preview
+could not start because its launcher passes Vite-only `--host`/`--strictPort`
+flags to Next.js. No application workaround was added. Temporary QA route was
+removed; visual/mobile browser verification remains incomplete. Production is
+unchanged. The React checklist found no new server fetch, SDK, animation or
+cross-user state; stage transitions focus headings and controls are labelled.
+
+Final `npm run validate` passed in full after the dependency-path repair:
+format, lint, types, 446 unit/component tests with coverage, 251 integration tests
+and production build. Commit is retained locally. Automatic approval review
+rejected pushing new feature source to the public GitHub repository because
+explicit authorisation for that publication was not established. No push, PR,
+Vercel Preview or production deployment is claimed.

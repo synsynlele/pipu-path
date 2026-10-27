@@ -147,6 +147,25 @@ export default async function BuildPage() {
 
       <div className="relative -mt-5 rounded-t-[2rem] bg-[#f7f8fc] pt-5">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <section className="pp-app-card pp-mobile-section mb-5 p-5 sm:p-6">
+            <p className="text-xs font-bold tracking-widest text-[#6848dc] uppercase">
+              The Unbuilt City · Practice episode
+            </p>
+            <h2 className="mt-2 text-xl font-bold text-[#25284a]">
+              An empty square. What could you make possible?
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-[#747b90]">
+              Listen to your neighbours, build a plan and see what happens. Then
+              try a small experiment in real life.
+            </p>
+            <ButtonLink href="/build/play" className="mt-4 rounded-full">
+              Play the first episode →
+            </ButtonLink>
+            <p className="mt-3 text-xs leading-5 text-[#747b90]">
+              Practice does not earn XP or replace your real-world Quest.
+            </p>
+          </section>
+
           <section className="pp-mobile-section">
             <div className="flex items-center justify-between gap-3 px-1">
               <h2 className="pp-section-title text-xl">Your build flow</h2>

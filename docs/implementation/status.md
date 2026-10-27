@@ -415,3 +415,13 @@ the www endpoint with only the direct-download certificate; the apex endpoint
 redirects and is not used by the current Android host configuration. Production
 verification must check the new associations through Google Digital Asset Links
 and a fresh launch of the Play-installed app. Android may cache verification.
+
+## 27 October 2026 — The Unbuilt City first episode candidate
+
+The user authorised the game direction inside the existing PipuPath design.
+Implemented a Build entry and protected `/build/play` practice episode with a
+shared-first attempt, explicit explanation, independent changed scenario,
+reflection and optional real-world experiment download. Uses existing shell and
+components. Practice never earns XP or produces a capability claim. Page state
+resets on refresh; explicit download is the only export. No database change or
+live deployment is claimed. See product/unbuilt-city-first-episode.md and ledger.
