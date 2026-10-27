@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { gardenChapter } from "../domain/chapters";
 import {
@@ -20,12 +26,18 @@ describe("optional game resume", () => {
       name: /Keep my place on this device/,
     });
     expect(keep).not.toBeChecked();
-    fireEvent.click(screen.getByRole("button", { name: /Choose Plant seedlings/ }));
-    fireEvent.click(screen.getByRole("button", { name: "Garden square 1: empty" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Choose Plant seedlings/ }),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Garden square 1: empty" }),
+    );
     expect(localStorage.getItem(key)).toBeNull();
     fireEvent.click(keep);
     await waitFor(() => {
-      expect(JSON.parse(localStorage.getItem(key) ?? "{}").selected).toEqual(["seeds"]);
+      expect(JSON.parse(localStorage.getItem(key) ?? "{}").selected).toEqual([
+        "seeds",
+      ]);
     });
 
     cleanup();
@@ -36,8 +48,12 @@ describe("optional game resume", () => {
     expect(
       screen.getByRole("checkbox", { name: /Keep my place on this device/ }),
     ).toBeChecked();
-    expect(screen.getByText(/practice has resumed on this device/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("checkbox", { name: /Keep my place on this device/ }));
+    expect(
+      screen.getByText(/practice has resumed on this device/i),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("checkbox", { name: /Keep my place on this device/ }),
+    );
     expect(localStorage.getItem(key)).toBeNull();
     expect(
       screen.getByRole("button", { name: "Garden square 1: Seedlings" }),
@@ -50,22 +66,41 @@ describe("optional game resume", () => {
       key,
       JSON.stringify(
         createPracticeCheckpoint(
-          gardenChapter, 2, false, ["paths"], plot, Date.now(),
+          gardenChapter,
+          2,
+          false,
+          ["paths"],
+          plot,
+          Date.now(),
         ),
       ),
     );
     render(<ChapterChallenge chapter={gardenChapter} userId="builder-1" />);
-    expect((await screen.findAllByText(/The community arrives/))[0]).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Garden square 10: Walkway" })).toBeInTheDocument();
+    expect(
+      (await screen.findAllByText(/The community arrives/))[0],
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Garden square 10: Walkway" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("2 / 3 completed")).toBeInTheDocument();
-    expect(screen.queryByText("The garden comes alive.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("The garden comes alive."),
+    ).not.toBeInTheDocument();
   });
 
   it("ignores broken saves and never mixes users", async () => {
     localStorage.setItem(key, '{"version":1,"wrong":"data"}');
     render(<ChapterChallenge chapter={gardenChapter} userId="builder-2" />);
-    expect(await screen.findByRole("checkbox", { name: /Keep my place on this device/ })).not.toBeChecked();
-    expect(screen.getByRole("button", { name: "Garden square 1: empty" })).toBeInTheDocument();
-    expect(screen.queryByText(/resumed on this device/i)).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole("checkbox", {
+        name: /Keep my place on this device/,
+      }),
+    ).not.toBeChecked();
+    expect(
+      screen.getByRole("button", { name: "Garden square 1: empty" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/resumed on this device/i),
+    ).not.toBeInTheDocument();
   });
 });
