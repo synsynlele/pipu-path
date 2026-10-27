@@ -1,5 +1,17 @@
 # Implementation status
 
+## 27 October 2026 — Game journey trail preview
+
+The open `feat/unbuilt-city-first-episode` candidate adds an illustrated,
+Quest-aware Explore → Act → Prove → Grow trail to the current shared Home,
+Build, Journey and Quest experience. Real Quest state determines available
+steps and earned progress; city practice never awards XP or completes a Quest.
+It reuses the existing authenticated AppShell and the Unbuilt City artwork.
+Four new deterministic status tests and a TypeScript check passed locally.
+Full GitHub CI, authenticated browser/phone QA and production release are
+separate gates. No Supabase migration is required.
+
+
 ## 15 October 2026 — Plain-language guidance candidate
 
 Shared prompts now explicitly serve adults of all ages and younger users, using
