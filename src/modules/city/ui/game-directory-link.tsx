@@ -12,7 +12,10 @@ export function GameDirectoryLink({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const active = pathname === href;
+  const active =
+    pathname === href ||
+    (href === "/build/adventures" &&
+      (pathname === "/build/play" || pathname?.startsWith("/build/play/")));
   return (
     <Link
       href={href}
