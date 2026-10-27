@@ -67,14 +67,28 @@
     background-position: -12px 30px;
   }
 }
-@media (max-width: 430px) {
+@media (max-width: 639px) {
   .city-scene {
     min-height: 390px;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: auto;
+  }
+  .city-scene-play {
+    min-height: 670px;
   }
   .city-sites {
-    top: 18%;
-    bottom: 10%;
+    top: 12%;
+    bottom: 6%;
+  }
+  .city-site {
+    overflow-wrap: anywhere;
+  }
+  .city-site > span {
+    max-width: 100%;
+  }
+}
+@media (max-width: 360px) {
+  .city-scene-play {
+    min-height: 690px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
