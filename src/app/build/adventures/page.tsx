@@ -6,6 +6,7 @@ import { requireAuthenticatedHomeState } from "@/modules/identity/infrastructure
 import { adventureTrail } from "@/modules/city/domain/adventure-trail";
 import { cityContinuation } from "@/modules/city/domain/continuation";
 import { CinematicImage } from "@/modules/city/ui/cinematic-art";
+import { ResumePractice } from "@/modules/city/ui/resume-practice";
 import { adventureScenes } from "@/modules/city/ui/adventure-scenes";
 import { getGameChapter } from "@/modules/city/domain/chapters";
 import {
@@ -164,6 +165,8 @@ export default async function AdventureHubPage() {
             </div>
           </div>
         </section>
+
+        <ResumePractice userId={state.userId} />
 
         <section
           className="rounded-3xl border border-[#efc87f]/45 bg-[#142f3d] p-5 sm:p-7"
