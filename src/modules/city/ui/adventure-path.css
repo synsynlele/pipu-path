@@ -57,18 +57,24 @@
   place-items: center;
   border: 3px solid;
   border-radius: 24px;
-  transition: transform 180ms ease-out, box-shadow 180ms ease-out;
+  transition:
+    transform 180ms ease-out,
+    box-shadow 180ms ease-out;
 }
 .adventure-stage-current {
   color: #122d3a;
   border-color: #ffe09a;
   background: linear-gradient(140deg, #ffe4a5 0%, #f1bd57 100%);
-  box-shadow: 0 7px 0 #ae7b35, 0 10px 23px #f2c55c37;
+  box-shadow:
+    0 7px 0 #ae7b35,
+    0 10px 23px #f2c55c37;
 }
 .adventure-stage-link:hover .adventure-stage-current,
 .adventure-stage-link:focus-visible .adventure-stage-current {
   transform: translateY(-3px);
-  box-shadow: 0 10px 0 #ae7b35, 0 14px 28px #f2c55c42;
+  box-shadow:
+    0 10px 0 #ae7b35,
+    0 14px 28px #f2c55c42;
 }
 .adventure-stage-link:active .adventure-stage-current {
   transform: translateY(4px);
