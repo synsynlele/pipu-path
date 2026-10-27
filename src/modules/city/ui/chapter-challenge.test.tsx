@@ -72,9 +72,7 @@ describe("cinematic garden chapter", () => {
     expect(
       screen.getByRole("button", { name: "Garden square 1: empty" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Test my plan/ }),
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Test my plan/ })).toBeDisabled();
   });
   it("clears stale feedback when a player changes a choice", () => {
     render(<ChapterChallenge chapter={gardenChapter} />);
