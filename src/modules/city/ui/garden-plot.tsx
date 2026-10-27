@@ -35,16 +35,26 @@ export function GardenPlot({
   const origin = useRef({ x: 0, y: 0 });
   const moved = useRef(false);
   const [tool, setTool] = useState<GardenPiece>("seeds");
+  const [undoStack, setUndoStack] = useState<GardenPlotState[]>([]);
   const [drag, setDrag] = useState<Drag>(null);
   const [message, setMessage] = useState(
     "Choose a piece, then tap a square to build.",
   );
 
   function put(piece: GardenPiece, index: number) {
+    setUndoStack((history) => [...history.slice(-9), [...plot]]);
     onChange(placeGardenPiece(plot, piece, index));
     setMessage(
       `${pieceNames[piece]} ${plot[index] === piece ? "removed from" : "placed in"} square ${index + 1}.`,
     );
+  }
+
+  function undo() {
+    const previous = undoStack[undoStack.length - 1];
+    if (!previous) return;
+    onChange([...previous]);
+    setUndoStack((history) => history.slice(0, -1));
+    setMessage("Last building move undone.");
   }
 
   function dragStart(
