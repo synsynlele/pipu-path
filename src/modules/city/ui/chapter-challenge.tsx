@@ -180,7 +180,9 @@ export function ChapterChallenge({
     queueMicrotask(() => {
       if (!active) return;
       try {
-        const raw = localStorage.getItem(practiceStorageKey(userId, chapter.id));
+        const raw = localStorage.getItem(
+          practiceStorageKey(userId, chapter.id),
+        );
         const saved = parsePracticeCheckpoint(raw, chapter);
         if (saved && practiceHasProgress(saved)) {
           setSceneIndex(saved.sceneIndex);
@@ -196,7 +198,9 @@ export function ChapterChallenge({
       }
       setCheckpointReady(true);
     });
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [chapter, userId]);
 
   useEffect(() => {
@@ -204,7 +208,11 @@ export function ChapterChallenge({
     let active = true;
     try {
       const save = createPracticeCheckpoint(
-        chapter, sceneIndex, twistActive, selected, gardenPlot,
+        chapter,
+        sceneIndex,
+        twistActive,
+        selected,
+        gardenPlot,
       );
       localStorage.setItem(
         practiceStorageKey(userId, chapter.id),
@@ -217,8 +225,19 @@ export function ChapterChallenge({
         setSaveMessage("Device saving is unavailable. You can still play.");
       });
     }
-    return () => { active = false; };
-  }, [chapter, userId, checkpointReady, keepPractice, sceneIndex, twistActive, selected, gardenPlot]);
+    return () => {
+      active = false;
+    };
+  }, [
+    chapter,
+    userId,
+    checkpointReady,
+    keepPractice,
+    sceneIndex,
+    twistActive,
+    selected,
+    gardenPlot,
+  ]);
 
   function toggleDeviceSave(checked: boolean) {
     if (!userId) return;
@@ -230,7 +249,9 @@ export function ChapterChallenge({
         localStorage.removeItem(practiceStorageKey(userId, chapter.id));
         setSaveMessage("Device save removed. Your current game remains open.");
       } catch {
-        setSaveMessage("Couldn't clear the device save. Try again in your browser settings.");
+        setSaveMessage(
+          "Couldn't clear the device save. Try again in your browser settings.",
+        );
       }
     }
   }
@@ -343,7 +364,10 @@ export function ChapterChallenge({
         </section>
 
         {userId && checkpointReady && (
-          <section className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/15 bg-[#102b3b] px-4 py-3" aria-label="Save practice on this device">
+          <section
+            className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/15 bg-[#102b3b] px-4 py-3"
+            aria-label="Save practice on this device"
+          >
             <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-xs font-semibold text-[#dbe9f1] sm:text-sm">
               <input
                 type="checkbox"
@@ -354,9 +378,15 @@ export function ChapterChallenge({
               Keep my place on this device
             </label>
             <span className="text-[0.68rem] leading-4 text-[#abc2d2]">
-              {keepPractice ? "Saved as you play · Device only" : "Off · Practice stays in this tab"}
+              {keepPractice
+                ? "Saved as you play · Device only"
+                : "Off · Practice stays in this tab"}
             </span>
-            {saveMessage && <p className="w-full text-xs text-[#e5ce90]" role="status">{saveMessage}</p>}
+            {saveMessage && (
+              <p className="w-full text-xs text-[#e5ce90]" role="status">
+                {saveMessage}
+              </p>
+            )}
           </section>
         )}
 
