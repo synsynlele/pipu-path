@@ -7,7 +7,12 @@ import { evaluateGame, type GameChapter } from "../domain/game-engine";
 import { CinematicImage, GardenSymbol } from "./cinematic-art";
 import { getWorldPresentation } from "./world-presentation";
 import { chapterWithDisruption, disruptions } from "../domain/disruptions";
-import { emptyGardenPlot, evaluateGardenLayout, gardenPieces, type GardenPlotState } from "../domain/garden-layout";
+import {
+  emptyGardenPlot,
+  evaluateGardenLayout,
+  gardenPieces,
+  type GardenPlotState,
+} from "../domain/garden-layout";
 import { GardenPlot } from "./garden-plot";
 import { LessonPath } from "./lesson-path";
 import "./adventure-theme.css";
@@ -125,7 +130,8 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const playable =
     twistActive && sceneIndex === 0 ? chapterWithDisruption(chapter) : chapter;
   const [selected, setSelected] = useState<string[]>([]);
-  const [gardenPlot, setGardenPlot] = useState<GardenPlotState>(emptyGardenPlot);
+  const [gardenPlot, setGardenPlot] =
+    useState<GardenPlotState>(emptyGardenPlot);
   const [checked, setChecked] = useState(false);
   const [previous, setPrevious] = useState<{
     name: string;
@@ -136,7 +142,9 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
   const scene = world?.scenes[scenario.id];
   const result = evaluateGame(playable, scenario.id, selected);
   const isGarden = chapter.id === "neighbourhood-garden-v1";
-  const layout = isGarden ? evaluateGardenLayout(selected, gardenPlot, scenario.id) : { success: true, problems: [] as string[] };
+  const layout = isGarden
+    ? evaluateGardenLayout(selected, gardenPlot, scenario.id)
+    : { success: true, problems: [] as string[] };
   const planWorks = result.success && layout.success;
   const isLast = sceneIndex === chapter.scenarios.length - 1;
   const successful = checked && planWorks;
@@ -245,7 +253,8 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
             id: item.id,
             title: item.label,
             state:
-              index < sceneIndex || (index === sceneIndex && successful && isLast)
+              index < sceneIndex ||
+              (index === sceneIndex && successful && isLast)
                 ? "done"
                 : index === sceneIndex
                   ? "current"
@@ -368,7 +377,11 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
                 {isGarden ? "Build your layout" : "What will you do?"}
               </h2>
             </div>
-            <p className="text-xs text-[#b4cbdb]">{isGarden ? "Move pieces around the garden" : "Tap a scene to select it"}</p>
+            <p className="text-xs text-[#b4cbdb]">
+              {isGarden
+                ? "Move pieces around the garden"
+                : "Tap a scene to select it"}
+            </p>
           </div>
           {isGarden ? (
             <GardenPlot
@@ -381,66 +394,70 @@ export function ChapterChallenge({ chapter }: { chapter: GameChapter }) {
               }}
             />
           ) : (
-          <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4">
-            {chapter.choices.map((choice, index) => {
-              const active = selected.includes(choice.id);
-              const blocked =
-                scenario.unavailableChoices?.includes(choice.id) ?? false;
-              const icon = world?.actionIcons[index] ?? "seed";
-              const image = index % 2 === 0 ? world?.secondImage : world?.image;
-              return (
-                <button
-                  key={choice.id}
-                  type="button"
-                  onClick={() => toggle(choice.id)}
-                  aria-pressed={active}
-                  disabled={blocked && !active}
-                  aria-describedby={
-                    blocked ? `blocked-${choice.id}` : undefined
-                  }
-                  className={`adventure-choice group relative isolate flex min-h-[10rem] max-w-full min-w-0 flex-col justify-between overflow-hidden rounded-[1.1rem] border-2 p-2.5 text-left shadow-lg transition-[border-color,transform] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffdc96] active:scale-[.98] motion-reduce:transition-none sm:min-h-[13rem] sm:rounded-[1.3rem] sm:p-4 ${active ? "border-[#f1ce85]" : "border-white/15 hover:border-white/50"}`}
-                >
-                  {image && (
-                    <CinematicImage
-                      src={image}
-                      sizes="(max-width: 640px) 48vw, 30vw"
-                      className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
-                    />
-                  )}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07151c]/95 via-[#07151c]/60 to-[#07151c]/35" />
-                  <span className="relative flex min-w-0 items-start justify-between gap-1">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-white/20 bg-black/45 text-[#f8d38c] sm:size-12">
-                      <GardenSymbol name={icon} className="size-5 sm:size-7" />
+            <div className="grid min-w-0 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4">
+              {chapter.choices.map((choice, index) => {
+                const active = selected.includes(choice.id);
+                const blocked =
+                  scenario.unavailableChoices?.includes(choice.id) ?? false;
+                const icon = world?.actionIcons[index] ?? "seed";
+                const image =
+                  index % 2 === 0 ? world?.secondImage : world?.image;
+                return (
+                  <button
+                    key={choice.id}
+                    type="button"
+                    onClick={() => toggle(choice.id)}
+                    aria-pressed={active}
+                    disabled={blocked && !active}
+                    aria-describedby={
+                      blocked ? `blocked-${choice.id}` : undefined
+                    }
+                    className={`adventure-choice group relative isolate flex min-h-[10rem] max-w-full min-w-0 flex-col justify-between overflow-hidden rounded-[1.1rem] border-2 p-2.5 text-left shadow-lg transition-[border-color,transform] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ffdc96] active:scale-[.98] motion-reduce:transition-none sm:min-h-[13rem] sm:rounded-[1.3rem] sm:p-4 ${active ? "border-[#f1ce85]" : "border-white/15 hover:border-white/50"}`}
+                  >
+                    {image && (
+                      <CinematicImage
+                        src={image}
+                        sizes="(max-width: 640px) 48vw, 30vw"
+                        className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
+                      />
+                    )}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07151c]/95 via-[#07151c]/60 to-[#07151c]/35" />
+                    <span className="relative flex min-w-0 items-start justify-between gap-1">
+                      <span className="grid size-9 shrink-0 place-items-center rounded-xl border border-white/20 bg-black/45 text-[#f8d38c] sm:size-12">
+                        <GardenSymbol
+                          name={icon}
+                          className="size-5 sm:size-7"
+                        />
+                      </span>
+                      <span
+                        className={`grid size-6 shrink-0 place-items-center rounded-full border text-xs font-bold ${active ? "border-[#f6d38a] bg-[#f6d38a] text-[#153229]" : "border-white/50 bg-black/25"}`}
+                        aria-hidden="true"
+                      >
+                        {active ? "✓" : "+"}
+                      </span>
                     </span>
-                    <span
-                      className={`grid size-6 shrink-0 place-items-center rounded-full border text-xs font-bold ${active ? "border-[#f6d38a] bg-[#f6d38a] text-[#153229]" : "border-white/50 bg-black/25"}`}
-                      aria-hidden="true"
-                    >
-                      {active ? "✓" : "+"}
+                    <span className="adventure-choice-copy relative block min-w-0">
+                      <strong className="block text-[0.78rem] leading-[1.13rem] break-words sm:text-base sm:leading-5">
+                        {choice.label}
+                      </strong>
+                      <span className="mt-2 block text-[0.61rem] leading-4 text-[#d1dce3] sm:text-xs">
+                        {blocked
+                          ? "Unavailable · remove to replace"
+                          : `${choice.visitors} reach · ${choice.joy} benefit`}
+                        <br />
+                        {choice.cost} supplies · {choice.time}h · {choice.crew}{" "}
+                        helpers
+                      </span>
                     </span>
-                  </span>
-                  <span className="adventure-choice-copy relative block min-w-0">
-                    <strong className="block text-[0.78rem] leading-[1.13rem] break-words sm:text-base sm:leading-5">
-                      {choice.label}
-                    </strong>
-                    <span className="mt-2 block text-[0.61rem] leading-4 text-[#d1dce3] sm:text-xs">
-                      {blocked
-                        ? "Unavailable · remove to replace"
-                        : `${choice.visitors} reach · ${choice.joy} benefit`}
-                      <br />
-                      {choice.cost} supplies · {choice.time}h · {choice.crew}{" "}
-                      helpers
-                    </span>
-                  </span>
-                  {blocked && (
-                    <span id={`blocked-${choice.id}`} className="sr-only">
-                      Unavailable in this situation. Remove it from your plan.
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                    {blocked && (
+                      <span id={`blocked-${choice.id}`} className="sr-only">
+                        Unavailable in this situation. Remove it from your plan.
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           )}
         </section>
 
