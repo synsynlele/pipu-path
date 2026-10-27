@@ -64,6 +64,17 @@ describe("cinematic garden chapter", () => {
     expect(
       screen.getByRole("link", { name: /Find a real-world Quest/ }),
     ).toHaveAttribute("href", "/quests");
+    expect(screen.getByText("3 / 3 completed")).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: /Play this world again/ }),
+    );
+    expect(screen.getByText("0 / 3 completed")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Garden square 1: empty" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Test my plan/ }),
+    ).toBeDisabled();
   });
   it("clears stale feedback when a player changes a choice", () => {
     render(<ChapterChallenge chapter={gardenChapter} />);
