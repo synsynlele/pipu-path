@@ -1,4 +1,9 @@
-import { builds, evaluateFestival, type BuildId, type Weather } from "./festival";
+import {
+  builds,
+  evaluateFestival,
+  type BuildId,
+  type Weather,
+} from "./festival";
 
 /**
  * A reusable, data-driven practice challenge. New chapters can provide their
@@ -30,7 +35,13 @@ export type GameChapter = {
 };
 export type GameEvaluation = {
   success: boolean;
-  totals: { cost: number; time: number; crew: number; visitors: number; joy: number };
+  totals: {
+    cost: number;
+    time: number;
+    crew: number;
+    visitors: number;
+    joy: number;
+  };
   problems: string[];
 };
 
@@ -42,7 +53,12 @@ export function evaluateGame(
   const scenario = chapter.scenarios.find((item) => item.id === scenarioId);
   if (!scenario) throw new Error("Unknown game scenario");
   const unique = new Set(selectedIds);
-  if (unique.size !== selectedIds.length || selectedIds.some((id) => !chapter.choices.some((choice) => choice.id === id))) {
+  if (
+    unique.size !== selectedIds.length ||
+    selectedIds.some(
+      (id) => !chapter.choices.some((choice) => choice.id === id),
+    )
+  ) {
     throw new Error("Invalid game choices");
   }
   const totals = { cost: 0, time: 0, crew: 0, visitors: 0, joy: 0 };
@@ -60,19 +76,31 @@ export function evaluateGame(
       problems.push(`Not enough ${resource} for this plan.`);
   }
   for (const id of scenario.requiredChoices) {
-    if (!unique.has(id)) problems.push(`Your plan still needs ${chapter.choices.find((choice) => choice.id === id)?.label ?? id}.`);
+    if (!unique.has(id))
+      problems.push(
+        `Your plan still needs ${chapter.choices.find((choice) => choice.id === id)?.label ?? id}.`,
+      );
   }
-  if (totals.visitors < scenario.minimumVisitors) problems.push("Not enough people can join.");
-  if (totals.joy < scenario.minimumJoy) problems.push("Add something people will enjoy.");
+  if (totals.visitors < scenario.minimumVisitors)
+    problems.push("Not enough people can join.");
+  if (totals.joy < scenario.minimumJoy)
+    problems.push("Add something people will enjoy.");
   return { success: problems.length === 0, totals, problems };
 }
 
 export const unbuiltCityChapter: GameChapter = {
   id: "unbuilt-city-night-market-v1",
   title: "The Unbuilt City",
-  description: "Help your neighbourhood turn an empty square into a welcoming place.",
+  description:
+    "Help your neighbourhood turn an empty square into a welcoming place.",
   choices: builds.map(({ id, title, cost, time, crew, visitors, joy }) => ({
-    id, label: title, cost, time, crew, visitors, joy,
+    id,
+    label: title,
+    cost,
+    time,
+    crew,
+    visitors,
+    joy,
   })),
   scenarios: [
     {
@@ -95,6 +123,9 @@ export const unbuiltCityChapter: GameChapter = {
 };
 
 /** Compatibility guard: the extracted engine must preserve the original game. */
-export function evaluateCityThroughEngine(ids: readonly BuildId[], weather: Weather) {
+export function evaluateCityThroughEngine(
+  ids: readonly BuildId[],
+  weather: Weather,
+) {
   return evaluateGame(unbuiltCityChapter, weather, ids);
 }
