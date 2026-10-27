@@ -106,8 +106,8 @@ export function GardenPlot({
         </p>
       </div>
       <p className="mb-3 text-xs leading-5 text-[#c7dce5]">
-        Drag a material onto the garden—or choose a material and tap an empty square.
-        Tap an occupied square to remove it. Try more than one layout.
+        Drag a material onto the garden—or choose a material and tap an empty
+        square. Tap an occupied square to remove it. Try more than one layout.
       </p>
       <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
         <section
