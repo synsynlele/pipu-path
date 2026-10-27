@@ -1122,3 +1122,11 @@ storage failure. Types passed. Full validation and exact-preview checks follow.
 Full npm run validate passed: formatting, zero-warning lint, strict types, 476
 unit/component tests with coverage, 251 integration tests and production build.
 No physical-device, retention or real-life transfer result is claimed.
+
+Exact initial-preview walkthrough completed Ada's art invitation, Timi's assembly,
+and Mama Jo's five-move supply route. Earlier choices appeared in later dialogue;
+all three encounters resolved without any real Quest action. Opt-in device save
+reported success. Screenshot inspection found player/location-label overlap;
+spawn/arrival points now stand beside labels and neighbours have visible character
+markers. Full validation passed again (476 + 251 tests and production build).
+Save restoration and corrected-layout verification follow on the final preview.

@@ -27,7 +27,7 @@ export function freshNeighbourhood(): NeighbourhoodSave {
   return {
     version: 1,
     avatar: "gold",
-    position: { x: 22, y: 77 },
+    position: { x: 42, y: 88 },
     completed: [],
     motif: "music",
     sign: "up",

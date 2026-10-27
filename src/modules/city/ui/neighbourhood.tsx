@@ -58,7 +58,13 @@ export function Neighbourhood({
   }
   function visit(id: Spot) {
     const target = spots.find((s) => s.id === id)!;
-    update({ ...state, position: { x: target.x, y: target.y } });
+    update({
+      ...state,
+      position: {
+        x: Math.min(88, target.x + 17),
+        y: Math.min(90, target.y + 14),
+      },
+    });
     setActive(id);
     setFeedback("");
     setSignTested(false);
@@ -234,6 +240,22 @@ export function Neighbourhood({
                   className={`neighbourhood-place absolute -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-2 py-2 text-xs ${active === spot.id ? "border-[#f1ce8e] bg-[#203a46]" : "border-white/50 bg-[#0a1d2e]/95"}`}
                   style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
                 >
+                  {spot.id !== "workshop" && (
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2"
+                    >
+                      <Player
+                        coat={
+                          spot.id === "ada"
+                            ? "#b5a4ef"
+                            : spot.id === "timi"
+                              ? "#8be0cb"
+                              : "#f0c579"
+                        }
+                      />
+                    </span>
+                  )}
                   <span className="block font-bold">{spot.name}</span>
                   <span className="mt-1 flex items-center justify-center gap-1 text-[10px] text-[#f1ce8e]">
                     <CityIcon
