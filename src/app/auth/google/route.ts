@@ -24,10 +24,7 @@ export async function GET(request: NextRequest) {
   const { appUrl } = requireSupabasePublicEnvironment();
   const origin = resolveTrustedRequestOrigin(request.headers, appUrl);
   const callbackUrl = new URL("/auth/callback", origin);
-  callbackUrl.searchParams.set(
-    "next",
-    next,
-  );
+  callbackUrl.searchParams.set("next", next);
 
   const client = await createServerSupabaseClient();
   const { data, error } = await client.auth.signInWithOAuth({
