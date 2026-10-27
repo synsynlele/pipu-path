@@ -1,6 +1,5 @@
 import {
   builds,
-  evaluateFestival,
   type BuildId,
   type Weather,
 } from "./festival";
