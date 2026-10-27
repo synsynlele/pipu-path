@@ -173,42 +173,51 @@ export function ChapterChallenge({
       : "Your plan makes a difference.";
 
   // Device-only practice state is opt-in and scoped to the signed-in player.
-  // Restoring never restores a success verdict: the player retests the plan.
+  // Restore asynchronously: effects synchronize with browser storage.
   useEffect(() => {
     if (!userId) return;
-    try {
-      const raw = localStorage.getItem(practiceStorageKey(userId, chapter.id));
-      const saved = parsePracticeCheckpoint(raw, chapter);
-      if (saved && practiceHasProgress(saved)) {
-        setSceneIndex(saved.sceneIndex);
-        setTwistActive(saved.twistActive);
-        setSelected(saved.selected);
-        setGardenPlot(saved.gardenPlot);
-        setChecked(false);
-        setKeepPractice(true);
-        setSaveMessage("Your practice has resumed on this device.");
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      try {
+        const raw = localStorage.getItem(practiceStorageKey(userId, chapter.id));
+        const saved = parsePracticeCheckpoint(raw, chapter);
+        if (saved && practiceHasProgress(saved)) {
+          setSceneIndex(saved.sceneIndex);
+          setTwistActive(saved.twistActive);
+          setSelected(saved.selected);
+          setGardenPlot(saved.gardenPlot);
+          setChecked(false);
+          setKeepPractice(true);
+          setSaveMessage("Your practice has resumed on this device.");
+        }
+      } catch {
+        // Browsers may disable local storage; gameplay still works without it.
       }
-    } catch {
-      // Browsers may disable local storage; gameplay still works without it.
-    }
-    setCheckpointReady(true);
+      setCheckpointReady(true);
+    });
+    return () => { active = false; };
   }, [chapter, userId]);
 
   useEffect(() => {
     if (!userId || !checkpointReady || !keepPractice) return;
+    let active = true;
     try {
       const save = createPracticeCheckpoint(
-        chapter,
-        sceneIndex,
-        twistActive,
-        selected,
-        gardenPlot,
+        chapter, sceneIndex, twistActive, selected, gardenPlot,
       );
-      localStorage.setItem(practiceStorageKey(userId, chapter.id), JSON.stringify(save));
+      localStorage.setItem(
+        practiceStorageKey(userId, chapter.id),
+        JSON.stringify(save),
+      );
     } catch {
-      setKeepPractice(false);
-      setSaveMessage("Device saving is unavailable. You can still play.");
+      queueMicrotask(() => {
+        if (!active) return;
+        setKeepPractice(false);
+        setSaveMessage("Device saving is unavailable. You can still play.");
+      });
     }
+    return () => { active = false; };
   }, [chapter, userId, checkpointReady, keepPractice, sceneIndex, twistActive, selected, gardenPlot]);
 
   function toggleDeviceSave(checked: boolean) {
