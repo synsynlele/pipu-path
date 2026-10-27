@@ -1,5 +1,11 @@
 import type { GameChapter } from "./game-engine";
 import { unbuiltCityChapter } from "./game-engine";
+import {
+  foodChapter,
+  learningChapter,
+  makersChapter,
+  riverChapter,
+} from "./world-chapters";
 
 /** Curated, age-neutral practice chapters. No unreviewed user content. */
 export const gardenChapter: GameChapter = {
@@ -80,12 +86,24 @@ export const gardenChapter: GameChapter = {
       minimumVisitors: 24,
       minimumJoy: 5,
     },
+    {
+      id: "opening",
+      label: "The community arrives",
+      budget: { cost: 9, time: 7, crew: 8 },
+      requiredChoices: ["seeds", "paths", "signs", "benches"],
+      minimumVisitors: 28,
+      minimumJoy: 6,
+    },
   ],
 };
 
 export const gameChapters: readonly GameChapter[] = [
   unbuiltCityChapter,
   gardenChapter,
+  riverChapter,
+  learningChapter,
+  makersChapter,
+  foodChapter,
 ];
 export function getGameChapter(id: string): GameChapter | null {
   return gameChapters.find((chapter) => chapter.id === id) ?? null;
