@@ -73,13 +73,11 @@ describe("stable preview Google OAuth handoff", () => {
   });
 
   it("keeps the branch alias, production, and localhost unchanged", () => {
-    expect(previewGoogleHandoffOrigin(branchHost, branchHost, "preview")).toBeNull();
     expect(
-      previewGoogleHandoffOrigin(
-        "www.pipupath.name.ng",
-        branchHost,
-        "preview",
-      ),
+      previewGoogleHandoffOrigin(branchHost, branchHost, "preview"),
+    ).toBeNull();
+    expect(
+      previewGoogleHandoffOrigin("www.pipupath.name.ng", branchHost, "preview"),
     ).toBeNull();
     expect(
       previewGoogleHandoffOrigin(
@@ -89,11 +87,7 @@ describe("stable preview Google OAuth handoff", () => {
       ),
     ).toBeNull();
     expect(
-      previewGoogleHandoffOrigin(
-        "localhost",
-        branchHost,
-        "preview",
-      ),
+      previewGoogleHandoffOrigin("localhost", branchHost, "preview"),
     ).toBeNull();
   });
 
