@@ -260,6 +260,19 @@ export function AdventurePathMap({
             <span className="text-[0.65rem] font-semibold text-[#d6e3e8]">Practice steps</span>
           </div>
         </div>
+        <div
+          role="progressbar"
+          aria-label="Practice missions completed"
+          aria-valuemin={0}
+          aria-valuemax={totalMissions}
+          aria-valuenow={completed}
+          className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white/15"
+        >
+          <div
+            className="h-full rounded-full bg-[#8bd9ac] transition-[width] duration-300 motion-reduce:transition-none"
+            style={{ width: `${Math.round((completed / Math.max(1, totalMissions)) * 100)}%` }}
+          />
+        </div>
         <button
           type="button"
           onClick={goToNextMission}
