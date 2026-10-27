@@ -1199,3 +1199,16 @@ unprocessed waste, drought/heat/flood consequences, reserved terrain and forged
 save proofs. UI coverage verifies two-stage completion, pause, save/resume,
 keyboard placement, diagnostics and path projection. Exact browser/mobile proof
 is reported independently; no engagement or real-world outcome is inferred.
+
+Browser review confirmed failed-plan diagnostics and manual construction of a
+connected access network. Review identified an asynchronous save opt-out race:
+a pending result could use the earlier save preference. The result now reads the
+current explicit preference; a regression opts out during the pending simulation
+and verifies that the removed save is not recreated.
+
+Deployed initial candidate walkthrough: built a district through UI placement,
+passed normal capacity/power/three-zone access, observed the flood disable two
+shelters and access, then placed two barriers to restore the same system. Visual
+review found three SVG face coordinates using scene origin instead of module
+origin; corrected them so facilities remain within their own construction tiles.
+Final checks and corrected-preview review follow. No real Quest action was taken.

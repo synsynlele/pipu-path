@@ -127,6 +127,7 @@ export function WorldSimulation({
   const [running, setRunning] = useState(false);
   const [tested, setTested] = useState(false);
   const [keep, setKeep] = useState(false);
+  const keepRef = useRef(false);
   const [notice, setNotice] = useState(
     "Connect your service corridors to HQ. Facilities need a corridor beside them.",
   );
@@ -163,7 +164,7 @@ export function WorldSimulation({
   function update(next: SimulationSave) {
     const value = stampSave(next);
     setGame(value);
-    if (keep)
+    if (keepRef.current)
       try {
         localStorage.setItem(
           simulationKey(userId, world.id),
@@ -171,6 +172,7 @@ export function WorldSimulation({
         );
       } catch {
         setKeep(false);
+        keepRef.current = false;
         setNotice("Device storage is unavailable. Keep playing in this tab.");
       }
   }
@@ -242,8 +244,9 @@ export function WorldSimulation({
   function toggleSave() {
     try {
       if (keep) {
-        localStorage.removeItem(simulationKey(userId, world.id));
         setKeep(false);
+        keepRef.current = false;
+        localStorage.removeItem(simulationKey(userId, world.id));
         setNotice("Device save removed; current project stays open.");
       } else {
         localStorage.setItem(
@@ -251,6 +254,7 @@ export function WorldSimulation({
           JSON.stringify(game),
         );
         setKeep(true);
+        keepRef.current = true;
         setNotice(
           "Project saved on this browser. Cloud saving is not included.",
         );
@@ -275,6 +279,7 @@ export function WorldSimulation({
       }
       setGame(saved);
       setKeep(true);
+      keepRef.current = true;
       setTested(false);
       setNotice("Saved build project restored.");
     } catch {
@@ -903,7 +908,7 @@ function ModuleArt({
     return (
       <g pointerEvents="none">
         <ellipse cx={x + 36} cy={y + 54} rx="29" ry="12" fill="#133d32" />
-        <path d={`M${x + 8} ${y + 22}h52v37H8Z`} fill="#886544" />
+        <path d={`M${x + 8} ${y + 22}h52v37H${x + 8}Z`} fill="#886544" />
         {[0, 1, 2].map((n) => (
           <g key={n}>
             <path
@@ -978,9 +983,12 @@ function ModuleArt({
   return (
     <g pointerEvents="none" filter="url(#building-shadow)">
       <path d={`M${x + 14} ${y + 25}l29-10 18 14-29 11Z`} fill={color} />
-      <path d={`M${x + 14} ${y + 25}l18 15v22L14 ${y + 48}Z`} fill="#43626a" />
       <path
-        d={`M${x + 32} ${y + 40}l29-11v23L32 ${y + 62}Z`}
+        d={`M${x + 14} ${y + 25}l18 15v22L${x + 14} ${y + 48}Z`}
+        fill="#43626a"
+      />
+      <path
+        d={`M${x + 32} ${y + 40}l29-11v23L${x + 32} ${y + 62}Z`}
         fill={tile === "support" ? "#6c928b" : "#abb8aa"}
       />
       <path

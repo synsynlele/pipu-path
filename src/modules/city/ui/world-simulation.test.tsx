@@ -88,3 +88,38 @@ it("diagnoses failure without recording progress and permits placing modules wit
   ).toBeInTheDocument();
   expect(localStorage.length).toBe(0);
 });
+
+it("honours saving opt-out even while a simulation result is pending", () => {
+  vi.useFakeTimers();
+  const world = simulationWorlds[0],
+    board = workingBlueprint(world);
+  localStorage.setItem(
+    simulationKey("qa", world.id),
+    JSON.stringify({
+      version: 1,
+      worldId: world.id,
+      board,
+      proofs: [],
+      baseline: null,
+      updatedAt: 100,
+    }),
+  );
+  render(
+    <WorldSimulation
+      world={world}
+      userId="qa"
+      questHref="/quests/owned"
+      onStory={() => {}}
+    />,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Resume build save" }));
+  fireEvent.click(screen.getByRole("button", { name: "Run normal operation" }));
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: "Keep this build on this device" }),
+  );
+  act(() => vi.advanceTimersByTime(2000));
+  expect(localStorage.getItem(simulationKey("qa", world.id))).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Run stress test" }),
+  ).toBeInTheDocument();
+});
