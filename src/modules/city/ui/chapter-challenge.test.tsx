@@ -17,9 +17,13 @@ function makeWorkingPlan() {
 describe("cinematic garden chapter", () => {
   it("completes two practice scenarios without granting XP", () => {
     render(<ChapterChallenge chapter={gardenChapter} />);
-    expect(screen.getByRole("heading", { name: "The Forgotten Garden" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "The Forgotten Garden" }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/No XP awarded/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /All adventures/ })).toHaveAttribute("href", "/build/adventures");
+    expect(
+      screen.getByRole("link", { name: /All adventures/ }),
+    ).toHaveAttribute("href", "/build/adventures");
     makeWorkingPlan();
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
@@ -28,7 +32,9 @@ describe("cinematic garden chapter", () => {
     makeWorkingPlan();
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Find a real-world Quest/ })).toHaveAttribute("href", "/quests");
+    expect(
+      screen.getByRole("link", { name: /Find a real-world Quest/ }),
+    ).toHaveAttribute("href", "/quests");
   });
   it("clears stale feedback when a player changes a choice", () => {
     render(<ChapterChallenge chapter={gardenChapter} />);
@@ -37,8 +43,12 @@ describe("cinematic garden chapter", () => {
     expect(screen.getByText(/Not quite/)).toBeInTheDocument();
     choose("Clear accessible paths");
     expect(screen.queryByText(/Not quite/)).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Clear accessible paths/ })).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("button", { name: /Clear accessible paths/ }),
+    ).toHaveAttribute("aria-pressed", "true");
     choose("Clear accessible paths");
-    expect(screen.getByRole("button", { name: /Clear accessible paths/ })).toHaveAttribute("aria-pressed", "false");
+    expect(
+      screen.getByRole("button", { name: /Clear accessible paths/ }),
+    ).toHaveAttribute("aria-pressed", "false");
   });
 });
