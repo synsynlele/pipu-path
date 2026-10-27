@@ -21,7 +21,10 @@ describe("safe practice checkpoints", () => {
   );
 
   it("round trips garden placement and twist without any user, XP, or Quest fields", () => {
-    const saved = parsePracticeCheckpoint(JSON.stringify(gardenSave), gardenChapter);
+    const saved = parsePracticeCheckpoint(
+      JSON.stringify(gardenSave),
+      gardenChapter,
+    );
     expect(saved).toEqual(gardenSave);
     expect(saved?.gardenPlot[1]).toBe("seeds");
     expect(saved).not.toHaveProperty("userId");
@@ -49,11 +52,16 @@ describe("safe practice checkpoints", () => {
       { ...gardenSave, selected: ["water"] },
       { ...gardenSave, gardenPlot: [null] },
       { ...gardenSave, gardenPlot: [42, ...plot.slice(1)] },
-      { ...gardenSave, gardenPlot: [...plot.slice(0, 2), "unsafe", ...plot.slice(3)] },
+      {
+        ...gardenSave,
+        gardenPlot: [...plot.slice(0, 2), "unsafe", ...plot.slice(3)],
+      },
       { ...gardenSave, updatedAt: "bad" },
     ];
     for (const value of examples) {
-      expect(parsePracticeCheckpoint(JSON.stringify(value), gardenChapter)).toBeNull();
+      expect(
+        parsePracticeCheckpoint(JSON.stringify(value), gardenChapter),
+      ).toBeNull();
     }
     expect(parsePracticeCheckpoint("{bad json", gardenChapter)).toBeNull();
     expect(parsePracticeCheckpoint("x".repeat(6000), gardenChapter)).toBeNull();
@@ -69,13 +77,22 @@ describe("safe practice checkpoints", () => {
       emptyGardenPlot(),
       1700000000000,
     );
-    expect(parsePracticeCheckpoint(JSON.stringify(save), riverChapter)).toEqual(save);
-    expect(parsePracticeCheckpoint(JSON.stringify(gardenSave), riverChapter)).toBeNull();
+    expect(parsePracticeCheckpoint(JSON.stringify(save), riverChapter)).toEqual(
+      save,
+    );
+    expect(
+      parsePracticeCheckpoint(JSON.stringify(gardenSave), riverChapter),
+    ).toBeNull();
   });
 
   it("does not claim an empty saved run as meaningful progress", () => {
     const empty = createPracticeCheckpoint(
-      gardenChapter, 0, false, [], emptyGardenPlot(), 1700000000000,
+      gardenChapter,
+      0,
+      false,
+      [],
+      emptyGardenPlot(),
+      1700000000000,
     );
     expect(practiceHasProgress(empty)).toBe(false);
   });
