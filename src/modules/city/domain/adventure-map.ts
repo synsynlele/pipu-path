@@ -1,3 +1,8 @@
+import {
+  simulationWorlds,
+  parseSimulation,
+  simulationKey,
+} from "./world-simulation";
 import { gameChapters } from "./chapters";
 import {
   parsePracticeCheckpoint,
@@ -146,4 +151,48 @@ export function recommendedPathWorld(worlds: readonly PathWorld[]): string {
     .filter((world) => world.hasProgress)
     .sort((a, b) => b.savedAt - a.savedAt);
   return saved[0]?.id ?? available[0]?.id ?? "";
+}
+
+/** New build missions require their own evaluated proofs. Legacy story saves remain intact. */
+export function projectSimulationMap(
+  userId: string,
+  read: (key: string) => string | null,
+  cityHref = "/build/play",
+): PathWorld[] {
+  return simulationWorlds.map((world, index) => {
+    let saved = null;
+    try {
+      saved = parseSimulation(read(simulationKey(userId, world.id)), world);
+    } catch {
+      /* Device saves are optional. */
+    }
+    const completed = saved?.proofs.length ?? 0;
+    const href =
+      world.id === "neighbourhood"
+        ? "/build/neighbourhood"
+        : world.id === "unbuilt-city-night-market-v1"
+          ? cityHref
+          : `/build/play/${world.id}`;
+    return {
+      id: world.id === "unbuilt-city-night-market-v1" ? "city" : world.id,
+      title: world.title,
+      eyebrow: `World ${String(index + 1).padStart(2, "0")} · Build & stress-test`,
+      description: world.project,
+      href,
+      missions: world.levels.map((title, i) => ({
+        id: `build-${i}`,
+        title,
+        state:
+          i < completed
+            ? ("done" as const)
+            : i === completed
+              ? ("current" as const)
+              : ("locked" as const),
+        href: i <= completed ? href : null,
+      })),
+      completed,
+      hasProgress: completed > 0 || Boolean(saved?.board.some(Boolean)),
+      savedAt: saved?.updatedAt ?? 0,
+    };
+  });
 }

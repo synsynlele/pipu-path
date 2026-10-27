@@ -47,8 +47,8 @@ describe("authenticated city context", () => {
     const page = await CityPage({
       searchParams: Promise.resolve({ quest: id }),
     });
-    expect(page.props.context.returnHref).toBe(`/quests/${id}`);
-    expect(page.props.context.outcome).toBe(
+    expect(page.props.children.props.context.returnHref).toBe(`/quests/${id}`);
+    expect(page.props.children.props.context.outcome).toBe(
       "Test a sketch with someone you know.",
     );
   });

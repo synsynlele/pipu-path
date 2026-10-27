@@ -486,3 +486,15 @@ are unchanged. Full checks and preview verification are recorded in the ledger.
 Game directory highlighting now follows the current pathname instead of always
 highlighting Neighbourhood. A regression covers all seven games and the hub.
 This correction adds no levels or changes to progression/save rules.
+
+## 27 October — build-system gameplay candidate
+
+All seven worlds now default to editable build/stress-test simulations with
+world-specific infrastructure, constraints and disruptions. The existing winding
+path describes 19 new evaluated build missions. Earlier story modes and their
+saves remain available; they are not automatically counted as new-build progress.
+Original SVG worlds support module dragging/rearrangement, camera controls,
+network traffic, weather feedback and reduced-motion alternatives. Opt-in device
+saves store bounded blueprints and evaluated proofs only. No verified XP, learner
+record, database schema or production release change is claimed. See the build
+simulation product contract and ledger for validation/release evidence.

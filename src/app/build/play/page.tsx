@@ -1,3 +1,4 @@
+import { MissionExperience } from "@/modules/city/ui/world-simulation";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CityEpisode, type CityContext } from "@/modules/city/ui/city-episode";
@@ -41,5 +42,15 @@ export default async function CityPage({
       returnLabel: next.actionLabel,
     };
   }
-  return <CityEpisode context={context} />;
+  return (
+    <MissionExperience
+      worldId="unbuilt-city-night-market-v1"
+      userId={state.userId}
+      questHref={
+        context?.returnHref ?? cityContinuation(state.quest).actionHref
+      }
+    >
+      <CityEpisode context={context} />
+    </MissionExperience>
+  );
 }

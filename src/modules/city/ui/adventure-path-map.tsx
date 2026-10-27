@@ -9,7 +9,7 @@ import {
   type GardenSymbolName,
 } from "./cinematic-art";
 import {
-  projectAdventureMap,
+  projectSimulationMap,
   recommendedPathWorld,
   type PathMission,
   type PathWorld,
@@ -246,7 +246,7 @@ export function AdventurePathMap({
   cityHref?: string;
 }) {
   const [worlds, setWorlds] = useState(() =>
-    projectAdventureMap(userId, () => null, cityHref),
+    projectSimulationMap(userId, () => null, cityHref),
   );
   const [hydrated, setHydrated] = useState(false);
 
@@ -255,7 +255,7 @@ export function AdventurePathMap({
     queueMicrotask(() => {
       if (!active) return;
       setWorlds(
-        projectAdventureMap(
+        projectSimulationMap(
           userId,
           (key) => localStorage.getItem(key),
           cityHref,

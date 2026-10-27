@@ -1,0 +1,101 @@
+.world-simulation {
+  --sim-fg: #f1f6fa;
+}
+.pp-app-experience main.world-simulation {
+  color: var(--sim-fg);
+  background: #071a29;
+}
+.world-simulation button,
+.world-simulation summary {
+  color: #f1f6fa;
+}
+.world-simulation button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.simulation-scene {
+  background: linear-gradient(130deg, #173a49, #1b4344);
+  box-shadow: 0 18px 70px #020e19aa;
+}
+.simulation-scene button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 10px;
+  border: 1px solid #ffffff44;
+  border-radius: 12px;
+}
+.simulation-viewport {
+  height: 540px;
+  max-height: 65vh;
+  min-height: 360px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: radial-gradient(ellipse at top, #537b6a, #112b3c);
+}
+.simulation-viewport.camera-pan {
+  cursor: grab;
+  touch-action: none;
+}
+.simulation-board {
+  display: block;
+  transform-origin: top left;
+}
+.construction-cell {
+  cursor: crosshair;
+  outline: none;
+}
+.construction-cell:focus rect:first-child,
+.construction-cell:hover rect:first-child {
+  stroke: #ffe3a0;
+  stroke-width: 3px;
+}
+.construction-tool {
+  cursor: grab;
+}
+.simulation-person {
+  animation: district-life 3s ease-in-out infinite alternate;
+}
+.simulation-rain {
+  animation: rainfall 1s linear infinite;
+}
+.weather-drought {
+  filter: sepia(0.25);
+}
+.weather-heat {
+  filter: sepia(0.16) saturate(1.12);
+}
+.weather-outage {
+  filter: brightness(0.8);
+}
+.simulation-running {
+  outline: 2px solid #e6c17d;
+  outline-offset: -2px;
+}
+@keyframes district-life {
+  to {
+    transform: translate(7px, -5px);
+  }
+}
+@keyframes rainfall {
+  to {
+    transform: translate(-15px, 25px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .simulation-person,
+  .simulation-rain {
+    animation: none;
+  }
+  .simulation-traffic {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .simulation-viewport {
+    height: 440px;
+  }
+}
+.construction-cell:has(path),
+.construction-cell:has(ellipse) {
+  touch-action: none;
+}

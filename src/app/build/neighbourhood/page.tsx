@@ -1,3 +1,4 @@
+import { MissionExperience } from "@/modules/city/ui/world-simulation";
 import type { Metadata } from "next";
 import { requireAuthenticatedHomeState } from "@/modules/identity/infrastructure/progress-dal";
 import { cityContinuation } from "@/modules/city/domain/continuation";
@@ -10,10 +11,16 @@ export default async function NeighbourhoodPage() {
   const state = await requireAuthenticatedHomeState();
   const next = cityContinuation(state.quest);
   return (
-    <Neighbourhood
+    <MissionExperience
+      worldId="neighbourhood"
       userId={state.userId}
       questHref={next.actionHref}
-      questTitle={state.quest?.title ?? null}
-    />
+    >
+      <Neighbourhood
+        userId={state.userId}
+        questHref={next.actionHref}
+        questTitle={state.quest?.title ?? null}
+      />
+    </MissionExperience>
   );
 }

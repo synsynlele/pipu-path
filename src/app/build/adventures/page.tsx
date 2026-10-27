@@ -43,6 +43,11 @@ export default async function AdventureHubPage() {
         </header>
 
         <AdventurePathMap userId={state.userId} cityHref={next.playHref} />
+        <p className="text-xs leading-5 text-[#c9dae2]">
+          Build simulations start fresh. Earlier story saves remain available
+          through Story practice inside each world. Your real Quest progress is
+          unchanged.
+        </p>
 
         <section
           aria-labelledby="real-quest-heading"

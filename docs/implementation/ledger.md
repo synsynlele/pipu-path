@@ -1169,3 +1169,33 @@ all seven routes and returns to the hub without a false game selection.
 Full npm run validate passed: 479 unit/component and 251 integration tests,
 formatting, zero-warning lint, types and production build. Deployed route-switch
 proof follows separately. No production release or new level is implied.
+
+## 27 October — meaningful build systems across seven worlds
+
+User rejected static, basic neighbourhood puzzles despite improved path navigation.
+Added a shared pure simulation engine with distinct world briefs and rules for
+community backup services, flood-ready city infrastructure, irrigated food systems,
+riverbank treatment/wetlands, powered learning campuses, circular manufacturing
+and refrigerated food distribution. Replaced default world-route content with a
+live editable construction scene; preserved earlier runners/saves as Story practice.
+The existing 19-node path now projects only evaluated new-build proofs; legacy
+story progress is preserved separately and never relabelled as new completion.
+
+Supports construction, moving/swapping, refunds, camera pan/zoom, keyboard/tap
+alternatives, normal-operation tests followed by disruption/repair, capacity,
+network reach, energy, ecology and waste diagnostics. Motion represents connected
+service traffic and declared weather. This remains simplified 2D simulation; no
+claim of 3D realism, proven difficulty, retention or learning transfer.
+
+Added bounded opt-in user/world-scoped device saves with re-evaluated blueprint
+proofs; no schema, dependency, Quest/evidence/XP change. See product/world-build-
+simulations.md. Full validation and deployed browser evidence follow separately.
+
+Full npm run validate passed: 520 unit/component tests, 251 integration tests,
+formatting, zero-warning lint, strict types and production build. Reviewed fixture
+blueprints pass every mission under normal and disrupted conditions; alternate
+solutions pass. Negative cases cover lost access/power, incorrect river placement,
+unprocessed waste, drought/heat/flood consequences, reserved terrain and forged
+save proofs. UI coverage verifies two-stage completion, pause, save/resume,
+keyboard placement, diagnostics and path projection. Exact browser/mobile proof
+is reported independently; no engagement or real-world outcome is inferred.
