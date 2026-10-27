@@ -260,12 +260,10 @@ export default async function HomePage() {
             </div>
           </nav>
 
-          {state.journey && (
-            <JourneyPlayCard
-              quest={state.quest}
-              journeyTitle={state.journey.title}
-            />
-          )}
+          <JourneyPlayCard
+            quest={state.quest}
+            journeyTitle={state.journey?.title}
+          />
 
           <section
             className="pp-mobile-section mt-5"
