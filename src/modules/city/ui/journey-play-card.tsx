@@ -185,9 +185,7 @@ export function JourneyPlayCard({
             href={next.focus === "play" ? "/build/adventures" : next.actionHref}
             className="w-full justify-center rounded-full sm:w-auto"
           >
-            {next.focus === "play"
-              ? "My adventure path →"
-              : next.actionLabel}
+            {next.focus === "play" ? "My adventure path →" : next.actionLabel}
           </ButtonLink>
           <ButtonLink
             variant="secondary"
