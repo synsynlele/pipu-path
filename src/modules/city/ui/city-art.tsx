@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { CinematicImage } from "./cinematic-art";
+import { adventureScenes } from "./adventure-scenes";
 import type { BuildId } from "../domain/festival";
 
 export type IconName =
@@ -201,14 +202,7 @@ export function CityBackdrop({
     <div
       className={`city-scene relative isolate overflow-hidden rounded-3xl bg-[#292749] ${rainy ? "city-rain" : ""} ${celebrating ? "city-celebrate" : ""}`}
     >
-      <Image
-        src="/city/neighbourhood-dusk.webp"
-        alt=""
-        fill
-        sizes="(max-width: 768px) 100vw, 960px"
-        className="object-cover"
-        preload
-      />
+      <CinematicImage src={adventureScenes.city} priority />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#181633]/20 via-transparent to-[#181633]/50" />
       {children}
     </div>
