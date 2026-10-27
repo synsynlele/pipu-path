@@ -10,7 +10,11 @@ function choose(name: string) {
 }
 function place(choice: string, square: number) {
   choose(choice);
-  fireEvent.click(screen.getByRole("button", { name: new RegExp(`Garden square ${square}:`) }));
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: new RegExp(`Garden square ${square}:`),
+    }),
+  );
 }
 function makeWorkingPlan() {
   place("Plant seedlings", 1);
@@ -35,7 +39,9 @@ describe("cinematic garden chapter", () => {
       screen.getByRole("button", { name: /See what happens next/ }),
     );
     expect(screen.getByText(/Rain arrives/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Garden square 1: Seedlings/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Garden square 1: Seedlings/ }),
+    ).toBeInTheDocument();
     // The old solution no longer fits: swap watering for seating.
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText(/Not quite/)).toBeInTheDocument();
@@ -69,7 +75,9 @@ describe("cinematic garden chapter", () => {
     expect(
       screen.getByRole("button", { name: /Garden square 10: Walkway/ }),
     ).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /Garden square 10: Walkway/ }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Garden square 10: Walkway/ }),
+    );
     expect(
       screen.getByRole("button", { name: /Garden square 10: empty/ }),
     ).toBeInTheDocument();
