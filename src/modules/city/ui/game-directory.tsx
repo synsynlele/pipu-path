@@ -1,3 +1,4 @@
+import { GameDirectoryLink } from "./game-directory-link";
 import Link from "next/link";
 import { worldDirectory } from "./world-presentation";
 import { getGameChapter } from "../domain/chapters";
@@ -19,26 +20,14 @@ export function GameDirectory() {
           </span>
         </Link>
         <div className="flex flex-wrap gap-2">
-          <Link
-            href="/build/neighbourhood"
-            className="inline-flex min-h-11 items-center rounded-xl border border-[#f1ce8e] bg-[#29434d] px-3 text-xs font-bold text-white"
-          >
+          <GameDirectoryLink href="/build/neighbourhood">
             ⌂ Neighbourhood · move & build
-          </Link>
-          <Link
-            href="/build/play"
-            className="inline-flex min-h-11 items-center rounded-xl border border-white/30 px-3 text-xs text-white"
-          >
-            Unbuilt City
-          </Link>
+          </GameDirectoryLink>
+          <GameDirectoryLink href="/build/play">Unbuilt City</GameDirectoryLink>
           {worldDirectory.map(({ id }) => (
-            <Link
-              key={id}
-              href={`/build/play/${id}`}
-              className="inline-flex min-h-11 items-center rounded-xl border border-white/30 px-3 text-xs text-white"
-            >
+            <GameDirectoryLink key={id} href={`/build/play/${id}`}>
               {getGameChapter(id)?.title}
-            </Link>
+            </GameDirectoryLink>
           ))}
         </div>
       </div>

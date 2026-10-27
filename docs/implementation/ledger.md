@@ -1157,3 +1157,15 @@ records were changed. Browser review caught low-contrast header shortcut text;
 explicit foreground fixes it. Drag threshold now measures from the gesture origin,
 so slow movements accumulate correctly. Final full validation and exact-preview
 review apply to these corrections; physical touch/Android proof remains pending.
+
+## 27 October — current game selection
+
+The neighbourhood link was permanently styled as selected. Replaced static styling
+with a small pathname-aware link boundary. Exactly the current game receives the
+gold marker, filled background and aria-current; /build/play does not also match
+its chapter routes. The server still owns catalogue composition. Regression walks
+all seven routes and returns to the hub without a false game selection.
+
+Full npm run validate passed: 479 unit/component and 251 integration tests,
+formatting, zero-warning lint, types and production build. Deployed route-switch
+proof follows separately. No production release or new level is implied.

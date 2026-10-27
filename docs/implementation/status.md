@@ -480,3 +480,9 @@ dragging, rearrangement and keyboard/tap alternatives. Hold-to-walk controls and
 visible delivery vehicle improve motion feedback. These reusable controls are the
 foundation for further world conversions; existing six-world planning mechanics
 are unchanged. Full checks and preview verification are recorded in the ledger.
+
+## 27 October — game selection correction
+
+Game directory highlighting now follows the current pathname instead of always
+highlighting Neighbourhood. A regression covers all seven games and the hub.
+This correction adds no levels or changes to progression/save rules.
