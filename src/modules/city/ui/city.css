@@ -1,0 +1,89 @@
+.city-scene {
+  min-height: 420px;
+  aspect-ratio: 3 / 2;
+}
+.city-site {
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+  touch-action: manipulation;
+}
+.city-site:hover {
+  background-color: #3c2d69e6;
+}
+.city-built {
+  animation: city-build-in 0.28s ease-out;
+}
+.city-resident {
+  width: 9px;
+  height: 20px;
+  border-radius: 8px 8px 4px 4px;
+  border-top: 6px solid #614333;
+  animation: city-arrive 0.5s both;
+}
+.city-rain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    112deg,
+    transparent 0px,
+    transparent 24px,
+    #c9defa44 25px,
+    transparent 26px,
+    transparent 55px
+  );
+  animation: city-rainfall 1s linear infinite;
+}
+.city-celebrate {
+  box-shadow: 0 0 0 3px #d5b56b;
+}
+@keyframes city-build-in {
+  from {
+    transform: translateY(8px) scale(0.9);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes city-arrive {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes city-rainfall {
+  from {
+    background-position: 0 -30px;
+  }
+  to {
+    background-position: -12px 30px;
+  }
+}
+@media (max-width: 430px) {
+  .city-scene {
+    min-height: 390px;
+    aspect-ratio: 4 / 5;
+  }
+  .city-sites {
+    top: 18%;
+    bottom: 10%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .city-built,
+  .city-resident,
+  .city-rain::after {
+    animation: none;
+  }
+  .city-site {
+    transition: none;
+  }
+}

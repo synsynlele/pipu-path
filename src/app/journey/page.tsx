@@ -1,3 +1,5 @@
+import { requireAuthenticatedHomeState } from "@/modules/identity/infrastructure/progress-dal";
+import { JourneyPlayCard } from "@/modules/city/ui/journey-play-card";
 import type { Metadata } from "next";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
@@ -289,7 +291,10 @@ function JourneyDetails({
 }
 
 export default async function JourneyPage() {
-  const context = await getJourneyContext();
+  const [context, home] = await Promise.all([
+    getJourneyContext(),
+    requireAuthenticatedHomeState(),
+  ]);
   const state = await getCurrentJourneyState(context?.missionId);
   const attemptsRemaining = Math.max(0, 3 - state.attempts);
   const existingJourney = state.active ?? state.draft ?? state.completed;
@@ -360,6 +365,10 @@ export default async function JourneyPage() {
               In progress
             </span>
           </div>
+          <JourneyPlayCard
+            quest={home.quest}
+            journeyTitle={state.active.title}
+          />
           <JourneyDetails
             journey={state.active}
             isThirtyDayPathway={isThirtyDayPathway}

@@ -1,11 +1,43 @@
 import type { Metadata } from "next";
-import { CityEpisode } from "@/modules/city/ui/city-episode";
+import { notFound } from "next/navigation";
+import { CityEpisode, type CityContext } from "@/modules/city/ui/city-episode";
+import { cityContinuation } from "@/modules/city/domain/continuation";
+import { requireAuthenticatedHomeState } from "@/modules/identity/infrastructure/progress-dal";
+import { getQuestById } from "@/modules/quest/infrastructure/quest-dal";
 
 export const metadata: Metadata = {
   title: "The Unbuilt City · Play",
   robots: { index: false, follow: false },
 };
-
-export default function CityPage() {
-  return <CityEpisode />;
+export default async function CityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ quest?: string }>;
+}) {
+  const params = await searchParams;
+  const state = await requireAuthenticatedHomeState();
+  const selectedId = params.quest ?? state.quest?.id;
+  let context: CityContext | null = null;
+  if (selectedId) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        selectedId,
+      )
+    )
+      notFound();
+    // This DAL authenticates ownership; never trust a query parameter as context.
+    const detail = await getQuestById(selectedId);
+    if (!detail || detail.quest.status === "locked") notFound();
+    const next = cityContinuation(detail.quest);
+    context = {
+      questId: detail.quest.id,
+      questTitle: detail.quest.title,
+      journeyTitle:
+        detail.journey?.title ?? state.journey?.title ?? "Your journey",
+      outcome: detail.quest.real_world_outcome,
+      returnHref: next.actionHref,
+      returnLabel: next.actionLabel,
+    };
+  }
+  return <CityEpisode context={context} />;
 }

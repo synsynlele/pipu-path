@@ -10,6 +10,8 @@ describe("safeNextPath", () => {
     expect(safeNextPath("/guardian")).toBe("/guardian");
     expect(safeNextPath("/onboarding/guardian")).toBe("/onboarding/guardian");
     expect(safeNextPath("/reset-password")).toBe("/reset-password");
+    expect(safeNextPath("/build/play?quest=abc")).toBe("/build/play?quest=abc");
+    expect(safeNextPath("/build/unknown")).toBe("/app");
   });
 
   it("rejects external, protocol-relative and unknown redirects", () => {

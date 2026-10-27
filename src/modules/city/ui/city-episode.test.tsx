@@ -59,6 +59,42 @@ describe("city episode", () => {
       screen.getByRole("button", { name: /Meet the neighbours/ }),
     ).toBeInTheDocument();
   });
+  it("carries a real Quest through the playable episode", () => {
+    render(
+      <CityEpisode
+        context={{
+          questId: "q1",
+          questTitle: "My real challenge",
+          journeyTitle: "My journey",
+          returnHref: "/quests/q1",
+          returnLabel: "Continue my real-world Quest →",
+          outcome: "Ask someone you know for feedback.",
+        }}
+      />,
+    );
+    expect(
+      screen.getByRole("link", { name: /Back to my Quest/ }),
+    ).toHaveAttribute("href", "/quests/q1");
+    click(/Meet the neighbours/);
+    click(/Ada/);
+    click(/Timi/);
+    click(/Mama Jo/);
+    click(/I've heard everyone/);
+    click(/Open the square/);
+    click(/Live music/);
+    click(/Open the gates/);
+    click(/See what this teaches/);
+    click(/Try a different night/);
+    click(/Food corner/);
+    click(/Open the gates/);
+    click(/Reflect on this attempt/);
+    expect(
+      screen.getByText("Ask someone you know for feedback."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Continue my real-world Quest/ }),
+    ).toHaveAttribute("href", "/quests/q1");
+  });
   it("offers actionable feedback and invalidates stale results after edits", () => {
     render(<CityEpisode />);
     click(/Meet the neighbours/);

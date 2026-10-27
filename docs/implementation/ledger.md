@@ -1039,3 +1039,28 @@ and production build. Commit is retained locally. Automatic approval review
 rejected pushing new feature source to the public GitHub repository because
 explicit authorisation for that publication was not established. No push, PR,
 Vercel Preview or production deployment is claimed.
+
+## 27 October — visual city and connected Quest slice
+
+Authority: user requested more graphics, less writing and one PipuPath journey.
+Added a generated dusk environment, live illustrated build sites, consistent
+resource/action icons, short character voices, visual meters/targets, rain and
+crowd feedback. Removed the old diagram and duplicate text-heavy build cards.
+All primary controls remain semantic buttons with costs/effects in their labels.
+Motion respects reduced-motion; background is a 284 KB WebP, no video/3D engine.
+
+Shared JourneyPlayCard reads current Quest state on Home, Build, Journey and
+Quest. Owned Quest context is resolved on the server and carried into the game;
+its final CTA returns to the real Quest, never to an invented completion. Evidence
+and completed states prioritise real reflection/progression over practice.
+Regression tests cover malformed/foreign/locked context, exact destination
+continuity, changed-plan feedback, complete flow and the exact auth-return path.
+No schema, learner writes, XP rule or evidence contract changed. Game state is
+still tab-local; no cloud save, multiple episode catalogue or broad potential
+assessment is claimed. Full validation and browser evidence follow.
+
+Validation: npm run validate passed: formatting, zero-warning lint, strict types,
+452 unit/component tests with coverage, 251 integration tests and the production
+build. Focused city/redirect tests passed (20). Exact new-preview browser proof
+is pending; the previous plain episode's browser success does not certify the
+new visuals. No production promotion or phone-device pass is claimed.

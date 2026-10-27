@@ -3,6 +3,7 @@ const allowedExactPaths = new Set([
   "/account-privacy",
   "/app",
   "/build",
+  "/build/play",
   "/onboarding/identity",
   "/onboarding/guardian",
   "/guardian",

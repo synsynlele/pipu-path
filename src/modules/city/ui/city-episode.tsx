@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import {
   builds,
   episode,
@@ -12,34 +12,75 @@ import {
   type BuildId,
   type Role,
 } from "../domain/festival";
+import {
+  BuildMiniature,
+  CityBackdrop,
+  CityIcon,
+  type IconName,
+} from "./city-art";
+import "./city.css";
 
+export type CityContext = {
+  questId: string;
+  questTitle: string;
+  journeyTitle: string;
+  returnHref: string;
+  returnLabel: string;
+  outcome: string;
+};
 const voices = [
   {
     name: "Ada",
-    initial: "A",
-    line: "I want to come. But my chair needs a clear, level path to every activity.",
+    icon: "access",
+    line: "Leave a clear path. I want to join in too.",
+    detail:
+      "I want to come. But my chair needs a clear, level path to every activity.",
+    color: "#c3b5ef",
   },
   {
     name: "Timi",
-    initial: "T",
-    line: "Give us something to do together. A square full of stalls alone won't bring me back.",
+    icon: "music",
+    line: "Give us something worth staying for.",
+    detail:
+      "Give us something to do together. A square full of stalls alone won't bring me back.",
+    color: "#9cdbca",
   },
   {
     name: "Mama Jo",
-    initial: "J",
-    line: "A wonderful event is useless if nobody knows where it is. Help people find us.",
+    icon: "signs",
+    line: "Make sure people can find us.",
+    detail:
+      "A wonderful event is useless if nobody knows where it is. Help people find us.",
+    color: "#edc28e",
   },
-];
+] as const;
 const roleClues: Record<Role, string> = {
-  maker:
-    "Supplies, setup hours and helpers are three different limits. A cheap plan can still need too many people.",
+  maker: "Supplies, setup hours and helpers are three different limits.",
   designer:
-    "An invitation gets people to the square. Clear paths get them into the activities. Those are different jobs.",
+    "Invitations bring people here. Paths let them join in. Those are different jobs.",
   organiser:
-    "A plan can please one neighbour and leave another out. Listen for the need beneath each request.",
+    "Every neighbour needs something different. Make room for each one.",
 };
+const roleIcons: Record<Role, IconName> = {
+  maker: "supplies",
+  designer: "art",
+  organiser: "people",
+};
+const titles = [
+  "Someone left you the keys.",
+  "Who is this place for?",
+  "Choose your approach.",
+  "Make tonight worth coming to.",
+  "See what made the difference.",
+  "Rain changes everything.",
+  "Your next move is real.",
+];
 
-export function CityEpisode() {
+export function CityEpisode({
+  context = null,
+}: {
+  context?: CityContext | null;
+}) {
   const [stage, setStage] = useState(0);
   const [role, setRole] = useState<Role>("maker");
   const [heard, setHeard] = useState<number[]>([]);
@@ -57,12 +98,17 @@ export function CityEpisode() {
   const totals = evaluateFestival(plan, weather);
   const budget = limits[weather];
   const isTrial = stage === 3 || stage === 5;
-
   function move(next: number) {
     setStage(next);
     setResult(null);
     if (next === 5) setPlan([]);
-    requestAnimationFrame(() => heading.current?.focus());
+    requestAnimationFrame(() => {
+      heading.current?.focus();
+      heading.current?.scrollIntoView?.({
+        block: "start",
+        behavior: "instant",
+      });
+    });
   }
   function toggle(id: BuildId) {
     setPlan((current) =>
@@ -76,19 +122,12 @@ export function CityEpisode() {
     const report = {
       episode: episode.id,
       kind: "Practice plan — not verified real-world evidence",
+      questId: context?.questId ?? null,
       chosenRole: role,
       firstPlan,
       rainPlan: plan,
-      simulation: evaluateFestival(plan, "rain"),
       reflection,
       proposedExperiment: experiment,
-      steps: [
-        "Choose a familiar, safe space.",
-        "Ask someone you know what makes it difficult to use.",
-        "Sketch a small improvement using paper or materials you have.",
-        "Show it to that person and ask what still needs changing.",
-        "Record what you tried, their feedback and your next change.",
-      ],
     };
     const url = URL.createObjectURL(
       new Blob([JSON.stringify(report, null, 2)], { type: "application/json" }),
@@ -99,542 +138,688 @@ export function CityEpisode() {
     anchor.click();
     URL.revokeObjectURL(url);
   }
-
+  function replay() {
+    setHeard([]);
+    setPlan([]);
+    setFirstPlan([]);
+    setReflection("");
+    setExperiment("Sketch a better layout for a familiar space.");
+    move(0);
+  }
   return (
     <main
       id="main-content"
       className="w-full bg-[#f7f8fc] pb-10 text-[#25284a]"
     >
-      <section className="bg-[#201b59] px-4 pt-5 pb-12 text-white sm:px-6">
-        <div className="mx-auto max-w-5xl">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Link
-              href="/build"
-              className="inline-flex min-h-11 items-center text-sm font-semibold text-indigo-100"
-            >
-              ← Back to Build
-            </Link>
-            <span className="rounded-full border border-white/20 px-3 py-2 text-xs font-semibold">
-              The Unbuilt City · Episode 01
-            </span>
-          </div>
-          <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-5xl">
-            {episode.title}
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-indigo-100">
-            Three neighbours. One chance to bring this place to life. What will
-            you make possible?
-          </p>
-          <ol aria-label="Episode progress" className="mt-6 flex gap-2">
-            {episode.stages.map((label, index) => (
-              <li
-                key={label}
-                aria-current={index === stage ? "step" : undefined}
-                className={`h-1.5 flex-1 rounded-full ${index <= stage ? "bg-[#c9a54d]" : "bg-white/20"}`}
-              >
-                <span className="sr-only">
-                  {index + 1}. {label}
-                  {index < stage ? " — visited" : ""}
-                </span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-3 text-xs text-indigo-100">
-            Part {stage + 1} of 7 · {episode.stages[stage]}
+      <header className="bg-[#201b59] px-4 py-4 text-white sm:px-6">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
+          <Link
+            href={context?.returnHref ?? "/build"}
+            className="inline-flex min-h-11 items-center text-sm font-semibold text-indigo-100"
+          >
+            ← {context ? "Back to my Quest" : "Back to Build"}
+          </Link>
+          <p className="text-xs font-semibold text-indigo-100">
+            The Unbuilt City · 01
           </p>
         </div>
-      </section>
-      <div className="relative mx-auto -mt-5 max-w-5xl space-y-4 px-4 sm:px-6">
-        <section className="pp-app-card overflow-hidden p-5 sm:p-7">
-          <p className="text-xs font-bold tracking-widest text-[#6848dc] uppercase">
-            {isTrial
-              ? weather === "rain"
-                ? "Your independent attempt"
-                : "Your first attempt"
-              : "The neighbourhood"}
+      </header>
+      <div className="mx-auto max-w-5xl space-y-4 px-3 pt-4 sm:px-6">
+        <nav
+          aria-label="Your connected adventure"
+          className="flex items-center justify-between gap-2 rounded-2xl border border-[#e1ddef] bg-white px-3 py-3 text-xs font-semibold"
+        >
+          {(
+            [
+              ["play", "Play", true],
+              ["art", "Act", false],
+              ["proof", "Prove", false],
+              ["spark", "Grow", false],
+            ] as const
+          ).map(([icon, label, current]) => (
+            <span
+              key={label}
+              aria-current={current ? "step" : undefined}
+              className={`flex items-center gap-1.5 ${current ? "text-[#6343cc]" : "text-[#69728a]"}`}
+            >
+              <CityIcon name={icon} className="size-4" />
+              {label}
+            </span>
+          ))}
+        </nav>
+        {context && (
+          <p className="truncate text-xs text-[#626a80]">
+            {context.journeyTitle} <span aria-hidden="true">/</span>{" "}
+            {context.questTitle}
           </p>
-          <h2
-            ref={heading}
-            tabIndex={-1}
-            className="mt-2 text-2xl font-bold tracking-tight outline-none"
-          >
-            {
-              [
-                "Someone left you the keys.",
-                "Who is this place for?",
-                "Choose how you want to contribute.",
-                "Make tonight worth coming to.",
-                "A busy square is only half the story.",
-                "Rain changes everything.",
-                "What could you change where you live?",
-              ][stage]
-            }
-          </h2>
+        )}
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold tracking-widest text-[#6848dc] uppercase">
+              {stage === 5
+                ? "Night 02 · On your own"
+                : `Part ${stage + 1} of 7 · ${episode.stages[stage]}`}
+            </p>
+            <h1 className="sr-only">{episode.title}</h1>
+            <h2
+              ref={heading}
+              tabIndex={-1}
+              className="mt-2 scroll-mt-24 text-2xl font-bold tracking-tight outline-none sm:text-3xl"
+            >
+              {titles[stage]}
+            </h2>
+          </div>
+          <span className="shrink-0 rounded-full bg-[#ece8fa] p-3 text-[#6848dc]">
+            <CityIcon name={stage === 5 ? "shelter" : "spark"} />
+          </span>
+        </div>
+        <ol aria-label="Episode progress" className="flex gap-1.5">
+          {episode.stages.map((label, i) => (
+            <li
+              key={label}
+              aria-current={i === stage ? "step" : undefined}
+              className={`h-1 flex-1 rounded-full ${i <= stage ? "bg-[#b39143]" : "bg-[#ded9ec]"}`}
+            >
+              <span className="sr-only">
+                {label}
+                {i < stage ? " — visited" : ""}
+              </span>
+            </li>
+          ))}
+        </ol>
 
-          {stage === 0 && (
-            <>
-              <CitySquare plan={[]} rainy={false} />
-              <p className="mt-4 max-w-2xl text-base leading-7">
-                An empty square is about to become a car park. Your neighbours
-                have one evening to show it could be something more. You have
-                the keys, a small supply budget and a few willing helpers.
-              </p>
-              <p className="mt-3 text-sm leading-6 text-[#626a80]">
-                This is a fictional planning game. You can retry freely. It does
-                not award XP or assess your abilities. Your attempt stays in
-                this open page; refreshing starts again.
-              </p>
-              <Button onClick={() => move(1)} className="mt-5 rounded-full">
-                Meet the neighbours →
-              </Button>
-            </>
-          )}
-
-          {stage === 1 && (
-            <>
-              <p className="mt-3 text-sm leading-6">
-                Before choosing what to build, hear what each neighbour needs.
-              </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                {voices.map((voice, index) => (
-                  <button
-                    key={voice.name}
-                    type="button"
-                    aria-expanded={heard.includes(index)}
-                    onClick={() =>
-                      setHeard((current) =>
-                        current.includes(index) ? current : [...current, index],
-                      )
-                    }
-                    className="min-h-36 rounded-2xl border border-[#ddd9ee] bg-[#faf9ff] p-4 text-left focus-visible:outline-2 focus-visible:outline-[#5436df]"
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="grid size-10 place-items-center rounded-full bg-[#ece9ff] font-bold text-[#5436df]"
-                    >
-                      {voice.initial}
-                    </span>
-                    <span className="mt-3 block font-bold">{voice.name}</span>
-                    <span className="mt-2 block text-sm leading-6 text-[#626a80]">
-                      {heard.includes(index)
-                        ? voice.line
-                        : "Tap to hear their story →"}
-                    </span>
-                  </button>
-                ))}
+        {stage === 0 && (
+          <>
+            <CityBackdrop>
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-8">
+                <p className="text-xs font-bold tracking-widest text-[#f1d295] uppercase">
+                  Your city. Your next possibility.
+                </p>
+                <p className="mt-2 max-w-md text-3xl font-bold sm:text-5xl">
+                  One night.
+                  <br />
+                  Make it matter.
+                </p>
+                <p className="mt-3 max-w-sm text-sm leading-6">
+                  This square could become a car park.
+                  <br />
+                  Give the neighbourhood a reason to keep it.
+                </p>
+                <Button onClick={() => move(1)} className="mt-5 rounded-full">
+                  Meet the neighbours →
+                </Button>
               </div>
-              <p className="mt-5 font-semibold">
-                How do you bring people together without leaving someone out?
-              </p>
-              <Button
-                disabled={heard.length < 3}
-                onClick={() => move(2)}
-                className="mt-5 rounded-full"
-              >
-                I&apos;ve heard everyone →
-              </Button>
-            </>
-          )}
+            </CityBackdrop>
+            <p className="text-center text-xs text-[#626a80]">
+              Tap. Build. Test. Then take an idea into your life.
+            </p>
+          </>
+        )}
 
-          {stage === 2 && (
-            <>
-              <p className="mt-3 text-sm leading-6">
-                Try a role for this episode. You can explore another on a
-                replay. This is a choice, not a personality label.
-              </p>
-              <fieldset className="mt-5 grid gap-3 sm:grid-cols-3">
-                <legend className="sr-only">Choose your role</legend>
-                {roles.map((item) => (
-                  <label
-                    key={item.id}
-                    className={`cursor-pointer rounded-2xl border p-4 ${role === item.id ? "border-[#6848dc] bg-[#f3f0ff]" : "border-[#ddd9ee]"}`}
-                  >
-                    <input
-                      type="radio"
-                      name="role"
-                      value={item.id}
-                      checked={role === item.id}
-                      onChange={() => setRole(item.id)}
-                      className="mr-2 accent-[#5436df]"
-                    />
-                    <strong>{item.title}</strong>
-                    <span className="mt-2 block text-sm leading-6 text-[#626a80]">
-                      {item.detail}
-                    </span>
-                  </label>
-                ))}
-              </fieldset>
-              <p className="mt-5 rounded-2xl bg-[#f3f0ff] p-4 text-sm leading-6">
-                <strong>One small clue: </strong>
-                {roleClues[role]}
-              </p>
-              <Button onClick={() => move(3)} className="mt-5 rounded-full">
-                Open the square →
-              </Button>
-            </>
-          )}
-
-          {isTrial && (
-            <>
-              <p className="mt-3 text-sm leading-6">
-                {stage === 3
-                  ? "If someone is with you, make this first plan together. Playing alone? Say one reason for and one reason against each choice."
-                  : "Try this plan yourself. Supplies drop to 11 tokens and every activity now needs rain cover. Find a new combination."}
-              </p>
-              <div className="mt-4 rounded-2xl bg-[#f3f0ff] p-4 text-sm leading-6">
-                <strong>Your goal:</strong> attract at least 24 fictional
-                visitors, offer activities with 4 enjoyment points, provide
-                clear paths and invitations
-                {weather === "rain" ? ", and keep activities dry" : ""}. Stay
-                within all three limits. Numbers are game rules, not predictions
-                about real events.
-              </div>
-              <CitySquare plan={plan} rainy={weather === "rain"} />
-              <div
-                className="mt-4 grid grid-cols-3 gap-2"
-                aria-label="Resources used"
-              >
-                {(
-                  [
-                    ["Supplies", totals.cost, budget.cost],
-                    ["Setup hours", totals.time, budget.time],
-                    ["Helpers", totals.crew, budget.crew],
-                  ] as const
-                ).map(([label, used, max]) => (
-                  <div
-                    key={label}
-                    className={`rounded-2xl border p-3 ${used > max ? "border-red-500 bg-red-50" : "border-[#ddd9ee] bg-[#faf9ff]"}`}
-                  >
-                    <span className="block text-xs text-[#626a80]">
-                      {label}
-                    </span>
-                    <strong className="mt-1 block text-xl">
-                      {used} / {max}
-                    </strong>
-                    {used > max && (
-                      <span className="text-xs text-red-700">
-                        Over the limit
+        {stage === 1 && (
+          <section className="pp-app-card p-4 sm:p-6">
+            <p className="mb-4 text-sm text-[#626a80]">
+              Tap each neighbour. What matters to them?
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {voices.map((voice, index) => (
+                <button
+                  key={voice.name}
+                  type="button"
+                  aria-expanded={heard.includes(index)}
+                  onClick={() =>
+                    setHeard((current) =>
+                      current.includes(index) ? current : [...current, index],
+                    )
+                  }
+                  className="city-voice min-h-44 rounded-3xl border border-[#ded9ed] p-4 text-left focus-visible:outline-2 focus-visible:outline-[#6848dc]"
+                  style={{
+                    background: `linear-gradient(145deg, ${voice.color}66, #fff)`,
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <Portrait index={index} />
+                    <span>
+                      <strong className="block text-lg">{voice.name}</strong>
+                      <span className="mt-1 flex items-center gap-1 text-xs text-[#62547d]">
+                        <CityIcon name={voice.icon} className="size-4" />
+                        {heard.includes(index) ? "Heard" : "Tap to listen"}
                       </span>
-                    )}
+                    </span>
                   </div>
-                ))}
+                  <p className="mt-4 rounded-2xl bg-white p-3 text-sm leading-6 font-medium">
+                    {heard.includes(index)
+                      ? `“${voice.line}”`
+                      : "What would bring you here?"}
+                  </p>
+                  <span className="sr-only">
+                    {heard.includes(index) ? voice.detail : ""}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <Button
+              disabled={heard.length < 3}
+              onClick={() => move(2)}
+              className="mt-5 w-full rounded-full sm:w-auto"
+            >
+              I&apos;ve heard everyone →
+            </Button>
+          </section>
+        )}
+
+        {stage === 2 && (
+          <section className="pp-app-card p-4 sm:p-6">
+            <p className="text-sm text-[#626a80]">
+              One approach to try. You can switch on a replay.
+            </p>
+            <fieldset className="mt-5 grid grid-cols-3 gap-2 sm:gap-4">
+              <legend className="sr-only">Choose your role</legend>
+              {roles.map((item) => (
+                <label
+                  key={item.id}
+                  className={`relative flex cursor-pointer flex-col items-center rounded-3xl border p-3 text-center ${role === item.id ? "border-[#6848dc] bg-[#efeafa] ring-2 ring-[#6848dc]/20" : "border-[#ded9ed] bg-white"}`}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value={item.id}
+                    checked={role === item.id}
+                    onChange={() => setRole(item.id)}
+                    className="absolute top-3 right-3 accent-[#6848dc]"
+                  />
+                  <CityIcon
+                    name={roleIcons[item.id]}
+                    className="my-5 size-10 text-[#6343cc]"
+                  />
+                  <strong className="text-sm sm:text-base">{item.title}</strong>
+                  <span className="sr-only">{item.detail}</span>
+                </label>
+              ))}
+            </fieldset>
+            <p className="mt-5 flex gap-3 rounded-2xl bg-[#eee9fb] p-4 text-sm leading-6">
+              <CityIcon
+                name="spark"
+                className="size-5 shrink-0 text-[#6343cc]"
+              />
+              <span>{roleClues[role]}</span>
+            </p>
+            <Button
+              onClick={() => move(3)}
+              className="mt-5 w-full rounded-full sm:w-auto"
+            >
+              Open the square →
+            </Button>
+          </section>
+        )}
+
+        {isTrial && (
+          <>
+            <p className="text-sm text-[#626a80]">
+              {stage === 3
+                ? "Plan together if you can. Tap a site to add or remove it."
+                : "Try it yourself. Less supplies. Rain cover needed."}
+            </p>
+            <div className="grid grid-cols-3 gap-2" aria-label="Resources used">
+              {(
+                [
+                  ["supplies", "Supplies", totals.cost, budget.cost],
+                  ["clock", "Hours", totals.time, budget.time],
+                  ["people", "Helpers", totals.crew, budget.crew],
+                ] as const
+              ).map(([icon, label, used, max]) => (
+                <div
+                  key={label}
+                  className={`rounded-2xl border bg-white p-3 ${used > max ? "border-red-500 text-red-700" : "border-[#ded9ed]"}`}
+                >
+                  <span className="flex items-center gap-1.5 text-xs">
+                    <CityIcon name={icon} className="size-4" />
+                    {label}
+                  </span>
+                  <strong className="mt-1 block text-xl">
+                    {used}
+                    <span className="text-xs font-normal"> / {max}</span>
+                  </strong>
+                  <div
+                    aria-hidden="true"
+                    className="mt-2 h-1 rounded-full bg-[#e9e5f0]"
+                  >
+                    <div
+                      className={`h-full rounded-full ${used > max ? "bg-red-500" : "bg-[#7b61c8]"}`}
+                      style={{ width: `${Math.min((used / max) * 100, 100)}%` }}
+                    />
+                  </div>
+                  {used > max && (
+                    <span className="text-xs">Over the limit</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2" aria-label="Plan targets">
+              <Target
+                icon="people"
+                text={`${totals.visitors} / 24 visitors`}
+                met={totals.visitors >= 24}
+              />
+              <Target
+                icon="spark"
+                text={`${totals.joy} / 4 enjoyment`}
+                met={totals.joy >= 4}
+              />
+              <Target
+                icon="access"
+                text="Access"
+                met={plan.includes("access")}
+              />
+              <Target
+                icon="signs"
+                text="Invitations"
+                met={plan.includes("signs")}
+              />
+              {weather === "rain" && (
+                <Target
+                  icon="shelter"
+                  text="Cover"
+                  met={plan.includes("shelter")}
+                />
+              )}
+            </div>
+            <CityBackdrop
+              rainy={weather === "rain"}
+              celebrating={!!result?.success}
+            >
+              <div className="absolute top-3 left-3 rounded-full bg-[#201b59]/90 px-3 py-2 text-xs font-semibold text-white">
+                {weather === "rain" ? "Rainy night" : "Clear evening"} · Tap a
+                site
               </div>
-              <fieldset className="mt-5 grid gap-3 sm:grid-cols-2">
-                <legend className="mb-3 text-sm font-semibold">
-                  Tap to add or remove a build.
-                </legend>
+              <div
+                className="city-sites absolute inset-x-3 top-[20%] bottom-[9%] grid grid-cols-3 grid-rows-2 gap-1 sm:inset-x-12 sm:top-[22%] sm:bottom-[13%] sm:gap-4"
+                aria-label="Build sites"
+              >
                 {builds.map((build) => (
                   <button
                     key={build.id}
                     type="button"
+                    aria-label={`${build.title}. ${build.cost} supplies, ${build.time} hours, ${build.crew} helpers. ${build.visitors} visitors, ${build.joy} enjoyment.`}
                     aria-pressed={plan.includes(build.id)}
                     onClick={() => toggle(build.id)}
-                    className={`min-h-32 rounded-2xl border p-4 text-left focus-visible:outline-2 focus-visible:outline-[#5436df] ${plan.includes(build.id) ? "border-[#6848dc] bg-[#f3f0ff]" : "border-[#ddd9ee] bg-white"}`}
+                    className={`city-site group relative flex min-h-11 min-w-0 flex-col items-center justify-end rounded-2xl border py-2 focus-visible:outline-4 focus-visible:outline-white ${plan.includes(build.id) ? "border-[#eaca88] bg-[#261c50]/80 text-white" : "border-white/40 bg-[#201b59]/60 text-white"}`}
                   >
-                    <span className="flex items-center justify-between gap-2 font-bold">
+                    <span
+                      className="absolute top-1 right-2 text-sm text-[#ffe0a5]"
+                      aria-hidden="true"
+                    >
+                      {plan.includes(build.id) ? "✓" : "+"}
+                    </span>
+                    <span
+                      className={
+                        plan.includes(build.id) ? "city-built" : "opacity-70"
+                      }
+                    >
+                      <BuildMiniature id={build.id} />
+                    </span>
+                    <span className="px-1 text-center text-[10px] leading-4 font-semibold sm:text-sm">
                       {build.title}
-                      <span aria-hidden="true">
-                        {plan.includes(build.id) ? "✓" : "+"}
+                    </span>
+                    <span
+                      className="mt-1 flex gap-2 text-[10px] text-[#eee5ff] sm:text-xs"
+                      aria-hidden="true"
+                    >
+                      <span className="flex gap-0.5">
+                        <CityIcon name="supplies" className="size-3" />
+                        {build.cost}
                       </span>
-                    </span>
-                    <span className="mt-1 block text-sm leading-5 text-[#626a80]">
-                      {build.detail}
-                    </span>
-                    <span className="mt-3 block text-xs leading-5">
-                      {build.cost} supplies · {build.time} hours · {build.crew}{" "}
-                      helpers
-                      <br />
-                      {build.visitors} visitors · {build.joy} enjoyment
+                      <span className="flex gap-0.5">
+                        <CityIcon name="clock" className="size-3" />
+                        {build.time}
+                      </span>
+                      <span className="flex gap-0.5">
+                        <CityIcon name="people" className="size-3" />
+                        {build.crew}
+                      </span>
                     </span>
                   </button>
                 ))}
-              </fieldset>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Button
-                  disabled={!plan.length}
-                  onClick={() => setResult(evaluateFestival(plan, weather))}
-                  className="rounded-full"
-                >
-                  Open the gates →
-                </Button>
-                <Button
-                  variant="secondary"
-                  disabled={!plan.length}
-                  onClick={() => {
-                    setPlan([]);
-                    setResult(null);
-                  }}
-                  className="rounded-full"
-                >
-                  Clear plan
-                </Button>
               </div>
               {result && (
-                <section
-                  aria-live="polite"
-                  className={`mt-5 rounded-2xl border p-5 ${result.success ? "border-[#78c8b9] bg-[#effaf6]" : "border-[#e3ce96] bg-[#fffaf0]"}`}
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center gap-1 pb-3"
+                  aria-hidden="true"
                 >
-                  <h3 className="text-lg font-bold">
-                    {result.success
-                      ? "The square comes alive."
-                      : "Something needs another look."}
-                  </h3>
-                  <p className="mt-2 text-sm">
-                    Your plan: {result.visitors} potential visitors ·{" "}
-                    {result.joy} enjoyment points.
-                  </p>
-                  {result.problems.length > 0 && (
-                    <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6">
-                      {result.problems.map((problem) => (
-                        <li key={problem}>{problem}</li>
-                      ))}
-                    </ul>
-                  )}
-                  <p className="mt-3 text-sm leading-6">
-                    {result.success
-                      ? "You balanced the resources and made room for different needs. Other combinations can work too."
-                      : "Change a build and test again. Every attempt tells you something."}
-                  </p>
-                  {stage === 3 ? (
-                    <Button
-                      onClick={() => {
-                        setFirstPlan([...plan]);
-                        move(4);
+                  {Array.from({ length: result.success ? 14 : 4 }, (_, i) => (
+                    <span
+                      key={i}
+                      className="city-resident"
+                      style={{
+                        animationDelay: `${i * 0.13}s`,
+                        background: ["#ecbe79", "#9fd2c4", "#b3a1e2"][i % 3],
                       }}
-                      className="mt-4 rounded-full"
-                    >
-                      See what this teaches →
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() => move(6)}
-                      className="mt-4 rounded-full"
-                    >
-                      Reflect on this attempt →
-                    </Button>
-                  )}
-                </section>
+                    />
+                  ))}
+                </div>
               )}
-            </>
-          )}
-
-          {stage === 4 && (
-            <>
-              <p className="mt-4 text-base leading-7">
-                This is a lesson in designing for people under constraints. The
-                most exciting activity cannot fix a path someone cannot use. An
-                accessible event still needs something enjoyable—and people need
-                to know it exists.
+            </CityBackdrop>
+            <details className="rounded-2xl border border-[#ded9ed] bg-white p-3 text-xs leading-6">
+              <summary className="cursor-pointer font-semibold">
+                What do the icons and numbers mean?
+              </summary>
+              <p className="mt-2">
+                Box = supplies. Clock = setup hours. People = helpers. Add sites
+                to reach 24 visitors and 4 enjoyment. Include paths and
+                invitations; add cover when it rains. Stay within all three
+                resource limits. These are fictional game rules.
               </p>
-              <ul className="mt-4 list-disc space-y-3 pl-5 text-sm leading-6">
-                <li>
-                  <strong>Listen:</strong> turn each person&apos;s story into a
-                  requirement.
-                </li>
-                <li>
-                  <strong>Balance:</strong> check supplies, hours and helpers
-                  separately.
-                </li>
-                <li>
-                  <strong>Test:</strong> change one choice and compare the
-                  outcome.
-                </li>
+              <ul className="mt-2">
+                {builds.map((b) => (
+                  <li key={b.id}>
+                    <strong>{b.title}:</strong> {b.detail} +{b.visitors}{" "}
+                    visitors · +{b.joy} enjoyment.
+                  </li>
+                ))}
               </ul>
-              <p className="mt-4 rounded-2xl bg-[#f3f0ff] p-4 text-sm leading-6">
-                For clear weather, live music + Make & share + clear paths +
-                invitations uses 9 supplies, 7 hours and 6 helpers. It meets the
-                needs—but a different night may need a different answer.
-              </p>
-              <Button onClick={() => move(5)} className="mt-5 rounded-full">
-                Try a different night →
-              </Button>
-            </>
-          )}
-
-          {stage === 6 && (
-            <>
-              <p className="mt-3 text-sm leading-6">
-                A game attempt suggests something to explore. It does not prove
-                a talent or complete a real-world Quest.
-              </p>
-              <label
-                htmlFor="city-reflection"
-                className="mt-5 block text-sm font-semibold"
+            </details>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                disabled={!plan.length}
+                onClick={() => setResult(evaluateFestival(plan, weather))}
+                className="flex-1 gap-2 rounded-full sm:flex-none"
               >
-                What did you change, and whose need did it help?
-              </label>
+                <CityIcon name="play" className="size-5" />
+                Open the gates →
+              </Button>
+              <Button
+                variant="secondary"
+                disabled={!plan.length}
+                onClick={() => {
+                  setPlan([]);
+                  setResult(null);
+                }}
+                className="rounded-full"
+              >
+                Clear plan
+              </Button>
+            </div>
+            {result && (
+              <section
+                role="status"
+                className={`rounded-3xl border p-5 ${result.success ? "border-[#8dc9b7] bg-[#eaf7f0]" : "border-[#ddc58d] bg-[#fff8e9]"}`}
+              >
+                <div className="flex items-center gap-3">
+                  <CityIcon
+                    name={result.success ? "spark" : "art"}
+                    className="size-9 shrink-0"
+                  />
+                  <div>
+                    <h3 className="text-lg font-bold">
+                      {result.success
+                        ? "The square comes alive."
+                        : "Something needs another look."}
+                    </h3>
+                    <p className="mt-1 text-xs">
+                      {result.visitors} visitors · {result.joy} enjoyment ·{" "}
+                      {result.success ? "All needs met" : "Adjust and retry"}
+                    </p>
+                  </div>
+                </div>
+                {result.problems.length > 0 && (
+                  <ul className="mt-4 space-y-2 text-sm leading-6">
+                    {result.problems.map((p) => (
+                      <li key={p}>• {p}</li>
+                    ))}
+                  </ul>
+                )}
+                <Button
+                  onClick={() => {
+                    if (stage === 3) setFirstPlan([...plan]);
+                    move(stage === 3 ? 4 : 6);
+                  }}
+                  className="mt-4 rounded-full"
+                >
+                  {stage === 3
+                    ? "See what this teaches →"
+                    : "Reflect on this attempt →"}
+                </Button>
+              </section>
+            )}
+          </>
+        )}
+
+        {stage === 4 && (
+          <section className="pp-app-card p-5">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {(
+                [
+                  ["people", "Listen", "Every person adds a requirement."],
+                  [
+                    "supplies",
+                    "Balance",
+                    "Supplies, hours and helpers each have a limit.",
+                  ],
+                  ["play", "Test", "Change one choice. Compare what happens."],
+                ] as const
+              ).map(([icon, title, line]) => (
+                <div key={title} className="rounded-3xl bg-[#f0ebfb] p-5">
+                  <CityIcon
+                    name={icon}
+                    className="mb-4 size-10 text-[#6848dc]"
+                  />
+                  <h3 className="font-bold">{title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-[#626a80]">
+                    {line}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 text-sm leading-6">
+              {evaluateFestival(firstPlan, "clear").success
+                ? "Your plan worked. Now find out which choices survive a change."
+                : "A busy square needs more than an attraction. Paths and invitations matter too."}
+            </p>
+            <details className="mt-4 text-sm">
+              <summary className="cursor-pointer font-semibold">
+                Show a working example
+              </summary>
+              <p className="mt-2 leading-6">
+                Music + Make & share + paths + invitations: 9 supplies, 7 hours,
+                6 helpers. Rain changes what you need.
+              </p>
+            </details>
+            <Button onClick={() => move(5)} className="mt-5 rounded-full">
+              Try a different night →
+            </Button>
+          </section>
+        )}
+
+        {stage === 6 && (
+          <section className="pp-app-card space-y-5 p-5 sm:p-7">
+            <div className="flex items-center gap-4 rounded-3xl bg-[#eee9fb] p-4">
+              <CityIcon
+                name="art"
+                className="size-10 shrink-0 text-[#6848dc]"
+              />
+              <div>
+                <p className="text-xs font-semibold text-[#6848dc]">
+                  PLAY → ACT
+                </p>
+                <h3 className="mt-1 font-bold">
+                  {context?.questTitle ?? "Try a small idea in your world."}
+                </h3>
+                <p className="mt-1 text-sm leading-6 text-[#626a80]">
+                  {context?.outcome ??
+                    "Ask someone you know. Make one improvement. Get their feedback."}
+                </p>
+              </div>
+            </div>
+            <label
+              htmlFor="city-reflection"
+              className="block text-sm font-semibold"
+            >
+              What did you change, and whose need did it help?
               <textarea
                 id="city-reflection"
                 maxLength={1200}
-                rows={3}
+                rows={2}
                 value={reflection}
-                onChange={(event) => setReflection(event.target.value)}
-                className="mt-2 w-full rounded-2xl border border-[#bdb7df] bg-white p-4 text-[#25284a]"
-                placeholder="A short observation is enough. Leave out names or private details."
+                onChange={(e) => setReflection(e.target.value)}
+                className="mt-2 w-full rounded-2xl border border-[#bdb7df] bg-white p-3 text-[#25284a]"
+                placeholder="One sentence is enough."
               />
-              <fieldset className="mt-5 space-y-3">
-                <legend className="mb-3 font-bold">
-                  Choose an optional real-world experiment
+            </label>
+            {!context && (
+              <fieldset className="space-y-2">
+                <legend className="mb-3 text-sm font-semibold">
+                  Choose a small real-world experiment
                 </legend>
                 {[
                   "Sketch a better layout for a familiar space.",
                   "Make a clearer invitation for a small activity.",
                   "Plan a no-cost activity with someone you know.",
-                ].map((choice) => (
+                ].map((item) => (
                   <label
-                    key={choice}
-                    className="flex min-h-12 items-center gap-3 rounded-2xl border border-[#ddd9ee] p-3 text-sm"
+                    key={item}
+                    className="flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl border border-[#ded9ed] p-3 text-sm"
                   >
                     <input
                       type="radio"
                       name="experiment"
-                      checked={experiment === choice}
-                      onChange={() => setExperiment(choice)}
-                      className="accent-[#5436df]"
+                      checked={experiment === item}
+                      onChange={() => setExperiment(item)}
+                      className="accent-[#6848dc]"
                     />
-                    {choice}
+                    {item}
                   </label>
                 ))}
               </fieldset>
-              <ol className="mt-5 list-decimal space-y-2 pl-5 text-sm leading-6">
-                <li>Pick a familiar, safe space.</li>
-                <li>Ask someone you know what could work better.</li>
-                <li>
-                  Make a small sketch or prototype with materials you have.
-                </li>
-                <li>Show it to them and ask what still needs changing.</li>
-                <li>Record the attempt, feedback and your next change.</li>
-              </ol>
-              <p className="mt-4 text-sm leading-6 text-[#626a80]">
-                No spending, public event or contact with strangers is required.
-                Younger players: involve a trusted adult before changing a
-                shared space. Keep other people&apos;s faces and details out of
-                your notes.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Button onClick={download} className="rounded-full">
-                  Download my experiment
-                </Button>
-                <Link
-                  href="/quests"
-                  className="inline-flex min-h-11 items-center rounded-full border border-[#bdb7df] px-5 text-sm font-semibold text-[#5436df]"
+            )}
+            <div className="grid grid-cols-3 gap-2 text-center text-xs">
+              {(
+                [
+                  ["people", "Ask"],
+                  ["art", "Make"],
+                  ["proof", "Bring proof"],
+                ] as const
+              ).map(([icon, label]) => (
+                <div
+                  key={label}
+                  className="rounded-2xl border border-[#ded9ed] p-3"
                 >
-                  Open my real-world Quests →
-                </Link>
-              </div>
-              <p className="mt-3 text-xs leading-5 text-[#626a80]">
-                Download saves a file to your device. This page does not upload
-                your reflection or create a Quest. Use your existing
-                Quest&apos;s evidence flow only when the experiment genuinely
-                fits that Quest.
-              </p>
+                  <CityIcon
+                    name={icon}
+                    className="mx-auto mb-2 size-7 text-[#6848dc]"
+                  />
+                  {label}
+                </div>
+              ))}
+            </div>
+            <ButtonLink
+              href={context?.returnHref ?? "/quests"}
+              className="w-full gap-2 rounded-full"
+            >
+              <CityIcon name="art" className="size-5" />
+              {context?.returnLabel ?? "Open my real-world Quests →"}
+            </ButtonLink>
+            <p className="text-xs leading-5 text-[#626a80]">
+              Use your actual Quest steps. A game plan is practice; bring back
+              proof only after a real attempt. No spending or strangers
+              required. Ask a trusted adult before changing shared spaces.
+            </p>
+            <details className="text-xs leading-6">
+              <summary className="cursor-pointer font-semibold">
+                Keep this practice plan
+              </summary>
               <Button
-                variant="ghost"
-                onClick={() => {
-                  setPlan([]);
-                  setFirstPlan([]);
-                  setHeard([]);
-                  setReflection("");
-                  move(0);
-                }}
-                className="mt-4"
+                onClick={download}
+                variant="secondary"
+                className="mt-3 rounded-full"
               >
-                Replay with another role
+                Download my experiment
               </Button>
-            </>
-          )}
-        </section>
-        <p className="px-2 text-xs leading-5 text-[#626a80]">
-          Practice episode · No leaderboard, talent score or XP · You can leave
-          at any time.
-        </p>
+              <p className="mt-2">
+                This page does not upload your reflection or create a Quest. The
+                download is practice, not evidence.
+              </p>
+            </details>
+            <Button
+              variant="secondary"
+              onClick={replay}
+              className="rounded-full"
+            >
+              Replay with another role
+            </Button>
+          </section>
+        )}
+        <details className="px-2 text-xs leading-6 text-[#626a80]">
+          <summary className="cursor-pointer">About this chapter</summary>
+          <p>
+            Fictional practice. No XP or ability score. Decisions and notes stay
+            in this tab; refreshing starts again. Real-world proof and
+            reflection remain in your Quest.
+          </p>
+        </details>
       </div>
     </main>
   );
 }
-
-function CitySquare({ plan, rainy }: { plan: BuildId[]; rainy: boolean }) {
-  const spots = [
-    { id: "music", x: 110, y: 85, icon: "♪" },
-    { id: "food", x: 310, y: 85, icon: "☕" },
-    { id: "art", x: 510, y: 85, icon: "✦" },
-    { id: "access", x: 110, y: 230, icon: "↔" },
-    { id: "shelter", x: 310, y: 230, icon: "⌂" },
-    { id: "signs", x: 510, y: 230, icon: "↗" },
-  ];
+function Target({
+  icon,
+  text,
+  met,
+}: {
+  icon: IconName;
+  text: string;
+  met: boolean;
+}) {
   return (
-    <figure className="mt-5 overflow-hidden rounded-2xl border border-[#ddd9ee] bg-[#ece9f6]">
-      <svg
-        viewBox="0 0 640 350"
-        role="img"
-        aria-label={`The square, ${rainy ? "under rain" : "in clear weather"}, with ${plan.length} selected builds`}
-        className="block w-full"
-      >
-        <rect width="640" height="350" fill={rainy ? "#d9e2ed" : "#eeebf6"} />
-        <path
-          d="M0 160h640M210 0v350M425 0v350"
-          stroke="#fff"
-          strokeWidth="24"
-        />
-        <path
-          d="M0 160h640M210 0v350M425 0v350"
-          stroke="#c9c2db"
-          strokeWidth="1"
-          strokeDasharray="5 8"
-        />
-        {spots.map((spot) => {
-          const active = plan.includes(spot.id as BuildId);
-          return (
-            <g key={spot.id} transform={`translate(${spot.x},${spot.y})`}>
-              <rect
-                x="-72"
-                y="-44"
-                width="144"
-                height="100"
-                rx="16"
-                fill={active ? "#5436df" : "#fff"}
-                stroke={active ? "#5436df" : "#d4cde4"}
-                strokeWidth="2"
-              />
-              <text
-                y="0"
-                textAnchor="middle"
-                fill={active ? "white" : "#aaa2bc"}
-                fontSize="32"
-              >
-                {spot.icon}
-              </text>
-              <text
-                y="33"
-                textAnchor="middle"
-                fill={active ? "white" : "#6a627a"}
-                fontSize="12"
-                fontFamily="system-ui"
-              >
-                {builds.find((item) => item.id === spot.id)?.title}
-              </text>
-              {active && <circle cx="58" cy="-30" r="7" fill="#c9a54d" />}
-            </g>
-          );
-        })}
-        <text
-          x="320"
-          y="330"
-          textAnchor="middle"
-          fill="#51496a"
-          fontSize="13"
-          fontFamily="system-ui"
-        >
-          {rainy
-            ? "NIGHT TWO · RAIN EXPECTED"
-            : "NIGHT ONE · YOUR SQUARE, YOUR CHOICES"}
-        </text>
-      </svg>
-      <figcaption className="bg-white px-4 py-3 text-xs leading-5 text-[#626a80]">
-        {plan.length
-          ? "Your selected builds appear in purple. Adjust your choices below."
-          : "The empty square is waiting for your choices."}
-      </figcaption>
-    </figure>
+    <span
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-1.5 text-[11px] font-medium ${met ? "border-[#8dc9b7] bg-[#eaf7f0] text-[#235845]" : "border-[#ded9ed] bg-white text-[#626a80]"}`}
+    >
+      <CityIcon name={icon} className="size-3.5" />
+      {text}
+      <span className="sr-only">{met ? " — met" : " — needed"}</span>
+    </span>
+  );
+}
+function Portrait({ index }: { index: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 80 80"
+      className="size-16 shrink-0 rounded-2xl"
+    >
+      <rect
+        width="80"
+        height="80"
+        rx="20"
+        fill={["#78609f", "#347b73", "#b57d53"][index]}
+      />
+      <path
+        d="M10 80c0-26 60-26 60 0"
+        fill={["#e6b97b", "#d9ae69", "#a5d8cb"][index]}
+      />
+      <ellipse
+        cx="40"
+        cy="35"
+        rx="18"
+        ry="22"
+        fill={["#b97f59", "#895634", "#a76c46"][index]}
+      />
+      <path
+        d={
+          index === 2
+            ? "M20 36C9 0 69-9 63 35L52 19 23 36"
+            : "M20 33C10 1 65-3 60 32L49 20 21 34"
+        }
+        fill="#292033"
+      />
+      <path
+        d="M32 35h2m12 0h2m-13 12q5 4 10 0"
+        stroke="#342037"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      {index === 2 && (
+        <path d="M19 21q20-24 43 0" stroke="#e7be83" strokeWidth="10" />
+      )}
+    </svg>
   );
 }

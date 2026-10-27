@@ -425,3 +425,13 @@ reflection and optional real-world experiment download. Uses existing shell and
 components. Practice never earns XP or produces a capability claim. Page state
 resets on refresh; explicit download is the only export. No database change or
 live deployment is claimed. See product/unbuilt-city-first-episode.md and ledger.
+
+## 27 October — visual city and Quest continuity candidate
+
+Replaced prose-heavy card planning with an illustrated interactive scene and
+short character dialogue. Home/Build/Journey/Quest share a Play–Act–Prove–Grow
+continuation, with owned Quest context passed through the game to its real goal.
+Practice cannot write completion, XP or evidence. Added owned-context/locked-ID,
+continuation and browser-auth return regression checks. Art is an optimised
+static project asset. Validation and exact-preview visual results are recorded
+in the ledger; no production deployment is implied.

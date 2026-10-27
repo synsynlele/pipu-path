@@ -54,3 +54,36 @@ Pilot owner: a facilitator other than the founder. Observe a small consented gro
 without coaching: can they start, explain choices, retry voluntarily and choose a
 safe real-world experiment? Record confusion, voluntary second play, return to an
 attempt and actual experiment feedback. Do not infer psychometric validity.
+
+## 27 October — visual play and connected journey revision
+
+User requested graphic-first play and integration with the existing Journey.
+The chapter now uses an optimised 284 KB WebP dusk environment, six illustrated
+interactive sites, coherent SVG resource/action icons, short character speech,
+resource meters, visible targets, rain and crowd feedback. Longer rules and
+explanations are behind labelled details. Keyboard labels retain every site's
+cost and effect; reduced-motion styles disable rain/build/crowd animation.
+
+One shared Play → Act → Prove → Grow card is composed into Home (when a Journey
+exists), Build, active Journey and Quest focus. It uses the actual current Quest.
+The protected game route accepts an owned, unlocked Quest ID; malformed, foreign
+and locked IDs fail closed. The final game step displays that Quest's real goal
+and returns to its existing action/proof/reflection workflow. Existing proof is
+prioritised over replay. No simulated result completes a Quest or earns XP.
+An exact `/build/play` auth-return entry preserves the requested game destination
+without opening arbitrary Build URLs.
+
+This is the first connected chapter, not an automatically generated game for
+every Quest. Common planning/listening practice is explicitly labelled. No backend
+schema, real learner data, XP, evidence or capability writes were introduced.
+Practice state remains tab-local and resets on refresh; private real-world
+progress continues through the durable Quest engine. Cross-device game saves
+and a catalogue of subject/skill-specific chapters remain future work.
+
+Art provenance: built-in image generation, stylized-concept environment prompt:
+"Premium isometric contemporary Lagos-inspired neighbourhood square at dusk;
+indigo/gold/terracotta; large clear plaza for live build sites; textured grounded
+architecture, trees, cafe and platform; mature game environment, no UI or text."
+Source was inspected and converted to public/city/neighbourhood-dusk.webp.
+All build sites, icons, characters, interaction and feedback are code-rendered;
+background illustration is not presented as a functioning game screenshot.
