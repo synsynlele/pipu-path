@@ -32,6 +32,13 @@ describe("cinematic garden chapter", () => {
     makeWorkingPlan();
     fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
     expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Next situation/ }));
+    choose("Plant seedlings");
+    choose("Clear accessible paths");
+    choose("Invite neighbours");
+    choose("Build seating");
+    fireEvent.click(screen.getByRole("button", { name: /Test my plan/ }));
+    expect(screen.getByText("The garden comes alive.")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /Find a real-world Quest/ }),
     ).toHaveAttribute("href", "/quests");
