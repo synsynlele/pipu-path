@@ -19,6 +19,41 @@ callback shown by the Supabase Google provider configuration. It is not each
 Vercel application callback. Configure the approved staging test account while
 the consent screen remains in testing mode.
 
+## PipuPath game preview: returning to the same domain
+
+The cinematic Adventure Hub is deployed on the stable Git preview alias:
+
+`https://pipu-path-git-feat-unbuilt-cit-3cc555-copyartint-2860s-projects.vercel.app`
+
+The callback for this branch is:
+
+`https://pipu-path-git-feat-unbuilt-cit-3cc555-copyartint-2860s-projects.vercel.app/auth/callback?next=%2Fbuild%2Fadventures`
+
+If signing in from this preview lands on `www.pipupath.name.ng` instead,
+check **Supabase Dashboard → PipuPath project → Authentication → URL Configuration**
+and add the **additional Redirect URL**:
+
+`https://pipu-path-git-feat-unbuilt-cit-3cc555-copyartint-2860s-projects.vercel.app/auth/callback**`
+
+The final `**` accepts safe in-app `next` query strings. Keep the existing
+production **Site URL** unchanged. Never replace it with a preview URL.
+
+The Google Cloud OAuth client itself should continue using the existing
+`https://<project-ref>.supabase.co/auth/v1/callback` authorised redirect URI;
+the Vercel preview belongs in **Supabase Redirect URLs**, not in Google's
+authorised redirect list.
+
+After saving, open the **stable branch alias** above in a fresh browser session,
+visit `/build/adventures`, choose Google sign-in, and confirm that the browser
+returns to that same preview host, not production. Also verify that a user who
+has not finished onboarding is sent to the required onboarding step. The user
+should not have to register a new account.
+
+When testing an immutable per-commit Vercel deployment URL instead of the branch
+alias, the exact callback host differs; add it separately or use a narrow
+project-owned Vercel preview wildcard. Do not use an unrestricted
+`https://**.vercel.app/**` wildcard.
+
 ## Required verification
 
 1. Open the exact Stage 10 Preview with no PipuPath session.
