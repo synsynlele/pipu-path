@@ -1,7 +1,8 @@
 .garden-land {
   background:
     linear-gradient(180deg, #14332685, #0d2f2575),
-    url("https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?fit=crop&w=640&h=640&q=60&fm=webp") center / cover,
+    url("https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?fit=crop&w=640&h=640&q=60&fm=webp")
+      center / cover,
     #426c4b;
   box-shadow: inset 0 0 30px #091e19af;
 }

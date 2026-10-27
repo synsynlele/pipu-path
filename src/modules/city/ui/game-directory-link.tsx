@@ -17,7 +17,7 @@ export function GameDirectoryLink({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`inline-flex min-h-11 shrink-0 snap-start items-center whitespace-nowrap rounded-xl border px-3 text-xs text-white ${active ? "border-[#f1ce8e] bg-[#29434d] font-bold" : "border-white/30 bg-transparent"}`}
+      className={`inline-flex min-h-11 shrink-0 snap-start items-center rounded-xl border px-3 text-xs whitespace-nowrap text-white ${active ? "border-[#f1ce8e] bg-[#29434d] font-bold" : "border-white/30 bg-transparent"}`}
     >
       {active && (
         <span aria-hidden="true" className="mr-1.5 text-[#f1ce8e]">

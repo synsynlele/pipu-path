@@ -12,17 +12,35 @@ afterEach(() => {
 
 function Example() {
   const [plot, setPlot] = useState<GardenPlotState>(emptyGardenPlot);
-  return <GardenPlot choices={gardenChapter.choices} plot={plot} onChange={setPlot} />;
+  return (
+    <GardenPlot
+      choices={gardenChapter.choices}
+      plot={plot}
+      onChange={setPlot}
+    />
+  );
 }
 
 it("supports keyboard and mobile tap building without horizontal card dependence", () => {
   render(<Example />);
-  fireEvent.click(screen.getByRole("button", { name: /Choose Plant seedlings/ }));
-  fireEvent.click(screen.getByRole("button", { name: "Garden square 1: empty" }));
-  expect(screen.getByRole("button", { name: "Garden square 1: Seedlings" })).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Garden square 1: Seedlings" }));
-  expect(screen.getByRole("button", { name: "Garden square 1: empty" })).toBeInTheDocument();
-  expect(screen.getByRole("group", { name: /Four by four garden/ })).toHaveClass("grid-cols-4");
+  fireEvent.click(
+    screen.getByRole("button", { name: /Choose Plant seedlings/ }),
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Garden square 1: empty" }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Garden square 1: Seedlings" }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Garden square 1: Seedlings" }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Garden square 1: empty" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("group", { name: /Four by four garden/ }),
+  ).toHaveClass("grid-cols-4");
 });
 
 it("places a material by pointer drag and leaves out-of-bounds drops untouched", () => {
@@ -37,13 +55,22 @@ it("places a material by pointer drag and leaves out-of-bounds drops untouched",
   const tool = screen.getByRole("button", { name: /Choose Set up watering/ });
   tool.setPointerCapture = vi.fn();
   const drag = (x: number, y: number) => {
-    fireEvent.pointerDown(tool, { pointerId: 5, pointerType: "touch", clientX: 400, clientY: 400 });
+    fireEvent.pointerDown(tool, {
+      pointerId: 5,
+      pointerType: "touch",
+      clientX: 400,
+      clientY: 400,
+    });
     fireEvent.pointerMove(tool, { pointerId: 5, clientX: x, clientY: y });
     fireEvent.pointerUp(tool, { pointerId: 5, clientX: x, clientY: y });
   };
   drag(290, 50); // rightmost tile, top row
-  expect(screen.getByRole("button", { name: "Garden square 4: Water" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Garden square 4: Water" }),
+  ).toBeInTheDocument();
   drag(500, 500); // outside the board
-  expect(screen.getByRole("button", { name: "Garden square 4: Water" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Garden square 4: Water" }),
+  ).toBeInTheDocument();
   expect(screen.getByText(/Drop inside the garden/)).toBeInTheDocument();
 });
