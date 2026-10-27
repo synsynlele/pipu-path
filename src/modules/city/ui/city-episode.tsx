@@ -162,10 +162,10 @@ export function CityEpisode({
       <header className="bg-[#201b59] px-4 py-4 text-white sm:px-6">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
           <Link
-            href={context?.returnHref ?? "/build"}
+            href={context?.returnHref ?? "/build/adventures"}
             className="inline-flex min-h-11 items-center text-sm font-semibold text-indigo-100"
           >
-            ← {context ? "Back to my Quest" : "Back to Build"}
+            ← {context ? "Back to my Quest" : "Back to adventures"}
           </Link>
           <p className="text-xs font-semibold text-indigo-100">
             The Unbuilt City · 01
