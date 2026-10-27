@@ -17,7 +17,8 @@ export default async function CityPage({
   const params = await searchParams;
   const state = await requireAuthenticatedHomeState();
   const selectedId =
-    params.quest ?? (state.quest?.status === "locked" ? undefined : state.quest?.id);
+    params.quest ??
+    (state.quest?.status === "locked" ? undefined : state.quest?.id);
   let context: CityContext | null = null;
   if (selectedId) {
     if (
