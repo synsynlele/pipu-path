@@ -75,3 +75,59 @@ for (const item of CITY_CASES) {
 console.log(
   "PASS: 36 consecutive choices construct and animate across the 3D city; nearby culling and aerial restoration preserve all effects.",
 );
+
+// Mobile allocates fewer visual actors than the domain's resident count.
+// Exercise all 243 opening paths: the former mixed path missed thriving areas.
+for (const lowPower of [true, false]) {
+  const populationScene = createLivingCityScene({
+    T,
+    scene: new T.Scene(),
+    box,
+    cyl,
+    mat,
+    lowPower,
+  });
+  for (let path = 0; path < 3 ** 5; path++) {
+    let choices = {};
+    let remaining = path;
+    for (const item of CITY_CASES.slice(0, 5)) {
+      choices = saveDecision(choices, item.id, item.options[remaining % 3].id);
+      remaining = Math.floor(remaining / 3);
+      populationScene.sync(choices);
+      populationScene.setFocus(null, true);
+      for (const reducedMotion of [false, true])
+        populationScene.animate(1000 + path * 17, reducedMotion);
+    }
+  }
+  for (let option = 0; option < 3; option++) {
+    let choices = {};
+    for (const item of CITY_CASES) {
+      choices = saveDecision(choices, item.id, item.options[option].id);
+      populationScene.sync(choices);
+      populationScene.animate(3000, false);
+    }
+    // Revision must safely transition thriving neighbourhoods back and forth.
+    for (const item of CITY_CASES) {
+      choices = saveDecision(
+        choices,
+        item.id,
+        item.options[(option + 1) % 3].id,
+      );
+      const derived = populationScene.sync(choices);
+      populationScene.setFocus(null, true);
+      populationScene.animate(4000, false);
+      for (const district of derived.districts) {
+        const actors = populationScene.pedestrians.get(district.id);
+        assert.equal(
+          actors.filter((actor) => actor.visible).length,
+          Math.min(actors.length, district.residents),
+        );
+        for (const actor of actors)
+          assert(actor.position.toArray().every(Number.isFinite));
+      }
+    }
+  }
+}
+console.log(
+  "PASS: 243 opening paths per graphics mode, all-option 36-decision journeys, revisions and reduced motion preserve bounded resident animation.",
+);
