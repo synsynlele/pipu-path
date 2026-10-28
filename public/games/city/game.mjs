@@ -1474,8 +1474,11 @@ function renderOpportunityPanel() {
   enterpriseInput.value = economy.enterprise.id ?? "";
   enterpriseInput.disabled = completed;
   const owner = OWNED_ENTERPRISES.find((b) => b.id === economy.enterprise.id);
+  const improvement = ENTERPRISE_ACTIONS.find(
+    (action) => action.id === economy.enterprise.action,
+  );
   $("opportunities-business-note").textContent = owner
-    ? owner.detail + " Your chosen improvement affects the next operating day."
+    ? owner.detail + " " + (improvement?.detail ?? "")
     : "Choose one business to establish. You can change your plan before the next day.";
   const actions = $("opportunities-actions");
   actions.replaceChildren();
