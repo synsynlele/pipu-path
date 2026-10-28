@@ -11,8 +11,9 @@ bring visual identity to each neighbourhood. Only completed
 construction makes the gathering spaces glow and attracts people.
 
 The full-city aerial mode shows the same structures and residents.
-When two districts depend on one another *and both have buildings*,
+When two districts depend on one another _and both have buildings_,
 small stylised delivery vehicles may move between road intersections:
+
 - transport to food, water to healthcare, manufacturing to repair;
 - business to housing, creative work to business and
   education to manufacturing.

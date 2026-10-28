@@ -37,7 +37,6 @@ physical student Android/tablet scene performance, movement,
 readability and long-session stress testing are required before
 production promotion. Production remains unchanged.
 
-
 ## 28 October 2026 — Aerial view of the player's actual built city
 
 Branch `feat/unbuilt-city-player-city-view` adds a compact, player-facing

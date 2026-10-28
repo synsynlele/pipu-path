@@ -777,8 +777,13 @@ const caseScenes = createCaseSceneEffects({ T, scene, box, cyl, mat });
 // Small-school phones and the software canvas get a reduced ambient budget.
 // City decisions themselves remain identical across devices.
 const livingScene = createLivingCityScene({
-  T, scene, box, cyl, mat,
-  lowPower: innerWidth <= 650 ||
+  T,
+  scene,
+  box,
+  cyl,
+  mat,
+  lowPower:
+    innerWidth <= 650 ||
     (window.navigator.hardwareConcurrency ?? 8) <= 4 ||
     renderer instanceof SoftwareRenderer,
 });
@@ -877,7 +882,9 @@ function updateBuiltCityView() {
     summary.active +
     "/" +
     summary.total +
-    " districts built · " + living.deliveries.length + " moving services";
+    " districts built · " +
+    living.deliveries.length +
+    " moving services";
   const select = $("city-view-district");
   select.replaceChildren();
   const first = document.createElement("option");
