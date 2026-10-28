@@ -1,5 +1,9 @@
 # Implementation status
 
+## 28 October 2026 — richer city visuals and on-demand controls
+
+On `feat/unbuilt-city-living-visuals` the city now uses detailed masonry houses, pitched roofs, streetside furniture, market awnings and more human-like characters. The guide and construction dock are dismissible and collapse as the player acts; all background controls hide during the test-day animation. The new UI smoke assertions run with the existing power-district checks. Preview, browser interactions, accessibility and physical-device QA must be verified separately; not production.
+
 ## 28 October 2026 — Unbuilt City guided expansion candidate
 
 An isolated feature branch, `feat/unbuilt-city-guided-expanded`, extends

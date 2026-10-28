@@ -23,6 +23,8 @@ const fresh = () => ({
 let state = fresh(),
   freeExplore = false,
   mapMode = false,
+  guideExpanded = true,
+  dockExpanded = false,
   simulating = false,
   simPeriod = -1,
   simRows = [],
@@ -68,7 +70,7 @@ try {
   $("webgl-note").textContent =
     "Software 3D mode is active on this device. All mission interactions remain available.";
 }
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.4));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = T.PCFSoftShadowMap;
 renderer.setClearColor(0xe9e2d2);
@@ -165,16 +167,48 @@ box(200, 0.3, 200, 0xe5ddc9, 0, -0.6, 0);
 const island = box(52, 0.45, 44, 0xc2bf9e, 0, -0.25, 0);
 box(52.2, 0.12, 44.2, 0xddd7bd, 0, 0, 0);
 // Low-profile roads and future lots are scenery, not invisible walls.
-box(3.8, 0.04, 41, 0xc6b596, 6, 0.1, 0);
-box(49, 0.04, 3.2, 0xc6b596, 0, 0.1, 6.7);
-box(3.2, 0.04, 32, 0xc6b596, -10, 0.1, 1);
-box(45, 0.04, 3, 0xc6b596, 0, 0.1, -12);
+box(3.8, 0.04, 41, 0x818586, 6, 0.1, 0);
+box(49, 0.04, 3.2, 0x818586, 0, 0.1, 6.7);
+box(3.2, 0.04, 32, 0x818586, -10, 0.1, 1);
+box(45, 0.04, 3, 0x818586, 0, 0.1, -12);
+// Pavement edges and zebra crossings make the streets legible from above.
+for (const x of [3.95, 8.05, -12.05, -7.95])
+  box(0.14, 0.035, x > 0 ? 40 : 31, 0xb9b4a4, x, 0.14, 0);
+for (const z of [4.94, 8.46, -13.65, -10.35])
+  box(z > 0 ? 48 : 44, 0.035, 0.14, 0xb9b4a4, 0, 0.14, z);
+for (const x of [-0.8, -0.15, 0.5, 1.15, 2]) {
+  const stripe = box(0.33, 0.018, 2.35, 0xeee9d9, x, 0.156, 6.7);
+  stripe.userData.ignoreNavigation = true;
+}
+for (const z of [-3, -2.3, -1.6, -0.9, -0.2]) {
+  const stripe = box(2.4, 0.018, 0.32, 0xeee9d9, 6, 0.156, z);
+  stripe.userData.ignoreNavigation = true;
+}
 for (let z = -19; z < 20; z += 2.1)
   box(0.12, 0.015, 0.95, 0xe7d9b7, 6, 0.13, z);
 for (let x = -23; x < 24; x += 2.1)
   box(0.95, 0.015, 0.12, 0xe7d9b7, x, 0.13, 6.7);
 box(8, 0.03, 8, 0x91ac7c, -8, 0.11, -11);
 box(7, 0.03, 6, 0xa5bd8b, 15, 0.11, 15);
+// Cutaway workshop: open south and east walls preserve sightlines.
+// A raised concrete apron and timber awning add depth without hiding the work.
+box(10.1, 0.09, 0.75, 0x9f9480, -2, 0.21, 2.68);
+for (const x of [-6.2, -3.2, -0.2, 2]) {
+  const beam = box(0.1, 0.14, 1.7, 0x75553e, x, 3.27, 2.28);
+  beam.userData.ignoreNavigation = true;
+}
+for (let i = 0; i < 7; i++) {
+  const sheet = box(
+    9.0,
+    0.055,
+    0.12,
+    i % 2 ? 0x65736d : 0x75857a,
+    -2,
+    3.37,
+    1.55 + i * 0.21,
+  );
+  sheet.userData.ignoreNavigation = true;
+}
 // Cutaway workshop: open south and east walls preserve sightlines.
 box(9, 0.24, 7.2, 0xc7baa1, -2, 0.15, -1);
 box(9, 0.15, 0.15, 0xa89978, -2, 0.32, 2.6);
@@ -306,6 +340,44 @@ for (const p of [
   g.add(bulb);
   lamps.push(bulb);
 }
+// The city keeps repeated scenery lightweight and outside collision sampling.
+function visual(mesh) {
+  mesh.userData.ignoreNavigation = true;
+  return mesh;
+}
+function streetLight(x, z) {
+  visual(cyl(0.055, 3.55, 0x4b5b64, x, 1.9, z));
+  visual(box(0.75, 0.09, 0.14, 0x4b5b64, x + 0.33, 3.55, z));
+  const glass = new T.Mesh(
+    new T.SphereGeometry(0.14, 10, 8),
+    new T.MeshStandardMaterial({
+      color: 0xffebba,
+      emissive: 0xf5c777,
+      emissiveIntensity: 0.65,
+    }),
+  );
+  glass.position.set(x + 0.62, 3.43, z);
+  visual(glass);
+  scene.add(glass);
+}
+function parkSeat(x, z) {
+  for (const dz of [-0.36, 0.36])
+    visual(box(1.7, 0.12, 0.18, 0x8d6348, x, 0.6, z + dz));
+  visual(box(1.7, 0.68, 0.12, 0x8d6348, x, 0.99, z - 0.39));
+  for (const dx of [-0.67, 0.67])
+    visual(box(0.1, 0.61, 0.1, 0x435561, x + dx, 0.35, z));
+}
+for (const [x, z] of [
+  [-12, -7],
+  [-12, 10],
+  [4, -17],
+  [8, 16],
+  [17, 4],
+  [-2, 4],
+])
+  streetLight(x, z);
+parkSeat(-4, 12);
+parkSeat(12, 14);
 // Everyday life around the cooperative.
 function tree(x, z, s = 1) {
   const g = new T.Group();
@@ -343,28 +415,76 @@ for (let i = 0; i < 17; i++) {
   if (x > 4 && x < 8) continue;
   box(0.35, 0.18, 0.3, 0xa2a67b, x, 0.2, z);
 }
-function building(x, z, w, h, d, c) {
-  box(w, h, d, c, x, h / 2, z);
-  box(w + 0.3, 0.2, d + 0.3, 0x969474, x, h + 0.1, z);
-  for (let i = 0; i < 2; i++) {
-    box(
-      0.45,
-      0.65,
-      0.05,
-      0x66796e,
-      x - w * 0.25 + i * w * 0.5,
-      h * 0.6,
-      z + d / 2 + 0.035,
-    );
+// Procedural masonry keeps eight distinctive houses textured without an asset download.
+const masonryCache = new Map();
+function masonry(c) {
+  if (masonryCache.has(c)) return masonryCache.get(c);
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 128;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#f4f1e9";
+  ctx.fillRect(0, 0, 128, 128);
+  for (let row = 0; row < 8; row++) {
+    for (let col = -1; col < 5; col++) {
+      const offset = row % 2 ? 14 : 0;
+      const x = col * 32 + offset;
+      const shade = 223 + ((row * 17 + col * 11 + 100) % 25);
+      ctx.fillStyle =
+        "rgb(" + shade + "," + (shade - 4) + "," + (shade - 12) + ")";
+      ctx.fillRect(x + 1, row * 16 + 1, 30, 14);
+    }
   }
-  textPlane(
-    "LOCAL WORKS",
-    w * 0.7,
-    0.28,
-    x,
-    h * 0.85,
-    z + d / 2 + 0.04,
-    "#ad956e",
+  const texture = new T.CanvasTexture(canvas);
+  texture.wrapS = texture.wrapT = T.RepeatWrapping;
+  texture.repeat.set(2, 1.6);
+  texture.colorSpace = T.SRGBColorSpace;
+  const material = new T.MeshStandardMaterial({
+    color: c,
+    map: texture,
+    roughness: 0.94,
+  });
+  masonryCache.set(c, material);
+  return material;
+}
+function building(x, z, w, h, d, c) {
+  box(w, h, d, masonry(c), x, h / 2, z);
+  const trim = 0xe0d3b8;
+  const roofColor = Math.round(x + z) & 1 ? 0x746d5c : 0x62746d;
+  const rise = Math.min(1.15, w * 0.24);
+  const slope = Math.atan2(rise, w / 2 + 0.3);
+  const roofWidth = Math.hypot(w / 2 + 0.3, rise) + 0.18;
+  for (const side of [-1, 1]) {
+    const roof = visual(
+      box(
+        roofWidth,
+        0.19,
+        d + 0.58,
+        roofColor,
+        x + side * (w / 4 + 0.1),
+        h + rise / 2,
+        z,
+      ),
+    );
+    roof.rotation.z = -side * slope;
+  }
+  // Recessed front door, inset windows, ledges and contrasting trim.
+  visual(box(1.02, 1.68, 0.11, 0x705d49, x, 0.89, z + d / 2 + 0.075));
+  visual(box(0.7, 0.12, 0.12, 0xb6a17a, x, 1.65, z + d / 2 + 0.15));
+  visual(cyl(0.045, 0.035, 0xe2c579, x + 0.3, 0.82, z + d / 2 + 0.16));
+  visual(box(1.55, 0.13, 0.42, 0x9f937d, x, 0.095, z + d / 2 + 0.29));
+  for (const side of [-1, 1]) {
+    const px = x + side * w * 0.31;
+    const pz = z + d / 2 + 0.075;
+    visual(box(0.88, 0.85, 0.065, trim, px, h * 0.58, pz));
+    visual(box(0.7, 0.69, 0.075, 0x446d79, px, h * 0.58, pz + 0.04));
+    visual(box(0.055, 0.72, 0.085, 0xd9d3bb, px, h * 0.58, pz + 0.088));
+    visual(box(0.72, 0.055, 0.085, 0xd9d3bb, px, h * 0.58, pz + 0.09));
+    visual(box(0.93, 0.09, 0.25, 0xb2a18a, px, h * 0.58 - 0.48, pz + 0.12));
+  }
+  // Roof ridge and rainwater pipe.
+  visual(box(0.13, 0.11, d + 0.55, 0xada58c, x, h + rise + 0.03, z));
+  visual(
+    cyl(0.035, h - 0.1, 0x87918a, x + w / 2 - 0.08, h / 2, z + d / 2 + 0.08),
   );
 }
 building(9, -10, 5, 3, 3, 0xcbad80);
@@ -402,25 +522,42 @@ function person(x, z, shirt, skin = 0x815239) {
   g.userData.character = true;
   g.position.set(x, 0.3, z);
   scene.add(g);
-  cyl(0.22, 0.65, shirt, 0, 1.02, 0, g, 0.27);
+  // Layered clothing, facial features and varied silhouettes remain low-poly
+  // enough for constrained mobile devices.
+  cyl(0.23, 0.7, shirt, 0, 1.03, 0, g, 0.3);
+  visual(box(0.47, 0.1, 0.32, 0xe3cda9, 0, 1.37, 0.02, g));
   const head = new T.Mesh(new T.SphereGeometry(0.21, 12, 10), mat(skin));
   head.position.set(0, 1.6, 0);
   head.castShadow = true;
   g.add(head);
-  cyl(0.22, 0.1, 0x393d31, 0, 1.77, 0, g);
-  const legs = [];
-  for (const k of [-1, 1]) {
-    legs.push(box(0.14, 0.62, 0.16, 0x45544d, k * 0.115, 0.37, 0, g));
-    box(0.17, 0.1, 0.27, 0x4b4939, k * 0.115, 0.08, 0.06, g);
-    const arm = cyl(0.07, 0.62, shirt, k * 0.31, 1.02, 0, g);
-    arm.rotation.z = k * 0.14;
+  const hair = new T.Mesh(new T.SphereGeometry(0.215, 12, 9), mat(0x292d2b));
+  hair.scale.set(1.03, 0.42, 1.01);
+  hair.position.set(0, 1.76, -0.018);
+  visual(hair);
+  g.add(hair);
+  for (const side of [-1, 1]) {
+    const eye = new T.Mesh(new T.SphereGeometry(0.023, 8, 6), mat(0x222523));
+    eye.position.set(side * 0.088, 1.62, 0.192);
+    visual(eye);
+    g.add(eye);
+    visual(box(0.05, 0.015, 0.012, 0x5d3427, side * 0.035, 1.49, 0.209, g));
   }
-  return { g, legs };
+  const legs = [];
+  const arms = [];
+  for (const k of [-1, 1]) {
+    legs.push(box(0.17, 0.62, 0.2, 0x3d4d59, k * 0.115, 0.37, 0, g));
+    visual(box(0.19, 0.12, 0.32, 0x333a3e, k * 0.115, 0.075, 0.07, g));
+    const arm = cyl(0.085, 0.61, shirt, k * 0.3, 1.0, 0, g);
+    arm.rotation.z = k * 0.15;
+    arms.push(arm);
+    visual(cyl(0.068, 0.14, skin, k * 0.34, 0.63, 0, g));
+  }
+  return { g, legs, arms };
 }
 const ama = person(-3.3, -2.7, 0xcb884d),
   bisi = person(-14.6, 11, 0x74978b),
   tunde = person(1.4, -0.8, 0x9b9d63);
-const player = person(4, 4, 0xe4d6a6, 0x9b6343);
+const player = person(4, 4, 0x547aa2, 0x9b6343);
 player.g.scale.setScalar(0.9);
 box(0.33, 0.42, 0.12, 0xb36742, 0, 1.1, -0.21, player.g);
 const walkTarget = new T.Vector3(4, 0.3, 4);
@@ -470,6 +607,21 @@ box(3.5, 0.12, 5.8, 0xcbbd9b, 8, 0.25, -1.1);
 for (const x of [6.6, 9.5])
   for (const z of [-2.5, 0.9]) box(0.1, 3, 0.1, 0x7d725c, x, 1.7, z);
 box(3.5, 0.16, 3.9, 0x243b78, 8, 3.3, -0.8);
+for (let i = 0; i < 7; i++)
+  visual(
+    box(
+      0.12,
+      0.018,
+      3.8,
+      i % 2 ? 0xe5c96f : 0xf0e1bf,
+      6.4 + i * 0.47,
+      3.395,
+      -0.8,
+    ),
+  );
+visual(box(2.75, 0.13, 0.75, 0xa88464, 8, 0.98, 0.65));
+for (const x of [7.0, 9.0])
+  visual(box(0.1, 0.86, 0.12, 0x705c4c, x, 0.53, 0.65));
 textPlane("HARVEST EXCHANGE", 2.8, 0.45, 8, 2.85, 1.18, "#243b78", "#eed68c");
 const crates = [];
 for (let i = 0; i < 10; i++) {
@@ -659,6 +811,11 @@ function goTo(point, arrival = null, label = "your destination") {
   marker.position.set(planned.destination.x, 0.19, planned.destination.z);
   $("travel").hidden = false;
   $("travel-text").textContent = "Walking to " + label;
+  guideExpanded = false;
+  dockExpanded = false;
+  $("build-dock").hidden = true;
+  $("build-toggle").textContent = "Build";
+  updateGuideVisibility();
   drawRoute();
   if (planned.adjusted && !arrival)
     toast("That spot is occupied. Walking to the nearest clear space.");
@@ -751,6 +908,17 @@ const firstJourney = [
     copy: "You have met the people. Visit the city desk and test how your decisions work together.",
   },
 ];
+function updateGuideVisibility() {
+  const entered = $("intro").hidden;
+  const visible = entered && guideExpanded && !simulating;
+  $("mission").hidden = !visible;
+  $("guide-toggle").hidden = !entered || simulating;
+  $("guide-toggle").textContent = visible ? "Hide guide" : "Next step";
+  $("guide-toggle").setAttribute("aria-expanded", String(visible));
+  document.body.classList.toggle("guide-open", visible);
+  document.body.classList.toggle("city-testing", simulating);
+  $("test-status").hidden = !simulating;
+}
 function render() {
   const guided =
     state.day === 1 && !freeExplore
@@ -794,7 +962,10 @@ function render() {
     : "POWER ↔ FOOD ↔ LEARNING";
   $("credits").textContent = q.available;
   $("resource").hidden = !$("intro").hidden;
-  $("build-dock").hidden = !$("intro").hidden || Boolean(guided);
+  $("build-dock").hidden =
+    !$("intro").hidden || Boolean(guided) || !dockExpanded || simulating;
+  $("build-toggle").hidden = Boolean(guided) || simulating;
+  $("build-toggle").textContent = dockExpanded ? "Close Build" : "Build";
   $("build-dock").classList.add("city-dock");
   $("mission").classList.add("city-board");
   document.body.classList.toggle("city-guided", Boolean(guided));
@@ -853,10 +1024,11 @@ function render() {
       .querySelectorAll("[data-district]")
       .forEach((b) => (b.onclick = () => goToStation(b.dataset.district)));
   }
-  $("mobile-move").hidden = innerWidth > 650 || Boolean(guided);
+  $("mobile-move").hidden = innerWidth > 650 || !freeExplore;
   $("weather-title").textContent =
     state.day === 1 ? "Collection at 14:00" : "Dust · late collection";
   $("weather-icon").textContent = state.day === 1 ? "☀" : "☁";
+  updateGuideVisibility();
   updateWorld();
 }
 function change(key, value) {
@@ -898,7 +1070,7 @@ function inspect(id) {
     showDetail(
       '<div class="eyebrow">POWER DISTRICT · THE SAME CITY</div><h2>Energy has a timetable.</h2><blockquote>Ama: “Repairs can move to midday. Bisi’s class cannot. Cooling at the market needs one more midday unit.”</blockquote><div class="evidence"><strong>GENERATION / MORNING · MIDDAY · AFTERNOON · EVENING</strong>' +
         (state.day === 1 ? "3 · 5 · 2 · 0" : "2 · 3 · 2 · 0") +
-        ' units. Extra solar adds 2 at midday.<br>Essential demand: 2 each period. Repairs add 2 in the evening; shifting moves them to midday.<br>Storage holds 4 and moves at most 2 per period.<br>Cooling adds 1 midday unit. Care costs 1 credit each operating day.</div><p>Use the shared construction bar below to change the power system. Other districts keep their places, people and equipment.</p><button class="primary" id="noted">Return to the city →</button>',
+        ' units. Extra solar adds 2 at midday.<br>Essential demand: 2 each period. Repairs add 2 in the evening; shifting moves them to midday.<br>Storage holds 4 and moves at most 2 per period.<br>Cooling adds 1 midday unit. Care costs 1 credit each operating day.</div><p>Open Build from the top controls to change the power system. Other districts keep their places, people and equipment.</p><button class="primary" id="noted">Return to the city →</button>',
     );
     $("noted").onclick = closeDetail;
   }
@@ -1103,6 +1275,8 @@ function runDay() {
   simRows = lastResult.power;
   simPeriod = 0;
   simulating = true;
+  guideExpanded = false;
+  dockExpanded = false;
   runStarted = performance.now();
   playTone(600);
   cancelWalk();
@@ -1119,6 +1293,8 @@ function runDay() {
     const r = simRows[simPeriod];
     $("weather-title").textContent =
       r.period + " · power " + r.served + "/" + r.need;
+    $("test-status").textContent =
+      "Testing " + r.period + " · electricity " + r.served + "/" + r.need;
     document.querySelector(".weather-time").textContent = [
       "08:00",
       "12:00",
@@ -1222,11 +1398,32 @@ $("test").onclick = runDay;
 $("close-detail").onclick = closeDetail;
 $("explore-free").onclick = () => {
   freeExplore = !freeExplore;
+  guideExpanded = !freeExplore;
+  dockExpanded = false;
   closeDetail();
+  render();
+};
+$("guide-toggle").onclick = () => {
+  if (simulating) return;
+  guideExpanded = !guideExpanded;
+  if (guideExpanded) dockExpanded = false;
+  render();
+};
+$("build-toggle").onclick = () => {
+  if (simulating) return;
+  dockExpanded = !dockExpanded;
+  if (dockExpanded) guideExpanded = false;
   render();
 };
 $("city-map").onclick = () => {
   mapMode = !mapMode;
+  if (mapMode) {
+    guideExpanded = false;
+    dockExpanded = false;
+    $("build-dock").hidden = true;
+    $("build-toggle").textContent = "Build";
+  }
+  updateGuideVisibility();
   distance = mapMode ? 68 : 27;
   $("city-map").textContent = mapMode ? "Follow me" : "City map";
 };
@@ -1234,6 +1431,8 @@ $("start").onclick = () => {
   $("intro").hidden = true;
   $("city-tools").hidden = false;
   mapMode = false;
+  guideExpanded = true;
+  dockExpanded = false;
   distance = 27;
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
@@ -1264,6 +1463,8 @@ $("reset").onclick = () => {
   state = fresh();
   freeExplore = false;
   mapMode = false;
+  guideExpanded = true;
+  dockExpanded = false;
   distance = 27;
   $("city-map").textContent = "City map";
   lastResult = null;
@@ -1434,9 +1635,14 @@ function animate(now) {
       player.legs.forEach(
         (l, i) => (l.rotation.x = Math.sin(time * 10 + i * Math.PI) * 0.4),
       );
+      player.arms.forEach(
+        (a, i) =>
+          (a.rotation.x = Math.sin(time * 10 + (i + 1) * Math.PI) * 0.28),
+      );
     } else cancelWalk();
   } else {
     player.legs.forEach((l) => (l.rotation.x *= 0.85));
+    player.arms.forEach((a) => (a.rotation.x *= 0.85));
     if (route.length) {
       route.shift();
       if (!route.length) {
@@ -1501,8 +1707,7 @@ function resize() {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   if ($("intro").hidden)
-    $("mobile-move").hidden =
-      innerWidth > 650 || document.body.classList.contains("city-guided");
+    $("mobile-move").hidden = innerWidth > 650 || !freeExplore;
 }
 window.addEventListener("resize", resize);
 resize();

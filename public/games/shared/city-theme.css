@@ -1449,3 +1449,97 @@ body.city-guided #resource {
     font-size: 9px;
   }
 }
+
+/* Living city v2: immersive view first; guidance and construction on demand. */
+#city-tools {
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: calc(100% - 24px);
+}
+#city-tools button {
+  min-height: 39px;
+  touch-action: manipulation;
+}
+#city-tools button#guide-toggle {
+  background: #e5c96ff5;
+  color: #16294c;
+  border-color: #c6a94b;
+}
+#city-tools button#build-toggle {
+  background: #253c75f5;
+  color: #fff;
+  border-color: #253c75;
+}
+#test-status {
+  position: absolute;
+  z-index: 16;
+  top: max(21px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  border-radius: 30px;
+  border: 1px solid #d0dded;
+  background: #fbfcfff2;
+  color: #1d3569;
+  padding: 11px 18px;
+  font-weight: 800;
+  font-size: 12px;
+  box-shadow: 0 9px 28px #10234720;
+  white-space: nowrap;
+}
+body.city-testing #mission,
+body.city-testing #build-dock,
+body.city-testing #city-tools,
+body.city-testing #resource,
+body.city-testing #scene-labels,
+body.city-testing #controls,
+body.city-testing #mobile-move,
+body.city-testing .corner-note,
+body.city-testing #weather,
+body.city-testing header {
+  display: none !important;
+}
+body.city-testing #test-status:not([hidden]) {
+  display: block;
+}
+body.city-playing:not(.guide-open) #mission {
+  display: none;
+}
+body.city-playing #guide-toggle:focus-visible,
+body.city-playing #build-toggle:focus-visible {
+  outline: 3px solid #142a52;
+  outline-offset: 2px;
+}
+@media (max-width: 650px) {
+  #city-tools {
+    top: calc(75px + env(safe-area-inset-top) / 3);
+    right: 9px;
+    left: 9px;
+    gap: 5px;
+  }
+  #city-tools button {
+    min-height: 37px;
+    padding: 8px 10px;
+    font-size: 10px;
+    box-shadow: 0 2px 8px #182b4d20;
+  }
+  #test-status {
+    top: max(65px, env(safe-area-inset-top));
+    font-size: 10px;
+    padding: 9px 11px;
+    max-width: calc(100% - 24px);
+    white-space: normal;
+    text-align: center;
+  }
+  body.city-guided #mission.city-board {
+    max-height: min(38dvh, 265px);
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #city-tools button,
+  #test-status {
+    transition: none !important;
+  }
+}
