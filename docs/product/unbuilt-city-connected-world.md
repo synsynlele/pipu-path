@@ -1,5 +1,14 @@
 # The Unbuilt City: one connected world
 
+## 28 October — lived-in streets, characters and disappearing instructions
+
+This isolated candidate adds material-based masonry, pitched roofs with windows and doors, road markings, street lighting, seats, dressed characters with faces and arm animation, and shop/workshop details. Materials reuse a small procedural texture set, and WebGL pixel density is capped to protect low-end Android devices. This is a detailed lightweight 3D scene, **not** a photorealistic asset pipeline, crowd simulation or verified device performance claim.
+
+Guidance is present only at the start or when Next step is opened. After travelling, selecting a map view or testing, the task panel collapses without deleting progression. The advanced construction dock is opt-in through Build and collapses on travel. During the city-day simulation, all overlays except a compact live status indicator are hidden; once it finishes, the result panel explains consequences and users can reopen the guide. A phone retains tap-to-move; the arrow pad appears only in explicit free exploration.
+
+The underlying two-day city model, investment costs, existing PipuPath Quest ownership, progress provenance, safeguarding and backend are unchanged. Build/test regression and independent physical Android testing are still required. The next major visual leap should use versioned, legally cleared optimized GLB assets with performance budgets rather than adding unbounded meshes to each district.
+
+
 ## 28 October — public-browser smoke check
 
 The preview opened the intro screen and displayed the expected opening copy.

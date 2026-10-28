@@ -56,9 +56,12 @@
         ><span class="weather-time">08:00</span>
       </div>
       <nav id="city-tools" hidden aria-label="City exploration controls">
-        <button id="city-map" type="button">City map</button
-        ><button id="explore-free" type="button">Explore freely</button>
+        <button id="guide-toggle" type="button" aria-controls="mission" aria-expanded="true">Hide guide</button>
+        <button id="city-map" type="button">City map</button>
+        <button id="explore-free" type="button">Explore freely</button>
+        <button id="build-toggle" type="button" aria-controls="build-dock">Build</button>
       </nav>
+      <div id="test-status" role="status" aria-live="polite" hidden>Testing the city day…</div>
       <section id="mission" class="panel" hidden>
         <div class="eyebrow" id="chapter">01 / DISCOVER</div>
         <h1 id="mission-title">A workshop worth keeping.</h1>
