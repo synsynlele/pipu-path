@@ -55,6 +55,10 @@
         ><span id="weather-title">A bright beginning</span
         ><span class="weather-time">08:00</span>
       </div>
+      <div id="journey-bar" hidden role="region" aria-label="Automatic builder journey">
+        <span id="journey-status" aria-live="polite">Your city journey is running</span>
+        <button id="journey-toggle" class="primary" type="button">Pause journey</button>
+      </div>
       <nav id="city-tools" hidden aria-label="City exploration controls">
         <button
           id="guide-toggle"
@@ -212,7 +216,7 @@
       <div id="scene-labels"></div>
       <div id="travel" hidden>
         <span class="live-dot"></span><span id="travel-text">Walking…</span
-        ><button id="stop-walking">Stop ×</button>
+        ><button id="stop-walking" type="button">Stop ×</button>
       </div>
       <div id="toast" role="status" aria-live="polite"></div>
       <section id="detail" class="panel" hidden aria-label="Station details">

@@ -2,10 +2,10 @@ import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
+import { firstUnanswered, recoverJourney } from "./journey-flow.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
-  CITY_CASES,
   CASE_DISTRICTS,
   IMPACT_LABELS,
   casesFor,
@@ -47,6 +47,7 @@ const fresh = () => ({
   handedOver: false,
   reflection: "",
   decisions: {},
+  journey: null,
 });
 const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
@@ -776,6 +777,9 @@ const sparkUnits = Array.from({ length: 12 }, (_, i) => {
 });
 decisionSparks.visible = false;
 let previewDecision = null;
+let journey = previousPractice?.journey
+  ? { ...previousPractice.journey, status: "paused" }
+  : { status: "idle", caseId: null, stage: "travelling", choiceId: null };
 let autoAdvanceTimer = null;
 let outcomePaused = false;
 let feedbackTimer = null;
@@ -784,6 +788,84 @@ let activeFeedback = null;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
+}
+function rememberJourney() {
+  state.journey = journey.status === "idle"
+    ? null
+    : { caseId: journey.caseId, stage: journey.stage,
+        choiceId: journey.choiceId, status: journey.status };
+  if (saveEnabled) persistPractice();
+}
+function refreshJourneyControls() {
+  rememberJourney();
+  const entered = $("intro").hidden;
+  const running = journey.status === "running";
+  const paused = journey.status === "paused";
+  const visible = entered && (running || paused);
+  $("journey-bar").hidden = !visible;
+  $("city-tools").hidden = !entered || running || simulating;
+  document.body.classList.toggle("city-journey", running);
+  document.body.classList.toggle("city-journey-paused", paused);
+  if (!visible) return;
+  $("journey-toggle").textContent = running ? "Pause journey" : "Resume journey →";
+  $("journey-status").textContent = running
+    ? "Building your city · problem " + caseNumber(journey.caseId) + " of 16"
+    : "Journey paused · resume problem " + caseNumber(journey.caseId) + " of 16";
+}
+function pauseJourney(message = "Journey paused. Resume whenever you're ready.") {
+  if (journey.status !== "running") return;
+  journey.status = "paused";
+  cancelAutoAdvance();
+  if (journey.stage === "travelling") cancelWalk();
+  if (journey.stage === "building") cancelCasePreview();
+  else if (journey.stage === "outcome" && $("autonext-caption")) {
+    $("autonext-caption").textContent = "Paused. Tap Resume journey to continue.";
+    document.querySelector(".auto-next")?.classList.add("paused");
+  }
+  refreshJourneyControls();
+  toast(message);
+}
+function goToJourneyCase(id) {
+  const caseFile = getCase(id);
+  if (!caseFile || simulating) return;
+  journey = { status: "running", caseId: id, stage: "travelling", choiceId: null };
+  cancelAutoAdvance();
+  $("detail").hidden = true;
+  closeCasebook();
+  closeCityStatus();
+  closeDirectory();
+  guideExpanded = false;
+  dockExpanded = false;
+  if (mapMode) {
+    mapMode = false;
+    distance = 27;
+    $("city-map").textContent = "City map";
+  }
+  refreshJourneyControls();
+  const point = approaches[caseFile.district];
+  const success = goTo(point, () => showCase(id), "the next problem");
+  if (!success) {
+    toast("The road is blocked, but you can still solve this problem.");
+    showCase(id);
+  }
+}
+function resumeJourney() {
+  if (!$("intro").hidden || simulating || journey.status === "running") return;
+  const target = recoverJourney({ ...journey, decisions: state.decisions });
+  if (target.stage === "complete") {
+    journey.status = "complete";
+    refreshJourneyControls();
+    toast("All 16 problems completed. Revisit any problem from Problems (16).");
+    return;
+  }
+  journey = { status: "running", ...target };
+  guideExpanded = false;
+  dockExpanded = false;
+  refreshJourneyControls();
+  if (target.stage === "question") showCase(target.caseId);
+  else if (target.stage === "building") runCaseWorldAction(target.caseId, target.choiceId);
+  else if (target.stage === "outcome") showCaseOutcome(target.caseId, target.choiceId);
+  else goToJourneyCase(target.caseId);
 }
 function cancelAutoAdvance() {
   clearTimeout(autoAdvanceTimer);
@@ -806,6 +888,8 @@ function runCaseWorldAction(caseId, choiceId) {
   const choice = getChoice(caseId, choiceId);
   if (!spec || !choice) return;
   cancelCasePreview();
+  journey = { status: "running", caseId, stage: "building", choiceId };
+  refreshJourneyControls();
   // One choice is the only required action: the world and practice record
   // update immediately. No second 'Keep' confirmation is needed.
   state.decisions = saveDecision(state.decisions, caseId, choiceId);
@@ -865,7 +949,7 @@ function runCaseWorldAction(caseId, choiceId) {
       distance = priorDistance;
       previewDecision = null;
       syncCaseScenes();
-      showCaseOutcome(caseId, choiceId);
+      if (journey.status === "running") showCaseOutcome(caseId, choiceId);
     },
     reduceMotion.matches ? 700 : 1650,
   );
@@ -957,6 +1041,10 @@ function goTo(point, arrival = null, label = "your destination") {
     return false;
   }
   cancelWalk();
+  if (!planned.points.length) {
+    arrival?.();
+    return true;
+  }
   route = planned.points;
   onArrival = arrival;
 
@@ -983,6 +1071,7 @@ for (const d of OUTER_DISTRICTS)
   approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
 function goToStation(id, afterArrival = null) {
   if (!$("intro").hidden || simulating) return;
+  if (journey.status === "running") pauseJourney();
   closeCityStatus();
   const station = stations.find((s) => s.id === id);
   if (!station) return;
@@ -1003,7 +1092,10 @@ function goToStation(id, afterArrival = null) {
     station.label,
   );
 }
-$("stop-walking").onclick = cancelWalk;
+$("stop-walking").onclick = () => {
+  if (journey.status === "running") pauseJourney();
+  else cancelWalk();
+};
 
 function updateWorld() {
   const c = state.config;
@@ -1028,6 +1120,9 @@ function updateWorld() {
   rebuildNavigation();
 }
 function closeDetail() {
+  if (journey.status === "running" &&
+      ["question", "building", "outcome"].includes(journey.stage))
+    pauseJourney();
   cancelAutoAdvance();
   $("detail").hidden = true;
   if (previewDecision) cancelCasePreview();
@@ -1201,16 +1296,17 @@ function showDistrictCases(district) {
   });
 }
 function startCase(id) {
-  const scenario = getCase(id);
-  if (!scenario) return;
-  closeCasebook();
-  if (!goToStation(scenario.district, () => showCase(id))) {
-    // Reaching the learning choice must not depend on a perfect 3D path.
-    showCase(id);
-    toast("Your next problem is ready.");
-  }
+  if (!getCase(id)) return;
+  if (journey.status === "running") pauseJourney();
+  goToJourneyCase(id);
 }
 function showCase(id) {
+  if (journey.status === "running") {
+    journey.caseId = id;
+    journey.stage = "question";
+    journey.choiceId = null;
+    refreshJourneyControls();
+  }
   cancelAutoAdvance();
   if (previewDecision) cancelCasePreview();
   const scenario = getCase(id);
@@ -1250,9 +1346,13 @@ function showCase(id) {
 }
 function proceedAfterCase(id) {
   cancelAutoAdvance();
-  closeDetail();
+  $("detail").hidden = true;
   const next = nextCaseAfter(id);
+  if (journey.status === "paused") journey.status = "running";
   if (!next) {
+    journey.status = "complete";
+    journey.stage = "complete";
+    refreshJourneyControls();
     showDetail(
       '<div class="eyebrow">THE UNBUILT CITY · 16 / 16</div>' +
         "<h2>You have shaped four districts.</h2>" +
@@ -1269,14 +1369,13 @@ function proceedAfterCase(id) {
     $("finish-practice").onclick = closeDetail;
     return;
   }
-  // The next scenario begins automatically, including travel between districts.
-  if (!goToStation(next.district, () => showCase(next.id))) {
-    // If the route is blocked, the next choice must remain accessible.
-    showCase(next.id);
-    toast("Could not walk there; the next problem is ready here.");
-  }
+  // A single journey owns travel, questions and outcomes. Legacy station
+  // inspectors cannot replace the next question with their old panels.
+  goToJourneyCase(next.id);
 }
 function showCaseOutcome(id, choiceId) {
+  journey = { status: "running", caseId: id, stage: "outcome", choiceId };
+  refreshJourneyControls();
   const scenario = getCase(id);
   const option = getChoice(id, choiceId);
   if (!scenario || !option) return;
@@ -1329,13 +1428,13 @@ function showCaseOutcome(id, choiceId) {
       "</button></div>",
   );
   $("case-pause").onclick = () => {
-    cancelAutoAdvance();
+    pauseJourney("Paused to read. Use Resume journey when you're ready.");
     outcomePaused = true;
     $("autonext-caption").textContent =
       "Paused. You can examine the result, retry, or continue when ready.";
     document.querySelector(".auto-next").classList.add("paused");
-    $("case-pause").textContent = "Continue";
-    $("case-pause").onclick = () => proceedAfterCase(id);
+    $("case-pause").textContent = "Resume journey →";
+    $("case-pause").onclick = resumeJourney;
   };
   $("case-replay").onclick = () => runCaseWorldAction(id, choiceId);
   $("case-retry").onclick = () => showCase(id);
@@ -1347,8 +1446,10 @@ function showCaseOutcome(id, choiceId) {
       $("autonext-caption").textContent =
         "Paused while you were away. Continue when you are ready.";
       document.querySelector(".auto-next").classList.add("paused");
-      $("case-pause").textContent = "Continue";
-      $("case-pause").onclick = () => proceedAfterCase(id);
+      journey.status = "paused";
+      refreshJourneyControls();
+      $("case-pause").textContent = "Resume journey →";
+      $("case-pause").onclick = resumeJourney;
     }
   }, OUTCOME_VIEW_MS);
 }
@@ -1392,7 +1493,8 @@ const firstJourney = [
 ];
 function updateGuideVisibility() {
   const entered = $("intro").hidden;
-  const visible = entered && guideExpanded && !simulating;
+  const visible = entered && guideExpanded && !simulating &&
+    journey.status !== "running";
   $("mission").hidden = !visible;
   $("guide-toggle").hidden = !entered || simulating;
   $("guide-toggle").textContent = visible ? "Hide guide" : "Next step";
@@ -1403,6 +1505,7 @@ function updateGuideVisibility() {
   $("districts-toggle").hidden = simulating;
   $("cases-toggle").hidden = simulating;
   $("city-status-toggle").hidden = simulating;
+  refreshJourneyControls();
 }
 function render() {
   const guided =
@@ -1950,7 +2053,14 @@ function handoverPanel() {
     $("keep-exploring").onclick = closeDetail;
   };
 }
-$("test").onclick = runDay;
+$("test").onclick = () => {
+  if (journey.status === "running") pauseJourney();
+  runDay();
+};
+$("journey-toggle").onclick = () => {
+  if (journey.status === "running") pauseJourney();
+  else resumeJourney();
+};
 $("close-detail").onclick = closeDetail;
 $("city-status-toggle").onclick = () => {
   if (simulating) return;
@@ -2030,18 +2140,16 @@ $("start").onclick = () => {
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
-  const nextUnsolved = CITY_CASES.find(
-    (scenario) => !getChoice(scenario.id, state.decisions[scenario.id]),
-  );
-  if (nextUnsolved) {
-    toast(
-      previousPractice
-        ? "Welcome back! Walking to your next unsolved problem."
-        : "Welcome! Walking to your first problem.",
-    );
-    startCase(nextUnsolved.id);
+  const nextUnsolved = firstUnanswered(state.decisions);
+  if (nextUnsolved || journey.status === "paused") {
+    toast(previousPractice
+      ? "Welcome back. Resuming your unfinished builder journey."
+      : "Your first problem is ready.");
+    resumeJourney();
   } else {
-    toast("Your 16 decisions are here. Explore freely or replay any problem.");
+    journey.status = "complete";
+    refreshJourneyControls();
+    toast("Your 16 decisions are here. Explore or revisit any problem.");
   }
 };
 $("sound").onclick = () => {
@@ -2064,6 +2172,8 @@ $("reset").onclick = () => {
     return;
   clearTimeout(runTimer);
   cancelCasePreview();
+  journey = { status: "idle", caseId: null, stage: "travelling", choiceId: null };
+  refreshJourneyControls();
   simulating = false;
   simPeriod = -1;
   const cleared = clearPractice();
@@ -2129,7 +2239,8 @@ canvas.addEventListener("pointermove", (e) => {
 canvas.addEventListener("pointerup", (e) => {
   pointers.delete(e.pointerId);
   pinchDistance = null;
-  if (down && !dragging && $("intro").hidden && !simulating) {
+  if (down && !dragging && $("intro").hidden && !simulating &&
+      journey.status !== "running") {
     pointer.set(
       (e.clientX / innerWidth) * 2 - 1,
       (-e.clientY / innerHeight) * 2 + 1,
@@ -2220,7 +2331,7 @@ function animate(now) {
     if (keys.has("s") || keys.has("ArrowDown")) dz += 1;
     if (keys.has("a") || keys.has("ArrowLeft")) dx -= 1;
     if (keys.has("d") || keys.has("ArrowRight")) dx += 1;
-    if ((dx || dz) && !simulating) {
+    if ((dx || dz) && !simulating && journey.status !== "running") {
       cancelWalk();
       const mx = dx * Math.cos(yaw) + dz * Math.sin(yaw),
         mz = -dx * Math.sin(yaw) + dz * Math.cos(yaw),
@@ -2252,6 +2363,8 @@ function animate(now) {
         (a, i) =>
           (a.rotation.x = Math.sin(time * 10 + (i + 1) * Math.PI) * 0.28),
       );
+    } else if (journey.status === "running" && journey.stage === "travelling") {
+      pauseJourney("The route is blocked. Tap Resume journey to retry.");
     } else cancelWalk();
   } else {
     player.legs.forEach((l) => (l.rotation.x *= 0.85));

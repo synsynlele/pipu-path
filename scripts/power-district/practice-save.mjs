@@ -24,6 +24,7 @@ const state = {
   reflection: "A learner's sensitive personal account should never be saved",
   name: "NO PERSONAL DATA",
   decisions: { "repair-queue": "first", fake: "invalid" },
+  journey: { caseId: "repair-queue", stage: "outcome", choiceId: "first", status: "running" },
 };
 assert.equal(loadPractice(fake), null, "explicit consent required");
 assert.equal(savePractice(state, fake), true);
@@ -37,6 +38,12 @@ assert.deepEqual(restored.seen, ["workshop", "power"]);
 assert.equal(restored.reflection, "");
 assert.deepEqual(restored.decisions, { "repair-queue": "first" });
 assert.equal(restored.day, 1);
+assert.deepEqual(restored.journey, {
+  caseId: "repair-queue", stage: "outcome", choiceId: "first", status: "paused",
+});
+assert.equal(sanitizePractice({ ...state, journey: { caseId: "fake", stage: "question", status:"paused" } }).journey, null);
+assert.equal(sanitizePractice({ ...state, journey: { caseId: "repair-queue", stage: "building", choiceId:"rush", status:"paused" } }).journey, null);
+assert.equal(sanitizePractice({ ...state, journey: { caseId: "repair-queue", stage: "question", choiceId:null, status:"paused" } }).journey.stage,"question");
 assert.equal(clearPractice(fake), true);
 assert.equal(loadPractice(fake), null);
 assert.equal(sanitizePractice({ ...state, day: 7 }), null);

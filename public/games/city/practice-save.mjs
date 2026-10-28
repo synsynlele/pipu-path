@@ -1,7 +1,8 @@
 // Optional device-only save for fictional practice. Never store names,
 // reflections, evidence, photos, credentials, or real PipuPath Quest state.
 import { initialPlan } from "./model.mjs";
-import { getChoice } from "./cases.mjs";
+import { getCase, getChoice } from "./cases.mjs";
+import { JOURNEY_STAGES } from "./journey-flow.mjs";
 
 export const PRACTICE_KEY = "unbuilt-city:practice:v1";
 const VERSION = 1;
@@ -70,6 +71,25 @@ export function sanitizePractice(state) {
   for (const [caseId, choiceId] of Object.entries(state.decisions)) {
     if (getChoice(caseId, choiceId)) decisions[caseId] = choiceId;
   }
+  // An optional, allowlisted journey cursor restores the exact interrupted
+  // question/travel/build/outcome when device saving was explicitly enabled.
+  const cursor = state.journey;
+  const journey =
+    validObject(cursor) &&
+    getCase(cursor.caseId) &&
+    JOURNEY_STAGES.includes(cursor.stage) &&
+    ["running", "paused", "complete"].includes(cursor.status) &&
+    (cursor.stage === "building" || cursor.stage === "outcome"
+      ? Boolean(getChoice(cursor.caseId, cursor.choiceId)) &&
+        decisions[cursor.caseId] === cursor.choiceId
+      : cursor.choiceId == null)
+      ? {
+          caseId: cursor.caseId,
+          stage: cursor.stage,
+          choiceId: cursor.choiceId ?? null,
+          status: "paused",
+        }
+      : null;
   return {
     day: state.day,
     cash: state.cash,
@@ -80,6 +100,7 @@ export function sanitizePractice(state) {
     handedOver: state.day === 3 && state.handedOver === true,
     reflection: "", // Never persist personal text or unreviewed user content.
     decisions,
+    journey,
   };
 }
 function getStorage(storage) {
