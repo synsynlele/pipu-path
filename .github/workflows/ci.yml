@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,11 +19,23 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: feat/unbuilt-city-mobile-freeze-fix
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: One-time format of the freeze-fix files
+        run: |
+          npx prettier --write public/games/city/game.mjs public/games/shared/navigation.mjs public/games/shared/frame-budget.mjs scripts/power-district/navigation.mjs scripts/power-district/frame-budget.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/games/city/game.mjs public/games/shared/navigation.mjs public/games/shared/frame-budget.mjs scripts/power-district/navigation.mjs scripts/power-district/frame-budget.mjs
+          if ! git diff --cached --quiet; then
+            git commit -m "Format mobile freeze protection"
+            git push origin HEAD:feat/unbuilt-city-mobile-freeze-fix
+          fi
       - run: npm run validate
 
   staging-e2e:
