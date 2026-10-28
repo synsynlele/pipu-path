@@ -98,6 +98,16 @@
         >
           View My City
         </button>
+        <button
+          id="opportunities-toggle"
+          type="button"
+          aria-controls="opportunities-panel"
+          aria-expanded="false"
+          title="Finish the 36 city decisions to open Chapter 3"
+          disabled
+        >
+          Opportunities
+        </button>
         <button id="city-map" type="button">City map</button>
         <button
           id="districts-toggle"
@@ -235,6 +245,28 @@
           Drag to look around · Pinch or use +/− to zoom · Your journey is
           paused
         </p>
+      </section>
+      <section id="opportunities-panel" class="panel" hidden aria-label="Chapter 3 city enterprises">
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">CHAPTER 3 · THE CITY OF OPPORTUNITIES</div>
+            <h2>Make your city work</h2>
+            <p id="opportunities-summary">Enterprises need supplies, customers and people.</p>
+          </div>
+          <button id="opportunities-close" type="button" aria-label="Close Chapter 3">×</button>
+        </div>
+        <div class="opportunities-metrics" aria-live="polite">
+          <span id="opportunities-day">Day 0 / 7</span>
+          <span id="opportunities-people">People served: 0</span>
+        </div>
+        <div id="opportunities-event" class="opportunities-event"></div>
+        <p class="opportunities-caption">Choose what matters most today. Supplies are limited, so some people may have to wait.</p>
+        <div id="opportunities-policies" class="opportunities-policies" role="group" aria-label="City operating priority"></div>
+        <button id="opportunities-run" class="primary" type="button">Run city day →</button>
+        <div id="opportunities-result" class="opportunities-result" aria-live="polite"></div>
+        <div id="opportunities-ledger" class="opportunities-ledger"></div>
+        <button id="opportunities-reset" class="secondary" type="button">Restart seven-day practice (keep my city)</button>
+        <small class="opportunities-note">Fictional learning simulation. No real jobs, money, health outcomes or PipuPath XP are awarded.</small>
       </section>
       <section
         id="casebook"

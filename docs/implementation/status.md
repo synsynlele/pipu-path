@@ -1,5 +1,49 @@
 # Implementation status
 
+## 28 October 2026 — Chapter 3, City of Opportunities: operating enterprises
+
+The development branch `feat/unbuilt-city-chapter-three-enterprises` extends the
+existing 36-decision, 14-district city. **Chapter 3 unlocks only when all 36
+foundation and growth decisions are complete.** The last decision now offers
+a clear **Start Chapter 3 — Opportunities** action; a persistent Opportunities
+navigation button also unlocks, including for existing saved cities that already
+completed Chapter 2.
+
+Chapter 3 introduces the first **playable seven-day enterprise simulation**.
+The player chooses among four explicit priorities—balancing services, people
+first, enterprise growth, or repair first—then runs a day to see how finite
+resources are produced, allocated, carried into tomorrow and delivered:
+waterworks supplies clinics and food producers, industry supplies parts
+for repairs, food producers supply shops, and clinics and shops serve
+residents. Operational capacity is derived from the previously chosen
+district construction and linked service conditions. Demand variations,
+maintenance benefits, shortages, four independent priorities and seven
+authored daily events make choices consequential. Days display water,
+parts, food, clinic/market visits, repair activity, shortages, simple
+work activity counts and actual outgoing shipments, plus a compact
+seven-day history. These numbers are deliberately **fictional illustrative
+units**, never claims about real health outcomes, jobs, money, grades,
+or the city economy.
+
+The pre-existing 3D delivery layer shows **actual last-day shipment routes**
+once a Chapter 3 day has run, instead of the initial ambient illustration.
+No new personal data, remote calls or other backend changes are required.
+The optional, consented device save has an allowlisted `economy` field,
+bounded to seven days and small non-identifying integer values. Existing
+v1 saves without this field remain valid and start with an empty
+Chapter 3 practice. The player can restart *only* the enterprise
+practice while preserving the 36 decisions, buildings and the entire
+city. Decision revision affects subsequent production days; past
+fictional days remain historical records and are not rewritten.
+
+This is a meaningful **Chapter 3 vertical slice**, not a completed
+autonomous market economy. Chapter 4 remains future work.
+Release gate: full CI, Vercel preview and classroom Android tests for
+mobile panel space, operating-day resets, reopening a saved game,
+live delivery visibility, memory stability and impact of revised choices.
+Production remains unchanged.
+
+
 ## 28 October 2026 — Build a more beautiful, visibly living city
 
 Development branch `feat/unbuilt-city-living-beautiful-world`
