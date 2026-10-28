@@ -248,7 +248,7 @@ export function createLivingCityScene({
         person.visible = Boolean(active && i < active.residents) && nearby(person.position);
       });
     }
-    if (latest?.enterpriseActivity && enterpriseStand.visible)
+    if (latest?.enterpriseActivity)
       enterpriseStand.visible = nearby(enterpriseStand.position);
     else enterpriseStand.visible = false;
     // Deliveries retain their real computed routes; hide only when far

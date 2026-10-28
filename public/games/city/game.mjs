@@ -861,6 +861,7 @@ let journeyTravelTimer = null;
 let builtCityView = null;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 let graphicsInterrupted = false;
+let contextLost = false;
 let renderErrors = 0;
 let graphicsResets = 0;
 let lastRenderError = "";
@@ -879,12 +880,14 @@ if (!softwareMode) {
   $("world").addEventListener("webglcontextlost", (event) => {
     event.preventDefault(); // Let Three.js rebuild the context on restoration.
     graphicsInterrupted = true;
+    contextLost = true;
     showGraphicsProblem(
       "Your phone paused the 3D graphics. Your decisions are still here. Tap Recover 3D.",
     );
   });
   $("world").addEventListener("webglcontextrestored", () => {
     graphicsInterrupted = false;
+    contextLost = false;
     renderErrors = 0;
     graphicsResets++;
     restoreGraphicsQuality();
@@ -895,10 +898,11 @@ if (!softwareMode) {
 }
 $("graphics-recover").onclick = () => {
   restoreGraphicsQuality();
-  if (graphicsInterrupted) {
+  if (contextLost) {
     renderer.forceContextRestore?.();
     showGraphicsProblem("Trying to restore 3D. Your saved decisions are unchanged.");
   } else {
+    graphicsInterrupted = false;
     renderErrors = 0;
     $("graphics-recovery").hidden = true;
     syncCaseScenes();
