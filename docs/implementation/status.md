@@ -34,7 +34,6 @@ do not yet have their own economic gameplay. Preview only; physical
 Android rendering, long-session user experience and consented learner
 observations are still required before any production promotion.
 
-
 ## 28 October 2026 — hands-free case progression and varied answer positions
 
 The branch `feat/unbuilt-city-auto-flow-options` builds on the visible-action

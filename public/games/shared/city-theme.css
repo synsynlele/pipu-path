@@ -2072,9 +2072,15 @@ body.city-impact-view #weather {
   background: #a48f7b;
   transition: width 350ms ease-out;
 }
-.city-service-meter i.thriving { background: #4b9b81; }
-.city-service-meter i.active { background: #c49e51; }
-.city-service-meter i.struggling { background: #bc7d68; }
+.city-service-meter i.thriving {
+  background: #4b9b81;
+}
+.city-service-meter i.active {
+  background: #c49e51;
+}
+.city-service-meter i.struggling {
+  background: #bc7d68;
+}
 .city-connections {
   color: #56708d;
   font-size: 10px;
@@ -2090,7 +2096,9 @@ body.city-impact-view #weather {
   color: #536780;
 }
 body.city-impact-view #city-status,
-body.city-testing #city-status { display: none !important; }
+body.city-testing #city-status {
+  display: none !important;
+}
 @media (max-width: 650px) {
   #city-status {
     top: 142px;
@@ -2101,8 +2109,12 @@ body.city-testing #city-status { display: none !important; }
     max-height: none;
     padding: 14px;
   }
-  .city-status-heading { align-items: flex-start; }
+  .city-status-heading {
+    align-items: flex-start;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .city-service-meter i { transition: none; }
+  .city-service-meter i {
+    transition: none;
+  }
 }

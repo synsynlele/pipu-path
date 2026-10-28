@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
-import { CITY_CASES, getChoice, saveDecision } from "../../public/games/city/cases.mjs";
-import { deriveBuilderCity, choiceStructure, CITY_SYSTEMS, CONNECTIONS } from "../../public/games/city/city-growth.mjs";
+import {
+  CITY_CASES,
+  getChoice,
+  saveDecision,
+} from "../../public/games/city/cases.mjs";
+import {
+  deriveBuilderCity,
+  choiceStructure,
+  CITY_SYSTEMS,
+  CONNECTIONS,
+} from "../../public/games/city/city-growth.mjs";
 import { CASE_BUILD_SITES } from "../../public/games/city/feedback.mjs";
 
 const empty = deriveBuilderCity();
@@ -13,8 +22,14 @@ assert(CONNECTIONS.some((l) => l.from === "power" && l.to === "market"));
 const ids = new Set();
 for (const scenario of CITY_CASES) {
   assert(CASE_BUILD_SITES[scenario.id]);
-  const variations = scenario.options.map((c) => choiceStructure(scenario.id, c.id));
-  assert.equal(new Set(variations.map((v) => v.variant)).size, 3, "Every option must create a visibly different building");
+  const variations = scenario.options.map((c) =>
+    choiceStructure(scenario.id, c.id),
+  );
+  assert.equal(
+    new Set(variations.map((v) => v.variant)).size,
+    3,
+    "Every option must create a visibly different building",
+  );
   for (const shape of variations) {
     assert(shape && shape.district === scenario.district);
     assert(!ids.has(shape.caseId + "_" + shape.choiceId));
@@ -24,7 +39,8 @@ for (const scenario of CITY_CASES) {
 assert.equal(ids.size, 48);
 assert.equal(choiceStructure("invalid", "invalid"), null);
 let choices = {};
-for (const c of CITY_CASES) choices = saveDecision(choices, c.id, c.options[0].id);
+for (const c of CITY_CASES)
+  choices = saveDecision(choices, c.id, c.options[0].id);
 const positive = deriveBuilderCity(choices);
 assert.equal(positive.completed, 16);
 assert.equal(positive.visibleBuildings, 16);
@@ -34,22 +50,50 @@ for (const district of Object.values(positive.districts)) {
   assert.equal(district.built, 4);
   assert.equal(district.structures.length, 4);
   assert(district.service >= 0 && district.service <= 100);
-  assert(["active","thriving","struggling"].includes(district.activity));
+  assert(["active", "thriving", "struggling"].includes(district.activity));
 }
 let adverse = {};
 for (const c of CITY_CASES) adverse[c.id] = c.options[1].id;
 const troubled = deriveBuilderCity(adverse);
-assert(troubled.cityHealth < positive.cityHealth, "Alternative decisions change operating city health");
-assert(troubled.districts.workshop.service < positive.districts.workshop.service);
+assert(
+  troubled.cityHealth < positive.cityHealth,
+  "Alternative decisions change operating city health",
+);
+assert(
+  troubled.districts.workshop.service < positive.districts.workshop.service,
+);
 const revised = { ...choices, "power-upkeep": "wait" };
 const changed = deriveBuilderCity(revised);
-assert.notEqual(changed.districts.power.direct, positive.districts.power.direct);
-assert.notEqual(changed.districts.market.service, positive.districts.market.service,
-  "Power decisions must influence the food district even if no food decisions are revised");
-assert.notEqual(changed.districts.school.service, positive.districts.school.service,
-  "Power decisions must also influence learning");
-assert.equal(positive.districts.power.structures.find((s)=>s.caseId === "power-upkeep").variant, "coordinated");
-assert.equal(changed.districts.power.structures.find((s)=>s.caseId === "power-upkeep").variant, "overloaded");
-assert.equal(deriveBuilderCity(revised).cityHealth, changed.cityHealth, "City must restore deterministically from saved decisions");
+assert.notEqual(
+  changed.districts.power.direct,
+  positive.districts.power.direct,
+);
+assert.notEqual(
+  changed.districts.market.service,
+  positive.districts.market.service,
+  "Power decisions must influence the food district even if no food decisions are revised",
+);
+assert.notEqual(
+  changed.districts.school.service,
+  positive.districts.school.service,
+  "Power decisions must also influence learning",
+);
+assert.equal(
+  positive.districts.power.structures.find((s) => s.caseId === "power-upkeep")
+    .variant,
+  "coordinated",
+);
+assert.equal(
+  changed.districts.power.structures.find((s) => s.caseId === "power-upkeep")
+    .variant,
+  "overloaded",
+);
+assert.equal(
+  deriveBuilderCity(revised).cityHealth,
+  changed.cityHealth,
+  "City must restore deterministically from saved decisions",
+);
 assert.equal(getChoice("repair-queue", "rush").id, "rush");
-console.log("PASS: 48 distinct choice architectures, 16 lasting sites, reversible outcomes, four active districts, dependency effects and deterministic device-save restoration.");
+console.log(
+  "PASS: 48 distinct choice architectures, 16 lasting sites, reversible outcomes, four active districts, dependency effects and deterministic device-save restoration.",
+);

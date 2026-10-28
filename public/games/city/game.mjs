@@ -827,8 +827,13 @@ function runCaseWorldAction(caseId, choiceId) {
     .slice(0, 2);
   $("world-feedback-copy").textContent =
     feedbackCopy(spec.kind, tone) +
-    " " + neighbourhood.name + " is now " + neighbourhood.activity +
-    (connected.length ? ". Connected to " + connected.join(" and ") + "." : ".");
+    " " +
+    neighbourhood.name +
+    " is now " +
+    neighbourhood.activity +
+    (connected.length
+      ? ". Connected to " + connected.join(" and ") + "."
+      : ".");
   $("world-feedback").hidden = false;
   $("detail").hidden = true;
   guideExpanded = false;
@@ -1050,8 +1055,10 @@ function renderCityStatus() {
   const city = deriveBuilderCity(state.decisions);
   $("city-health-badge").textContent = city.completed + "/16";
   $("city-status-summary").textContent =
-    city.visibleBuildings + " physical projects built. Fictional overall service health: " +
-    city.cityHealth + "/100. Revise any decision to reshape the city.";
+    city.visibleBuildings +
+    " physical projects built. Fictional overall service health: " +
+    city.cityHealth +
+    "/100. Revise any decision to reshape the city.";
   const rows = $("city-status-list");
   rows.replaceChildren();
   for (const id of CASE_DISTRICTS) {
@@ -1063,7 +1070,9 @@ function renderCityStatus() {
     const title = document.createElement("strong");
     title.textContent = d.icon + " " + d.name + " · " + d.built + "/4 builds";
     const service = document.createElement("small");
-    service.textContent = d.built ? d.service + "/100 · " + d.activity : "Not built yet";
+    service.textContent = d.built
+      ? d.service + "/100 · " + d.activity
+      : "Not built yet";
     head.append(title, service);
     const meter = document.createElement("div");
     meter.className = "city-service-meter";
@@ -1080,9 +1089,17 @@ function renderCityStatus() {
     if (d.links.length) {
       const effects = document.createElement("p");
       effects.className = "city-connections";
-      effects.textContent = d.links.map((link) =>
-        city.districts[link.from].name + " " + (link.change > 0 ? "+" : "") +
-        link.change + " · " + link.reason).join(" | ");
+      effects.textContent = d.links
+        .map(
+          (link) =>
+            city.districts[link.from].name +
+            " " +
+            (link.change > 0 ? "+" : "") +
+            link.change +
+            " · " +
+            link.reason,
+        )
+        .join(" | ");
       section.append(effects);
     }
     rows.append(section);

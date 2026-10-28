@@ -166,43 +166,64 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       if (appearance.variant === "coordinated") {
         // A finished, staffed, walkable facility: shelter, equipment and greenery.
         for (const x of [-0.5, 0.5]) {
-          V(0.10, 1.25, 0.12, 0x54766c, x, 0.73, -0.42);
-          V(0.10, 1.25, 0.12, 0x54766c, x, 0.73, 0.35);
+          V(0.1, 1.25, 0.12, 0x54766c, x, 0.73, -0.42);
+          V(0.1, 1.25, 0.12, 0x54766c, x, 0.73, 0.35);
         }
         V(1.42, 0.18, 1.18, 0x4b8e8d, 0, 1.42, -0.03);
-        V(0.90, 0.42, 0.55, 0xd3b77f, 0, 0.50, -0.07);
-        for (let i=0;i<3;i++) V(0.20, 0.20, 0.24, 0x81a5c5, -0.32+i*0.32, 0.82, -0.04);
-        Vc(0.14,0.3,0x719459,0.53,0.39,0.42);
+        V(0.9, 0.42, 0.55, 0xd3b77f, 0, 0.5, -0.07);
+        for (let i = 0; i < 3; i++)
+          V(0.2, 0.2, 0.24, 0x81a5c5, -0.32 + i * 0.32, 0.82, -0.04);
+        Vc(0.14, 0.3, 0x719459, 0.53, 0.39, 0.42);
         const worker = new T.Group();
         alt.add(worker);
-        const body = new T.Mesh(new T.CylinderGeometry(0.12,0.16,0.45,7),mat(0x527ca3));
-        body.position.y=0.52;worker.add(body);
-        const head = new T.Mesh(new T.SphereGeometry(0.14,8,6),mat(0x9e7158));
-        head.position.y=0.83;worker.add(head);
-        worker.position.set(-0.6,0,0.37);
-        worker.userData.ignoreNavigation=true;
-        alt.userData.worker=worker;
+        const body = new T.Mesh(
+          new T.CylinderGeometry(0.12, 0.16, 0.45, 7),
+          mat(0x527ca3),
+        );
+        body.position.y = 0.52;
+        worker.add(body);
+        const head = new T.Mesh(
+          new T.SphereGeometry(0.14, 8, 6),
+          mat(0x9e7158),
+        );
+        head.position.y = 0.83;
+        worker.add(head);
+        worker.position.set(-0.6, 0, 0.37);
+        worker.userData.ignoreNavigation = true;
+        alt.userData.worker = worker;
       } else if (appearance.variant === "overloaded") {
         // Oversized uncoordinated expansion: many structures, blocked access.
-        for(let i=0;i<3;i++) {
-          const x=-0.40+i*0.43;
-          V(0.38,1.10+i*0.32,0.58,[0xbb895b,0xbba38d,0x9b817c][i],x,0.66+(i*0.16),-0.08);
-          V(0.36,0.12,0.10,0x4d5864,x,1.19+i*0.32,0.27);
+        for (let i = 0; i < 3; i++) {
+          const x = -0.4 + i * 0.43;
+          V(
+            0.38,
+            1.1 + i * 0.32,
+            0.58,
+            [0xbb895b, 0xbba38d, 0x9b817c][i],
+            x,
+            0.66 + i * 0.16,
+            -0.08,
+          );
+          V(0.36, 0.12, 0.1, 0x4d5864, x, 1.19 + i * 0.32, 0.27);
         }
-        V(1.55,0.12,0.43,0xb96950,0,0.20,0.46);
-        for(let j=0;j<3;j++) V(0.25,0.28,0.22,0xd1a76d,-0.46+j*0.41,0.50,0.43);
-        V(0.14,1.92,0.13,0x6d6770,0.67,1.12,-0.26);
+        V(1.55, 0.12, 0.43, 0xb96950, 0, 0.2, 0.46);
+        for (let j = 0; j < 3; j++)
+          V(0.25, 0.28, 0.22, 0xd1a76d, -0.46 + j * 0.41, 0.5, 0.43);
+        V(0.14, 1.92, 0.13, 0x6d6770, 0.67, 1.12, -0.26);
       } else {
         // Underused / risky plan: an incomplete frame and idle equipment.
-        for(const x of [-0.48,0.48]){
-          for(const z of [-0.36,0.35]) V(0.08,1.18,0.09,0x8d6f5f,x,0.74,z);
+        for (const x of [-0.48, 0.48]) {
+          for (const z of [-0.36, 0.35])
+            V(0.08, 1.18, 0.09, 0x8d6f5f, x, 0.74, z);
         }
-        V(1.14,0.11,0.79,0x95887a,0,1.36,0);
-        V(0.72,0.42,0.55,0xa96e5c,0.12,0.47,-0.04);
-        for(let j=0;j<3;j++) V(0.25,0.26,0.24,0x77736d,-0.40+j*0.29,0.31,0.42);
+        V(1.14, 0.11, 0.79, 0x95887a, 0, 1.36, 0);
+        V(0.72, 0.42, 0.55, 0xa96e5c, 0.12, 0.47, -0.04);
+        for (let j = 0; j < 3; j++)
+          V(0.25, 0.26, 0.24, 0x77736d, -0.4 + j * 0.29, 0.31, 0.42);
         // Clear caution barrier: a poor choice is not represented as success.
-        for(const x of [-0.54,0,0.54]) V(0.12,0.54,0.12,0xce8e50,x,0.44,0.6);
-        V(1.23,0.12,0.12,0xce8e50,0,0.65,0.6);
+        for (const x of [-0.54, 0, 0.54])
+          V(0.12, 0.54, 0.12, 0xce8e50, x, 0.44, 0.6);
+        V(1.23, 0.12, 0.12, 0xce8e50, 0, 0.65, 0.6);
       }
       alt.visible = false;
       variants.set(choiceId, alt);
@@ -224,7 +245,16 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     halo.userData.ignoreNavigation = true;
     group.add(halo);
     group.visible = false;
-    return { group, light, flag, halo, variants, buildChoice, choiceId: null, started: 0 };
+    return {
+      group,
+      light,
+      flag,
+      halo,
+      variants,
+      buildChoice,
+      choiceId: null,
+      started: 0,
+    };
   }
   for (const [id, spec] of Object.entries(CASE_BUILD_SITES)) {
     effects.set(id, build({ ...spec, caseId: id }));
@@ -250,18 +280,33 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     const roof = box(1.07, 0.12, 0.83, 0x99a977, 0, 0.93, 0, hub);
     roof.userData.ignoreNavigation = true;
     const workers = [];
-    for (let i=0;i<2;i++) {
+    for (let i = 0; i < 2; i++) {
       const p = new T.Group();
-      const shirt = new T.Mesh(new T.CylinderGeometry(0.10,0.14,0.32,6), mat(i ? 0xba865b : 0x6987ac));
-      shirt.position.y = 0.35; p.add(shirt);
-      const head = new T.Mesh(new T.SphereGeometry(0.115,7,6), mat(i ? 0x88654e : 0xb88a63));
-      head.position.y = 0.62; p.add(head);
+      const shirt = new T.Mesh(
+        new T.CylinderGeometry(0.1, 0.14, 0.32, 6),
+        mat(i ? 0xba865b : 0x6987ac),
+      );
+      shirt.position.y = 0.35;
+      p.add(shirt);
+      const head = new T.Mesh(
+        new T.SphereGeometry(0.115, 7, 6),
+        mat(i ? 0x88654e : 0xb88a63),
+      );
+      head.position.y = 0.62;
+      p.add(head);
       p.userData.ignoreNavigation = true;
       hub.add(p);
       workers.push(p);
     }
     hub.visible = false;
-    hubs.set(id, { hub, tower, roof, workers, activity: "waiting", service: 0 });
+    hubs.set(id, {
+      hub,
+      tower,
+      roof,
+      workers,
+      activity: "waiting",
+      service: 0,
+    });
   }
   const palette = { improving: 0x6bab85, mixed: 0xe0bd65, strained: 0xcf7963 };
   function sync(decisions, preview = null) {
@@ -274,7 +319,12 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       const strength = d.service / 100;
       item.tower.scale.y = 0.7 + strength * 1.1;
       item.tower.position.y = 0.52 + (item.tower.scale.y - 1) * 0.29;
-      const colour = d.activity === "thriving" ? 0x4a947f : d.activity === "active" ? 0xddb668 : 0xb47567;
+      const colour =
+        d.activity === "thriving"
+          ? 0x4a947f
+          : d.activity === "active"
+            ? 0xddb668
+            : 0xb47567;
       item.tower.material = mat(colour);
       item.roof.material = mat(colour);
       item.workers[0].visible = d.activity !== "waiting";
@@ -315,7 +365,8 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       if (!item.hub.visible) continue;
       item.workers.forEach((person, i) => {
         if (!person.visible) return;
-        const angle = now / (item.activity === "thriving" ? 1300 : 3100) + i * Math.PI;
+        const angle =
+          now / (item.activity === "thriving" ? 1300 : 3100) + i * Math.PI;
         person.position.set(Math.cos(angle) * 0.8, 0.0, Math.sin(angle) * 0.7);
         person.rotation.y = angle + Math.PI / 2;
         if (reducedMotion) person.position.y = 0;

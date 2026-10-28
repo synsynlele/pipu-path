@@ -27,7 +27,7 @@ assert(source.includes("effects.set(id, build({ ...spec, caseId: id }))"));
 assert(source.includes("effect.buildChoice(id, choiceId)"));
 assert(source.includes("effect.variants"));
 assert(source.includes("for (const [id, item] of hubs)"));
-assert(source.includes('const city = deriveBuilderCity(decisions)'));
+assert(source.includes("const city = deriveBuilderCity(decisions)"));
 assert(source.includes("effect.group.visible = Boolean(choiceId)"));
 assert(source.includes("effect.group.scale.set("));
 assert(source.includes("getChoice(id, choiceId)"));
