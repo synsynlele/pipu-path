@@ -1,5 +1,43 @@
 # Implementation status
 
+## 28 October 2026 — Build a more beautiful, visibly living city
+
+Development branch `feat/unbuilt-city-living-beautiful-world`
+adds a **decision-driven ambient life layer** on top of the existing
+14-district 3D city (36 scenarios). Every neighbourhood gains a
+lightweight planted courtyard with flowers, shade trees and an
+illuminated gathering seat that activates when that district receives
+an actual construction decision. Only built districts attract
+animated workers and residents; stronger districts can display more
+people, while weak districts show less activity.
+
+Up to five small delivery vehicles travel only along the existing
+road lattice between built service districts. Their number, routes
+and movement speed derive entirely from the player's selected
+decisions (e.g., water and healthcare, manufacturing and repairs,
+transport and food). A revised decision recalculates activity
+immediately. A new **View My City** subtitle displays how many
+illustrative service deliveries are active. This is illustrative,
+not a real traffic, population, jobs or economic forecast.
+
+For low-power phones or the software renderer, the scene constructs
+one extra resident per built district instead of two, and a
+maximum of three delivery vehicles. Decorative meshes do not cast
+shadows or obstruct avatar navigation. Reduced-motion preferences
+stop the movement but retain a representative still scene;
+simulations do not update visually while a tab is hidden.
+No additional WebGL textures, third-party services, tracking,
+account storage, XP claims or real-world metrics were added.
+
+This is the beginning of a beautiful, responsive living-city
+presentation, **not** the fully fledged Chapter 3 operational
+enterprise economy or Chapter 4 autonomous population simulator.
+Do not describe it as those chapters being shipped. CI plus
+physical student Android/tablet scene performance, movement,
+readability and long-session stress testing are required before
+production promotion. Production remains unchanged.
+
+
 ## 28 October 2026 — Aerial view of the player's actual built city
 
 Branch `feat/unbuilt-city-player-city-view` adds a compact, player-facing
