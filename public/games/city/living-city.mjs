@@ -2,6 +2,7 @@
 // Visual-only: not real traffic forecasts, incomes, population, health or XP.
 import { CITY_DISTRICTS } from "./districts.mjs";
 import { CONNECTIONS, deriveBuilderCity } from "./city-growth.mjs";
+import { OWNED_ENTERPRISES } from "./opportunities.mjs";
 
 const ROAD_X = Object.freeze([-45, -10, 6, 47]);
 const ROAD_Z = Object.freeze([-39, 6.7, 39]);
@@ -114,6 +115,20 @@ export function deriveLivingCity(decisions = {}, economy = null) {
       .slice(0, 5);
     deliveries.splice(0, deliveries.length, ...actual);
   }
+  // A founder's storefront and visitors reflect completed operating work,
+  // not a decorative business that appears before the student establishes it.
+  const lastOwned = economy?.day > 0 ? economy?.last?.enterprise : null;
+  const business = OWNED_ENTERPRISES.find((e) => e.id === lastOwned?.id);
+  const enterpriseActivity = business
+    ? {
+        id: business.id,
+        district: business.district,
+        workers: lastOwned.workers,
+        customers: Math.min(2, lastOwned.customers),
+        output: lastOwned.output,
+        shortfall: lastOwned.shortfall,
+      }
+    : null;
   // Traffic illustrates a few relationships only; not a prediction.
   const linkageCount = CONNECTIONS.filter(
     ({ from, to }) => city.districts[from].built && city.districts[to].built,
@@ -124,6 +139,7 @@ export function deriveLivingCity(decisions = {}, economy = null) {
     active: districts.filter((d) => d.built).length,
     residents: districts.reduce((sum, d) => sum + d.residents, 0),
     deliveries,
+    enterpriseActivity,
     linkageCount,
   };
 }

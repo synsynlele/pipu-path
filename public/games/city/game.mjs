@@ -8,6 +8,10 @@ import {
   DAY_EVENTS,
   ENTERPRISE_DAYS,
   OPPORTUNITY_POLICIES,
+  OWNED_ENTERPRISES,
+  ENTERPRISE_ACTIONS,
+  chooseOwnedEnterprise,
+  chooseEnterpriseAction,
   foundationForOpportunities,
   newOpportunityState,
   runOpportunityDay,
@@ -1455,6 +1459,53 @@ function renderOpportunityPanel() {
   $("opportunities-event").textContent = completed
     ? "Your seven-day city challenge is complete. Explore the results or restart just this practice."
     : "Next challenge: " + event.name + " — " + event.detail;
+  const enterpriseInput = $("opportunities-business");
+  enterpriseInput.replaceChildren();
+  const prompt = document.createElement("option");
+  prompt.value = "";
+  prompt.textContent = "Choose your enterprise";
+  enterpriseInput.append(prompt);
+  for (const business of OWNED_ENTERPRISES) {
+    const option = document.createElement("option");
+    option.value = business.id;
+    option.textContent = business.title;
+    enterpriseInput.append(option);
+  }
+  enterpriseInput.value = economy.enterprise.id ?? "";
+  enterpriseInput.disabled = completed;
+  const owner = OWNED_ENTERPRISES.find((b) => b.id === economy.enterprise.id);
+  const improvement = ENTERPRISE_ACTIONS.find(
+    (action) => action.id === economy.enterprise.action,
+  );
+  $("opportunities-business-note").textContent = owner
+    ? owner.detail + " " + (improvement?.detail ?? "")
+    : "Choose one business to establish. You can change your plan before the next day.";
+  const actions = $("opportunities-actions");
+  actions.replaceChildren();
+  if (owner) {
+    for (const action of ENTERPRISE_ACTIONS) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "opportunity-action";
+      button.textContent = action.title;
+      button.title = action.detail;
+      button.setAttribute(
+        "aria-pressed",
+        String(economy.enterprise.action === action.id),
+      );
+      button.disabled = completed;
+      button.onclick = () => {
+        const next = chooseEnterpriseAction(state.economy, action.id);
+        if (!next) return;
+        state.economy = next;
+        persistPractice();
+        renderOpportunityPanel();
+      };
+      actions.append(button);
+    }
+  }
+  const ownedLast = last?.enterprise;
+  $("opportunities-view-business").disabled = !ownedLast;
   const buttons = $("opportunities-policies");
   buttons.replaceChildren();
   for (const policy of OPPORTUNITY_POLICIES) {
@@ -1477,7 +1528,7 @@ function renderOpportunityPanel() {
     };
     buttons.append(button);
   }
-  $("opportunities-run").disabled = completed;
+  $("opportunities-run").disabled = completed || !owner;
   $("opportunities-run").textContent = completed
     ? "Seven days completed"
     : "Run day " + (economy.day + 1) + " →";
@@ -1525,7 +1576,29 @@ function renderOpportunityPanel() {
       economy.stocks.parts +
       " · Food: " +
       economy.stocks.food;
-    result.append(title, production, served, impact, delivery, stocks);
+    result.append(title);
+    if (ownedLast) {
+      const business = OWNED_ENTERPRISES.find(
+        (item) => item.id === ownedLast.id,
+      );
+      const performance = document.createElement("p");
+      performance.textContent =
+        (business?.title ?? "Your enterprise") +
+        ": " +
+        ownedLast.output +
+        " units of activity · " +
+        ownedLast.customers +
+        " customer/service visits · " +
+        ownedLast.workers +
+        " workers active · " +
+        ownedLast.shortfall +
+        " needs still waiting." +
+        (ownedLast.shortfall > 0
+          ? " Try a different operating priority or improvement tomorrow."
+          : " The business met its immediate needs.");
+      result.append(performance);
+    }
+    result.append(production, served, impact, delivery, stocks);
   }
   const ledger = $("opportunities-ledger");
   ledger.replaceChildren();
@@ -1540,6 +1613,7 @@ function renderOpportunityPanel() {
         row.day +
         " · " +
         row.policy +
+        (row.enterprise ? " · " + row.enterprise.id + " business" : "") +
         " · " +
         (row.meals + row.patients) +
         " visits · " +
@@ -2740,7 +2814,26 @@ $("opportunities-toggle").onclick = () => {
   else closeOpportunityPanel();
 };
 $("opportunities-close").onclick = closeOpportunityPanel;
+$("opportunities-business").onchange = (event) => {
+  const next = chooseOwnedEnterprise(state.economy, event.target.value);
+  if (!next) return;
+  state.economy = next;
+  persistPractice();
+  renderOpportunityPanel();
+  toast("Your enterprise is ready. Choose how to operate it.");
+};
+$("opportunities-view-business").onclick = () => {
+  const id = state.economy.last?.enterprise?.id;
+  const business = OWNED_ENTERPRISES.find((item) => item.id === id);
+  if (!business) return;
+  openBuiltCityView();
+  focusBuiltCityDistrict(business.district);
+};
 $("opportunities-run").onclick = () => {
+  if (!state.economy.enterprise?.id) {
+    toast("Choose a business to establish before running the next day.");
+    return;
+  }
   const next = runOpportunityDay(state.decisions, state.economy);
   if (!next) {
     toast(

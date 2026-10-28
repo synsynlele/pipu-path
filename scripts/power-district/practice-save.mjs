@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { initialPlan } from "../../public/games/city/model.mjs";
-import { newOpportunityState } from "../../public/games/city/opportunities.mjs";
+import {
+  newOpportunityState,
+  chooseOwnedEnterprise,
+  chooseEnterpriseAction,
+} from "../../public/games/city/opportunities.mjs";
 import {
   PRACTICE_KEY,
   sanitizePractice,
@@ -102,6 +106,12 @@ assert.deepEqual(
   newOpportunityState(),
   "Invalid enterprise state resets safely while 36 choices survive",
 );
+const owned = chooseEnterpriseAction(
+  chooseOwnedEnterprise(newOpportunityState(), "food"),
+  "tools",
+);
+assert.equal(savePractice({ ...state, economy: owned }, fake), true);
+assert.deepEqual(loadPractice(fake).economy, owned);
 assert.equal(clearPractice(fake), true);
 assert.equal(loadPractice(fake), null);
 assert.equal(sanitizePractice({ ...state, day: 7 }), null);

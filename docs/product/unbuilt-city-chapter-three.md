@@ -70,8 +70,29 @@ only stores validated strategy IDs and bounded numerical totals.
 - Android portrait/landscape, software renderer, long-session GPU
   usage and touch-accessible controls require student testing.
 
-**Next milestone:** deeper enterprise ownership (orders, skills,
-customers and meaningful collaboration), not adding purely
-decorative menus. Chapter 4 will introduce time-based resident
-needs, maintenance and city resilience only after Chapter 3 is
-validated in real classroom use.
+## Founder-operated enterprise extension (development branch)
+
+Players now establish one of four starter businesses: Clean Water Service,
+Food Growers, Repair Team or Neighbourhood Shop. This is an operating role
+inside one connected city, not a disconnected minigame. Players can revise
+their choice before future days and choose to operate steadily, improve
+tools using one finite spare part or invite more customers (which can
+increase unmet demand when supplies are scarce).
+
+The selected business records its own activity, service visits, workers
+active and unmet demand after each day. A reusable stall and small number
+of animated people appear in the selected real district, driven by the
+latest recorded operating results. From the Chapter 3 panel, the player can
+open the existing aerial view focused on their enterprise. Earlier chapter
+decisions still determine the city's service capacities.
+
+This first release is **not** an independent detailed finance simulator:
+there are no fictional profit claims presented as real income, verified
+employment results or awards. Enterprise operations share the city's
+finite resources, so improvement is a trade-off. Previously saved
+seven-day records without ownership still load; new records are allowlisted
+and bounded under the existing consented device-only save.
+
+**Next milestone:** customer orders, apprenticeships, skill transfer and
+meaningful collaboration between enterprises, validated first with students.
+Chapter 4 will introduce time-based resident needs, maintenance and city resilience only after Chapter 3 is validated in real classroom use.
