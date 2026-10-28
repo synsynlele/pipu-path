@@ -95,3 +95,16 @@ export function deliveryLaneLoop(path, offset = 0.78) {
     ...arc(path[0], backward[backward.length - 1], forward[0]),
   ];
 }
+
+// The software renderer clips whole triangles. Only long, flat surfaces need
+// smaller faces near the camera; WebGL and ordinary buildings keep simple boxes.
+export function cityBoxGeometry(T, w, h, d, software = false) {
+  return new T.BoxGeometry(
+    w,
+    h,
+    d,
+    software && w > 40 ? Math.ceil(w / 4) : 1,
+    1,
+    software && d > 40 ? Math.ceil(d / 4) : 1,
+  );
+}

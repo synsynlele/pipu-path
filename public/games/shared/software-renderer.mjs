@@ -52,7 +52,7 @@ export class SoftwareRenderer {
       if (!o.isMesh || !o.geometry?.attributes.position) return;
       const geo = o.geometry;
       // Skip only the enormous background slab, not long horizontal roads.
-      if (geo.parameters?.width > 150 && geo.parameters?.depth > 150) return;
+      if (geo.parameters?.width > 70 && geo.parameters?.depth > 70) return;
       const pos = geo.attributes.position,
         idx = geo.index,
         normal = geo.attributes.normal;

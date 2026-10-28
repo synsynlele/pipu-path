@@ -5,6 +5,7 @@ import {
   overlapsRoad,
   clearRoadPlacement,
   overviewFrustum,
+  cityBoxGeometry,
 } from "./layout.mjs";
 import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
@@ -206,7 +207,7 @@ function box(w, h, d, c, x = 0, y = 0, z = 0, parent = scene) {
       // decision outcomes; mesh transforms still create unique structures.
       const key = [w, h, d].join(":");
       if (!boxGeometries.has(key))
-        boxGeometries.set(key, new T.BoxGeometry(w, h, d));
+        boxGeometries.set(key, cityBoxGeometry(T, w, h, d, softwareMode));
       return boxGeometries.get(key);
     })(),
     typeof c === "string" || typeof c === "number" ? mat(c) : c,

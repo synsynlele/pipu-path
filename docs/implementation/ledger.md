@@ -1399,3 +1399,24 @@ Build logged two unauthenticated progress-load diagnostics and exited 0.
 Courtyard planting, ambient people and enterprise stalls now use separate
 pedestrian/service anchors rather than the former road-crossing offsets.
 A single controlled preview is the next verification step; production is unchanged.
+
+## 28 October 2026 — Close-view software road correction
+
+Visual verification on preview `a62b3d1` exercised software rendering because
+cloud Chrome has WebGL disabled. Whole-city orthographic view, first answer's
+physical assembly and journey arrival worked. Close perspective revealed long
+road triangles disappearing at the camera clipping boundary after flattening
+box geometry. The software renderer discards a triangle when a vertex is beyond
+the clip plane; ordinary WebGL clipping does not have this limitation.
+
+Only software-mode surfaces longer than 40 world units now receive four-unit
+segments; buildings and WebGL boxes keep simple geometry. The fallback continues
+to skip broad ground slabs while retaining long narrow roads. A real software
+raster test samples a known road pixel: it fails with the unsegmented road
+(233,226,210 background) and passes with segmented geometry. This is pixel
+raster proof, independent of the stubbed navigation harness. A second controlled
+preview build is necessary to include this correction; no production change.
+
+Correction validation: `npm run validate` passed again, including the new real
+software raster pixel regression, 527 unit/component tests, 251 integration
+tests and local production build.
