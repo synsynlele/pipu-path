@@ -42,7 +42,11 @@ assert(
 );
 assert(game.includes("lowPower:"));
 assert(game.includes("innerWidth <= 650"));
-assert(game.includes("const living = deriveLivingCity(state.decisions, state.economy)"));
+assert(
+  game.includes(
+    "const living = deriveLivingCity(state.decisions, state.economy)",
+  ),
+);
 assert(game.includes("living.deliveries.length"));
 
 assert(game.includes("function runCaseWorldAction("));
