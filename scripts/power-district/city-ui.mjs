@@ -34,7 +34,7 @@ assert(game.includes("function openCasebook()"));
 assert(game.includes("function showCaseOutcome("));
 assert(game.includes("const caseScenes = createCaseSceneEffects("));
 assert(game.includes("const livingScene = createLivingCityScene("));
-assert(game.includes("livingScene.sync(state.decisions)"));
+assert(game.includes("livingScene.sync(state.decisions, state.economy)"));
 assert(
   game.includes(
     "livingScene.animate(now, reduceMotion.matches, document.hidden || simulating)",
@@ -42,7 +42,7 @@ assert(
 );
 assert(game.includes("lowPower:"));
 assert(game.includes("innerWidth <= 650"));
-assert(game.includes("const living = deriveLivingCity(state.decisions)"));
+assert(game.includes("const living = deriveLivingCity(state.decisions, state.economy)"));
 assert(game.includes("living.deliveries.length"));
 
 assert(game.includes("function runCaseWorldAction("));
