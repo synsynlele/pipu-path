@@ -331,18 +331,11 @@ export function runOpportunityDay(decisions, previous) {
   );
   stocks.food = clamp(stocks.food + foodMade, 0, 30);
   const busyMarketBonus = day === 2 || day === 6 ? 2 : 0;
-  const shopCapacity =
-    capacity(city, "business", 9) +
-    busyMarketBonus +
-    (tools("shop") ? 2 : 0);
-  const retailNeed = clamp(
-    capacity(city, "business", 9) +
-      busyMarketBonus +
-      (reach("shop") ? 2 : 0) +
-      (tools("shop") ? 2 : 0),
-    0,
-    13,
-  );
+  const shopUpgrade = tools("shop") ? 2 : 0;
+  const basicShopCapacity = capacity(city, "business", 9);
+  const shopCapacity = basicShopCapacity + busyMarketBonus + shopUpgrade;
+  const extraDemand = reach("shop") ? 2 : 0;
+  const retailNeed = clamp(shopCapacity + extraDemand, 0, 13);
   const meals = transfer(
     "food",
     "market",
