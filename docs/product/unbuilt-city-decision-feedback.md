@@ -3,12 +3,15 @@
 Date: 28 October 2026. Status: development-preview candidate.
 
 ## Feedback
+
 KNS learners report:
+
 1. The line drawn during walking is distracting.
 2. Choosing a decision only shows more text. Nothing apparently happens
    in the city, making the experience feel less like a game.
 
 ## What this iteration implements
+
 - Remove the navigation route mesh and curve. Point-and-go navigation,
   avatar movement, obstacles and the destination marker remain.
 - On **every** case option, briefly clear the panels and zoom/focus the
@@ -27,6 +30,7 @@ KNS learners report:
   four-signal scenario impact. A poor decision is not a no-op.
 
 ## Guardrails
+
 These constructions are simplified representations of scenario responses,
 not new economy mechanics. The two-day power and food evaluation remains
 authoritative for that simulation, and no choice issues verifiable XP or
@@ -34,6 +38,7 @@ claims a real-world solution is approved. A case interaction should never
 promote unsafe electrical, damaged-food or waste handling.
 
 ## Verify before rollout
+
 Regression: all 16 build sites and all 48 options produce a scene change;
 no line mesh is drawn; replay and abort/retry work; existing 14 districts,
 auto-walk and economy still function; phone controls remain legible; device

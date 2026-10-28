@@ -1855,10 +1855,22 @@ body.city-testing #casebook {
   color: #edf3fc;
   margin: 7px 0 9px;
 }
-#world-feedback small { display: block; margin-top: 7px; color: #d8e1f0; font-size: 10px; }
-.build-progress { height: 5px; border-radius: 20px; overflow: hidden; background: #d7e1ef50; }
+#world-feedback small {
+  display: block;
+  margin-top: 7px;
+  color: #d8e1f0;
+  font-size: 10px;
+}
+.build-progress {
+  height: 5px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #d7e1ef50;
+}
 .build-progress i {
-  display: block; height: 100%; width: 100%;
+  display: block;
+  height: 100%;
+  width: 100%;
   transform-origin: left center;
   background: linear-gradient(90deg, #f5cd6c, #f8e5a6);
   animation: build-action-fill 1.65s linear both;
@@ -1879,12 +1891,22 @@ body.city-impact-view #weather {
   display: none !important;
 }
 @keyframes build-feedback-enter {
-  from { opacity: 0; transform: translate(-50%, -12px) scale(0.97); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
 }
 @keyframes build-action-fill {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 @media (max-width: 650px) {
   #world-feedback {
@@ -1893,10 +1915,18 @@ body.city-impact-view #weather {
     padding: 11px 13px;
     width: min(345px, calc(100% - 24px));
   }
-  #world-feedback strong { font-size: 14px; }
-  #world-feedback p { font-size: 11px; }
+  #world-feedback strong {
+    font-size: 14px;
+  }
+  #world-feedback p {
+    font-size: 11px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  #world-feedback { animation: none; }
-  .build-progress i { animation: none; }
+  #world-feedback {
+    animation: none;
+  }
+  .build-progress i {
+    animation: none;
+  }
 }

@@ -38,11 +38,17 @@ assert(game.includes("case-replay"));
 assert(game.includes("decisionSparks.visible"));
 assert(game.includes("previewDecision = null"));
 assert(game.includes("caseScenes.setTone("));
-assert(game.includes('button.onclick = () => runCaseWorldAction('));
+assert(game.includes("button.onclick = () => runCaseWorldAction("));
 assert(game.includes("caseScenes.animate(now, reduceMotion.matches)"));
-assert(!game.includes("function drawRoute("), "navigation path lines must not render");
+assert(
+  !game.includes("function drawRoute("),
+  "navigation path lines must not render",
+);
 assert(!game.includes("routeLine"), "navigation trail must stay hidden");
-assert(!game.includes("scene.add(routeLine)"), "route meshes must remain disabled");
+assert(
+  !game.includes("scene.add(routeLine)"),
+  "route meshes must remain disabled",
+);
 assert(html.includes('id="world-feedback"'));
 assert(css.includes("body.city-impact-view #detail"));
 assert(css.includes("#world-feedback"));

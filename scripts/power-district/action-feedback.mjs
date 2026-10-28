@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { CITY_CASES } from "../../public/games/city/cases.mjs";
-import { CASE_BUILD_SITES, visualTone, feedbackCopy } from "../../public/games/city/feedback.mjs";
+import {
+  CASE_BUILD_SITES,
+  visualTone,
+  feedbackCopy,
+} from "../../public/games/city/feedback.mjs";
 import { readFileSync } from "node:fs";
 
 assert.equal(Object.keys(CASE_BUILD_SITES).length, 16);
@@ -17,10 +21,12 @@ for (const c of CITY_CASES) {
   }
 }
 assert.equal(visualTone(null), null);
-const source = readFileSync("public/games/city/scene-feedback.mjs","utf8");
+const source = readFileSync("public/games/city/scene-feedback.mjs", "utf8");
 assert(source.includes("function build(spec)"));
 assert(source.includes("effects.set(id, build(spec))"));
 assert(source.includes("effect.group.visible = Boolean(choiceId)"));
 assert(source.includes("effect.group.scale.set("));
 assert(source.includes("getChoice(id, choiceId)"));
-console.log("PASS: every authored choice has an immediate physical district response, with reversible preview and no path trail.");
+console.log(
+  "PASS: every authored choice has an immediate physical district response, with reversible preview and no path trail.",
+);

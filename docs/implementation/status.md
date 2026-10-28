@@ -27,7 +27,6 @@ CI, actual browser interaction, physical Android performance and a new
 consented learner observation are mandatory before production or claims
 that students find this genuinely engaging.
 
-
 ## 28 October 2026 — Four-district engagement practice and opt-in device save
 
 The candidate `feat/unbuilt-city-pilot-challenges` adds 16 authored

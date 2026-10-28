@@ -794,9 +794,11 @@ function runCaseWorldAction(caseId, choiceId) {
   caseScenes.setTone(caseId, choice);
   const tone = visualTone(choice);
   $("world-feedback-title").textContent =
-    tone === "improving" ? "YOUR IDEA IS TAKING SHAPE" :
-    tone === "strained" ? "THE CITY FEELS THE CONSEQUENCES" :
-    "YOUR DECISION CHANGES THE CITY";
+    tone === "improving"
+      ? "YOUR IDEA IS TAKING SHAPE"
+      : tone === "strained"
+        ? "THE CITY FEELS THE CONSEQUENCES"
+        : "YOUR DECISION CHANGES THE CITY";
   $("world-feedback-copy").textContent = feedbackCopy(spec.kind, tone);
   $("world-feedback").hidden = false;
   $("detail").hidden = true;
@@ -808,20 +810,28 @@ function runCaseWorldAction(caseId, choiceId) {
   document.body.classList.add("city-impact-view");
   const priorDistance = distance;
   distance = Math.min(distance, 15);
-  activeFeedback = { x: spec.x, z: spec.z, started: performance.now(), district: spec.district };
+  activeFeedback = {
+    x: spec.x,
+    z: spec.z,
+    started: performance.now(),
+    district: spec.district,
+  };
   decisionSparks.position.set(spec.x, 0, spec.z);
   decisionSparks.visible = !reduceMotion.matches;
   playTone(tone === "improving" ? 690 : tone === "strained" ? 340 : 520);
   const run = feedbackRunId;
-  feedbackTimer = setTimeout(() => {
-    if (run !== feedbackRunId) return;
-    $("world-feedback").hidden = true;
-    document.body.classList.remove("city-impact-view");
-    activeFeedback = null;
-    decisionSparks.visible = false;
-    distance = priorDistance;
-    showCaseOutcome(caseId, choiceId);
-  }, reduceMotion.matches ? 700 : 1650);
+  feedbackTimer = setTimeout(
+    () => {
+      if (run !== feedbackRunId) return;
+      $("world-feedback").hidden = true;
+      document.body.classList.remove("city-impact-view");
+      activeFeedback = null;
+      decisionSparks.visible = false;
+      distance = priorDistance;
+      showCaseOutcome(caseId, choiceId);
+    },
+    reduceMotion.matches ? 700 : 1650,
+  );
 }
 for (const d of OUTER_DISTRICTS)
   stations.push({
@@ -1159,7 +1169,7 @@ function showCaseOutcome(id, choiceId, kept = false) {
           "You can still retry it.</p>"
         : "") +
       '<div class="case-actions"><button class="secondary" id="case-replay">Watch the city change ↻</button>' +
-    '<button class="secondary" id="case-retry">Try another</button>' +
+      '<button class="secondary" id="case-retry">Try another</button>' +
       (kept
         ? ""
         : '<button class="primary" id="case-keep">Keep this approach</button>') +
@@ -2013,8 +2023,7 @@ function animate(now) {
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
   time += dt;
-  if (activeFeedback)
-    desiredTarget.set(activeFeedback.x, 0, activeFeedback.z);
+  if (activeFeedback) desiredTarget.set(activeFeedback.x, 0, activeFeedback.z);
   else if ($("intro").hidden && !mapMode)
     desiredTarget.set(player.g.position.x, 0, player.g.position.z);
   else desiredTarget.set(0, 0, 0);
@@ -2088,7 +2097,7 @@ function animate(now) {
   if (activeFeedback && !reduceMotion.matches) {
     const progress = Math.min(1, (now - activeFeedback.started) / 1450);
     sparkUnits.forEach((particle, i) => {
-      const theta = i * Math.PI * 2 / sparkUnits.length;
+      const theta = (i * Math.PI * 2) / sparkUnits.length;
       const radius = 0.15 + progress * (0.85 + (i % 3) * 0.25);
       particle.position.set(
         Math.cos(theta) * radius,
@@ -2127,10 +2136,11 @@ function animate(now) {
   });
   [ama, bisi, tunde].forEach((p, i) => {
     p.g.rotation.y = 0.4 + Math.sin(time * 0.7 + i) * 0.09;
-    const reacting = activeFeedback &&
+    const reacting =
+      activeFeedback &&
       ((activeFeedback.district === "market" && p === tunde) ||
-      (activeFeedback.district === "school" && p === bisi) ||
-      (["workshop", "power"].includes(activeFeedback.district) && p === ama));
+        (activeFeedback.district === "school" && p === bisi) ||
+        (["workshop", "power"].includes(activeFeedback.district) && p === ama));
     if (reacting && !reduceMotion.matches) {
       p.arms.forEach((arm, side) => {
         arm.rotation.x = Math.sin(time * 13 + side * Math.PI) * 0.48 - 0.25;
