@@ -1,5 +1,28 @@
 # Implementation status
 
+## 28 October 2026 — Compact in-city decision cards
+
+The decision and consequence overlays were occupying most of the
+mobile scene. The `feat/unbuilt-city-compact-decision-panel` preview
+scopes a **small floating question/outcome sheet** to actual case
+interactions, leaving normal city, district and map overlays unchanged.
+On a phone the question and outcome panel is capped at **46dvh or
+355px, whichever is smaller**, anchored bottom-right with scroll
+contained inside it. Landscape short screens may use up to 65dvh,
+and wider screens cap the sheet to 54dvh / 465px, at a maximum width
+of 354px. Long descriptions show their opening sentence and move
+the rest, including the existing Chapter 2 connected-city context,
+into an expandable **More about this problem** disclosure. The
+question and all three existing choice buttons remain on the main
+sheet with touch targets of at least 44px. The opening scroll position
+is reset for every new question or outcome. Review/retry and the
+existing Pause/Resume/Decisions controls are preserved; full original
+narratives and consequences remain available, not deleted.
+
+This change is preview-only until student Android portrait/landscape
+testing confirms readability, all three options reachable, accessibility
+and no collision with the journey controls.
+
 ## 28 October 2026 — Chapter 2 expansion across all 14 places
 
 Branch `feat/unbuilt-city-chapter-two-all-districts` extends the original
