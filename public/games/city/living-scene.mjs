@@ -14,6 +14,12 @@ export function createLivingCityScene({
   const plazas = new Map();
   const pedestrians = new Map();
   const vehicles = [];
+  const enterpriseStand = new T.Group();
+  enterpriseStand.userData.ignoreNavigation = true;
+  enterpriseStand.visible = false;
+  scene.add(enterpriseStand);
+  const ownedWorkers = [];
+  const ownedCustomers = [];
   function harmless(mesh) {
     mesh.userData.ignoreNavigation = true;
     mesh.castShadow = false;
@@ -123,6 +129,35 @@ export function createLivingCityScene({
     g.visible = false;
     vehicles.push({ g, route: null });
   }
+  // One lightweight, reusable enterprise stall, rather than new geometry
+  // every day. It moves to the actual district the learner has chosen.
+  B(enterpriseStand, 2.5, 0.17, 1.75, 0x9e7851, 0, 0.25, 0);
+  B(enterpriseStand, 2.8, 0.15, 2.05, 0x4d8090, 0, 2.12, 0);
+  for (const x of [-1.05, 1.05])
+    for (const z of [-0.65, 0.65])
+      C(enterpriseStand, 0.07, 1.85, 0x7b694e, x, 1.18, z);
+  B(enterpriseStand, 1.35, 0.7, 0.42, 0xc7aa7e, 0, 0.69, 0.6);
+  B(enterpriseStand, 0.6, 0.5, 0.45, 0x7fa1a0, -0.6, 0.68, 0);
+  B(enterpriseStand, 0.45, 0.4, 0.45, 0xe4bb73, 0.5, 0.62, 0);
+  function smallPerson(color, x, z) {
+    const figure = new T.Group();
+    figure.userData.ignoreNavigation = true;
+    C(figure, 0.14, 0.49, color, 0, 0.52, 0, 0.15, 7);
+    const head = new T.Mesh(new T.SphereGeometry(0.15, 7, 5), mat(0xa87c5b));
+    head.position.y = 0.93;
+    harmless(head);
+    figure.add(head);
+    for (const offset of [-0.08, 0.08])
+      B(figure, 0.09, 0.28, 0.1, 0x41515a, offset, 0.19, 0);
+    figure.position.set(x, 0.12, z);
+    enterpriseStand.add(figure);
+    return figure;
+  }
+  for (let i = 0; i < (lowPower ? 1 : 3); i++)
+    ownedWorkers.push(smallPerson(0x659c75, -0.7 + i * 0.65, 1.15));
+  for (let i = 0; i < (lowPower ? 1 : 2); i++)
+    ownedCustomers.push(smallPerson(0xb97c5e, 1.7 + i * 0.45, 1.2));
+
   let latest = null;
   function sync(decisions, economy = null) {
     latest = deriveLivingCity(decisions, economy);
@@ -139,6 +174,18 @@ export function createLivingCityScene({
       const walkers = pedestrians.get(district.id);
       walkers.forEach((p, i) => {
         p.visible = i < district.residents;
+      });
+    }
+    const owner = latest.enterpriseActivity;
+    const district = owner && CITY_DISTRICTS.find((site) => site.id === owner.district);
+    enterpriseStand.visible = Boolean(district);
+    if (district) {
+      enterpriseStand.position.set(district.x + 6.6, 0, district.z + 4.8);
+      ownedWorkers.forEach((person, i) => {
+        person.visible = i < owner.workers;
+      });
+      ownedCustomers.forEach((person, i) => {
+        person.visible = i < owner.customers;
       });
     }
     vehicles.forEach((item, i) => {
@@ -203,6 +250,16 @@ export function createLivingCityScene({
         );
         p.rotation.y = reduceMotion ? 0 : phase + Math.PI / 2;
       }
+    }
+    // Visitors approach the founder's kiosk only when a real completed day
+    // records customers; reduced motion leaves them standing in place.
+    if (enterpriseStand.visible) {
+      ownedCustomers.forEach((person, i) => {
+        if (!person.visible) return;
+        const phase = now / 1600 + i * 1.8;
+        person.position.x = reduceMotion ? 1.5 + i * 0.45 : 1.45 + i * 0.45 - Math.abs(Math.sin(phase)) * 0.8;
+        person.rotation.y = reduceMotion ? 0 : Math.sin(phase) * 0.25;
+      });
     }
     vehicles.forEach(({ g, route }, i) => {
       if (!route) return;
