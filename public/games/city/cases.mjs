@@ -578,7 +578,9 @@ const FOUNDATION_CASES = [
 export const FOUNDATION_CASE_COUNT = FOUNDATION_CASES.length;
 export const CITY_CASES = [...FOUNDATION_CASES, ...GROWING_CITY_CASES];
 export const CASE_BY_ID = new Map(CITY_CASES.map((c) => [c.id, c]));
-export const CASE_DISTRICTS = Object.freeze([...new Set(CITY_CASES.map((c) => c.district))]);
+export const CASE_DISTRICTS = Object.freeze([
+  ...new Set(CITY_CASES.map((c) => c.district)),
+]);
 export const IMPACT_LABELS = Object.freeze([
   "Reliability",
   "Access",

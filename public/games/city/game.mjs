@@ -4,8 +4,12 @@ import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
 import { chapterPressure } from "./chapter-two.mjs";
 import {
-  firstUnanswered, recoverJourney, foundationComplete,
-  chapterForCase, isChapterTransition, nextPlayableAfter,
+  firstUnanswered,
+  recoverJourney,
+  foundationComplete,
+  chapterForCase,
+  isChapterTransition,
+  nextPlayableAfter,
 } from "./journey-flow.mjs";
 import { previousKeptCase, canRevise } from "./decision-review.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
@@ -23,11 +27,7 @@ import {
   districtProgress,
 } from "./cases.mjs";
 import { loadPractice, savePractice, clearPractice } from "./practice-save.mjs";
-import {
-  choicesForCase,
-  caseNumber,
-  OUTCOME_VIEW_MS,
-} from "./case-flow.mjs";
+import { choicesForCase, caseNumber, OUTCOME_VIEW_MS } from "./case-flow.mjs";
 import {
   CITY_DISTRICTS,
   OUTER_DISTRICTS,
@@ -828,15 +828,26 @@ function refreshJourneyControls() {
   $("journey-back").title = previous
     ? "Change your earlier decision: " + previous.title
     : "No earlier decisions yet";
-  $("decision-count").textContent = caseProgress(state.decisions) + "/" + CITY_CASES.length;
+  $("decision-count").textContent =
+    caseProgress(state.decisions) + "/" + CITY_CASES.length;
   if (!visible) return;
   $("journey-toggle").textContent = running
     ? "Pause journey"
     : "Resume journey →";
   const chapter = chapterForCase(journey.caseId) ?? 1;
   $("journey-status").textContent = running
-    ? "Chapter " + chapter + " · problem " + caseNumber(journey.caseId) + "/" + CITY_CASES.length
-    : "Paused · Chapter " + chapter + " · problem " + caseNumber(journey.caseId) + "/" + CITY_CASES.length;
+    ? "Chapter " +
+      chapter +
+      " · problem " +
+      caseNumber(journey.caseId) +
+      "/" +
+      CITY_CASES.length
+    : "Paused · Chapter " +
+      chapter +
+      " · problem " +
+      caseNumber(journey.caseId) +
+      "/" +
+      CITY_CASES.length;
 }
 function pauseJourney(
   message = "Journey paused. Resume whenever you're ready.",
@@ -886,21 +897,27 @@ function goToJourneyCase(id) {
   const point = approaches[caseFile.district];
   // Fast travel between distant districts. A long unskippable walk turns
   // a city-building game into waiting; local routes still walk normally.
-  const metres = Math.hypot(player.g.position.x - point.x, player.g.position.z - point.z);
+  const metres = Math.hypot(
+    player.g.position.x - point.x,
+    player.g.position.z - point.z,
+  );
   if (metres > 24) {
     cancelWalk();
     activeFeedback = { x: point.x, z: point.z, started: performance.now() };
     toast("Travelling to " + caseFile.district + "...");
-    journeyTravelTimer = setTimeout(() => {
-      journeyTravelTimer = null;
-      if (journey.status !== "running" || journey.caseId !== id) return;
-      const planned = navigator.route(point, point);
-      const location = planned?.destination ?? point;
-      player.g.position.set(location.x, 0.3, location.z);
-      walkTarget.copy(player.g.position);
-      activeFeedback = null;
-      showCase(id);
-    }, reduceMotion.matches ? 200 : 1050);
+    journeyTravelTimer = setTimeout(
+      () => {
+        journeyTravelTimer = null;
+        if (journey.status !== "running" || journey.caseId !== id) return;
+        const planned = navigator.route(point, point);
+        const location = planned?.destination ?? point;
+        player.g.position.set(location.x, 0.3, location.z);
+        walkTarget.copy(player.g.position);
+        activeFeedback = null;
+        showCase(id);
+      },
+      reduceMotion.matches ? 200 : 1050,
+    );
     return;
   }
   const success = goTo(point, () => showCase(id), "the next problem");
@@ -1236,7 +1253,8 @@ function closeCityStatus() {
 }
 function renderCityStatus() {
   const city = deriveBuilderCity(state.decisions);
-  $("city-health-badge").textContent = city.activeDistricts + "/" + city.districtCount;
+  $("city-health-badge").textContent =
+    city.activeDistricts + "/" + city.districtCount;
   $("city-status-summary").textContent =
     city.visibleBuildings +
     " physical projects built. Fictional overall service health: " +
@@ -1251,7 +1269,15 @@ function renderCityStatus() {
     const head = document.createElement("div");
     head.className = "city-status-heading";
     const title = document.createElement("strong");
-    title.textContent = d.icon + " " + d.name + " · " + d.built + "/" + casesFor(id).length + " builds";
+    title.textContent =
+      d.icon +
+      " " +
+      d.name +
+      " · " +
+      d.built +
+      "/" +
+      casesFor(id).length +
+      " builds";
     const service = document.createElement("small");
     service.textContent = d.built
       ? d.service + "/100 · " + d.activity
@@ -1303,10 +1329,14 @@ function openCityStatus() {
   $("city-status-close").focus();
 }
 function renderCasebook() {
-  $("decision-count").textContent = caseProgress(state.decisions) + "/" + CITY_CASES.length;
+  $("decision-count").textContent =
+    caseProgress(state.decisions) + "/" + CITY_CASES.length;
   $("casebook-summary").textContent =
     caseProgress(state.decisions) +
-    " of " + CITY_CASES.length + " practice decisions kept across " + CASE_DISTRICTS.length +
+    " of " +
+    CITY_CASES.length +
+    " practice decisions kept across " +
+    CASE_DISTRICTS.length +
     " districts. Revise any decision to reshape your city.";
   $("save-practice").textContent = saveEnabled
     ? "Stop saving and clear device copy"
@@ -1327,10 +1357,12 @@ function renderCasebook() {
       d.name +
       " · " +
       districtProgress(state.decisions, district) +
-      "/" + casesFor(district).length;
+      "/" +
+      casesFor(district).length;
     const grid = document.createElement("div");
     grid.className = "case-grid";
-    const unlocked = FOUNDATION_DISTRICTS.includes(district) ||
+    const unlocked =
+      FOUNDATION_DISTRICTS.includes(district) ||
       foundationComplete(state.decisions);
     for (const scenario of casesFor(district)) {
       const button = document.createElement("button");
@@ -1343,7 +1375,9 @@ function renderCasebook() {
       const savedChoice = getChoice(scenario.id, state.decisions[scenario.id]);
       status.textContent = savedChoice
         ? "↶ Change: " + savedChoice.title
-        : unlocked ? "Not solved yet · start problem" : "Unlock after Chapter 1";
+        : unlocked
+          ? "Not solved yet · start problem"
+          : "Unlock after Chapter 1";
       if (savedChoice) button.classList.add("case-completed");
       button.append(title, status);
       button.onclick = () => startCase(scenario.id);
@@ -1448,7 +1482,9 @@ function showDecisionReviewOutcome(id, choiceId) {
   showDetail(
     '<div class="eyebrow">YOUR CITY HAS CHANGED · ' +
       caseNumber(id) +
-      "/" + CITY_CASES.length + "</div>" +
+      "/" +
+      CITY_CASES.length +
+      "</div>" +
       "<h2>" +
       scenario.title +
       "</h2>" +
@@ -1499,7 +1535,9 @@ function showCase(id) {
         ? "REVISIT YOUR DECISION · PROBLEM "
         : "BUILDER PRACTICE · PROBLEM ") +
       caseNumber(id) +
-      " / " + CITY_CASES.length + "</div>" +
+      " / " +
+      CITY_CASES.length +
+      "</div>" +
       "<h2>" +
       scenario.title +
       "</h2><p>" +
@@ -1507,7 +1545,8 @@ function showCase(id) {
       "</p>" +
       (scenario.chapter === 2
         ? '<p class="case-context"><strong>IN YOUR CITY:</strong> ' +
-          chapterPressure(scenario, deriveBuilderCity(state.decisions)) + "</p>"
+          chapterPressure(scenario, deriveBuilderCity(state.decisions)) +
+          "</p>"
         : "") +
       '<div class="evidence"><strong>YOUR DECISION</strong>' +
       scenario.question +
@@ -1561,25 +1600,34 @@ function showChapterTransition() {
   refreshJourneyControls();
   const city = deriveBuilderCity(state.decisions);
   const stronger = Object.values(city.districts)
-    .filter((d) => d.built && d.service >= 60).map((d) => d.name);
+    .filter((d) => d.built && d.service >= 60)
+    .map((d) => d.name);
   showDetail(
     '<div class="eyebrow">THE UNBUILT CITY · CHAPTER 2 UNLOCKED</div>' +
-    '<h2>Your city is coming alive.</h2>' +
-    '<p>Your first 16 decisions have shaped four districts. Look at the city you have begun: ' +
-    'new neighbours are arriving and ten more districts need your decisions.</p>' +
-    '<div class="evidence"><strong>YOUR CITY SO FAR</strong>' +
-    city.completed + '/' + CITY_CASES.length + ' projects · ' +
-    city.activeDistricts + '/14 active neighbourhoods · ' +
-    'fictional service health ' + city.cityHealth + '/100.</div>' +
-    '<p>' + (stronger.length ? 'Growing strengths: ' + stronger.join(', ') + '. ' :
-    'Your foundation still has weaknesses. ') +
-    'Housing, water, health, roads, technology, enterprise, environment, ' +
-    'governance, the arts and manufacturing now need builders.</p>' +
-    '<p>Your earlier choices will influence the situations you face here. ' +
-    'You can return and improve any decision.</p>' +
-    '<div class="auto-next"><span>Chapter 2 starts automatically.</span>' +
-    '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
-    '<button class="primary" id="chapter-start">Start the growing city now →</button>',
+      "<h2>Your city is coming alive.</h2>" +
+      "<p>Your first 16 decisions have shaped four districts. Look at the city you have begun: " +
+      "new neighbours are arriving and ten more districts need your decisions.</p>" +
+      '<div class="evidence"><strong>YOUR CITY SO FAR</strong>' +
+      city.completed +
+      "/" +
+      CITY_CASES.length +
+      " projects · " +
+      city.activeDistricts +
+      "/14 active neighbourhoods · " +
+      "fictional service health " +
+      city.cityHealth +
+      "/100.</div>" +
+      "<p>" +
+      (stronger.length
+        ? "Growing strengths: " + stronger.join(", ") + ". "
+        : "Your foundation still has weaknesses. ") +
+      "Housing, water, health, roads, technology, enterprise, environment, " +
+      "governance, the arts and manufacturing now need builders.</p>" +
+      "<p>Your earlier choices will influence the situations you face here. " +
+      "You can return and improve any decision.</p>" +
+      '<div class="auto-next"><span>Chapter 2 starts automatically.</span>' +
+      '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
+      '<button class="primary" id="chapter-start">Start the growing city now →</button>',
   );
   const advance = () => {
     cancelAutoAdvance();
@@ -1617,7 +1665,9 @@ function proceedAfterCase(id) {
         "You can explore, revise choices and keep testing how city services connect.</p>" +
         '<div class="evidence"><strong>BUILDER PRACTICE</strong>' +
         caseProgress(state.decisions) +
-        " of " + CITY_CASES.length + " choices made. " +
+        " of " +
+        CITY_CASES.length +
+        " choices made. " +
         "Every decision can be revisited.</div>" +
         "<p>This is a fictional learning model, not a verified city economy or Quest achievement. Your city remains revisable.</p>" +
         '<button class="primary" id="finish-practice">Return to the city</button>',
@@ -1652,7 +1702,9 @@ function showCaseOutcome(id, choiceId) {
   showDetail(
     '<div class="eyebrow">YOUR ACTION · ' +
       caseNumber(id) +
-      " / " + CITY_CASES.length + "</div>" +
+      " / " +
+      CITY_CASES.length +
+      "</div>" +
       "<h2>" +
       scenario.title +
       "</h2>" +
@@ -1672,7 +1724,9 @@ function showCaseOutcome(id, choiceId) {
       scenario.bridge +
       "</p><small>Fictional signals, not verified XP or actual city funds.</small></details>" +
       '<div class="auto-next"><span id="autonext-caption">✓ Your decision is kept.' +
-      (next ? " Next: " + next.title : " All " + CITY_CASES.length + " problems reached.") +
+      (next
+        ? " Next: " + next.title
+        : " All " + CITY_CASES.length + " problems reached.") +
       " The game continues automatically.</span>" +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
       '<div class="case-actions">' +
@@ -1773,8 +1827,11 @@ function render() {
       day: Math.min(state.day, 2),
     }),
     q = r.quote;
-  $("chapter").textContent = "THE UNBUILT CITY · CHAPTER " +
-    (foundationComplete(state.decisions) ? 2 : 1) + " · DAY " + state.day;
+  $("chapter").textContent =
+    "THE UNBUILT CITY · CHAPTER " +
+    (foundationComplete(state.decisions) ? 2 : 1) +
+    " · DAY " +
+    state.day;
   $("mission-title").textContent = guided
     ? guided.title
     : state.day === 1
@@ -1917,8 +1974,10 @@ function inspect(id) {
     if (!foundationComplete(state.decisions)) {
       showDetail(
         '<div class="eyebrow">CHAPTER 2 · COMING NEXT</div>' +
-        '<h2>' + district.name + '</h2><p>Finish the 16 Foundation decisions to ' +
-        'unlock this district and its two builder challenges.</p>',
+          "<h2>" +
+          district.name +
+          "</h2><p>Finish the 16 Foundation decisions to " +
+          "unlock this district and its two builder challenges.</p>",
       );
     } else showDistrictCases(id);
     return;
@@ -1982,9 +2041,10 @@ function openDirectory() {
     const info = document.createElement("small");
     info.textContent =
       d.status === "active"
-        ? (FOUNDATION_DISTRICTS.includes(d.id) ||
-            foundationComplete(state.decisions)
-            ? "Playable · go there" : "Chapter 2 · unlock after 16 choices")
+        ? FOUNDATION_DISTRICTS.includes(d.id) ||
+          foundationComplete(state.decisions)
+          ? "Playable · go there"
+          : "Chapter 2 · unlock after 16 choices"
         : "Explore";
     b.append(name, info);
     b.onclick = () => goToStation(d.id);
@@ -2427,9 +2487,11 @@ $("start").onclick = () => {
   if (nextUnsolved || journey.status === "paused") {
     // Preserve the Chapter 2 reveal for older saves that completed all 16
     // foundation cases before Chapter 2 existed.
-    if (foundationComplete(state.decisions) &&
-        caseProgress(state.decisions) === FOUNDATION_CASE_COUNT &&
-        journey.stage === "complete") {
+    if (
+      foundationComplete(state.decisions) &&
+      caseProgress(state.decisions) === FOUNDATION_CASE_COUNT &&
+      journey.stage === "complete"
+    ) {
       showChapterTransition();
       return;
     }

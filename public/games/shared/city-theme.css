@@ -2348,10 +2348,21 @@ body.city-journey #world-feedback {
   opacity: 0.62;
   cursor: not-allowed;
 }
-#casebook .case-section { scroll-margin-top: 12px; }
-#casebook-list .case-grid { gap: 8px; }
-#casebook-list .case-section h3 { font-size: 14px; }
+#casebook .case-section {
+  scroll-margin-top: 12px;
+}
+#casebook-list .case-grid {
+  gap: 8px;
+}
+#casebook-list .case-section h3 {
+  font-size: 14px;
+}
 @media (max-width: 650px) {
-  .case-context { font-size: 11px; padding: 10px; }
-  #casebook-list .case-grid { grid-template-columns: 1fr; }
+  .case-context {
+    font-size: 11px;
+    padding: 10px;
+  }
+  #casebook-list .case-grid {
+    grid-template-columns: 1fr;
+  }
 }

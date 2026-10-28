@@ -183,7 +183,15 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       case "flood":
       case "recycling":
         for (let i = 0; i < 3; i++)
-          B(0.31, 0.57, 0.43, [0x559786, 0xd3b365, 0x6c8dad][i], -0.37+i*0.37, 0.45, 0);
+          B(
+            0.31,
+            0.57,
+            0.43,
+            [0x559786, 0xd3b365, 0x6c8dad][i],
+            -0.37 + i * 0.37,
+            0.45,
+            0,
+          );
         B(1.25, 0.1, 0.18, 0x688b77, 0, 0.22, 0.44);
         break;
       case "civic":
@@ -195,7 +203,8 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       case "stage":
       case "notices":
         B(1.25, 0.22, 0.87, 0x957292, 0, 0.4, 0);
-        for (const x of [-0.52,0.52]) B(0.09, 0.93, 0.08, 0xd7a86e, x, 0.95, -0.33);
+        for (const x of [-0.52, 0.52])
+          B(0.09, 0.93, 0.08, 0xd7a86e, x, 0.95, -0.33);
         B(1.12, 0.12, 0.24, 0xe6bf8a, 0, 1.38, -0.33);
         break;
       case "factory":

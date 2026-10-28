@@ -7,11 +7,16 @@ import { OUTER_DISTRICTS } from "./districts.mjs";
 import { GROWING_CITY_CASES } from "./chapter-two.mjs";
 const outerSites = {};
 const kinds = {
-  housing: ["homes", "upkeep"], water: ["pump", "drains"],
-  health: ["clinic", "supply"], transport: ["roads", "crosswalk"],
-  technology: ["digital", "offline"], business: ["shops", "finance"],
-  environment: ["flood", "recycling"], governance: ["civic", "reports"],
-  creative: ["stage", "notices"], industry: ["factory", "training"],
+  housing: ["homes", "upkeep"],
+  water: ["pump", "drains"],
+  health: ["clinic", "supply"],
+  transport: ["roads", "crosswalk"],
+  technology: ["digital", "offline"],
+  business: ["shops", "finance"],
+  environment: ["flood", "recycling"],
+  governance: ["civic", "reports"],
+  creative: ["stage", "notices"],
+  industry: ["factory", "training"],
 };
 for (const district of OUTER_DISTRICTS) {
   const authored = GROWING_CITY_CASES.filter((c) => c.district === district.id);
@@ -132,7 +137,11 @@ export const CASE_BUILD_SITES = Object.freeze({
     label: "Inclusive materials",
   },
   "learn-feedback": {
-    district: "school", x: -11.0, z: 15.5, kind: "feedback", label: "Learning feedback",
+    district: "school",
+    x: -11.0,
+    z: 15.5,
+    kind: "feedback",
+    label: "Learning feedback",
   },
   ...outerSites,
 });
@@ -161,16 +170,26 @@ export function feedbackCopy(kind, tone) {
       lights: "The classroom lighting changes.",
       access: "Learning resources change.",
       feedback: "The learner feedback board changes.",
-      homes: "Homes begin to take shape.", upkeep: "Shared housing services change.",
-      pump: "The neighbourhood water point changes.", drains: "New sanitation works appear.",
-      clinic: "Clinic access changes.", supply: "The medical supply point changes.",
-      roads: "The delivery yard changes.", crosswalk: "A street crossing takes shape.",
-      digital: "A public-service technology kiosk changes.", offline: "The backup communication point changes.",
-      shops: "A shop front develops.", finance: "The enterprise payment desk changes.",
-      flood: "The rainwater protection area changes.", recycling: "A waste collection site takes shape.",
-      civic: "The community meeting space changes.", reports: "The public service board changes.",
-      stage: "A community stage takes shape.", notices: "Creative announcements appear.",
-      factory: "The local making yard changes.", training: "A production training station changes.",
+      homes: "Homes begin to take shape.",
+      upkeep: "Shared housing services change.",
+      pump: "The neighbourhood water point changes.",
+      drains: "New sanitation works appear.",
+      clinic: "Clinic access changes.",
+      supply: "The medical supply point changes.",
+      roads: "The delivery yard changes.",
+      crosswalk: "A street crossing takes shape.",
+      digital: "A public-service technology kiosk changes.",
+      offline: "The backup communication point changes.",
+      shops: "A shop front develops.",
+      finance: "The enterprise payment desk changes.",
+      flood: "The rainwater protection area changes.",
+      recycling: "A waste collection site takes shape.",
+      civic: "The community meeting space changes.",
+      reports: "The public service board changes.",
+      stage: "A community stage takes shape.",
+      notices: "Creative announcements appear.",
+      factory: "The local making yard changes.",
+      training: "A production training station changes.",
     }[kind] ?? "This district changes.";
   return (
     action +

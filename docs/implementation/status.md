@@ -35,7 +35,6 @@ consented classroom end-to-end walk-through must happen before a
 production merge, especially long-session WebGL performance and
 navigation across the enlarged map.
 
-
 ## 28 October 2026 — restore essential controls and let builders revise decisions
 
 A new preview branch `feat/unbuilt-city-navigation-and-revision`

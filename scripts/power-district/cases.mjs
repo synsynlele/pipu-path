@@ -17,7 +17,11 @@ assert.equal(CASE_DISTRICTS.length, 14);
 assert.equal(IMPACT_LABELS.length, 4);
 assert.equal(new Set(CITY_CASES.map((c) => c.id)).size, 16);
 for (const district of CASE_DISTRICTS) {
-  assert.equal(casesFor(district).length, ["workshop","power","market","school"].includes(district) ? 4 : 2, district);
+  assert.equal(
+    casesFor(district).length,
+    ["workshop", "power", "market", "school"].includes(district) ? 4 : 2,
+    district,
+  );
 }
 for (const c of CITY_CASES) {
   assert(c.title.length > 5 && c.situation.length > 40);
@@ -38,7 +42,11 @@ let decisions = {};
 for (const caseFile of CITY_CASES)
   decisions = saveDecision(decisions, caseFile.id, caseFile.options[0].id);
 assert.equal(caseProgress(decisions), 36);
-for (const d of CASE_DISTRICTS) assert.equal(districtProgress(decisions, d), ["workshop","power","market","school"].includes(d) ? 4 : 2);
+for (const d of CASE_DISTRICTS)
+  assert.equal(
+    districtProgress(decisions, d),
+    ["workshop", "power", "market", "school"].includes(d) ? 4 : 2,
+  );
 const before = decisions;
 assert.equal(saveDecision(decisions, "fake-id", "fake"), before);
 assert.equal(saveDecision(decisions, CITY_CASES[0].id, "invalid"), before);

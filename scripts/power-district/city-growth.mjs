@@ -47,7 +47,9 @@ assert.equal(positive.visibleBuildings, 36);
 assert(positive.thriving >= 4);
 assert(positive.cityHealth > 60);
 for (const district of Object.values(positive.districts)) {
-  const target = ["workshop","power","market","school"].includes(district.id) ? 4 : 2;
+  const target = ["workshop", "power", "market", "school"].includes(district.id)
+    ? 4
+    : 2;
   assert.equal(district.built, target);
   assert.equal(district.structures.length, target);
   assert(district.service >= 0 && district.service <= 100);

@@ -163,7 +163,12 @@ export const CITY_DISTRICTS = [
   },
 ];
 
-export const FOUNDATION_DISTRICTS = Object.freeze(["workshop", "power", "market", "school"]);
+export const FOUNDATION_DISTRICTS = Object.freeze([
+  "workshop",
+  "power",
+  "market",
+  "school",
+]);
 export const OUTER_DISTRICTS = CITY_DISTRICTS.filter(
   (d) => !FOUNDATION_DISTRICTS.includes(d.id),
 );

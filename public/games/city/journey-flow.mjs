@@ -36,7 +36,9 @@ export function nextPlayableAfter(caseId, decisions = {}) {
   const first = CITY_CASES.slice(at + 1).find(
     (c) => !getChoice(c.id, decisions[c.id]),
   );
-  return first ?? CITY_CASES.find((c) => !getChoice(c.id, decisions[c.id])) ?? null;
+  return (
+    first ?? CITY_CASES.find((c) => !getChoice(c.id, decisions[c.id])) ?? null
+  );
 }
 export function firstUnanswered(decisions = {}) {
   return CITY_CASES.find((c) => !getChoice(c.id, decisions[c.id])) ?? null;
