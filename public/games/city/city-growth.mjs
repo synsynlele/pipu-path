@@ -207,8 +207,13 @@ export function deriveBuilderCity(decisions = {}) {
     const total = casesFor(d.id).length || 1;
     const progress = d.built / total;
     d.direct = d.built
-      ? clamp(12 + progress * 36 +
-        d.impact.reduce((a, b) => a + b, 0) * (6.4 / total), 5, 100)
+      ? clamp(
+          12 +
+            progress * 36 +
+            d.impact.reduce((a, b) => a + b, 0) * (6.4 / total),
+          5,
+          100,
+        )
       : 0;
     DIMENSIONS.forEach((axis, i) => {
       d[axis] = d.built
