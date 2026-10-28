@@ -1195,6 +1195,7 @@ $("city-map").onclick = () => {
 };
 $("start").onclick = () => {
   $("intro").hidden = true;
+  $("city-tools").hidden = false;
   mapMode = false;
   distance = 27;
   $("mission").hidden = false;
