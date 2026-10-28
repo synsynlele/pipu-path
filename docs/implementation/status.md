@@ -1,5 +1,40 @@
 # Implementation status
 
+## 28 October 2026 — Choice-to-City Engine (four-district vertical slice)
+
+The preview branch `feat/unbuilt-city-choice-to-city` turns all 16
+authored cases into **persistent, visibly different alternatives**.
+Each has three independently modelled 3D arrangements (48 authored
+choice-state variants across Repair, Power, Food and Learning): a
+coordinated, staffed facility; an overloaded construction; or an
+underused/incomplete installation. The structure is selected by the
+stable authored choice ID, never by the on-screen answer position.
+Revisiting a scenario replaces the prior arrangement, and optional
+device-save restoration regenerates the same built city from the
+sanitised choices already stored. A district-wide civic hub changes
+its shape and resident activity according to aggregated service
+conditions; its appearance is driven by the whole district, rather
+than merely by the most recent answer.
+
+A pure `city-growth.mjs` model derives four fictional service
+profiles from choices, including interdependencies:
+Power → Food, Learning and Repair; Learning → Repair;
+Repair → Power and Food; Food → Repair and Learning.
+"My City" opens a compact panel with 4 live district readouts,
+building counts, service bars, and incoming cross-district effects.
+No new personal data or parallel mutable city save is introduced:
+city state is deterministically reconstructed from the existing
+opt-in, validated browser-only saved choice IDs, and can be revised.
+
+The above indicators are **authored fictional feedback**, separate
+from the earlier two-day power, food and cash operating simulation.
+They are not grade scores, XP, actual market or engineering predictions,
+or verified evidence. The remaining ten districts are explorable but
+do not yet have their own economic gameplay. Preview only; physical
+Android rendering, long-session user experience and consented learner
+observations are still required before any production promotion.
+
+
 ## 28 October 2026 — hands-free case progression and varied answer positions
 
 The branch `feat/unbuilt-city-auto-flow-options` builds on the visible-action

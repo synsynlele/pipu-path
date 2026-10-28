@@ -2,7 +2,8 @@
 // These props are fiction-only visual effects and do not alter the budget,
 // power model, Quest achievements or skill verification.
 import { CASE_BUILD_SITES, visualTone } from "./feedback.mjs";
-import { getChoice } from "./cases.mjs";
+import { getCase, getChoice } from "./cases.mjs";
+import { choiceStructure, deriveBuilderCity } from "./city-growth.mjs";
 
 export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
   const effects = new Map();
@@ -145,6 +146,69 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       default:
         B(1, 0.7, 0.7, 0x78988d, 0, 0.48, 0);
     }
+    // Three truly different structures for each authored choice. This changes
+    // the skyline, capacity illusion and resident activity—not just its colour.
+    const variants = new Map();
+    const buildChoice = (caseId, choiceId) => {
+      const appearance = choiceStructure(caseId, choiceId);
+      const alt = new T.Group();
+      group.add(alt);
+      const V = (w, h, d, color, x, y, z) => {
+        const m = box(w, h, d, color, x, y, z, alt);
+        m.userData.ignoreNavigation = true;
+        return m;
+      };
+      const Vc = (rad, h, color, x, y, z) => {
+        const m = cyl(rad, h, color, x, y, z, alt);
+        m.userData.ignoreNavigation = true;
+        return m;
+      };
+      if (appearance.variant === "coordinated") {
+        // A finished, staffed, walkable facility: shelter, equipment and greenery.
+        for (const x of [-0.5, 0.5]) {
+          V(0.10, 1.25, 0.12, 0x54766c, x, 0.73, -0.42);
+          V(0.10, 1.25, 0.12, 0x54766c, x, 0.73, 0.35);
+        }
+        V(1.42, 0.18, 1.18, 0x4b8e8d, 0, 1.42, -0.03);
+        V(0.90, 0.42, 0.55, 0xd3b77f, 0, 0.50, -0.07);
+        for (let i=0;i<3;i++) V(0.20, 0.20, 0.24, 0x81a5c5, -0.32+i*0.32, 0.82, -0.04);
+        Vc(0.14,0.3,0x719459,0.53,0.39,0.42);
+        const worker = new T.Group();
+        alt.add(worker);
+        const body = new T.Mesh(new T.CylinderGeometry(0.12,0.16,0.45,7),mat(0x527ca3));
+        body.position.y=0.52;worker.add(body);
+        const head = new T.Mesh(new T.SphereGeometry(0.14,8,6),mat(0x9e7158));
+        head.position.y=0.83;worker.add(head);
+        worker.position.set(-0.6,0,0.37);
+        worker.userData.ignoreNavigation=true;
+        alt.userData.worker=worker;
+      } else if (appearance.variant === "overloaded") {
+        // Oversized uncoordinated expansion: many structures, blocked access.
+        for(let i=0;i<3;i++) {
+          const x=-0.40+i*0.43;
+          V(0.38,1.10+i*0.32,0.58,[0xbb895b,0xbba38d,0x9b817c][i],x,0.66+(i*0.16),-0.08);
+          V(0.36,0.12,0.10,0x4d5864,x,1.19+i*0.32,0.27);
+        }
+        V(1.55,0.12,0.43,0xb96950,0,0.20,0.46);
+        for(let j=0;j<3;j++) V(0.25,0.28,0.22,0xd1a76d,-0.46+j*0.41,0.50,0.43);
+        V(0.14,1.92,0.13,0x6d6770,0.67,1.12,-0.26);
+      } else {
+        // Underused / risky plan: an incomplete frame and idle equipment.
+        for(const x of [-0.48,0.48]){
+          for(const z of [-0.36,0.35]) V(0.08,1.18,0.09,0x8d6f5f,x,0.74,z);
+        }
+        V(1.14,0.11,0.79,0x95887a,0,1.36,0);
+        V(0.72,0.42,0.55,0xa96e5c,0.12,0.47,-0.04);
+        for(let j=0;j<3;j++) V(0.25,0.26,0.24,0x77736d,-0.40+j*0.29,0.31,0.42);
+        // Clear caution barrier: a poor choice is not represented as success.
+        for(const x of [-0.54,0,0.54]) V(0.12,0.54,0.12,0xce8e50,x,0.44,0.6);
+        V(1.23,0.12,0.12,0xce8e50,0,0.65,0.6);
+      }
+      alt.visible = false;
+      variants.set(choiceId, alt);
+    };
+    const scenario = getCase(spec.caseId);
+    for (const option of scenario.options) buildChoice(spec.caseId, option.id);
     const light = B(1.28, 0.12, 0.14, 0x709e7b, 0, 0.18, 0.57);
     const flag = C(0.15, 0.19, 0x709e7b, 0.43, 1.37, 0.44);
     const halo = new T.Mesh(
@@ -161,19 +225,69 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     halo.userData.ignoreNavigation = true;
     group.add(halo);
     group.visible = false;
-    return { group, light, flag, halo, choiceId: null, started: 0 };
+    return { group, light, flag, halo, variants, choiceId: null, started: 0 };
   }
   for (const [id, spec] of Object.entries(CASE_BUILD_SITES)) {
-    effects.set(id, build(spec));
+    effects.set(id, build({ ...spec, caseId: id }));
+  }
+  // A district-wide civic site expands as its actual fictional service
+  // health improves. Residents are visibly active, idle or absent.
+  const hubSites = {
+    workshop: { x: -0.15, z: -5.8 },
+    power: { x: 6.45, z: -7.9 },
+    market: { x: 19.6, z: 12.2 },
+    school: { x: -10.4, z: 11.6 },
+  };
+  const hubs = new Map();
+  for (const [id, anchor] of Object.entries(hubSites)) {
+    const hub = new T.Group();
+    hub.position.set(anchor.x, 0.16, anchor.z);
+    hub.userData.ignoreNavigation = true;
+    scene.add(hub);
+    const base = box(1.2, 0.17, 1.1, 0x888b80, 0, 0.09, 0, hub);
+    base.userData.ignoreNavigation = true;
+    const tower = box(0.72, 0.58, 0.62, 0x638e9c, 0, 0.52, 0, hub);
+    tower.userData.ignoreNavigation = true;
+    const roof = box(1.07, 0.12, 0.83, 0x99a977, 0, 0.93, 0, hub);
+    roof.userData.ignoreNavigation = true;
+    const workers = [];
+    for (let i=0;i<2;i++) {
+      const p = new T.Group();
+      const shirt = new T.Mesh(new T.CylinderGeometry(0.10,0.14,0.32,6), mat(i ? 0xba865b : 0x6987ac));
+      shirt.position.y = 0.35; p.add(shirt);
+      const head = new T.Mesh(new T.SphereGeometry(0.115,7,6), mat(i ? 0x88654e : 0xb88a63));
+      head.position.y = 0.62; p.add(head);
+      p.userData.ignoreNavigation = true;
+      hub.add(p);
+      workers.push(p);
+    }
+    hub.visible = false;
+    hubs.set(id, { hub, tower, roof, workers, activity: "waiting", service: 0 });
   }
   const palette = { improving: 0x6bab85, mixed: 0xe0bd65, strained: 0xcf7963 };
   function sync(decisions, preview = null) {
+    const city = deriveBuilderCity(decisions);
+    for (const [id, item] of hubs) {
+      const d = city.districts[id];
+      item.hub.visible = d.built > 0;
+      item.activity = d.activity;
+      item.service = d.service;
+      const strength = d.service / 100;
+      item.tower.scale.y = 0.7 + strength * 1.1;
+      item.tower.position.y = 0.52 + (item.tower.scale.y - 1) * 0.29;
+      const colour = d.activity === "thriving" ? 0x4a947f : d.activity === "active" ? 0xddb668 : 0xb47567;
+      item.tower.material = mat(colour);
+      item.roof.material = mat(colour);
+      item.workers[0].visible = d.activity !== "waiting";
+      item.workers[1].visible = d.activity === "thriving";
+    }
     for (const [id, effect] of effects) {
       const choiceId =
         preview?.caseId === id ? preview.choiceId : decisions[id];
       const changed = effect.choiceId !== choiceId;
       effect.choiceId = choiceId;
       effect.group.visible = Boolean(choiceId);
+      for (const [id, variant] of effect.variants) variant.visible = id === choiceId;
       if (!choiceId) continue;
       const option = getChoice(id, choiceId);
       const toneName = visualTone(option);
@@ -195,6 +309,17 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     e.flag.material = mat(color);
   }
   function animate(now, reducedMotion) {
+    for (const item of hubs.values()) {
+      if (!item.hub.visible) continue;
+      item.workers.forEach((person, i) => {
+        if (!person.visible) return;
+        const angle = now / (item.activity === "thriving" ? 1300 : 3100) + i * Math.PI;
+        person.position.set(Math.cos(angle) * 0.8, 0.0, Math.sin(angle) * 0.7);
+        person.rotation.y = angle + Math.PI / 2;
+        if (reducedMotion) person.position.y = 0;
+        else person.position.y = Math.abs(Math.sin(now / 240 + i)) * 0.025;
+      });
+    }
     for (const effect of effects.values()) {
       if (!effect.group.visible) continue;
       const t = Math.max(0, Math.min(1, (now - effect.started) / 1000));
@@ -203,6 +328,11 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       effect.halo.scale.setScalar(
         reducedMotion ? 1 : 1 + Math.sin(t * Math.PI) * 0.8,
       );
+      const chosen = effect.variants.get(effect.choiceId);
+      if (chosen?.userData.worker && !reducedMotion) {
+        chosen.userData.worker.position.x = -0.6 + Math.sin(now / 650) * 0.12;
+        chosen.userData.worker.rotation.y = Math.sin(now / 1050) * 0.18;
+      }
       effect.halo.material.opacity = reducedMotion
         ? 0.2
         : t < 1
@@ -210,5 +340,5 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
           : 0.08;
     }
   }
-  return { sync, setTone, animate, effects };
+  return { sync, setTone, animate, effects, hubs };
 }
