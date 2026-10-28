@@ -1,7 +1,7 @@
 // Choice-to-City v1: deterministic fictional district operating indicators.
 // This is NOT the original two-day budget/power simulator, verified XP,
 // personal assessment, or advice for real infrastructure operations.
-import { CITY_CASES, getChoice } from "./cases.mjs";
+import { CITY_CASES, getChoice, casesFor } from "./cases.mjs";
 import { CITY_DISTRICTS } from "./districts.mjs";
 
 export const CITY_SYSTEMS = Object.freeze(
@@ -202,15 +202,18 @@ export function deriveBuilderCity(decisions = {}) {
   // Baseline only represents a fictional starting neighbourhood. Buildings
   // cannot increase capacity merely because a question was viewed.
   for (const d of Object.values(districts)) {
+    // Two-decision growth districts and four-decision foundation districts
+    // must be comparable once their available problems are completed.
+    const total = casesFor(d.id).length || 1;
+    const progress = d.built / total;
     d.direct = d.built
-      ? clamp(
-          12 + d.built * 9 + d.impact.reduce((a, b) => a + b, 0) * 1.6,
-          5,
-          100,
-        )
+      ? clamp(12 + progress * 36 +
+        d.impact.reduce((a, b) => a + b, 0) * (6.4 / total), 5, 100)
       : 0;
     DIMENSIONS.forEach((axis, i) => {
-      d[axis] = d.built ? clamp(38 + d.impact[i] * 8 + d.built * 3, 0, 100) : 0;
+      d[axis] = d.built
+        ? clamp(38 + d.impact[i] * (32 / total) + progress * 12, 0, 100)
+        : 0;
     });
   }
   for (const d of Object.values(districts)) {

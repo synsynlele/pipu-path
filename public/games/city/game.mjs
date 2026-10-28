@@ -910,9 +910,15 @@ function goToJourneyCase(id) {
         journeyTravelTimer = null;
         if (journey.status !== "running" || journey.caseId !== id) return;
         const planned = navigator.route(point, point);
-        const location = planned?.destination ?? point;
-        player.g.position.set(location.x, 0.3, location.z);
-        walkTarget.copy(player.g.position);
+        const location = planned?.destination;
+        // Never place the avatar in an obstacle. If all safe arrivals are
+        // blocked, preserve the current position and open the problem.
+        if (location && navigator.free(location)) {
+          player.g.position.set(location.x, 0.3, location.z);
+          walkTarget.copy(player.g.position);
+        } else {
+          toast("That spot is occupied. The next problem opens safely here.");
+        }
         activeFeedback = null;
         showCase(id);
       },
