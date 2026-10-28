@@ -1,7 +1,7 @@
-import { MissionExperience } from "@/modules/city/ui/world-simulation";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CityEpisode, type CityContext } from "@/modules/city/ui/city-episode";
+import type { CityContext } from "@/modules/city/ui/city-episode";
+import { UnbuiltCityExperience } from "@/modules/city/ui/unbuilt-city-experience";
 import { cityContinuation } from "@/modules/city/domain/continuation";
 import { requireAuthenticatedHomeState } from "@/modules/identity/infrastructure/progress-dal";
 import { getQuestById } from "@/modules/quest/infrastructure/quest-dal";
@@ -42,15 +42,13 @@ export default async function CityPage({
       returnLabel: next.actionLabel,
     };
   }
+  const next = cityContinuation(state.quest);
   return (
-    <MissionExperience
-      worldId="unbuilt-city-night-market-v1"
-      userId={state.userId}
-      questHref={
-        context?.returnHref ?? cityContinuation(state.quest).actionHref
-      }
-    >
-      <CityEpisode context={context} />
-    </MissionExperience>
+    <UnbuiltCityExperience
+      questHref={context?.returnHref ?? next.actionHref}
+      questLabel={context?.returnLabel ?? next.actionLabel}
+      questTitle={context?.questTitle}
+      outcome={context?.outcome}
+    />
   );
 }

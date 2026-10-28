@@ -160,11 +160,9 @@ export function JourneyPlayCard({
               <CityIcon name="play" className="size-6" />
             </span>
             <span>
-              <strong className="block text-sm">
-                Follow my adventure path
-              </strong>
+              <strong className="block text-sm">The Unbuilt City</strong>
               <span className="mt-1 block text-xs text-indigo-100">
-                Start with one mission, then follow your worlds.
+                Enter Power District and build a solution that lasts.
               </span>
             </span>
           </span>

@@ -4,10 +4,10 @@ import Link from "next/link";
 import { requireAuthenticatedHomeState } from "@/modules/identity/infrastructure/progress-dal";
 import { getBuilderLevelProgress } from "@/modules/identity/domain/builder-level";
 import { cityContinuation } from "@/modules/city/domain/continuation";
-import { AdventurePathMap } from "@/modules/city/ui/adventure-path-map";
+import { UnbuiltCityCampaign } from "@/modules/city/ui/unbuilt-city-campaign";
 
 export const metadata: Metadata = {
-  title: "Your Adventure Path | PipuPath",
+  title: "The Unbuilt City · Mission Path | PipuPath",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
@@ -42,12 +42,7 @@ export default async function AdventureHubPage() {
           </Link>
         </header>
 
-        <AdventurePathMap userId={state.userId} cityHref={next.playHref} />
-        <p className="text-xs leading-5 text-[#c9dae2]">
-          Build simulations start fresh. Earlier story saves remain available
-          through Story practice inside each world. Your real Quest progress is
-          unchanged.
-        </p>
+        <UnbuiltCityCampaign playHref={next.playHref} />
 
         <section
           aria-labelledby="real-quest-heading"
@@ -74,7 +69,8 @@ export default async function AdventureHubPage() {
         </section>
         <p className="pb-2 text-center text-[0.7rem] leading-5 text-[#8fa7b5]">
           The mission path is your practice journey. Earned XP and real Quest
-          progress remain separate. World photography: Unsplash.
+          progress remain separate. The Unbuilt City · Build, test, improve and
+          hand over.
         </p>
       </div>
     </main>

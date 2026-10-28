@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#efe8d9" />
+    <title>The Unbuilt City · Power District</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main id="game" aria-label="PipuPath interactive 3D workshop">
+      <canvas
+        id="world"
+        aria-label="3D repair workshop. Drag to orbit, scroll to zoom, click the ground to walk. Use labeled stations to interact."
+      ></canvas>
+      <div id="vignette"></div>
+      <header>
+        <a class="brand" href="#" aria-label="PipuPath home"
+          ><span class="brand-icon">p<span>↗</span></span
+          ><b>PipuPath<small>THE UNBUILT CITY</small></b></a
+        >
+        <div class="district">
+          <span class="live-dot"></span> POWER DISTRICT
+          <span class="divider">/</span> MISSION 01
+        </div>
+        <div class="top-actions">
+          <button
+            id="sound"
+            class="icon"
+            aria-label="Turn sound on"
+            title="Sound"
+          >
+            ♫</button
+          ><button
+            id="help"
+            class="icon"
+            aria-label="Open controls"
+            title="Controls"
+          >
+            ?</button
+          ><button
+            id="reset"
+            class="icon"
+            aria-label="Restart mission"
+            title="Restart"
+          >
+            ↻
+          </button>
+        </div>
+      </header>
+      <div id="weather">
+        <span id="weather-icon">☀</span
+        ><span id="weather-title">A bright beginning</span
+        ><span class="weather-time">08:00</span>
+      </div>
+      <section id="mission" class="panel" hidden>
+        <div class="eyebrow" id="chapter">01 / DISCOVER</div>
+        <h1 id="mission-title">A workshop worth keeping.</h1>
+        <p id="mission-copy"></p>
+        <div id="objectives"></div>
+        <div id="mission-action"></div>
+        <div class="progress-track"><i id="progress"></i></div>
+        <div class="mission-footer">
+          <span id="step-label">DISCOVER</span
+          ><span>POWER • PEOPLE • PURPOSE</span>
+        </div>
+      </section>
+      <div id="scene-labels"></div>
+      <div id="travel" hidden>
+        <span class="live-dot"></span><span id="travel-text">Walking…</span
+        ><button id="stop-walking">Stop ×</button>
+      </div>
+      <div id="toast" role="status" aria-live="polite"></div>
+      <section id="detail" class="panel" hidden aria-label="Station details">
+        <button class="close" id="close-detail" aria-label="Close details">
+          ×
+        </button>
+        <div id="detail-body"></div>
+      </section>
+      <div id="resource" hidden>
+        <span class="coin">◈</span
+        ><span
+          ><b id="credits">8</b> credits<small>YOUR PROJECT BUDGET</small></span
+        >
+      </div>
+      <div id="build-dock" hidden>
+        <div class="dock-title">
+          <span class="eyebrow">YOUR SOLUTION</span
+          ><span>Tap to add · tap again to remove</span>
+        </div>
+        <div id="build-options"></div>
+        <button id="test" class="primary">Run a day <span>→</span></button>
+      </div>
+      <div id="controls">
+        <span class="control-icon">↔</span> Drag to look <span>·</span> Tap once
+        to travel <span>·</span> Scroll to zoom
+      </div>
+      <div id="mobile-move" hidden>
+        <button data-move="up" aria-label="Walk forward">↑</button>
+        <div>
+          <button data-move="left" aria-label="Walk left">←</button
+          ><button data-move="down" aria-label="Walk backward">↓</button
+          ><button data-move="right" aria-label="Walk right">→</button>
+        </div>
+      </div>
+      <div class="corner-note">
+        A world of builders. A future you can shape.
+      </div>
+      <div id="intro" class="overlay">
+        <section class="intro-card">
+          <div class="eyebrow">
+            <span class="live-dot"></span> THE UNBUILT CITY · YOUR FIRST MISSION
+          </div>
+          <h1>Small workshop.<br /><em>Big possibilities.</em></h1>
+          <p>
+            Machines stop. Promises slip. An evening class waits in the dark.<br />Can
+            you help this community keep its power—and its purpose?
+          </p>
+          <button id="start" class="primary">
+            Enter Power District <span>↗</span>
+          </button>
+          <div class="intro-meta">
+            <span>EXPLORE IN 3D</span><span>BUILD & TEST</span
+            ><span>MAKE IT LAST</span>
+          </div>
+          <small
+            >Playable prototype · fictional energy model · progress saved on
+            this device</small
+          >
+        </section>
+      </div>
+      <dialog id="help-dialog">
+        <button class="close" id="close-help" aria-label="Close help">×</button>
+        <div class="eyebrow">MAKE YOURSELF AT HOME</div>
+        <h2>Your world. Your moves.</h2>
+        <p>
+          Drag the scene to orbit. Scroll or pinch to zoom. Tap once on the
+          ground and your character walks there automatically, routing around
+          walls and equipment. Tap a station label to walk over and interact on
+          arrival. Choose a new destination to change course, or use Stop. WASD
+          / arrow keys also respect obstacles. On a phone, use the arrow
+          controls.
+        </p>
+        <p>
+          Tap the floating station names to approach equipment and talk to
+          people. During Build, add or remove options, then run a day. Revise as
+          often as you need.
+        </p>
+        <p>
+          All energy units and costs are fictional. This is a learning
+          simulation, not electrical installation guidance. Sound is optional.
+          Progress stays in this browser.
+        </p>
+        <button id="help-done" class="primary">Back to the workshop →</button>
+        <p id="webgl-note"></p>
+      </dialog>
+      <div id="loading">Opening the district…</div>
+    </main>
+    <script type="module" src="game.mjs"></script>
+  </body>
+</html>

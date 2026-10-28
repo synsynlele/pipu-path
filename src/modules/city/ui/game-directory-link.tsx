@@ -14,8 +14,10 @@ export function GameDirectoryLink({
   const pathname = usePathname();
   const active =
     pathname === href ||
+    (href === "/build/play" && pathname === "/build/power-district") ||
     (href === "/build/adventures" &&
-      (pathname === "/build/play" || pathname?.startsWith("/build/play/")));
+      (pathname?.startsWith("/build/play/") ||
+        pathname === "/build/neighbourhood"));
   return (
     <Link
       href={href}

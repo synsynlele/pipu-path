@@ -498,3 +498,24 @@ network traffic, weather feedback and reduced-motion alternatives. Opt-in device
 saves store bounded blueprints and evaluated proofs only. No verified XP, learner
 record, database schema or production release change is claimed. See the build
 simulation product contract and ledger for validation/release evidence.
+
+## 28 October — Power District 3D navigation and app-preview candidate
+
+Added the first 3D workshop inside authenticated Build/Adventure navigation at
+`/build/power-district`. The same-origin game is isolated from the app bundle and
+uses session-only practice state inside the app. Real Quest continuation uses
+existing owned home state; no game event awards XP or writes Quest evidence.
+One-click destinations and station approaches use obstacle-expanded pathfinding;
+keyboard/touch manual movement uses the same swept collision checks. Installed
+equipment updates the walkable area. See product/power-district-3d.md and ledger.
+This is one workshop prototype, not a completed 12-world platform.
+
+## 28 October — The Unbuilt City replacement, preview authorised
+
+Owner explicitly authorised pushing/deploying the prepared integration to preview
+and clarified that new challenges replace the existing Unbuilt City game.
+Canonical `/build/play` now opens the 3D Power District mission, preserving owned
+Quest context. The Hub uses a new mission path rather than the old simulations;
+retired chapter routes recover to that path. Food/learning are planned, not
+playable. Scoped same-origin framing supports the bundled game without opening
+other app pages to embedding. No production release, XP or data migration.

@@ -12,6 +12,7 @@ it("highlights the current section and groups every game under the Path tab", ()
   const paths = [
     "/build/neighbourhood",
     "/build/adventures",
+    "/build/power-district",
     "/build/play",
     "/build/play/neighbourhood-garden-v1",
     "/build/play/river-renewal-v1",
@@ -28,8 +29,8 @@ it("highlights the current section and groups every game under the Path tab", ()
     expect(current).toHaveLength(1);
     expect(current[0]).toHaveAttribute(
       "href",
-      pathname === "/build/neighbourhood"
-        ? "/build/neighbourhood"
+      pathname === "/build/power-district" || pathname === "/build/play"
+        ? "/build/play"
         : "/build/adventures",
     );
     expect(current[0]).toHaveClass("bg-[#29434d]");

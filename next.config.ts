@@ -62,7 +62,34 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      {
+        source: "/build/:city(play|power-district)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: contentSecurityPolicy.replace(
+              `frame-src ${toolbarFrame}`,
+              `frame-src 'self'${enableVercelToolbar ? " https://vercel.live" : ""}`,
+            ),
+          },
+        ],
+      },
+      {
+        source: "/games/power-district/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: contentSecurityPolicy.replace(
+              "frame-ancestors 'none'",
+              "frame-ancestors 'self'",
+            ),
+          },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
+    ];
   },
 };
 

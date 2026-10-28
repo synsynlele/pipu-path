@@ -1218,3 +1218,42 @@ but found one remaining solar-panel path closing to the scene origin. Corrected
 that coordinate too, and gave grid coordinates dark plates for readability over
 light roads. Browser geometry bounds and final visual proof must be checked after
 this correction; earlier gameplay proof remains separate from final art proof.
+
+## 28 October — Power District 3D integration candidate
+
+Implemented user-requested tap-once travel, obstacle-aware routes, station arrival
+interactions, Stop/re-target, and shared manual collision. Solid scene geometry
+and newly installed equipment determine clearance. Added authenticated
+`/build/power-district` with Hub/navigation entry and same-origin game frame.
+Real Quest links use existing server state; embedded reflection is in-session
+only. No practice XP/evidence writes, migrations, production promotion or changes
+to the existing seven-world simulations. See product/power-district-3d.md.
+Validation and exact-preview browser results will be recorded separately.
+
+Local validation: format check, zero-warning ESLint, strict TypeScript, 523
+unit/component tests with coverage and 251 integration tests passed. The build
+step initially rejected a workspace dependency symlink; replaced that local-only
+symlink with a real dependency directory and reran `npm run build` successfully.
+Navigation/model checks passed, including every energy configuration and both
+reduced-service plans. Browser software-3D review verified a single station tap
+starts travel, Ama and Bisi dialogue opens on arrival, and Stop cancels travel.
+GPU/mobile and authenticated deployed app checks remain separate.
+
+## 28 October — Replace the Unbuilt City entry and campaign
+
+Owner authorised GitHub source upload and Vercel preview deployment, then clarified
+this is a replacement game rather than a parallel app feature. Replaced the
+canonical city runner and published mission map, retired earlier challenge entry
+routes through authenticated recovery, preserved owned Quest validation and the
+real developmental return link. Kept a prototype URL alias. The only playable
+new mission is Power District; food and learning are explicitly planned.
+Fixed same-origin frame restrictions narrowly for the canonical game document.
+No database migration, save conversion, verified reward write or production push.
+
+Replacement validation: canonical `npm run validate` passed formatting,
+zero-warning lint, strict types, pure energy/navigation checks, 527 unit/component
+tests with coverage, 251 integration tests and the production Next.js build.
+New regressions cover canonical city replacement, planned/unplayable mission
+briefs, retired-route recovery, owned Quest context and scoped framing policy.
+The existing preview browser has an authenticated session for exact-deployment
+checks; preview publication and browser results are recorded separately.

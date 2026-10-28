@@ -1,7 +1,7 @@
 import { GameDirectoryLink } from "./game-directory-link";
 import Link from "next/link";
 
-/** Three stable navigation destinations; worlds live on the learning path. */
+/** Stable adventure destinations with a dedicated playable 3D workshop. */
 export function GameDirectory() {
   return (
     <nav
@@ -16,7 +16,7 @@ export function GameDirectory() {
           <span aria-hidden="true" className="text-lg">
             ◈
           </span>
-          PipuPath Adventure
+          The Unbuilt City
         </Link>
         <div
           className="flex min-w-0 flex-wrap items-center gap-1.5"
@@ -24,9 +24,7 @@ export function GameDirectory() {
           aria-label="Adventure sections"
         >
           <GameDirectoryLink href="/build/adventures">Path</GameDirectoryLink>
-          <GameDirectoryLink href="/build/neighbourhood">
-            Explore
-          </GameDirectoryLink>
+          <GameDirectoryLink href="/build/play">Play city</GameDirectoryLink>
           <GameDirectoryLink href="/quests">Real Quest</GameDirectoryLink>
         </div>
       </div>
