@@ -107,3 +107,16 @@ the board does not introduce fictitious orders. Learners can compare service
 needs before choosing the next day's priority or enterprise improvement.
 Saved daily request records are validated, and earlier records without this
 board still load. No extra screen or separate quiz is introduced.
+
+## District visits and visible service signals
+
+After an operating day, each request row includes a **Visit** control.
+The player travels to the actual clinic, farm, workshop or shop district
+using existing collision-aware automatic walking. A compact, dismissible
+district card identifies the recorded deliveries and unmet demand and
+provides a return to Chapter 3. If a route is blocked, the player gets a
+safe aerial district view instead of being moved through buildings.
+Four small, low-cost street signals turn amber only for genuine unmet
+requests and green when completed requests are fulfilled. These are
+decorative indicators only, not real-world incident or health alerts.
+No new location or personal data is stored.

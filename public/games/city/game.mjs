@@ -1618,7 +1618,13 @@ function renderOpportunityPanel() {
       count.className =
         values.served < values.requested ? "request-waiting" : "request-met";
       count.textContent = values.served + "/" + values.requested + " met";
-      line.append(title, count);
+      const visit = document.createElement("button");
+      visit.type = "button";
+      visit.className = "request-visit";
+      visit.textContent = "Visit";
+      visit.setAttribute("aria-label", "Visit " + request.title + " in the city");
+      visit.onclick = () => visitCityRequest(request.id);
+      line.append(title, count, visit);
       board.append(line);
     }
     const note = document.createElement("p");
@@ -1651,8 +1657,50 @@ function renderOpportunityPanel() {
     }
   }
 }
+function hideRequestInspection() {
+  $("request-inspection").hidden = true;
+}
+function visitCityRequest(id) {
+  const request = CITY_REQUESTS.find((item) => item.id === id);
+  const values = state.economy.last?.requests?.[id];
+  const destination = request && approaches[request.district];
+  if (!destination || !values || simulating || !$("intro").hidden) return;
+  if (journey.status === "running")
+    pauseJourney("Your journey is paused while you visit this need.");
+  hideRequestInspection();
+  closeOpportunityPanel();
+  if (mapMode) {
+    mapMode = false;
+    distance = 27;
+    $("city-map").textContent = "City map";
+  }
+  const arrival = () => {
+    const waiting = values.requested - values.served;
+    $("request-inspection-title").textContent =
+      request.title + " · Day " + state.economy.day;
+    $("request-inspection-detail").textContent =
+      request.resource +
+      ": " +
+      values.served +
+      " of " +
+      values.requested +
+      " requests met. " +
+      (waiting
+        ? waiting + " still waiting. Change tomorrow's plan to help."
+        : "All today's requests were met here.");
+    $("request-inspection").hidden = false;
+  };
+  if (!goTo(destination, arrival, request.title)) {
+    // Aerial inspection is the safe fallback if a newly-built structure
+    // blocks the normal walking approach.
+    openBuiltCityView();
+    focusBuiltCityDistrict(request.district);
+    toast("Walking route blocked. Showing the district from above instead.");
+  }
+}
 function openOpportunityPanel() {
   if (simulating || !$("intro").hidden) return;
+  hideRequestInspection();
   if (!foundationForOpportunities(state.decisions)) {
     toast("Complete all 36 decisions to unlock your city's opportunities.");
     return;
@@ -2842,6 +2890,12 @@ $("opportunities-toggle").onclick = () => {
   else closeOpportunityPanel();
 };
 $("opportunities-close").onclick = closeOpportunityPanel;
+$("request-inspection-back").onclick = () => {
+  hideRequestInspection();
+  cancelWalk();
+  openOpportunityPanel();
+};
+$("request-inspection-close").onclick = hideRequestInspection;
 $("opportunities-business").onchange = (event) => {
   const next = chooseOwnedEnterprise(state.economy, event.target.value);
   if (!next) return;
@@ -2870,6 +2924,7 @@ $("opportunities-run").onclick = () => {
     return;
   }
   state.economy = next;
+  hideRequestInspection();
   render();
   renderOpportunityPanel();
   toast("Day " + next.day + " completed. See which needs your city met.");
@@ -2882,6 +2937,7 @@ $("opportunities-reset").onclick = () => {
   )
     return;
   state.economy = newOpportunityState();
+  hideRequestInspection();
   render();
   renderOpportunityPanel();
 };

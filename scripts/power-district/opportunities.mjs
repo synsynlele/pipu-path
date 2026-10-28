@@ -43,6 +43,18 @@ for (let day = 1; day <= 7; day++) {
   assert.equal(next.day, day);
   assert.equal(next.history.length, day);
   assert.equal(Object.keys(next.last.requests).length, 4);
+  const visibleRequests = deriveLivingCity(decisions, next).requestSignals;
+  assert.equal(visibleRequests.length, 4);
+  assert(
+    visibleRequests.every((request) =>
+      ["health", "market", "workshop", "business"].includes(request.district),
+    ),
+    "Every service request points to a real city district",
+  );
+  assert.equal(
+    visibleRequests.reduce((total, request) => total + request.waiting, 0),
+    next.last.unserved,
+  );
   assert.equal(
     Object.values(next.last.requests).reduce(
       (total, request) => total + request.requested - request.served,
@@ -80,6 +92,11 @@ assert(
 );
 // Owned enterprise outcomes must be caused by player decisions, not animation.
 assert.equal(OWNED_ENTERPRISES.length, 4);
+assert.equal(
+  deriveLivingCity(decisions, fresh).requestSignals.length,
+  0,
+  "No service alerts before an operating day",
+);
 assert.equal(ENTERPRISE_ACTIONS.length, 3);
 assert.equal(chooseOwnedEnterprise(fresh, "fake"), null);
 assert.equal(chooseEnterpriseAction(fresh, "tools"), null);
@@ -181,7 +198,7 @@ const afterRevision = runOpportunityDay(revised, {
   ...state,
   day: 6,
   history: state.history.slice(0, 6),
-  last: { ...state.last, day: 6 },
+  last: { ...state.history[5], shipments: [] },
 });
 assert(afterRevision, "New operating day adapts to revised city decisions");
 const unhealthy = {

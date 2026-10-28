@@ -399,6 +399,23 @@
         ><button id="stop-walking" type="button">Stop ×</button>
       </div>
       <div id="toast" role="status" aria-live="polite"></div>
+      <aside
+        id="request-inspection"
+        hidden
+        role="region"
+        aria-label="District service request"
+      >
+        <button
+          id="request-inspection-close"
+          type="button"
+          aria-label="Close district request"
+        >×</button>
+        <strong id="request-inspection-title"></strong>
+        <p id="request-inspection-detail"></p>
+        <button id="request-inspection-back" type="button">
+          Back to city requests
+        </button>
+      </aside>
       <section id="detail" class="panel" hidden aria-label="Station details">
         <button class="close" id="close-detail" aria-label="Close details">
           ×

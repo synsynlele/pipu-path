@@ -63,10 +63,15 @@ export const DAY_EVENTS = Object.freeze([
 ]);
 export const ENTERPRISE_PRODUCTS = Object.freeze(["water", "parts", "food"]);
 export const CITY_REQUESTS = Object.freeze([
-  { id: "clinic", title: "Clinic", resource: "Safe water" },
-  { id: "farms", title: "Farms", resource: "Water for crops" },
-  { id: "repairs", title: "Repair teams", resource: "Repair tasks" },
-  { id: "shops", title: "Shops", resource: "Food orders" },
+  { id: "clinic", title: "Clinic", resource: "Safe water", district: "health" },
+  { id: "farms", title: "Farms", resource: "Water for crops", district: "market" },
+  {
+    id: "repairs",
+    title: "Repair teams",
+    resource: "Repair tasks",
+    district: "workshop",
+  },
+  { id: "shops", title: "Shops", resource: "Food orders", district: "business" },
 ]);
 export const OWNED_ENTERPRISES = Object.freeze([
   {

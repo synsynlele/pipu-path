@@ -2845,6 +2845,7 @@ body.city-viewing #opportunities-panel {
   justify-content: space-between;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
   border-bottom: 1px solid #dde5df;
   padding: 6px 0;
   font-size: 11px;
@@ -2853,6 +2854,62 @@ body.city-viewing #opportunities-panel {
   white-space: nowrap;
   font-size: 11px;
   font-variant-numeric: tabular-nums;
+}
+.request-visit {
+  min-width: 56px;
+  min-height: 44px;
+  border: 1px solid #a7bdab;
+  border-radius: 8px;
+  background: #fff;
+  color: #27583d;
+  font-size: 11px;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+#request-inspection {
+  position: absolute;
+  right: 12px;
+  bottom: max(72px, env(safe-area-inset-bottom));
+  z-index: 53;
+  width: min(310px, calc(100vw - 24px));
+  padding: 12px 42px 12px 13px;
+  background: #f6f6ed;
+  color: #304c40;
+  border: 1px solid #9ebaa7;
+  border-radius: 13px;
+  box-shadow: 0 6px 24px #20282035;
+  font-size: 12px;
+}
+#request-inspection[hidden],
+body.city-viewing #request-inspection {
+  display: none;
+}
+#request-inspection strong {
+  display: block;
+  margin-bottom: 5px;
+}
+#request-inspection p {
+  margin: 0 0 9px;
+  line-height: 1.45;
+}
+#request-inspection-back {
+  min-height: 44px;
+  padding: 7px 10px;
+  border: 1px solid #789e80;
+  border-radius: 8px;
+  background: #e0eee2;
+  color: #265e3b;
+  font-weight: 700;
+}
+#request-inspection-close {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
 }
 .request-met {
   color: #2d6b4f;
