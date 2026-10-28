@@ -4,6 +4,7 @@ import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
+  CITY_CASES,
   CASE_DISTRICTS,
   IMPACT_LABELS,
   casesFor,
@@ -14,6 +15,12 @@ import {
   districtProgress,
 } from "./cases.mjs";
 import { loadPractice, savePractice, clearPractice } from "./practice-save.mjs";
+import {
+  choicesForCase,
+  nextCaseAfter,
+  caseNumber,
+  OUTCOME_VIEW_MS,
+} from "./case-flow.mjs";
 import {
   CITY_DISTRICTS,
   OUTER_DISTRICTS,
@@ -41,6 +48,9 @@ const fresh = () => ({
   decisions: {},
 });
 const previousPractice = loadPractice();
+// Once per current play session: stable positions while retrying each case,
+// varied across sessions; no learner tracking or personally identifiable data.
+const answerOrderSeed = Math.floor(Math.random() * 3);
 let state = previousPractice ? { ...fresh(), ...previousPractice } : fresh(),
   saveEnabled = Boolean(previousPractice),
   freeExplore = false,
@@ -765,6 +775,8 @@ const sparkUnits = Array.from({ length: 12 }, (_, i) => {
 });
 decisionSparks.visible = false;
 let previewDecision = null;
+let autoAdvanceTimer = null;
+let outcomePaused = false;
 let feedbackTimer = null;
 let feedbackRunId = 0;
 let activeFeedback = null;
@@ -772,7 +784,12 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
 }
+function cancelAutoAdvance() {
+  clearTimeout(autoAdvanceTimer);
+  autoAdvanceTimer = null;
+}
 function cancelCasePreview() {
+  cancelAutoAdvance();
   feedbackRunId++;
   clearTimeout(feedbackTimer);
   feedbackTimer = null;
@@ -788,7 +805,11 @@ function runCaseWorldAction(caseId, choiceId) {
   const choice = getChoice(caseId, choiceId);
   if (!spec || !choice) return;
   cancelCasePreview();
+  // One choice is the only required action: the world and practice record
+  // update immediately. No second 'Keep' confirmation is needed.
+  state.decisions = saveDecision(state.decisions, caseId, choiceId);
   previewDecision = { caseId, choiceId };
+  render();
   syncCaseScenes();
   caseScenes.setTone(caseId, choice);
   const tone = visualTone(choice);
@@ -827,6 +848,8 @@ function runCaseWorldAction(caseId, choiceId) {
       activeFeedback = null;
       decisionSparks.visible = false;
       distance = priorDistance;
+      previewDecision = null;
+      syncCaseScenes();
       showCaseOutcome(caseId, choiceId);
     },
     reduceMotion.matches ? 700 : 1650,
@@ -955,7 +978,7 @@ function goToStation(id, afterArrival = null) {
     distance = 27;
     $("city-map").textContent = "City map";
   }
-  goTo(
+  return goTo(
     approaches[id],
     () => {
       inspect(id);
@@ -989,6 +1012,7 @@ function updateWorld() {
   rebuildNavigation();
 }
 function closeDetail() {
+  cancelAutoAdvance();
   $("detail").hidden = true;
   if (previewDecision) cancelCasePreview();
 }
@@ -1093,15 +1117,22 @@ function startCase(id) {
   const scenario = getCase(id);
   if (!scenario) return;
   closeCasebook();
-  goToStation(scenario.district, () => showCase(id));
+  if (!goToStation(scenario.district, () => showCase(id))) {
+    // Reaching the learning choice must not depend on a perfect 3D path.
+    showCase(id);
+    toast("Your next problem is ready.");
+  }
 }
 function showCase(id) {
+  cancelAutoAdvance();
   if (previewDecision) cancelCasePreview();
   const scenario = getCase(id);
   if (!scenario) return;
   const saved = getChoice(id, state.decisions[id]);
   showDetail(
-    '<div class="eyebrow">BUILDER PRACTICE · ONE CONNECTED CITY</div>' +
+    '<div class="eyebrow">BUILDER PRACTICE · PROBLEM ' +
+      caseNumber(id) +
+      " / 16</div>" +
       "<h2>" +
       scenario.title +
       "</h2><p>" +
@@ -1114,7 +1145,7 @@ function showCase(id) {
           saved.title +
           ". You can compare alternatives without losing it.</p>"
         : "") +
-      scenario.options
+      choicesForCase(id, answerOrderSeed)
         .map(
           (option) =>
             '<button class="case-choice" data-case-choice="' +
@@ -1130,10 +1161,41 @@ function showCase(id) {
     button.onclick = () => runCaseWorldAction(id, button.dataset.caseChoice);
   });
 }
-function showCaseOutcome(id, choiceId, kept = false) {
+function proceedAfterCase(id) {
+  cancelAutoAdvance();
+  closeDetail();
+  const next = nextCaseAfter(id);
+  if (!next) {
+    showDetail(
+      '<div class="eyebrow">THE UNBUILT CITY · 16 / 16</div>' +
+        "<h2>You have shaped four districts.</h2>" +
+        "<p>You made decisions across repair, energy, food and learning." +
+        " The city keeps your fictional practice constructions. " +
+        "There is no verified XP or real-world achievement.</p>" +
+        '<div class="evidence"><strong>BUILDER PRACTICE</strong>' +
+        caseProgress(state.decisions) +
+        " of 16 choices made. " +
+        "Every decision can be revisited.</div>" +
+        "<p>Explore the other districts or test the connected city economy.</p>" +
+        '<button class="primary" id="finish-practice">Return to the city</button>',
+    );
+    $("finish-practice").onclick = closeDetail;
+    return;
+  }
+  // The next scenario begins automatically, including travel between districts.
+  if (!goToStation(next.district, () => showCase(next.id))) {
+    // If the route is blocked, the next choice must remain accessible.
+    showCase(next.id);
+    toast("Could not walk there; the next problem is ready here.");
+  }
+}
+function showCaseOutcome(id, choiceId) {
   const scenario = getCase(id);
   const option = getChoice(id, choiceId);
   if (!scenario || !option) return;
+  cancelAutoAdvance();
+  outcomePaused = false;
+  const next = nextCaseAfter(id);
   const signals = option.impact
     .map(
       (value, i) =>
@@ -1146,54 +1208,62 @@ function showCaseOutcome(id, choiceId, kept = false) {
     )
     .join("");
   showDetail(
-    '<div class="eyebrow">FICTIONAL CASE CONSEQUENCES</div><h2>' +
+    '<div class="eyebrow">YOUR ACTION · ' +
+      caseNumber(id) +
+      " / 16</div>" +
+      "<h2>" +
       scenario.title +
-      "</h2><p><strong>You chose:</strong> " +
+      "</h2>" +
+      "<p><strong>Your decision:</strong> " +
       option.title +
-      '</p><div class="case-result"><b>What happens</b><p>' +
+      "</p>" +
+      '<div class="case-result"><b>What changed</b><p>' +
       option.result +
-      "</p><b>What it costs or risks</b><p>" +
+      "</p><b>The trade-off</b><p>" +
       option.tradeoff +
-      "</p><b>Connected city systems</b><p>" +
-      option.links +
       '</p></div><div class="case-impact">' +
       signals +
-      '</div><p class="case-small">Four fictional signals from −2 to +2 compare outcomes in this case only. ' +
-      "They do not change the two-day power and food economy or verify capability.</p>" +
-      "<p><strong>A safe real-world observation:</strong> " +
+      '</div><details class="case-more"><summary>Explore the connections</summary>' +
+      "<p><strong>Related systems:</strong> " +
+      option.links +
+      "</p><p><strong>Safe observation:</strong> " +
       scenario.bridge +
-      "</p>" +
-      (kept
-        ? "<p>✓ This practice approach is marked in your district. " +
-          "You can still retry it.</p>"
-        : "") +
-      '<div class="case-actions"><button class="secondary" id="case-replay">Watch the city change ↻</button>' +
-      '<button class="secondary" id="case-retry">Try another</button>' +
-      (kept
-        ? ""
-        : '<button class="primary" id="case-keep">Keep this approach</button>') +
-      '<button class="secondary" id="case-next">Next problem →</button></div>',
+      "</p><small>Fictional signals, not verified XP or actual city funds.</small></details>" +
+      '<div class="auto-next"><span id="autonext-caption">✓ Your decision is kept.' +
+      (next ? " Next: " + next.title : " All 16 problems reached.") +
+      " The game continues automatically.</span>" +
+      '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
+      '<div class="case-actions">' +
+      '<button class="secondary" id="case-pause">Pause to read</button>' +
+      '<button class="secondary" id="case-replay">Replay action</button>' +
+      '<button class="secondary" id="case-retry">Change decision</button>' +
+      '<button class="primary" id="case-next">' +
+      (next ? "Next now →" : "Finish →") +
+      "</button></div>",
   );
+  $("case-pause").onclick = () => {
+    cancelAutoAdvance();
+    outcomePaused = true;
+    $("autonext-caption").textContent =
+      "Paused. You can examine the result, retry, or continue when ready.";
+    document.querySelector(".auto-next").classList.add("paused");
+    $("case-pause").textContent = "Continue";
+    $("case-pause").onclick = () => proceedAfterCase(id);
+  };
   $("case-replay").onclick = () => runCaseWorldAction(id, choiceId);
   $("case-retry").onclick = () => showCase(id);
-  if ($("case-keep"))
-    $("case-keep").onclick = () => {
-      state.decisions = saveDecision(state.decisions, id, choiceId);
-      previewDecision = null;
-      render();
-      showCaseOutcome(id, choiceId, true);
-      toast(
-        saveEnabled
-          ? "Practice decision saved on this device."
-          : "Practice marked in this session. Open Problems (16) to optionally save here.",
-      );
-    };
-  $("case-next").onclick = () => {
-    const items = casesFor(scenario.district);
-    const next =
-      items[(items.findIndex((item) => item.id === id) + 1) % items.length];
-    showCase(next.id);
-  };
+  $("case-next").onclick = () => proceedAfterCase(id);
+  autoAdvanceTimer = setTimeout(() => {
+    if (!outcomePaused && !document.hidden) proceedAfterCase(id);
+    else if (!outcomePaused) {
+      outcomePaused = true;
+      $("autonext-caption").textContent =
+        "Paused while you were away. Continue when you are ready.";
+      document.querySelector(".auto-next").classList.add("paused");
+      $("case-pause").textContent = "Continue";
+      $("case-pause").onclick = () => proceedAfterCase(id);
+    }
+  }, OUTCOME_VIEW_MS);
 }
 function check(label, done) {
   return (
@@ -1863,11 +1933,19 @@ $("start").onclick = () => {
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
-  toast(
-    previousPractice
-      ? "Your saved city is open. Continue exploring."
-      : "Start with the yellow Take me there button.",
+  const nextUnsolved = CITY_CASES.find(
+    (scenario) => !getChoice(scenario.id, state.decisions[scenario.id]),
   );
+  if (nextUnsolved) {
+    toast(
+      previousPractice
+        ? "Welcome back! Walking to your next unsolved problem."
+        : "Welcome! Walking to your first problem.",
+    );
+    startCase(nextUnsolved.id);
+  } else {
+    toast("Your 16 decisions are here. Explore freely or replay any problem.");
+  }
 };
 $("sound").onclick = () => {
   sound = !sound;

@@ -1,5 +1,37 @@
 # Implementation status
 
+## 28 October 2026 — hands-free case progression and varied answer positions
+
+The branch `feat/unbuilt-city-auto-flow-options` builds on the visible-action
+preview. Selecting **Enter the city** now starts the next unsolved
+practice problem automatically, including walking to that district.
+No Problems (16) menu click or manual Take me there step is required.
+Returning device-save players resume at the first unanswered problem;
+a blocked route falls back to showing the decision rather than trapping
+the player. Learners now make **one choice** per authored practice problem.
+That single tap records the fictional decision (and saves it on the
+current device only if they previously opted in), immediately activates
+the physical district effect, shows the outcome, and then automatically
+travels to the next case. No "keep", "next", or "return" button is required
+between the 16 authored cases. Consequences remain visible for 7.2 seconds,
+with a **Pause to read** control for optional extended reading; players
+can optionally retry or skip the countdown. The sixteenth case ends
+in a deliberate completion panel instead of looping forever.
+
+A stable per-session answer order distributes the **first-authored
+option** across positions one, two and three (5–6 occurrences in each
+position across the 16 cases, independent of the seed). Distractor order
+also varies; replaying the same case within a session preserves the
+positions, so retries are understandable. This breaks the misleading
+"first answer is always correct" pattern, but does not claim that every
+scenario has a single objectively right answer: each choice still
+includes authored trade-offs.
+
+The underlying 14-district scene, full navigation, case effects,
+two-day city economy, optional device-only save and real Quest separation
+are preserved. Preview-only. CI, Android input/reading pace, screen-reader
+access, navigation and actual engagement need verification before release.
+
 ## 28 October 2026 — visible decision consequences and no walking trail
 
 A separate preview branch `feat/unbuilt-city-visible-actions` directly responds
