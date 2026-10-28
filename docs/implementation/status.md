@@ -1,5 +1,34 @@
 # Implementation status
 
+## 28 October 2026 — restore essential controls and let builders revise decisions
+
+A new preview branch `feat/unbuilt-city-navigation-and-revision`
+corrects the over-restriction of navigation in the first guided-journey
+iteration. The full essential city toolbar (Decisions, My City, Map, Places,
+Build, Explore, Guide) remains **visible throughout automatic play**,
+with a touch-friendly horizontally scrollable mobile layout. Activating a
+legacy panel now pauses the guided journey first and preserves its case
+and stage; the panel no longer competes with an in-flight automatic route.
+The always-visible Pause/Resume journey control remains.
+
+Players can **review any previously answered problem**, including after
+completing all sixteen. The Decisions panel lists earlier recorded
+choices, with an explicit "Change" label, and the journey bar offers
+"Last decision" for fast access. Opening a saved decision temporarily
+pauses—but does NOT overwrite—the main-journey checkpoint.
+Choosing a replacement immediately changes its persistent physical
+structure and the connected district health model, shows the resulting
+consequence, and then automatically returns to the interrupted
+journey if it was previously running. If the player had explicitly
+paused, it remains paused until resumed. Returning without a
+change preserves the original choice. Revisions use the existing
+opt-in same-browser decision save, with no new personal data,
+real XP or credential storage.
+
+The 16-case auto flow and the original optional two-day city-economy
+activity remain separate. Android pointer, scrolling, panel overlap,
+back/revision and resume tests remain mandatory before production.
+
 ## 28 October 2026 — one journey controller with pause/resume
 
 The new preview branch `feat/unbuilt-city-journey-resume` addresses observed

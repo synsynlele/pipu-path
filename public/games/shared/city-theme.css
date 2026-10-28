@@ -1876,7 +1876,6 @@ body.city-testing #casebook {
   animation: build-action-fill 1.65s linear both;
 }
 body.city-impact-view #detail,
-body.city-impact-view #city-tools,
 body.city-impact-view #district-directory,
 body.city-impact-view #casebook,
 body.city-impact-view #mission,
@@ -2156,7 +2155,6 @@ body.city-testing #city-status {
   background: #e8cf7d;
   touch-action: manipulation;
 }
-body.city-journey #city-tools,
 body.city-journey #mission,
 body.city-journey #build-dock,
 body.city-journey #resource,
@@ -2211,5 +2209,125 @@ body.city-journey #detail {
     top: auto;
     bottom: 10px;
     max-height: calc(100dvh - 150px);
+  }
+}
+
+/* Essential navigation is available without cancelling the automatic journey.
+   Selecting a control pauses the guided sequence before opening its panel. */
+body.city-journey #city-tools,
+body.city-journey-paused #city-tools {
+  position: absolute;
+  z-index: 30;
+  top: max(8px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  width: auto;
+  max-width: none;
+  padding: 4px 2px 7px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 7px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+body.city-journey #city-tools[hidden],
+body.city-journey-paused #city-tools[hidden] {
+  display: none !important;
+}
+body.city-journey #city-tools button,
+body.city-journey-paused #city-tools button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 9px 12px;
+  font-size: 11px;
+  touch-action: manipulation;
+}
+#cases-toggle {
+  background: #e9d38be8 !important;
+  color: #233658 !important;
+  border-color: #c3a755 !important;
+}
+#decision-count {
+  font-weight: 800;
+}
+body.city-journey-paused header {
+  display: none !important;
+}
+body.city-journey #journey-bar,
+body.city-journey-paused #journey-bar {
+  top: max(68px, calc(env(safe-area-inset-top) + 59px));
+}
+#journey-bar .journey-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+#journey-back {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d6dfee;
+  background: #eef3fc;
+  color: #254170;
+  font-size: 11px;
+  min-height: 42px;
+  font-weight: 750;
+}
+#journey-back:disabled {
+  opacity: 0.45;
+}
+body.city-journey #detail,
+body.city-journey-paused #detail {
+  z-index: 24;
+}
+body.city-journey #world-feedback {
+  top: max(182px, 26%);
+}
+.case-tile.case-completed {
+  border-color: #9bb4cf;
+  background: #eff5fc;
+}
+.case-tile.case-completed small {
+  color: #2a6a64;
+  font-weight: 700;
+}
+@media (max-width: 650px) {
+  body.city-journey #city-tools,
+  body.city-journey-paused #city-tools {
+    top: max(5px, env(safe-area-inset-top));
+    left: 8px;
+    right: 8px;
+    gap: 5px;
+  }
+  body.city-journey #city-tools button,
+  body.city-journey-paused #city-tools button {
+    padding: 8px 10px;
+    font-size: 10px;
+    min-height: 39px;
+  }
+  body.city-journey #journey-bar,
+  body.city-journey-paused #journey-bar {
+    top: max(54px, calc(env(safe-area-inset-top) + 51px));
+    padding: 7px 9px;
+    gap: 8px;
+  }
+  #journey-status {
+    font-size: 10px;
+  }
+  #journey-back,
+  #journey-toggle {
+    font-size: 10px;
+    padding: 8px 9px;
+    min-height: 40px;
+  }
+  body.city-journey #world-feedback {
+    top: max(145px, 22%);
+  }
+  body.city-journey #detail,
+  body.city-journey-paused #detail {
+    max-height: calc(100dvh - 142px);
   }
 }
