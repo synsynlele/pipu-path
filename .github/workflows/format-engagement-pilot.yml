@@ -1,0 +1,32 @@
+name: Format Unbuilt City engagement pilot
+on:
+  pull_request:
+    branches: [feat/unbuilt-city-fourteen-districts]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feat/unbuilt-city-pilot-challenges'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/unbuilt-city-pilot-challenges
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format changed files
+        run: npx prettier --write public/games/city/cases.mjs public/games/city/practice-save.mjs public/games/city/game.mjs public/games/city/index.html public/games/shared/city-theme.css scripts/power-district/cases.mjs scripts/power-district/practice-save.mjs scripts/power-district/city-ui.mjs docs/implementation/status.md docs/product/unbuilt-city-engagement-pilot.md .github/workflows/format-engagement-pilot.yml
+      - name: Commit formatted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/games/city/cases.mjs public/games/city/practice-save.mjs public/games/city/game.mjs public/games/city/index.html public/games/shared/city-theme.css scripts/power-district/cases.mjs scripts/power-district/practice-save.mjs scripts/power-district/city-ui.mjs docs/implementation/status.md docs/product/unbuilt-city-engagement-pilot.md .github/workflows/format-engagement-pilot.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "style: format Unbuilt City pilot"
+            git push origin HEAD:feat/unbuilt-city-pilot-challenges
+          fi
