@@ -2517,3 +2517,146 @@ body #detail[data-mode] .case-actions {
     width: min(330px, calc(100vw - 20px));
   }
 }
+
+/* Player-facing aerial tour: the town, not a dashboard, is the main view.
+   All journey controls return after inspection; saved decisions are untouched. */
+body.city-viewing #city-tools,
+body.city-viewing #journey-bar,
+body.city-viewing #detail,
+body.city-viewing #mission,
+body.city-viewing #build-dock,
+body.city-viewing #travel,
+body.city-viewing #world-feedback,
+body.city-viewing #scene-labels,
+body.city-viewing #resource,
+body.city-viewing #controls,
+body.city-viewing #mobile-move,
+body.city-viewing #district-directory,
+body.city-viewing #casebook,
+body.city-viewing #city-status,
+body.city-viewing #weather,
+body.city-viewing header,
+body.city-viewing .corner-note {
+  display: none !important;
+}
+#city-view {
+  position: absolute;
+  top: max(12px, calc(env(safe-area-inset-top) + 8px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 55;
+  width: min(695px, calc(100vw - 24px));
+  padding: 10px 12px 8px;
+  border: 1px solid #e7edfad9;
+  border-radius: 17px;
+  color: #253e68;
+  background: #f8fbfff0;
+  box-shadow: 0 8px 26px #172c5438;
+  backdrop-filter: blur(12px);
+}
+.city-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.city-view-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.city-view-label strong { font-size: 15px; color: #243c68; }
+#city-view-summary {
+  font-size: 10px;
+  color: #526b89;
+  font-weight: 700;
+  line-height: 1.3;
+}
+#city-view-return {
+  flex: 0 0 auto;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 11px;
+  background: #e7cb74;
+  border: 1px solid #c1a452;
+  color: #1e3761;
+  font-size: 11px;
+  font-weight: 800;
+  touch-action: manipulation;
+}
+.city-view-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+}
+.city-view-controls .city-view-action {
+  flex: 0 0 auto;
+  min-height: 40px;
+  min-width: 42px;
+  border: 1px solid #c6d6e9;
+  border-radius: 10px;
+  background: #ecf2fb;
+  color: #254370;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  touch-action: manipulation;
+}
+.city-view-controls #city-view-overview[aria-pressed="true"] {
+  background: #274773;
+  color: #fff;
+  border-color: #274773;
+}
+.city-view-district-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #526b89;
+  white-space: nowrap;
+}
+#city-view-district {
+  flex: 1 1 0;
+  min-width: 80px;
+  max-width: 290px;
+  min-height: 41px;
+  padding: 7px 9px;
+  border-radius: 10px;
+  border: 1px solid #c6d6e9;
+  background: #fff;
+  color: #26446f;
+  font-size: 11px;
+  touch-action: manipulation;
+}
+.city-view-info {
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+  color: #355a7d;
+}
+.city-view-hint {
+  margin: 4px 0 0;
+  font-size: 9px;
+  color: #617890;
+  line-height: 1.35;
+}
+@media (max-width: 650px) {
+  #city-view {
+    top: max(7px, env(safe-area-inset-top));
+    width: calc(100vw - 16px);
+    padding: 9px 10px 8px;
+    border-radius: 13px;
+  }
+  .city-view-label strong { font-size: 13px; }
+  #city-view-summary { font-size: 9px; }
+  #city-view-return { padding: 8px 9px; font-size: 10px; min-height: 42px; }
+  .city-view-controls { gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+  .city-view-district-label { display: none; }
+  #city-view-district { min-width: 95px; max-width: none; font-size: 10px; }
+  .city-view-controls .city-view-action { min-width: 38px; padding: 7px 9px; }
+  .city-view-info { font-size: 10px; margin-top: 5px; }
+  .city-view-hint { font-size: 9px; }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  #city-view { max-width: min(690px, calc(100vw - 16px)); padding: 5px 9px; }
+  .city-view-controls { margin-top: 4px; }
+  .city-view-hint { display: none; }
+  .city-view-info { margin-top: 3px; }
+}

@@ -90,6 +90,14 @@
         >
           My City <span id="city-health-badge">0/14</span>
         </button>
+        <button
+          id="view-city-toggle"
+          type="button"
+          aria-controls="city-view"
+          aria-expanded="false"
+        >
+          View My City
+        </button>
         <button id="city-map" type="button">City map</button>
         <button
           id="districts-toggle"
@@ -165,6 +173,26 @@
           Fictional builder simulation. These numbers are not grades, money or
           verified capabilities. All choices can be revised.
         </div>
+      </section>
+      <section id="city-view" hidden role="region" aria-label="View the city you have built">
+        <div class="city-view-header">
+          <div class="city-view-label">
+            <strong>🏙️ My Built City</strong>
+            <span id="city-view-summary" role="status" aria-live="polite">Your city so far</span>
+          </div>
+          <button id="city-view-return" type="button" class="primary">Return to journey →</button>
+        </div>
+        <div class="city-view-controls">
+          <button id="city-view-overview" class="city-view-action" type="button" aria-pressed="true">Whole city</button>
+          <label class="city-view-district-label" for="city-view-district">Look closer</label>
+          <select id="city-view-district" aria-label="Choose a district to inspect">
+            <option value="">Choose a district</option>
+          </select>
+          <button id="city-view-zoom-out" type="button" class="city-view-action" aria-label="Zoom out">−</button>
+          <button id="city-view-zoom-in" type="button" class="city-view-action" aria-label="Zoom in">+</button>
+        </div>
+        <div id="city-view-info" class="city-view-info" aria-live="polite"></div>
+        <p class="city-view-hint">Drag to look around · Pinch or use +/− to zoom · Your journey is paused</p>
       </section>
       <section
         id="casebook"

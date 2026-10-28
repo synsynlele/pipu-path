@@ -1,5 +1,37 @@
 # Implementation status
 
+## 28 October 2026 — Aerial view of the player's actual built city
+
+Branch `feat/unbuilt-city-player-city-view` adds a compact, player-facing
+**View My City** action to the existing city navigation. The action
+does not reset progress or open a large questionnaire. It pauses the
+automatic journey at the current travel, question, building, outcome
+or chapter-reveal stage. A dedicated 3D overview camera rises over
+the same scene and the same decision-derived construction state.
+The player can orbit by dragging, zoom by pinching or +/- buttons,
+and select any of the 14 districts to move the camera nearer.
+A small, unobtrusive overlay reports built projects and whether
+each neighbourhood has started construction. Empty districts
+remain visibly unfinished.
+
+**Return to journey** restores the original map mode, camera angle,
+field of view and paused card. When a player opened the view during
+active auto-play, the original stage resumes; if they had deliberately
+paused, the stage remains paused, avoiding surprising advancement.
+Review cards remain intact if city viewing begins while reviewing an
+older choice. The view explicitly suppresses world-tap navigation
+and keyboard movement, so looking around cannot move the character
+or trigger another mission. It is transient and read-only: no new
+saved state, personal information, images, location or screenshots.
+Existing optional same-device saves continue unchanged.
+
+Regression checks validate 14 districts, projects 0/36 to 36/36,
+revision-derived changes, and view-pause-return source contracts.
+Android portrait, landscape, canvas orbit/zoom, overlay spacing and
+software-renderer fallback still require hands-on testing. Production
+is unchanged.
+
+
 ## 28 October 2026 — Compact in-city decision cards
 
 The decision and consequence overlays were occupying most of the
