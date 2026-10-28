@@ -1,5 +1,12 @@
 # The Unbuilt City: one connected world
 
+## 28 October — public-browser smoke check
+
+The preview opened the intro screen and displayed the expected opening copy.
+The browser check did not complete entering the city, travelling to Ama or
+testing map controls; those interactions remain unverified and are not
+claimed as passed. Device WebGL and phone layout remain pending.
+
 ## 28 October — guided opening and larger districts (isolated preview candidate)
 
 The user reported that the previous city was too small, packed and confusing.
