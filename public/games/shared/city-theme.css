@@ -2884,6 +2884,36 @@ body.city-viewing #opportunities-panel {
 body.city-viewing #request-inspection {
   display: none;
 }
+#graphics-recovery {
+  position: fixed;
+  left: 50%;
+  bottom: max(70px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 99;
+  width: min(340px, calc(100vw - 28px));
+  background: #f8f3e8;
+  color: #304850;
+  border: 2px solid #b57c51;
+  border-radius: 13px;
+  padding: 13px;
+  box-shadow: 0 9px 30px #20282055;
+}
+#graphics-recovery[hidden] {
+  display: none;
+}
+#graphics-recovery p {
+  margin: 5px 0 10px;
+  font-size: 12px;
+}
+#graphics-recover {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #49785f;
+  border-radius: 8px;
+  background: #e1efe5;
+  color: #204d35;
+  font-weight: 700;
+}
 #request-inspection strong {
   display: block;
   margin-bottom: 5px;

@@ -87,7 +87,7 @@ export function createLivingCityScene({
     harmless(lantern);
     built.add(lantern);
     built.visible = false;
-    plazas.set(district.id, { built, lantern });
+    plazas.set(district.id, { built, lantern, root });
     const walkers = [];
     for (let j = 0; j < (lowPower ? 1 : 2); j++) {
       const person = new T.Group();
@@ -234,6 +234,29 @@ export function createLivingCityScene({
     });
     return latest;
   }
+  function setFocus(focus, overview = false, range = 32) {
+    const nearby = (p) =>
+      overview || !focus || Math.hypot(p.x - focus.x, p.z - focus.z) < range;
+    for (const district of CITY_DISTRICTS) {
+      const site = plazas.get(district.id);
+      site.root.visible = nearby(site.root.position);
+      const walkers = pedestrians.get(district.id);
+      const active = latest?.districts.find((item) => item.id === district.id);
+      walkers.forEach((person, i) => {
+        person.visible =
+          Boolean(active && i < active.residents) && nearby(person.position);
+      });
+    }
+    if (latest?.enterpriseActivity)
+      enterpriseStand.visible = nearby(enterpriseStand.position);
+    else enterpriseStand.visible = false;
+    // Deliveries retain their real computed routes; hide only when far
+    // enough that the player cannot see them on the small phone screen.
+    vehicles.forEach((vehicle) => {
+      if (vehicle.route)
+        vehicle.g.visible = overview || !focus || nearby(vehicle.g.position);
+    });
+  }
   function sample(path, progress) {
     const lengths = [];
     let total = 0;
@@ -313,5 +336,13 @@ export function createLivingCityScene({
       g.rotation.y = point.angle;
     });
   }
-  return { sync, animate, plazas, pedestrians, vehicles, requestMarkers };
+  return {
+    sync,
+    setFocus,
+    animate,
+    plazas,
+    pedestrians,
+    vehicles,
+    requestMarkers,
+  };
 }

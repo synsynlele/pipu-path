@@ -860,6 +860,58 @@ let activeFeedback = null;
 let journeyTravelTimer = null;
 let builtCityView = null;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+let graphicsInterrupted = false;
+let contextLost = false;
+let renderErrors = 0;
+let graphicsResets = 0;
+let lastRenderError = "";
+function showGraphicsProblem(message) {
+  const banner = $("graphics-recovery");
+  $("graphics-recovery-detail").textContent = message;
+  banner.hidden = false;
+}
+function restoreGraphicsQuality() {
+  renderer.shadowMap.enabled = false;
+  sun.castShadow = false;
+  renderer.setPixelRatio(0.65);
+  resize();
+}
+if (!softwareMode) {
+  $("world").addEventListener("webglcontextlost", (event) => {
+    event.preventDefault(); // Let Three.js rebuild the context on restoration.
+    graphicsInterrupted = true;
+    contextLost = true;
+    showGraphicsProblem(
+      "Your phone paused the 3D graphics. Your decisions are still here. Tap Recover 3D.",
+    );
+  });
+  $("world").addEventListener("webglcontextrestored", () => {
+    graphicsInterrupted = false;
+    contextLost = false;
+    renderErrors = 0;
+    graphicsResets++;
+    console.info("City graphics restored", graphicsResets);
+    restoreGraphicsQuality();
+    syncCaseScenes();
+    $("graphics-recovery").hidden = true;
+    toast("Your city graphics are back. Continue building.");
+  });
+}
+$("graphics-recover").onclick = () => {
+  restoreGraphicsQuality();
+  if (contextLost) {
+    renderer.forceContextRestore?.();
+    showGraphicsProblem(
+      "Trying to restore 3D. Your saved decisions are unchanged.",
+    );
+  } else {
+    graphicsInterrupted = false;
+    renderErrors = 0;
+    $("graphics-recovery").hidden = true;
+    syncCaseScenes();
+    toast("Graphics reset. Your city decisions are preserved.");
+  }
+};
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
   livingScene.sync(state.decisions, state.economy);
@@ -3266,7 +3318,26 @@ let last = performance.now(),
 const v = new T.Vector3();
 function animate(now) {
   requestAnimationFrame(animate);
+  try {
+    animateWorld(now);
+    renderErrors = 0;
+  } catch (error) {
+    // Without this boundary one failing frame throws on every RAF tick,
+    // leaving the canvas apparently frozen and the reason invisible.
+    renderErrors++;
+    lastRenderError = error instanceof Error ? error.message : String(error);
+    if (renderErrors === 2) {
+      console.warn("City rendering interrupted:", lastRenderError);
+      graphicsInterrupted = true;
+      showGraphicsProblem(
+        "The 3D scene stopped drawing. Your choices are safe in this session. Tap Recover 3D.",
+      );
+    }
+  }
+}
+function animateWorld(now) {
   if (!frameBudget.takeFrame(now, document.hidden)) return;
+  if (graphicsInterrupted) return;
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
   time += dt;
@@ -3350,6 +3421,12 @@ function animate(now) {
     }
   }
 
+  // Only nearby buildings need draw calls on mobile. Aerial view and
+  // desktop still show the complete 14-district city.
+  const focus = activeFeedback ?? player.g.position;
+  const overview = !compactDevice || mapMode || Boolean(builtCityView);
+  caseScenes.setFocus(focus, overview);
+  livingScene.setFocus(focus, overview);
   // City buildings and small community workers reflect each retained choice.
   // The same retained choices animate a living neighbourhood in both play
   // and aerial inspection. Hidden tabs avoid unnecessary simulation work.
