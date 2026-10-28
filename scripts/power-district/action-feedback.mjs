@@ -7,7 +7,7 @@ import {
 } from "../../public/games/city/feedback.mjs";
 import { readFileSync } from "node:fs";
 
-assert.equal(Object.keys(CASE_BUILD_SITES).length, 16);
+assert.equal(Object.keys(CASE_BUILD_SITES).length, 36);
 for (const c of CITY_CASES) {
   const site = CASE_BUILD_SITES[c.id];
   assert(site, c.id + " must build something visibly in the 3D scene");

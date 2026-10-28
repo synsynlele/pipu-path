@@ -7,15 +7,10 @@ import {
 import { createNavigator } from "../../public/games/shared/navigation.mjs";
 
 const counts = countDistricts();
-assert.deepEqual(counts, { all: 14, active: 4, exploring: 10 });
+assert.deepEqual(counts, { all: 14, active: 14, exploring: 0, growing: 10 });
 assert.equal(new Set(CITY_DISTRICTS.map((d) => d.id)).size, 14);
 assert.equal(new Set(CITY_DISTRICTS.map((d) => d.name)).size, 14);
-assert.deepEqual(
-  CITY_DISTRICTS.filter((d) => d.status === "active")
-    .map((d) => d.id)
-    .sort(),
-  ["market", "power", "school", "workshop"],
-);
+assert.equal(CITY_DISTRICTS.filter((d) => d.status === "active").length, 14);
 for (const district of OUTER_DISTRICTS) {
   assert(district.challenge && district.challenge.endsWith("?"));
   assert(Math.abs(district.x) < 54 && Math.abs(district.z) < 45);
@@ -48,5 +43,5 @@ for (const d of OUTER_DISTRICTS) {
   }
 }
 console.log(
-  "PASS: fourteen distinct districts, honest playability, and safe routes to ten outer landmarks.",
+  "PASS: fourteen playable districts, ten unlocked in the second chapter, and safe routes.",
 );

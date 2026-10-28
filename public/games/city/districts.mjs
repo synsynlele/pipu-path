@@ -1,5 +1,5 @@
-// One city catalogue. Only the four core districts have a playable operating model.
-// The ten outer districts are explorable places with truthful future-work briefs.
+// One city catalogue: four foundation districts and ten playable growing-city districts.
+// The outer-district geometry remains in place as those sites open in Chapter 2.
 export const CITY_DISTRICTS = [
   {
     id: "workshop",
@@ -41,7 +41,7 @@ export const CITY_DISTRICTS = [
     id: "housing",
     name: "Housing & Construction",
     short: "Homes Quarter",
-    status: "explore",
+    status: "active",
     x: -45,
     z: -24,
     emoji: "🏠",
@@ -54,7 +54,7 @@ export const CITY_DISTRICTS = [
     id: "water",
     name: "Water & Sanitation",
     short: "Water Works",
-    status: "explore",
+    status: "active",
     x: -27,
     z: -39,
     emoji: "💧",
@@ -66,7 +66,7 @@ export const CITY_DISTRICTS = [
     id: "health",
     name: "Healthcare",
     short: "Community Health",
-    status: "explore",
+    status: "active",
     x: 1,
     z: -39,
     emoji: "🏥",
@@ -78,7 +78,7 @@ export const CITY_DISTRICTS = [
     id: "transport",
     name: "Transport & Logistics",
     short: "Transit Yard",
-    status: "explore",
+    status: "active",
     x: 29,
     z: -39,
     emoji: "🚚",
@@ -91,7 +91,7 @@ export const CITY_DISTRICTS = [
     id: "technology",
     name: "Technology & Innovation",
     short: "Innovation Hub",
-    status: "explore",
+    status: "active",
     x: 47,
     z: -21,
     emoji: "💻",
@@ -103,7 +103,7 @@ export const CITY_DISTRICTS = [
     id: "business",
     name: "Business & Finance",
     short: "Enterprise Row",
-    status: "explore",
+    status: "active",
     x: 47,
     z: 4,
     emoji: "🏪",
@@ -115,7 +115,7 @@ export const CITY_DISTRICTS = [
     id: "environment",
     name: "Environment & Climate",
     short: "Green Commons",
-    status: "explore",
+    status: "active",
     x: 43,
     z: 33,
     emoji: "🌿",
@@ -127,7 +127,7 @@ export const CITY_DISTRICTS = [
     id: "governance",
     name: "Community & Governance",
     short: "Civic Square",
-    status: "explore",
+    status: "active",
     x: 19,
     z: 39,
     emoji: "🏛️",
@@ -139,7 +139,7 @@ export const CITY_DISTRICTS = [
     id: "creative",
     name: "Creative Economy",
     short: "Creative Park",
-    status: "explore",
+    status: "active",
     x: -9,
     z: 39,
     emoji: "🎨",
@@ -152,7 +152,7 @@ export const CITY_DISTRICTS = [
     id: "industry",
     name: "Industry & Manufacturing",
     short: "Making Yard",
-    status: "explore",
+    status: "active",
     x: -44,
     z: 26,
     emoji: "🏭",
@@ -163,8 +163,14 @@ export const CITY_DISTRICTS = [
   },
 ];
 
+export const FOUNDATION_DISTRICTS = Object.freeze([
+  "workshop",
+  "power",
+  "market",
+  "school",
+]);
 export const OUTER_DISTRICTS = CITY_DISTRICTS.filter(
-  (d) => d.status === "explore",
+  (d) => !FOUNDATION_DISTRICTS.includes(d.id),
 );
 export const DISTRICT_INDEX = new Map(CITY_DISTRICTS.map((d) => [d.id, d]));
 
@@ -172,7 +178,8 @@ export function countDistricts() {
   return {
     all: CITY_DISTRICTS.length,
     active: CITY_DISTRICTS.filter((d) => d.status === "active").length,
-    exploring: OUTER_DISTRICTS.length,
+    exploring: CITY_DISTRICTS.filter((d) => d.status === "explore").length,
+    growing: OUTER_DISTRICTS.length,
   };
 }
 
@@ -262,7 +269,7 @@ export function createOuterDistricts({
       detail(0.15, 2.2, 0.15, 0x564b3e, x + 2, 4.8, z - 2.7);
       detail(3, 1.0, 2, 0x9a8c80, x - 3.8, 0.7, z - 0.2);
     }
-    // Compact welcome sign and a neighbour: decorative only, distinct from authored quests.
+    // Compact welcome sign and a neighbour, now beside playable growing-city challenges.
     detail(2.6, 1.15, 0.14, 0x253d72, x - 4.2, 1.9, z - 4.7);
     textPlane(
       d.short.toUpperCase(),

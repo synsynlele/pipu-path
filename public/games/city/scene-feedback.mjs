@@ -4,6 +4,7 @@
 import { CASE_BUILD_SITES, visualTone } from "./feedback.mjs";
 import { getChoice } from "./cases.mjs";
 import { choiceStructure, deriveBuilderCity } from "./city-growth.mjs";
+import { OUTER_DISTRICTS } from "./districts.mjs";
 
 export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
   const effects = new Map();
@@ -143,6 +144,75 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
         B(0.8, 0.12, 0.4, 0xb9baaa, 0, 1.44, 0);
         B(0.66, 0.08, 0.28, 0xf2d486, 0, 1.36, 0);
         break;
+      case "homes":
+      case "upkeep":
+        B(0.97, 0.68, 0.72, 0xcdac8c, 0, 0.54, 0);
+        B(1.18, 0.17, 0.98, 0xa46c5a, 0, 0.99, 0);
+        B(0.27, 0.46, 0.1, 0x567285, -0.15, 0.62, 0.41);
+        break;
+      case "pump":
+      case "drains":
+        C(0.38, 0.73, 0x5a9ca9, 0, 0.6, 0);
+        B(1.22, 0.1, 0.24, 0x54828e, 0, 0.28, 0.46);
+        B(0.15, 1.1, 0.14, 0x506d78, 0.41, 0.8, -0.2);
+        break;
+      case "clinic":
+      case "supply":
+        B(1.05, 0.86, 0.73, 0xe8e2d4, 0, 0.64, 0);
+        B(0.47, 0.12, 0.09, 0xc94857, 0, 0.9, 0.42);
+        B(0.11, 0.43, 0.09, 0xc94857, 0, 0.9, 0.42);
+        break;
+      case "roads":
+      case "crosswalk":
+        B(1.22, 0.1, 1.0, 0x66757c, 0, 0.28, 0);
+        for (const x of [-0.34, 0, 0.34])
+          B(0.13, 0.03, 0.7, 0xe8d0aa, x, 0.35, 0);
+        break;
+      case "digital":
+      case "offline":
+        B(1.04, 1.12, 0.2, 0x4d627b, 0, 0.78, 0);
+        B(0.83, 0.63, 0.05, 0x75a9ba, 0, 0.94, 0.13);
+        B(1.15, 0.14, 0.45, 0xaebec8, 0, 0.25, 0.1);
+        break;
+      case "shops":
+      case "finance":
+        B(1.2, 0.85, 0.9, 0xc6a36f, 0, 0.6, 0);
+        for (const x of [-0.35, 0, 0.35])
+          B(0.27, 0.33, 0.07, 0x5c8999, x, 0.67, 0.49);
+        break;
+      case "flood":
+      case "recycling":
+        for (let i = 0; i < 3; i++)
+          B(
+            0.31,
+            0.57,
+            0.43,
+            [0x559786, 0xd3b365, 0x6c8dad][i],
+            -0.37 + i * 0.37,
+            0.45,
+            0,
+          );
+        B(1.25, 0.1, 0.18, 0x688b77, 0, 0.22, 0.44);
+        break;
+      case "civic":
+      case "reports":
+        B(1.18, 1.0, 0.17, 0xc8ba9e, 0, 0.7, 0);
+        for (const x of [-0.32, 0, 0.32])
+          B(0.22, 0.41, 0.03, 0x506e8c, x, 0.84, 0.12);
+        break;
+      case "stage":
+      case "notices":
+        B(1.25, 0.22, 0.87, 0x957292, 0, 0.4, 0);
+        for (const x of [-0.52, 0.52])
+          B(0.09, 0.93, 0.08, 0xd7a86e, x, 0.95, -0.33);
+        B(1.12, 0.12, 0.24, 0xe6bf8a, 0, 1.38, -0.33);
+        break;
+      case "factory":
+      case "training":
+        B(1.2, 0.78, 0.91, 0x8a969f, 0, 0.6, 0);
+        B(0.21, 0.87, 0.18, 0x978975, 0.38, 1.36, -0.23);
+        B(0.9, 0.12, 0.54, 0xd9b77b, 0, 1.05, 0);
+        break;
       default:
         B(1, 0.7, 0.7, 0x78988d, 0, 0.48, 0);
     }
@@ -267,6 +337,8 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     market: { x: 19.6, z: 12.2 },
     school: { x: -10.4, z: 11.6 },
   };
+  for (const d of OUTER_DISTRICTS)
+    hubSites[d.id] = { x: d.x + 5.5, z: d.z + 2.6 };
   const hubs = new Map();
   for (const [id, anchor] of Object.entries(hubSites)) {
     const hub = new T.Group();

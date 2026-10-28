@@ -1,5 +1,40 @@
 # Implementation status
 
+## 28 October 2026 — Chapter 2 expansion across all 14 places
+
+Branch `feat/unbuilt-city-chapter-two-all-districts` extends the original
+16-case foundation to a 36-case, two-chapter city-building sequence. The
+ten previously decorative/explorable places—Housing, Water, Healthcare,
+Transport, Technology, Business, Environment, Governance, Creative
+Economy and Industry—now each have **two authored fictional
+problem-solving scenarios**, three materially different decision
+consequences, visible decision-specific building geometries and district
+service activity. All 14 places are represented in the connected-city
+model. The new model connects water and healthcare, transport and food,
+environment and housing, manufacturing and repairs, and other services.
+
+Chapter 2 is gated on all 16 foundation decisions. Completion reveals
+the student's unique city at an elevated camera view, then automatically
+opens the first new district with a resumable chapter stage and manual
+'Start now' shortcut. Long-distance guided travel skips long empty
+walking sections while local walk movement remains unchanged. A Chapter
+2 decision contains a concise contextual statement derived from a
+related existing district's strength or weakness; dependencies are
+fictional scenario heuristics, not new external economic data.
+
+Existing direct click-to-navigate, mobile controls, pause/resume, last
+decision and retrospective revisions remain. New case choices are
+allowlisted through the existing opt-in browser-only save without new
+identifiers or personal data. The legacy two-day operating exercise is
+not silently merged into the 36-decision city. Chapter 3
+entrepreneurial operations and Chapter 4 continuously operating city
+systems remain **future work**, not implied to be shipped in this PR.
+
+Release gate: full tests and Vercel preview; physical Android and
+consented classroom end-to-end walk-through must happen before a
+production merge, especially long-session WebGL performance and
+navigation across the enlarged map.
+
 ## 28 October 2026 — restore essential controls and let builders revise decisions
 
 A new preview branch `feat/unbuilt-city-navigation-and-revision`

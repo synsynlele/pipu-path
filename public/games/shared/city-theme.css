@@ -2331,3 +2331,38 @@ body.city-journey #world-feedback {
     max-height: calc(100dvh - 142px);
   }
 }
+
+/* Chapter 2: first four districts establish the city, next ten unlock.
+   Keep city state, choices and chapter reveal accessible on phones. */
+.case-context {
+  padding: 10px 13px;
+  margin: 9px 0 14px;
+  border-radius: 10px;
+  border-inline-start: 4px solid #c9a957;
+  background: #f7f0d9;
+  color: #284266;
+  line-height: 1.55;
+  font-size: 12px;
+}
+.case-tile:disabled {
+  opacity: 0.62;
+  cursor: not-allowed;
+}
+#casebook .case-section {
+  scroll-margin-top: 12px;
+}
+#casebook-list .case-grid {
+  gap: 8px;
+}
+#casebook-list .case-section h3 {
+  font-size: 14px;
+}
+@media (max-width: 650px) {
+  .case-context {
+    font-size: 11px;
+    padding: 10px;
+  }
+  #casebook-list .case-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,14 +1,12 @@
 // Choice-to-City v1: deterministic fictional district operating indicators.
 // This is NOT the original two-day budget/power simulator, verified XP,
 // personal assessment, or advice for real infrastructure operations.
-import { CITY_CASES, getChoice } from "./cases.mjs";
+import { CITY_CASES, getChoice, casesFor } from "./cases.mjs";
+import { CITY_DISTRICTS } from "./districts.mjs";
 
-export const CITY_SYSTEMS = Object.freeze([
-  { id: "workshop", name: "Repair", icon: "🔧" },
-  { id: "power", name: "Power", icon: "⚡" },
-  { id: "market", name: "Food", icon: "🌱" },
-  { id: "school", name: "Learning", icon: "🎓" },
-]);
+export const CITY_SYSTEMS = Object.freeze(
+  CITY_DISTRICTS.map(({ id, name, emoji }) => ({ id, name, icon: emoji })),
+);
 export const CONNECTIONS = Object.freeze([
   {
     from: "power",
@@ -57,6 +55,90 @@ export const CONNECTIONS = Object.freeze([
     to: "school",
     reason: "More stable livelihoods support participation",
     weight: 0.07,
+  },
+  {
+    from: "power",
+    to: "water",
+    reason: "Pumps depend on energy",
+    weight: 0.12,
+  },
+  {
+    from: "water",
+    to: "health",
+    reason: "Clean water supports health",
+    weight: 0.13,
+  },
+  {
+    from: "housing",
+    to: "water",
+    reason: "Housing growth increases service demand",
+    weight: 0.08,
+  },
+  {
+    from: "environment",
+    to: "housing",
+    reason: "Drainage protects homes",
+    weight: 0.12,
+  },
+  {
+    from: "environment",
+    to: "transport",
+    reason: "Flood prevention protects roads",
+    weight: 0.11,
+  },
+  {
+    from: "transport",
+    to: "market",
+    reason: "Roads support food deliveries",
+    weight: 0.12,
+  },
+  {
+    from: "transport",
+    to: "health",
+    reason: "Road access affects clinic journeys",
+    weight: 0.1,
+  },
+  {
+    from: "technology",
+    to: "governance",
+    reason: "Tools can improve public response",
+    weight: 0.08,
+  },
+  {
+    from: "governance",
+    to: "water",
+    reason: "Clear stewardship helps services",
+    weight: 0.09,
+  },
+  {
+    from: "business",
+    to: "industry",
+    reason: "Demand shapes local manufacturing",
+    weight: 0.11,
+  },
+  {
+    from: "industry",
+    to: "workshop",
+    reason: "Locally made parts support repairs",
+    weight: 0.1,
+  },
+  {
+    from: "school",
+    to: "industry",
+    reason: "Practical skills support safe production",
+    weight: 0.1,
+  },
+  {
+    from: "creative",
+    to: "business",
+    reason: "Culture brings enterprise opportunities",
+    weight: 0.08,
+  },
+  {
+    from: "health",
+    to: "housing",
+    reason: "Healthy neighbours support community life",
+    weight: 0.08,
   },
 ]);
 const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, Math.round(n)));
@@ -120,15 +202,23 @@ export function deriveBuilderCity(decisions = {}) {
   // Baseline only represents a fictional starting neighbourhood. Buildings
   // cannot increase capacity merely because a question was viewed.
   for (const d of Object.values(districts)) {
+    // Two-decision growth districts and four-decision foundation districts
+    // must be comparable once their available problems are completed.
+    const total = casesFor(d.id).length || 1;
+    const progress = d.built / total;
     d.direct = d.built
       ? clamp(
-          12 + d.built * 9 + d.impact.reduce((a, b) => a + b, 0) * 1.6,
+          12 +
+            progress * 36 +
+            d.impact.reduce((a, b) => a + b, 0) * (6.4 / total),
           5,
           100,
         )
       : 0;
     DIMENSIONS.forEach((axis, i) => {
-      d[axis] = d.built ? clamp(38 + d.impact[i] * 8 + d.built * 3, 0, 100) : 0;
+      d[axis] = d.built
+        ? clamp(38 + d.impact[i] * (32 / total) + progress * 12, 0, 100)
+        : 0;
     });
   }
   for (const d of Object.values(districts)) {
@@ -156,12 +246,17 @@ export function deriveBuilderCity(decisions = {}) {
   const all = Object.values(districts);
   const completed = all.reduce((sum, d) => sum + d.built, 0);
   const thriving = all.filter((d) => d.activity === "thriving").length;
-  const serviceTotal = all.reduce((sum, d) => sum + d.service, 0);
+  const functioning = all.filter((d) => d.built > 0);
+  const serviceTotal = functioning.reduce((sum, d) => sum + d.service, 0);
   return {
     districts,
     completed,
     totalCases: CITY_CASES.length,
-    cityHealth: completed ? Math.round(serviceTotal / 4) : 0,
+    cityHealth: functioning.length
+      ? Math.round(serviceTotal / functioning.length)
+      : 0,
+    activeDistricts: functioning.length,
+    districtCount: all.length,
     thriving,
     visibleBuildings: completed,
     // Stored snapshot is the choice IDs; city geometry and indicators derive

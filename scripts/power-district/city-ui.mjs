@@ -125,7 +125,13 @@ assert(game.includes("saveEnabled = false"));
 assert(css.includes("#casebook-list"));
 assert(css.includes(".case-choice"));
 assert(game.includes("createOuterDistricts("));
-assert(game.includes("showFutureDistrict("));
+assert(game.includes("if (district && OUTER_DISTRICTS.some("));
+assert(game.includes("function showChapterTransition()"));
+assert(game.includes("isChapterTransition(id)"));
+assert(game.includes("nextPlayableAfter(id, state.decisions)"));
+assert(game.includes("chapterPressure(scenario"));
+assert(html.includes("36 builder problems"));
+assert(game.includes("journeyTravelTimer"));
 assert(css.includes("#district-list"));
 console.log(
   "PASS: living city scene, on-demand guide and construction, focused simulation and expanded navigation contracts.",
