@@ -27,7 +27,6 @@ two-day city economy, optional device-only save and real Quest separation
 are preserved. Preview-only. CI, Android input/reading pace, screen-reader
 access, navigation and actual engagement need verification before release.
 
-
 ## 28 October 2026 — visible decision consequences and no walking trail
 
 A separate preview branch `feat/unbuilt-city-visible-actions` directly responds

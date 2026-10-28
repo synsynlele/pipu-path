@@ -3,10 +3,12 @@
 Date: 28 October 2026. Preview only.
 
 ## Learner problem
+
 Students reported unnecessary manual taps after each decision and noticed
 that the best-authored response was always the first choice.
 
 ## Updated experience
+
 1. Open Problems (16), select a scenario once.
 2. Avatar travels to the location automatically.
 3. See a scenario and select one of the three choices; this is the only
@@ -27,6 +29,7 @@ pauses auto-advance rather than silently skipping learning content.
 Manual navigation and menus cancel any pending automatic transition.
 
 ## Answer positions
+
 The first-authored choice was often the most responsible one. To prevent
 position-based guessing, the choice order is rotated using the case index
 and a random, session-only integer from 0–2. The other two options are
@@ -36,6 +39,7 @@ sixteen cases. The order stays stable through retries within that session.
 Case semantics and choice IDs do not change.
 
 ## What this is not
+
 Not an AI assessment, not learning efficacy evidence, and not
 independent engineering/food-safety guidance. This UI orchestration does
 not extend the two-day connected economy or activate the remaining ten
@@ -43,6 +47,7 @@ future district models. Device save is optional, local and excludes
 personal reflection and real Quest evidence.
 
 ## Test gates
+
 - All sixteen cases offer unique, stable answer orders with balanced
   positions under varied session seeds.
 - Selecting any choice instantly records the fictional decision, and

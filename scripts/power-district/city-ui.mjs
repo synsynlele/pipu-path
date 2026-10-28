@@ -36,11 +36,20 @@ assert(game.includes("const caseScenes = createCaseSceneEffects("));
 assert(game.includes("function runCaseWorldAction("));
 assert(game.includes("case-replay"));
 assert(game.includes("function proceedAfterCase("));
-assert(game.includes("state.decisions = saveDecision(state.decisions, caseId, choiceId)"));
+assert(
+  game.includes(
+    "state.decisions = saveDecision(state.decisions, caseId, choiceId)",
+  ),
+);
 assert(game.includes("choicesForCase(id, answerOrderSeed)"));
 assert(game.includes("autoAdvanceTimer = setTimeout("));
-assert(game.includes("if (!goToStation(next.district, () => showCase(next.id)))"));
-assert(!game.includes('id="case-keep"'), "players must not need a separate keep click");
+assert(
+  game.includes("if (!goToStation(next.district, () => showCase(next.id)))"),
+);
+assert(
+  !game.includes('id="case-keep"'),
+  "players must not need a separate keep click",
+);
 assert(css.includes(".auto-next-track"));
 assert(game.includes("decisionSparks.visible"));
 assert(game.includes("previewDecision = null"));

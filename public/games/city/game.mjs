@@ -14,7 +14,12 @@ import {
   districtProgress,
 } from "./cases.mjs";
 import { loadPractice, savePractice, clearPractice } from "./practice-save.mjs";
-import { choicesForCase, nextCaseAfter, caseNumber, OUTCOME_VIEW_MS } from "./case-flow.mjs";
+import {
+  choicesForCase,
+  nextCaseAfter,
+  caseNumber,
+  OUTCOME_VIEW_MS,
+} from "./case-flow.mjs";
 import {
   CITY_DISTRICTS,
   OUTER_DISTRICTS,
@@ -1120,8 +1125,9 @@ function showCase(id) {
   if (!scenario) return;
   const saved = getChoice(id, state.decisions[id]);
   showDetail(
-    '<div class="eyebrow">BUILDER PRACTICE · PROBLEM ' + caseNumber(id) +
-      ' / 16</div>' +
+    '<div class="eyebrow">BUILDER PRACTICE · PROBLEM ' +
+      caseNumber(id) +
+      " / 16</div>" +
       "<h2>" +
       scenario.title +
       "</h2><p>" +
@@ -1157,15 +1163,16 @@ function proceedAfterCase(id) {
   if (!next) {
     showDetail(
       '<div class="eyebrow">THE UNBUILT CITY · 16 / 16</div>' +
-      '<h2>You have shaped four districts.</h2>' +
-      '<p>You made decisions across repair, energy, food and learning.' +
-      ' The city keeps your fictional practice constructions. ' +
-      'There is no verified XP or real-world achievement.</p>' +
-      '<div class="evidence"><strong>BUILDER PRACTICE</strong>' +
-      caseProgress(state.decisions) + ' of 16 choices made. ' +
-      'Every decision can be revisited.</div>' +
-      '<p>Explore the other districts or test the connected city economy.</p>' +
-      '<button class="primary" id="finish-practice">Return to the city</button>'
+        "<h2>You have shaped four districts.</h2>" +
+        "<p>You made decisions across repair, energy, food and learning." +
+        " The city keeps your fictional practice constructions. " +
+        "There is no verified XP or real-world achievement.</p>" +
+        '<div class="evidence"><strong>BUILDER PRACTICE</strong>' +
+        caseProgress(state.decisions) +
+        " of 16 choices made. " +
+        "Every decision can be revisited.</div>" +
+        "<p>Explore the other districts or test the connected city economy.</p>" +
+        '<button class="primary" id="finish-practice">Return to the city</button>',
     );
     $("finish-practice").onclick = closeDetail;
     return;
@@ -1185,32 +1192,49 @@ function showCaseOutcome(id, choiceId) {
   outcomePaused = false;
   const next = nextCaseAfter(id);
   const signals = option.impact
-    .map((value, i) =>
-      "<span>" + IMPACT_LABELS[i] + ": " +
-      (value > 0 ? "+" : "") + value + "</span>",
+    .map(
+      (value, i) =>
+        "<span>" +
+        IMPACT_LABELS[i] +
+        ": " +
+        (value > 0 ? "+" : "") +
+        value +
+        "</span>",
     )
     .join("");
   showDetail(
-    '<div class="eyebrow">YOUR ACTION · ' + caseNumber(id) + ' / 16</div>' +
-    '<h2>' + scenario.title + '</h2>' +
-    '<p><strong>Your decision:</strong> ' + option.title + '</p>' +
-    '<div class="case-result"><b>What changed</b><p>' + option.result +
-    '</p><b>The trade-off</b><p>' + option.tradeoff +
-    '</p></div><div class="case-impact">' + signals +
-    '</div><details class="case-more"><summary>Explore the connections</summary>' +
-    '<p><strong>Related systems:</strong> ' + option.links +
-    '</p><p><strong>Safe observation:</strong> ' + scenario.bridge +
-    '</p><small>Fictional signals, not verified XP or actual city funds.</small></details>' +
-    '<div class="auto-next"><span id="autonext-caption">✓ Your decision is kept.' +
-    (next ? ' Next: ' + next.title : ' All 16 problems reached.') +
-    ' The game continues automatically.</span>' +
-    '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
-    '<div class="case-actions">' +
-    '<button class="secondary" id="case-pause">Pause to read</button>' +
-    '<button class="secondary" id="case-replay">Replay action</button>' +
-    '<button class="secondary" id="case-retry">Change decision</button>' +
-    '<button class="primary" id="case-next">' +
-    (next ? 'Next now →' : 'Finish →') + '</button></div>',
+    '<div class="eyebrow">YOUR ACTION · ' +
+      caseNumber(id) +
+      " / 16</div>" +
+      "<h2>" +
+      scenario.title +
+      "</h2>" +
+      "<p><strong>Your decision:</strong> " +
+      option.title +
+      "</p>" +
+      '<div class="case-result"><b>What changed</b><p>' +
+      option.result +
+      "</p><b>The trade-off</b><p>" +
+      option.tradeoff +
+      '</p></div><div class="case-impact">' +
+      signals +
+      '</div><details class="case-more"><summary>Explore the connections</summary>' +
+      "<p><strong>Related systems:</strong> " +
+      option.links +
+      "</p><p><strong>Safe observation:</strong> " +
+      scenario.bridge +
+      "</p><small>Fictional signals, not verified XP or actual city funds.</small></details>" +
+      '<div class="auto-next"><span id="autonext-caption">✓ Your decision is kept.' +
+      (next ? " Next: " + next.title : " All 16 problems reached.") +
+      " The game continues automatically.</span>" +
+      '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
+      '<div class="case-actions">' +
+      '<button class="secondary" id="case-pause">Pause to read</button>' +
+      '<button class="secondary" id="case-replay">Replay action</button>' +
+      '<button class="secondary" id="case-retry">Change decision</button>' +
+      '<button class="primary" id="case-next">' +
+      (next ? "Next now →" : "Finish →") +
+      "</button></div>",
   );
   $("case-pause").onclick = () => {
     cancelAutoAdvance();

@@ -1962,10 +1962,16 @@ body.city-impact-view #weather {
   transform-origin: left center;
   animation: next-problem-countdown 7.2s linear both;
 }
-.auto-next.paused .auto-next-track i { animation-play-state: paused; }
+.auto-next.paused .auto-next-track i {
+  animation-play-state: paused;
+}
 @keyframes next-problem-countdown {
-  from { transform: scaleX(1); }
-  to { transform: scaleX(0); }
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 .case-more {
   margin: 9px 0;
@@ -1974,8 +1980,13 @@ body.city-impact-view #weather {
   border-radius: 10px;
   font-size: 11px;
 }
-.case-more summary { font-weight: 650; cursor: pointer; }
-.case-more p { line-height: 1.55; }
+.case-more summary {
+  font-weight: 650;
+  cursor: pointer;
+}
+.case-more p {
+  line-height: 1.55;
+}
 #detail .case-actions {
   gap: 6px;
   margin-top: 9px;
@@ -1987,8 +1998,14 @@ body.city-impact-view #weather {
   min-height: 40px;
 }
 @media (max-width: 650px) {
-  #detail .case-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #detail .case-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .auto-next-track i { animation: none; transform: scaleX(1); }
+  .auto-next-track i {
+    animation: none;
+    transform: scaleX(1);
+  }
 }

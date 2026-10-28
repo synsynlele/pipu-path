@@ -8,7 +8,10 @@ export function choicesForCase(caseId, seed = 0) {
   if (!c) return [];
   const index = CITY_CASES.findIndex((entry) => entry.id === caseId);
   const offset = (((index + seed) % 3) + 3) % 3;
-  const hash = [...caseId].reduce((n, char) => (Math.imul(n, 31) + char.charCodeAt(0)) | 0, 7);
+  const hash = [...caseId].reduce(
+    (n, char) => (Math.imul(n, 31) + char.charCodeAt(0)) | 0,
+    7,
+  );
   const rest = c.options.slice(1);
   if ((hash + seed) & 1) rest.reverse();
   rest.splice(offset, 0, c.options[0]);
@@ -17,7 +20,9 @@ export function choicesForCase(caseId, seed = 0) {
 
 export function nextCaseAfter(caseId) {
   const index = CITY_CASES.findIndex((c) => c.id === caseId);
-  return index < 0 || index >= CITY_CASES.length - 1 ? null : CITY_CASES[index + 1];
+  return index < 0 || index >= CITY_CASES.length - 1
+    ? null
+    : CITY_CASES[index + 1];
 }
 export function caseNumber(caseId) {
   const index = CITY_CASES.findIndex((c) => c.id === caseId);
