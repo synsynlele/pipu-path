@@ -2118,3 +2118,98 @@ body.city-testing #city-status {
     transition: none;
   }
 }
+
+/* One owner for the automatic builder journey. Legacy station, guide and
+   building controls are temporarily hidden during guided progression. */
+#journey-bar {
+  position: absolute;
+  z-index: 28;
+  top: max(96px, calc(env(safe-area-inset-top) + 76px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(470px, calc(100% - 28px));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 11px 9px 15px;
+  color: #223964;
+  background: #f7f9fff5;
+  border: 1px solid #d4deef;
+  border-radius: 16px;
+  box-shadow: 0 8px 22px #172c5435;
+}
+#journey-status {
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+#journey-toggle {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 10px 15px;
+  border-radius: 12px;
+  border: 1px solid #b8a250;
+  font-size: 12px;
+  font-weight: 800;
+  color: #1d345e;
+  background: #e8cf7d;
+  touch-action: manipulation;
+}
+body.city-journey #city-tools,
+body.city-journey #mission,
+body.city-journey #build-dock,
+body.city-journey #resource,
+body.city-journey #scene-labels,
+body.city-journey #controls,
+body.city-journey #mobile-move,
+body.city-journey #travel,
+body.city-journey #weather,
+body.city-journey header,
+body.city-journey .corner-note {
+  display: none !important;
+}
+body.city-journey #detail {
+  z-index: 23;
+}
+@media (max-width: 650px) {
+  #journey-bar {
+    top: max(67px, calc(env(safe-area-inset-top) + 55px));
+    left: 9px;
+    right: 9px;
+    width: auto;
+    transform: none;
+    padding: 7px 8px 7px 12px;
+    border-radius: 12px;
+  }
+  #journey-status {
+    font-size: 10px;
+  }
+  #journey-toggle {
+    min-height: 42px;
+    font-size: 11px;
+    padding: 9px 11px;
+  }
+  body.city-journey #detail {
+    max-height: calc(100dvh - 158px);
+  }
+}
+
+/* Keep the response scene and the pause control visibly separate. */
+body.city-journey #world-feedback {
+  top: max(191px, 28%);
+}
+body.city-journey #detail {
+  top: max(182px, 24%);
+  max-height: calc(100dvh - 202px);
+}
+@media (max-width: 650px) {
+  body.city-journey #world-feedback {
+    top: max(148px, 22%);
+  }
+  body.city-journey #detail {
+    top: auto;
+    bottom: 10px;
+    max-height: calc(100dvh - 150px);
+  }
+}

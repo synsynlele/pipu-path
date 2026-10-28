@@ -1,5 +1,39 @@
 # Implementation status
 
+## 28 October 2026 — one journey controller with pause/resume
+
+The new preview branch `feat/unbuilt-city-journey-resume` addresses observed
+learner interruptions. The old station inspector opened a legacy details
+panel immediately before auto-running `showCase()`, and legacy movement
+and mission controls could cancel an auto-walk and discard its arrival
+callback. A separate, visible **Pause journey / Resume journey** control
+now owns the progression state. Guided mode bypasses legacy `inspect()`
+entirely, drives directly to each question, and temporarily hides legacy
+map, guide, build, hotspot and movement controls while running.
+
+The journey tracks `travelling`, `question`, `building`,
+`outcome`, and `complete`. Pausing stops route/timers safely without
+losing which case or response the student was on. Resuming restarts
+the appropriate stage (re-travel, same question, replay building, or
+read the outcome) rather than jumping to an unrelated panel. A blocked
+route surfaces a resumable state or opens the requested question. A
+zero-length route immediately invokes its arrival callback. Closing
+a question, tapping Pause while travelling, or choosing an old station
+no longer silently loses the continuation path.
+
+If the student has already opted into device-only saving, the same
+allowlisted browser snapshot now also stores a restricted journey
+cursor (case ID, stage, choice ID, paused status); it never stores text,
+identity, private evidence or credentials. Existing saves lacking a
+cursor still resume from the first unanswered case. Without opt-in
+saving, exact resume works **within the current open session** but is
+not promised after app/browser closure.
+
+The legacy two-day operating simulation remains an optional,
+separate activity. No new Quest XP or real-world proficiency is
+awarded. CI and physical Android interruption/restart verification
+are required before shipping.
+
 ## 28 October 2026 — Choice-to-City Engine (four-district vertical slice)
 
 The preview branch `feat/unbuilt-city-choice-to-city` turns all 16
