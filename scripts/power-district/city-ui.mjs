@@ -46,6 +46,24 @@ assert(game.includes("if (!planned.points.length)"));
 assert(game.includes('pauseJourney("The route is blocked.'));
 assert(html.includes('id="journey-bar"'));
 assert(html.includes('id="journey-toggle"'));
+assert(html.includes('id="journey-back"'));
+assert(html.includes('id="decision-count"'));
+assert(game.includes('function beginDecisionReview(id, autoResume = false)'));
+assert(game.includes('function showDecisionReviewOutcome(id, choiceId)'));
+assert(game.includes('function finishDecisionReview({ resume = true } = {})'));
+assert(game.includes('if (reviewCaseId !== caseId)'));
+assert(game.includes('if (reviewCaseId === caseId) showDecisionReviewOutcome(caseId, choiceId)'));
+assert(game.includes('const previous = previousKeptCase(state.decisions, journey.caseId)'));
+assert(game.includes('beginDecisionReview(previous.id)'));
+assert(game.includes('button.onclick = () => startCase(scenario.id)'));
+assert(game.includes('button.onclick = () => startCase(button.dataset.localCase)'));
+assert(game.includes('if (journey.status === "running") pauseJourney("Your place is saved.'));
+assert(game.includes('$("city-tools").hidden = !entered || simulating;'));
+assert(css.includes('body.city-journey #city-tools button'));
+assert(css.includes('body.city-journey-paused #city-tools button'));
+assert(css.includes('body.city-journey #city-tools[hidden]'));
+assert(!css.includes('body.city-journey #city-tools,\nbody.city-journey #mission,'));
+
 assert(css.includes("body.city-journey #city-tools"));
 assert(css.includes("body.city-journey #travel"));
 assert(

@@ -3,6 +3,7 @@ import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
 import { firstUnanswered, recoverJourney } from "./journey-flow.mjs";
+import { previousKeptCase, canRevise } from "./decision-review.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
@@ -782,6 +783,9 @@ let journey = previousPractice?.journey
   : { status: "idle", caseId: null, stage: "travelling", choiceId: null };
 let autoAdvanceTimer = null;
 let outcomePaused = false;
+let reviewCaseId = null;
+let autoResumeAfterReview = false;
+let resumeFromDecisionList = false;
 let feedbackTimer = null;
 let feedbackRunId = 0;
 let activeFeedback = null;
@@ -808,9 +812,16 @@ function refreshJourneyControls() {
   const paused = journey.status === "paused";
   const visible = entered && (running || paused);
   $("journey-bar").hidden = !visible;
-  $("city-tools").hidden = !entered || running || simulating;
+  // Always keep essential navigation available. Opening it pauses the journey.
+  $("city-tools").hidden = !entered || simulating;
   document.body.classList.toggle("city-journey", running);
   document.body.classList.toggle("city-journey-paused", paused);
+  const previous = previousKeptCase(state.decisions, journey.caseId);
+  $("journey-back").disabled = !previous;
+  $("journey-back").title = previous
+    ? "Change your earlier decision: " + previous.title
+    : "No earlier decisions yet";
+  $("decision-count").textContent = caseProgress(state.decisions) + "/16";
   if (!visible) return;
   $("journey-toggle").textContent = running
     ? "Pause journey"
@@ -868,6 +879,7 @@ function goToJourneyCase(id) {
 }
 function resumeJourney() {
   if (!$("intro").hidden || simulating || journey.status === "running") return;
+  if (reviewCaseId) finishDecisionReview({ resume: false });
   const target = recoverJourney({ ...journey, decisions: state.decisions });
   if (target.stage === "complete") {
     journey.status = "complete";
@@ -907,8 +919,10 @@ function runCaseWorldAction(caseId, choiceId) {
   const choice = getChoice(caseId, choiceId);
   if (!spec || !choice) return;
   cancelCasePreview();
-  journey = { status: "running", caseId, stage: "building", choiceId };
-  refreshJourneyControls();
+  if (reviewCaseId !== caseId) {
+    journey = { status: "running", caseId, stage: "building", choiceId };
+    refreshJourneyControls();
+  }
   // One choice is the only required action: the world and practice record
   // update immediately. No second 'Keep' confirmation is needed.
   state.decisions = saveDecision(state.decisions, caseId, choiceId);
@@ -968,7 +982,8 @@ function runCaseWorldAction(caseId, choiceId) {
       distance = priorDistance;
       previewDecision = null;
       syncCaseScenes();
-      if (journey.status === "running") showCaseOutcome(caseId, choiceId);
+      if (reviewCaseId === caseId) showDecisionReviewOutcome(caseId, choiceId);
+      else if (journey.status === "running") showCaseOutcome(caseId, choiceId);
     },
     reduceMotion.matches ? 700 : 1650,
   );
@@ -1090,6 +1105,7 @@ for (const d of OUTER_DISTRICTS)
   approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
 function goToStation(id, afterArrival = null) {
   if (!$("intro").hidden || simulating) return;
+  if (reviewCaseId) finishDecisionReview({ resume: false });
   if (journey.status === "running") pauseJourney();
   closeCityStatus();
   const station = stations.find((s) => s.id === id);
@@ -1139,6 +1155,10 @@ function updateWorld() {
   rebuildNavigation();
 }
 function closeDetail() {
+  if (reviewCaseId) {
+    finishDecisionReview();
+    return;
+  }
   if (
     journey.status === "running" &&
     ["question", "building", "outcome"].includes(journey.stage)
@@ -1222,6 +1242,8 @@ function renderCityStatus() {
   }
 }
 function openCityStatus() {
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your place is saved.");
   closeDirectory();
   closeCasebook();
   closeDetail();
@@ -1234,6 +1256,7 @@ function openCityStatus() {
   $("city-status-close").focus();
 }
 function renderCasebook() {
+  $("decision-count").textContent = caseProgress(state.decisions) + "/16";
   $("casebook-summary").textContent =
     caseProgress(state.decisions) +
     " of 16 practice decisions kept. Each decision has consequences and trade-offs.";
@@ -1266,9 +1289,11 @@ function renderCasebook() {
       const title = document.createElement("strong");
       title.textContent = scenario.title;
       const status = document.createElement("small");
-      status.textContent = getChoice(scenario.id, state.decisions[scenario.id])
-        ? "Decision kept · revisit"
-        : "Try this problem";
+      const savedChoice = getChoice(scenario.id, state.decisions[scenario.id]);
+      status.textContent = savedChoice
+        ? "↶ Change: " + savedChoice.title
+        : "Not solved yet · start problem";
+      if (savedChoice) button.classList.add("case-completed");
       button.append(title, status);
       button.onclick = () => startCase(scenario.id);
       grid.append(button);
@@ -1278,6 +1303,10 @@ function renderCasebook() {
   }
 }
 function openCasebook() {
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  resumeFromDecisionList = journey.status === "running";
+  if (journey.status === "running")
+    pauseJourney("Your place is saved. Choose a decision to change.");
   closeCityStatus();
   closeDirectory();
   closeDetail();
@@ -1313,16 +1342,74 @@ function showDistrictCases(district) {
         .join(""),
   );
   document.querySelectorAll("[data-local-case]").forEach((button) => {
-    button.onclick = () => showCase(button.dataset.localCase);
+    button.onclick = () => startCase(button.dataset.localCase);
   });
 }
 function startCase(id) {
   if (!getCase(id)) return;
+  if (canRevise(state.decisions, id)) {
+    beginDecisionReview(id, resumeFromDecisionList);
+    return;
+  }
+  resumeFromDecisionList = false;
   if (journey.status === "running") pauseJourney();
   goToJourneyCase(id);
 }
+function beginDecisionReview(id, autoResume = false) {
+  if (!canRevise(state.decisions, id)) return;
+  const wasRunning = journey.status === "running";
+  if (wasRunning)
+    pauseJourney("Change an earlier choice without losing your place.");
+  autoResumeAfterReview = autoResume || wasRunning;
+  resumeFromDecisionList = false;
+  reviewCaseId = id;
+  closeCasebook();
+  closeCityStatus();
+  closeDirectory();
+  cancelAutoAdvance();
+  cancelWalk();
+  showCase(id);
+}
+function finishDecisionReview({ resume = true } = {}) {
+  const shouldResume = resume && autoResumeAfterReview && journey.status === "paused";
+  cancelAutoAdvance();
+  reviewCaseId = null;
+  autoResumeAfterReview = false;
+  resumeFromDecisionList = false;
+  $("detail").hidden = true;
+  if (previewDecision) cancelCasePreview();
+  refreshJourneyControls();
+  if (shouldResume) resumeJourney();
+}
+function showDecisionReviewOutcome(id, choiceId) {
+  const scenario = getCase(id);
+  const choice = getChoice(id, choiceId);
+  if (!scenario || !choice) return;
+  cancelAutoAdvance();
+  const district = deriveBuilderCity(state.decisions).districts[scenario.district];
+  showDetail(
+    '<div class="eyebrow">YOUR CITY HAS CHANGED · ' + caseNumber(id) + '/16</div>' +
+    '<h2>' + scenario.title + '</h2>' +
+    '<p><strong>Revised choice:</strong> ' + choice.title + '</p>' +
+    '<div class="case-result"><b>What changed</b><p>' + choice.result +
+    '</p><b>The trade-off</b><p>' + choice.tradeoff + '</p></div>' +
+    '<div class="evidence"><strong>YOUR DISTRICT NOW</strong>' + district.name +
+    ': ' + district.activity + '. Connected systems have been recalculated.</div>' +
+    '<div class="auto-next"><span>Your original journey is kept. Returning shortly.</span>' +
+    '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
+    '<div class="case-actions">' +
+    '<button class="secondary" id="review-again">Change again</button>' +
+    '<button class="primary" id="review-done">Return to my journey →</button></div>',
+  );
+  $("review-again").onclick = () => { cancelAutoAdvance(); showCase(id); };
+  $("review-done").onclick = () => finishDecisionReview();
+  autoAdvanceTimer = setTimeout(() => {
+    if (!document.hidden) finishDecisionReview();
+    else document.querySelector(".auto-next")?.classList.add("paused");
+  }, OUTCOME_VIEW_MS);
+}
 function showCase(id) {
-  if (journey.status === "running") {
+  if (journey.status === "running" && reviewCaseId !== id) {
     journey.caseId = id;
     journey.stage = "question";
     journey.choiceId = null;
@@ -1334,7 +1421,8 @@ function showCase(id) {
   if (!scenario) return;
   const saved = getChoice(id, state.decisions[id]);
   showDetail(
-    '<div class="eyebrow">BUILDER PRACTICE · PROBLEM ' +
+    '<div class="eyebrow">' +
+      (reviewCaseId === id ? "REVISIT YOUR DECISION · PROBLEM " : "BUILDER PRACTICE · PROBLEM ") +
       caseNumber(id) +
       " / 16</div>" +
       "<h2>" +
@@ -1347,7 +1435,7 @@ function showCase(id) {
       (saved
         ? '<p class="case-small">Your kept approach: ' +
           saved.title +
-          ". You can compare alternatives without losing it.</p>"
+          ". Choosing another answer will replace the earlier construction.</p>"
         : "") +
       choicesForCase(id, answerOrderSeed)
         .map(
@@ -1359,8 +1447,12 @@ function showCase(id) {
             "</button>",
         )
         .join("") +
-      '<p class="case-small">Every approach has consequences. No real money is spent.</p>',
+      '<p class="case-small">Every approach has consequences. No real money is spent.</p>' +
+      (reviewCaseId === id
+        ? '<button class="secondary" id="review-cancel">Return without changing →</button>'
+        : ''),
   );
+  if ($("review-cancel")) $("review-cancel").onclick = () => finishDecisionReview();
   document.querySelectorAll("[data-case-choice]").forEach((button) => {
     button.onclick = () => runCaseWorldAction(id, button.dataset.caseChoice);
   });
@@ -1722,6 +1814,8 @@ function closeDirectory() {
   $("districts-toggle").setAttribute("aria-expanded", "false");
 }
 function openDirectory() {
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your place is saved.");
   closeCityStatus();
   closeCasebook();
   guideExpanded = false;
@@ -2082,6 +2176,10 @@ $("journey-toggle").onclick = () => {
   if (journey.status === "running") pauseJourney();
   else resumeJourney();
 };
+$("journey-back").onclick = () => {
+  const previous = previousKeptCase(state.decisions, journey.caseId);
+  if (previous) beginDecisionReview(previous.id);
+};
 $("close-detail").onclick = closeDetail;
 $("city-status-toggle").onclick = () => {
   if (simulating) return;
@@ -2117,6 +2215,8 @@ $("districts-toggle").onclick = () => {
 };
 $("district-close").onclick = closeDirectory;
 $("explore-free").onclick = () => {
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your journey is paused while you explore.");
   freeExplore = !freeExplore;
   guideExpanded = !freeExplore;
   dockExpanded = false;
@@ -2125,17 +2225,23 @@ $("explore-free").onclick = () => {
 };
 $("guide-toggle").onclick = () => {
   if (simulating) return;
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your journey is paused while you use the guide.");
   guideExpanded = !guideExpanded;
   if (guideExpanded) dockExpanded = false;
   render();
 };
 $("build-toggle").onclick = () => {
   if (simulating) return;
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your journey is paused while you build.");
   dockExpanded = !dockExpanded;
   if (dockExpanded) guideExpanded = false;
   render();
 };
 $("city-map").onclick = () => {
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your journey is paused while you explore the map.");
   mapMode = !mapMode;
   closeDirectory();
   if (mapMode) {
@@ -2195,6 +2301,9 @@ $("reset").onclick = () => {
     return;
   clearTimeout(runTimer);
   cancelCasePreview();
+  reviewCaseId = null;
+  autoResumeAfterReview = false;
+  resumeFromDecisionList = false;
   journey = {
     status: "idle",
     caseId: null,
