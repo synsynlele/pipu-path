@@ -194,11 +194,19 @@ box(7, 0.03, 6, 0xa5bd8b, 15, 0.11, 15);
 // A raised concrete apron and timber awning add depth without hiding the work.
 box(10.1, 0.09, 0.75, 0x9f9480, -2, 0.21, 2.68);
 for (const x of [-6.2, -3.2, -0.2, 2]) {
-  const beam = box(0.10, 0.14, 1.7, 0x75553e, x, 3.27, 2.28);
+  const beam = box(0.1, 0.14, 1.7, 0x75553e, x, 3.27, 2.28);
   beam.userData.ignoreNavigation = true;
 }
 for (let i = 0; i < 7; i++) {
-  const sheet = box(9.0, 0.055, 0.12, i % 2 ? 0x65736d : 0x75857a, -2, 3.37, 1.55 + i * 0.21);
+  const sheet = box(
+    9.0,
+    0.055,
+    0.12,
+    i % 2 ? 0x65736d : 0x75857a,
+    -2,
+    3.37,
+    1.55 + i * 0.21,
+  );
   sheet.userData.ignoreNavigation = true;
 }
 // Cutaway workshop: open south and east walls preserve sightlines.
@@ -359,7 +367,14 @@ function parkSeat(x, z) {
   for (const dx of [-0.67, 0.67])
     visual(box(0.1, 0.61, 0.1, 0x435561, x + dx, 0.35, z));
 }
-for (const [x, z] of [[-12, -7], [-12, 10], [4, -17], [8, 16], [17, 4], [-2, 4]])
+for (const [x, z] of [
+  [-12, -7],
+  [-12, 10],
+  [4, -17],
+  [8, 16],
+  [17, 4],
+  [-2, 4],
+])
   streetLight(x, z);
 parkSeat(-4, 12);
 parkSeat(12, 14);
@@ -414,7 +429,8 @@ function masonry(c) {
       const offset = row % 2 ? 14 : 0;
       const x = col * 32 + offset;
       const shade = 223 + ((row * 17 + col * 11 + 100) % 25);
-      ctx.fillStyle = "rgb(" + shade + "," + (shade - 4) + "," + (shade - 12) + ")";
+      ctx.fillStyle =
+        "rgb(" + shade + "," + (shade - 4) + "," + (shade - 12) + ")";
       ctx.fillRect(x + 1, row * 16 + 1, 30, 14);
     }
   }
@@ -422,22 +438,33 @@ function masonry(c) {
   texture.wrapS = texture.wrapT = T.RepeatWrapping;
   texture.repeat.set(2, 1.6);
   texture.colorSpace = T.SRGBColorSpace;
-  const material = new T.MeshStandardMaterial({ color: c, map: texture, roughness: 0.94 });
+  const material = new T.MeshStandardMaterial({
+    color: c,
+    map: texture,
+    roughness: 0.94,
+  });
   masonryCache.set(c, material);
   return material;
 }
 function building(x, z, w, h, d, c) {
   box(w, h, d, masonry(c), x, h / 2, z);
   const trim = 0xe0d3b8;
-  const roofColor = (Math.round(x + z) & 1) ? 0x746d5c : 0x62746d;
+  const roofColor = Math.round(x + z) & 1 ? 0x746d5c : 0x62746d;
   const rise = Math.min(1.15, w * 0.24);
   const slope = Math.atan2(rise, w / 2 + 0.3);
   const roofWidth = Math.hypot(w / 2 + 0.3, rise) + 0.18;
   for (const side of [-1, 1]) {
-    const roof = visual(box(
-      roofWidth, 0.19, d + 0.58, roofColor,
-      x + side * (w / 4 + 0.1), h + rise / 2, z,
-    ));
+    const roof = visual(
+      box(
+        roofWidth,
+        0.19,
+        d + 0.58,
+        roofColor,
+        x + side * (w / 4 + 0.1),
+        h + rise / 2,
+        z,
+      ),
+    );
     roof.rotation.z = -side * slope;
   }
   // Recessed front door, inset windows, ledges and contrasting trim.
@@ -456,7 +483,9 @@ function building(x, z, w, h, d, c) {
   }
   // Roof ridge and rainwater pipe.
   visual(box(0.13, 0.11, d + 0.55, 0xada58c, x, h + rise + 0.03, z));
-  visual(cyl(0.035, h - 0.1, 0x87918a, x + w / 2 - 0.08, h / 2, z + d / 2 + 0.08));
+  visual(
+    cyl(0.035, h - 0.1, 0x87918a, x + w / 2 - 0.08, h / 2, z + d / 2 + 0.08),
+  );
 }
 building(9, -10, 5, 3, 3, 0xcbad80);
 building(-9, -12, 5, 4, 4, 0xc4a37c);
@@ -579,7 +608,17 @@ for (const x of [6.6, 9.5])
   for (const z of [-2.5, 0.9]) box(0.1, 3, 0.1, 0x7d725c, x, 1.7, z);
 box(3.5, 0.16, 3.9, 0x243b78, 8, 3.3, -0.8);
 for (let i = 0; i < 7; i++)
-  visual(box(0.12, 0.018, 3.8, i % 2 ? 0xe5c96f : 0xf0e1bf, 6.4 + i * 0.47, 3.395, -0.8));
+  visual(
+    box(
+      0.12,
+      0.018,
+      3.8,
+      i % 2 ? 0xe5c96f : 0xf0e1bf,
+      6.4 + i * 0.47,
+      3.395,
+      -0.8,
+    ),
+  );
 visual(box(2.75, 0.13, 0.75, 0xa88464, 8, 0.98, 0.65));
 for (const x of [7.0, 9.0])
   visual(box(0.1, 0.86, 0.12, 0x705c4c, x, 0.53, 0.65));
@@ -923,7 +962,8 @@ function render() {
     : "POWER ↔ FOOD ↔ LEARNING";
   $("credits").textContent = q.available;
   $("resource").hidden = !$("intro").hidden;
-  $("build-dock").hidden = !$("intro").hidden || Boolean(guided) || !dockExpanded || simulating;
+  $("build-dock").hidden =
+    !$("intro").hidden || Boolean(guided) || !dockExpanded || simulating;
   $("build-toggle").hidden = Boolean(guided) || simulating;
   $("build-toggle").textContent = dockExpanded ? "Close Build" : "Build";
   $("build-dock").classList.add("city-dock");
@@ -1253,7 +1293,8 @@ function runDay() {
     const r = simRows[simPeriod];
     $("weather-title").textContent =
       r.period + " · power " + r.served + "/" + r.need;
-    $("test-status").textContent = "Testing " + r.period + " · electricity " + r.served + "/" + r.need;
+    $("test-status").textContent =
+      "Testing " + r.period + " · electricity " + r.served + "/" + r.need;
     document.querySelector(".weather-time").textContent = [
       "08:00",
       "12:00",
@@ -1595,7 +1636,8 @@ function animate(now) {
         (l, i) => (l.rotation.x = Math.sin(time * 10 + i * Math.PI) * 0.4),
       );
       player.arms.forEach(
-        (a, i) => (a.rotation.x = Math.sin(time * 10 + (i + 1) * Math.PI) * 0.28),
+        (a, i) =>
+          (a.rotation.x = Math.sin(time * 10 + (i + 1) * Math.PI) * 0.28),
       );
     } else cancelWalk();
   } else {

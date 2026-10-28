@@ -9,11 +9,11 @@ for (const id of ["guide-toggle", "build-toggle", "test-status", "city-map"]) {
   assert(html.includes('id="' + id + '"'), "missing city control: " + id);
 }
 assert(game.includes("function updateGuideVisibility()"));
-assert(game.includes('guideExpanded = false;'));
-assert(game.includes('dockExpanded = false;'));
+assert(game.includes("guideExpanded = false;"));
+assert(game.includes("dockExpanded = false;"));
 assert(game.includes('$("mission").hidden = !visible;'));
 assert(game.includes('$("test-status").hidden = !simulating;'));
-assert(game.includes('dockExpanded || simulating'));
+assert(game.includes("dockExpanded || simulating"));
 assert(css.includes("body.city-testing #mission"));
 assert(css.includes("body.city-testing #build-dock"));
 assert(css.includes("body.city-testing #scene-labels"));
@@ -25,4 +25,6 @@ assert(game.includes("function parkSeat("));
 assert(game.includes("player.arms.forEach("));
 assert(game.includes("createNavigator(obstacles, {"));
 assert(game.includes("minX: -24.5"));
-console.log("PASS: living city scene, on-demand guide and construction, focused simulation and expanded navigation contracts.");
+console.log(
+  "PASS: living city scene, on-demand guide and construction, focused simulation and expanded navigation contracts.",
+);

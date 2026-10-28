@@ -8,7 +8,6 @@ Guidance is present only at the start or when Next step is opened. After travell
 
 The underlying two-day city model, investment costs, existing PipuPath Quest ownership, progress provenance, safeguarding and backend are unchanged. Build/test regression and independent physical Android testing are still required. The next major visual leap should use versioned, legally cleared optimized GLB assets with performance budgets rather than adding unbounded meshes to each district.
 
-
 ## 28 October — public-browser smoke check
 
 The preview opened the intro screen and displayed the expected opening copy.
