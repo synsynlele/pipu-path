@@ -2,6 +2,7 @@ import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
+import { cityViewSummary, findCityViewDistrict } from "./city-view.mjs";
 import { chapterPressure } from "./chapter-two.mjs";
 import {
   firstUnanswered,
@@ -796,6 +797,7 @@ let feedbackTimer = null;
 let feedbackRunId = 0;
 let activeFeedback = null;
 let journeyTravelTimer = null;
+let builtCityView = null;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
@@ -848,6 +850,142 @@ function refreshJourneyControls() {
       caseNumber(journey.caseId) +
       "/" +
       CITY_CASES.length;
+}
+// Read-only aerial inspection of the actual selected construction states.
+// It pauses the guided flow and keeps its original stage, including review.
+function updateBuiltCityView() {
+  if (!builtCityView) return;
+  const summary = cityViewSummary(state.decisions);
+  $("city-view-summary").textContent =
+    summary.built +
+    "/" +
+    summary.possible +
+    " projects · " +
+    summary.active +
+    "/" +
+    summary.total +
+    " districts built";
+  const select = $("city-view-district");
+  select.replaceChildren();
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = "Choose a district";
+  select.append(first);
+  for (const district of [...summary.districts].sort(
+    (a, b) => Number(b.built > 0) - Number(a.built > 0),
+  )) {
+    const option = document.createElement("option");
+    option.value = district.id;
+    option.textContent =
+      district.emoji +
+      " " +
+      district.name +
+      " · " +
+      district.built +
+      "/" +
+      district.possible +
+      " built";
+    select.append(option);
+  }
+  const focused = findCityViewDistrict(summary, builtCityView.districtId);
+  select.value = focused?.id ?? "";
+  $("city-view-overview").setAttribute("aria-pressed", String(!focused));
+  if (focused) {
+    $("city-view-info").textContent =
+      focused.emoji +
+      " " +
+      focused.name +
+      " · " +
+      focused.built +
+      "/" +
+      focused.possible +
+      " projects · " +
+      (focused.built
+        ? "City service: " + focused.activity
+        : "Not built yet. Make decisions here to shape this district.");
+  } else {
+    $("city-view-info").textContent = summary.built
+      ? "Your saved decisions built these structures. Look around or select a district."
+      : "Your city is waiting for its first project. Return to the journey to begin building.";
+  }
+}
+function focusBuiltCityDistrict(id = null) {
+  if (!builtCityView) return;
+  const selected = findCityViewDistrict(cityViewSummary(state.decisions), id);
+  builtCityView.districtId = selected?.id ?? null;
+  builtCityView.focus = selected ? { x: selected.x, z: selected.z } : null;
+  mapMode = true;
+  if (selected) {
+    pitch = 1.05;
+    distance = 37;
+  } else {
+    pitch = 1.38;
+    distance = innerWidth <= 650 ? 201 : 153;
+  }
+  updateBuiltCityView();
+}
+function openBuiltCityView() {
+  if (!$("intro").hidden || simulating || builtCityView) return;
+  const wasRunning = journey.status === "running";
+  const snapshot = {
+    wasRunning,
+    detailVisible: !$("detail").hidden,
+    yaw,
+    pitch,
+    distance,
+    mapMode,
+    fov: camera.fov,
+    far: camera.far,
+    fogFar: scene.fog.far,
+  };
+  if (wasRunning)
+    pauseJourney("Your journey is paused while you inspect your city.");
+  cancelWalk();
+  keys.clear();
+  closeCasebook();
+  closeCityStatus();
+  closeDirectory();
+  $("detail").hidden = true;
+  $("mission").hidden = true;
+  $("build-dock").hidden = true;
+  $("travel").hidden = true;
+  $("world-feedback").hidden = true;
+  builtCityView = { snapshot, districtId: null, focus: null };
+  mapMode = true;
+  yaw = 0.55;
+  pitch = 1.38;
+  distance = innerWidth <= 650 ? 201 : 153;
+  camera.fov = innerWidth <= 650 ? 65 : 49;
+  camera.far = 440;
+  camera.updateProjectionMatrix();
+  scene.fog.far = 400;
+  document.body.classList.add("city-viewing");
+  $("view-city-toggle").setAttribute("aria-expanded", "true");
+  $("city-view").hidden = false;
+  $("city-view-return").textContent = wasRunning
+    ? "Resume journey →"
+    : "Return to game →";
+  updateBuiltCityView();
+}
+function closeBuiltCityView() {
+  if (!builtCityView) return;
+  const { snapshot } = builtCityView;
+  builtCityView = null;
+  document.body.classList.remove("city-viewing");
+  $("city-view").hidden = true;
+  $("view-city-toggle").setAttribute("aria-expanded", "false");
+  mapMode = snapshot.mapMode;
+  yaw = snapshot.yaw;
+  pitch = snapshot.pitch;
+  distance = snapshot.distance;
+  camera.fov = snapshot.fov;
+  camera.far = snapshot.far;
+  scene.fog.far = snapshot.fogFar;
+  camera.updateProjectionMatrix();
+  $("city-map").textContent = mapMode ? "Follow me" : "City map";
+  $("detail").hidden = !snapshot.detailVisible;
+  if (snapshot.wasRunning) resumeJourney();
+  else refreshJourneyControls();
 }
 function pauseJourney(
   message = "Journey paused. Resume whenever you're ready.",
@@ -1838,6 +1976,7 @@ function updateGuideVisibility() {
   $("districts-toggle").hidden = simulating;
   $("cases-toggle").hidden = simulating;
   $("city-status-toggle").hidden = simulating;
+  $("view-city-toggle").hidden = simulating;
   refreshJourneyControls();
 }
 function render() {
@@ -2401,6 +2540,18 @@ $("journey-back").onclick = () => {
   if (previous) beginDecisionReview(previous.id);
 };
 $("close-detail").onclick = closeDetail;
+$("view-city-toggle").onclick = openBuiltCityView;
+$("city-view-return").onclick = closeBuiltCityView;
+$("city-view-overview").onclick = () => focusBuiltCityDistrict();
+$("city-view-district").onchange = (event) => {
+  focusBuiltCityDistrict(event.target.value);
+};
+$("city-view-zoom-in").onclick = () => {
+  if (builtCityView) distance = clamp(distance * 0.8, 20, 250);
+};
+$("city-view-zoom-out").onclick = () => {
+  if (builtCityView) distance = clamp(distance * 1.25, 20, 250);
+};
 $("city-status-toggle").onclick = () => {
   if (simulating) return;
   if ($("city-status").hidden) openCityStatus();
@@ -2529,6 +2680,7 @@ $("help").onclick = () => $("help-dialog").showModal();
 $("help-done").onclick = $("close-help").onclick = () =>
   $("help-dialog").close();
 $("reset").onclick = () => {
+  if (builtCityView) closeBuiltCityView();
   if (
     !confirm("Restart this fictional city and clear its in-session progress?")
   )
@@ -2591,7 +2743,11 @@ canvas.addEventListener("pointermove", (e) => {
     const a = [...pointers.values()],
       d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
     if (pinchDistance)
-      distance = clamp(distance - (d - pinchDistance) * 0.055, 16, 128);
+      distance = clamp(
+        distance - (d - pinchDistance) * 0.055,
+        builtCityView ? 20 : 16,
+        builtCityView ? 250 : 128,
+      );
     pinchDistance = d;
     dragging = true;
     return;
@@ -2615,6 +2771,7 @@ canvas.addEventListener("pointerup", (e) => {
     !dragging &&
     $("intro").hidden &&
     !simulating &&
+    !builtCityView &&
     journey.status !== "running"
   ) {
     pointer.set(
@@ -2639,7 +2796,11 @@ canvas.addEventListener(
   "wheel",
   (e) => {
     e.preventDefault();
-    distance = clamp(distance + e.deltaY * 0.02, 16, 128);
+    distance = clamp(
+      distance + e.deltaY * 0.02,
+      builtCityView ? 20 : 16,
+      builtCityView ? 250 : 128,
+    );
   },
   { passive: false },
 );
@@ -2685,7 +2846,11 @@ function animate(now) {
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
   time += dt;
-  if (activeFeedback) desiredTarget.set(activeFeedback.x, 0, activeFeedback.z);
+  if (builtCityView?.focus)
+    desiredTarget.set(builtCityView.focus.x, 0, builtCityView.focus.z);
+  else if (builtCityView) desiredTarget.set(0, 0, 0);
+  else if (activeFeedback)
+    desiredTarget.set(activeFeedback.x, 0, activeFeedback.z);
   else if ($("intro").hidden && !mapMode)
     desiredTarget.set(player.g.position.x, 0, player.g.position.z);
   else desiredTarget.set(0, 0, 0);
@@ -2707,7 +2872,12 @@ function animate(now) {
     if (keys.has("s") || keys.has("ArrowDown")) dz += 1;
     if (keys.has("a") || keys.has("ArrowLeft")) dx -= 1;
     if (keys.has("d") || keys.has("ArrowRight")) dx += 1;
-    if ((dx || dz) && !simulating && journey.status !== "running") {
+    if (
+      (dx || dz) &&
+      !simulating &&
+      !builtCityView &&
+      journey.status !== "running"
+    ) {
       cancelWalk();
       const mx = dx * Math.cos(yaw) + dz * Math.sin(yaw),
         mz = -dx * Math.sin(yaw) + dz * Math.cos(yaw),
