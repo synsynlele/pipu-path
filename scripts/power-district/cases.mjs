@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import {
-  CITY_CASES, CASE_DISTRICTS, IMPACT_LABELS, getCase, getChoice,
-  casesFor, saveDecision, caseProgress, districtProgress,
+  CITY_CASES,
+  CASE_DISTRICTS,
+  IMPACT_LABELS,
+  getCase,
+  getChoice,
+  casesFor,
+  saveDecision,
+  caseProgress,
+  districtProgress,
 } from "../../public/games/city/cases.mjs";
 assert.equal(CITY_CASES.length, 16);
 assert.equal(CASE_DISTRICTS.length, 4);
@@ -26,13 +33,20 @@ for (const c of CITY_CASES) {
   }
 }
 let decisions = {};
-for (const caseFile of CITY_CASES) decisions = saveDecision(decisions, caseFile.id, caseFile.options[0].id);
+for (const caseFile of CITY_CASES)
+  decisions = saveDecision(decisions, caseFile.id, caseFile.options[0].id);
 assert.equal(caseProgress(decisions), 16);
 for (const d of CASE_DISTRICTS) assert.equal(districtProgress(decisions, d), 4);
 const before = decisions;
 assert.equal(saveDecision(decisions, "fake-id", "fake"), before);
 assert.equal(saveDecision(decisions, CITY_CASES[0].id, "invalid"), before);
-const changed = saveDecision(decisions, CITY_CASES[0].id, CITY_CASES[0].options[1].id);
+const changed = saveDecision(
+  decisions,
+  CITY_CASES[0].id,
+  CITY_CASES[0].options[1].id,
+);
 assert.equal(changed[CITY_CASES[0].id], CITY_CASES[0].options[1].id);
 assert.equal(decisions[CITY_CASES[0].id], CITY_CASES[0].options[0].id);
-console.log("PASS: sixteen distinct authored practice cases, three reversible trade-off choices each, four districts and stable effects.");
+console.log(
+  "PASS: sixteen distinct authored practice cases, three reversible trade-off choices each, four districts and stable effects.",
+);

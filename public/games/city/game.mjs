@@ -2,8 +2,15 @@ import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
-  CITY_CASES, CASE_DISTRICTS, IMPACT_LABELS,
-  casesFor, getCase, getChoice, saveDecision, caseProgress, districtProgress,
+  CITY_CASES,
+  CASE_DISTRICTS,
+  IMPACT_LABELS,
+  casesFor,
+  getCase,
+  getChoice,
+  saveDecision,
+  caseProgress,
+  districtProgress,
 } from "./cases.mjs";
 import { loadPractice, savePractice, clearPractice } from "./practice-save.mjs";
 import {
@@ -756,8 +763,13 @@ for (const district of CASE_DISTRICTS) {
   casesFor(district).forEach((scenario, i) => {
     const h = 0.23 + i * 0.12;
     const marker = box(
-      0.42, h, 0.42, 0xe2bc62, anchor.x + (i % 2) * 0.68,
-      0.27 + h / 2, anchor.z + Math.floor(i / 2) * 0.68,
+      0.42,
+      h,
+      0.42,
+      0xe2bc62,
+      anchor.x + (i % 2) * 0.68,
+      0.27 + h / 2,
+      anchor.z + Math.floor(i / 2) * 0.68,
     );
     marker.userData.ignoreNavigation = true;
     marker.visible = false;
@@ -771,7 +783,9 @@ function updatePracticeMarkers() {
     marker.visible = Boolean(chosen);
     if (chosen) {
       const total = chosen.impact.reduce((a, b) => a + b, 0);
-      marker.material = mat(total >= 3 ? 0x709e7b : total >= 0 ? 0xd9b65d : 0xb97962);
+      marker.material = mat(
+        total >= 3 ? 0x709e7b : total >= 0 ? 0xd9b65d : 0xb97962,
+      );
     }
   }
 }
@@ -931,7 +945,14 @@ function goToStation(id, afterArrival = null) {
     distance = 27;
     $("city-map").textContent = "City map";
   }
-  goTo(approaches[id], () => { inspect(id); afterArrival?.(); }, station.label);
+  goTo(
+    approaches[id],
+    () => {
+      inspect(id);
+      afterArrival?.();
+    },
+    station.label,
+  );
 }
 $("stop-walking").onclick = cancelWalk;
 
@@ -976,9 +997,12 @@ function closeCasebook() {
   $("cases-toggle").setAttribute("aria-expanded", "false");
 }
 function renderCasebook() {
-  $("casebook-summary").textContent = caseProgress(state.decisions) +
+  $("casebook-summary").textContent =
+    caseProgress(state.decisions) +
     " of 16 practice decisions kept. Each decision has consequences and trade-offs.";
-  $("save-practice").textContent = saveEnabled ? "Stop saving and clear device copy" : "Save on this device";
+  $("save-practice").textContent = saveEnabled
+    ? "Stop saving and clear device copy"
+    : "Save on this device";
   $("save-note").textContent = saveEnabled
     ? "Saving fictional decisions and city settings on this browser only. Not synced to an account or backed up."
     : "Save is off. Practice remains in the open game until you opt in. No personal reflection or Quest evidence is stored.";
@@ -989,8 +1013,13 @@ function renderCasebook() {
     const section = document.createElement("section");
     section.className = "case-section";
     const heading = document.createElement("h3");
-    heading.textContent = d.emoji + " " + d.name + " · " +
-      districtProgress(state.decisions, district) + "/4";
+    heading.textContent =
+      d.emoji +
+      " " +
+      d.name +
+      " · " +
+      districtProgress(state.decisions, district) +
+      "/4";
     const grid = document.createElement("div");
     grid.className = "case-grid";
     for (const scenario of casesFor(district)) {
@@ -1001,7 +1030,8 @@ function renderCasebook() {
       title.textContent = scenario.title;
       const status = document.createElement("small");
       status.textContent = getChoice(scenario.id, state.decisions[scenario.id])
-        ? "Decision kept · revisit" : "Try this problem";
+        ? "Decision kept · revisit"
+        : "Try this problem";
       button.append(title, status);
       button.onclick = () => startCase(scenario.id);
       grid.append(button);
@@ -1025,13 +1055,24 @@ function showDistrictCases(district) {
   const d = CITY_DISTRICTS.find((entry) => entry.id === district);
   const scenarios = casesFor(district);
   showDetail(
-    '<div class="eyebrow">PRACTISE IN THIS DISTRICT</div><h2>' + d.name +
-    '</h2><p>These are authored fictional decisions. Each can be tried again.' +
-    ' They do not award XP or change a real PipuPath Quest.</p>' +
-    scenarios.map((c) => '<button class="detail-choice" data-local-case="' +
-      c.id + '">' + c.title +
-      '<small>' + (getChoice(c.id, state.decisions[c.id])
-        ? "Decision kept · compare again" : "Try this problem") + '</small></button>').join("")
+    '<div class="eyebrow">PRACTISE IN THIS DISTRICT</div><h2>' +
+      d.name +
+      "</h2><p>These are authored fictional decisions. Each can be tried again." +
+      " They do not award XP or change a real PipuPath Quest.</p>" +
+      scenarios
+        .map(
+          (c) =>
+            '<button class="detail-choice" data-local-case="' +
+            c.id +
+            '">' +
+            c.title +
+            "<small>" +
+            (getChoice(c.id, state.decisions[c.id])
+              ? "Decision kept · compare again"
+              : "Try this problem") +
+            "</small></button>",
+        )
+        .join(""),
   );
   document.querySelectorAll("[data-local-case]").forEach((button) => {
     button.onclick = () => showCase(button.dataset.localCase);
@@ -1049,14 +1090,29 @@ function showCase(id) {
   const saved = getChoice(id, state.decisions[id]);
   showDetail(
     '<div class="eyebrow">BUILDER PRACTICE · ONE CONNECTED CITY</div>' +
-    '<h2>' + scenario.title + '</h2><p>' + scenario.situation +
-    '</p><div class="evidence"><strong>YOUR DECISION</strong>' +
-    scenario.question + '</div>' +
-    (saved ? '<p class="case-small">Your kept approach: ' + saved.title +
-      '. You can compare alternatives without losing it.</p>' : '') +
-    scenario.options.map((option) => '<button class="case-choice" data-case-choice="' +
-      option.id + '">' + option.title + '</button>').join("") +
-    '<p class="case-small">Every approach has consequences. No real money is spent.</p>'
+      "<h2>" +
+      scenario.title +
+      "</h2><p>" +
+      scenario.situation +
+      '</p><div class="evidence"><strong>YOUR DECISION</strong>' +
+      scenario.question +
+      "</div>" +
+      (saved
+        ? '<p class="case-small">Your kept approach: ' +
+          saved.title +
+          ". You can compare alternatives without losing it.</p>"
+        : "") +
+      scenario.options
+        .map(
+          (option) =>
+            '<button class="case-choice" data-case-choice="' +
+            option.id +
+            '">' +
+            option.title +
+            "</button>",
+        )
+        .join("") +
+      '<p class="case-small">Every approach has consequences. No real money is spent.</p>',
   );
   document.querySelectorAll("[data-case-choice]").forEach((button) => {
     button.onclick = () => showCaseOutcome(id, button.dataset.caseChoice);
@@ -1066,36 +1122,61 @@ function showCaseOutcome(id, choiceId, kept = false) {
   const scenario = getCase(id);
   const option = getChoice(id, choiceId);
   if (!scenario || !option) return;
-  const signals = option.impact.map((value, i) =>
-    '<span>' + IMPACT_LABELS[i] + ': ' +
-    (value > 0 ? '+' : '') + value + '</span>').join("");
+  const signals = option.impact
+    .map(
+      (value, i) =>
+        "<span>" +
+        IMPACT_LABELS[i] +
+        ": " +
+        (value > 0 ? "+" : "") +
+        value +
+        "</span>",
+    )
+    .join("");
   showDetail(
     '<div class="eyebrow">FICTIONAL CASE CONSEQUENCES</div><h2>' +
-    scenario.title + '</h2><p><strong>You chose:</strong> ' + option.title +
-    '</p><div class="case-result"><b>What happens</b><p>' + option.result +
-    '</p><b>What it costs or risks</b><p>' + option.tradeoff +
-    '</p><b>Connected city systems</b><p>' + option.links +
-    '</p></div><div class="case-impact">' + signals +
-    '</div><p class="case-small">Four fictional signals from −2 to +2 compare outcomes in this case only. ' +
-    'They do not change the two-day power and food economy or verify capability.</p>' +
-    '<p><strong>A safe real-world observation:</strong> ' + scenario.bridge +
-    '</p>' + (kept ? '<p>✓ This practice approach is marked in your district. ' +
-    'You can still retry it.</p>' : '') +
-    '<div class="case-actions"><button class="secondary" id="case-retry">Try another</button>' +
-    (kept ? '' : '<button class="primary" id="case-keep">Keep this approach</button>') +
-    '<button class="secondary" id="case-next">Next problem →</button></div>'
+      scenario.title +
+      "</h2><p><strong>You chose:</strong> " +
+      option.title +
+      '</p><div class="case-result"><b>What happens</b><p>' +
+      option.result +
+      "</p><b>What it costs or risks</b><p>" +
+      option.tradeoff +
+      "</p><b>Connected city systems</b><p>" +
+      option.links +
+      '</p></div><div class="case-impact">' +
+      signals +
+      '</div><p class="case-small">Four fictional signals from −2 to +2 compare outcomes in this case only. ' +
+      "They do not change the two-day power and food economy or verify capability.</p>" +
+      "<p><strong>A safe real-world observation:</strong> " +
+      scenario.bridge +
+      "</p>" +
+      (kept
+        ? "<p>✓ This practice approach is marked in your district. " +
+          "You can still retry it.</p>"
+        : "") +
+      '<div class="case-actions"><button class="secondary" id="case-retry">Try another</button>' +
+      (kept
+        ? ""
+        : '<button class="primary" id="case-keep">Keep this approach</button>') +
+      '<button class="secondary" id="case-next">Next problem →</button></div>',
   );
   $("case-retry").onclick = () => showCase(id);
-  if ($("case-keep")) $("case-keep").onclick = () => {
-    state.decisions = saveDecision(state.decisions, id, choiceId);
-    render();
-    showCaseOutcome(id, choiceId, true);
-    toast(saveEnabled ? "Practice decision saved on this device." :
-      "Practice marked in this session. Open Problems (16) to optionally save here.");
-  };
+  if ($("case-keep"))
+    $("case-keep").onclick = () => {
+      state.decisions = saveDecision(state.decisions, id, choiceId);
+      render();
+      showCaseOutcome(id, choiceId, true);
+      toast(
+        saveEnabled
+          ? "Practice decision saved on this device."
+          : "Practice marked in this session. Open Problems (16) to optionally save here.",
+      );
+    };
   $("case-next").onclick = () => {
     const items = casesFor(scenario.district);
-    const next = items[(items.findIndex((item) => item.id === id) + 1) % items.length];
+    const next =
+      items[(items.findIndex((item) => item.id === id) + 1) % items.length];
     showCase(next.id);
   };
 }
@@ -1311,9 +1392,12 @@ function inspect(id) {
         ' units. Extra solar adds 2 at midday.<br>Essential demand: 2 each period. Repairs add 2 in the evening; shifting moves them to midday.<br>Storage holds 4 and moves at most 2 per period.<br>Cooling adds 1 midday unit. Care costs 1 credit each operating day.</div><p>Open Build from the top controls to change the power system. Other districts keep their places, people and equipment.</p><button class="primary" id="noted">Return to the city →</button>',
     );
     $("noted").onclick = closeDetail;
-    $("detail-body").insertAdjacentHTML("beforeend",
+    $("detail-body").insertAdjacentHTML(
+      "beforeend",
       '<button class="secondary" id="district-cases">Explore 4 ' +
-      (id === "workshop" ? "repair" : "power") + ' problems →</button>');
+        (id === "workshop" ? "repair" : "power") +
+        " problems →</button>",
+    );
     $("district-cases").onclick = () => showDistrictCases(id);
   }
   if (id === "market") marketPanel();
@@ -1443,8 +1527,10 @@ function marketPanel() {
     .forEach(
       (b) => (b.onclick = () => change("agreement", b.dataset.agreement)),
     );
-  $("detail-body").insertAdjacentHTML("beforeend",
-    '<button class="secondary" id="district-cases">Explore 4 food problems →</button>');
+  $("detail-body").insertAdjacentHTML(
+    "beforeend",
+    '<button class="secondary" id="district-cases">Explore 4 food problems →</button>',
+  );
   $("district-cases").onclick = () => showDistrictCases("market");
 }
 function schoolPanel() {
@@ -1500,8 +1586,10 @@ function schoolPanel() {
     .forEach(
       (b) => (b.onclick = () => change(b.dataset.lesson, b.dataset.value)),
     );
-  $("detail-body").insertAdjacentHTML("beforeend",
-    '<button class="secondary" id="district-cases">Explore 4 learning problems →</button>');
+  $("detail-body").insertAdjacentHTML(
+    "beforeend",
+    '<button class="secondary" id="district-cases">Explore 4 learning problems →</button>',
+  );
   $("district-cases").onclick = () => showDistrictCases("school");
 }
 function councilPanel() {
@@ -1760,7 +1848,11 @@ $("start").onclick = () => {
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
-  toast(previousPractice ? "Your saved city is open. Continue exploring." : "Start with the yellow Take me there button.");
+  toast(
+    previousPractice
+      ? "Your saved city is open. Continue exploring."
+      : "Start with the yellow Take me there button.",
+  );
 };
 $("sound").onclick = () => {
   sound = !sound;

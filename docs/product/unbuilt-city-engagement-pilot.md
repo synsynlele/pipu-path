@@ -3,8 +3,10 @@
 Status: isolated preview candidate, 28 October 2026.
 
 ## Learning product
+
 There are sixteen versioned, authored practice problems in the four
 currently playable districts:
+
 - Repair: triage an urgent queue, manage spare parts, train apprentices safely,
   and handle discarded electronics.
 - Power: coordinate evening demand, plan maintenance, assess clinic resilience,
@@ -25,9 +27,11 @@ inside that particular case, NOT earned XP, budget, school grades, real income,
 verified capability or additions to the existing two-day city model.
 
 ## Persistence boundary
+
 In the Problems (16) panel players may explicitly select
 "Save on this device"; after that the local browser stores only an
 allowlisted, versioned fictional practice snapshot containing:
+
 - current day, cash, scenario planning configuration, owned fictional assets,
 - five visited original stations and at most two adopted-day summaries,
 - one chosen decision per case, and a boolean handover state.
@@ -41,8 +45,10 @@ It is opt-in per browser, not cloud storage, not guaranteed permanent, and
 should not be represented as cross-device save.
 
 ## Pilot evaluation
+
 A facilitator (not the founder) should observe a small group of consented
 learners and adult players, checking:
+
 1. Can they enter unaided, walk to their first problem and explain the question?
 2. Can they compare at least two outcomes and describe the trade-off?
 3. Can they identify what other district their decision could affect?
@@ -55,6 +61,7 @@ A case attempt is not evidence of capability. No rollout or
 retention-learning outcomes should be claimed without observed data.
 
 ## Next architecture
+
 Keep one shared district/case schema; add more cases by content review,
 not custom screens. Once learner comprehension is demonstrated, connect
 specific case actions to a formally versioned city simulation with traceable

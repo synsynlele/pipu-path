@@ -30,29 +30,53 @@ function validObject(obj) {
 export function sanitizePractice(state) {
   if (
     !validObject(state) ||
-    !Number.isInteger(state.day) || state.day < 1 || state.day > 3 ||
-    !Number.isInteger(state.cash) || state.cash < 0 || state.cash > 1000 ||
-    !validPlan(state.config) || !validPlan(state.owned) ||
-    !Array.isArray(state.seen) || !Array.isArray(state.history) ||
+    !Number.isInteger(state.day) ||
+    state.day < 1 ||
+    state.day > 3 ||
+    !Number.isInteger(state.cash) ||
+    state.cash < 0 ||
+    state.cash > 1000 ||
+    !validPlan(state.config) ||
+    !validPlan(state.owned) ||
+    !Array.isArray(state.seen) ||
+    !Array.isArray(state.history) ||
     !validObject(state.decisions)
-  ) return null;
+  )
+    return null;
   const allowedSeen = ["power", "workshop", "market", "school", "council"];
-  const seen = [...new Set(state.seen.filter((id) => allowedSeen.includes(id)))];
+  const seen = [
+    ...new Set(state.seen.filter((id) => allowedSeen.includes(id))),
+  ];
   const history = state.history.slice(0, 2).map((h) => {
-    if (!validObject(h) || ![1, 2].includes(h.day) ||
-        !Number.isInteger(h.closingCash) || h.closingCash < 0 ||
-        !Number.isInteger(h.usable) || h.usable < 0 || h.usable > 10) return null;
+    if (
+      !validObject(h) ||
+      ![1, 2].includes(h.day) ||
+      !Number.isInteger(h.closingCash) ||
+      h.closingCash < 0 ||
+      !Number.isInteger(h.usable) ||
+      h.usable < 0 ||
+      h.usable > 10
+    )
+      return null;
     return { day: h.day, closingCash: h.closingCash, usable: h.usable };
   });
-  if (history.some((h) => !h) || history.length !== state.day - 1 ||
-      history.some((h, i) => h.day !== i + 1)) return null;
+  if (
+    history.some((h) => !h) ||
+    history.length !== state.day - 1 ||
+    history.some((h, i) => h.day !== i + 1)
+  )
+    return null;
   const decisions = {};
   for (const [caseId, choiceId] of Object.entries(state.decisions)) {
     if (getChoice(caseId, choiceId)) decisions[caseId] = choiceId;
   }
   return {
-    day: state.day, cash: state.cash, config: { ...state.config },
-    owned: { ...state.owned }, seen, history,
+    day: state.day,
+    cash: state.cash,
+    config: { ...state.config },
+    owned: { ...state.owned },
+    seen,
+    history,
     handedOver: state.day === 3 && state.handedOver === true,
     reflection: "", // Never persist personal text or unreviewed user content.
     decisions,
@@ -60,7 +84,9 @@ export function sanitizePractice(state) {
 }
 function getStorage(storage) {
   try {
-    return storage ?? (typeof localStorage !== "undefined" ? localStorage : null);
+    return (
+      storage ?? (typeof localStorage !== "undefined" ? localStorage : null)
+    );
   } catch {
     return null;
   }
@@ -72,13 +98,19 @@ export function loadPractice(storage) {
     const raw = store.getItem(PRACTICE_KEY);
     if (!raw || raw.length > MAX_BYTES) return null;
     const envelope = JSON.parse(raw);
-    if (!validObject(envelope) || envelope.version !== VERSION ||
+    if (
+      !validObject(envelope) ||
+      envelope.version !== VERSION ||
       envelope.consent !== true ||
       !Number.isFinite(envelope.savedAt) ||
       envelope.savedAt < Date.now() - maxAgeDays * 86_400_000 ||
-      envelope.savedAt > Date.now() + 86_400_000) return null;
+      envelope.savedAt > Date.now() + 86_400_000
+    )
+      return null;
     return sanitizePractice(envelope.state);
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 export function savePractice(state, storage) {
   const store = getStorage(storage);
@@ -86,12 +118,17 @@ export function savePractice(state, storage) {
   if (!store || !safe) return false;
   try {
     const raw = JSON.stringify({
-      version: VERSION, consent: true, savedAt: Date.now(), state: safe,
+      version: VERSION,
+      consent: true,
+      savedAt: Date.now(),
+      state: safe,
     });
     if (raw.length > MAX_BYTES) return false;
     store.setItem(PRACTICE_KEY, raw);
     return store.getItem(PRACTICE_KEY) === raw;
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }
 export function clearPractice(storage) {
   const store = getStorage(storage);
@@ -99,5 +136,7 @@ export function clearPractice(storage) {
   try {
     store.removeItem(PRACTICE_KEY);
     return store.getItem(PRACTICE_KEY) === null;
-  } catch { return false; }
+  } catch {
+    return false;
+  }
 }

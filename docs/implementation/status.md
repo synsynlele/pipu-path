@@ -28,7 +28,6 @@ Release gates include CI, verified browser playthrough, storage/clear on
 Android, collision- and overlay-safe tap navigation, minor safeguarding,
 and consented KNS learner testing without coaching.
 
-
 ## 28 October 2026 — The Unbuilt City 14-district pilot world candidate
 
 Branch `feat/unbuilt-city-fourteen-districts` extends the existing single city
