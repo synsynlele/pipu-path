@@ -1257,3 +1257,10 @@ New regressions cover canonical city replacement, planned/unplayable mission
 briefs, retired-route recovery, owned Quest context and scoped framing policy.
 The existing preview browser has an authenticated session for exact-deployment
 checks; preview publication and browser results are recorded separately.
+
+Exact-preview browser found inherited document CSP after client-side Hub → Play
+navigation. A route-only frame-src exception cannot update an already loaded
+parent document. Corrected the app's frame-src to permit self across navigation;
+frame-ancestors none and X-Frame-Options DENY still protect every application page
+except the explicitly bundled game document, which permits same-origin only.
+No external frame host is added. Updated the policy regression accordingly.

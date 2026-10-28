@@ -517,5 +517,5 @@ and clarified that new challenges replace the existing Unbuilt City game.
 Canonical `/build/play` now opens the 3D Power District mission, preserving owned
 Quest context. The Hub uses a new mission path rather than the old simulations;
 retired chapter routes recover to that path. Food/learning are planned, not
-playable. Scoped same-origin framing supports the bundled game without opening
-other app pages to embedding. No production release, XP or data migration.
+playable. Same-origin frame loading supports client-side navigation; only the game
+document permits embedding, while other app pages remain unframeable. No production release, XP or data migration.

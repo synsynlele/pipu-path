@@ -12,7 +12,7 @@ const toolbarImage = enableVercelToolbar
 const toolbarConnect = enableVercelToolbar
   ? " https://vercel.live wss://ws-us3.pusher.com"
   : "";
-const toolbarFrame = enableVercelToolbar ? "https://vercel.live" : "'none'";
+const toolbarFrame = enableVercelToolbar ? " https://vercel.live" : "";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -26,7 +26,7 @@ const contentSecurityPolicy = [
   `img-src 'self' data: blob: https:${toolbarImage}`,
   "media-src 'self' blob:",
   `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com${toolbarConnect}`,
-  `frame-src ${toolbarFrame}`,
+  `frame-src 'self'${toolbarFrame}`,
   "worker-src 'self' blob:",
   "upgrade-insecure-requests",
 ].join("; ");
@@ -64,18 +64,6 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: "/(.*)", headers: securityHeaders },
-      {
-        source: "/build/:city(play|power-district)",
-        headers: [
-          {
-            key: "Content-Security-Policy",
-            value: contentSecurityPolicy.replace(
-              `frame-src ${toolbarFrame}`,
-              `frame-src 'self'${enableVercelToolbar ? " https://vercel.live" : ""}`,
-            ),
-          },
-        ],
-      },
       {
         source: "/games/power-district/:path*",
         headers: [

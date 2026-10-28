@@ -50,6 +50,7 @@ untouched and are never counted as completion of a new mission.
 Only the first new mission is playable. Harvest Exchange and Learning Commons are
 honestly marked planned and have no play buttons. No other blueprint mission is
 represented as implemented. The application keeps the name The Unbuilt City.
-Same-origin framing is allowed only on the city entry/compatibility route and
-its static game document; external framing and other application pages retain
-the existing restrictions.
+The app may load same-origin frames across client-side navigation. Only the
+static game document permits same-origin ancestors; other application pages
+remain unframeable, and external frames remain blocked except the existing
+preview toolbar.
