@@ -21,6 +21,8 @@ const fresh = () => ({
   reflection: "",
 });
 let state = fresh(),
+  freeExplore = false,
+  mapMode = false,
   simulating = false,
   simPeriod = -1,
   simRows = [],
@@ -74,11 +76,11 @@ renderer.outputColorSpace = T.SRGBColorSpace;
 renderer.toneMapping = T.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.35;
 const scene = new T.Scene();
-scene.fog = new T.Fog(0xe9e2d2, 38, 80);
-const camera = new T.PerspectiveCamera(39, innerWidth / innerHeight, 0.1, 140);
+scene.fog = new T.Fog(0xe9e2d2, 68, 135);
+const camera = new T.PerspectiveCamera(39, innerWidth / innerHeight, 0.1, 190);
 let yaw = 0.8,
   pitch = 0.72,
-  distance = 29,
+  distance = 43,
   target = new T.Vector3(0, 0, 0),
   desiredTarget = new T.Vector3(0, 0, 0);
 const hemi = new T.HemisphereLight(0xfff9e4, 0x798268, 2.9);
@@ -160,11 +162,17 @@ function textPlane(
   return mesh;
 }
 box(200, 0.3, 200, 0xe5ddc9, 0, -0.6, 0);
-const island = box(23, 0.45, 18, 0xc2bf9e, 0, -0.25, 0);
-box(23.2, 0.12, 18.2, 0xddd7bd, 0, 0, 0);
-box(4, 0.04, 18, 0xc6b596, 6, 0.1, 0);
-box(23, 0.04, 2.2, 0xc6b596, 0, 0.1, 6.7);
-for (let z = -7; z < 8; z += 1.4) box(0.1, 0.015, 0.65, 0xe7d9b7, 6, 0.13, z);
+const island = box(52, 0.45, 44, 0xc2bf9e, 0, -0.25, 0);
+box(52.2, 0.12, 44.2, 0xddd7bd, 0, 0, 0);
+// Low-profile roads and future lots are scenery, not invisible walls.
+box(3.8, 0.04, 41, 0xc6b596, 6, 0.1, 0);
+box(49, 0.04, 3.2, 0xc6b596, 0, 0.1, 6.7);
+box(3.2, 0.04, 32, 0xc6b596, -10, 0.1, 1);
+box(45, 0.04, 3, 0xc6b596, 0, 0.1, -12);
+for (let z = -19; z < 20; z += 2.1) box(0.12, 0.015, 0.95, 0xe7d9b7, 6, 0.13, z);
+for (let x = -23; x < 24; x += 2.1) box(0.95, 0.015, 0.12, 0xe7d9b7, x, 0.13, 6.7);
+box(8, 0.03, 8, 0x91ac7c, -8, 0.11, -11);
+box(7, 0.03, 6, 0xa5bd8b, 15, 0.11, 15);
 // Cutaway workshop: open south and east walls preserve sightlines.
 box(9, 0.24, 7.2, 0xc7baa1, -2, 0.15, -1);
 box(9, 0.15, 0.15, 0xa89978, -2, 0.32, 2.6);
@@ -210,7 +218,8 @@ machine(-1.3, -2.2, 0xb1ac78);
 box(2.1, 0.14, 1, 0x927955, -1, 1.1, 1.15);
 for (const x of [-1.8, -0.2]) box(0.12, 1, 0.65, 0x7d6e51, x, 0.6, 1.15);
 box(0.65, 0.3, 0.5, 0x8b6548, -1, 1.33, 1.15);
-// School pavilion.
+// School pavilion — move the completed group to its own district.
+const schoolStart = scene.children.length;
 box(3.8, 0.2, 3.3, 0xd1c4a5, -5, 0.2, 5.3);
 for (const x of [-6.6, -3.4])
   for (const z of [4, 6.6]) box(0.12, 2.7, 0.12, 0x837759, x, 1.6, z);
@@ -221,6 +230,10 @@ textPlane("LEARN • BUILD • SHARE", 2.1, 0.3, -5, 2, 3.97, "#3b5c4a");
 for (const z of [4.8, 5.8]) {
   box(2.5, 0.09, 0.6, 0xb59360, -5, 0.9, z);
   for (const x of [-5.9, -4.1]) box(0.09, 0.8, 0.1, 0x7c7557, x, 0.45, z);
+}
+for (const object of scene.children.slice(schoolStart)) {
+  object.position.x -= 10;
+  object.position.z += 7;
 }
 // Solar garden.
 const solarBase = new T.Group();
@@ -273,7 +286,7 @@ scene.add(statusLamp);
 const lamps = [];
 for (const p of [
   [-3, 2.8, -1],
-  [-5, 2.5, 5.3],
+  [-15, 2.5, 12.3],
 ]) {
   const g = new T.Group();
   g.position.set(...p);
@@ -356,6 +369,11 @@ building(9, -10, 5, 3, 3, 0xcbad80);
 building(-9, -12, 5, 4, 4, 0xc4a37c);
 building(12, 0, 3, 2.5, 4, 0xd9c89a);
 building(0, -14, 5, 2.6, 3, 0xbca47b);
+building(-20, -14, 4, 2.6, 3, 0xc8ab85);
+building(20, -14, 4, 3.2, 3, 0xb8a582);
+building(-20, 18, 4, 2.8, 3, 0xcab999);
+building(20, 17, 4, 2.8, 3, 0xb3a283);
+for (const [x,z,scale] of [[-19,-4,1.4],[-17,9,1.3],[-10,18,1.2],[12,19,1.4],[23,0,1.2],[20,-6,1.3],[-2,17,1.4]]) tree(x,z,scale);
 // Cargo tricycle.
 const bike = new T.Group();
 bike.position.set(6, 0.4, 3.8);
@@ -389,7 +407,7 @@ function person(x, z, shirt, skin = 0x815239) {
   return { g, legs };
 }
 const ama = person(-3.3, -2.7, 0xcb884d),
-  bisi = person(-4.6, 4, 0x74978b),
+  bisi = person(-14.6, 11, 0x74978b),
   tunde = person(1.4, -0.8, 0x9b9d63);
 const player = person(4, 4, 0xe4d6a6, 0x9b6343);
 player.g.scale.setScalar(0.9);
@@ -434,7 +452,8 @@ cable(
   ],
   0x8f9b64,
 );
-// The market and learning club occupy the same navigable workshop neighbourhood.
+// Harvest Exchange is a separate, reachable district of the same city.
+const marketStart = scene.children.length;
 tunde.g.position.set(7.3, 0.3, 1.8);
 box(3.5, 0.12, 5.8, 0xcbbd9b, 8, 0.25, -1.1);
 for (const x of [6.6, 9.5])
@@ -483,8 +502,14 @@ for (const c of crates) {
   const p = c.g.position;
   box(0.57, 0.08, 0.55, 0xc2cfe3, p.x, 0.89, p.z, crateCover);
 }
-const lessonKit = box(0.6, 0.3, 0.45, 0xc9a54d, -4.7, 1.15, 4.8);
-textPlane("EQUAL PARTS", 1.9, 0.27, -5, 1.63, 3.98, "#3b5c4a", "#fff4cd");
+for (const object of scene.children.slice(marketStart)) {
+  object.position.x += 11;
+  object.position.z += 8;
+}
+tunde.g.position.x += 11;
+tunde.g.position.z += 8;
+const lessonKit = box(0.6, 0.3, 0.45, 0xc9a54d, -14.7, 1.15, 11.8);
+textPlane("EQUAL PARTS", 1.9, 0.27, -15, 1.63, 10.98, "#3b5c4a", "#fff4cd");
 const stations = [
   { id: "power", label: "Power station", pos: new T.Vector3(1.6, 2.6, -6.7) },
   {
@@ -495,12 +520,12 @@ const stations = [
   {
     id: "school",
     label: "Bisi · learning club",
-    pos: new T.Vector3(-5, 3.9, 5.3),
+    pos: new T.Vector3(-15, 3.9, 12.3),
   },
   {
     id: "market",
     label: "Market · food & cash",
-    pos: new T.Vector3(8, 3.9, -0.8),
+    pos: new T.Vector3(19, 3.9, 7.2),
   },
   {
     id: "council",
@@ -553,7 +578,9 @@ function rebuildNavigation() {
       minZ: p.g.position.z - 0.23,
       maxZ: p.g.position.z + 0.23,
     });
-  navigator = createNavigator(obstacles);
+  navigator = createNavigator(obstacles, {
+    minX: -24.5, maxX: 24.5, minZ: -20.5, maxZ: 20.5, step: 0.5,
+  });
   if (!navigator.free(player.g.position)) {
     const rescue = navigator.route(
       { x: 4, z: 4 },
@@ -625,14 +652,19 @@ function goTo(point, arrival = null, label = "your destination") {
 const approaches = {
   power: { x: 3.4, z: -5.6 },
   workshop: { x: -2.6, z: -2.8 },
-  school: { x: -3.15, z: 4.1 },
+  school: { x: -13.15, z: 11.1 },
   council: { x: 2.8, z: 1.1 },
-  market: { x: 5.4, z: -1.6 },
+  market: { x: 16.4, z: 6.4 },
 };
 function goToStation(id) {
   if (!$("intro").hidden || simulating) return;
   closeDetail();
   const station = stations.find((s) => s.id === id);
+  if (mapMode) {
+    mapMode = false;
+    distance = 27;
+    $("city-map").textContent = "City map";
+  }
   goTo(approaches[id], () => inspect(id), station.label);
 }
 $("stop-walking").onclick = cancelWalk;
@@ -677,25 +709,41 @@ function check(label, done) {
     "</div>"
   );
 }
+const firstJourney = [
+  { id: "workshop", title: "Meet Ama at the workshop",
+    copy: "Ama repairs things for the neighbourhood. Find out why her work keeps stopping." },
+  { id: "power", title: "Find out where the power goes",
+    copy: "The workshop cannot run all day. Visit the power station to see when electricity is available." },
+  { id: "market", title: "Help food reach the market",
+    copy: "Fresh food is being lost. Meet the traders and look for the real problem before spending money." },
+  { id: "school", title: "Help Bisi teach everyone",
+    copy: "The learning club needs a way to help people understand, not just memorise." },
+  { id: "council", title: "Bring your city together",
+    copy: "You have met the people. Visit the city desk and test how your decisions work together." },
+];
 function render() {
+  const guided = state.day === 1 && !freeExplore
+    ? firstJourney.find((step) => !state.seen.includes(step.id))
+    : null;
   const r = evaluateCity(state.config, {
       ...state,
       day: Math.min(state.day, 2),
     }),
     q = r.quote;
   $("chapter").textContent = "THE UNBUILT CITY · DAY " + state.day;
-  $("mission-title").textContent =
+  $("mission-title").textContent = guided ? guided.title :
     state.day === 1
       ? "Make the city work."
       : state.day === 2
         ? "Keep your city working."
         : "A city others can run.";
-  $("mission-copy").textContent =
+  $("mission-copy").textContent = guided ? guided.copy :
     state.day === 1
       ? "One city, one fund. Connect power, food and learning. Test how the whole day works."
       : state.day === 2
         ? "Dust cuts power. Collection slips to 15:00 and buyer payment arrives tomorrow. Adapt the same city."
         : "Your buildings and agreements remain here. Leave the people a clear operating plan.";
+  $("objectives").hidden = Boolean(guided);
   $("objectives").innerHTML =
     check("Reliable power & upkeep", r.powerReady) +
     check("8 usable crates, fair payments", r.foodReady) +
@@ -708,12 +756,14 @@ function render() {
         : state.day === 2
           ? 55
           : 15) + "%";
-  $("step-label").textContent = "POWER ↔ FOOD ↔ LEARNING";
+  $("step-label").textContent = guided ? "ONE STEP AT A TIME" : "POWER ↔ FOOD ↔ LEARNING";
   $("credits").textContent = q.available;
   $("resource").hidden = !$("intro").hidden;
-  $("build-dock").hidden = !$("intro").hidden;
+  $("build-dock").hidden = !$("intro").hidden || Boolean(guided);
   $("build-dock").classList.add("city-dock");
   $("mission").classList.add("city-board");
+  document.body.classList.toggle("city-guided", Boolean(guided));
+  $("explore-free").textContent = freeExplore ? "Show my next step" : "Explore freely";
   document.body.classList.add("city-playing");
   const options = [
     ["storage", "▥", "Storage", 5],
@@ -756,11 +806,17 @@ function render() {
       ? "Open the handover"
       : "Test the whole city →";
   $("test").disabled = simulating;
-  $("mission-action").innerHTML =
-    '<div class="district-buttons"><button data-district="power">Power</button><button data-district="market">Market</button><button data-district="school">Learning</button><button data-district="council">City desk</button></div>';
-  document
-    .querySelectorAll("[data-district]")
-    .forEach((b) => (b.onclick = () => goToStation(b.dataset.district)));
+  $("mission-action").innerHTML = guided
+    ? '<button class="primary" id="take-me-there">Take me there →</button>'
+    : '<div class="district-buttons"><button data-district="power">Power</button><button data-district="market">Market</button><button data-district="school">Learning</button><button data-district="council">City desk</button></div>';
+  if (guided) {
+    $("take-me-there").onclick = () => goToStation(guided.id);
+  } else {
+    document.querySelectorAll("[data-district]").forEach(
+      (b) => (b.onclick = () => goToStation(b.dataset.district)),
+    );
+  }
+  $("mobile-move").hidden = innerWidth > 650 || Boolean(guided);
   $("weather-title").textContent =
     state.day === 1 ? "Collection at 14:00" : "Dust · late collection";
   $("weather-icon").textContent = state.day === 1 ? "☀" : "☁";
@@ -1127,12 +1183,24 @@ function handoverPanel() {
 }
 $("test").onclick = runDay;
 $("close-detail").onclick = closeDetail;
+$("explore-free").onclick = () => {
+  freeExplore = !freeExplore;
+  closeDetail();
+  render();
+};
+$("city-map").onclick = () => {
+  mapMode = !mapMode;
+  distance = mapMode ? 68 : 27;
+  $("city-map").textContent = mapMode ? "Follow me" : "City map";
+};
 $("start").onclick = () => {
   $("intro").hidden = true;
+  mapMode = false;
+  distance = 27;
   $("mission").hidden = false;
-  $("mobile-move").hidden = innerWidth > 650;
+  $("mobile-move").hidden = true;
   render();
-  toast("Tap a place once to travel. The districts share one city.");
+  toast("Start with the yellow Take me there button.");
 };
 $("sound").onclick = () => {
   sound = !sound;
@@ -1156,6 +1224,10 @@ $("reset").onclick = () => {
   simulating = false;
   simPeriod = -1;
   state = fresh();
+  freeExplore = false;
+  mapMode = false;
+  distance = 27;
+  $("city-map").textContent = "City map";
   lastResult = null;
   cancelWalk();
   navigationSignature = null;
@@ -1187,7 +1259,7 @@ canvas.addEventListener("pointermove", (e) => {
     const a = [...pointers.values()],
       d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
     if (pinchDistance)
-      distance = clamp(distance - (d - pinchDistance) * 0.055, 17, 42);
+      distance = clamp(distance - (d - pinchDistance) * 0.055, 16, 72);
     pinchDistance = d;
     dragging = true;
     return;
@@ -1229,7 +1301,7 @@ canvas.addEventListener(
   "wheel",
   (e) => {
     e.preventDefault();
-    distance = clamp(distance + e.deltaY * 0.02, 17, 42);
+    distance = clamp(distance + e.deltaY * 0.02, 16, 72);
   },
   { passive: false },
 );
@@ -1275,7 +1347,9 @@ function animate(now) {
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
   time += dt;
-  target.lerp(desiredTarget, 0.04);
+  if ($("intro").hidden && !mapMode) desiredTarget.set(player.g.position.x, 0, player.g.position.z);
+  else desiredTarget.set(0, 0, 0);
+  target.lerp(desiredTarget, 0.055);
   const aspect = innerWidth / innerHeight;
   camera.position.set(
     target.x + Math.sin(yaw) * Math.cos(pitch) * distance,
@@ -1370,7 +1444,8 @@ function animate(now) {
     s.el.style.left = (v.x * 0.5 + 0.5) * innerWidth + "px";
     s.el.style.top = (-v.y * 0.5 + 0.5) * innerHeight + "px";
     s.el.style.visibility =
-      v.z > 1 || !$("intro").hidden ? "hidden" : "visible";
+      v.z > 1 || Math.abs(v.x) > 0.88 || Math.abs(v.y) > 0.82 || !$("intro").hidden
+        ? "hidden" : "visible";
   }
   if (simulating) {
     bike.position.z =
@@ -1382,7 +1457,8 @@ function resize() {
   renderer.setSize(innerWidth, innerHeight);
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
-  if ($("intro").hidden) $("mobile-move").hidden = innerWidth > 650;
+  if ($("intro").hidden)
+    $("mobile-move").hidden = innerWidth > 650 || document.body.classList.contains("city-guided");
 }
 window.addEventListener("resize", resize);
 resize();
