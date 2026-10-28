@@ -11,7 +11,6 @@ This is **preview-only development**, not a release or a demonstrated
 physical-phone pass. CI, browser exploration and navigation reachability
 must pass before merging to `feat/unbuilt-city-first-episode` or main.
 
-
 ## 27 October 2026 — Game journey trail preview
 
 The open `feat/unbuilt-city-first-episode` candidate adds an illustrated,

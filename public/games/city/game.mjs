@@ -169,8 +169,10 @@ box(3.8, 0.04, 41, 0xc6b596, 6, 0.1, 0);
 box(49, 0.04, 3.2, 0xc6b596, 0, 0.1, 6.7);
 box(3.2, 0.04, 32, 0xc6b596, -10, 0.1, 1);
 box(45, 0.04, 3, 0xc6b596, 0, 0.1, -12);
-for (let z = -19; z < 20; z += 2.1) box(0.12, 0.015, 0.95, 0xe7d9b7, 6, 0.13, z);
-for (let x = -23; x < 24; x += 2.1) box(0.95, 0.015, 0.12, 0xe7d9b7, x, 0.13, 6.7);
+for (let z = -19; z < 20; z += 2.1)
+  box(0.12, 0.015, 0.95, 0xe7d9b7, 6, 0.13, z);
+for (let x = -23; x < 24; x += 2.1)
+  box(0.95, 0.015, 0.12, 0xe7d9b7, x, 0.13, 6.7);
 box(8, 0.03, 8, 0x91ac7c, -8, 0.11, -11);
 box(7, 0.03, 6, 0xa5bd8b, 15, 0.11, 15);
 // Cutaway workshop: open south and east walls preserve sightlines.
@@ -373,7 +375,16 @@ building(-20, -14, 4, 2.6, 3, 0xc8ab85);
 building(20, -14, 4, 3.2, 3, 0xb8a582);
 building(-20, 18, 4, 2.8, 3, 0xcab999);
 building(20, 17, 4, 2.8, 3, 0xb3a283);
-for (const [x,z,scale] of [[-19,-4,1.4],[-17,9,1.3],[-10,18,1.2],[12,19,1.4],[23,0,1.2],[20,-6,1.3],[-2,17,1.4]]) tree(x,z,scale);
+for (const [x, z, scale] of [
+  [-19, -4, 1.4],
+  [-17, 9, 1.3],
+  [-10, 18, 1.2],
+  [12, 19, 1.4],
+  [23, 0, 1.2],
+  [20, -6, 1.3],
+  [-2, 17, 1.4],
+])
+  tree(x, z, scale);
 // Cargo tricycle.
 const bike = new T.Group();
 bike.position.set(6, 0.4, 3.8);
@@ -579,7 +590,11 @@ function rebuildNavigation() {
       maxZ: p.g.position.z + 0.23,
     });
   navigator = createNavigator(obstacles, {
-    minX: -24.5, maxX: 24.5, minZ: -20.5, maxZ: 20.5, step: 0.5,
+    minX: -24.5,
+    maxX: 24.5,
+    minZ: -20.5,
+    maxZ: 20.5,
+    step: 0.5,
   });
   if (!navigator.free(player.g.position)) {
     const rescue = navigator.route(
@@ -710,35 +725,53 @@ function check(label, done) {
   );
 }
 const firstJourney = [
-  { id: "workshop", title: "Meet Ama at the workshop",
-    copy: "Ama repairs things for the neighbourhood. Find out why her work keeps stopping." },
-  { id: "power", title: "Find out where the power goes",
-    copy: "The workshop cannot run all day. Visit the power station to see when electricity is available." },
-  { id: "market", title: "Help food reach the market",
-    copy: "Fresh food is being lost. Meet the traders and look for the real problem before spending money." },
-  { id: "school", title: "Help Bisi teach everyone",
-    copy: "The learning club needs a way to help people understand, not just memorise." },
-  { id: "council", title: "Bring your city together",
-    copy: "You have met the people. Visit the city desk and test how your decisions work together." },
+  {
+    id: "workshop",
+    title: "Meet Ama at the workshop",
+    copy: "Ama repairs things for the neighbourhood. Find out why her work keeps stopping.",
+  },
+  {
+    id: "power",
+    title: "Find out where the power goes",
+    copy: "The workshop cannot run all day. Visit the power station to see when electricity is available.",
+  },
+  {
+    id: "market",
+    title: "Help food reach the market",
+    copy: "Fresh food is being lost. Meet the traders and look for the real problem before spending money.",
+  },
+  {
+    id: "school",
+    title: "Help Bisi teach everyone",
+    copy: "The learning club needs a way to help people understand, not just memorise.",
+  },
+  {
+    id: "council",
+    title: "Bring your city together",
+    copy: "You have met the people. Visit the city desk and test how your decisions work together.",
+  },
 ];
 function render() {
-  const guided = state.day === 1 && !freeExplore
-    ? firstJourney.find((step) => !state.seen.includes(step.id))
-    : null;
+  const guided =
+    state.day === 1 && !freeExplore
+      ? firstJourney.find((step) => !state.seen.includes(step.id))
+      : null;
   const r = evaluateCity(state.config, {
       ...state,
       day: Math.min(state.day, 2),
     }),
     q = r.quote;
   $("chapter").textContent = "THE UNBUILT CITY · DAY " + state.day;
-  $("mission-title").textContent = guided ? guided.title :
-    state.day === 1
+  $("mission-title").textContent = guided
+    ? guided.title
+    : state.day === 1
       ? "Make the city work."
       : state.day === 2
         ? "Keep your city working."
         : "A city others can run.";
-  $("mission-copy").textContent = guided ? guided.copy :
-    state.day === 1
+  $("mission-copy").textContent = guided
+    ? guided.copy
+    : state.day === 1
       ? "One city, one fund. Connect power, food and learning. Test how the whole day works."
       : state.day === 2
         ? "Dust cuts power. Collection slips to 15:00 and buyer payment arrives tomorrow. Adapt the same city."
@@ -756,14 +789,18 @@ function render() {
         : state.day === 2
           ? 55
           : 15) + "%";
-  $("step-label").textContent = guided ? "ONE STEP AT A TIME" : "POWER ↔ FOOD ↔ LEARNING";
+  $("step-label").textContent = guided
+    ? "ONE STEP AT A TIME"
+    : "POWER ↔ FOOD ↔ LEARNING";
   $("credits").textContent = q.available;
   $("resource").hidden = !$("intro").hidden;
   $("build-dock").hidden = !$("intro").hidden || Boolean(guided);
   $("build-dock").classList.add("city-dock");
   $("mission").classList.add("city-board");
   document.body.classList.toggle("city-guided", Boolean(guided));
-  $("explore-free").textContent = freeExplore ? "Show my next step" : "Explore freely";
+  $("explore-free").textContent = freeExplore
+    ? "Show my next step"
+    : "Explore freely";
   document.body.classList.add("city-playing");
   const options = [
     ["storage", "▥", "Storage", 5],
@@ -812,9 +849,9 @@ function render() {
   if (guided) {
     $("take-me-there").onclick = () => goToStation(guided.id);
   } else {
-    document.querySelectorAll("[data-district]").forEach(
-      (b) => (b.onclick = () => goToStation(b.dataset.district)),
-    );
+    document
+      .querySelectorAll("[data-district]")
+      .forEach((b) => (b.onclick = () => goToStation(b.dataset.district)));
   }
   $("mobile-move").hidden = innerWidth > 650 || Boolean(guided);
   $("weather-title").textContent =
@@ -1348,7 +1385,8 @@ function animate(now) {
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
   time += dt;
-  if ($("intro").hidden && !mapMode) desiredTarget.set(player.g.position.x, 0, player.g.position.z);
+  if ($("intro").hidden && !mapMode)
+    desiredTarget.set(player.g.position.x, 0, player.g.position.z);
   else desiredTarget.set(0, 0, 0);
   target.lerp(desiredTarget, 0.055);
   const aspect = innerWidth / innerHeight;
@@ -1445,8 +1483,12 @@ function animate(now) {
     s.el.style.left = (v.x * 0.5 + 0.5) * innerWidth + "px";
     s.el.style.top = (-v.y * 0.5 + 0.5) * innerHeight + "px";
     s.el.style.visibility =
-      v.z > 1 || Math.abs(v.x) > 0.88 || Math.abs(v.y) > 0.82 || !$("intro").hidden
-        ? "hidden" : "visible";
+      v.z > 1 ||
+      Math.abs(v.x) > 0.88 ||
+      Math.abs(v.y) > 0.82 ||
+      !$("intro").hidden
+        ? "hidden"
+        : "visible";
   }
   if (simulating) {
     bike.position.z =
@@ -1459,7 +1501,8 @@ function resize() {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   if ($("intro").hidden)
-    $("mobile-move").hidden = innerWidth > 650 || document.body.classList.contains("city-guided");
+    $("mobile-move").hidden =
+      innerWidth > 650 || document.body.classList.contains("city-guided");
 }
 window.addEventListener("resize", resize);
 resize();

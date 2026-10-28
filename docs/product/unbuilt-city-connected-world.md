@@ -29,7 +29,6 @@ comprehension remain acceptance gates; no production release is claimed.
 The founder need not intervene to route each player; the same template can
 guide later districts after user validation.
 
-
 Authority: 28 October 2026. The owner rejected duplicate PipuPath branding inside
 the game, requested app/game colour integration and asked for all building and
 solutions to happen in the same city rather than separate challenge scenes.
