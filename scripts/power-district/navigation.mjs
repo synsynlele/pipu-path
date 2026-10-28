@@ -52,3 +52,34 @@ assert(installed.route({ x: 4, z: 4 }, { x: 2, z: -3.6 }).adjusted);
 console.log(
   "PASS: detours, occupied destinations, swept collision, body clearance, unreachable goals, corner guards and installed obstacles.",
 );
+
+const manyBuildings = [];
+for (let iz = -4; iz <= 4; iz++)
+  for (let ix = -5; ix <= 5; ix++) {
+    if (ix === 0 || iz === 0) continue;
+    manyBuildings.push({
+      minX: ix * 7 - 1,
+      maxX: ix * 7 + 1,
+      minZ: iz * 7 - 1,
+      maxZ: iz * 7 + 1,
+    });
+  }
+const cityNav = createNavigator(manyBuildings, {
+  minX: -57.5,
+  maxX: 57.5,
+  minZ: -49.5,
+  maxZ: 49.5,
+  step: 1,
+});
+const startTime = performance.now();
+for (let i = 0; i < 8; i++) {
+  const route = cityNav.route(
+    { x: -50, z: -0.5 },
+    { x: 49 - i, z: i + 1 },
+  );
+  assert(route && cityNav.free(route.destination));
+}
+assert(
+  performance.now() - startTime < 4000,
+  "Navigation through a grown city must not stall the main UI thread",
+);

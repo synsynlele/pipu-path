@@ -17,14 +17,40 @@ export function createNavigator(
     minZ: o.minZ - radius,
     maxZ: o.maxZ + radius,
   }));
-  const free = (p) =>
-    p.x >= minX &&
-    p.x <= maxX &&
-    p.z >= minZ &&
-    p.z <= maxZ &&
-    !blocks.some(
+  // A small spatial hash prevents every walking step from scanning every
+  // building in a growing city. Collision rules remain exact.
+  const cellSize = 4;
+  const cells = new Map();
+  const cellKey = (x, z) => x + ":" + z;
+  for (const block of blocks) {
+    for (
+      let ix = Math.floor(block.minX / cellSize);
+      ix <= Math.floor(block.maxX / cellSize);
+      ix++
+    )
+      for (
+        let iz = Math.floor(block.minZ / cellSize);
+        iz <= Math.floor(block.maxZ / cellSize);
+        iz++
+      ) {
+        const key = cellKey(ix, iz);
+        if (!cells.has(key)) cells.set(key, []);
+        cells.get(key).push(block);
+      }
+  }
+  const free = (p) => {
+    if (p.x < minX || p.x > maxX || p.z < minZ || p.z > maxZ)
+      return false;
+    const nearby = cells.get(
+      cellKey(
+        Math.floor(p.x / cellSize),
+        Math.floor(p.z / cellSize),
+      ),
+    );
+    return !nearby?.some(
       (b) => p.x >= b.minX && p.x <= b.maxX && p.z >= b.minZ && p.z <= b.maxZ,
     );
+  };
   const segmentFree = (a, b) => {
     const n = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.z - a.z) / 0.06));
     for (let i = 0; i <= n; i++)
@@ -43,21 +69,60 @@ export function createNavigator(
     x: minX + (id % nx) * step,
     z: minZ + Math.floor(id / nx) * step,
   });
-  const open = new Uint8Array(nx * nz);
-  for (let i = 0; i < open.length; i++) open[i] = free(point(i)) ? 1 : 0;
-  function nearest(p, reachableFrom) {
-    let best = -1,
-      distance = Infinity;
-    for (let i = 0; i < open.length; i++) {
-      if (!open[i]) continue;
-      const q = point(i),
-        d = (p.x - q.x) ** 2 + (p.z - q.z) ** 2;
-      if (d < distance && (!reachableFrom || segmentFree(reachableFrom, q))) {
-        distance = d;
-        best = i;
+  // Rasterize only the grid cells overlapped by a building instead of
+  // checking every grid cell against every building after each city change.
+  const open = new Uint8Array(nx * nz).fill(1);
+  for (const b of blocks) {
+    const x0 = Math.max(0, Math.ceil((b.minX - minX) / step));
+    const x1 = Math.min(nx - 1, Math.floor((b.maxX - minX) / step));
+    const z0 = Math.max(0, Math.ceil((b.minZ - minZ) / step));
+    const z1 = Math.min(nz - 1, Math.floor((b.maxZ - minZ) / step));
+    for (let iz = z0; iz <= z1; iz++) {
+      const z = minZ + iz * step;
+      if (z < b.minZ || z > b.maxZ) continue;
+      for (let ix = x0; ix <= x1; ix++) {
+        const x = minX + ix * step;
+        if (x >= b.minX && x <= b.maxX) open[iz * nx + ix] = 0;
       }
     }
-    return best;
+  }
+  function nearest(p, reachableFrom) {
+    const centerX = Math.max(
+      0,
+      Math.min(nx - 1, Math.round((p.x - minX) / step)),
+    );
+    const centerZ = Math.max(
+      0,
+      Math.min(nz - 1, Math.round((p.z - minZ) / step)),
+    );
+    // Search outwards from the requested location. Almost all starting
+    // points resolve within the first one or two rings, even in a full city.
+    for (let radius = 0; radius <= Math.max(nx, nz); radius++) {
+      let best = -1;
+      let distance = Infinity;
+      for (let dz = -radius; dz <= radius; dz++) {
+        const iz = centerZ + dz;
+        if (iz < 0 || iz >= nz) continue;
+        for (let dx = -radius; dx <= radius; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dz)) !== radius) continue;
+          const ix = centerX + dx;
+          if (ix < 0 || ix >= nx) continue;
+          const id = iz * nx + ix;
+          if (!open[id]) continue;
+          const q = point(id);
+          const d = (p.x - q.x) ** 2 + (p.z - q.z) ** 2;
+          if (
+            d < distance &&
+            (!reachableFrom || segmentFree(reachableFrom, q))
+          ) {
+            distance = d;
+            best = id;
+          }
+        }
+      }
+      if (best >= 0) return best;
+    }
+    return -1;
   }
   function route(start, requested) {
     if (!free(start)) return null;
@@ -142,8 +207,14 @@ export function createNavigator(
           index = 0;
         while (index < raw.length) {
           let far = index;
-          for (let k = index; k < raw.length; k++)
-            if (segmentFree(anchor, raw[k])) far = k;
+          // Prefer the farthest clear waypoint first. The old forward scan
+          // tested every intermediate candidate, causing long UI stalls.
+          for (let k = raw.length - 1; k >= index; k--)
+            if (segmentFree(anchor, raw[k])) {
+              far = k;
+              break;
+            }
+          if (!segmentFree(anchor, raw[far])) return null;
           const next = raw[far];
           smoothed.push(next);
           anchor = next;

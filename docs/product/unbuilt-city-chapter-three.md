@@ -120,3 +120,18 @@ Four small, low-cost street signals turn amber only for genuine unmet
 requests and green when completed requests are fulfilled. These are
 decorative indicators only, not real-world incident or health alerts.
 No new location or personal data is stored.
+
+## Mobile freeze protection (student bug report)
+
+The navigation engine now uses a spatial obstacle index, rasterizes grid
+occupancy by obstacle rather than checking every building for every grid
+cell, finds nearest safe points in expanding local rings and shortens
+routes with farthest-clear waypoint checks. Exact collision sweeps and
+non-cutting corners remain in force.
+
+3D rendering now avoids expensive shadow passes and multisampling on
+low-memory or small devices, shares GPU geometry for repeated structural
+components, targets a practical mobile frame budget and lowers resolution
+after repeated long render calls. Tab-hidden animation work is paused.
+This does not replace a student-run Android test: a software canvas or a
+WebGL-driver-specific crash can still require device-level diagnosis.
