@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { CITY_CASES, saveDecision } from "../../public/games/city/cases.mjs";
+import { CITY_CASES } from "../../public/games/city/cases.mjs";
 import { deriveBuilderCity } from "../../public/games/city/city-growth.mjs";
 import { deriveLivingCity } from "../../public/games/city/living-city.mjs";
 import {
