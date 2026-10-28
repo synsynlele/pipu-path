@@ -17,8 +17,8 @@ assert.equal(
 assert.equal(empty.districts.length, 14);
 assert.equal(roadDeliveryRoute("unknown", "health").length, 0);
 assert.equal(roadDeliveryRoute("market", "market").length, 0);
-const validX = [-45, -10, 6, 47],
-  validZ = [-39, 6.7, 39];
+const validX = [-54, -30, 6, 54],
+  validZ = [-47, -18, 6.7, 24, 47];
 for (const a of CITY_DISTRICTS)
   for (const b of CITY_DISTRICTS) {
     const path = roadDeliveryRoute(a.id, b.id);

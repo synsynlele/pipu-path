@@ -948,3 +948,62 @@ city regressions, 527 unit/component tests with coverage, 251 integration tests,
 and local production build). Build emitted two `authenticated_progress_load_failed`
 diagnostics while prerendering without live authentication; it exited successfully.
 No authenticated live-flow verification is inferred from the build.
+
+## 28 October 2026 — Street layout, answer-built infrastructure and continuous journeys
+
+Branch `feat/city-streets-and-construction` follows the owner-reported successful
+Android stability test of PR #101. User then reported teleporting between cases,
+poor city arrangement, generic decision props, traffic clipping, trees on roads
+and a blurry aerial view.
+
+A shared layout reserves streets; ten outer districts now have separate blocks
+with two empty development plots rather than completed buildings before choices.
+Scenery excludes street reservations. Deliveries use that street graph, separate
+lanes and continuous end turns. Vehicles yield with swept clearance checks around
+characters; guided walking can detour around a waiting vehicle. Long guided trips
+walk continuously instead of timed teleportation. Exceptional invalid-position
+recovery remains separate from normal travel.
+
+All 108 authored answers map to explicit physical consequences in
+`infrastructure.mjs`: e.g. housing plans build homes/drainage, rushed housing shows
+unfinished structures/water, safe crossings build crossings/lighting, and burning
+waste shows a burn site. Non-construction decisions install relevant equipment,
+desks or information boards rather than inventing unrelated buildings. Components
+assemble in height order; revision changes the same plot. Choice IDs and saves
+remain authoritative and backward-compatible. Foundation projects remain compact
+within existing premises; outer projects use larger reserved footprints.
+
+City inspection uses an angled orthographic camera, district focus, functional
+pinch/button/wheel zoom, no overview fog and restores the play camera afterward.
+Rendering stays capped at one device pixel per CSS pixel during overview rather
+than escalating to high-DPI buffers. Flat boxes no longer carry unnecessary
+subdivision. Software rendering now includes horizontal streets that its old
+wide-mesh filter incorrectly skipped. Lighting exposure is reduced for contrast.
+
+New geometry tests cover all 108 project footprints and street clearance, layout
+reservations, overview framing and a real simulated vehicle stop/resume. A JSDOM
+harness loads actual game setup and checks 108 full guided journeys, static tree/
+house street clearance, zoom and camera restoration. Canvas is stubbed in that
+harness: it is navigation/integration proof, not rendered WebGL or Android proof.
+Existing mobile resident regressions remain in place.
+
+The next acceptance gate is the same Android phone: walk across districts,
+inspect the whole and focused city, watch live builds and revisions, cross a
+traffic route, finish all 36 choices and open Chapter 3 enterprise operations.
+Chapter 3 already exists; this change does not claim Chapter 4 or a new economic
+simulation. No production merge or learner-data change is authorised here.
+
+Layout audit also moved the pre-existing market off the main road and relocated
+power decision equipment away from the traffic corridor. The runtime test now
+checks every static collision rectangle against streets, not just tree/house
+labels. Project geometry tests update world transforms before measuring bounds.
+
+Validation: final `npm run validate` passed formatting, lint, types, all city
+checks (including actual-runtime navigation and all-option plot checks), 527
+unit/component tests with coverage, 251 integration tests and local production
+build. The runtime harness deliberately falls back to a stub canvas and logs
+WebGL creation failure; it does not establish WebGL rendering performance.
+Build logged two unauthenticated progress-load diagnostics and exited 0.
+Courtyard planting, ambient people and enterprise stalls now use separate
+pedestrian/service anchors rather than the former road-crossing offsets.
+A single controlled preview is the next verification step; production is unchanged.

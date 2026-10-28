@@ -5,7 +5,6 @@ import {
   visualTone,
   feedbackCopy,
 } from "../../public/games/city/feedback.mjs";
-import { readFileSync } from "node:fs";
 
 assert.equal(Object.keys(CASE_BUILD_SITES).length, 36);
 for (const c of CITY_CASES) {
@@ -21,16 +20,6 @@ for (const c of CITY_CASES) {
   }
 }
 assert.equal(visualTone(null), null);
-const source = readFileSync("public/games/city/scene-feedback.mjs", "utf8");
-assert(source.includes("function build(spec)"));
-assert(source.includes("effects.set(id, build({ ...spec, caseId: id }))"));
-assert(source.includes("effect.buildChoice(id, choiceId)"));
-assert(source.includes("effect.variants"));
-assert(source.includes("for (const [id, item] of hubs)"));
-assert(source.includes("const city = deriveBuilderCity(decisions)"));
-assert(source.includes("effect.group.visible = Boolean(choiceId)"));
-assert(source.includes("effect.group.scale.set("));
-assert(source.includes("getChoice(id, choiceId)"));
 console.log(
-  "PASS: every authored choice has an immediate physical district response, with reversible preview and no path trail.",
+  "PASS: every authored choice has a district build site and consequence copy.",
 );

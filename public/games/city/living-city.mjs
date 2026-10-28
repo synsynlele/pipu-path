@@ -4,8 +4,7 @@ import { CITY_DISTRICTS } from "./districts.mjs";
 import { CONNECTIONS, deriveBuilderCity } from "./city-growth.mjs";
 import { CITY_REQUESTS, OWNED_ENTERPRISES } from "./opportunities.mjs";
 
-const ROAD_X = Object.freeze([-45, -10, 6, 47]);
-const ROAD_Z = Object.freeze([-39, 6.7, 39]);
+import { ROAD_X, ROAD_Z } from "./layout.mjs";
 const SUGGESTED_FLOW = Object.freeze([
   ["transport", "market", "Food delivery"],
   ["water", "health", "Water service"],

@@ -51,7 +51,8 @@ export class SoftwareRenderer {
     scene.traverseVisible((o) => {
       if (!o.isMesh || !o.geometry?.attributes.position) return;
       const geo = o.geometry;
-      if (geo.parameters?.width > 70) return;
+      // Skip only the enormous background slab, not long horizontal roads.
+      if (geo.parameters?.width > 150 && geo.parameters?.depth > 150) return;
       const pos = geo.attributes.position,
         idx = geo.index,
         normal = geo.attributes.normal;

@@ -1,0 +1,135 @@
+import assert from "node:assert/strict";
+import * as T from "../../public/games/shared/vendor/three.module.js";
+import { overlapsRoad } from "../../public/games/city/layout.mjs";
+import { JSDOM } from "jsdom";
+import { readFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
+const root = process.cwd() + "/";
+const dom = new JSDOM(
+  readFileSync(root + "public/games/city/index.html", "utf8"),
+  {
+    url: "https://example.test/games/city/index.html",
+    pretendToBeVisual: true,
+  },
+);
+const w = dom.window;
+const ctx = new Proxy(
+  { canvas: {} },
+  { get: (o, k) => (k in o ? o[k] : () => {}) },
+);
+w.HTMLCanvasElement.prototype.getContext = function (type) {
+  return type === "2d" ? ctx : null;
+};
+for (const [key, value] of Object.entries({
+  window: w,
+  document: w.document,
+  innerWidth: 390,
+  innerHeight: 844,
+  devicePixelRatio: 2,
+  matchMedia: () => ({ matches: false, addEventListener() {} }),
+  requestAnimationFrame: () => {},
+  localStorage: w.localStorage,
+  confirm: () => true,
+}))
+  Object.defineProperty(globalThis, key, {
+    value,
+    configurable: true,
+    writable: true,
+  });
+let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
+  /from "(\.\.?\/[^\"]+)"/g,
+  (_, p) =>
+    "from " +
+    JSON.stringify(
+      new URL(p, pathToFileURL(root + "public/games/city/game.mjs")).href,
+    ),
+);
+code +=
+  "\nexport {navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey};";
+const game = await import(
+  "data:text/javascript;base64," + Buffer.from(code).toString("base64")
+);
+// Keep the real game setup, navigation, simulation and DOM; the canvas context
+// is a stub. This verifies integration, not WebGL or physical-device performance.
+game.renderer.render = () => {};
+const { CITY_CASES } = await import(
+  pathToFileURL(root + "public/games/city/cases.mjs")
+);
+let now = performance.now();
+w.document.getElementById("intro").hidden = true;
+for (let option = 0; option < 3; option++) {
+  for (const c of CITY_CASES) game.state.decisions[c.id] = c.options[option].id;
+  game.render();
+  for (const block of game.navigationObstacles) {
+    const x = (block.minX + block.maxX) / 2,
+      z = (block.minZ + block.maxZ) / 2;
+    assert(
+      !overlapsRoad(x, z, block.maxX - block.minX, block.maxZ - block.minZ),
+      "Collidable structure intrudes into road",
+    );
+  }
+  game.scene.updateMatrixWorld(true);
+  game.scene.traverse((object) => {
+    if (!object.userData.scenery) return;
+    const bounds = new T.Box3().setFromObject(object),
+      size = bounds.getSize(new T.Vector3());
+    assert(
+      !overlapsRoad(
+        (bounds.min.x + bounds.max.x) / 2,
+        (bounds.min.z + bounds.max.z) / 2,
+        size.x,
+        size.z,
+      ),
+      object.userData.scenery + " overlaps road",
+    );
+  });
+  for (const c of CITY_CASES) {
+    const initial = game.player.g.position.clone();
+    game.goToJourneyCase(c.id);
+    assert(
+      game.player.g.position.equals(initial),
+      "Journey teleported on entry",
+    );
+    let frames = 0;
+    while (game.route.length && frames++ < 1800) {
+      const before = game.player.g.position.clone();
+      now += 100;
+      game.animateWorld(now);
+      assert(
+        game.player.g.position.distanceTo(before) <= 1.61,
+        "Walking frame jumped",
+      );
+      assert(
+        game.navigator.free(game.player.g.position),
+        "Walked through a building",
+      );
+    }
+    if (game.route.length)
+      console.log(
+        "STUCK",
+        c.id,
+        game.player.g.position.toArray(),
+        game.route,
+        game.journey,
+      );
+    assert.equal(game.route.length, 0, c.id + " never arrived");
+    assert.equal(
+      game.journey.stage,
+      "question",
+      c.id + " failed to open on arrival",
+    );
+  }
+}
+game.openBuiltCityView();
+now += 100;
+game.animateWorld(now);
+assert.equal(game.camera.type, "OrthographicCamera");
+const oldZoom = game.camera.zoom;
+w.document.getElementById("city-view-zoom-in").click();
+assert(game.camera.zoom > oldZoom);
+game.closeBuiltCityView();
+assert.equal(game.camera.type, "PerspectiveCamera");
+console.log(
+  "PASS: actual mobile game runtime, all 108 journeys without teleportation, road-free trees/houses, overview zoom and camera restoration. Canvas/GPU not tested.",
+);
+process.exit(0);
