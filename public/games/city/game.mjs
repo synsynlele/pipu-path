@@ -890,6 +890,7 @@ if (!softwareMode) {
     contextLost = false;
     renderErrors = 0;
     graphicsResets++;
+    console.info("City graphics restored", graphicsResets);
     restoreGraphicsQuality();
     syncCaseScenes();
     $("graphics-recovery").hidden = true;
@@ -3326,6 +3327,7 @@ function animate(now) {
     renderErrors++;
     lastRenderError = error instanceof Error ? error.message : String(error);
     if (renderErrors === 2) {
+      console.warn("City rendering interrupted:", lastRenderError);
       graphicsInterrupted = true;
       showGraphicsProblem(
         "The 3D scene stopped drawing. Your choices are safe in this session. Tap Recover 3D.",
