@@ -790,10 +790,15 @@ function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
 }
 function rememberJourney() {
-  state.journey = journey.status === "idle"
-    ? null
-    : { caseId: journey.caseId, stage: journey.stage,
-        choiceId: journey.choiceId, status: journey.status };
+  state.journey =
+    journey.status === "idle"
+      ? null
+      : {
+          caseId: journey.caseId,
+          stage: journey.stage,
+          choiceId: journey.choiceId,
+          status: journey.status,
+        };
   if (saveEnabled) persistPractice();
 }
 function refreshJourneyControls() {
@@ -807,19 +812,26 @@ function refreshJourneyControls() {
   document.body.classList.toggle("city-journey", running);
   document.body.classList.toggle("city-journey-paused", paused);
   if (!visible) return;
-  $("journey-toggle").textContent = running ? "Pause journey" : "Resume journey →";
+  $("journey-toggle").textContent = running
+    ? "Pause journey"
+    : "Resume journey →";
   $("journey-status").textContent = running
     ? "Building your city · problem " + caseNumber(journey.caseId) + " of 16"
-    : "Journey paused · resume problem " + caseNumber(journey.caseId) + " of 16";
+    : "Journey paused · resume problem " +
+      caseNumber(journey.caseId) +
+      " of 16";
 }
-function pauseJourney(message = "Journey paused. Resume whenever you're ready.") {
+function pauseJourney(
+  message = "Journey paused. Resume whenever you're ready.",
+) {
   if (journey.status !== "running") return;
   journey.status = "paused";
   cancelAutoAdvance();
   if (journey.stage === "travelling") cancelWalk();
   if (journey.stage === "building") cancelCasePreview();
   else if (journey.stage === "outcome" && $("autonext-caption")) {
-    $("autonext-caption").textContent = "Paused. Tap Resume journey to continue.";
+    $("autonext-caption").textContent =
+      "Paused. Tap Resume journey to continue.";
     document.querySelector(".auto-next")?.classList.add("paused");
   }
   refreshJourneyControls();
@@ -828,7 +840,12 @@ function pauseJourney(message = "Journey paused. Resume whenever you're ready.")
 function goToJourneyCase(id) {
   const caseFile = getCase(id);
   if (!caseFile || simulating) return;
-  journey = { status: "running", caseId: id, stage: "travelling", choiceId: null };
+  journey = {
+    status: "running",
+    caseId: id,
+    stage: "travelling",
+    choiceId: null,
+  };
   cancelAutoAdvance();
   $("detail").hidden = true;
   closeCasebook();
@@ -863,8 +880,10 @@ function resumeJourney() {
   dockExpanded = false;
   refreshJourneyControls();
   if (target.stage === "question") showCase(target.caseId);
-  else if (target.stage === "building") runCaseWorldAction(target.caseId, target.choiceId);
-  else if (target.stage === "outcome") showCaseOutcome(target.caseId, target.choiceId);
+  else if (target.stage === "building")
+    runCaseWorldAction(target.caseId, target.choiceId);
+  else if (target.stage === "outcome")
+    showCaseOutcome(target.caseId, target.choiceId);
   else goToJourneyCase(target.caseId);
 }
 function cancelAutoAdvance() {
@@ -1120,8 +1139,10 @@ function updateWorld() {
   rebuildNavigation();
 }
 function closeDetail() {
-  if (journey.status === "running" &&
-      ["question", "building", "outcome"].includes(journey.stage))
+  if (
+    journey.status === "running" &&
+    ["question", "building", "outcome"].includes(journey.stage)
+  )
     pauseJourney();
   cancelAutoAdvance();
   $("detail").hidden = true;
@@ -1493,8 +1514,8 @@ const firstJourney = [
 ];
 function updateGuideVisibility() {
   const entered = $("intro").hidden;
-  const visible = entered && guideExpanded && !simulating &&
-    journey.status !== "running";
+  const visible =
+    entered && guideExpanded && !simulating && journey.status !== "running";
   $("mission").hidden = !visible;
   $("guide-toggle").hidden = !entered || simulating;
   $("guide-toggle").textContent = visible ? "Hide guide" : "Next step";
@@ -2142,9 +2163,11 @@ $("start").onclick = () => {
   render();
   const nextUnsolved = firstUnanswered(state.decisions);
   if (nextUnsolved || journey.status === "paused") {
-    toast(previousPractice
-      ? "Welcome back. Resuming your unfinished builder journey."
-      : "Your first problem is ready.");
+    toast(
+      previousPractice
+        ? "Welcome back. Resuming your unfinished builder journey."
+        : "Your first problem is ready.",
+    );
     resumeJourney();
   } else {
     journey.status = "complete";
@@ -2172,7 +2195,12 @@ $("reset").onclick = () => {
     return;
   clearTimeout(runTimer);
   cancelCasePreview();
-  journey = { status: "idle", caseId: null, stage: "travelling", choiceId: null };
+  journey = {
+    status: "idle",
+    caseId: null,
+    stage: "travelling",
+    choiceId: null,
+  };
   refreshJourneyControls();
   simulating = false;
   simPeriod = -1;
@@ -2239,8 +2267,13 @@ canvas.addEventListener("pointermove", (e) => {
 canvas.addEventListener("pointerup", (e) => {
   pointers.delete(e.pointerId);
   pinchDistance = null;
-  if (down && !dragging && $("intro").hidden && !simulating &&
-      journey.status !== "running") {
+  if (
+    down &&
+    !dragging &&
+    $("intro").hidden &&
+    !simulating &&
+    journey.status !== "running"
+  ) {
     pointer.set(
       (e.clientX / innerWidth) * 2 - 1,
       (-e.clientY / innerHeight) * 2 + 1,

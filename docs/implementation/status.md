@@ -34,7 +34,6 @@ separate activity. No new Quest XP or real-world proficiency is
 awarded. CI and physical Android interruption/restart verification
 are required before shipping.
 
-
 ## 28 October 2026 — Choice-to-City Engine (four-district vertical slice)
 
 The preview branch `feat/unbuilt-city-choice-to-city` turns all 16

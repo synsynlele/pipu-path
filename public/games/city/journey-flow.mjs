@@ -3,22 +3,39 @@
 import { CITY_CASES, getChoice } from "./cases.mjs";
 
 export const JOURNEY_STAGES = Object.freeze([
-  "travelling", "question", "building", "outcome", "complete",
+  "travelling",
+  "question",
+  "building",
+  "outcome",
+  "complete",
 ]);
 export function firstUnanswered(decisions = {}) {
   return CITY_CASES.find((c) => !getChoice(c.id, decisions[c.id])) ?? null;
 }
-export function recoverJourney({ caseId, stage, choiceId, decisions = {} } = {}) {
+export function recoverJourney({
+  caseId,
+  stage,
+  choiceId,
+  decisions = {},
+} = {}) {
   const current = CITY_CASES.find((c) => c.id === caseId);
   if (current && stage === "travelling")
     return { caseId, stage: "travelling", choiceId: null };
   if (current && stage === "question")
     return { caseId, stage: "question", choiceId: null };
-  if (current && ["building", "outcome"].includes(stage) &&
-      getChoice(caseId, choiceId) && decisions[caseId] === choiceId)
+  if (
+    current &&
+    ["building", "outcome"].includes(stage) &&
+    getChoice(caseId, choiceId) &&
+    decisions[caseId] === choiceId
+  )
     return { caseId, stage, choiceId };
   const next = firstUnanswered(decisions);
   return next
     ? { caseId: next.id, stage: "travelling", choiceId: null }
-    : { caseId: CITY_CASES[CITY_CASES.length - 1].id, stage: "complete", choiceId: null };
+    : {
+        caseId: CITY_CASES[CITY_CASES.length - 1].id,
+        stage: "complete",
+        choiceId: null,
+      };
 }

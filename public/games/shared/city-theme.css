@@ -2139,7 +2139,11 @@ body.city-testing #city-status {
   border-radius: 16px;
   box-shadow: 0 8px 22px #172c5435;
 }
-#journey-status { font-size: 11px; font-weight: 750; line-height: 1.35; }
+#journey-status {
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.35;
+}
 #journey-toggle {
   flex-shrink: 0;
   min-height: 44px;
@@ -2165,7 +2169,9 @@ body.city-journey header,
 body.city-journey .corner-note {
   display: none !important;
 }
-body.city-journey #detail { z-index: 23; }
+body.city-journey #detail {
+  z-index: 23;
+}
 @media (max-width: 650px) {
   #journey-bar {
     top: max(67px, calc(env(safe-area-inset-top) + 55px));
@@ -2176,19 +2182,31 @@ body.city-journey #detail { z-index: 23; }
     padding: 7px 8px 7px 12px;
     border-radius: 12px;
   }
-  #journey-status { font-size: 10px; }
-  #journey-toggle { min-height: 42px; font-size: 11px; padding: 9px 11px; }
-  body.city-journey #detail { max-height: calc(100dvh - 158px); }
+  #journey-status {
+    font-size: 10px;
+  }
+  #journey-toggle {
+    min-height: 42px;
+    font-size: 11px;
+    padding: 9px 11px;
+  }
+  body.city-journey #detail {
+    max-height: calc(100dvh - 158px);
+  }
 }
 
 /* Keep the response scene and the pause control visibly separate. */
-body.city-journey #world-feedback { top: max(191px, 28%); }
+body.city-journey #world-feedback {
+  top: max(191px, 28%);
+}
 body.city-journey #detail {
   top: max(182px, 24%);
   max-height: calc(100dvh - 202px);
 }
 @media (max-width: 650px) {
-  body.city-journey #world-feedback { top: max(148px, 22%); }
+  body.city-journey #world-feedback {
+    top: max(148px, 22%);
+  }
   body.city-journey #detail {
     top: auto;
     bottom: 10px;

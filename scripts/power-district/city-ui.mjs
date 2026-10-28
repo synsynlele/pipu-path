@@ -38,10 +38,12 @@ assert(game.includes("case-replay"));
 assert(game.includes("function proceedAfterCase("));
 assert(game.includes("function pauseJourney("));
 assert(game.includes("function refreshJourneyControls()"));
-assert(game.includes("recoverJourney({ ...journey, decisions: state.decisions })"));
+assert(
+  game.includes("recoverJourney({ ...journey, decisions: state.decisions })"),
+);
 assert(game.includes("const success = goTo(point, () => showCase(id)"));
 assert(game.includes("if (!planned.points.length)"));
-assert(game.includes("pauseJourney(\"The route is blocked."));
+assert(game.includes('pauseJourney("The route is blocked.'));
 assert(html.includes('id="journey-bar"'));
 assert(html.includes('id="journey-toggle"'));
 assert(css.includes("body.city-journey #city-tools"));

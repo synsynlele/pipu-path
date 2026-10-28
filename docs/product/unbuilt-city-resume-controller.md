@@ -24,13 +24,13 @@ A **Pause journey** button stays visible above the active gameplay.
 When paused it becomes **Resume journey**. It is independent of the
 scene's legacy Stop control and remains discoverable on mobile.
 
-| Stop point | Resume behaviour |
-|---|---|
-| Before arrival | Plan the route again to the same question |
-| At a question | Return to the same three decisions |
-| During a building animation | Repeat the visual response and consequence |
-| While reading an outcome | Reopen that outcome and restart its reading interval |
-| At the final case | Show completion and permit free exploration |
+| Stop point                  | Resume behaviour                                     |
+| --------------------------- | ---------------------------------------------------- |
+| Before arrival              | Plan the route again to the same question            |
+| At a question               | Return to the same three decisions                   |
+| During a building animation | Repeat the visual response and consequence           |
+| While reading an outcome    | Reopen that outcome and restart its reading interval |
+| At the final case           | Show completion and permit free exploration          |
 
 Manually leaving a problem pauses (rather than destroys) progression.
 Zero-distance arrival calls the question immediately. Failed routes
