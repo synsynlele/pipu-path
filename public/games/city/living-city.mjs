@@ -2,7 +2,7 @@
 // Visual-only: not real traffic forecasts, incomes, population, health or XP.
 import { CITY_DISTRICTS } from "./districts.mjs";
 import { CONNECTIONS, deriveBuilderCity } from "./city-growth.mjs";
-import { OWNED_ENTERPRISES } from "./opportunities.mjs";
+import { CITY_REQUESTS, OWNED_ENTERPRISES } from "./opportunities.mjs";
 
 const ROAD_X = Object.freeze([-45, -10, 6, 47]);
 const ROAD_Z = Object.freeze([-39, 6.7, 39]);
@@ -129,6 +129,30 @@ export function deriveLivingCity(decisions = {}, economy = null) {
         shortfall: lastOwned.shortfall,
       }
     : null;
+  // The four neighbourhood signals come from genuine completed demand and
+  // fulfilment, not ambient animation or guesses about residents.
+  const requestSignals =
+    economy?.day > 0 && economy.last?.requests
+      ? CITY_REQUESTS.map((request) => {
+          const values = economy.last.requests[request.id];
+          if (
+            !values ||
+            !city.districts[request.district]?.built ||
+            !Number.isInteger(values.requested) ||
+            !Number.isInteger(values.served) ||
+            values.served < 0 ||
+            values.served > values.requested
+          )
+            return null;
+          return {
+            id: request.id,
+            district: request.district,
+            requested: values.requested,
+            served: values.served,
+            waiting: values.requested - values.served,
+          };
+        }).filter(Boolean)
+      : [];
   // Traffic illustrates a few relationships only; not a prediction.
   const linkageCount = CONNECTIONS.filter(
     ({ from, to }) => city.districts[from].built && city.districts[to].built,
@@ -140,6 +164,7 @@ export function deriveLivingCity(decisions = {}, economy = null) {
     residents: districts.reduce((sum, d) => sum + d.residents, 0),
     deliveries,
     enterpriseActivity,
+    requestSignals,
     linkageCount,
   };
 }

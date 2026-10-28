@@ -2,6 +2,7 @@
 // Decorative entities never participate in avatar collision/navigation.
 import { CITY_DISTRICTS } from "./districts.mjs";
 import { deriveLivingCity } from "./living-city.mjs";
+import { CITY_REQUESTS } from "./opportunities.mjs";
 
 export function createLivingCityScene({
   T,
@@ -20,6 +21,7 @@ export function createLivingCityScene({
   scene.add(enterpriseStand);
   const ownedWorkers = [];
   const ownedCustomers = [];
+  const requestMarkers = new Map();
   function harmless(mesh) {
     mesh.userData.ignoreNavigation = true;
     mesh.castShadow = false;
@@ -158,6 +160,30 @@ export function createLivingCityScene({
   for (let i = 0; i < (lowPower ? 1 : 2); i++)
     ownedCustomers.push(smallPerson(0xb97c5e, 1.7 + i * 0.45, 1.2));
 
+  // Four small, reused street-side status lamps. Amber means someone
+  // is still waiting; green means a real day's requests were met.
+  // They never create collision or new simulated demand.
+  for (const request of CITY_REQUESTS) {
+    const district = CITY_DISTRICTS.find(
+      (site) => site.id === request.district,
+    );
+    if (!district) continue;
+    const lamp = new T.Group();
+    lamp.userData.ignoreNavigation = true;
+    lamp.position.set(district.x + 5.1, 0, district.z + 3.6);
+    B(lamp, 0.12, 2.25, 0.12, 0x6f756b, 0, 1.13, 0);
+    const light = new T.Mesh(
+      new T.SphereGeometry(0.39, 8, 6),
+      new T.MeshBasicMaterial({ color: 0x5b987a }),
+    );
+    light.position.y = 2.4;
+    harmless(light);
+    lamp.add(light);
+    lamp.visible = false;
+    scene.add(lamp);
+    requestMarkers.set(request.id, { lamp, light });
+  }
+
   let latest = null;
   function sync(decisions, economy = null) {
     latest = deriveLivingCity(decisions, economy);
@@ -175,6 +201,18 @@ export function createLivingCityScene({
       walkers.forEach((p, i) => {
         p.visible = i < district.residents;
       });
+    }
+    for (const request of CITY_REQUESTS) {
+      const marker = requestMarkers.get(request.id);
+      if (!marker) continue;
+      const signal = latest.requestSignals.find(
+        (item) => item.id === request.id,
+      );
+      marker.lamp.visible = Boolean(signal && signal.requested > 0);
+      if (signal)
+        marker.light.material.color.setHex(
+          signal.waiting > 0 ? 0xd28a43 : 0x4aa47a,
+        );
     }
     const owner = latest.enterpriseActivity;
     const district =
@@ -275,5 +313,5 @@ export function createLivingCityScene({
       g.rotation.y = point.angle;
     });
   }
-  return { sync, animate, plazas, pedestrians, vehicles };
+  return { sync, animate, plazas, pedestrians, vehicles, requestMarkers };
 }
