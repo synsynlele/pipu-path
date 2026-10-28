@@ -2185,15 +2185,15 @@ function showChapterTransition() {
     '<div class="eyebrow">THE UNBUILT CITY · CHAPTER 2 UNLOCKED</div>' +
       "<h2>Your city is coming alive.</h2>" +
       "<p>Your first 16 decisions have shaped four districts. Look at the city you have begun: " +
-      "new neighbours are arriving and ten more districts need your decisions.</p>" +
+      "ten more districts are ready to explore. Your choices and unresolved needs carry forward.</p>" +
       '<div class="evidence"><strong>YOUR CITY SO FAR</strong>' +
-      city.completed +
+      city.visibleBuildings +
       "/" +
       CITY_CASES.length +
       " infrastructure projects · " +
-      summary.working +
+      city.workingSolutions +
       " working · " +
-      summary.unresolved +
+      city.unresolvedNeeds +
       " unresolved · " +
       city.activeDistricts +
       "/14 active neighbourhoods · " +
