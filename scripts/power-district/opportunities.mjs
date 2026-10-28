@@ -11,6 +11,10 @@ import {
   runOpportunityDay,
   selectOpportunityPolicy,
   foundationForOpportunities,
+  OWNED_ENTERPRISES,
+  ENTERPRISE_ACTIONS,
+  chooseOwnedEnterprise,
+  chooseEnterpriseAction,
 } from "../../public/games/city/opportunities.mjs";
 
 const fresh = newOpportunityState();
@@ -65,6 +69,58 @@ assert(
   history.some((day) => day.repairs > 0),
   "Parts should reach the workshop",
 );
+// Owned enterprise outcomes must be caused by player decisions, not animation.
+assert.equal(OWNED_ENTERPRISES.length, 4);
+assert.equal(ENTERPRISE_ACTIONS.length, 3);
+assert.equal(chooseOwnedEnterprise(fresh, "fake"), null);
+assert.equal(chooseEnterpriseAction(fresh, "tools"), null);
+const owner = chooseOwnedEnterprise(fresh, "water");
+assert.equal(owner.enterprise.id, "water");
+assert.equal(owner.enterprise.action, "steady");
+const improvedOwner = chooseEnterpriseAction(owner, "tools");
+assert.equal(improvedOwner.enterprise.action, "tools");
+const baseline = runOpportunityDay(decisions, owner);
+const improved = runOpportunityDay(decisions, improvedOwner);
+assert.equal(improved.last.enterprise.id, "water");
+assert(improved.last.enterprise.workers > 0);
+assert(improved.last.water >= baseline.last.water);
+assert(improved.stocks.parts <= baseline.stocks.parts, "Tool upgrades use finite parts");
+assert.deepEqual(sanitizeOpportunityState(improved), improved);
+const active = deriveLivingCity(decisions, improved).enterpriseActivity;
+assert.equal(active.district, "water");
+assert.equal(active.workers, improved.last.enterprise.workers);
+assert.equal(active.customers, Math.min(2, improved.last.enterprise.customers));
+for (const business of OWNED_ENTERPRISES) {
+  const founded = chooseOwnedEnterprise(fresh, business.id);
+  const result = runOpportunityDay(decisions, founded);
+  assert.equal(result.last.enterprise.id, business.id);
+  assert.equal(
+    deriveLivingCity(decisions, result).enterpriseActivity.district,
+    business.district,
+  );
+}
+assert.equal(
+  runOpportunityDay(decisions, fresh).last.enterprise,
+  null,
+  "Older Chapter 3 journeys remain playable without forcing new ownership",
+);
+const reached = runOpportunityDay(
+  decisions,
+  chooseEnterpriseAction(chooseOwnedEnterprise(fresh, "shop"), "reach"),
+);
+assert(reached.last.unserved >= runOpportunityDay(
+  decisions,
+  chooseOwnedEnterprise(fresh, "shop"),
+).last.unserved, "Inviting customers cannot magically create stock");
+assert.equal(chooseOwnedEnterprise(state, "shop"), null, "Do not alter completed history");
+assert.equal(sanitizeOpportunityState({
+  ...improved,
+  enterprise: { id: "<img>", action: "tools" },
+}), null);
+assert.equal(sanitizeOpportunityState({
+  ...improved,
+  history: [{ ...improved.history[0], enterprise: { ...improved.last.enterprise, workers: 999 } }],
+}), null);
 const scene = deriveLivingCity(decisions, state);
 assert(scene.deliveries.length > 0 && scene.deliveries.length <= 5);
 assert(
