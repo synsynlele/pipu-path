@@ -209,7 +209,11 @@ assert.equal(
 assert.equal(sanitizeOpportunityState({ ...state, policy: "<script>" }), null);
 const legacyBoardlessSave = {
   ...improved,
-  history: improved.history.map(({ requests: _requests, ...row }) => row),
+  history: improved.history.map((row) => {
+    const copy = { ...row };
+    delete copy.requests;
+    return copy;
+  }),
   last: { ...improved.last },
 };
 delete legacyBoardlessSave.last.requests;
