@@ -1,0 +1,32 @@
+name: Format Unbuilt City navigation revision
+on:
+  pull_request:
+    branches: [feat/unbuilt-city-journey-resume]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feat/unbuilt-city-navigation-and-revision'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/unbuilt-city-navigation-and-revision
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format changes
+        run: npx prettier --write public/games/city/game.mjs public/games/city/index.html public/games/city/decision-review.mjs public/games/shared/city-theme.css scripts/power-district/decision-review.mjs scripts/power-district/city-ui.mjs docs/implementation/status.md docs/product/unbuilt-city-navigation-revision.md .github/workflows/format-nav-revision.yml
+      - name: Commit formatted code
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/games/city/game.mjs public/games/city/index.html public/games/city/decision-review.mjs public/games/shared/city-theme.css scripts/power-district/decision-review.mjs scripts/power-district/city-ui.mjs docs/implementation/status.md docs/product/unbuilt-city-navigation-revision.md .github/workflows/format-nav-revision.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "style: format navigation and decision revision"
+            git push origin HEAD:feat/unbuilt-city-navigation-and-revision
+          fi
