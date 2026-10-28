@@ -56,6 +56,11 @@ assert(
   "players must not need a separate keep click",
 );
 assert(css.includes(".auto-next-track"));
+assert(html.includes('id="city-status-toggle"'));
+assert(html.includes('id="city-status"'));
+assert(game.includes("function renderCityStatus()"));
+assert(game.includes("const city = deriveBuilderCity(state.decisions)"));
+assert(css.includes(".city-status-district"));
 assert(game.includes("decisionSparks.visible"));
 assert(game.includes("previewDecision = null"));
 assert(game.includes("caseScenes.setTone("));

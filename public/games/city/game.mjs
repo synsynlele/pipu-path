@@ -1,6 +1,7 @@
 import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
+import { deriveBuilderCity } from "./city-growth.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
@@ -819,7 +820,20 @@ function runCaseWorldAction(caseId, choiceId) {
       : tone === "strained"
         ? "THE CITY FEELS THE CONSEQUENCES"
         : "YOUR DECISION CHANGES THE CITY";
-  $("world-feedback-copy").textContent = feedbackCopy(spec.kind, tone);
+  const city = deriveBuilderCity(state.decisions);
+  const neighbourhood = city.districts[spec.district];
+  const connected = neighbourhood.links
+    .map((link) => city.districts[link.from].name)
+    .slice(0, 2);
+  $("world-feedback-copy").textContent =
+    feedbackCopy(spec.kind, tone) +
+    " " +
+    neighbourhood.name +
+    " is now " +
+    neighbourhood.activity +
+    (connected.length
+      ? ". Connected to " + connected.join(" and ") + "."
+      : ".");
   $("world-feedback").hidden = false;
   $("detail").hidden = true;
   guideExpanded = false;
@@ -827,6 +841,7 @@ function runCaseWorldAction(caseId, choiceId) {
   $("build-dock").hidden = true;
   closeDirectory();
   closeCasebook();
+  closeCityStatus();
   document.body.classList.add("city-impact-view");
   const priorDistance = distance;
   distance = Math.min(distance, 15);
@@ -968,6 +983,7 @@ for (const d of OUTER_DISTRICTS)
   approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
 function goToStation(id, afterArrival = null) {
   if (!$("intro").hidden || simulating) return;
+  closeCityStatus();
   const station = stations.find((s) => s.id === id);
   if (!station) return;
   closeDirectory();
@@ -1031,6 +1047,76 @@ function closeCasebook() {
   $("casebook").hidden = true;
   $("cases-toggle").setAttribute("aria-expanded", "false");
 }
+function closeCityStatus() {
+  $("city-status").hidden = true;
+  $("city-status-toggle").setAttribute("aria-expanded", "false");
+}
+function renderCityStatus() {
+  const city = deriveBuilderCity(state.decisions);
+  $("city-health-badge").textContent = city.completed + "/16";
+  $("city-status-summary").textContent =
+    city.visibleBuildings +
+    " physical projects built. Fictional overall service health: " +
+    city.cityHealth +
+    "/100. Revise any decision to reshape the city.";
+  const rows = $("city-status-list");
+  rows.replaceChildren();
+  for (const id of CASE_DISTRICTS) {
+    const d = city.districts[id];
+    const section = document.createElement("section");
+    section.className = "city-status-district";
+    const head = document.createElement("div");
+    head.className = "city-status-heading";
+    const title = document.createElement("strong");
+    title.textContent = d.icon + " " + d.name + " · " + d.built + "/4 builds";
+    const service = document.createElement("small");
+    service.textContent = d.built
+      ? d.service + "/100 · " + d.activity
+      : "Not built yet";
+    head.append(title, service);
+    const meter = document.createElement("div");
+    meter.className = "city-service-meter";
+    meter.setAttribute("role", "meter");
+    meter.setAttribute("aria-valuemin", "0");
+    meter.setAttribute("aria-valuemax", "100");
+    meter.setAttribute("aria-valuenow", String(d.service));
+    meter.setAttribute("aria-label", d.name + " fictional service score");
+    const bar = document.createElement("i");
+    bar.style.width = d.service + "%";
+    bar.className = d.activity;
+    meter.append(bar);
+    section.append(head, meter);
+    if (d.links.length) {
+      const effects = document.createElement("p");
+      effects.className = "city-connections";
+      effects.textContent = d.links
+        .map(
+          (link) =>
+            city.districts[link.from].name +
+            " " +
+            (link.change > 0 ? "+" : "") +
+            link.change +
+            " · " +
+            link.reason,
+        )
+        .join(" | ");
+      section.append(effects);
+    }
+    rows.append(section);
+  }
+}
+function openCityStatus() {
+  closeDirectory();
+  closeCasebook();
+  closeDetail();
+  guideExpanded = false;
+  dockExpanded = false;
+  render();
+  renderCityStatus();
+  $("city-status").hidden = false;
+  $("city-status-toggle").setAttribute("aria-expanded", "true");
+  $("city-status-close").focus();
+}
 function renderCasebook() {
   $("casebook-summary").textContent =
     caseProgress(state.decisions) +
@@ -1076,6 +1162,7 @@ function renderCasebook() {
   }
 }
 function openCasebook() {
+  closeCityStatus();
   closeDirectory();
   closeDetail();
   guideExpanded = false;
@@ -1315,6 +1402,7 @@ function updateGuideVisibility() {
   $("test-status").hidden = !simulating;
   $("districts-toggle").hidden = simulating;
   $("cases-toggle").hidden = simulating;
+  $("city-status-toggle").hidden = simulating;
 }
 function render() {
   const guided =
@@ -1428,6 +1516,7 @@ function render() {
   updateGuideVisibility();
   updateWorld();
   syncCaseScenes();
+  renderCityStatus();
   persistPractice();
 }
 function change(key, value) {
@@ -1509,6 +1598,7 @@ function closeDirectory() {
   $("districts-toggle").setAttribute("aria-expanded", "false");
 }
 function openDirectory() {
+  closeCityStatus();
   closeCasebook();
   guideExpanded = false;
   dockExpanded = false;
@@ -1862,6 +1952,12 @@ function handoverPanel() {
 }
 $("test").onclick = runDay;
 $("close-detail").onclick = closeDetail;
+$("city-status-toggle").onclick = () => {
+  if (simulating) return;
+  if ($("city-status").hidden) openCityStatus();
+  else closeCityStatus();
+};
+$("city-status-close").onclick = closeCityStatus;
 $("cases-toggle").onclick = () => {
   if (simulating) return;
   if ($("casebook").hidden) openCasebook();
@@ -1926,6 +2022,7 @@ $("start").onclick = () => {
   $("city-tools").hidden = false;
   mapMode = false;
   closeCasebook();
+  closeCityStatus();
   guideExpanded = true;
   dockExpanded = false;
   distance = 27;
@@ -1973,6 +2070,7 @@ $("reset").onclick = () => {
   state = fresh();
   saveEnabled = false;
   closeCasebook();
+  closeCityStatus();
   if (!cleared) toast("Could not clear saved practice. Check browser storage.");
   freeExplore = false;
   mapMode = false;
@@ -2169,6 +2267,7 @@ function animate(now) {
     }
   }
 
+  // City buildings and small community workers reflect each retained choice.
   // Construction rises, sparks scatter and nearby characters react.
   caseScenes.animate(now, reduceMotion.matches);
   if (activeFeedback && !reduceMotion.matches) {

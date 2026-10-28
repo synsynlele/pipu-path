@@ -66,6 +66,14 @@
         </button>
         <button id="city-map" type="button">City map</button>
         <button
+          id="city-status-toggle"
+          type="button"
+          aria-controls="city-status"
+          aria-expanded="false"
+        >
+          My City <span id="city-health-badge">0/16</span>
+        </button>
+        <button
           id="districts-toggle"
           type="button"
           aria-controls="district-directory"
@@ -110,6 +118,35 @@
           </button>
         </div>
         <div id="district-list"></div>
+      </section>
+      <section
+        id="city-status"
+        class="panel"
+        hidden
+        aria-label="Your changing city"
+      >
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">BUILT BY YOUR DECISIONS</div>
+            <h2>Your city is unique</h2>
+            <p id="city-status-summary">
+              Your decisions shape buildings, services and neighbouring
+              districts.
+            </p>
+          </div>
+          <button
+            id="city-status-close"
+            type="button"
+            aria-label="Close My City"
+          >
+            ×
+          </button>
+        </div>
+        <div id="city-status-list"></div>
+        <div class="city-state-disclaimer">
+          Fictional builder simulation. These numbers are not grades, money or
+          verified capabilities. All choices can be revised.
+        </div>
       </section>
       <section
         id="casebook"

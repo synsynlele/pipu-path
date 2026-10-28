@@ -23,7 +23,11 @@ for (const c of CITY_CASES) {
 assert.equal(visualTone(null), null);
 const source = readFileSync("public/games/city/scene-feedback.mjs", "utf8");
 assert(source.includes("function build(spec)"));
-assert(source.includes("effects.set(id, build(spec))"));
+assert(source.includes("effects.set(id, build({ ...spec, caseId: id }))"));
+assert(source.includes("effect.buildChoice(id, choiceId)"));
+assert(source.includes("effect.variants"));
+assert(source.includes("for (const [id, item] of hubs)"));
+assert(source.includes("const city = deriveBuilderCity(decisions)"));
 assert(source.includes("effect.group.visible = Boolean(choiceId)"));
 assert(source.includes("effect.group.scale.set("));
 assert(source.includes("getChoice(id, choiceId)"));
