@@ -2,6 +2,18 @@ import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
+  CITY_CASES,
+  CASE_DISTRICTS,
+  IMPACT_LABELS,
+  casesFor,
+  getCase,
+  getChoice,
+  saveDecision,
+  caseProgress,
+  districtProgress,
+} from "./cases.mjs";
+import { loadPractice, savePractice, clearPractice } from "./practice-save.mjs";
+import {
   CITY_DISTRICTS,
   OUTER_DISTRICTS,
   DISTRICT_INDEX,
@@ -25,8 +37,11 @@ const fresh = () => ({
   history: [],
   handedOver: false,
   reflection: "",
+  decisions: {},
 });
-let state = fresh(),
+const previousPractice = loadPractice();
+let state = previousPractice ? { ...fresh(), ...previousPractice } : fresh(),
+  saveEnabled = Boolean(previousPractice),
   freeExplore = false,
   mapMode = false,
   guideExpanded = true,
@@ -734,6 +749,46 @@ const futureNeighbours = createOuterDistricts({
   textPlane,
   person,
 });
+// Recorded fictional approaches light up small markers in the actual 3D district.
+// They are never attributed as real-life competence or the shared economy result.
+const practiceMarkers = new Map();
+const practiceAnchors = {
+  workshop: { x: -0.4, z: -3.1 },
+  power: { x: 3.8, z: -7.4 },
+  market: { x: 20.7, z: 9.7 },
+  school: { x: -12.7, z: 13.8 },
+};
+for (const district of CASE_DISTRICTS) {
+  const anchor = practiceAnchors[district];
+  casesFor(district).forEach((scenario, i) => {
+    const h = 0.23 + i * 0.12;
+    const marker = box(
+      0.42,
+      h,
+      0.42,
+      0xe2bc62,
+      anchor.x + (i % 2) * 0.68,
+      0.27 + h / 2,
+      anchor.z + Math.floor(i / 2) * 0.68,
+    );
+    marker.userData.ignoreNavigation = true;
+    marker.visible = false;
+    practiceMarkers.set(scenario.id, marker);
+  });
+}
+function updatePracticeMarkers() {
+  for (const scenario of CITY_CASES) {
+    const marker = practiceMarkers.get(scenario.id);
+    const chosen = getChoice(scenario.id, state.decisions[scenario.id]);
+    marker.visible = Boolean(chosen);
+    if (chosen) {
+      const total = chosen.impact.reduce((a, b) => a + b, 0);
+      marker.material = mat(
+        total >= 3 ? 0x709e7b : total >= 0 ? 0xd9b65d : 0xb97962,
+      );
+    }
+  }
+}
 for (const d of OUTER_DISTRICTS)
   stations.push({
     id: d.id,
@@ -878,18 +933,26 @@ const approaches = {
 };
 for (const d of OUTER_DISTRICTS)
   approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
-function goToStation(id) {
+function goToStation(id, afterArrival = null) {
   if (!$("intro").hidden || simulating) return;
   const station = stations.find((s) => s.id === id);
   if (!station) return;
   closeDirectory();
+  closeCasebook();
   closeDetail();
   if (mapMode) {
     mapMode = false;
     distance = 27;
     $("city-map").textContent = "City map";
   }
-  goTo(approaches[id], () => inspect(id), station.label);
+  goTo(
+    approaches[id],
+    () => {
+      inspect(id);
+      afterArrival?.();
+    },
+    station.label,
+  );
 }
 $("stop-walking").onclick = cancelWalk;
 
@@ -921,6 +984,201 @@ function closeDetail() {
 function showDetail(html) {
   $("detail-body").innerHTML = html;
   $("detail").hidden = false;
+}
+function persistPractice() {
+  if (!saveEnabled) return;
+  if (!savePractice(state)) {
+    saveEnabled = false;
+    toast("Device storage is unavailable. Progress is only in this open game.");
+  }
+}
+function closeCasebook() {
+  $("casebook").hidden = true;
+  $("cases-toggle").setAttribute("aria-expanded", "false");
+}
+function renderCasebook() {
+  $("casebook-summary").textContent =
+    caseProgress(state.decisions) +
+    " of 16 practice decisions kept. Each decision has consequences and trade-offs.";
+  $("save-practice").textContent = saveEnabled
+    ? "Stop saving and clear device copy"
+    : "Save on this device";
+  $("save-note").textContent = saveEnabled
+    ? "Saving fictional decisions and city settings on this browser only. Not synced to an account or backed up."
+    : "Save is off. Practice remains in the open game until you opt in. No personal reflection or Quest evidence is stored.";
+  const list = $("casebook-list");
+  list.replaceChildren();
+  for (const district of CASE_DISTRICTS) {
+    const d = CITY_DISTRICTS.find((item) => item.id === district);
+    const section = document.createElement("section");
+    section.className = "case-section";
+    const heading = document.createElement("h3");
+    heading.textContent =
+      d.emoji +
+      " " +
+      d.name +
+      " · " +
+      districtProgress(state.decisions, district) +
+      "/4";
+    const grid = document.createElement("div");
+    grid.className = "case-grid";
+    for (const scenario of casesFor(district)) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "case-tile";
+      const title = document.createElement("strong");
+      title.textContent = scenario.title;
+      const status = document.createElement("small");
+      status.textContent = getChoice(scenario.id, state.decisions[scenario.id])
+        ? "Decision kept · revisit"
+        : "Try this problem";
+      button.append(title, status);
+      button.onclick = () => startCase(scenario.id);
+      grid.append(button);
+    }
+    section.append(heading, grid);
+    list.append(section);
+  }
+}
+function openCasebook() {
+  closeDirectory();
+  closeDetail();
+  guideExpanded = false;
+  dockExpanded = false;
+  render();
+  renderCasebook();
+  $("casebook").hidden = false;
+  $("cases-toggle").setAttribute("aria-expanded", "true");
+  $("casebook-close").focus();
+}
+function showDistrictCases(district) {
+  const d = CITY_DISTRICTS.find((entry) => entry.id === district);
+  const scenarios = casesFor(district);
+  showDetail(
+    '<div class="eyebrow">PRACTISE IN THIS DISTRICT</div><h2>' +
+      d.name +
+      "</h2><p>These are authored fictional decisions. Each can be tried again." +
+      " They do not award XP or change a real PipuPath Quest.</p>" +
+      scenarios
+        .map(
+          (c) =>
+            '<button class="detail-choice" data-local-case="' +
+            c.id +
+            '">' +
+            c.title +
+            "<small>" +
+            (getChoice(c.id, state.decisions[c.id])
+              ? "Decision kept · compare again"
+              : "Try this problem") +
+            "</small></button>",
+        )
+        .join(""),
+  );
+  document.querySelectorAll("[data-local-case]").forEach((button) => {
+    button.onclick = () => showCase(button.dataset.localCase);
+  });
+}
+function startCase(id) {
+  const scenario = getCase(id);
+  if (!scenario) return;
+  closeCasebook();
+  goToStation(scenario.district, () => showCase(id));
+}
+function showCase(id) {
+  const scenario = getCase(id);
+  if (!scenario) return;
+  const saved = getChoice(id, state.decisions[id]);
+  showDetail(
+    '<div class="eyebrow">BUILDER PRACTICE · ONE CONNECTED CITY</div>' +
+      "<h2>" +
+      scenario.title +
+      "</h2><p>" +
+      scenario.situation +
+      '</p><div class="evidence"><strong>YOUR DECISION</strong>' +
+      scenario.question +
+      "</div>" +
+      (saved
+        ? '<p class="case-small">Your kept approach: ' +
+          saved.title +
+          ". You can compare alternatives without losing it.</p>"
+        : "") +
+      scenario.options
+        .map(
+          (option) =>
+            '<button class="case-choice" data-case-choice="' +
+            option.id +
+            '">' +
+            option.title +
+            "</button>",
+        )
+        .join("") +
+      '<p class="case-small">Every approach has consequences. No real money is spent.</p>',
+  );
+  document.querySelectorAll("[data-case-choice]").forEach((button) => {
+    button.onclick = () => showCaseOutcome(id, button.dataset.caseChoice);
+  });
+}
+function showCaseOutcome(id, choiceId, kept = false) {
+  const scenario = getCase(id);
+  const option = getChoice(id, choiceId);
+  if (!scenario || !option) return;
+  const signals = option.impact
+    .map(
+      (value, i) =>
+        "<span>" +
+        IMPACT_LABELS[i] +
+        ": " +
+        (value > 0 ? "+" : "") +
+        value +
+        "</span>",
+    )
+    .join("");
+  showDetail(
+    '<div class="eyebrow">FICTIONAL CASE CONSEQUENCES</div><h2>' +
+      scenario.title +
+      "</h2><p><strong>You chose:</strong> " +
+      option.title +
+      '</p><div class="case-result"><b>What happens</b><p>' +
+      option.result +
+      "</p><b>What it costs or risks</b><p>" +
+      option.tradeoff +
+      "</p><b>Connected city systems</b><p>" +
+      option.links +
+      '</p></div><div class="case-impact">' +
+      signals +
+      '</div><p class="case-small">Four fictional signals from −2 to +2 compare outcomes in this case only. ' +
+      "They do not change the two-day power and food economy or verify capability.</p>" +
+      "<p><strong>A safe real-world observation:</strong> " +
+      scenario.bridge +
+      "</p>" +
+      (kept
+        ? "<p>✓ This practice approach is marked in your district. " +
+          "You can still retry it.</p>"
+        : "") +
+      '<div class="case-actions"><button class="secondary" id="case-retry">Try another</button>' +
+      (kept
+        ? ""
+        : '<button class="primary" id="case-keep">Keep this approach</button>') +
+      '<button class="secondary" id="case-next">Next problem →</button></div>',
+  );
+  $("case-retry").onclick = () => showCase(id);
+  if ($("case-keep"))
+    $("case-keep").onclick = () => {
+      state.decisions = saveDecision(state.decisions, id, choiceId);
+      render();
+      showCaseOutcome(id, choiceId, true);
+      toast(
+        saveEnabled
+          ? "Practice decision saved on this device."
+          : "Practice marked in this session. Open Problems (16) to optionally save here.",
+      );
+    };
+  $("case-next").onclick = () => {
+    const items = casesFor(scenario.district);
+    const next =
+      items[(items.findIndex((item) => item.id === id) + 1) % items.length];
+    showCase(next.id);
+  };
 }
 function check(label, done) {
   return (
@@ -971,6 +1229,7 @@ function updateGuideVisibility() {
   document.body.classList.toggle("city-testing", simulating);
   $("test-status").hidden = !simulating;
   $("districts-toggle").hidden = simulating;
+  $("cases-toggle").hidden = simulating;
 }
 function render() {
   const guided =
@@ -1083,6 +1342,8 @@ function render() {
   $("weather-icon").textContent = state.day === 1 ? "☀" : "☁";
   updateGuideVisibility();
   updateWorld();
+  updatePracticeMarkers();
+  persistPractice();
 }
 function change(key, value) {
   if (simulating) return;
@@ -1131,6 +1392,13 @@ function inspect(id) {
         ' units. Extra solar adds 2 at midday.<br>Essential demand: 2 each period. Repairs add 2 in the evening; shifting moves them to midday.<br>Storage holds 4 and moves at most 2 per period.<br>Cooling adds 1 midday unit. Care costs 1 credit each operating day.</div><p>Open Build from the top controls to change the power system. Other districts keep their places, people and equipment.</p><button class="primary" id="noted">Return to the city →</button>',
     );
     $("noted").onclick = closeDetail;
+    $("detail-body").insertAdjacentHTML(
+      "beforeend",
+      '<button class="secondary" id="district-cases">Explore 4 ' +
+        (id === "workshop" ? "repair" : "power") +
+        " problems →</button>",
+    );
+    $("district-cases").onclick = () => showDistrictCases(id);
   }
   if (id === "market") marketPanel();
   if (id === "school") schoolPanel();
@@ -1156,6 +1424,7 @@ function closeDirectory() {
   $("districts-toggle").setAttribute("aria-expanded", "false");
 }
 function openDirectory() {
+  closeCasebook();
   guideExpanded = false;
   dockExpanded = false;
   render();
@@ -1258,6 +1527,11 @@ function marketPanel() {
     .forEach(
       (b) => (b.onclick = () => change("agreement", b.dataset.agreement)),
     );
+  $("detail-body").insertAdjacentHTML(
+    "beforeend",
+    '<button class="secondary" id="district-cases">Explore 4 food problems →</button>',
+  );
+  $("district-cases").onclick = () => showDistrictCases("market");
 }
 function schoolPanel() {
   const c = state.config;
@@ -1312,6 +1586,11 @@ function schoolPanel() {
     .forEach(
       (b) => (b.onclick = () => change(b.dataset.lesson, b.dataset.value)),
     );
+  $("detail-body").insertAdjacentHTML(
+    "beforeend",
+    '<button class="secondary" id="district-cases">Explore 4 learning problems →</button>',
+  );
+  $("district-cases").onclick = () => showDistrictCases("school");
 }
 function councilPanel() {
   if (state.day > 2) {
@@ -1473,7 +1752,7 @@ function resultPanel() {
 }
 function handoverPanel() {
   showDetail(
-    '<div class="eyebrow">CITY STEWARDSHIP</div><h2>Who keeps this city working?</h2><p>The workshop, market and learning club now share an operating system. Leave responsibilities and a rule for responding to faults.</p><label class="field" for="operator">Who operates the city services?</label><select id="operator"><option value="">Choose…</option><option value="teams">Trained district teams with a shared coordinator</option><option value="me">I approve every decision</option></select><label class="field" for="reflection">What connection surprised you? Who still bears a cost?</label><textarea id="reflection" class="reflection" maxlength="600" placeholder="Use the power, food, cash or learning evidence…"></textarea><p class="hint">Practice stays in this session only. No personal details are needed.</p><button class="primary" id="handover">Leave the operating plan →</button>',
+    '<div class="eyebrow">CITY STEWARDSHIP</div><h2>Who keeps this city working?</h2><p>The workshop, market and learning club now share an operating system. Leave responsibilities and a rule for responding to faults.</p><label class="field" for="operator">Who operates the city services?</label><select id="operator"><option value="">Choose…</option><option value="teams">Trained district teams with a shared coordinator</option><option value="me">I approve every decision</option></select><label class="field" for="reflection">What connection surprised you? Who still bears a cost?</label><textarea id="reflection" class="reflection" maxlength="600" placeholder="Use the power, food, cash or learning evidence…"></textarea><p class="hint">Only fictional choices and city settings can be saved on this device if you opt in. This reflection is never saved. No personal details are needed.</p><button class="primary" id="handover">Leave the operating plan →</button>',
   );
   $("reflection").value = state.reflection;
   $("handover").onclick = () => {
@@ -1490,7 +1769,7 @@ function handoverPanel() {
     state.reflection = reflection;
     render();
     showDetail(
-      '<div class="eyebrow">THE UNBUILT CITY · FIRST CONNECTED BUILD</div><h2>Your city can keep going.</h2><p>Power, food and learning remain connected here. The city has an agreed response to disruption and district teams to operate it.</p><div class="evidence"><strong>YOUR PRACTICE RECORD</strong>Two evaluated city days adopted. No verified XP or real-world capability is claimed. The reflection is length-checked, not independently assessed.</div><p id="reflection-record"></p><h3>Take one safe next step.</h3><p>With permission, ask a familiar adult how one local service is maintained and paid for. Notice which other services depend on it. Do not handle electrical equipment or potentially spoiled food.</p><button class="primary" id="keep-exploring">Keep exploring the city →</button>',
+      '<div class="eyebrow">THE UNBUILT CITY · FIRST CONNECTED BUILD</div><h2>Your city can keep going.</h2><p>Power, food and learning remain connected here. The city has an agreed response to disruption and district teams to operate it.</p><div class="evidence"><strong>YOUR PRACTICE RECORD</strong>Two evaluated city days adopted. No verified XP or real-world capability is claimed. Reflections are not independently assessed or saved.</div><p id="reflection-record"></p><h3>Take one safe next step.</h3><p>With permission, ask a familiar adult how one local service is maintained and paid for. Notice which other services depend on it. Do not handle electrical equipment or potentially spoiled food.</p><button class="primary" id="keep-exploring">Keep exploring the city →</button>',
     );
     $("reflection-record").textContent = reflection;
     $("keep-exploring").onclick = closeDetail;
@@ -1498,6 +1777,28 @@ function handoverPanel() {
 }
 $("test").onclick = runDay;
 $("close-detail").onclick = closeDetail;
+$("cases-toggle").onclick = () => {
+  if (simulating) return;
+  if ($("casebook").hidden) openCasebook();
+  else closeCasebook();
+};
+$("casebook-close").onclick = closeCasebook;
+$("save-practice").onclick = () => {
+  if (saveEnabled) {
+    if (!clearPractice()) {
+      toast("Could not clear device storage. Check browser settings.");
+      return;
+    }
+    saveEnabled = false;
+    toast("Device copy cleared. This open session remains playable.");
+  } else if (savePractice(state)) {
+    saveEnabled = true;
+    toast("Practice saved to this browser only, not cloud backed.");
+  } else {
+    toast("Device storage is unavailable. Practice stays in this open game.");
+  }
+  renderCasebook();
+};
 $("districts-toggle").onclick = () => {
   if ($("district-directory").hidden) openDirectory();
   else closeDirectory();
@@ -1539,6 +1840,7 @@ $("start").onclick = () => {
   $("intro").hidden = true;
   $("city-tools").hidden = false;
   mapMode = false;
+  closeCasebook();
   guideExpanded = true;
   dockExpanded = false;
   distance = 27;
@@ -1546,7 +1848,11 @@ $("start").onclick = () => {
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
-  toast("Start with the yellow Take me there button.");
+  toast(
+    previousPractice
+      ? "Your saved city is open. Continue exploring."
+      : "Start with the yellow Take me there button.",
+  );
 };
 $("sound").onclick = () => {
   sound = !sound;
@@ -1569,7 +1875,11 @@ $("reset").onclick = () => {
   clearTimeout(runTimer);
   simulating = false;
   simPeriod = -1;
+  const cleared = clearPractice();
   state = fresh();
+  saveEnabled = false;
+  closeCasebook();
+  if (!cleared) toast("Could not clear saved practice. Check browser storage.");
   freeExplore = false;
   mapMode = false;
   closeDirectory();
@@ -1828,6 +2138,9 @@ window.addEventListener("resize", resize);
 resize();
 render();
 document.querySelector(".intro-card>small").textContent =
-  "One connected city · fictional simulation · this session only";
+  "One connected city · 16 fictional practice problems · optional device-only save";
+if (previousPractice) {
+  $("start").textContent = "Continue saved city →";
+}
 $("loading").hidden = true;
 requestAnimationFrame(animate);
