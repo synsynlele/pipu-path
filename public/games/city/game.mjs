@@ -1622,7 +1622,10 @@ function renderOpportunityPanel() {
       visit.type = "button";
       visit.className = "request-visit";
       visit.textContent = "Visit";
-      visit.setAttribute("aria-label", "Visit " + request.title + " in the city");
+      visit.setAttribute(
+        "aria-label",
+        "Visit " + request.title + " in the city",
+      );
       visit.onclick = () => visitCityRequest(request.id);
       line.append(title, count, visit);
       board.append(line);

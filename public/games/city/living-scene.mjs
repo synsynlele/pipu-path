@@ -164,7 +164,9 @@ export function createLivingCityScene({
   // is still waiting; green means a real day's requests were met.
   // They never create collision or new simulated demand.
   for (const request of CITY_REQUESTS) {
-    const district = CITY_DISTRICTS.find((site) => site.id === request.district);
+    const district = CITY_DISTRICTS.find(
+      (site) => site.id === request.district,
+    );
     if (!district) continue;
     const lamp = new T.Group();
     lamp.userData.ignoreNavigation = true;
@@ -203,7 +205,9 @@ export function createLivingCityScene({
     for (const request of CITY_REQUESTS) {
       const marker = requestMarkers.get(request.id);
       if (!marker) continue;
-      const signal = latest.requestSignals.find((item) => item.id === request.id);
+      const signal = latest.requestSignals.find(
+        (item) => item.id === request.id,
+      );
       marker.lamp.visible = Boolean(signal && signal.requested > 0);
       if (signal)
         marker.light.material.color.setHex(
