@@ -1,5 +1,17 @@
 # Implementation status
 
+## 28 October 2026 — Unbuilt City guided expansion candidate
+
+An isolated feature branch, `feat/unbuilt-city-guided-expanded`, extends
+the connected city: one-step guided onboarding beginning with Ama, optional
+free exploration, larger navigable school and market districts, a map view,
+following camera and mobile-first overlay hierarchy. It keeps the two-day
+shared fund/power/food/learning simulation and owned Quest link unchanged.
+This is **preview-only development**, not a release or a demonstrated
+physical-phone pass. CI, browser exploration and navigation reachability
+must pass before merging to `feat/unbuilt-city-first-episode` or main.
+
+
 ## 27 October 2026 — Game journey trail preview
 
 The open `feat/unbuilt-city-first-episode` candidate adds an illustrated,
