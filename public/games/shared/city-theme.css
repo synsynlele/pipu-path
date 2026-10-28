@@ -1930,3 +1930,65 @@ body.city-impact-view #weather {
     animation: none;
   }
 }
+
+/* Seamless Builder Run: decision is the only required action.
+   Other controls are optional: pause, retry, replay, continue early. */
+.auto-next {
+  margin: 13px 0 8px;
+  padding: 11px 12px;
+  border: 1px solid #c7d6ea;
+  border-radius: 10px;
+  background: #ecf3fd;
+  color: #274674;
+}
+#autonext-caption {
+  display: block;
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 650;
+}
+.auto-next-track {
+  height: 4px;
+  overflow: hidden;
+  margin-top: 9px;
+  border-radius: 8px;
+  background: #d2def2;
+}
+.auto-next-track i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: #d0a74c;
+  transform-origin: left center;
+  animation: next-problem-countdown 7.2s linear both;
+}
+.auto-next.paused .auto-next-track i { animation-play-state: paused; }
+@keyframes next-problem-countdown {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+.case-more {
+  margin: 9px 0;
+  padding: 9px 11px;
+  border: 1px solid #d7e1ef;
+  border-radius: 10px;
+  font-size: 11px;
+}
+.case-more summary { font-weight: 650; cursor: pointer; }
+.case-more p { line-height: 1.55; }
+#detail .case-actions {
+  gap: 6px;
+  margin-top: 9px;
+}
+#detail .case-actions button {
+  min-width: 92px;
+  font-size: 11px;
+  padding: 9px;
+  min-height: 40px;
+}
+@media (max-width: 650px) {
+  #detail .case-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auto-next-track i { animation: none; transform: scaleX(1); }
+}
