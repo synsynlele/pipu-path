@@ -105,7 +105,8 @@ export function createNavigator(
           if (
             child + 1 < heap.length &&
             heap[child + 1].priority < heap[child].priority
-          ) child++;
+          )
+            child++;
           if (heap[child].priority >= tail.priority) break;
           heap[i] = heap[child];
           i = child;
@@ -121,7 +122,8 @@ export function createNavigator(
       if (
         closed[current] ||
         candidate.priority > scores[current] + heuristic(current) + 1e-7
-      ) continue;
+      )
+        continue;
       if (current === to) {
         const raw = [];
         for (let id = to; id !== -1; id = parents[id]) raw.push(point(id));

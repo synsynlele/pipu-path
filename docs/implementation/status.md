@@ -18,7 +18,6 @@ of the five existing stations, route reachability to the ten new locations,
 mobile frame rate and accessibility proof, and pilot feedback. This is an
 isolated preview candidate, not production or a finished 14-district game.
 
-
 ## 28 October 2026 — richer city visuals and on-demand controls
 
 On `feat/unbuilt-city-living-visuals` the city now uses detailed masonry houses, pitched roofs, streetside furniture, market awnings and more human-like characters. The guide and construction dock are dismissible and collapse as the player acts; all background controls hide during the test-day animation. The new UI smoke assertions run with the existing power-district checks. Preview, browser interactions, accessibility and physical-device QA must be verified separately; not production.

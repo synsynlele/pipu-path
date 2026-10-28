@@ -4,6 +4,7 @@ Status: preview candidate, 28 October 2026. All places belong to one navigable
 city. No separate game, account system, currency or Quest progression is created.
 
 ## What exists
+
 - Four **playable** districts share the existing two-day service/cash/learning
   simulation: Repair & Maintenance, Power & Energy, Agriculture & Food, and
   Education & Skills. Repair and Power intentionally share the original
@@ -20,6 +21,7 @@ city. No separate game, account system, currency or Quest progression is created
   city-wide overview. Guidance and construction remain collapsible.
 
 ## Next vertical slices, in order
+
 1. Prove a phone can enter, reach all fourteen areas without clipping or
    freezing, and still run the original two evaluated operating days.
 2. Add reusable versioned problem, solution, simulation and consequence
@@ -36,6 +38,7 @@ city. No separate game, account system, currency or Quest progression is created
    over adding unbounded meshes that overwhelm affordable Android devices.
 
 ## Truth & safeguarding
+
 The city economy, time, energy, crate, cash and agreements are fictional
 learning rules. Real-world decisions require relevant expertise. Reading a
 district brief or winning a fictional test does not award XP, verify a skill or
@@ -44,6 +47,7 @@ the authority. Players can explore all fourteen places but only four provide
 the existing shared playable service systems.
 
 ## Test gates
+
 - CI: formatting, lint, TypeScript, city/navigation/model regressions,
   unit/integration tests and Next.js build.
 - Browser: first step to Ama; full city map, Places directory, all ten future

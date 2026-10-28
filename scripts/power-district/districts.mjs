@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
-import { CITY_DISTRICTS, OUTER_DISTRICTS, countDistricts } from "../../public/games/city/districts.mjs";
+import {
+  CITY_DISTRICTS,
+  OUTER_DISTRICTS,
+  countDistricts,
+} from "../../public/games/city/districts.mjs";
 import { createNavigator } from "../../public/games/shared/navigation.mjs";
 
 const counts = countDistricts();
@@ -7,7 +11,9 @@ assert.deepEqual(counts, { all: 14, active: 4, exploring: 10 });
 assert.equal(new Set(CITY_DISTRICTS.map((d) => d.id)).size, 14);
 assert.equal(new Set(CITY_DISTRICTS.map((d) => d.name)).size, 14);
 assert.deepEqual(
-  CITY_DISTRICTS.filter((d) => d.status === "active").map((d) => d.id).sort(),
+  CITY_DISTRICTS.filter((d) => d.status === "active")
+    .map((d) => d.id)
+    .sort(),
   ["market", "power", "school", "workshop"],
 );
 for (const district of OUTER_DISTRICTS) {
@@ -34,8 +40,13 @@ for (const d of OUTER_DISTRICTS) {
   assert(route, d.id + ": unreachable from the original city");
   let previous = { x: 4, z: 4 };
   for (const waypoint of route.points) {
-    assert(nav.segmentFree(previous, waypoint), d.id + ": route crosses a wall");
+    assert(
+      nav.segmentFree(previous, waypoint),
+      d.id + ": route crosses a wall",
+    );
     previous = waypoint;
   }
 }
-console.log("PASS: fourteen distinct districts, honest playability, and safe routes to ten outer landmarks.");
+console.log(
+  "PASS: fourteen distinct districts, honest playability, and safe routes to ten outer landmarks.",
+);

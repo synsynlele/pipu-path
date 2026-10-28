@@ -1589,7 +1589,7 @@ body.city-playing #build-toggle:focus-visible {
 }
 #district-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 .district-entry {
@@ -1607,12 +1607,20 @@ body.city-playing #build-toggle:focus-visible {
   color: #263e6d;
   text-align: left;
 }
-.district-entry:hover, .district-entry:focus-visible {
+.district-entry:hover,
+.district-entry:focus-visible {
   background: #e8effc;
   border-color: #8da6d2;
 }
-.district-entry strong { font-size: 12px; line-height: 1.4; }
-.district-entry small { font-size: 10px; line-height: 1.35; color: #64748f; }
+.district-entry strong {
+  font-size: 12px;
+  line-height: 1.4;
+}
+.district-entry small {
+  font-size: 10px;
+  line-height: 1.35;
+  color: #64748f;
+}
 #scene-labels .hotspot.upcoming {
   border-style: dashed;
   border-color: #aebcd3;
@@ -1632,8 +1640,17 @@ body.city-testing #district-directory {
     max-height: none;
     padding: 14px;
   }
-  #district-list { grid-template-columns: 1fr; }
-  .district-entry { min-height: 55px; padding: 9px 11px; }
-  #city-tools { justify-content: center; }
-  #city-tools button { padding: 8px; }
+  #district-list {
+    grid-template-columns: 1fr;
+  }
+  .district-entry {
+    min-height: 55px;
+    padding: 9px 11px;
+  }
+  #city-tools {
+    justify-content: center;
+  }
+  #city-tools button {
+    padding: 8px;
+  }
 }

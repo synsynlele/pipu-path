@@ -1,7 +1,12 @@
 import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
-import { CITY_DISTRICTS, OUTER_DISTRICTS, DISTRICT_INDEX, createOuterDistricts } from "./districts.mjs";
+import {
+  CITY_DISTRICTS,
+  OUTER_DISTRICTS,
+  DISTRICT_INDEX,
+  createOuterDistricts,
+} from "./districts.mjs";
 import {
   initialPlan,
   INITIAL_CASH,
@@ -171,14 +176,23 @@ box(120.2, 0.12, 102.2, 0xddd7bd, 0, 0, 0);
 for (const z of [-39, 6.7, 39]) box(115, 0.04, 3.5, 0x818586, 0, 0.105, z);
 for (const x of [-45, -10, 6, 47]) box(3.5, 0.04, 98, 0x818586, x, 0.105, 0);
 for (const z of [-36.85, 9, 41.2]) box(115, 0.025, 0.36, 0xb7ad9c, 0, 0.135, z);
-for (const x of [-42.85, -7.85, 8.15, 49.15]) box(0.36, 0.025, 97, 0xb7ad9c, x, 0.135, 0);
-for (const [x,z] of [[-36,-9],[-30,22],[32,20],[10,23],[-25,-20],[28,-18]]) {
+for (const x of [-42.85, -7.85, 8.15, 49.15])
+  box(0.36, 0.025, 97, 0xb7ad9c, x, 0.135, 0);
+for (const [x, z] of [
+  [-36, -9],
+  [-30, 22],
+  [32, 20],
+  [10, 23],
+  [-25, -20],
+  [28, -18],
+]) {
   box(8, 0.025, 8, 0x9aae87, x, 0.137, z);
 }
-for (const z of [-39, 39]) for (const x of [-32, -20, -3, 12, 32, 40]) {
-  const paint = box(1.5, 0.018, 0.13, 0xe7e3d6, x, 0.141, z);
-  paint.userData.ignoreNavigation = true;
-}
+for (const z of [-39, 39])
+  for (const x of [-32, -20, -3, 12, 32, 40]) {
+    const paint = box(1.5, 0.018, 0.13, 0xe7e3d6, x, 0.141, z);
+    paint.userData.ignoreNavigation = true;
+  }
 // Low-profile roads and future lots are scenery, not invisible walls.
 box(3.8, 0.04, 41, 0x818586, 6, 0.1, 0);
 box(49, 0.04, 3.2, 0x818586, 0, 0.1, 6.7);
@@ -711,18 +725,28 @@ const stations = [
   },
 ];
 const futureNeighbours = createOuterDistricts({
-  T, box, cyl, building, tree, visual, textPlane, person,
+  T,
+  box,
+  cyl,
+  building,
+  tree,
+  visual,
+  textPlane,
+  person,
 });
-for (const d of OUTER_DISTRICTS) stations.push({
-  id: d.id,
-  label: d.short,
-  pos: new T.Vector3(d.x, 3.2, d.z),
-  upcoming: true,
-});
+for (const d of OUTER_DISTRICTS)
+  stations.push({
+    id: d.id,
+    label: d.short,
+    pos: new T.Vector3(d.x, 3.2, d.z),
+    upcoming: true,
+  });
 for (const s of stations) {
   const b = document.createElement("button");
   b.className = "hotspot" + (s.upcoming ? " upcoming" : "");
-  b.title = s.upcoming ? "Explore a planned district" : "Visit an active city station";
+  b.title = s.upcoming
+    ? "Explore a planned district"
+    : "Visit an active city station";
   b.innerHTML = '<span class="spot"></span>' + s.label;
   b.onclick = () => goToStation(s.id);
   $("scene-labels").append(b);
@@ -852,7 +876,8 @@ const approaches = {
   council: { x: 2.8, z: 1.1 },
   market: { x: 16.4, z: 6.4 },
 };
-for (const d of OUTER_DISTRICTS) approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
+for (const d of OUTER_DISTRICTS)
+  approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
 function goToStation(id) {
   if (!$("intro").hidden || simulating) return;
   const station = stations.find((s) => s.id === id);
@@ -1114,12 +1139,15 @@ function inspect(id) {
 function showFutureDistrict(d) {
   showDetail(
     '<div class="eyebrow">EXPLORE THE CITY · DISTRICT IN DEVELOPMENT</div>' +
-    '<h2>' + d.name + '</h2><p>Explore the buildings and neighbourhood. ' +
-    'Full problem-solving missions are not playable in this district yet.</p>' +
-    '<div class="evidence"><strong>A QUESTION FOR BUILDERS</strong>' +
-    d.challenge + '</div><p>For now, working decisions and consequences ' +
-    'are available in Repair, Power, Food and Learning.</p>' +
-    '<button class="primary" id="future-back">Keep exploring →</button>'
+      "<h2>" +
+      d.name +
+      "</h2><p>Explore the buildings and neighbourhood. " +
+      "Full problem-solving missions are not playable in this district yet.</p>" +
+      '<div class="evidence"><strong>A QUESTION FOR BUILDERS</strong>' +
+      d.challenge +
+      "</div><p>For now, working decisions and consequences " +
+      "are available in Repair, Power, Food and Learning.</p>" +
+      '<button class="primary" id="future-back">Keep exploring →</button>',
   );
   $("future-back").onclick = closeDetail;
 }
@@ -1140,9 +1168,10 @@ function openDirectory() {
     const name = document.createElement("strong");
     name.textContent = d.emoji + " " + d.name;
     const info = document.createElement("small");
-    info.textContent = d.status === "active"
-      ? "Playable · go there"
-      : "Explore · missions coming later";
+    info.textContent =
+      d.status === "active"
+        ? "Playable · go there"
+        : "Explore · missions coming later";
     b.append(name, info);
     b.onclick = () => goToStation(d.id);
     list.append(b);
@@ -1769,10 +1798,9 @@ function animate(now) {
     v.copy(s.pos).project(camera);
     s.el.style.left = (v.x * 0.5 + 0.5) * innerWidth + "px";
     s.el.style.top = (-v.y * 0.5 + 0.5) * innerHeight + "px";
-    const near = Math.hypot(
-      s.pos.x - player.g.position.x,
-      s.pos.z - player.g.position.z,
-    ) < 18;
+    const near =
+      Math.hypot(s.pos.x - player.g.position.x, s.pos.z - player.g.position.z) <
+      18;
     s.el.style.visibility =
       v.z > 1 ||
       Math.abs(v.x) > 0.88 ||
