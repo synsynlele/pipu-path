@@ -236,16 +236,15 @@ export function createLivingCityScene({
   }
   function setFocus(focus, overview = false, range = 32) {
     const nearby = (p) =>
-      overview ||
-      !focus ||
-      Math.hypot(p.x - focus.x, p.z - focus.z) < range;
+      overview || !focus || Math.hypot(p.x - focus.x, p.z - focus.z) < range;
     for (const district of CITY_DISTRICTS) {
       const site = plazas.get(district.id);
       site.root.visible = nearby(site.root.position);
       const walkers = pedestrians.get(district.id);
       const active = latest?.districts.find((item) => item.id === district.id);
       walkers.forEach((person, i) => {
-        person.visible = Boolean(active && i < active.residents) && nearby(person.position);
+        person.visible =
+          Boolean(active && i < active.residents) && nearby(person.position);
       });
     }
     if (latest?.enterpriseActivity)

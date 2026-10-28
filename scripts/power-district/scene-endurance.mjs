@@ -24,7 +24,14 @@ const cyl = (r, h, c, x, y, z, parent = scene, r2 = r, sides = 12) => {
   return mesh;
 };
 const built = createCaseSceneEffects({ T, scene, box, cyl, mat });
-const living = createLivingCityScene({ T, scene, box, cyl, mat, lowPower: true });
+const living = createLivingCityScene({
+  T,
+  scene,
+  box,
+  cyl,
+  mat,
+  lowPower: true,
+});
 const now = () => performance.now();
 let decisions = {};
 let total = 0;
@@ -34,7 +41,10 @@ for (const [index, item] of CITY_CASES.entries()) {
   built.sync(decisions, { caseId: item.id, choiceId: choice.id });
   living.sync(decisions);
   const effect = built.effects.get(item.id);
-  assert(effect.group.visible, "Answer " + (index + 1) + " must show a physical effect");
+  assert(
+    effect.group.visible,
+    "Answer " + (index + 1) + " must show a physical effect",
+  );
   assert(effect.variants.get(choice.id)?.visible);
   for (let frame = 0; frame < 5; frame++) {
     built.setFocus(effect.group.position);
@@ -42,11 +52,17 @@ for (const [index, item] of CITY_CASES.entries()) {
     built.animate(now() + frame * 250, false);
     living.animate(now() + frame * 250, false);
   }
-  assert(effect.group.visible, "Answer " + (index + 1) + " remains visible in its district");
+  assert(
+    effect.group.visible,
+    "Answer " + (index + 1) + " remains visible in its district",
+  );
   built.setFocus({ x: 999, z: 999 }, false);
   assert(!effect.group.visible, "Faraway scenery is culled on mobile");
   built.setFocus({ x: 999, z: 999 }, true);
-  assert(effect.group.visible, "Aerial city view restores all completed buildings");
+  assert(
+    effect.group.visible,
+    "Aerial city view restores all completed buildings",
+  );
   assert.equal(Object.keys(decisions).length, index + 1);
   total++;
 }
@@ -56,4 +72,6 @@ for (const item of CITY_CASES) {
   const effect = built.effects.get(item.id);
   assert(effect.variants.get(decisions[item.id])?.visible);
 }
-console.log("PASS: 36 consecutive choices construct and animate across the 3D city; nearby culling and aerial restoration preserve all effects.");
+console.log(
+  "PASS: 36 consecutive choices construct and animate across the 3D city; nearby culling and aerial restoration preserve all effects.",
+);

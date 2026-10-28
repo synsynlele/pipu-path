@@ -900,7 +900,9 @@ $("graphics-recover").onclick = () => {
   restoreGraphicsQuality();
   if (contextLost) {
     renderer.forceContextRestore?.();
-    showGraphicsProblem("Trying to restore 3D. Your saved decisions are unchanged.");
+    showGraphicsProblem(
+      "Trying to restore 3D. Your saved decisions are unchanged.",
+    );
   } else {
     graphicsInterrupted = false;
     renderErrors = 0;

@@ -443,7 +443,8 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       !focus ||
       Math.hypot(position.x - focus.x, position.z - focus.z) < range;
     for (const effect of effects.values())
-      effect.group.visible = Boolean(effect.choiceId) && near(effect.group.position);
+      effect.group.visible =
+        Boolean(effect.choiceId) && near(effect.group.position);
     for (const [id, item] of hubs) {
       const district = citySites.get(id);
       item.hub.visible = Boolean(item.service) && near(district);
