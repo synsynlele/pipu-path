@@ -2234,7 +2234,9 @@ body.city-journey-paused #city-tools {
   -webkit-overflow-scrolling: touch;
 }
 body.city-journey #city-tools[hidden],
-body.city-journey-paused #city-tools[hidden] { display: none !important; }
+body.city-journey-paused #city-tools[hidden] {
+  display: none !important;
+}
 body.city-journey #city-tools button,
 body.city-journey-paused #city-tools button {
   flex: 0 0 auto;
@@ -2248,13 +2250,22 @@ body.city-journey-paused #city-tools button {
   color: #233658 !important;
   border-color: #c3a755 !important;
 }
-#decision-count { font-weight: 800; }
-body.city-journey-paused header { display: none !important; }
+#decision-count {
+  font-weight: 800;
+}
+body.city-journey-paused header {
+  display: none !important;
+}
 body.city-journey #journey-bar,
 body.city-journey-paused #journey-bar {
   top: max(68px, calc(env(safe-area-inset-top) + 59px));
 }
-#journey-bar .journey-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+#journey-bar .journey-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
 #journey-back {
   padding: 10px 12px;
   border-radius: 10px;
@@ -2265,9 +2276,13 @@ body.city-journey-paused #journey-bar {
   min-height: 42px;
   font-weight: 750;
 }
-#journey-back:disabled { opacity: 0.45; }
+#journey-back:disabled {
+  opacity: 0.45;
+}
 body.city-journey #detail,
-body.city-journey-paused #detail { z-index: 24; }
+body.city-journey-paused #detail {
+  z-index: 24;
+}
 body.city-journey #world-feedback {
   top: max(182px, 26%);
 }
@@ -2275,7 +2290,10 @@ body.city-journey #world-feedback {
   border-color: #9bb4cf;
   background: #eff5fc;
 }
-.case-tile.case-completed small { color: #2a6a64; font-weight: 700; }
+.case-tile.case-completed small {
+  color: #2a6a64;
+  font-weight: 700;
+}
 @media (max-width: 650px) {
   body.city-journey #city-tools,
   body.city-journey-paused #city-tools {
@@ -2296,9 +2314,18 @@ body.city-journey #world-feedback {
     padding: 7px 9px;
     gap: 8px;
   }
-  #journey-status { font-size: 10px; }
-  #journey-back, #journey-toggle { font-size: 10px; padding: 8px 9px; min-height: 40px; }
-  body.city-journey #world-feedback { top: max(145px, 22%); }
+  #journey-status {
+    font-size: 10px;
+  }
+  #journey-back,
+  #journey-toggle {
+    font-size: 10px;
+    padding: 8px 9px;
+    min-height: 40px;
+  }
+  body.city-journey #world-feedback {
+    top: max(145px, 22%);
+  }
   body.city-journey #detail,
   body.city-journey-paused #detail {
     max-height: calc(100dvh - 142px);

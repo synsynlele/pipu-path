@@ -29,7 +29,6 @@ The 16-case auto flow and the original optional two-day city-economy
 activity remain separate. Android pointer, scrolling, panel overlap,
 back/revision and resume tests remain mandatory before production.
 
-
 ## 28 October 2026 — one journey controller with pause/resume
 
 The new preview branch `feat/unbuilt-city-journey-resume` addresses observed

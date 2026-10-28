@@ -1371,7 +1371,8 @@ function beginDecisionReview(id, autoResume = false) {
   showCase(id);
 }
 function finishDecisionReview({ resume = true } = {}) {
-  const shouldResume = resume && autoResumeAfterReview && journey.status === "paused";
+  const shouldResume =
+    resume && autoResumeAfterReview && journey.status === "paused";
   cancelAutoAdvance();
   reviewCaseId = null;
   autoResumeAfterReview = false;
@@ -1386,22 +1387,39 @@ function showDecisionReviewOutcome(id, choiceId) {
   const choice = getChoice(id, choiceId);
   if (!scenario || !choice) return;
   cancelAutoAdvance();
-  const district = deriveBuilderCity(state.decisions).districts[scenario.district];
+  const district = deriveBuilderCity(state.decisions).districts[
+    scenario.district
+  ];
   showDetail(
-    '<div class="eyebrow">YOUR CITY HAS CHANGED · ' + caseNumber(id) + '/16</div>' +
-    '<h2>' + scenario.title + '</h2>' +
-    '<p><strong>Revised choice:</strong> ' + choice.title + '</p>' +
-    '<div class="case-result"><b>What changed</b><p>' + choice.result +
-    '</p><b>The trade-off</b><p>' + choice.tradeoff + '</p></div>' +
-    '<div class="evidence"><strong>YOUR DISTRICT NOW</strong>' + district.name +
-    ': ' + district.activity + '. Connected systems have been recalculated.</div>' +
-    '<div class="auto-next"><span>Your original journey is kept. Returning shortly.</span>' +
-    '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
-    '<div class="case-actions">' +
-    '<button class="secondary" id="review-again">Change again</button>' +
-    '<button class="primary" id="review-done">Return to my journey →</button></div>',
+    '<div class="eyebrow">YOUR CITY HAS CHANGED · ' +
+      caseNumber(id) +
+      "/16</div>" +
+      "<h2>" +
+      scenario.title +
+      "</h2>" +
+      "<p><strong>Revised choice:</strong> " +
+      choice.title +
+      "</p>" +
+      '<div class="case-result"><b>What changed</b><p>' +
+      choice.result +
+      "</p><b>The trade-off</b><p>" +
+      choice.tradeoff +
+      "</p></div>" +
+      '<div class="evidence"><strong>YOUR DISTRICT NOW</strong>' +
+      district.name +
+      ": " +
+      district.activity +
+      ". Connected systems have been recalculated.</div>" +
+      '<div class="auto-next"><span>Your original journey is kept. Returning shortly.</span>' +
+      '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
+      '<div class="case-actions">' +
+      '<button class="secondary" id="review-again">Change again</button>' +
+      '<button class="primary" id="review-done">Return to my journey →</button></div>',
   );
-  $("review-again").onclick = () => { cancelAutoAdvance(); showCase(id); };
+  $("review-again").onclick = () => {
+    cancelAutoAdvance();
+    showCase(id);
+  };
   $("review-done").onclick = () => finishDecisionReview();
   autoAdvanceTimer = setTimeout(() => {
     if (!document.hidden) finishDecisionReview();
@@ -1422,7 +1440,9 @@ function showCase(id) {
   const saved = getChoice(id, state.decisions[id]);
   showDetail(
     '<div class="eyebrow">' +
-      (reviewCaseId === id ? "REVISIT YOUR DECISION · PROBLEM " : "BUILDER PRACTICE · PROBLEM ") +
+      (reviewCaseId === id
+        ? "REVISIT YOUR DECISION · PROBLEM "
+        : "BUILDER PRACTICE · PROBLEM ") +
       caseNumber(id) +
       " / 16</div>" +
       "<h2>" +
@@ -1450,9 +1470,10 @@ function showCase(id) {
       '<p class="case-small">Every approach has consequences. No real money is spent.</p>' +
       (reviewCaseId === id
         ? '<button class="secondary" id="review-cancel">Return without changing →</button>'
-        : ''),
+        : ""),
   );
-  if ($("review-cancel")) $("review-cancel").onclick = () => finishDecisionReview();
+  if ($("review-cancel"))
+    $("review-cancel").onclick = () => finishDecisionReview();
   document.querySelectorAll("[data-case-choice]").forEach((button) => {
     button.onclick = () => runCaseWorldAction(id, button.dataset.caseChoice);
   });
@@ -2216,7 +2237,8 @@ $("districts-toggle").onclick = () => {
 $("district-close").onclick = closeDirectory;
 $("explore-free").onclick = () => {
   if (reviewCaseId) finishDecisionReview({ resume: false });
-  if (journey.status === "running") pauseJourney("Your journey is paused while you explore.");
+  if (journey.status === "running")
+    pauseJourney("Your journey is paused while you explore.");
   freeExplore = !freeExplore;
   guideExpanded = !freeExplore;
   dockExpanded = false;
@@ -2226,7 +2248,8 @@ $("explore-free").onclick = () => {
 $("guide-toggle").onclick = () => {
   if (simulating) return;
   if (reviewCaseId) finishDecisionReview({ resume: false });
-  if (journey.status === "running") pauseJourney("Your journey is paused while you use the guide.");
+  if (journey.status === "running")
+    pauseJourney("Your journey is paused while you use the guide.");
   guideExpanded = !guideExpanded;
   if (guideExpanded) dockExpanded = false;
   render();
@@ -2234,14 +2257,16 @@ $("guide-toggle").onclick = () => {
 $("build-toggle").onclick = () => {
   if (simulating) return;
   if (reviewCaseId) finishDecisionReview({ resume: false });
-  if (journey.status === "running") pauseJourney("Your journey is paused while you build.");
+  if (journey.status === "running")
+    pauseJourney("Your journey is paused while you build.");
   dockExpanded = !dockExpanded;
   if (dockExpanded) guideExpanded = false;
   render();
 };
 $("city-map").onclick = () => {
   if (reviewCaseId) finishDecisionReview({ resume: false });
-  if (journey.status === "running") pauseJourney("Your journey is paused while you explore the map.");
+  if (journey.status === "running")
+    pauseJourney("Your journey is paused while you explore the map.");
   mapMode = !mapMode;
   closeDirectory();
   if (mapMode) {
