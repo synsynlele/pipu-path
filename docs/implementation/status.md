@@ -519,3 +519,14 @@ Quest context. The Hub uses a new mission path rather than the old simulations;
 retired chapter routes recover to that path. Food/learning are planned, not
 playable. Same-origin frame loading supports client-side navigation; only the game
 document permits embedding, while other app pages remain unframeable. No production release, XP or data migration.
+
+## 28 October — Connected-city direction and identity correction
+
+Owner requested The Unbuilt City as the sole in-game identity, integration with
+the app colours, and all building/solutions in the same city. Added a single
+3D neighbourhood with linked power, food distribution, cash and learning support,
+one fund and two evaluated operating days. Buildings and funds carry forward
+within the session; no separate challenge scenes or claimed cloud saves. Shared
+rendering/navigation/theme assets now live under games/shared. The game removes
+the alternate P logo and PipuPath wordmark; the app shell retains its own identity.
+See product/unbuilt-city-connected-world.md. Validation/deployment are separate.

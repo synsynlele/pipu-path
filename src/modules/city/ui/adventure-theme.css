@@ -133,3 +133,26 @@
   color: #233e35;
   -webkit-text-fill-color: #233e35;
 }
+
+/* Shared navy/blue/gold family; the game carries only The Unbuilt City wordmark. */
+.pp-app-experience main.unbuilt-city-experience {
+  background: #07142f;
+  color: #f8fafc;
+}
+.unbuilt-city-experience .unbuilt-city-frame {
+  color: #142a52;
+  color-scheme: light;
+}
+.unbuilt-city-experience .unbuilt-city-frame a,
+.unbuilt-city-experience .unbuilt-city-frame a:hover,
+.unbuilt-city-experience .unbuilt-city-frame a:focus-visible {
+  color: #142a52;
+  -webkit-text-fill-color: #142a52;
+}
+.unbuilt-city-campaign .adventure-action,
+.unbuilt-city-campaign .adventure-action:hover {
+  background: #e5c96f;
+  color: #101e38;
+  -webkit-text-fill-color: #101e38;
+  border-color: #e5c96f;
+}

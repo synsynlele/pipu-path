@@ -17,22 +17,18 @@ vi.mock("next/navigation", () => ({
 import ChapterPage from "@/app/build/play/[chapterId]/page";
 import NeighbourhoodPage from "@/app/build/neighbourhood/page";
 afterEach(cleanup);
-it("replaces old challenge links with one playable new mission and honest planned briefs", () => {
+it("presents districts as one city with one game entry", () => {
   render(<UnbuiltCityCampaign playHref="/build/play?quest=owned" />);
   expect(
-    screen.getByRole("heading", {
-      name: "Build a city that works for people.",
-    }),
+    screen.getByRole("heading", { name: "One city. Every choice connected." }),
   ).toBeVisible();
   const links = screen.getAllByRole("link");
-  expect(links).toHaveLength(2);
-  for (const link of links)
-    expect(link).toHaveAttribute("href", "/build/play?quest=owned");
-  expect(screen.getByText(/02 · HARVEST EXCHANGE · PLANNED/)).toBeVisible();
-  expect(screen.getByText(/03 · LEARNING COMMONS · PLANNED/)).toBeVisible();
-  expect(screen.queryByText("Story practice")).not.toBeInTheDocument();
+  expect(links).toHaveLength(1);
+  expect(links[0]).toHaveAttribute("href", "/build/play?quest=owned");
+  expect(screen.getAllByRole("article")).toHaveLength(3);
+  expect(screen.queryByText(/PLANNED/)).not.toBeInTheDocument();
 });
-it("keeps the existing city identity and the owned Quest return around the new frame", () => {
+it("preserves the owned real-Quest return around the connected city", () => {
   render(
     <UnbuiltCityExperience
       questHref="/quests/owned"
@@ -42,17 +38,16 @@ it("keeps the existing city identity and the owned Quest return around the new f
     />,
   );
   expect(
-    screen.getByRole("heading", { name: "Keep the Workshop Running" }),
+    screen.getByRole("heading", { name: "Your city. Your next move." }),
   ).toBeVisible();
   expect(
-    screen.getByTitle("Power District: Keep the Workshop Running"),
-  ).toHaveAttribute("src", "/games/power-district/index.html?embedded=1");
+    screen.getByTitle("The Unbuilt City: Power, Food and Learning"),
+  ).toHaveAttribute("src", "/games/city/index.html?embedded=1");
   expect(
     screen.getByRole("heading", { name: "Your real Quest: Listen locally" }),
   ).toBeVisible();
-  expect(screen.getByText("Test one useful improvement.")).toBeVisible();
 });
-it("recovers retired valid bookmarks and preserves authentication and unknown-route guards", async () => {
+it("recovers retired bookmarks without bypassing authentication", async () => {
   boundary.home.mockResolvedValue({ quest: null });
   await expect(
     ChapterPage({ params: Promise.resolve({ chapterId: "food-rescue-v1" }) }),

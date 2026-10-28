@@ -162,7 +162,7 @@ export function JourneyPlayCard({
             <span>
               <strong className="block text-sm">The Unbuilt City</strong>
               <span className="mt-1 block text-xs text-indigo-100">
-                Enter Power District and build a solution that lasts.
+                Power, food and learning share the same city.
               </span>
             </span>
           </span>

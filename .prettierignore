@@ -3,4 +3,4 @@ coverage
 node_modules
 package-lock.json
 
-public/games/power-district/vendor
+public/games/shared/vendor

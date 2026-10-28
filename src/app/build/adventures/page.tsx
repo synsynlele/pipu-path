@@ -23,7 +23,7 @@ export default async function AdventureHubPage() {
   return (
     <main
       id="main-content"
-      className="adventure-dark min-h-screen w-full max-w-full min-w-0 overflow-x-clip bg-[#091a29] pb-16 text-white"
+      className="adventure-dark unbuilt-city-experience min-h-screen w-full max-w-full min-w-0 overflow-x-clip bg-[#091a29] pb-16 text-white"
     >
       <div className="mx-auto w-full max-w-3xl min-w-0 space-y-5 px-3 pt-3 sm:px-6 sm:pt-6">
         <header className="flex min-w-0 flex-wrap items-center justify-between gap-2">
@@ -68,9 +68,8 @@ export default async function AdventureHubPage() {
           </Link>
         </section>
         <p className="pb-2 text-center text-[0.7rem] leading-5 text-[#8fa7b5]">
-          The mission path is your practice journey. Earned XP and real Quest
-          progress remain separate. The Unbuilt City · Build, test, improve and
-          hand over.
+          The city is fictional practice. Real Quest proof and earned XP stay
+          connected to your actual actions.
         </p>
       </div>
     </main>

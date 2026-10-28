@@ -1,72 +1,81 @@
 import Link from "next/link";
 
-/** Authored missions only become playable when their actual game is available. */
+/** Districts share one city document, clock, fund and evaluated operating days. */
 export function UnbuiltCityCampaign({ playHref }: { playHref: string }) {
   return (
-    <section aria-labelledby="city-campaign-heading" className="space-y-4">
-      <header className="rounded-3xl border border-[#a2b889]/45 bg-[#19382f] p-6 sm:p-8">
-        <p className="text-xs font-bold tracking-widest text-[#e4c185] uppercase">
-          PipuPath · The Unbuilt City
+    <section
+      aria-labelledby="city-campaign-heading"
+      className="unbuilt-city-campaign space-y-5"
+    >
+      <header className="overflow-hidden rounded-3xl border border-[#4f7cff]/30 bg-[#0d1d3d] p-6 sm:p-8">
+        <p className="text-xs font-bold tracking-[.2em] text-[#e5c96f] uppercase">
+          The Unbuilt City
         </p>
-        <h1 id="city-campaign-heading" className="mt-3 text-3xl font-extrabold">
-          Build a city that works for people.
+        <h1
+          id="city-campaign-heading"
+          className="mt-3 max-w-lg text-3xl font-extrabold sm:text-4xl"
+        >
+          One city. Every choice connected.
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#d3e2d5]">
-          Enter places. Investigate what is happening. Build, test and improve a
-          solution with the people who need it.
+        <p className="mt-4 max-w-xl text-sm leading-7 text-[#c5d2ec]">
+          The workshop, market and learning club exist in the same place. Walk
+          between them, build useful systems and watch the whole city respond.
         </p>
         <Link
           href={playHref}
-          className="adventure-action mt-5 inline-flex min-h-12 items-center rounded-full bg-[#d8e7a8] px-5 text-sm font-extrabold text-[#233e35]"
+          className="adventure-action mt-5 inline-flex min-h-12 items-center rounded-full px-6 text-sm font-extrabold"
         >
           Enter The Unbuilt City →
         </Link>
+        <p className="mt-4 text-xs leading-5 text-[#94a8ce]">
+          One 3D neighbourhood · a shared city fund · two connected operating
+          days
+        </p>
       </header>
-      <ol aria-label="New city mission path" className="space-y-3">
-        <li className="rounded-2xl border border-[#8fab73]/70 bg-[#172e35] p-5">
-          <p className="text-xs font-bold tracking-wide text-[#d8e7a8]">
-            01 · POWER DISTRICT · PLAYABLE IN 3D
-          </p>
-          <h2 className="mt-2 text-xl font-extrabold">
-            Keep the Workshop Running
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-[#d3e2e9]">
-            Balance generation, storage, timing and upkeep. Face a dusty day and
-            leave a service the cooperative can maintain.
-          </p>
-          <Link
-            href={playHref}
-            className="mt-3 inline-flex min-h-11 items-center font-bold text-[#efd399]"
-          >
-            Play the first mission ↗
-          </Link>
-        </li>
-        <li className="rounded-2xl border border-white/15 bg-[#142730] p-5">
-          <p className="text-xs font-bold tracking-wide text-[#bdcfc9]">
-            02 · HARVEST EXCHANGE · PLANNED
-          </p>
-          <h2 className="mt-2 text-lg font-bold">The Collection Window</h2>
-          <p className="mt-2 text-sm leading-6 text-[#bdcfc9]">
-            Investigate produce losses, coordinate collection and keep supplier
-            payments viable. This mission is being designed; it is not playable
-            yet.
-          </p>
-        </li>
-        <li className="rounded-2xl border border-white/15 bg-[#142730] p-5">
-          <p className="text-xs font-bold tracking-wide text-[#bdcfc9]">
-            03 · LEARNING COMMONS · PLANNED
-          </p>
-          <h2 className="mt-2 text-lg font-bold">Everyone Can Explain It</h2>
-          <p className="mt-2 text-sm leading-6 text-[#bdcfc9]">
-            Investigate barriers to understanding, create an activity and test
-            transfer. This mission is being designed; it is not playable yet.
-          </p>
-        </li>
-      </ol>
-      <p className="text-xs leading-5 text-[#aebfc7]">
-        This new campaign replaces the earlier city challenges. Earlier device
-        saves are not converted into new mission completion. Practice stays
-        separate from earned XP and real Quest proof.
+      <section
+        aria-labelledby="inside-city"
+        className="rounded-3xl border border-[#4f7cff]/20 bg-[#0c1c3c] p-5 sm:p-6"
+      >
+        <h2 id="inside-city" className="text-lg font-extrabold">
+          Inside your city
+        </h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <article className="rounded-2xl border border-white/10 bg-[#132b5c]/40 p-4">
+            <p className="text-xs font-bold text-[#e5c96f]">POWER DISTRICT</p>
+            <h3 className="mt-2 text-base font-bold">Keep services running</h3>
+            <p className="mt-2 text-xs leading-6 text-[#c1ceea]">
+              Generation and storage power the workshop, evening class and
+              market cooling.
+            </p>
+          </article>
+          <article className="rounded-2xl border border-white/10 bg-[#132b5c]/40 p-4">
+            <p className="text-xs font-bold text-[#e5c96f]">HARVEST EXCHANGE</p>
+            <h3 className="mt-2 text-base font-bold">Make food reach people</h3>
+            <p className="mt-2 text-xs leading-6 text-[#c1ceea]">
+              Collection, protection and fair payments affect losses and the
+              city’s next investment.
+            </p>
+          </article>
+          <article className="rounded-2xl border border-white/10 bg-[#132b5c]/40 p-4">
+            <p className="text-xs font-bold text-[#e5c96f]">LEARNING COMMONS</p>
+            <h3 className="mt-2 text-base font-bold">
+              Help understanding grow
+            </h3>
+            <p className="mt-2 text-xs leading-6 text-[#c1ceea]">
+              Investigate fictional learner examples, build an activity and keep
+              the club’s power dependable.
+            </p>
+          </article>
+        </div>
+        <p className="mt-5 text-sm leading-6 text-[#d2def2]">
+          Dust, delayed collection and late payment arrive together. Adapt the
+          city you already built—your equipment and people stay in place.
+        </p>
+      </section>
+      <p className="text-xs leading-5 text-[#a7b8d8]">
+        This first connected-city prototype stays in the current session.
+        Earlier practice saves are not converted. It does not simulate a full
+        economy or award verified XP.
       </p>
     </section>
   );

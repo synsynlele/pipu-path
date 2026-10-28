@@ -1272,3 +1272,26 @@ anchor rule that made the light frame's real-Quest return link low contrast; the
 campaign CTA now uses the established readable action scope. These are shared
 surface fixes, not changes to Quest state or game rules. Physical phones and
 GPU rendering remain separate verification work; browser review used software 3D.
+
+## 28 October — One connected city and unified game identity
+
+Replaced the playable standalone workshop challenge with one city document at the
+existing /build/play entry. Power, market, collection/cooling and learning club
+share a clock, plan and city fund. Tested operating days commit evaluated results
+once; the disruption affects the existing city. Added financial timing, power
+interdependence, learning diagnostics, alternate agreements and handover. No game
+writes real XP, Quest proof or cloud state. Extracted renderer/navigation/theme
+and vendor assets into games/shared; preserved the old energy/navigation tests.
+Removed the alternative P logo and PipuPath brand from game documents. App and
+game controls share the established navy/blue/gold family. See the connected-world
+product contract for limitations, ownership and scale. Browser and release proof
+follow validation separately.
+
+Connected-city local validation passed: formatting, zero-warning lint, strict
+TypeScript, 527 unit/component tests, 251 integration tests, the production build
+and the new shared-city model checks alongside the existing energy/navigation
+checks. A later small intro-visibility correction passed syntax and targeted lint.
+Browser review confirmed the sole city wordmark and navy/gold interface, travel
+between the power station, market and school in the same scene, shared asset
+spending, collection configuration and the learning activity. Operating-day and
+exact-preview verification remain separate below/at handoff.

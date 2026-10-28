@@ -1,7 +1,7 @@
-import * as T from "./vendor/three.module.js";
+import * as T from "../shared/vendor/three.module.js";
 import { simulate, spent, COSTS } from "./model.mjs";
-import { SoftwareRenderer } from "./software-renderer.mjs";
-import { createNavigator } from "./navigation.mjs";
+import { SoftwareRenderer } from "../shared/software-renderer.mjs";
+import { createNavigator } from "../shared/navigation.mjs";
 const $ = (id) => document.getElementById(id),
   clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const embedded = new URLSearchParams(location.search).get("embedded") === "1";
@@ -1337,7 +1337,7 @@ if (embedded) {
     "Fictional energy units and costs. Practice stays in this session and does not earn verified XP or create Quest evidence.";
   document
     .querySelector(".brand")
-    .setAttribute("aria-label", "PipuPath game controls");
+    .setAttribute("aria-label", "The Unbuilt City controls");
 }
 $("loading").hidden = true;
 requestAnimationFrame(animate);

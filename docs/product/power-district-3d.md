@@ -1,3 +1,5 @@
+> Current direction: [one connected city](unbuilt-city-connected-world.md) supersedes the separate-mission presentation below.
+
 # Power District 3D workshop preview
 
 User authority: 28 October 2026 asks for one-click automatic travel, collision

@@ -16,7 +16,7 @@ export function UnbuiltCityExperience({
   return (
     <main
       id="main-content"
-      className="adventure-dark min-h-screen bg-[#0b2231] px-3 py-4 pb-24 text-white sm:px-6"
+      className="adventure-dark unbuilt-city-experience min-h-screen bg-[#07142f] px-3 py-4 pb-24 text-white sm:px-6"
     >
       <div className="mx-auto max-w-7xl space-y-4">
         <Link
@@ -27,12 +27,14 @@ export function UnbuiltCityExperience({
         </Link>
         <header className="max-w-2xl space-y-2">
           <p className="text-xs font-bold tracking-widest text-[#e4c185] uppercase">
-            The Unbuilt City · Power District · Mission 01
+            The Unbuilt City · one world, shared consequences
           </p>
-          <h1 className="text-2xl font-extrabold">Keep the Workshop Running</h1>
+          <h1 className="text-2xl font-extrabold">
+            Your city. Your next move.
+          </h1>
           <p className="text-sm leading-6 text-[#d1e1dd]">
-            Tap a place once to walk there. Meet the people, test your power
-            system and help another team keep it working.
+            Walk between the workshop, market and learning club. Build, run the
+            city day, and watch how each decision affects the whole place.
           </p>
         </header>
         <PowerDistrictFrame questHref={questHref} questLabel={questLabel} />

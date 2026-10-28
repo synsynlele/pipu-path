@@ -65,7 +65,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/(.*)", headers: securityHeaders },
       {
-        source: "/games/power-district/:path*",
+        source: "/games/city/:path*",
         headers: [
           {
             key: "Content-Security-Policy",

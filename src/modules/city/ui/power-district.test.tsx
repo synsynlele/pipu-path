@@ -23,11 +23,8 @@ it("keeps game assets same-origin and offers an escape without exporting private
       questLabel="Continue my real-world Quest →"
     />,
   );
-  const frame = screen.getByTitle("Power District: Keep the Workshop Running");
-  expect(frame).toHaveAttribute(
-    "src",
-    "/games/power-district/index.html?embedded=1",
-  );
+  const frame = screen.getByTitle("The Unbuilt City: Power, Food and Learning");
+  expect(frame).toHaveAttribute("src", "/games/city/index.html?embedded=1");
   expect(screen.getByRole("link")).toHaveAttribute(
     "href",
     "/quests/owned-quest",

@@ -4,7 +4,7 @@ import config from "../../../next.config";
 it("allows the bundled game across app navigation while keeping other pages unframeable", async () => {
   const rules = await config.headers!();
   const defaults = rules.find((r) => r.source === "/(.*)")!;
-  const game = rules.find((r) => r.source === "/games/power-district/:path*")!;
+  const game = rules.find((r) => r.source === "/games/city/:path*")!;
   const value = (headers: { key: string; value: string }[], key: string) =>
     headers.find((h) => h.key === key)?.value;
   expect(value(defaults.headers, "Content-Security-Policy")).toContain(

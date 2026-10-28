@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { createNavigator } from "../../public/games/power-district/navigation.mjs";
+import { createNavigator } from "../../public/games/shared/navigation.mjs";
 const nav = createNavigator([{ minX: -1, maxX: 1, minZ: -3, maxZ: 3 }], {
   minX: -5,
   maxX: 5,

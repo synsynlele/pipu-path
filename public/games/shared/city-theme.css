@@ -76,22 +76,6 @@ header {
   align-items: center;
   gap: 11px;
 }
-.brand-icon {
-  background: var(--green);
-  color: #f5f0dd;
-  border-radius: 11px;
-  width: 43px;
-  height: 46px;
-  font: bold 38px Georgia;
-  text-align: center;
-  position: relative;
-}
-.brand-icon span {
-  font: 22px sans-serif;
-  position: absolute;
-  right: 3px;
-  top: 0;
-}
 .brand b {
   font-family: Manrope, sans-serif;
   font-size: 23px;
@@ -795,14 +779,6 @@ select {
     padding: 0 17px;
     gap: 12px;
   }
-  .brand-icon {
-    width: 32px;
-    height: 35px;
-    font-size: 29px;
-  }
-  .brand-icon span {
-    font-size: 17px;
-  }
   .brand b {
     font-size: 19px;
   }
@@ -1053,5 +1029,300 @@ select {
   #controls {
     max-width: 95%;
     flex-wrap: wrap;
+  }
+}
+/* One interface family: the app's navy, blue and gold over a warm living world. */
+:root {
+  --ink: #142a52;
+  --muted: #61718d;
+  --paper: #fbfcff;
+  --green: #243b78;
+  --lime: #e5c96f;
+  --orange: #a86935;
+  --line: #d7dfeb;
+}
+body {
+  color: #142a52;
+  font-family: Arial, Helvetica, sans-serif;
+}
+header {
+  background: linear-gradient(#f6f8fff0, transparent);
+}
+.brand b {
+  font-size: 22px;
+  letter-spacing: -0.8px;
+  color: #142a52;
+}
+.brand small {
+  font-size: 7px;
+  letter-spacing: 1.8px;
+  color: #71819a;
+  margin-top: 5px;
+}
+.panel {
+  background: #fbfcfff5;
+  border-color: #dce4f2;
+  box-shadow: 0 15px 45px #12264820;
+  backdrop-filter: none;
+}
+.primary {
+  background: #e5c96f;
+  color: #101e38;
+}
+.primary:hover {
+  background: #f0d98d;
+}
+.secondary {
+  border-color: #c1cee2;
+  background: #f2f5fb;
+  color: #243b78;
+}
+.secondary:hover {
+  background: #e5ecf9;
+}
+.icon,
+.hotspot {
+  background: #fbfcfff5;
+  border-color: #d3ddec;
+  color: #243b78;
+}
+.hotspot:hover {
+  background: #edf2ff;
+}
+.hotspot.seen .spot {
+  background: #243b78;
+  border-color: #243b78;
+}
+.eyebrow,
+.mission-footer {
+  color: #697a99;
+}
+#mission p {
+  color: #5a6b86;
+}
+.objective {
+  border-color: #e0e6f1;
+}
+.check {
+  border-color: #b9c5db;
+}
+.done .check {
+  background: #243b78;
+  border-color: #243b78;
+}
+.done {
+  color: #546b90;
+}
+.progress-track {
+  background: #dfe7f5;
+}
+.progress-track i {
+  background: #c9a54d;
+}
+#detail p {
+  color: #52647e;
+}
+.evidence,
+.stat {
+  background: #edf2fa;
+}
+.avatar {
+  background: #e4eaf7;
+}
+.evidence strong {
+  color: #617394;
+}
+blockquote {
+  border-color: #c9a54d;
+  color: #29416e;
+}
+.result-label {
+  background: #e6edf9;
+  color: #243b78;
+}
+.result-label.bad {
+  background: #f4e3ce;
+  color: #79502a;
+}
+.detail-choice {
+  background: #f3f6fc;
+  border-color: #ccd6e9;
+  color: #243b78;
+}
+.detail-choice.selected {
+  background: #e5ecfc;
+  border-color: #6685c1;
+}
+.detail-choice small {
+  color: #657593;
+}
+#resource,
+#build-dock,
+#travel {
+  background: #fbfcfff5;
+  border-color: #d6deed;
+  color: #243b78;
+}
+.build-item {
+  background: #f1f4fb;
+  border-color: #d4ddee;
+  color: #243b78;
+}
+.build-item.active {
+  background: #e3eafa;
+  border-color: #718ec5;
+}
+.build-item:hover {
+  background: #e8eefb;
+}
+.build-item small {
+  color: #627493;
+}
+#toast {
+  background: #172d57f2;
+  color: #fff;
+}
+.overlay {
+  background: linear-gradient(
+    90deg,
+    #f4f6fdf7 0%,
+    #f4f6fdeb 27%,
+    #f4f6fd60 60%,
+    transparent 85%
+  );
+}
+.intro-card em {
+  color: #9b7b31;
+}
+.intro-card p {
+  color: #5e708c;
+}
+#travel button {
+  background: #e7edf9;
+  color: #243b78;
+}
+.reflection,
+select {
+  background: #fff;
+  color: #142a52;
+  border-color: #becbe0;
+}
+.bar {
+  background: #e0e7f3;
+}
+.bar i {
+  background: #5877af;
+}
+.time-row.bad .bar i {
+  background: #ba8350;
+}
+#mobile-move button {
+  background: #fbfcffeb;
+  color: #243b78;
+  border-color: #c7d2e7;
+}
+.city-summary {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #52647e;
+}
+.city-needs {
+  display: grid;
+  gap: 4px;
+}
+.district-buttons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.district-buttons button {
+  padding: 8px;
+  font-size: 10px;
+  border: 1px solid #c9d5e9;
+  background: #edf2fb;
+  border-radius: 6px;
+}
+.city-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.city-table td,
+.city-table th {
+  padding: 7px 3px;
+  border-bottom: 1px solid #dbe3f1;
+  text-align: left;
+}
+.city-table td:last-child {
+  text-align: right;
+}
+.lesson-shape {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  width: 160px;
+  height: 65px;
+  border: 3px solid #243b78;
+  transform: rotate(-8deg);
+  margin: 15px auto;
+}
+.lesson-shape span {
+  background: #dce5f7;
+}
+.lesson-shape span:first-child {
+  background: #c9a54d;
+}
+#build-dock.city-dock {
+  width: min(660px, calc(100% - 380px));
+}
+#city-run {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+}
+.city-status {
+  font-size: 10px;
+  color: #607391;
+  margin: 10px 0 0;
+}
+body.city-playing #resource {
+  bottom: 250px;
+}
+@media (max-width: 650px) {
+  .brand b {
+    font-size: 18px;
+  }
+  .brand small {
+    font-size: 6px;
+  }
+  .overlay {
+    background: linear-gradient(
+      0deg,
+      #f4f6fdff 0%,
+      #f4f6fdf5 27%,
+      #f4f6fd55 65%,
+      transparent 100%
+    );
+  }
+  #build-dock.city-dock {
+    width: auto;
+    left: 12px;
+    right: 12px;
+  }
+  body.city-playing #resource {
+    bottom: 225px;
+  }
+  body.city-playing #mobile-move {
+    bottom: 225px;
+  }
+  body.city-playing #travel {
+    bottom: 275px;
+  }
+  .city-dock .build-item {
+    min-height: 68px;
+  }
+  #mission.city-board {
+    width: 200px;
   }
 }
