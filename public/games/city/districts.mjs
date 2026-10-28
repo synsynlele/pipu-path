@@ -177,7 +177,6 @@ export function countDistricts() {
 }
 
 export function createOuterDistricts({
-  T,
   box,
   cyl,
   building,
