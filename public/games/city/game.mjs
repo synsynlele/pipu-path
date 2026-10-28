@@ -2,6 +2,12 @@ import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
+  CITY_DISTRICTS,
+  OUTER_DISTRICTS,
+  DISTRICT_INDEX,
+  createOuterDistricts,
+} from "./districts.mjs";
+import {
   initialPlan,
   INITIAL_CASH,
   quote,
@@ -78,11 +84,11 @@ renderer.outputColorSpace = T.SRGBColorSpace;
 renderer.toneMapping = T.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.35;
 const scene = new T.Scene();
-scene.fog = new T.Fog(0xe9e2d2, 68, 135);
-const camera = new T.PerspectiveCamera(39, innerWidth / innerHeight, 0.1, 190);
+scene.fog = new T.Fog(0xe9e2d2, 115, 225);
+const camera = new T.PerspectiveCamera(39, innerWidth / innerHeight, 0.1, 260);
 let yaw = 0.8,
   pitch = 0.72,
-  distance = 43,
+  distance = 84,
   target = new T.Vector3(0, 0, 0),
   desiredTarget = new T.Vector3(0, 0, 0);
 const hemi = new T.HemisphereLight(0xfff9e4, 0x798268, 2.9);
@@ -90,11 +96,11 @@ scene.add(hemi);
 const sun = new T.DirectionalLight(0xffe1af, 3.5);
 sun.position.set(-12, 20, 8);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -24;
-sun.shadow.camera.right = 24;
-sun.shadow.camera.top = 24;
-sun.shadow.camera.bottom = -24;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.left = -62;
+sun.shadow.camera.right = 62;
+sun.shadow.camera.top = 52;
+sun.shadow.camera.bottom = -52;
 sun.shadow.normalBias = 0.04;
 scene.add(sun);
 const mats = {};
@@ -164,8 +170,29 @@ function textPlane(
   return mesh;
 }
 box(200, 0.3, 200, 0xe5ddc9, 0, -0.6, 0);
-const island = box(52, 0.45, 44, 0xc2bf9e, 0, -0.25, 0);
-box(52.2, 0.12, 44.2, 0xddd7bd, 0, 0, 0);
+const island = box(120, 0.45, 102, 0xc2bf9e, 0, -0.25, 0);
+box(120.2, 0.12, 102.2, 0xddd7bd, 0, 0, 0);
+// District roads connect one continuous world. Surface paint never blocks walking.
+for (const z of [-39, 6.7, 39]) box(115, 0.04, 3.5, 0x818586, 0, 0.105, z);
+for (const x of [-45, -10, 6, 47]) box(3.5, 0.04, 98, 0x818586, x, 0.105, 0);
+for (const z of [-36.85, 9, 41.2]) box(115, 0.025, 0.36, 0xb7ad9c, 0, 0.135, z);
+for (const x of [-42.85, -7.85, 8.15, 49.15])
+  box(0.36, 0.025, 97, 0xb7ad9c, x, 0.135, 0);
+for (const [x, z] of [
+  [-36, -9],
+  [-30, 22],
+  [32, 20],
+  [10, 23],
+  [-25, -20],
+  [28, -18],
+]) {
+  box(8, 0.025, 8, 0x9aae87, x, 0.137, z);
+}
+for (const z of [-39, 39])
+  for (const x of [-32, -20, -3, 12, 32, 40]) {
+    const paint = box(1.5, 0.018, 0.13, 0xe7e3d6, x, 0.141, z);
+    paint.userData.ignoreNavigation = true;
+  }
 // Low-profile roads and future lots are scenery, not invisible walls.
 box(3.8, 0.04, 41, 0x818586, 6, 0.1, 0);
 box(49, 0.04, 3.2, 0x818586, 0, 0.1, 6.7);
@@ -673,6 +700,7 @@ tunde.g.position.x += 11;
 tunde.g.position.z += 8;
 const lessonKit = box(0.6, 0.3, 0.45, 0xc9a54d, -14.7, 1.15, 11.8);
 textPlane("EQUAL PARTS", 1.9, 0.27, -15, 1.63, 10.98, "#3b5c4a", "#fff4cd");
+// Original stations remain the four playable districts plus the city desk.
 const stations = [
   { id: "power", label: "Power station", pos: new T.Vector3(1.6, 2.6, -6.7) },
   {
@@ -696,9 +724,29 @@ const stations = [
     pos: new T.Vector3(2, 2.9, 0.4),
   },
 ];
+const futureNeighbours = createOuterDistricts({
+  T,
+  box,
+  cyl,
+  building,
+  tree,
+  visual,
+  textPlane,
+  person,
+});
+for (const d of OUTER_DISTRICTS)
+  stations.push({
+    id: d.id,
+    label: d.short,
+    pos: new T.Vector3(d.x, 3.2, d.z),
+    upcoming: true,
+  });
 for (const s of stations) {
   const b = document.createElement("button");
-  b.className = "hotspot";
+  b.className = "hotspot" + (s.upcoming ? " upcoming" : "");
+  b.title = s.upcoming
+    ? "Explore a planned district"
+    : "Visit an active city station";
   b.innerHTML = '<span class="spot"></span>' + s.label;
   b.onclick = () => goToStation(s.id);
   $("scene-labels").append(b);
@@ -734,7 +782,7 @@ function rebuildNavigation() {
       maxZ: b.max.z,
     });
   });
-  for (const p of [ama, bisi, tunde])
+  for (const p of [ama, bisi, tunde, ...futureNeighbours])
     obstacles.push({
       minX: p.g.position.x - 0.23,
       maxX: p.g.position.x + 0.23,
@@ -742,11 +790,11 @@ function rebuildNavigation() {
       maxZ: p.g.position.z + 0.23,
     });
   navigator = createNavigator(obstacles, {
-    minX: -24.5,
-    maxX: 24.5,
-    minZ: -20.5,
-    maxZ: 20.5,
-    step: 0.5,
+    minX: -57.5,
+    maxX: 57.5,
+    minZ: -49.5,
+    maxZ: 49.5,
+    step: 1,
   });
   if (!navigator.free(player.g.position)) {
     const rescue = navigator.route(
@@ -828,10 +876,14 @@ const approaches = {
   council: { x: 2.8, z: 1.1 },
   market: { x: 16.4, z: 6.4 },
 };
+for (const d of OUTER_DISTRICTS)
+  approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
 function goToStation(id) {
   if (!$("intro").hidden || simulating) return;
-  closeDetail();
   const station = stations.find((s) => s.id === id);
+  if (!station) return;
+  closeDirectory();
+  closeDetail();
   if (mapMode) {
     mapMode = false;
     distance = 27;
@@ -918,6 +970,7 @@ function updateGuideVisibility() {
   document.body.classList.toggle("guide-open", visible);
   document.body.classList.toggle("city-testing", simulating);
   $("test-status").hidden = !simulating;
+  $("districts-toggle").hidden = simulating;
 }
 function render() {
   const guided =
@@ -1064,6 +1117,11 @@ function change(key, value) {
     );
 }
 function inspect(id) {
+  const district = DISTRICT_INDEX.get(id);
+  if (district?.status === "explore") {
+    showFutureDistrict(district);
+    return;
+  }
   if (!state.seen.includes(id)) state.seen.push(id);
   render();
   if (id === "power" || id === "workshop") {
@@ -1077,6 +1135,50 @@ function inspect(id) {
   if (id === "market") marketPanel();
   if (id === "school") schoolPanel();
   if (id === "council") councilPanel();
+}
+function showFutureDistrict(d) {
+  showDetail(
+    '<div class="eyebrow">EXPLORE THE CITY · DISTRICT IN DEVELOPMENT</div>' +
+      "<h2>" +
+      d.name +
+      "</h2><p>Explore the buildings and neighbourhood. " +
+      "Full problem-solving missions are not playable in this district yet.</p>" +
+      '<div class="evidence"><strong>A QUESTION FOR BUILDERS</strong>' +
+      d.challenge +
+      "</div><p>For now, working decisions and consequences " +
+      "are available in Repair, Power, Food and Learning.</p>" +
+      '<button class="primary" id="future-back">Keep exploring →</button>',
+  );
+  $("future-back").onclick = closeDetail;
+}
+function closeDirectory() {
+  $("district-directory").hidden = true;
+  $("districts-toggle").setAttribute("aria-expanded", "false");
+}
+function openDirectory() {
+  guideExpanded = false;
+  dockExpanded = false;
+  render();
+  const list = $("district-list");
+  list.replaceChildren();
+  for (const d of CITY_DISTRICTS) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "district-entry";
+    const name = document.createElement("strong");
+    name.textContent = d.emoji + " " + d.name;
+    const info = document.createElement("small");
+    info.textContent =
+      d.status === "active"
+        ? "Playable · go there"
+        : "Explore · missions coming later";
+    b.append(name, info);
+    b.onclick = () => goToStation(d.id);
+    list.append(b);
+  }
+  $("district-directory").hidden = false;
+  $("districts-toggle").setAttribute("aria-expanded", "true");
+  $("district-close").focus();
 }
 function marketPanel() {
   const c = state.config;
@@ -1396,6 +1498,11 @@ function handoverPanel() {
 }
 $("test").onclick = runDay;
 $("close-detail").onclick = closeDetail;
+$("districts-toggle").onclick = () => {
+  if ($("district-directory").hidden) openDirectory();
+  else closeDirectory();
+};
+$("district-close").onclick = closeDirectory;
 $("explore-free").onclick = () => {
   freeExplore = !freeExplore;
   guideExpanded = !freeExplore;
@@ -1417,6 +1524,7 @@ $("build-toggle").onclick = () => {
 };
 $("city-map").onclick = () => {
   mapMode = !mapMode;
+  closeDirectory();
   if (mapMode) {
     guideExpanded = false;
     dockExpanded = false;
@@ -1424,7 +1532,7 @@ $("city-map").onclick = () => {
     $("build-toggle").textContent = "Build";
   }
   updateGuideVisibility();
-  distance = mapMode ? 68 : 27;
+  distance = mapMode ? 115 : 27;
   $("city-map").textContent = mapMode ? "Follow me" : "City map";
 };
 $("start").onclick = () => {
@@ -1434,6 +1542,7 @@ $("start").onclick = () => {
   guideExpanded = true;
   dockExpanded = false;
   distance = 27;
+  closeDirectory();
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
@@ -1463,6 +1572,7 @@ $("reset").onclick = () => {
   state = fresh();
   freeExplore = false;
   mapMode = false;
+  closeDirectory();
   guideExpanded = true;
   dockExpanded = false;
   distance = 27;
@@ -1498,7 +1608,7 @@ canvas.addEventListener("pointermove", (e) => {
     const a = [...pointers.values()],
       d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
     if (pinchDistance)
-      distance = clamp(distance - (d - pinchDistance) * 0.055, 16, 72);
+      distance = clamp(distance - (d - pinchDistance) * 0.055, 16, 128);
     pinchDistance = d;
     dragging = true;
     return;
@@ -1540,7 +1650,7 @@ canvas.addEventListener(
   "wheel",
   (e) => {
     e.preventDefault();
-    distance = clamp(distance + e.deltaY * 0.02, 16, 72);
+    distance = clamp(distance + e.deltaY * 0.02, 16, 128);
   },
   { passive: false },
 );
@@ -1625,7 +1735,7 @@ function animate(now) {
   }
   const diff = walkTarget.clone().sub(player.g.position);
   if (diff.length() > 0.035) {
-    const step = Math.min(diff.length(), dt * 3),
+    const step = Math.min(diff.length(), dt * (route.length ? 5 : 3)),
       next = player.g.position
         .clone()
         .add(diff.clone().normalize().multiplyScalar(step));
@@ -1688,10 +1798,15 @@ function animate(now) {
     v.copy(s.pos).project(camera);
     s.el.style.left = (v.x * 0.5 + 0.5) * innerWidth + "px";
     s.el.style.top = (-v.y * 0.5 + 0.5) * innerHeight + "px";
+    const near =
+      Math.hypot(s.pos.x - player.g.position.x, s.pos.z - player.g.position.z) <
+      18;
     s.el.style.visibility =
       v.z > 1 ||
       Math.abs(v.x) > 0.88 ||
       Math.abs(v.y) > 0.82 ||
+      !near ||
+      mapMode ||
       !$("intro").hidden
         ? "hidden"
         : "visible";
