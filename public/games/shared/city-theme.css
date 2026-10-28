@@ -1817,3 +1817,116 @@ body.city-testing #casebook {
     min-height: 48px;
   }
 }
+
+/* Player decisions visibly construct/alter districts before explanations show. */
+#world-feedback {
+  position: absolute;
+  z-index: 25;
+  top: max(19%, 118px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(390px, calc(100% - 34px));
+  padding: 13px 19px;
+  background: #193b70ed;
+  color: #fffaf0;
+  text-align: center;
+  border: 1px solid #b8ceec77;
+  border-radius: 17px;
+  box-shadow: 0 16px 40px #0d27495e;
+  pointer-events: none;
+  animation: build-feedback-enter 260ms ease-out both;
+}
+#world-feedback .build-activity {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  font-weight: 800;
+  color: #f6d789;
+  margin-bottom: 7px;
+}
+#world-feedback strong {
+  display: block;
+  font-size: clamp(13px, 2.2vw, 19px);
+  letter-spacing: 0.4px;
+}
+#world-feedback p {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #edf3fc;
+  margin: 7px 0 9px;
+}
+#world-feedback small {
+  display: block;
+  margin-top: 7px;
+  color: #d8e1f0;
+  font-size: 10px;
+}
+.build-progress {
+  height: 5px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #d7e1ef50;
+}
+.build-progress i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #f5cd6c, #f8e5a6);
+  animation: build-action-fill 1.65s linear both;
+}
+body.city-impact-view #detail,
+body.city-impact-view #city-tools,
+body.city-impact-view #district-directory,
+body.city-impact-view #casebook,
+body.city-impact-view #mission,
+body.city-impact-view #build-dock,
+body.city-impact-view #travel,
+body.city-impact-view #controls,
+body.city-impact-view #scene-labels,
+body.city-impact-view #mobile-move,
+body.city-impact-view #resource,
+body.city-impact-view header,
+body.city-impact-view #weather {
+  display: none !important;
+}
+@keyframes build-feedback-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+@keyframes build-action-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (max-width: 650px) {
+  #world-feedback {
+    top: max(18%, 82px);
+    border-radius: 13px;
+    padding: 11px 13px;
+    width: min(345px, calc(100% - 24px));
+  }
+  #world-feedback strong {
+    font-size: 14px;
+  }
+  #world-feedback p {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #world-feedback {
+    animation: none;
+  }
+  .build-progress i {
+    animation: none;
+  }
+}

@@ -1,5 +1,32 @@
 # Implementation status
 
+## 28 October 2026 — visible decision consequences and no walking trail
+
+A separate preview branch `feat/unbuilt-city-visible-actions` directly responds
+to learner observations. The auto-walk navigator and collision logic remain
+unchanged, but the visible 3D tube/path line is removed completely.
+
+All sixteen authored cases now trigger an immediate **fictional world-action
+preview** upon selecting any of their three choices. The game briefly hides
+the text detail panel, focuses the camera on the appropriate district,
+raises a distinct 3D workplace/service prop, emits a lightweight particle
+burst and a nearby character reaction (subject to reduced-motion settings),
+then returns the consequence and trade-off explanation. Players can watch
+the result again, retry another option, or keep a decision. Until a choice
+is explicitly kept, its visible change is reversible. Kept choices remain
+on the 3D neighbourhood and are included in the existing optional
+device-only practice snapshot. Different outcomes have distinct visual
+signal colours and the city HUD spells out the provisional effect; poor
+choices also make a visible change rather than silently failing.
+
+**Evidence limits:** These props and signals are fictional illustrations
+of the authored scenarios. They do not yet alter power throughput,
+market sales, real city economics, XP, PipuPath evidence or skills. Scene
+animation is not proof of learning impact or a photorealistic simulation.
+CI, actual browser interaction, physical Android performance and a new
+consented learner observation are mandatory before production or claims
+that students find this genuinely engaging.
+
 ## 28 October 2026 — Four-district engagement practice and opt-in device save
 
 The candidate `feat/unbuilt-city-pilot-challenges` adds 16 authored

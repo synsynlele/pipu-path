@@ -1,8 +1,9 @@
 import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
+import { createCaseSceneEffects } from "./scene-feedback.mjs";
+import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
-  CITY_CASES,
   CASE_DISTRICTS,
   IMPACT_LABELS,
   casesFor,
@@ -749,45 +750,87 @@ const futureNeighbours = createOuterDistricts({
   textPlane,
   person,
 });
-// Recorded fictional approaches light up small markers in the actual 3D district.
-// They are never attributed as real-life competence or the shared economy result.
-const practiceMarkers = new Map();
-const practiceAnchors = {
-  workshop: { x: -0.4, z: -3.1 },
-  power: { x: 3.8, z: -7.4 },
-  market: { x: 20.7, z: 9.7 },
-  school: { x: -12.7, z: 13.8 },
-};
-for (const district of CASE_DISTRICTS) {
-  const anchor = practiceAnchors[district];
-  casesFor(district).forEach((scenario, i) => {
-    const h = 0.23 + i * 0.12;
-    const marker = box(
-      0.42,
-      h,
-      0.42,
-      0xe2bc62,
-      anchor.x + (i % 2) * 0.68,
-      0.27 + h / 2,
-      anchor.z + Math.floor(i / 2) * 0.68,
-    );
-    marker.userData.ignoreNavigation = true;
-    marker.visible = false;
-    practiceMarkers.set(scenario.id, marker);
-  });
+// Decisions construct fictional, scenario-specific objects in the 3D city.
+const caseScenes = createCaseSceneEffects({ T, scene, box, cyl, mat });
+const decisionSparks = new T.Group();
+scene.add(decisionSparks);
+const sparkUnits = Array.from({ length: 12 }, (_, i) => {
+  const m = new T.Mesh(
+    new T.BoxGeometry(0.12, 0.12, 0.12),
+    mat(i % 2 ? 0xffd979 : 0xf6f0cd),
+  );
+  m.userData.ignoreNavigation = true;
+  decisionSparks.add(m);
+  return m;
+});
+decisionSparks.visible = false;
+let previewDecision = null;
+let feedbackTimer = null;
+let feedbackRunId = 0;
+let activeFeedback = null;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+function syncCaseScenes() {
+  caseScenes.sync(state.decisions, previewDecision);
 }
-function updatePracticeMarkers() {
-  for (const scenario of CITY_CASES) {
-    const marker = practiceMarkers.get(scenario.id);
-    const chosen = getChoice(scenario.id, state.decisions[scenario.id]);
-    marker.visible = Boolean(chosen);
-    if (chosen) {
-      const total = chosen.impact.reduce((a, b) => a + b, 0);
-      marker.material = mat(
-        total >= 3 ? 0x709e7b : total >= 0 ? 0xd9b65d : 0xb97962,
-      );
-    }
-  }
+function cancelCasePreview() {
+  feedbackRunId++;
+  clearTimeout(feedbackTimer);
+  feedbackTimer = null;
+  activeFeedback = null;
+  decisionSparks.visible = false;
+  previewDecision = null;
+  $("world-feedback").hidden = true;
+  document.body.classList.remove("city-impact-view");
+  syncCaseScenes();
+}
+function runCaseWorldAction(caseId, choiceId) {
+  const spec = CASE_BUILD_SITES[caseId];
+  const choice = getChoice(caseId, choiceId);
+  if (!spec || !choice) return;
+  cancelCasePreview();
+  previewDecision = { caseId, choiceId };
+  syncCaseScenes();
+  caseScenes.setTone(caseId, choice);
+  const tone = visualTone(choice);
+  $("world-feedback-title").textContent =
+    tone === "improving"
+      ? "YOUR IDEA IS TAKING SHAPE"
+      : tone === "strained"
+        ? "THE CITY FEELS THE CONSEQUENCES"
+        : "YOUR DECISION CHANGES THE CITY";
+  $("world-feedback-copy").textContent = feedbackCopy(spec.kind, tone);
+  $("world-feedback").hidden = false;
+  $("detail").hidden = true;
+  guideExpanded = false;
+  dockExpanded = false;
+  $("build-dock").hidden = true;
+  closeDirectory();
+  closeCasebook();
+  document.body.classList.add("city-impact-view");
+  const priorDistance = distance;
+  distance = Math.min(distance, 15);
+  activeFeedback = {
+    x: spec.x,
+    z: spec.z,
+    started: performance.now(),
+    district: spec.district,
+  };
+  decisionSparks.position.set(spec.x, 0, spec.z);
+  decisionSparks.visible = !reduceMotion.matches;
+  playTone(tone === "improving" ? 690 : tone === "strained" ? 340 : 520);
+  const run = feedbackRunId;
+  feedbackTimer = setTimeout(
+    () => {
+      if (run !== feedbackRunId) return;
+      $("world-feedback").hidden = true;
+      document.body.classList.remove("city-impact-view");
+      activeFeedback = null;
+      decisionSparks.visible = false;
+      distance = priorDistance;
+      showCaseOutcome(caseId, choiceId);
+    },
+    reduceMotion.matches ? 700 : 1650,
+  );
 }
 for (const d of OUTER_DISTRICTS)
   stations.push({
@@ -810,8 +853,7 @@ for (const s of stations) {
 let navigationSignature = null;
 let navigator,
   route = [],
-  onArrival = null,
-  routeLine = null;
+  onArrival = null;
 function rebuildNavigation() {
   const signature = JSON.stringify(state.config);
   if (signature === navigationSignature) return;
@@ -868,38 +910,7 @@ function cancelWalk() {
   onArrival = null;
 
   walkTarget.copy(player.g.position);
-  if (routeLine) {
-    scene.remove(routeLine);
-    routeLine.geometry.dispose();
-    routeLine.material.dispose();
-    routeLine = null;
-  }
   $("travel").hidden = true;
-}
-function drawRoute() {
-  if (routeLine) {
-    scene.remove(routeLine);
-    routeLine.geometry.dispose();
-    routeLine.material.dispose();
-  }
-  const pts = [
-    player.g.position,
-    ...route.map((p) => new T.Vector3(p.x, 0.2, p.z)),
-  ];
-  const curve = new T.CurvePath();
-  for (let i = 1; i < pts.length; i++)
-    curve.add(
-      new T.LineCurve3(
-        new T.Vector3(pts[i - 1].x, 0.2, pts[i - 1].z),
-        new T.Vector3(pts[i].x, 0.2, pts[i].z),
-      ),
-    );
-  routeLine = new T.Mesh(
-    new T.TubeGeometry(curve, Math.max(8, route.length * 8), 0.028, 4, false),
-    new T.MeshBasicMaterial({ color: 0xd5e6aa }),
-  );
-  routeLine.userData.ignoreNavigation = true;
-  scene.add(routeLine);
 }
 function goTo(point, arrival = null, label = "your destination") {
   const planned = navigator.route(player.g.position, point);
@@ -919,7 +930,6 @@ function goTo(point, arrival = null, label = "your destination") {
   $("build-dock").hidden = true;
   $("build-toggle").textContent = "Build";
   updateGuideVisibility();
-  drawRoute();
   if (planned.adjusted && !arrival)
     toast("That spot is occupied. Walking to the nearest clear space.");
   return true;
@@ -980,6 +990,7 @@ function updateWorld() {
 }
 function closeDetail() {
   $("detail").hidden = true;
+  if (previewDecision) cancelCasePreview();
 }
 function showDetail(html) {
   $("detail-body").innerHTML = html;
@@ -1085,6 +1096,7 @@ function startCase(id) {
   goToStation(scenario.district, () => showCase(id));
 }
 function showCase(id) {
+  if (previewDecision) cancelCasePreview();
   const scenario = getCase(id);
   if (!scenario) return;
   const saved = getChoice(id, state.decisions[id]);
@@ -1115,7 +1127,7 @@ function showCase(id) {
       '<p class="case-small">Every approach has consequences. No real money is spent.</p>',
   );
   document.querySelectorAll("[data-case-choice]").forEach((button) => {
-    button.onclick = () => showCaseOutcome(id, button.dataset.caseChoice);
+    button.onclick = () => runCaseWorldAction(id, button.dataset.caseChoice);
   });
 }
 function showCaseOutcome(id, choiceId, kept = false) {
@@ -1155,16 +1167,19 @@ function showCaseOutcome(id, choiceId, kept = false) {
         ? "<p>✓ This practice approach is marked in your district. " +
           "You can still retry it.</p>"
         : "") +
-      '<div class="case-actions"><button class="secondary" id="case-retry">Try another</button>' +
+      '<div class="case-actions"><button class="secondary" id="case-replay">Watch the city change ↻</button>' +
+      '<button class="secondary" id="case-retry">Try another</button>' +
       (kept
         ? ""
         : '<button class="primary" id="case-keep">Keep this approach</button>') +
       '<button class="secondary" id="case-next">Next problem →</button></div>',
   );
+  $("case-replay").onclick = () => runCaseWorldAction(id, choiceId);
   $("case-retry").onclick = () => showCase(id);
   if ($("case-keep"))
     $("case-keep").onclick = () => {
       state.decisions = saveDecision(state.decisions, id, choiceId);
+      previewDecision = null;
       render();
       showCaseOutcome(id, choiceId, true);
       toast(
@@ -1342,7 +1357,7 @@ function render() {
   $("weather-icon").textContent = state.day === 1 ? "☀" : "☁";
   updateGuideVisibility();
   updateWorld();
-  updatePracticeMarkers();
+  syncCaseScenes();
   persistPractice();
 }
 function change(key, value) {
@@ -1873,6 +1888,7 @@ $("reset").onclick = () => {
   )
     return;
   clearTimeout(runTimer);
+  cancelCasePreview();
   simulating = false;
   simPeriod = -1;
   const cleared = clearPractice();
@@ -2006,7 +2022,8 @@ function animate(now) {
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
   time += dt;
-  if ($("intro").hidden && !mapMode)
+  if (activeFeedback) desiredTarget.set(activeFeedback.x, 0, activeFeedback.z);
+  else if ($("intro").hidden && !mapMode)
     desiredTarget.set(player.g.position.x, 0, player.g.position.z);
   else desiredTarget.set(0, 0, 0);
   target.lerp(desiredTarget, 0.055);
@@ -2074,6 +2091,21 @@ function animate(now) {
     }
   }
 
+  // Construction rises, sparks scatter and nearby characters react.
+  caseScenes.animate(now, reduceMotion.matches);
+  if (activeFeedback && !reduceMotion.matches) {
+    const progress = Math.min(1, (now - activeFeedback.started) / 1450);
+    sparkUnits.forEach((particle, i) => {
+      const theta = (i * Math.PI * 2) / sparkUnits.length;
+      const radius = 0.15 + progress * (0.85 + (i % 3) * 0.25);
+      particle.position.set(
+        Math.cos(theta) * radius,
+        0.5 + Math.sin(progress * Math.PI) * (1.4 + (i % 4) * 0.2),
+        Math.sin(theta) * radius,
+      );
+      particle.scale.setScalar(Math.max(0.01, 1.2 - progress));
+    });
+  }
   const period = simulating ? Math.max(0, simPeriod - 1) : -1;
   const row = period >= 0 ? simRows[period] : null;
   const power = row ? row.unmet === 0 : true;
@@ -2103,6 +2135,20 @@ function animate(now) {
   });
   [ama, bisi, tunde].forEach((p, i) => {
     p.g.rotation.y = 0.4 + Math.sin(time * 0.7 + i) * 0.09;
+    const reacting =
+      activeFeedback &&
+      ((activeFeedback.district === "market" && p === tunde) ||
+        (activeFeedback.district === "school" && p === bisi) ||
+        (["workshop", "power"].includes(activeFeedback.district) && p === ama));
+    if (reacting && !reduceMotion.matches) {
+      p.arms.forEach((arm, side) => {
+        arm.rotation.x = Math.sin(time * 13 + side * Math.PI) * 0.48 - 0.25;
+      });
+      p.g.position.y = 0.3 + Math.abs(Math.sin(time * 8)) * 0.035;
+    } else {
+      p.arms.forEach((arm) => (arm.rotation.x *= 0.85));
+      p.g.position.y = 0.3;
+    }
   });
   for (const s of stations) {
     v.copy(s.pos).project(camera);
