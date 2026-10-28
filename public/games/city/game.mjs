@@ -1238,9 +1238,12 @@ function closeDetail() {
   $("detail").hidden = true;
   if (previewDecision) cancelCasePreview();
 }
-function showDetail(html) {
+function showDetail(html, mode = "other") {
+  const panel = $("detail");
+  panel.dataset.mode = mode;
   $("detail-body").innerHTML = html;
-  $("detail").hidden = false;
+  panel.scrollTop = 0;
+  panel.hidden = false;
 }
 function persistPractice() {
   if (!saveEnabled) return;
@@ -1512,6 +1515,7 @@ function showDecisionReviewOutcome(id, choiceId) {
       '<div class="case-actions">' +
       '<button class="secondary" id="review-again">Change again</button>' +
       '<button class="primary" id="review-done">Return to my journey →</button></div>',
+    "outcome",
   );
   $("review-again").onclick = () => {
     cancelAutoAdvance();
@@ -1535,6 +1539,13 @@ function showCase(id) {
   const scenario = getCase(id);
   if (!scenario) return;
   const saved = getChoice(id, state.decisions[id]);
+  const splitAt = scenario.situation.indexOf(". ");
+  const shortSituation = splitAt < 0
+    ? scenario.situation
+    : scenario.situation.slice(0, splitAt + 1);
+  const extraSituation = splitAt < 0
+    ? ""
+    : scenario.situation.slice(splitAt + 2);
   showDetail(
     '<div class="eyebrow">' +
       (reviewCaseId === id
@@ -1546,15 +1557,19 @@ function showCase(id) {
       "</div>" +
       "<h2>" +
       scenario.title +
-      "</h2><p>" +
-      scenario.situation +
-      "</p>" +
-      (scenario.chapter === 2
-        ? '<p class="case-context"><strong>IN YOUR CITY:</strong> ' +
-          chapterPressure(scenario, deriveBuilderCity(state.decisions)) +
-          "</p>"
+      "</h2>" +
+      '<p class="case-intro">' + shortSituation + "</p>" +
+      (extraSituation || scenario.chapter === 2
+        ? '<details class="case-story"><summary>More about this problem</summary>' +
+          (extraSituation ? "<p>" + extraSituation + "</p>" : "") +
+          (scenario.chapter === 2
+            ? '<p class="case-context"><strong>IN YOUR CITY:</strong> ' +
+              chapterPressure(scenario, deriveBuilderCity(state.decisions)) +
+              "</p>"
+            : "") +
+          "</details>"
         : "") +
-      '<div class="evidence"><strong>YOUR DECISION</strong>' +
+      '<div class="evidence case-question"><strong>WHAT WOULD YOU DO?</strong>' +
       scenario.question +
       "</div>" +
       (saved
@@ -1576,6 +1591,7 @@ function showCase(id) {
       (reviewCaseId === id
         ? '<button class="secondary" id="review-cancel">Return without changing →</button>'
         : ""),
+    "choice",
   );
   if ($("review-cancel"))
     $("review-cancel").onclick = () => finishDecisionReview();
@@ -1742,6 +1758,7 @@ function showCaseOutcome(id, choiceId) {
       '<button class="primary" id="case-next">' +
       (next ? "Next now →" : "Finish →") +
       "</button></div>",
+    "outcome",
   );
   $("case-pause").onclick = () => {
     pauseJourney("Paused to read. Use Resume journey when you're ready.");
