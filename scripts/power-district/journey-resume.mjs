@@ -5,7 +5,7 @@ import {
   recoverJourney,
   JOURNEY_STAGES,
 } from "../../public/games/city/journey-flow.mjs";
-assert.equal(JOURNEY_STAGES.length, 5);
+assert.equal(JOURNEY_STAGES.length, 6);
 let choices = {};
 const start = firstUnanswered(choices);
 assert.equal(start.id, CITY_CASES[0].id);

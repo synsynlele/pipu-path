@@ -1,6 +1,8 @@
 // Authored, fictional decision cases. These are practice narratives, not
 // engineering, healthcare, food safety, or financial advice. No XP is awarded.
 // Impact signals are scenario-local relative comparisons, NOT city economy data.
+import { GROWING_CITY_CASES } from "./chapter-two.mjs";
+
 const choice = (id, title, result, tradeoff, links, impact) => ({
   id,
   title,
@@ -26,7 +28,7 @@ const caseFile = (
   options,
   bridge,
 });
-export const CITY_CASES = [
+const FOUNDATION_CASES = [
   caseFile(
     "repair-queue",
     "workshop",
@@ -573,13 +575,10 @@ export const CITY_CASES = [
   ),
 ];
 
+export const FOUNDATION_CASE_COUNT = FOUNDATION_CASES.length;
+export const CITY_CASES = [...FOUNDATION_CASES, ...GROWING_CITY_CASES];
 export const CASE_BY_ID = new Map(CITY_CASES.map((c) => [c.id, c]));
-export const CASE_DISTRICTS = Object.freeze([
-  "workshop",
-  "power",
-  "market",
-  "school",
-]);
+export const CASE_DISTRICTS = Object.freeze([...new Set(CITY_CASES.map((c) => c.district))]);
 export const IMPACT_LABELS = Object.freeze([
   "Reliability",
   "Access",

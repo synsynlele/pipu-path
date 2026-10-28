@@ -1,0 +1,202 @@
+// Chapter 2: twenty fictional, locally grounded builder situations.
+// No personal data, scored diagnoses, actual engineering prescriptions or XP.
+// These stories extend—not replace—the original 16 foundation cases.
+const choice = (id, title, result, tradeoff, impact, links) => ({
+  id, title, result, tradeoff, links, impact,
+});
+const caseFile = (id, district, title, situation, question, bridge, options, dependsOn) => ({
+  id, district, title, situation, question, bridge, options, dependsOn, chapter: 2,
+});
+// Each choice has a distinct physical architecture and city-system effect.
+export const GROWING_CITY_CASES = [
+  caseFile("homes-materials", "housing", "Homes for new neighbours",
+    "Twelve families need affordable homes, but builders have limited materials and some plots flood after heavy rain.",
+    "What should the housing team decide before building?",
+    "Notice how site conditions, household budgets and skilled builders shape safe housing.",
+    [
+      choice("assess", "Check sites, priorities and safe building plans", "The team compares land conditions and family needs, seeks qualified advice and starts homes on suitable plots.", "Safety checks and a phased build take time; some families still need temporary shelter.", [2,2,-1,2], "Housing, drainage and public health"),
+      choice("rush", "Start every house before checking the land", "Foundations go up quickly, but several new homes sit on land that may flood and create future costs.", "Fast construction can expose families to avoidable hazards and expensive repairs.", [-2,0,-2,-2], "Housing quality and climate resilience"),
+      choice("luxury", "Build a few expensive homes first", "The skyline gains attractive houses, while most waiting families remain without suitable accommodation.", "Fewer people benefit and scarce funding cannot reach the wider neighbourhood.", [0,-2,-2,-1], "Fair housing access and local finance"),
+    ], "environment"),
+  caseFile("homes-upkeep", "housing", "Who maintains the new homes?",
+    "Residents move into the housing quarter. Shared drainage, pathways and rubbish areas need upkeep, but nobody has been assigned responsibility.",
+    "Which plan helps these homes remain liveable?",
+    "Ask how shared facilities are maintained and who contributes to their upkeep.",
+    [
+      choice("committee", "Agree a fair maintenance plan and team", "Neighbours form a resident group, set clear tasks and record faults before small problems become expensive.", "The plan needs regular participation and fair contributions from households.", [2,2,0,2], "Community trust, maintenance and sanitation"),
+      choice("delay", "Wait for breakdowns before taking action", "Maintenance costs appear low at first, but blocked drains and broken paths soon interrupt daily life.", "Delayed work can cost more and shift inconvenience onto vulnerable neighbours.", [-2,-1,1,-2], "Public services and household safety"),
+      choice("charge", "Charge everyone an identical high fee", "Money is collected quickly from a few households, while others cannot afford basic shared upkeep.", "A single large fee may unfairly exclude residents with different means.", [0,-2,1,-1], "Equity, housing and financial planning"),
+    ], "governance"),
+  caseFile("water-breakdown", "water", "The neighbourhood water queue",
+    "A pump has stopped and residents walk a long distance for water. Some families have nowhere safe to store it.",
+    "Where should the water team begin?",
+    "Learn how trained operators inspect faults and communities protect safe water access.",
+    [
+      choice("inspect", "Check the fault and arrange safe temporary access", "Qualified operators assess the pump while the community organises a transparent, safe short-term supply.", "Temporary supply costs time and needs careful oversight until repairs are complete.", [2,2,-1,2], "Water access, maintenance and public health"),
+      choice("guess", "Restart the pump repeatedly without inspection", "The water point briefly becomes busy, but the underlying fault remains and can worsen.", "Unverified repairs can be dangerous and unreliable for households.", [-2,-1,0,-2], "Infrastructure safety and household trust"),
+      choice("private", "Supply only households that can pay the most", "A small group receives water quickly while many other residents face longer trips.", "Access becomes unfair and the community may lose confidence in the service.", [0,-2,2,-2], "Household wellbeing and equitable water access"),
+    ], "workshop"),
+  caseFile("water-sanitation", "water", "Rain reaches the water source",
+    "After a storm, dirty runoff approaches the neighbourhood's shared water area and a nearby drainage channel is blocked.",
+    "How can the community respond responsibly?",
+    "Observe how drainage, sanitation and water professionals work together; do not handle unsafe water.",
+    [
+      choice("protect", "Protect the source and involve qualified teams", "The team keeps people away from suspect water, clears responsibility and requests appropriate inspection and treatment.", "Protective action may temporarily limit supply until professionals confirm safety.", [2,2,-1,2], "Environmental health and dependable water"),
+      choice("ignore", "Assume the water is fine because it looks clear", "Water continues to be collected without verification, leaving an avoidable health risk unresolved.", "Appearance alone cannot establish whether drinking water is safe.", [-2,-2,1,-2], "Health protection and public confidence"),
+      choice("announce", "Announce a solution without a sanitation plan", "A public message reassures residents briefly, but blocked drains and source protection remain unresolved.", "Good communication must be backed by practical and verified action.", [-1,0,0,-1], "Public communication and sanitation"),
+    ], "environment"),
+  caseFile("clinic-arrival", "health", "Care before it is too late",
+    "The clinic sees many people arriving only after their problems worsen. Travel and appointment information are confusing.",
+    "What change could help residents reach appropriate care earlier?",
+    "Ask a healthcare worker how clear referral information and early support help families.",
+    [
+      choice("access", "Improve information, triage and referral guidance", "Clinic staff create clear arrival guidance, involve qualified workers and help people find appropriate services.", "Staff need training, privacy safeguards and time to coordinate referrals.", [2,2,-1,2], "Health access, transport and communication"),
+      choice("billboard", "Put up a large advert but change nothing else", "More people hear about the clinic, yet queues and confusing access remain much the same.", "Publicity alone does not solve the underlying service bottleneck.", [0,0,-1,0], "Public services and honest messaging"),
+      choice("premium", "Reserve all fast appointments for higher pay", "Revenue may improve temporarily for a few visits, while residents with urgent needs face delays.", "A clinic cannot judge urgency fairly by ability to pay.", [0,-2,1,-2], "Healthcare access and community trust"),
+    ], "transport"),
+  caseFile("clinic-supply", "health", "Essential supplies run low",
+    "Clinic workers discover that commonly used supplies run out unexpectedly. Deliveries depend on roads and careful records.",
+    "Which first improvement makes the system more dependable?",
+    "Ask professionals how stock lists and verified supply chains prevent shortages.",
+    [
+      choice("track", "Track demand and arrange verified replenishment", "Staff document usage patterns and work with authorised suppliers so critical needs are visible early.", "Reliable records require maintenance and cannot replace qualified clinical oversight.", [2,2,0,2], "Health logistics, procurement and information"),
+      choice("bulk", "Buy every item in the largest quantity", "The store fills, but the budget is tied up and some items may become unusable before needed.", "Stocking without forecasts can create waste and new shortages.", [0,0,-2,0], "Procurement, waste and cash management"),
+      choice("silence", "Keep shortages secret until patients arrive", "Patients only learn about gaps at the clinic desk, often after a difficult trip.", "Missing information increases inconvenience and erodes trust.", [-2,-2,1,-2], "Healthcare communication and transport"),
+    ], "business"),
+  caseFile("transit-delivery", "transport", "The market's delayed deliveries",
+    "Roadworks block a route used by farms, workshop customers and the clinic. A delivery vehicle has limited time.",
+    "How should the transport team organise today's journeys?",
+    "Notice how safe road access and clear schedules connect different city services.",
+    [
+      choice("prioritise", "Map safe routes and publish revised schedules", "Operators compare verified roads, protect urgent deliveries and tell customers what arrival times changed.", "Some non-urgent deliveries still take longer and vehicles need coordination.", [2,2,-1,2], "Food logistics, clinic access and reliable transport"),
+      choice("flood", "Take an unchecked shortcut to save time", "Drivers face a risky route and cannot promise goods will reach their destination intact.", "Speed should not be prioritised over road and personal safety.", [-2,-2,0,-2], "Transport safety and livelihoods"),
+      choice("promise", "Keep the original schedule without telling anyone", "Customers wait for goods that are unlikely to arrive on time and lose chances to plan around delays.", "Poor information transfers the consequences of disruption to others.", [-1,-2,0,-2], "Public communication and business trust"),
+    ], "market"),
+  caseFile("transit-people", "transport", "Children cross the busy road",
+    "More residents are moving into the city. A busy road divides homes from the learning centre and shops.",
+    "What transport design should the community explore?",
+    "Discuss safer walking routes and crossing designs with a qualified road-safety professional.",
+    [
+      choice("safe", "Plan safe crossings and accessible walking routes", "Residents and qualified planners identify risky places and develop routes that consider children and people with disabilities.", "Safer changes require consultation and may slow some vehicles.", [2,2,-1,2], "Education, accessibility and public safety"),
+      choice("cars", "Make every street faster for cars", "Vehicles move faster in some sections, but walking becomes harder and vulnerable residents feel less safe.", "A faster road is not always a better route for every person.", [-1,-2,1,-2], "Inclusive mobility and road safety"),
+      choice("ban", "Ban every delivery near the school indefinitely", "The immediate road becomes quiet, but essential deliveries and local livelihoods struggle unnecessarily.", "A blanket ban can create new problems when well-designed routes are possible.", [0,-1,-2,0], "Schools, trade and safe streets"),
+    ], "school"),
+  caseFile("tech-booking", "technology", "A queue that could be shorter",
+    "Residents travel to three different service desks only to find that their name is missing from the queue. A youth team proposes a digital tool.",
+    "What should the builders learn before writing the app?",
+    "Ask users which problem is most important and consider people without smartphones.",
+    [
+      choice("prototype", "Observe the problem and test a small accessible tool", "The builders check real needs and try a simple queue display with offline and privacy-conscious alternatives.", "User testing takes time and the prototype may need several revisions.", [2,2,-1,2], "Digital inclusion and useful public services"),
+      choice("features", "Build a large app with dozens of features immediately", "The team spends effort on attractive screens, but may not solve the missed-queue problem.", "Features cannot replace evidence that people actually need the solution.", [0,-1,-2,0], "Technology value and product discovery"),
+      choice("collect", "Require everyone to submit extensive personal details", "The tool gathers a great deal of information, but many people leave rather than risk their privacy.", "Unnecessary data collection discourages trust and excludes users.", [-1,-2,0,-2], "Privacy, access and civic technology"),
+    ], "governance"),
+  caseFile("tech-reliability", "technology", "When the network stops",
+    "The new service board helps residents, but internet access sometimes disappears and phones run out of power.",
+    "How should the technology team make it dependable?",
+    "Observe how services work when there is no connection or electricity.",
+    [
+      choice("offline", "Keep essential steps usable without the network", "The team adds clear offline instructions and safe local fallbacks so residents can still access core services.", "Offline support needs careful updating and checks against stale information.", [2,2,-1,2], "Electricity, networks and inclusive services"),
+      choice("online", "Require continuous internet for every action", "The app is simple to develop, but becomes unavailable to many residents during interruptions.", "Dependence on one fragile connection can exclude important users.", [-2,-2,1,-1], "Digital resilience and access"),
+      choice("replace", "Replace every human service desk right away", "Staff disappear from some counters while people who need explanations are left confused.", "Automation should improve access, not remove every channel for support.", [0,-2,0,-2], "Human support and digital equity"),
+    ], "power"),
+  caseFile("enterprise-trust", "business", "A promising new shop",
+    "A new enterprise has customers but no clear stock records or return arrangements. Some people complain about missing orders.",
+    "What should the owner improve first?",
+    "Ask a small business how it records orders and handles customer complaints fairly.",
+    [
+      choice("records", "Track orders and explain fair service terms", "Customers can check commitments and the owner spots repeated mistakes before they harm the business.", "Clear records require discipline and responsible handling of customer details.", [2,2,0,2], "Business operations and customer trust"),
+      choice("discount", "Offer huge discounts to silence every complaint", "The shop attracts more attention, but weak order records and unreliable deliveries remain.", "A price cut cannot repair a broken service process.", [0,1,-2,-1], "Business cash and service quality"),
+      choice("blame", "Blame customers whenever an order goes missing", "The shop avoids admitting mistakes, while customers stop recommending its products.", "Avoiding accountability can damage trust and reduce future sales.", [-1,-2,0,-2], "Consumer trust and responsible leadership"),
+    ], "transport"),
+  caseFile("enterprise-cash", "business", "Sales are not the same as cash",
+    "Several new shop owners sell goods on credit. They have orders but cannot always pay growers and transport workers on time.",
+    "What could help their enterprises stay reliable?",
+    "Discuss why sales, cash received and payments due are different numbers.",
+    [
+      choice("plan", "Map cash coming in and obligations coming due", "Owners create clear payment schedules and negotiate realistic terms with the people they depend on.", "Forecasts can change and agreements must be reviewed openly.", [2,2,0,2], "Finance, local suppliers and responsible enterprise"),
+      choice("borrow", "Borrow more money without a repayment plan", "Payments are delayed less today, but new debts can overwhelm the businesses tomorrow.", "Borrowing without understanding cash flow may deepen a shortage.", [0,0,-2,-1], "Debt risk and business survival"),
+      choice("delay", "Hide unpaid invoices from small suppliers", "Shop owners keep cash briefly, while growers and drivers cannot plan their next work.", "Shifting risk to weaker partners weakens the whole city economy.", [-1,-2,1,-2], "Fair trade and supply reliability"),
+    ], "market"),
+  caseFile("green-drainage", "environment", "Rain tests the neighbourhood",
+    "A heavy storm leaves water on low streets near homes and the market. Old drainage routes are obstructed.",
+    "What should the city examine before expanding buildings?",
+    "Ask why communities protect drainage routes and how qualified teams evaluate flood risks.",
+    [
+      choice("survey", "Map risky areas and protect drainage space", "Residents share flood observations and qualified teams plan safe routes for water before new sites are approved.", "Good planning takes time and some plots may need a different purpose.", [2,2,-1,2], "Housing, transport and climate adaptation"),
+      choice("pave", "Cover every open space with paving immediately", "New paved areas look tidy but may increase runoff toward homes and public pathways.", "Surface choices can worsen flooding when drainage is ignored.", [-2,-1,-2,-1], "Water movement and housing safety"),
+      choice("ignore", "Assume next season will have no serious rain", "Construction proceeds without addressing known low points and residents remain exposed to disruption.", "Uncertainty is not a reason to ignore repeated evidence of risk.", [-2,-2,1,-2], "Community resilience and safe planning"),
+    ], "housing"),
+  caseFile("green-waste", "environment", "The growing waste pile",
+    "As homes and businesses open, unmanaged waste collects near the market. Residents complain about blocked walkways and drains.",
+    "What response addresses the cause rather than hiding the pile?",
+    "Notice how waste prevention, collection and safe handling depend on many people.",
+    [
+      choice("system", "Organise reliable collection and reduce waste upstream", "The city agrees on collection points, safe handling and ways vendors can prevent avoidable waste.", "Regular service needs funding, clear roles and public cooperation.", [2,2,-1,2], "Sanitation, public health and enterprise"),
+      choice("dump", "Move all the waste to an unused neighbourhood", "One street looks cleaner, but another community inherits the risk and inconvenience.", "Moving harm out of sight is not a lasting or equitable solution.", [-2,-2,0,-2], "Equity, environment and health"),
+      choice("burn", "Burn mixed waste beside the shops", "The visible pile shrinks but smoke and potentially dangerous materials create new problems.", "Unsafe shortcuts can harm residents and nearby businesses.", [-2,-2,0,-2], "Air quality and public safety"),
+    ], "water"),
+  caseFile("civic-voices", "governance", "Who gets to decide?",
+    "The city council wants to spend its limited fund. Traders speak loudly, while young people and residents with disabilities rarely attend meetings.",
+    "How should decision-makers understand the city's needs?",
+    "Compare ways different residents can contribute to decisions without pressure or exclusion.",
+    [
+      choice("include", "Invite varied voices and publish clear priorities", "Residents can describe needs through accessible channels and see the reasons behind the final priorities.", "Listening well takes time and does not remove every disagreement.", [2,2,-1,2], "Trust, participation and accountable governance"),
+      choice("loud", "Listen only to the largest group at the meeting", "One group gets its preferred projects while quieter neighbourhoods lose access to important improvements.", "The loudest voice is not always the most urgent need.", [0,-2,1,-2], "Fairness and local representation"),
+      choice("secret", "Make every decision behind closed doors", "The plan moves faster at first but residents do not understand how money or priorities were chosen.", "Secrecy undermines confidence and limits useful correction.", [-1,-2,0,-2], "Public trust and transparent decisions"),
+    ], "school"),
+  caseFile("civic-repairs", "governance", "Residents report broken services",
+    "Faults are reported across the city, but no one knows who should act or whether a repair request has been addressed.",
+    "What kind of system helps the city respond?",
+    "Study how clear responsibilities and non-identifying issue records can guide public service.",
+    [
+      choice("track", "Assign owners and make progress visible", "The team keeps a simple public issue list with responsibilities and updates that do not expose private details.", "The list only helps if leaders regularly investigate and close real problems.", [2,2,-1,2], "Public accountability and maintenance"),
+      choice("announce", "Announce that every problem is already fixed", "People are reassured briefly, but broken services are still visible and complaints soon grow.", "An announcement is not evidence of completed work.", [-2,-1,0,-2], "Trust and reliable city services"),
+      choice("ignore", "Archive all reports without reviewing them", "The desk appears tidy while recurring faults and dangerous conditions remain unresolved.", "A system that hides problems cannot help anyone solve them.", [-2,-2,1,-2], "Service delivery and civic learning"),
+    ], "workshop"),
+  caseFile("creative-fairpay", "creative", "A festival creates opportunity",
+    "Young artists, makers and performers are invited to a popular city festival, but payment terms are unclear and some creators cannot afford to participate.",
+    "What should the organisers agree first?",
+    "Discuss why creators need clear consent, attribution and fair agreements.",
+    [
+      choice("fair", "Publish fair payment and participation arrangements", "Organisers clarify fees, creative rights, accessibility and responsibilities before performers commit.", "Transparent terms may limit the size of the festival until funding is secured.", [2,2,-1,2], "Creative work, business and fairness"),
+      choice("exposure", "Pay nobody because publicity is enough", "The event attracts attention, but creators who depend on income may be unable to join.", "Visibility cannot automatically replace fair compensation for skilled work.", [-1,-2,2,-2], "Livelihoods and respect for creative work"),
+      choice("copy", "Reuse people's designs without asking permission", "Posters appear quickly, but the makers are not credited or consulted about the use of their work.", "Unapproved reuse harms trust and creative ownership.", [-1,-2,1,-2], "Creative rights and responsible enterprise"),
+    ], "business"),
+  caseFile("creative-audience", "creative", "Small voices, large audiences",
+    "A community storyteller shares valuable local work, but residents who are not online cannot easily find events or opportunities.",
+    "How can the creative team broaden participation?",
+    "Ask how public events can work for people with different abilities and access to technology.",
+    [
+      choice("channels", "Use digital and community channels together", "Creators combine online announcements with accessible local notice points and invite feedback from different groups.", "More channels need coordination and updated information.", [2,2,-1,2], "Digital access, culture and public information"),
+      choice("viral", "Invest only in one viral social media trend", "A post may attract views, but many neighbours still cannot find or attend the real activities.", "Popularity online is not the same as useful, lasting reach.", [0,-1,-2,0], "Digital inclusion and communication"),
+      choice("exclusive", "Invite only the already famous creators", "Known performers fill the stage, while new talent loses opportunities to develop and contribute.", "A creative economy needs pathways for emerging builders.", [0,-2,1,-1], "Skills, opportunity and fair participation"),
+    ], "technology"),
+  caseFile("industry-spares", "industry", "Build what the city needs",
+    "The making yard can produce a few useful parts locally. Repair shops and farmers report frequent delays for simple replacements.",
+    "How should makers decide what to produce first?",
+    "Observe how prototypes, safety standards and real customer needs shape useful manufacturing.",
+    [
+      choice("test", "Study demand and prototype with qualified guidance", "Makers talk to users, test safe sample components and improve designs before committing scarce resources.", "Testing takes effort and some prototypes will need revision.", [2,2,-1,2], "Local engineering, agriculture and repair"),
+      choice("copy", "Mass-produce untested replacements immediately", "Many items appear quickly, but fit and safety problems may make them unusable or risky.", "Volume cannot substitute for quality assurance and proper testing.", [-2,-1,-2,-2], "Manufacturing reliability and product safety"),
+      choice("fashion", "Make only decorative products nobody requested", "The factory looks busy while essential parts remain scarce and goods accumulate unused.", "Production without a real use can consume money and materials.", [0,-1,-2,-1], "Local enterprise and resource use"),
+    ], "workshop"),
+  caseFile("industry-workers", "industry", "A factory needs more builders",
+    "Demand for locally made goods is growing. Workers have different levels of experience, and new machines create safety and training requirements.",
+    "What should the yard invest in to grow responsibly?",
+    "Ask why supervised practice, safe methods and fair work are central to production.",
+    [
+      choice("train", "Build supervised training and clear safety routines", "Experienced workers support apprentices with appropriate tasks while the factory monitors quality and safe operation.", "Training uses time and resources before output can grow steadily.", [2,2,-1,2], "Skills, worker welfare and sustainable production"),
+      choice("speed", "Demand maximum output without training", "The production line moves faster briefly, while errors and unsafe practices become harder to manage.", "High output is not worthwhile when workers and customers are exposed to preventable harm.", [-2,-2,1,-2], "Workplace safety and business resilience"),
+      choice("automate", "Replace every inexperienced worker overnight", "Some tasks become automated but the factory loses opportunities to develop local skills and support people.", "Equipment alone cannot replace careful training and fair transition planning.", [0,-2,-2,-1], "Human potential and responsible technology"),
+    ], "school"),
+];
+export const GROWTH_CASE_COUNT = GROWING_CITY_CASES.length;
+// Use one real dependency in the starting city's state, not a random paragraph.
+export function chapterPressure(scenario, city) {
+  if (scenario.chapter !== 2) return "";
+  const linked = city.districts[scenario.dependsOn];
+  if (!linked || !linked.built) return "A related service is not yet built. Your new district must plan around that gap.";
+  if (linked.service < 42) return linked.name + " is struggling in your city. This makes the new challenge harder until that service improves.";
+  if (linked.service >= 65) return linked.name + " is thriving in your city. You can build on that strength, but its upkeep still matters.";
+  return linked.name + " is active but has limits. Coordinate with that service while deciding what to build.";
+}

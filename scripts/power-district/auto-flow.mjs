@@ -6,7 +6,7 @@ import {
   caseNumber,
   OUTCOME_VIEW_MS,
 } from "../../public/games/city/case-flow.mjs";
-assert.equal(CITY_CASES.length, 16);
+assert.equal(CITY_CASES.length, 36);
 assert(OUTCOME_VIEW_MS >= 6000 && OUTCOME_VIEW_MS <= 12000);
 for (const seed of [0, 1, 2, 3, -1]) {
   const firstSlots = [0, 0, 0];
@@ -32,13 +32,13 @@ for (const seed of [0, 1, 2, 3, -1]) {
     );
   }
   assert(
-    firstSlots.every((n) => n >= 5 && n <= 6),
-    "best authored choice must be balanced across answer positions",
+    firstSlots.every((n) => n === 12),
+    "strong authored choice must be balanced across answer positions",
   );
 }
 assert.deepEqual(choicesForCase("invalid-case-id"), []);
 assert.equal(nextCaseAfter("invalid-case-id"), null);
 assert.equal(caseNumber("invalid-case-id"), 0);
 console.log(
-  "PASS: first authored option balances across all 3 answer positions, retries stay stable and 16 cases advance without cycling forever.",
+  "PASS: answer order balanced across 36 cases with predictable retries and no looping.",
 );

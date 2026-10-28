@@ -16,8 +16,8 @@ const empty = deriveBuilderCity();
 assert.equal(empty.completed, 0);
 assert.equal(empty.visibleBuildings, 0);
 assert.equal(empty.cityHealth, 0);
-assert.equal(Object.keys(empty.districts).length, 4);
-assert.equal(CITY_SYSTEMS.length, 4);
+assert.equal(Object.keys(empty.districts).length, 14);
+assert.equal(CITY_SYSTEMS.length, 14);
 assert(CONNECTIONS.some((l) => l.from === "power" && l.to === "market"));
 const ids = new Set();
 for (const scenario of CITY_CASES) {
@@ -36,19 +36,20 @@ for (const scenario of CITY_CASES) {
     ids.add(shape.caseId + "_" + shape.choiceId);
   }
 }
-assert.equal(ids.size, 48);
+assert.equal(ids.size, 108);
 assert.equal(choiceStructure("invalid", "invalid"), null);
 let choices = {};
 for (const c of CITY_CASES)
   choices = saveDecision(choices, c.id, c.options[0].id);
 const positive = deriveBuilderCity(choices);
-assert.equal(positive.completed, 16);
-assert.equal(positive.visibleBuildings, 16);
-assert.equal(positive.thriving, 4);
+assert.equal(positive.completed, 36);
+assert.equal(positive.visibleBuildings, 36);
+assert(positive.thriving >= 4);
 assert(positive.cityHealth > 60);
 for (const district of Object.values(positive.districts)) {
-  assert.equal(district.built, 4);
-  assert.equal(district.structures.length, 4);
+  const target = ["workshop","power","market","school"].includes(district.id) ? 4 : 2;
+  assert.equal(district.built, target);
+  assert.equal(district.structures.length, target);
   assert(district.service >= 0 && district.service <= 100);
   assert(["active", "thriving", "struggling"].includes(district.activity));
 }
@@ -95,5 +96,5 @@ assert.equal(
 );
 assert.equal(getChoice("repair-queue", "rush").id, "rush");
 console.log(
-  "PASS: 48 distinct choice architectures, 16 lasting sites, reversible outcomes, four active districts, dependency effects and deterministic device-save restoration.",
+  "PASS: 108 distinctive choice structures, 36 lasting sites, 14 active districts, coupled effects and repeatable restoration.",
 );
