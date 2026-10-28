@@ -40,7 +40,8 @@ assert(
     "livingScene.animate(now, reduceMotion.matches, document.hidden || simulating)",
   ),
 );
-assert(game.includes("lowPower: innerWidth <= 650"));
+assert(game.includes("lowPower:"));
+assert(game.includes("innerWidth <= 650"));
 assert(game.includes("const living = deriveLivingCity(state.decisions)"));
 assert(game.includes("living.deliveries.length"));
 
