@@ -1540,12 +1540,10 @@ function showCase(id) {
   if (!scenario) return;
   const saved = getChoice(id, state.decisions[id]);
   const splitAt = scenario.situation.indexOf(". ");
-  const shortSituation = splitAt < 0
-    ? scenario.situation
-    : scenario.situation.slice(0, splitAt + 1);
-  const extraSituation = splitAt < 0
-    ? ""
-    : scenario.situation.slice(splitAt + 2);
+  const shortSituation =
+    splitAt < 0 ? scenario.situation : scenario.situation.slice(0, splitAt + 1);
+  const extraSituation =
+    splitAt < 0 ? "" : scenario.situation.slice(splitAt + 2);
   showDetail(
     '<div class="eyebrow">' +
       (reviewCaseId === id
@@ -1558,7 +1556,9 @@ function showCase(id) {
       "<h2>" +
       scenario.title +
       "</h2>" +
-      '<p class="case-intro">' + shortSituation + "</p>" +
+      '<p class="case-intro">' +
+      shortSituation +
+      "</p>" +
       (extraSituation || scenario.chapter === 2
         ? '<details class="case-story"><summary>More about this problem</summary>' +
           (extraSituation ? "<p>" + extraSituation + "</p>" : "") +

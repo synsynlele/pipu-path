@@ -23,7 +23,6 @@ This change is preview-only until student Android portrait/landscape
 testing confirms readability, all three options reachable, accessibility
 and no collision with the journey controls.
 
-
 ## 28 October 2026 — Chapter 2 expansion across all 14 places
 
 Branch `feat/unbuilt-city-chapter-two-all-districts` extends the original
