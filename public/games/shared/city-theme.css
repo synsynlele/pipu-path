@@ -2703,3 +2703,173 @@ body.city-viewing .corner-note {
     margin-top: 3px;
   }
 }
+
+/* Chapter 3 operates inside the same visible city rather than replacing
+   the game with a screen-sized form. All results remain fictional. */
+#opportunities-panel {
+  position: absolute;
+  top: auto;
+  bottom: 16px;
+  right: 16px;
+  left: auto;
+  width: min(404px, calc(100vw - 32px));
+  max-height: min(66dvh, 540px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 13px;
+  border-radius: 15px;
+  z-index: 52;
+}
+#opportunities-panel[hidden],
+body.city-viewing #opportunities-panel {
+  display: none !important;
+}
+#opportunities-panel .district-menu-heading h2 {
+  font-size: 17px;
+  line-height: 1.2;
+}
+#opportunities-panel .district-menu-heading p,
+.opportunities-caption,
+.opportunities-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #48627e;
+}
+#opportunities-close {
+  flex: 0 0 36px;
+  min-width: 36px;
+  min-height: 36px;
+}
+.opportunities-metrics {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 9px 0;
+}
+.opportunities-metrics span {
+  padding: 6px 8px;
+  background: #e6ecf4;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #264773;
+}
+.opportunities-event {
+  padding: 10px 11px;
+  background: #f5edd2;
+  border-inline-start: 3px solid #c3a451;
+  border-radius: 8px;
+  color: #405672;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.opportunities-policies {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin: 9px 0 11px;
+}
+.opportunity-policy {
+  min-width: 0;
+  min-height: 74px;
+  padding: 9px;
+  border-radius: 10px;
+  background: #eff3f6;
+  border: 1px solid #cdd8e2;
+  color: #324d6b;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.opportunity-policy[aria-pressed="true"] {
+  background: #e3eedc;
+  border: 2px solid #47795d;
+}
+.opportunity-policy strong {
+  display: block;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.opportunity-policy small {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+#opportunities-run {
+  width: 100%;
+  min-height: 45px;
+  margin: 0;
+}
+.opportunities-result {
+  padding: 10px 11px;
+  margin-top: 10px;
+  border-radius: 10px;
+  background: #edf2e9;
+  color: #334e59;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.opportunities-result strong,
+.opportunities-ledger strong {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.opportunities-result p {
+  margin: 4px 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.opportunities-ledger {
+  margin-top: 12px;
+  color: #456078;
+}
+.opportunities-ledger div {
+  padding: 5px 0;
+  border-bottom: 1px solid #dbe4e9;
+  font-size: 10px;
+  line-height: 1.4;
+}
+#opportunities-reset {
+  display: block;
+  min-height: 44px;
+  width: 100%;
+  margin: 11px 0 6px;
+  font-size: 11px;
+}
+.opportunities-note {
+  display: block;
+}
+#opportunities-toggle:disabled {
+  opacity: 0.6;
+}
+@media (max-width: 650px) {
+  #opportunities-panel {
+    bottom: max(10px, env(safe-area-inset-bottom));
+    right: 10px;
+    width: min(355px, calc(100vw - 20px));
+    max-height: min(58dvh, 445px);
+    padding: 11px;
+  }
+  #opportunities-panel .district-menu-heading h2 {
+    font-size: 15px;
+  }
+  .opportunity-policy {
+    padding: 8px;
+  }
+  .opportunity-policy strong {
+    font-size: 10px;
+  }
+  .opportunity-policy small {
+    font-size: 9px;
+  }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  #opportunities-panel {
+    max-height: 70dvh;
+    width: min(355px, 48vw);
+  }
+}

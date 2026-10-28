@@ -4,6 +4,16 @@ import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
 import { cityViewSummary, findCityViewDistrict } from "./city-view.mjs";
 import { deriveLivingCity } from "./living-city.mjs";
+import {
+  DAY_EVENTS,
+  ENTERPRISE_DAYS,
+  OPPORTUNITY_POLICIES,
+  foundationForOpportunities,
+  newOpportunityState,
+  runOpportunityDay,
+  sanitizeOpportunityState,
+  selectOpportunityPolicy,
+} from "./opportunities.mjs";
 import { createLivingCityScene } from "./living-scene.mjs";
 import { chapterPressure } from "./chapter-two.mjs";
 import {
@@ -58,6 +68,7 @@ const fresh = () => ({
   reflection: "",
   decisions: {},
   journey: null,
+  economy: newOpportunityState(),
 });
 const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
@@ -816,7 +827,7 @@ let builtCityView = null;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
-  livingScene.sync(state.decisions);
+  livingScene.sync(state.decisions, state.economy);
   if (builtCityView) updateBuiltCityView();
 }
 function rememberJourney() {
@@ -840,6 +851,11 @@ function refreshJourneyControls() {
   $("journey-bar").hidden = !visible;
   // Always keep essential navigation available. Opening it pauses the journey.
   $("city-tools").hidden = !entered || simulating;
+  const unlocked = foundationForOpportunities(state.decisions);
+  $("opportunities-toggle").disabled = !unlocked || simulating;
+  $("opportunities-toggle").title = unlocked
+    ? "Manage your city's production, services and opportunities"
+    : "Finish all 36 city decisions to unlock Chapter 3";
   document.body.classList.toggle("city-journey", running);
   document.body.classList.toggle("city-journey-paused", paused);
   const previous = previousKeptCase(state.decisions, journey.caseId);
@@ -873,7 +889,7 @@ function refreshJourneyControls() {
 function updateBuiltCityView() {
   if (!builtCityView) return;
   const summary = cityViewSummary(state.decisions);
-  const living = deriveLivingCity(state.decisions);
+  const living = deriveLivingCity(state.decisions, state.economy);
   $("city-view-summary").textContent =
     summary.built +
     "/" +
@@ -957,6 +973,7 @@ function openBuiltCityView() {
     fov: camera.fov,
     far: camera.far,
     fogFar: scene.fog.far,
+    opportunityVisible: !$("opportunities-panel").hidden,
   };
   if (wasRunning)
     pauseJourney("Your journey is paused while you inspect your city.");
@@ -965,6 +982,7 @@ function openBuiltCityView() {
   closeCasebook();
   closeCityStatus();
   closeDirectory();
+  closeOpportunityPanel();
   $("detail").hidden = true;
   $("mission").hidden = true;
   $("build-dock").hidden = true;
@@ -1004,6 +1022,7 @@ function closeBuiltCityView() {
   camera.updateProjectionMatrix();
   $("city-map").textContent = mapMode ? "Follow me" : "City map";
   $("detail").hidden = !snapshot.detailVisible;
+  if (snapshot.opportunityVisible) openOpportunityPanel();
   if (snapshot.wasRunning) resumeJourney();
   else refreshJourneyControls();
 }
@@ -1097,7 +1116,7 @@ function resumeJourney() {
   if (target.stage === "complete") {
     journey.status = "complete";
     refreshJourneyControls();
-    toast("All current chapters complete. Every decision remains revisable.");
+    toast("Chapters 1 and 2 complete. Open Opportunities to manage your city.");
     return;
   }
   // A returned learner must see the requested case, not a still-open
@@ -1413,6 +1432,143 @@ function persistPractice() {
 function closeCasebook() {
   $("casebook").hidden = true;
   $("cases-toggle").setAttribute("aria-expanded", "false");
+}
+function closeOpportunityPanel() {
+  $("opportunities-panel").hidden = true;
+  $("opportunities-toggle").setAttribute("aria-expanded", "false");
+}
+function renderOpportunityPanel() {
+  const economy =
+    sanitizeOpportunityState(state.economy) ?? newOpportunityState();
+  const last = economy.last;
+  const completed = economy.day === ENTERPRISE_DAYS;
+  const people = economy.history.reduce(
+    (total, row) => total + row.meals + row.patients,
+    0,
+  );
+  $("opportunities-day").textContent =
+    "Day " + economy.day + " / " + ENTERPRISE_DAYS;
+  $("opportunities-people").textContent = "Service visits so far: " + people;
+  $("opportunities-summary").textContent =
+    "Water and parts feed production. Farms supply shops, clinics serve residents, and repairs support tomorrow.";
+  const event = DAY_EVENTS[completed ? ENTERPRISE_DAYS - 1 : economy.day];
+  $("opportunities-event").textContent = completed
+    ? "Your seven-day city challenge is complete. Explore the results or restart just this practice."
+    : "Next challenge: " + event.name + " — " + event.detail;
+  const buttons = $("opportunities-policies");
+  buttons.replaceChildren();
+  for (const policy of OPPORTUNITY_POLICIES) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "opportunity-policy";
+    button.setAttribute("aria-pressed", String(policy.id === economy.policy));
+    button.disabled = completed;
+    const title = document.createElement("strong");
+    title.textContent = policy.title;
+    const detail = document.createElement("small");
+    detail.textContent = policy.detail;
+    button.append(title, detail);
+    button.onclick = () => {
+      const next = selectOpportunityPolicy(state.economy, policy.id);
+      if (!next) return;
+      state.economy = next;
+      persistPractice();
+      renderOpportunityPanel();
+    };
+    buttons.append(button);
+  }
+  $("opportunities-run").disabled = completed;
+  $("opportunities-run").textContent = completed
+    ? "Seven days completed"
+    : "Run day " + (economy.day + 1) + " →";
+  const result = $("opportunities-result");
+  result.replaceChildren();
+  if (!last) {
+    result.textContent =
+      "Your enterprises are ready. Select a priority, then run the first day to see who gets supplies and who has to wait.";
+  } else {
+    const title = document.createElement("strong");
+    title.textContent = "DAY " + last.day + " · WHAT YOUR CITY PRODUCED";
+    const production = document.createElement("p");
+    production.textContent =
+      "Water: " +
+      last.water +
+      " · Parts: " +
+      last.parts +
+      " · Food: " +
+      last.food;
+    const served = document.createElement("p");
+    served.textContent =
+      "Market visits: " +
+      last.meals +
+      " · Clinic visits: " +
+      last.patients +
+      " · Repairs: " +
+      last.repairs;
+    const impact = document.createElement("p");
+    impact.textContent =
+      "Work activities: " + last.jobs + " · Needs not met: " + last.unserved;
+    const delivery = document.createElement("p");
+    delivery.textContent = last.shipments.length
+      ? "Deliveries: " +
+        last.shipments
+          .map(
+            (route) => route.units + " from " + route.from + " to " + route.to,
+          )
+          .join("; ")
+      : "No supplies were delivered today.";
+    const stocks = document.createElement("p");
+    stocks.textContent =
+      "Carried to tomorrow · Water: " +
+      economy.stocks.water +
+      " · Parts: " +
+      economy.stocks.parts +
+      " · Food: " +
+      economy.stocks.food;
+    result.append(title, production, served, impact, delivery, stocks);
+  }
+  const ledger = $("opportunities-ledger");
+  ledger.replaceChildren();
+  if (economy.history.length) {
+    const heading = document.createElement("strong");
+    heading.textContent = "YOUR SEVEN-DAY STORY";
+    ledger.append(heading);
+    for (const row of economy.history) {
+      const line = document.createElement("div");
+      line.textContent =
+        "Day " +
+        row.day +
+        " · " +
+        row.policy +
+        " · " +
+        (row.meals + row.patients) +
+        " visits · " +
+        row.unserved +
+        " needs still waiting";
+      ledger.append(line);
+    }
+  }
+}
+function openOpportunityPanel() {
+  if (simulating || !$("intro").hidden) return;
+  if (!foundationForOpportunities(state.decisions)) {
+    toast("Complete all 36 decisions to unlock your city's opportunities.");
+    return;
+  }
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your journey is paused.");
+  closeDirectory();
+  closeCasebook();
+  closeCityStatus();
+  closeDetail();
+  $("detail").hidden = true;
+  guideExpanded = false;
+  dockExpanded = false;
+  $("build-dock").hidden = true;
+  updateGuideVisibility();
+  renderOpportunityPanel();
+  $("opportunities-panel").hidden = false;
+  $("opportunities-toggle").setAttribute("aria-expanded", "true");
 }
 function closeCityStatus() {
   $("city-status").hidden = true;
@@ -1849,10 +2005,13 @@ function proceedAfterCase(id) {
         CITY_CASES.length +
         " choices made. " +
         "Every decision can be revisited.</div>" +
-        "<p>This is a fictional learning model, not a verified city economy or Quest achievement. Your city remains revisable.</p>" +
-        '<button class="primary" id="finish-practice">Return to the city</button>',
+        "<p>Now see what happens when your city's businesses must produce real supplies for people. This is a fictional learning model, not verified XP.</p>" +
+        '<button class="primary" id="finish-practice">Start Chapter 3 — Opportunities →</button>',
     );
-    $("finish-practice").onclick = closeDetail;
+    $("finish-practice").onclick = () => {
+      closeDetail();
+      openOpportunityPanel();
+    };
     return;
   }
   // A single journey owns travel, questions and outcomes. Legacy station
@@ -2011,7 +2170,11 @@ function render() {
     q = r.quote;
   $("chapter").textContent =
     "THE UNBUILT CITY · CHAPTER " +
-    (foundationComplete(state.decisions) ? 2 : 1) +
+    (foundationForOpportunities(state.decisions)
+      ? 3
+      : foundationComplete(state.decisions)
+        ? 2
+        : 1) +
     " · DAY " +
     state.day;
   $("mission-title").textContent = guided
@@ -2572,6 +2735,35 @@ $("city-view-zoom-in").onclick = () => {
 $("city-view-zoom-out").onclick = () => {
   if (builtCityView) distance = clamp(distance * 1.25, 20, 250);
 };
+$("opportunities-toggle").onclick = () => {
+  if ($("opportunities-panel").hidden) openOpportunityPanel();
+  else closeOpportunityPanel();
+};
+$("opportunities-close").onclick = closeOpportunityPanel;
+$("opportunities-run").onclick = () => {
+  const next = runOpportunityDay(state.decisions, state.economy);
+  if (!next) {
+    toast(
+      "Finish the city foundations first, or restart the seven-day practice.",
+    );
+    return;
+  }
+  state.economy = next;
+  render();
+  renderOpportunityPanel();
+  toast("Day " + next.day + " completed. See which needs your city met.");
+};
+$("opportunities-reset").onclick = () => {
+  if (
+    !confirm(
+      "Restart only the seven-day enterprise practice? Your 36 city decisions stay.",
+    )
+  )
+    return;
+  state.economy = newOpportunityState();
+  render();
+  renderOpportunityPanel();
+};
 $("city-status-toggle").onclick = () => {
   if (simulating) return;
   if ($("city-status").hidden) openCityStatus();
@@ -2683,7 +2875,7 @@ $("start").onclick = () => {
   } else {
     journey.status = "complete";
     refreshJourneyControls();
-    toast("Your city is ready to explore. Revisit any of your decisions.");
+    toast("Your city is ready. Open Opportunities to run its enterprises.");
   }
 };
 $("sound").onclick = () => {
@@ -2724,6 +2916,7 @@ $("reset").onclick = () => {
   saveEnabled = false;
   closeCasebook();
   closeCityStatus();
+  closeOpportunityPanel();
   if (!cleared) toast("Could not clear saved practice. Check browser storage.");
   freeExplore = false;
   mapMode = false;

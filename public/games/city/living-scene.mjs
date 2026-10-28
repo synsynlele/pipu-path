@@ -124,8 +124,8 @@ export function createLivingCityScene({
     vehicles.push({ g, route: null });
   }
   let latest = null;
-  function sync(decisions) {
-    latest = deriveLivingCity(decisions);
+  function sync(decisions, economy = null) {
+    latest = deriveLivingCity(decisions, economy);
     for (const district of latest.districts) {
       const courtyard = plazas.get(district.id);
       courtyard.built.visible = district.built > 0;

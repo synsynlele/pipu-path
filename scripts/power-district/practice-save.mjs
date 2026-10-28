@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { initialPlan } from "../../public/games/city/model.mjs";
+import { newOpportunityState } from "../../public/games/city/opportunities.mjs";
 import {
   PRACTICE_KEY,
   sanitizePractice,
@@ -43,6 +44,7 @@ assert.deepEqual(restored.seen, ["workshop", "power"]);
 assert.equal(restored.reflection, "");
 assert.deepEqual(restored.decisions, { "repair-queue": "first" });
 assert.equal(restored.day, 1);
+assert.deepEqual(restored.economy, newOpportunityState());
 assert.deepEqual(restored.journey, {
   caseId: "repair-queue",
   stage: "outcome",
@@ -79,6 +81,26 @@ assert.equal(
     },
   }).journey.stage,
   "question",
+);
+const firstEconomy = { ...newOpportunityState(), policy: "people" };
+assert.equal(savePractice({ ...state, economy: firstEconomy }, fake), true);
+assert.deepEqual(
+  loadPractice(fake).economy,
+  firstEconomy,
+  "Optional seven-day practice settings restore without leaking details",
+);
+assert.deepEqual(
+  sanitizePractice({
+    ...state,
+    economy: {
+      day: 999,
+      policy: "unsafe",
+      stocks: null,
+      history: [],
+    },
+  }).economy,
+  newOpportunityState(),
+  "Invalid enterprise state resets safely while 36 choices survive",
 );
 assert.equal(clearPractice(fake), true);
 assert.equal(loadPractice(fake), null);

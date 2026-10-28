@@ -48,7 +48,7 @@ export function roadDeliveryRoute(from, to) {
   return points.map(([x, z]) => ({ x, z }));
 }
 
-export function deriveLivingCity(decisions = {}) {
+export function deriveLivingCity(decisions = {}, economy = null) {
   const city = deriveBuilderCity(decisions);
   const districts = CITY_DISTRICTS.map((site) => {
     const state = city.districts[site.id];
@@ -83,6 +83,37 @@ export function deriveLivingCity(decisions = {}) {
       },
     ];
   }).slice(0, 5);
+  // Once Chapter 3 has operated, trucks represent shipments that the
+  // player's simulation actually completed rather than ambient loops.
+  if (economy?.day > 0 && Array.isArray(economy?.last?.shipments)) {
+    const actual = economy.last.shipments
+      .filter(
+        (s) =>
+          s.units > 0 &&
+          city.districts[s.from]?.built &&
+          city.districts[s.to]?.built,
+      )
+      .map((shipment) => {
+        const path = roadDeliveryRoute(shipment.from, shipment.to);
+        const quality = Math.min(
+          city.districts[shipment.from].service,
+          city.districts[shipment.to].service,
+        );
+        return {
+          id: shipment.from + "-to-" + shipment.to,
+          from: shipment.from,
+          to: shipment.to,
+          label: shipment.units + " units delivered",
+          units: shipment.units,
+          path,
+          pace: quality >= 65 ? "steady" : quality >= 42 ? "careful" : "slow",
+          speed: quality >= 65 ? 4.3 : quality >= 42 ? 2.8 : 1.55,
+        };
+      })
+      .filter((delivery) => delivery.path.length >= 2)
+      .slice(0, 5);
+    deliveries.splice(0, deliveries.length, ...actual);
+  }
   // Traffic illustrates a few relationships only; not a prediction.
   const linkageCount = CONNECTIONS.filter(
     ({ from, to }) => city.districts[from].built && city.districts[to].built,

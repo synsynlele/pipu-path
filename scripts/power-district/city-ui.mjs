@@ -34,7 +34,7 @@ assert(game.includes("function openCasebook()"));
 assert(game.includes("function showCaseOutcome("));
 assert(game.includes("const caseScenes = createCaseSceneEffects("));
 assert(game.includes("const livingScene = createLivingCityScene("));
-assert(game.includes("livingScene.sync(state.decisions)"));
+assert(game.includes("livingScene.sync(state.decisions, state.economy)"));
 assert(
   game.includes(
     "livingScene.animate(now, reduceMotion.matches, document.hidden || simulating)",
@@ -42,7 +42,11 @@ assert(
 );
 assert(game.includes("lowPower:"));
 assert(game.includes("innerWidth <= 650"));
-assert(game.includes("const living = deriveLivingCity(state.decisions)"));
+assert(
+  game.includes(
+    "const living = deriveLivingCity(state.decisions, state.economy)",
+  ),
+);
 assert(game.includes("living.deliveries.length"));
 
 assert(game.includes("function runCaseWorldAction("));
@@ -59,6 +63,21 @@ assert(game.includes('pauseJourney("The route is blocked.'));
 assert(html.includes('id="journey-bar"'));
 assert(html.includes('id="view-city-toggle"'));
 assert(html.includes('id="city-view"'));
+assert(html.includes('id="opportunities-toggle"'));
+assert(html.includes('id="opportunities-panel"'));
+assert(html.includes('id="opportunities-policies"'));
+assert(html.includes('id="opportunities-run"'));
+assert(html.includes('id="opportunities-reset"'));
+assert(game.includes("function renderOpportunityPanel()"));
+assert(game.includes("function openOpportunityPanel()"));
+assert(game.includes("function closeOpportunityPanel()"));
+assert(game.includes("runOpportunityDay(state.decisions, state.economy)"));
+assert(game.includes("selectOpportunityPolicy(state.economy, policy.id)"));
+assert(game.includes("foundationForOpportunities(state.decisions)"));
+assert(game.includes("Start Chapter 3 — Opportunities"));
+assert(game.includes("livingScene.sync(state.decisions, state.economy)"));
+assert(css.includes("#opportunities-panel"));
+assert(css.includes(".opportunity-policy"));
 assert(html.includes('id="city-view-return"'));
 assert(html.includes('id="city-view-overview"'));
 assert(html.includes('id="city-view-district"'));

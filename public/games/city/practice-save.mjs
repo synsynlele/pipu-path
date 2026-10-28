@@ -3,6 +3,10 @@
 import { initialPlan } from "./model.mjs";
 import { getCase, getChoice } from "./cases.mjs";
 import { JOURNEY_STAGES } from "./journey-flow.mjs";
+import {
+  newOpportunityState,
+  sanitizeOpportunityState,
+} from "./opportunities.mjs";
 
 export const PRACTICE_KEY = "unbuilt-city:practice:v1";
 const VERSION = 1;
@@ -101,6 +105,9 @@ export function sanitizePractice(state) {
     reflection: "", // Never persist personal text or unreviewed user content.
     decisions,
     journey,
+    // Existing saves without a Chapter 3 record restore as a fresh
+    // enterprise practice, without affecting the student's city decisions.
+    economy: sanitizeOpportunityState(state.economy) ?? newOpportunityState(),
   };
 }
 function getStorage(storage) {
