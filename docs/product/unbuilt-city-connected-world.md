@@ -1,5 +1,41 @@
 # The Unbuilt City: one connected world
 
+## 28 October — public-browser smoke check
+
+The preview opened the intro screen and displayed the expected opening copy.
+The browser check did not complete entering the city, travelling to Ama or
+testing map controls; those interactions remain unverified and are not
+claimed as passed. Device WebGL and phone layout remain pending.
+
+## 28 October — guided opening and larger districts (isolated preview candidate)
+
+The user reported that the previous city was too small, packed and confusing.
+This candidate keeps workshop, power, market, learning and city desk in the
+same simulated economy. It expands the ground from 23 × 18 to 52 × 44 world
+units and relocates the school district and market with corresponding
+characters, labels, arrival points and obstacles. Streets, trees, future
+plots and outlying buildings occupy the new space. A camera map toggle lets
+players see the larger neighbourhood; normal camera movement follows the
+walking character. Click-to-move, routing around obstacles and manual
+movement use the same navigator with explicit expanded bounds.
+
+First-time players now receive exactly one next destination: meet Ama,
+then inspect power, the market, learning and the city desk. A single
+"Take me there" action walks automatically. Construction controls stay
+hidden during this guided introduction; "Explore freely" restores the
+existing advanced city planning interface without deleting it. Smaller
+screens put the task card at the bottom, keep the view uncluttered and make
+the map and free-explore controls accessible. Game title is only
+"The Unbuilt City", not a second PipuPath wordmark.
+
+This does **not** change the fictional economy, Quest persistence,
+safeguarding, XP, evidence or Supabase schema. The guide is derived from
+this session's station visits; it is not durable user progress. Mobile
+walkability, runtime WebGL fallback, accessible tap targets and pilot
+comprehension remain acceptance gates; no production release is claimed.
+The founder need not intervene to route each player; the same template can
+guide later districts after user validation.
+
 Authority: 28 October 2026. The owner rejected duplicate PipuPath branding inside
 the game, requested app/game colour integration and asked for all building and
 solutions to happen in the same city rather than separate challenge scenes.

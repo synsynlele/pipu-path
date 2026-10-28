@@ -1326,3 +1326,126 @@ body.city-playing #resource {
     width: 200px;
   }
 }
+
+/* Guided exploration. Keep the existing detailed district tools available
+   behind "Explore freely" without loading the first screen with controls. */
+#city-tools {
+  position: absolute;
+  z-index: 9;
+  top: 92px;
+  right: 28px;
+  gap: 8px;
+}
+#city-tools:not([hidden]) {
+  display: flex;
+}
+#city-tools button {
+  border: 1px solid #cad5e9;
+  border-radius: 22px;
+  background: #fbfcfff2;
+  color: #243b78;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 3px 12px #21325316;
+}
+#city-tools button:focus-visible {
+  outline-color: #243b78;
+}
+body.city-guided #mission.city-board {
+  width: min(312px, calc(100% - 28px));
+}
+body.city-guided #mission .mission-footer > span:last-child {
+  display: none;
+}
+body.city-guided #mission-action .primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e5c96f;
+  color: #15294e;
+  border-radius: 10px;
+  min-height: 45px;
+  font-size: 13px;
+  font-weight: 800;
+}
+body.city-guided #mission h1 {
+  margin: 10px 0;
+}
+body.city-guided #mission p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+body.city-guided #mission .progress-track {
+  margin-top: 12px;
+}
+body.city-guided #resource {
+  left: auto;
+  right: 20px;
+  top: 146px;
+  bottom: auto;
+}
+@media (max-width: 650px) {
+  header {
+    height: 70px;
+    padding: 0 13px;
+    gap: 8px;
+  }
+  .brand b {
+    font-size: 19px;
+  }
+  .brand small {
+    font-size: 6px;
+    letter-spacing: 1.1px;
+  }
+  .top-actions {
+    gap: 4px;
+  }
+  .top-actions .icon {
+    width: 32px;
+    height: 32px;
+  }
+  #city-tools {
+    top: 76px;
+    right: 12px;
+    gap: 6px;
+  }
+  #city-tools button {
+    font-size: 10px;
+    padding: 9px 11px;
+  }
+  body.city-guided #mission.city-board {
+    position: absolute;
+    top: auto;
+    left: 12px;
+    right: 12px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    width: auto;
+    max-height: 38dvh;
+    overflow-y: auto;
+    padding: 16px 18px;
+    border-radius: 18px;
+  }
+  body.city-guided #mission h1 {
+    font-size: 20px;
+    line-height: 1.18;
+  }
+  body.city-guided #mission p {
+    font-size: 12px;
+  }
+  body.city-guided #resource {
+    top: 122px;
+    right: 12px;
+  }
+  body.city-guided #weather,
+  body.city-guided #controls,
+  body.city-guided .corner-note {
+    display: none;
+  }
+  body.city-guided #mobile-move {
+    display: none;
+  }
+  .hotspot {
+    font-size: 9px;
+  }
+}

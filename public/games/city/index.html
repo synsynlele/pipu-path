@@ -14,7 +14,7 @@
     <main id="game" aria-label="The Unbuilt City interactive world">
       <canvas
         id="world"
-        aria-label="3D repair workshop. Drag to orbit, scroll to zoom, click the ground to walk. Use labeled stations to interact."
+        aria-label="The Unbuilt City 3D world. Tap the highlighted next step to walk automatically. Drag to look around or tap an open spot to walk there."
       ></canvas>
       <div id="vignette"></div>
       <header>
@@ -55,6 +55,10 @@
         ><span id="weather-title">A bright beginning</span
         ><span class="weather-time">08:00</span>
       </div>
+      <nav id="city-tools" hidden aria-label="City exploration controls">
+        <button id="city-map" type="button">City map</button
+        ><button id="explore-free" type="button">Explore freely</button>
+      </nav>
       <section id="mission" class="panel" hidden>
         <div class="eyebrow" id="chapter">01 / DISCOVER</div>
         <h1 id="mission-title">A workshop worth keeping.</h1>
@@ -115,19 +119,19 @@
           </div>
           <h1>One city.<br /><em>Many possibilities.</em></h1>
           <p>
-            The workshop needs power. Food waits at the market. A learning club
-            opens after sunset. Build a city where the whole system works.
+            Your city is full of possibilities. Start by meeting Ama at her
+            workshop. She needs your help to solve a real problem.
           </p>
           <button id="start" class="primary">
             Enter the city <span>↗</span>
           </button>
           <div class="intro-meta">
-            <span>EXPLORE IN 3D</span><span>BUILD & TEST</span
-            ><span>MAKE IT LAST</span>
+            <span>MEET PEOPLE</span><span>SOLVE PROBLEMS</span
+            ><span>BUILD TOGETHER</span>
           </div>
           <small
-            >Playable prototype · fictional energy model · progress saved on
-            this device</small
+            >Playable prototype · fictional city systems · session-only
+            progress</small
           >
         </section>
       </div>
@@ -144,14 +148,15 @@
           controls.
         </p>
         <p>
-          Tap the floating station names to approach equipment and talk to
-          people. During Build, add or remove options, then run a day. Revise as
-          often as you need.
+          Follow the yellow Take me there button to meet the city builders one
+          at a time. You can explore freely whenever you want. Use City map to
+          see the whole neighbourhood, then Follow me to return to your
+          character. Later, you can build, test and improve the whole city.
         </p>
         <p>
           All energy units and costs are fictional. This is a learning
           simulation, not electrical installation guidance. Sound is optional.
-          Progress stays in this browser.
+          Progress lasts only while this game stays open.
         </p>
         <button id="help-done" class="primary">Back to the workshop →</button>
         <p id="webgl-note"></p>
