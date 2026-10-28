@@ -42,6 +42,15 @@ for (let day = 1; day <= 7; day++) {
   assert(next, "Each enterprise day must run");
   assert.equal(next.day, day);
   assert.equal(next.history.length, day);
+  assert.equal(Object.keys(next.last.requests).length, 4);
+  assert.equal(
+    Object.values(next.last.requests).reduce(
+      (total, request) => total + request.requested - request.served,
+      0,
+    ),
+    next.last.unserved,
+    "The board must show only requests backed by the simulated shortages",
+  );
   assert.equal(next.history.at(-1).policy, policy);
   assert(next.last.shipments.every((s) => s.units > 0));
   assert(next.last.shipments.length <= 6);
@@ -198,6 +207,31 @@ assert.equal(
   "Tampered history is rejected",
 );
 assert.equal(sanitizeOpportunityState({ ...state, policy: "<script>" }), null);
+const legacyBoardlessSave = {
+  ...improved,
+  history: improved.history.map(({ requests: _requests, ...row }) => row),
+  last: { ...improved.last },
+};
+delete legacyBoardlessSave.last.requests;
+assert.equal(
+  sanitizeOpportunityState(legacyBoardlessSave).last.requests,
+  null,
+  "Older Chapter 3 saves without a request board must still load",
+);
+assert.equal(
+  sanitizeOpportunityState({
+    ...improved,
+    history: improved.history.map((row) => ({
+      ...row,
+      requests: {
+        ...row.requests,
+        clinic: { requested: 0, served: 999 },
+      },
+    })),
+  }),
+  null,
+  "Forged customer demand is rejected",
+);
 assert.equal(
   sanitizeOpportunityState({
     ...state,

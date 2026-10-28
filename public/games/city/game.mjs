@@ -7,6 +7,7 @@ import { deriveLivingCity } from "./living-city.mjs";
 import {
   DAY_EVENTS,
   ENTERPRISE_DAYS,
+  CITY_REQUESTS,
   OPPORTUNITY_POLICIES,
   OWNED_ENTERPRISES,
   ENTERPRISE_ACTIONS,
@@ -1599,6 +1600,33 @@ function renderOpportunityPanel() {
       result.append(performance);
     }
     result.append(production, served, impact, delivery, stocks);
+  }
+  const board = $("opportunities-requests");
+  board.replaceChildren();
+  board.hidden = !last?.requests;
+  if (last?.requests) {
+    const heading = document.createElement("strong");
+    heading.textContent = "TODAY'S REQUESTS";
+    board.append(heading);
+    for (const request of CITY_REQUESTS) {
+      const values = last.requests[request.id];
+      const line = document.createElement("div");
+      line.className = "opportunities-request";
+      const title = document.createElement("span");
+      title.textContent = request.title + " · " + request.resource;
+      const count = document.createElement("b");
+      count.className =
+        values.served < values.requested ? "request-waiting" : "request-met";
+      count.textContent = values.served + "/" + values.requested + " met";
+      line.append(title, count);
+      board.append(line);
+    }
+    const note = document.createElement("p");
+    note.textContent = last.unserved
+      ? last.unserved +
+        " needs remain unmet. Try changing tomorrow's city priority, or improving your business."
+      : "All four kinds of requests were met today. Can your city keep it up?";
+    board.append(note);
   }
   const ledger = $("opportunities-ledger");
   ledger.replaceChildren();

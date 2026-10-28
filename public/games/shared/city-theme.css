@@ -2823,6 +2823,48 @@ body.city-viewing #opportunities-panel {
   font-size: 11px;
   line-height: 1.45;
 }
+.opportunities-requests {
+  margin-top: 10px;
+  padding: 10px 11px;
+  background: #f5f6f1;
+  border: 1px solid #cfdad1;
+  border-radius: 10px;
+  color: #36524a;
+}
+.opportunities-requests[hidden] {
+  display: none;
+}
+.opportunities-requests > strong {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+.opportunities-request {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid #dde5df;
+  padding: 6px 0;
+  font-size: 11px;
+}
+.opportunities-request b {
+  white-space: nowrap;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.request-met {
+  color: #2d6b4f;
+}
+.request-waiting {
+  color: #8c4f29;
+}
+.opportunities-requests p {
+  margin: 7px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
 .opportunities-ledger {
   margin-top: 12px;
   color: #456078;

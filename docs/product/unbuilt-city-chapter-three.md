@@ -96,3 +96,14 @@ and bounded under the existing consented device-only save.
 **Next milestone:** customer orders, apprenticeships, skill transfer and
 meaningful collaboration between enterprises, validated first with students.
 Chapter 4 will introduce time-based resident needs, maintenance and city resilience only after Chapter 3 is validated in real classroom use.
+
+## Community request board (next milestone)
+
+After each simulated operating day, a compact board presents the actual
+clinic water, farm irrigation, repair and food-shopping requests, with how
+many were fulfilled and how many remain unmet. These totals are derived
+from the same bounded daily allocations that control supplies and shipments;
+the board does not introduce fictitious orders. Learners can compare service
+needs before choosing the next day's priority or enterprise improvement.
+Saved daily request records are validated, and earlier records without this
+board still load. No extra screen or separate quiz is introduced.

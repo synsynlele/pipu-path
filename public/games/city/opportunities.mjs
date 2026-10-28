@@ -62,6 +62,12 @@ export const DAY_EVENTS = Object.freeze([
   },
 ]);
 export const ENTERPRISE_PRODUCTS = Object.freeze(["water", "parts", "food"]);
+export const CITY_REQUESTS = Object.freeze([
+  { id: "clinic", title: "Clinic", resource: "Safe water" },
+  { id: "farms", title: "Farms", resource: "Water for crops" },
+  { id: "repairs", title: "Repair teams", resource: "Repair tasks" },
+  { id: "shops", title: "Shops", resource: "Food orders" },
+]);
 export const OWNED_ENTERPRISES = Object.freeze([
   {
     id: "water",
@@ -135,6 +141,25 @@ function safeEnterpriseSnapshot(value) {
 }
 const clamp = (x, min, max) => Math.max(min, Math.min(max, x));
 const isInt = (v, max) => Number.isInteger(v) && v >= 0 && v <= max;
+function safeRequestBoard(value) {
+  if (value === null || value === undefined) return null; // Earlier saves.
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const board = {};
+  for (const { id } of CITY_REQUESTS) {
+    const row = value[id];
+    if (
+      !row ||
+      typeof row !== "object" ||
+      Array.isArray(row) ||
+      !isInt(row.requested, 30) ||
+      !isInt(row.served, 30) ||
+      row.served > row.requested
+    )
+      return false;
+    board[id] = { requested: row.requested, served: row.served };
+  }
+  return board;
+}
 export function foundationForOpportunities(decisions = {}) {
   return CITY_CASES.every((c) => Boolean(getChoice(c.id, decisions[c.id])));
 }
@@ -186,9 +211,11 @@ export function sanitizeOpportunityState(value) {
     )
       return null;
     const ownedDay = safeEnterpriseSnapshot(item.enterprise);
-    if (ownedDay === false) return null;
+    const requests = safeRequestBoard(item.requests);
+    if (ownedDay === false || requests === false) return null;
     history.push({
       enterprise: ownedDay,
+      requests,
       day: item.day,
       policy: item.policy,
       water: item.water,
@@ -202,7 +229,15 @@ export function sanitizeOpportunityState(value) {
     });
   }
   const last = value.last;
+  const lastRequests = safeRequestBoard(last?.requests);
   if (value.day === 0 && last != null) return null;
+  if (lastRequests === false) return null;
+  if (
+    lastRequests !== null &&
+    JSON.stringify(lastRequests) !==
+      JSON.stringify(history[history.length - 1]?.requests)
+  )
+    return null;
   if (value.day > 0 && safeEnterpriseSnapshot(last?.enterprise) === false)
     return null;
   if (
@@ -348,6 +383,14 @@ export function runOpportunityDay(decisions, previous) {
     (retailNeed - meals) +
     (farmNeed - wateredFarm) +
     (repairNeed - repairs);
+  // Requests are the exact demands and completions already used by the
+  // city simulation; this board never invents additional orders.
+  const requests = {
+    clinic: { requested: clinicNeed, served: patients },
+    farms: { requested: farmNeed, served: wateredFarm },
+    repairs: { requested: repairNeed, served: repairs },
+    shops: { requested: retailNeed, served: meals },
+  };
   const jobs =
     [
       water > 0,
@@ -388,6 +431,7 @@ export function runOpportunityDay(decisions, previous) {
   const row = {
     day,
     enterprise: ownedDay,
+    requests,
     policy: state.policy,
     water,
     parts,
