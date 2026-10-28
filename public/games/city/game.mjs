@@ -1,3 +1,12 @@
+import { infrastructurePlan } from "./infrastructure.mjs";
+import {
+  ROAD_X,
+  ROAD_Z,
+  overlapsRoad,
+  clearRoadPlacement,
+  overviewFrustum,
+  cityBoxGeometry,
+} from "./layout.mjs";
 import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
@@ -151,18 +160,28 @@ renderer.shadowMap.type = T.PCFSoftShadowMap;
 renderer.setClearColor(0xe9e2d2);
 renderer.outputColorSpace = T.SRGBColorSpace;
 renderer.toneMapping = T.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.35;
+renderer.toneMappingExposure = 1.08;
 const scene = new T.Scene();
 scene.fog = new T.Fog(0xe9e2d2, 115, 225);
-const camera = new T.PerspectiveCamera(39, innerWidth / innerHeight, 0.1, 260);
+let camera = new T.PerspectiveCamera(39, innerWidth / innerHeight, 0.1, 260);
+const playCamera = camera;
+const cityCamera = new T.OrthographicCamera(-70, 70, 70, -70, 0.1, 600);
+function fitCityCamera() {
+  const frame = overviewFrustum(
+    innerWidth / innerHeight,
+    builtCityView?.focus ? 25 : 128,
+  );
+  Object.assign(cityCamera, frame);
+  cityCamera.updateProjectionMatrix();
+}
 let yaw = 0.8,
   pitch = 0.72,
   distance = 84,
   target = new T.Vector3(0, 0, 0),
   desiredTarget = new T.Vector3(0, 0, 0);
-const hemi = new T.HemisphereLight(0xfff9e4, 0x798268, 2.9);
+const hemi = new T.HemisphereLight(0xfff9e4, 0x798268, 2.25);
 scene.add(hemi);
-const sun = new T.DirectionalLight(0xffe1af, 3.5);
+const sun = new T.DirectionalLight(0xffe1af, 2.6);
 sun.position.set(-12, 20, 8);
 sun.castShadow = !compactDevice && !softwareMode;
 sun.shadow.mapSize.set(1024, 1024);
@@ -188,17 +207,7 @@ function box(w, h, d, c, x = 0, y = 0, z = 0, parent = scene) {
       // decision outcomes; mesh transforms still create unique structures.
       const key = [w, h, d].join(":");
       if (!boxGeometries.has(key))
-        boxGeometries.set(
-          key,
-          new T.BoxGeometry(
-            w,
-            h,
-            d,
-            w > 4 ? Math.ceil(w / 1.5) : 1,
-            h > 4 ? Math.ceil(h / 1.5) : 1,
-            d > 4 ? Math.ceil(d / 1.5) : 1,
-          ),
-        );
+        boxGeometries.set(key, cityBoxGeometry(T, w, h, d, softwareMode));
       return boxGeometries.get(key);
     })(),
     typeof c === "string" || typeof c === "number" ? mat(c) : c,
@@ -256,51 +265,27 @@ function textPlane(
 box(200, 0.3, 200, 0xe5ddc9, 0, -0.6, 0);
 const island = box(120, 0.45, 102, 0xc2bf9e, 0, -0.25, 0);
 box(120.2, 0.12, 102.2, 0xddd7bd, 0, 0, 0);
-// District roads connect one continuous world. Surface paint never blocks walking.
-for (const z of [-39, 6.7, 39]) box(115, 0.04, 3.5, 0x818586, 0, 0.105, z);
-for (const x of [-45, -10, 6, 47]) box(3.5, 0.04, 98, 0x818586, x, 0.105, 0);
-for (const z of [-36.85, 9, 41.2]) box(115, 0.025, 0.36, 0xb7ad9c, 0, 0.135, z);
-for (const x of [-42.85, -7.85, 8.15, 49.15])
-  box(0.36, 0.025, 97, 0xb7ad9c, x, 0.135, 0);
-for (const [x, z] of [
-  [-36, -9],
-  [-30, 22],
-  [32, 20],
-  [10, 23],
-  [-25, -20],
-  [28, -18],
-]) {
-  box(8, 0.025, 8, 0x9aae87, x, 0.137, z);
+// The same reserved streets carry deliveries and exclude trees and buildings.
+for (const z of ROAD_Z) {
+  box(116, 0.04, 3.5, 0x66757c, 0, 0.105, z);
+  for (const side of [-1, 1])
+    box(116, 0.025, 0.65, 0xd2c7b1, 0, 0.14, z + side * 2.1);
+  for (let x = -56; x <= 56; x += 3)
+    if (ROAD_X.every((road) => Math.abs(x - road) > 3))
+      box(1.1, 0.015, 0.1, 0xeee4cd, x, 0.14, z);
 }
-for (const z of [-39, 39])
-  for (const x of [-32, -20, -3, 12, 32, 40]) {
-    const paint = box(1.5, 0.018, 0.13, 0xe7e3d6, x, 0.141, z);
-    paint.userData.ignoreNavigation = true;
-  }
-// Low-profile roads and future lots are scenery, not invisible walls.
-box(3.8, 0.04, 41, 0x818586, 6, 0.1, 0);
-box(49, 0.04, 3.2, 0x818586, 0, 0.1, 6.7);
-box(3.2, 0.04, 32, 0x818586, -10, 0.1, 1);
-box(45, 0.04, 3, 0x818586, 0, 0.1, -12);
-// Pavement edges and zebra crossings make the streets legible from above.
-for (const x of [3.95, 8.05, -12.05, -7.95])
-  box(0.14, 0.035, x > 0 ? 40 : 31, 0xb9b4a4, x, 0.14, 0);
-for (const z of [4.94, 8.46, -13.65, -10.35])
-  box(z > 0 ? 48 : 44, 0.035, 0.14, 0xb9b4a4, 0, 0.14, z);
-for (const x of [-0.8, -0.15, 0.5, 1.15, 2]) {
-  const stripe = box(0.33, 0.018, 2.35, 0xeee9d9, x, 0.156, 6.7);
-  stripe.userData.ignoreNavigation = true;
+for (const x of ROAD_X) {
+  box(3.5, 0.04, 100, 0x66757c, x, 0.108, 0);
+  for (const side of [-1, 1])
+    box(0.65, 0.025, 100, 0xd2c7b1, x + side * 2.1, 0.14, 0);
+  for (let z = -48; z <= 48; z += 3)
+    if (ROAD_Z.every((road) => Math.abs(z - road) > 3))
+      box(0.1, 0.015, 1.1, 0xeee4cd, x, 0.14, z);
 }
-for (const z of [-3, -2.3, -1.6, -0.9, -0.2]) {
-  const stripe = box(2.4, 0.018, 0.32, 0xeee9d9, 6, 0.156, z);
-  stripe.userData.ignoreNavigation = true;
-}
-for (let z = -19; z < 20; z += 2.1)
-  box(0.12, 0.015, 0.95, 0xe7d9b7, 6, 0.13, z);
-for (let x = -23; x < 24; x += 2.1)
-  box(0.95, 0.015, 0.12, 0xe7d9b7, x, 0.13, 6.7);
-box(8, 0.03, 8, 0x91ac7c, -8, 0.11, -11);
-box(7, 0.03, 6, 0xa5bd8b, 15, 0.11, 15);
+for (const x of ROAD_X)
+  for (const z of ROAD_Z)
+    for (let stripe = -1.2; stripe <= 1.2; stripe += 0.6)
+      box(0.3, 0.018, 2.8, 0xf2eddb, x + stripe, 0.16, z + 3.4);
 // Cutaway workshop: open south and east walls preserve sightlines.
 // A raised concrete apron and timber awning add depth without hiding the work.
 box(10.1, 0.09, 0.75, 0x9f9480, -2, 0.21, 2.68);
@@ -457,6 +442,7 @@ function visual(mesh) {
   return mesh;
 }
 function streetLight(x, z) {
+  if (overlapsRoad(x, z, 0.2, 0.2)) return;
   visual(cyl(0.055, 3.55, 0x4b5b64, x, 1.9, z));
   visual(box(0.75, 0.09, 0.14, 0x4b5b64, x + 0.33, 3.55, z));
   const glass = new T.Mesh(
@@ -491,7 +477,9 @@ parkSeat(-4, 12);
 parkSeat(12, 14);
 // Everyday life around the cooperative.
 function tree(x, z, s = 1) {
+  if (overlapsRoad(x, z, s * 2.4, s * 2.4, 0.4)) return;
   const g = new T.Group();
+  g.userData.scenery = "tree";
   g.position.set(x, 0, z);
   g.scale.setScalar(s);
   scene.add(g);
@@ -523,7 +511,7 @@ for (const [x, z, s] of [
 for (let i = 0; i < 17; i++) {
   const x = Math.sin(i * 7) * 10,
     z = Math.cos(i * 5) * 8;
-  if (x > 4 && x < 8) continue;
+  if (overlapsRoad(x, z, 0.5, 0.5, 0.5)) continue;
   box(0.35, 0.18, 0.3, 0xa2a67b, x, 0.2, z);
 }
 // Procedural masonry keeps eight distinctive houses textured without an asset download.
@@ -558,7 +546,11 @@ function masonry(c) {
   return material;
 }
 function building(x, z, w, h, d, c) {
-  box(w, h, d, masonry(c), x, h / 2, z);
+  const location = clearRoadPlacement(x, z, w + 0.8, d + 1);
+  if (!location) return;
+  ({ x, z } = location);
+  const wall = box(w, h, d, masonry(c), x, h / 2, z);
+  wall.userData.scenery = "building";
   const trim = 0xe0d3b8;
   const roofColor = Math.round(x + z) & 1 ? 0x746d5c : 0x62746d;
   const rise = Math.min(1.15, w * 0.24);
@@ -605,7 +597,7 @@ building(0, -14, 5, 2.6, 3, 0xbca47b);
 building(-20, -14, 4, 2.6, 3, 0xc8ab85);
 building(20, -14, 4, 3.2, 3, 0xb8a582);
 building(-20, 18, 4, 2.8, 3, 0xcab999);
-building(20, 17, 4, 2.8, 3, 0xb3a283);
+building(27, 14, 4, 2.8, 3, 0xb3a283);
 for (const [x, z, scale] of [
   [-19, -4, 1.4],
   [-17, 9, 1.3],
@@ -618,7 +610,7 @@ for (const [x, z, scale] of [
   tree(x, z, scale);
 // Cargo tricycle.
 const bike = new T.Group();
-bike.position.set(6, 0.4, 3.8);
+bike.position.set(12.4, 0.4, 12.4);
 scene.add(bike);
 box(1, 0.8, 1.4, 0xb97442, 0, 0.4, 0, bike);
 for (const x of [-0.65, 0.65]) {
@@ -778,10 +770,10 @@ for (const c of crates) {
 }
 for (const object of scene.children.slice(marketStart)) {
   object.position.x += 11;
-  object.position.z += 8;
+  object.position.z += 15;
 }
 tunde.g.position.x += 11;
-tunde.g.position.z += 8;
+tunde.g.position.z += 15;
 const lessonKit = box(0.6, 0.3, 0.45, 0xc9a54d, -14.7, 1.15, 11.8);
 textPlane("EQUAL PARTS", 1.9, 0.27, -15, 1.63, 10.98, "#3b5c4a", "#fff4cd");
 // Original stations remain the four playable districts plus the city desk.
@@ -800,7 +792,7 @@ const stations = [
   {
     id: "market",
     label: "Market · food & cash",
-    pos: new T.Vector3(19, 3.9, 7.2),
+    pos: new T.Vector3(19, 3.9, 14.2),
   },
   {
     id: "council",
@@ -1035,16 +1027,18 @@ function updateBuiltCityView() {
 function focusBuiltCityDistrict(id = null) {
   if (!builtCityView) return;
   const selected = findCityViewDistrict(cityViewSummary(state.decisions), id);
+  cityCamera.zoom = 1;
   builtCityView.districtId = selected?.id ?? null;
   builtCityView.focus = selected ? { x: selected.x, z: selected.z } : null;
   mapMode = true;
   if (selected) {
-    pitch = 1.05;
-    distance = 37;
+    pitch = 0.9;
+    distance = 160;
   } else {
-    pitch = 1.38;
-    distance = innerWidth <= 650 ? 201 : 153;
+    pitch = 0.95;
+    distance = 160;
   }
+  fitCityCamera();
   updateBuiltCityView();
 }
 function openBuiltCityView() {
@@ -1060,6 +1054,8 @@ function openBuiltCityView() {
     fov: camera.fov,
     far: camera.far,
     fogFar: scene.fog.far,
+    fogNear: scene.fog.near,
+    pixelRatio: renderer.getPixelRatio?.() ?? renderer.pixelRatio,
     opportunityVisible: !$("opportunities-panel").hidden,
   };
   if (wasRunning)
@@ -1078,12 +1074,15 @@ function openBuiltCityView() {
   builtCityView = { snapshot, districtId: null, focus: null };
   mapMode = true;
   yaw = 0.55;
-  pitch = 1.38;
-  distance = innerWidth <= 650 ? 201 : 153;
-  camera.fov = innerWidth <= 650 ? 65 : 49;
-  camera.far = 440;
-  camera.updateProjectionMatrix();
-  scene.fog.far = 400;
+  pitch = 0.95;
+  distance = 160;
+  cityCamera.zoom = 1;
+  camera = cityCamera;
+  fitCityCamera();
+  scene.fog.near = 500;
+  scene.fog.far = 600;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1));
+  resize();
   document.body.classList.add("city-viewing");
   $("view-city-toggle").setAttribute("aria-expanded", "true");
   $("city-view").hidden = false;
@@ -1099,6 +1098,8 @@ function closeBuiltCityView() {
   document.body.classList.remove("city-viewing");
   $("city-view").hidden = true;
   $("view-city-toggle").setAttribute("aria-expanded", "false");
+  camera = playCamera;
+  renderer.setPixelRatio(snapshot.pixelRatio);
   mapMode = snapshot.mapMode;
   yaw = snapshot.yaw;
   pitch = snapshot.pitch;
@@ -1106,6 +1107,8 @@ function closeBuiltCityView() {
   camera.fov = snapshot.fov;
   camera.far = snapshot.far;
   scene.fog.far = snapshot.fogFar;
+  scene.fog.near = snapshot.fogNear;
+  resize();
   camera.updateProjectionMatrix();
   $("city-map").textContent = mapMode ? "Follow me" : "City map";
   $("detail").hidden = !snapshot.detailVisible;
@@ -1159,37 +1162,6 @@ function goToJourneyCase(id) {
   }
   refreshJourneyControls();
   const point = approaches[caseFile.district];
-  // Fast travel between distant districts. A long unskippable walk turns
-  // a city-building game into waiting; local routes still walk normally.
-  const metres = Math.hypot(
-    player.g.position.x - point.x,
-    player.g.position.z - point.z,
-  );
-  if (metres > 24) {
-    cancelWalk();
-    activeFeedback = { x: point.x, z: point.z, started: performance.now() };
-    toast("Travelling to " + caseFile.district + "...");
-    journeyTravelTimer = setTimeout(
-      () => {
-        journeyTravelTimer = null;
-        if (journey.status !== "running" || journey.caseId !== id) return;
-        const planned = navigator.route(point, point);
-        const location = planned?.destination;
-        // Never place the avatar in an obstacle. If all safe arrivals are
-        // blocked, preserve the current position and open the problem.
-        if (location && navigator.free(location)) {
-          player.g.position.set(location.x, 0.3, location.z);
-          walkTarget.copy(player.g.position);
-        } else {
-          toast("That spot is occupied. The next problem opens safely here.");
-        }
-        activeFeedback = null;
-        showCase(id);
-      },
-      reduceMotion.matches ? 200 : 1050,
-    );
-    return;
-  }
   const success = goTo(point, () => showCase(id), "the next problem");
   if (!success) {
     toast("The road is blocked, but you can still solve this problem.");
@@ -1263,12 +1235,10 @@ function runCaseWorldAction(caseId, choiceId) {
   syncCaseScenes();
   caseScenes.setTone(caseId, choice);
   const tone = visualTone(choice);
-  $("world-feedback-title").textContent =
-    tone === "improving"
-      ? "YOUR IDEA IS TAKING SHAPE"
-      : tone === "strained"
-        ? "THE CITY FEELS THE CONSEQUENCES"
-        : "YOUR DECISION CHANGES THE CITY";
+  $("world-feedback-title").textContent = infrastructurePlan(
+    caseId,
+    choiceId,
+  ).title;
   const city = deriveBuilderCity(state.decisions);
   const neighbourhood = city.districts[spec.district];
   const connected = neighbourhood.links
@@ -1339,11 +1309,13 @@ for (const s of stations) {
   s.el = b;
 }
 let navigationSignature = null;
+let navigationObstacles = [];
+let trafficWaitStarted = null;
 let navigator,
   route = [],
   onArrival = null;
 function rebuildNavigation() {
-  const signature = JSON.stringify(state.config);
+  const signature = JSON.stringify([state.config, state.decisions]);
   if (signature === navigationSignature) return;
   navigationSignature = signature;
   scene.updateMatrixWorld(true);
@@ -1374,6 +1346,22 @@ function rebuildNavigation() {
       minZ: p.g.position.z - 0.23,
       maxZ: p.g.position.z + 0.23,
     });
+  // Choice-built plots use stable footprints, independent of construction animation.
+  for (const [id, effect] of caseScenes.effects) {
+    if (!state.decisions[id]) continue;
+    const { x, z } = effect.group.position;
+    const outer = OUTER_DISTRICTS.some(
+      (d) => d.id === CASE_BUILD_SITES[id].district,
+    );
+    const half = outer ? 2.5 : 0.65;
+    obstacles.push({
+      minX: x - half,
+      maxX: x + half,
+      minZ: z - (outer ? 2.1 : 0.65),
+      maxZ: z + (outer ? 2.1 : 0.65),
+    });
+  }
+  navigationObstacles = obstacles;
   navigator = createNavigator(obstacles, {
     minX: -57.5,
     maxX: 57.5,
@@ -1433,7 +1421,7 @@ const approaches = {
   workshop: { x: -2.6, z: -2.8 },
   school: { x: -13.15, z: 11.1 },
   council: { x: 2.8, z: 1.1 },
-  market: { x: 16.4, z: 6.4 },
+  market: { x: 16.4, z: 13.4 },
 };
 for (const d of OUTER_DISTRICTS)
   approaches[d.id] = { x: d.x - 3.7, z: d.z + 3.9 };
@@ -2965,10 +2953,16 @@ $("city-view-district").onchange = (event) => {
   focusBuiltCityDistrict(event.target.value);
 };
 $("city-view-zoom-in").onclick = () => {
-  if (builtCityView) distance = clamp(distance * 0.8, 20, 250);
+  if (builtCityView) {
+    cityCamera.zoom = clamp(cityCamera.zoom * 1.25, 0.6, 5);
+    cityCamera.updateProjectionMatrix();
+  }
 };
 $("city-view-zoom-out").onclick = () => {
-  if (builtCityView) distance = clamp(distance * 1.25, 20, 250);
+  if (builtCityView) {
+    cityCamera.zoom = clamp(cityCamera.zoom / 1.25, 0.6, 5);
+    cityCamera.updateProjectionMatrix();
+  }
 };
 $("opportunities-toggle").onclick = () => {
   if ($("opportunities-panel").hidden) openOpportunityPanel();
@@ -3217,7 +3211,10 @@ canvas.addEventListener("pointermove", (e) => {
   if (pointers.size === 2) {
     const a = [...pointers.values()],
       d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
-    if (pinchDistance)
+    if (pinchDistance && builtCityView) {
+      cityCamera.zoom = clamp((cityCamera.zoom * d) / pinchDistance, 0.6, 5);
+      cityCamera.updateProjectionMatrix();
+    } else if (pinchDistance)
       distance = clamp(
         distance - (d - pinchDistance) * 0.055,
         builtCityView ? 20 : 16,
@@ -3271,6 +3268,15 @@ canvas.addEventListener(
   "wheel",
   (e) => {
     e.preventDefault();
+    if (builtCityView) {
+      cityCamera.zoom = clamp(
+        cityCamera.zoom * Math.exp(-e.deltaY * 0.001),
+        0.6,
+        5,
+      );
+      cityCamera.updateProjectionMatrix();
+      return;
+    }
     distance = clamp(
       distance + e.deltaY * 0.02,
       builtCityView ? 20 : 16,
@@ -3390,11 +3396,42 @@ function animateWorld(now) {
   }
   const diff = walkTarget.clone().sub(player.g.position);
   if (diff.length() > 0.035) {
-    const step = Math.min(diff.length(), dt * (route.length ? 5 : 3)),
+    const step = Math.min(diff.length(), dt * (route.length ? 8 : 3)),
       next = player.g.position
         .clone()
         .add(diff.clone().normalize().multiplyScalar(step));
-    if (navigator.segmentFree(player.g.position, next)) {
+    const trafficClear = livingScene.vehicles.every(
+      ({ g }) =>
+        !g.visible ||
+        Math.hypot(g.position.x - next.x, g.position.z - next.z) > 1.25,
+    );
+    if (!trafficClear) {
+      trafficWaitStarted ??= now;
+      if (route.length && now - trafficWaitStarted > 700) {
+        const temporary = livingScene.vehicles
+          .filter(({ g }) => g.visible)
+          .map(({ g }) => ({
+            minX: g.position.x - 1,
+            maxX: g.position.x + 1,
+            minZ: g.position.z - 1,
+            maxZ: g.position.z + 1,
+          }));
+        const detour = createNavigator([...navigationObstacles, ...temporary], {
+          minX: -57.5,
+          maxX: 57.5,
+          minZ: -49.5,
+          maxZ: 49.5,
+          step: 1,
+        });
+        const planned = detour.route(
+          player.g.position,
+          route[route.length - 1],
+        );
+        if (planned) route = planned.points;
+        trafficWaitStarted = now;
+      }
+    } else if (navigator.segmentFree(player.g.position, next)) {
+      trafficWaitStarted = null;
       player.g.position.copy(next);
       player.g.rotation.y = Math.atan2(diff.x, diff.z);
       player.legs.forEach(
@@ -3431,7 +3468,14 @@ function animateWorld(now) {
   // The same retained choices animate a living neighbourhood in both play
   // and aerial inspection. Hidden tabs avoid unnecessary simulation work.
   caseScenes.animate(now, reduceMotion.matches);
-  livingScene.animate(now, reduceMotion.matches, document.hidden || simulating);
+  livingScene.animate(
+    now,
+    reduceMotion.matches,
+    document.hidden || simulating,
+    [player, ama, bisi, tunde, ...futureNeighbours].map(
+      (person) => person.g.position,
+    ),
+  );
   if (activeFeedback && !reduceMotion.matches) {
     const progress = Math.min(1, (now - activeFeedback.started) / 1450);
     sparkUnits.forEach((particle, i) => {
@@ -3463,10 +3507,10 @@ function animateWorld(now) {
       (l.material.emissiveIntensity = simulating ? (power ? 1.7 : 0.03) : 0.7),
   );
   const night = period === 3;
-  hemi.intensity = T.MathUtils.lerp(hemi.intensity, night ? 1 : 2.9, 0.04);
+  hemi.intensity = T.MathUtils.lerp(hemi.intensity, night ? 1 : 2.25, 0.04);
   sun.intensity = T.MathUtils.lerp(
     sun.intensity,
-    night ? 0.3 : state.day >= 2 ? 2.2 : 3.5,
+    night ? 0.3 : state.day >= 2 ? 2.2 : 2.6,
     0.04,
   );
   batteryBars.forEach((b, i) => {
@@ -3508,7 +3552,7 @@ function animateWorld(now) {
   }
   if (simulating) {
     bike.position.z =
-      3.8 - Math.sin(Math.min(1, (now - runStarted) / 4800) * Math.PI) * 7;
+      12.4 - Math.sin(Math.min(1, (now - runStarted) / 4800) * Math.PI) * 3;
   }
   const renderStarted = performance.now();
   renderer.render(scene, camera);
@@ -3522,7 +3566,9 @@ function animateWorld(now) {
 }
 function resize() {
   renderer.setSize(innerWidth, innerHeight);
-  camera.aspect = innerWidth / innerHeight;
+  playCamera.aspect = innerWidth / innerHeight;
+  playCamera.updateProjectionMatrix();
+  if (builtCityView) fitCityCamera();
   camera.updateProjectionMatrix();
   if ($("intro").hidden)
     $("mobile-move").hidden = innerWidth > 650 || !freeExplore;

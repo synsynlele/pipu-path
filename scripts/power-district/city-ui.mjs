@@ -48,11 +48,8 @@ assert(game.includes("function showCaseOutcome("));
 assert(game.includes("const caseScenes = createCaseSceneEffects("));
 assert(game.includes("const livingScene = createLivingCityScene("));
 assert(game.includes("livingScene.sync(state.decisions, state.economy)"));
-assert(
-  game.includes(
-    "livingScene.animate(now, reduceMotion.matches, document.hidden || simulating)",
-  ),
-);
+assert(game.includes("livingScene.animate("));
+assert(game.includes("...futureNeighbours].map"));
 assert(game.includes("lowPower:"));
 assert(game.includes("innerWidth <= 650"));
 assert(
@@ -124,7 +121,7 @@ assert(game.includes("if (builtCityView?.focus)"));
 assert(game.includes("!builtCityView &&"));
 assert(game.includes("camera.fov = snapshot.fov"));
 assert(game.includes("scene.fog.far = snapshot.fogFar"));
-assert(game.includes("if (builtCityView) distance = clamp("));
+
 assert(css.includes("body.city-viewing #detail"));
 assert(css.includes("body.city-viewing #city-tools"));
 assert(css.includes("#city-view-return"));

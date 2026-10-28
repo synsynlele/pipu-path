@@ -1,3 +1,4 @@
+import { segmentNearPerson, deliveryLaneLoop } from "./layout.mjs";
 // Low-poly but richly planted, lightweight living city.
 // Decorative entities never participate in avatar collision/navigation.
 import { CITY_DISTRICTS } from "./districts.mjs";
@@ -12,6 +13,16 @@ export function createLivingCityScene({
   mat,
   lowPower = false,
 }) {
+  const courtyardAnchors = {
+    workshop: { x: -8, z: -8.5 },
+    power: { x: -5, z: -11.6 },
+    market: { x: 26, z: 20 },
+    school: { x: -20, z: 11 },
+  };
+  const enterpriseAnchors = {
+    workshop: { x: -9, z: 0.5 },
+    market: { x: 14, z: 17 },
+  };
   const plazas = new Map();
   const pedestrians = new Map();
   const vehicles = [];
@@ -40,7 +51,11 @@ export function createLivingCityScene({
   for (let i = 0; i < CITY_DISTRICTS.length; i++) {
     const district = CITY_DISTRICTS[i];
     const root = new T.Group();
-    root.position.set(district.x + 5.3, 0, district.z + 4.3);
+    const anchor = courtyardAnchors[district.id] ?? {
+      x: district.x + 5.3,
+      z: district.z + 4.3,
+    };
+    root.position.set(anchor.x, 0, anchor.z);
     root.userData.ignoreNavigation = true;
     scene.add(root);
     const plants = [0x82a67b, 0x638e78, 0x73977f, 0xa3b27f];
@@ -104,9 +119,9 @@ export function createLivingCityScene({
       for (const dx of [-0.065, 0.065])
         B(person, 0.085, 0.29, 0.095, 0x485768, dx, 0.18, 0);
       person.position.set(
-        district.x - 3.4 - j * 0.52,
+        anchor.x - 0.4 - j * 0.52,
         0.11,
-        district.z + 3.1 - j * 0.55,
+        anchor.z + 1.6 + j * 0.55,
       );
       person.visible = false;
       scene.add(person);
@@ -129,7 +144,7 @@ export function createLivingCityScene({
         wheel.rotation.z = Math.PI / 2;
       }
     g.visible = false;
-    vehicles.push({ g, route: null });
+    vehicles.push({ g, route: null, travelled: 0 });
   }
   // One lightweight, reusable enterprise stall, rather than new geometry
   // every day. It moves to the actual district the learner has chosen.
@@ -219,7 +234,11 @@ export function createLivingCityScene({
       owner && CITY_DISTRICTS.find((site) => site.id === owner.district);
     enterpriseStand.visible = Boolean(district);
     if (district) {
-      enterpriseStand.position.set(district.x + 6.6, 0, district.z + 4.8);
+      const anchor = enterpriseAnchors[district.id] ?? {
+        x: district.x - 5,
+        z: district.z + 3.6,
+      };
+      enterpriseStand.position.set(anchor.x, 0, anchor.z);
       ownedWorkers.forEach((person, i) => {
         person.visible = i < owner.workers;
       });
@@ -229,7 +248,14 @@ export function createLivingCityScene({
     }
     vehicles.forEach((item, i) => {
       const delivery = latest.deliveries[i];
-      item.route = delivery ?? null;
+      if (item.route?.id !== delivery?.id) item.travelled = i * 2.5;
+      item.route = delivery
+        ? { ...delivery, path: deliveryLaneLoop(delivery.path) }
+        : null;
+      if (delivery) {
+        const start = sample(item.route.path, item.travelled);
+        if (start) item.g.position.set(start.x, 0.01, start.z);
+      }
       item.g.visible = Boolean(delivery);
     });
     return latest;
@@ -269,9 +295,8 @@ export function createLivingCityScene({
       total += n;
     }
     if (!total) return null;
-    const t = ((progress % (2 * total)) + 2 * total) % (2 * total);
-    let remaining = t > total ? 2 * total - t : t;
-    const backwards = t > total;
+    const t = ((progress % total) + total) % total;
+    let remaining = t;
     for (let i = 0; i < lengths.length; i++) {
       if (remaining <= lengths[i] || i === lengths.length - 1) {
         const a = path[i],
@@ -280,14 +305,20 @@ export function createLivingCityScene({
         return {
           x: a.x + (b.x - a.x) * u,
           z: a.z + (b.z - a.z) * u,
-          angle: Math.atan2(b.x - a.x, b.z - a.z) + (backwards ? Math.PI : 0),
+          angle: Math.atan2(b.x - a.x, b.z - a.z),
         };
       }
       remaining -= lengths[i];
     }
     return null;
   }
-  function animate(now, reduceMotion, inactive = false) {
+  let lastAnimation = null;
+  function animate(now, reduceMotion, inactive = false, people = []) {
+    const dt =
+      lastAnimation === null
+        ? 0
+        : Math.max(0, Math.min(0.08, (now - lastAnimation) / 1000));
+    lastAnimation = now;
     if (!latest || inactive) return;
     for (let d = 0; d < latest.districts.length; d++) {
       const site = latest.districts[d];
@@ -301,15 +332,15 @@ export function createLivingCityScene({
           now / (site.activity === "thriving" ? 1400 : 2700) +
           d * 1.9 +
           i * 1.5;
-        const original = CITY_DISTRICTS[d];
+        const original = plazas.get(site.id).root.position;
         p.position.set(
           original.x -
-            3.4 -
+            0.4 -
             i * 0.52 +
             (reduceMotion ? 0 : Math.cos(phase) * 0.55),
           0.11 + (reduceMotion ? 0 : Math.abs(Math.sin(phase * 2)) * 0.018),
           original.z +
-            3.1 -
+            1.6 +
             i * 0.55 +
             (reduceMotion ? 0 : Math.sin(phase) * 0.35),
         );
@@ -328,13 +359,35 @@ export function createLivingCityScene({
         person.rotation.y = reduceMotion ? 0 : Math.sin(phase) * 0.25;
       });
     }
-    vehicles.forEach(({ g, route }, i) => {
+    const blockers = [...people];
+    for (const walkers of pedestrians.values())
+      for (const person of walkers)
+        if (person.visible) blockers.push(person.position);
+    vehicles.forEach((vehicle) => {
+      const { g, route } = vehicle;
       if (!route) return;
       const travelled = reduceMotion
-        ? route.speed * (i + 1) * 6
-        : now * 0.001 * route.speed + i * 11.3;
+        ? vehicle.travelled
+        : vehicle.travelled + dt * route.speed;
       const point = sample(route.path, travelled);
       if (!point) return;
+      if (
+        blockers.some((person) => segmentNearPerson(g.position, point, person))
+      )
+        return;
+      if (
+        vehicles.some(
+          (other) =>
+            other !== vehicle &&
+            other.route &&
+            Math.hypot(
+              point.x - other.g.position.x,
+              point.z - other.g.position.z,
+            ) < 2,
+        )
+      )
+        return;
+      vehicle.travelled = travelled;
       g.position.set(point.x, 0.01, point.z);
       g.rotation.y = point.angle;
     });
