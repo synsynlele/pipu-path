@@ -1937,9 +1937,11 @@ $("start").onclick = () => {
     (scenario) => !getChoice(scenario.id, state.decisions[scenario.id]),
   );
   if (nextUnsolved) {
-    toast(previousPractice
-      ? "Welcome back! Walking to your next unsolved problem."
-      : "Welcome! Walking to your first problem.");
+    toast(
+      previousPractice
+        ? "Welcome back! Walking to your next unsolved problem."
+        : "Welcome! Walking to your first problem.",
+    );
     startCase(nextUnsolved.id);
   } else {
     toast("Your 16 decisions are here. Explore freely or replay any problem.");
