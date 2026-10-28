@@ -1295,3 +1295,48 @@ Browser review confirmed the sole city wordmark and navy/gold interface, travel
 between the power station, market and school in the same scene, shared asset
 spending, collection configuration and the learning activity. Operating-day and
 exact-preview verification remain separate below/at handoff.
+
+## 28 October 2026 — Mobile resident animation crash isolated locally
+
+On `investigate/android-city-stability`, based on PR #100 head
+`75e5a5863b155af2a3a0db6762e15ba4c0680bc2`, reproduced a deterministic
+TypeError without WebGL: low-power scenes allocate one pedestrian per district,
+while thriving domain activity requests two. The animation indexed the missing
+second actor and read its position. An all-first-option path fails at decision 3
+(`repair-training`); timing depends on choices. The outer frame handler catches
+this before `renderer.render`, causing the graphics interruption banner. Recovery
+re-synchronises the same state and cannot repair the missing visual actor.
+
+Animation now bounds iteration by both domain residents and allocated actors.
+No extra mobile actors, domain changes, save changes or quality reduction.
+The former 36-decision mixed-path test passes before the fix, while the new
+regression fails with the reproduced TypeError before the fix and passes after.
+Coverage includes all 243 opening five-decision paths in each graphics mode,
+reduced motion, all three uniform 36-decision paths per mode and revisions.
+`npm run test:power-district` passes after the fix.
+
+This proves a mobile-specific logic defect and its correction, not the absence
+of separate GPU/context or memory faults. Physical Android, real WebGL endurance
+and exact-preview acceptance remain pending. No push, PR creation, Vercel build,
+deployment, production change or live student-data operation was performed.
+Repository Vercel config disables selected named branches only; this local branch
+is not covered. Do not push it assuming automatic previews are disabled.
+
+### Next acceptance gate — QA facilitator owned
+
+After local validation and one deliberately authorised preview, a QA facilitator
+should test the previously failing Android phone and a second ordinary Android
+phone. Record candidate commit, browser/version, device model, selected choices,
+first failure/error if any and whether the canvas continues drawing. Complete
+all 36 decisions, inspect the full city, revise early choices, rotate the phone,
+background/restore the page, and verify opt-in save/reload separately. Capture
+console/render errors where available. Do not call a fast model sequence a GPU
+endurance test. Escalate any recurrence with the exact choice path; the founder
+should not have to diagnose or approve each test run. No claim of 100x capacity
+or physical-device reliability follows from these local regressions.
+
+Local validation completed: `npm run validate` passed (formatting, lint, types,
+city regressions, 527 unit/component tests with coverage, 251 integration tests,
+and local production build). Build emitted two `authenticated_progress_load_failed`
+diagnostics while prerendering without live authentication; it exited successfully.
+No authenticated live-flow verification is inferred from the build.

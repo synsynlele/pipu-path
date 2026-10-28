@@ -292,8 +292,11 @@ export function createLivingCityScene({
     for (let d = 0; d < latest.districts.length; d++) {
       const site = latest.districts[d];
       if (!site.residents) continue;
-      for (let i = 0; i < site.residents; i++) {
-        const p = pedestrians.get(site.id)[i];
+      // Domain activity can call for two residents; low-power rendering
+      // deliberately allocates only one. Animate the existing visual pool.
+      const walkers = pedestrians.get(site.id);
+      for (let i = 0; i < Math.min(site.residents, walkers.length); i++) {
+        const p = walkers[i];
         const phase =
           now / (site.activity === "thriving" ? 1400 : 2700) +
           d * 1.9 +
