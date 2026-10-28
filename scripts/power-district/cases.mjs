@@ -15,7 +15,7 @@ assert.equal(CITY_CASES.length, 36);
 assert.equal(FOUNDATION_CASE_COUNT, 16);
 assert.equal(CASE_DISTRICTS.length, 14);
 assert.equal(IMPACT_LABELS.length, 4);
-assert.equal(new Set(CITY_CASES.map((c) => c.id)).size, 16);
+assert.equal(new Set(CITY_CASES.map((c) => c.id)).size, 36);
 for (const district of CASE_DISTRICTS) {
   assert.equal(
     casesFor(district).length,
