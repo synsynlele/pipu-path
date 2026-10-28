@@ -330,11 +330,16 @@ export function runOpportunityDay(decisions, previous) {
     wateredFarm * 2,
   );
   stocks.food = clamp(stocks.food + foodMade, 0, 30);
-  const shopCapacity = capacity(city, "business", 9) + (tools("shop") ? 2 : 0);
+  const busyMarketBonus = day === 2 || day === 6 ? 2 : 0;
+  const shopCapacity =
+    capacity(city, "business", 9) +
+    busyMarketBonus +
+    (tools("shop") ? 2 : 0);
   const retailNeed = clamp(
     capacity(city, "business", 9) +
-      (day === 2 || day === 6 ? 2 : 0) +
-      (reach("shop") ? 2 : 0),
+      busyMarketBonus +
+      (reach("shop") ? 2 : 0) +
+      (tools("shop") ? 2 : 0),
     0,
     13,
   );
