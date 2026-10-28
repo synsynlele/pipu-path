@@ -38,7 +38,7 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
         cyl,
         mat,
         parent: variant,
-        scale: outer ? 2 : 0.53,
+        scale: outer ? 2 : 1,
       });
       variant.visible = false;
       group.add(variant);
@@ -55,7 +55,8 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
         preview?.caseId === id ? preview.choiceId : decisions[id];
       if (effect.choiceId !== choiceId) effect.started = performance.now();
       effect.choiceId = choiceId;
-      effect.group.visible = Boolean(choiceId);
+      effect.plan = infrastructurePlan(id, choiceId);
+      effect.group.visible = Boolean(effect.plan?.assets.length);
       if (choiceId && !effect.variants.has(choiceId))
         effect.buildChoice(id, choiceId);
       for (const [variantId, variant] of effect.variants)
@@ -73,7 +74,7 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
   function setFocus(focus, overview = false, range = 30) {
     for (const effect of effects.values())
       effect.group.visible =
-        Boolean(effect.choiceId) &&
+        Boolean(effect.plan?.assets.length) &&
         (overview ||
           !focus ||
           Math.hypot(

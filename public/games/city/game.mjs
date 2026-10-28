@@ -39,7 +39,7 @@ import {
   nextPlayableAfter,
 } from "./journey-flow.mjs";
 import { previousKeptCase, canRevise } from "./decision-review.mjs";
-import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
+import { CASE_BUILD_SITES, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import { createFrameBudget } from "../shared/frame-budget.mjs";
 import {
@@ -973,11 +973,15 @@ function updateBuiltCityView() {
     summary.built +
     "/" +
     summary.possible +
-    " projects · " +
+    " infrastructure projects · " +
+    summary.working +
+    " working · " +
+    summary.unresolved +
+    " unresolved · " +
     summary.active +
     "/" +
     summary.total +
-    " districts built · " +
+    " districts serving people · " +
     living.deliveries.length +
     " moving services";
   const select = $("city-view-district");
@@ -999,7 +1003,9 @@ function updateBuiltCityView() {
       district.built +
       "/" +
       district.possible +
-      " built";
+      " physical · " +
+      district.working +
+      " working";
     select.append(option);
   }
   const focused = findCityViewDistrict(summary, builtCityView.districtId);
@@ -1014,13 +1020,20 @@ function updateBuiltCityView() {
       focused.built +
       "/" +
       focused.possible +
-      " projects · " +
+      " infrastructure projects · " +
+      focused.working +
+      " working · " +
+      focused.unresolved +
+      " unresolved · " +
       (focused.built
         ? "City service: " + focused.activity
-        : "Not built yet. Make decisions here to shape this district.");
+        : "No useful infrastructure here yet. Revise a decision to improve this district.");
   } else {
-    $("city-view-info").textContent = summary.built
-      ? "Your saved decisions built these structures. Look around or select a district."
+    $("city-view-info").textContent = summary.answered
+      ? summary.working +
+        " working solutions · " +
+        summary.unresolved +
+        " needs remain unresolved. Select a district or revise a decision."
       : "Your city is waiting for its first project. Return to the journey to begin building.";
   }
 }
@@ -1245,7 +1258,7 @@ function runCaseWorldAction(caseId, choiceId) {
     .map((link) => city.districts[link.from].name)
     .slice(0, 2);
   $("world-feedback-copy").textContent =
-    feedbackCopy(spec.kind, tone) +
+    infrastructurePlan(caseId, choiceId).explanation +
     " " +
     neighbourhood.name +
     " is now " +
@@ -1271,7 +1284,9 @@ function runCaseWorldAction(caseId, choiceId) {
     district: spec.district,
   };
   decisionSparks.position.set(spec.x, 0, spec.z);
-  decisionSparks.visible = !reduceMotion.matches;
+  decisionSparks.visible =
+    !reduceMotion.matches &&
+    infrastructurePlan(caseId, choiceId).status === "working";
   playTone(tone === "improving" ? 690 : tone === "strained" ? 340 : 520);
   const run = feedbackRunId;
   feedbackTimer = setTimeout(
@@ -1348,7 +1363,8 @@ function rebuildNavigation() {
     });
   // Choice-built plots use stable footprints, independent of construction animation.
   for (const [id, effect] of caseScenes.effects) {
-    if (!state.decisions[id]) continue;
+    const plan = infrastructurePlan(id, state.decisions[id]);
+    if (!plan?.assets.length || id === "transit-people") continue;
     const { x, z } = effect.group.position;
     const outer = OUTER_DISTRICTS.some(
       (d) => d.id === CASE_BUILD_SITES[id].district,
@@ -1803,7 +1819,11 @@ function renderCityStatus() {
     city.activeDistricts + "/" + city.districtCount;
   $("city-status-summary").textContent =
     city.visibleBuildings +
-    " physical projects built. Fictional overall service health: " +
+    " infrastructure projects · " +
+    city.workingSolutions +
+    " working solutions · " +
+    city.unresolvedNeeds +
+    " unresolved needs. Fictional service health: " +
     city.cityHealth +
     "/100. Revise any decision to reshape the city.";
   const rows = $("city-status-list");
@@ -1820,10 +1840,10 @@ function renderCityStatus() {
       " " +
       d.name +
       " · " +
-      d.built +
+      d.working +
       "/" +
       casesFor(id).length +
-      " builds";
+      " working solutions";
     const service = document.createElement("small");
     service.textContent = d.built
       ? d.service + "/100 · " + d.activity
@@ -2170,7 +2190,11 @@ function showChapterTransition() {
       city.completed +
       "/" +
       CITY_CASES.length +
-      " projects · " +
+      " infrastructure projects · " +
+      summary.working +
+      " working · " +
+      summary.unresolved +
+      " unresolved · " +
       city.activeDistricts +
       "/14 active neighbourhoods · " +
       "fictional service health " +

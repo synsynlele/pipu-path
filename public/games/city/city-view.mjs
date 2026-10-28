@@ -14,7 +14,10 @@ export function cityViewSummary(decisions = {}) {
       emoji: site.emoji,
       x: site.x,
       z: site.z,
-      built: current.built,
+      built: current.constructed,
+      answered: current.built,
+      working: current.working,
+      unresolved: current.unresolved,
       possible: casesFor(site.id).length,
       activity: current.activity,
       service: current.service,
@@ -22,8 +25,11 @@ export function cityViewSummary(decisions = {}) {
   });
   return {
     built: city.visibleBuildings,
+    answered: city.completed,
+    working: city.workingSolutions,
+    unresolved: city.unresolvedNeeds,
     possible: districts.reduce((n, d) => n + d.possible, 0),
-    active: districts.filter((d) => d.built > 0).length,
+    active: city.activeDistricts,
     total: districts.length,
     districts,
   };

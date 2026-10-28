@@ -204,7 +204,7 @@ export function createLivingCityScene({
     latest = deriveLivingCity(decisions, economy);
     for (const district of latest.districts) {
       const courtyard = plazas.get(district.id);
-      courtyard.built.visible = district.built > 0;
+      courtyard.built.visible = district.residents > 0;
       courtyard.lantern.material.color.setHex(
         district.activity === "thriving"
           ? 0xf5d680

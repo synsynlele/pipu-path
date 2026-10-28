@@ -23,8 +23,8 @@ for (const district of OUTER_DISTRICTS) {
   authored.forEach((challenge, i) => {
     outerSites[challenge.id] = {
       district: district.id,
-      x: district.x - 3.2 + i * 6.4,
-      z: district.z - 1,
+      x: challenge.id === "transit-people" ? 54 : district.x - 3.2 + i * 6.4,
+      z: challenge.id === "transit-people" ? district.z : district.z - 1,
       kind: kinds[district.id][i],
       label: challenge.title,
     };

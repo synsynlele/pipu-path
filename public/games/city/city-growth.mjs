@@ -1,3 +1,4 @@
+import { infrastructurePlan } from "./construction-plans.mjs";
 // Choice-to-City v1: deterministic fictional district operating indicators.
 // This is NOT the original two-day budget/power simulator, verified XP,
 // personal assessment, or advice for real infrastructure operations.
@@ -152,13 +153,15 @@ export function choiceStructure(caseId, choiceId) {
   const scenario = CITY_CASES.find((c) => c.id === caseId);
   const option = getChoice(caseId, choiceId);
   if (!scenario || !option) return null;
-  const index = scenario.options.findIndex((c) => c.id === choiceId);
+  const plan = infrastructurePlan(caseId, choiceId);
   return {
     caseId,
     choiceId,
     district: scenario.district,
-    // These stable silhouettes are not dependent on shuffled answer positions.
-    variant: ["coordinated", "overloaded", "neglected"][index],
+    variant: plan.status,
+    assets: plan.assets,
+    construction: plan.construction,
+    label: plan.label,
     condition:
       option.impact.reduce((sum, n) => sum + n, 0) >= 3
         ? "improving"
@@ -176,6 +179,11 @@ export function deriveBuilderCity(decisions = {}) {
         name,
         icon,
         built: 0,
+        constructed: 0,
+        working: 0,
+        limited: 0,
+        unresolved: 0,
+        productive: 0,
         impact: [0, 0, 0, 0],
         structures: [],
         direct: 0,
@@ -194,6 +202,12 @@ export function deriveBuilderCity(decisions = {}) {
     if (!option) continue;
     const district = districts[scenario.district];
     district.built++;
+    const plan = infrastructurePlan(scenario.id, option.id);
+    district.constructed += Number(plan.construction);
+    district.working += Number(plan.status === "working");
+    district.limited += Number(plan.status === "limited");
+    district.unresolved += Number(plan.status !== "working");
+    district.productive = district.working + district.limited;
     option.impact.forEach((value, i) => {
       district.impact[i] += value;
     });
@@ -233,7 +247,10 @@ export function deriveBuilderCity(decisions = {}) {
       .filter((link) => link.change !== 0);
     const inherited = influences.reduce((sum, link) => sum + link.change, 0);
     d.links = influences;
-    d.service = d.built ? clamp(d.direct + inherited, 0, 100) : 0;
+    const usefulness = d.built ? (d.working + d.limited * 0.4) / d.built : 0;
+    d.service = d.productive
+      ? clamp((d.direct + inherited) * usefulness, 0, 100)
+      : 0;
     d.activity =
       d.built === 0
         ? "waiting"
@@ -255,10 +272,12 @@ export function deriveBuilderCity(decisions = {}) {
     cityHealth: functioning.length
       ? Math.round(serviceTotal / functioning.length)
       : 0,
-    activeDistricts: functioning.length,
+    activeDistricts: all.filter((d) => d.productive > 0).length,
+    workingSolutions: all.reduce((sum, d) => sum + d.working, 0),
+    unresolvedNeeds: all.reduce((sum, d) => sum + d.unresolved, 0),
     districtCount: all.length,
     thriving,
-    visibleBuildings: completed,
+    visibleBuildings: all.reduce((sum, d) => sum + d.constructed, 0),
     // Stored snapshot is the choice IDs; city geometry and indicators derive
     // from them on every render/reload, avoiding inconsistent duplicate saves.
   };

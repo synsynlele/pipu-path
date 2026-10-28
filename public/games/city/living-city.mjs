@@ -55,11 +55,12 @@ export function deriveLivingCity(decisions = {}, economy = null) {
     return {
       id: site.id,
       name: site.name,
-      built: state.built,
+      built: state.constructed,
       service: state.service,
       activity: state.activity,
-      residents: state.built === 0 ? 0 : state.activity === "thriving" ? 2 : 1,
-      glow: state.built > 0 && state.service >= 42,
+      residents:
+        state.productive === 0 ? 0 : state.activity === "thriving" ? 2 : 1,
+      glow: state.productive > 0 && state.service >= 42,
     };
   });
   // Deliveries appear only if two connected neighbourhoods actually exist.
@@ -67,7 +68,7 @@ export function deriveLivingCity(decisions = {}, economy = null) {
   const deliveries = SUGGESTED_FLOW.flatMap(([from, to, label]) => {
     const source = city.districts[from],
       destination = city.districts[to];
-    if (!source?.built || !destination?.built) return [];
+    if (!source?.productive || !destination?.productive) return [];
     const path = roadDeliveryRoute(from, to);
     if (path.length < 2) return [];
     const quality = Math.min(source.service, destination.service);
@@ -90,8 +91,8 @@ export function deriveLivingCity(decisions = {}, economy = null) {
       .filter(
         (s) =>
           s.units > 0 &&
-          city.districts[s.from]?.built &&
-          city.districts[s.to]?.built,
+          city.districts[s.from]?.productive &&
+          city.districts[s.to]?.productive,
       )
       .map((shipment) => {
         const path = roadDeliveryRoute(shipment.from, shipment.to);
@@ -136,7 +137,7 @@ export function deriveLivingCity(decisions = {}, economy = null) {
           const values = economy.last.requests[request.id];
           if (
             !values ||
-            !city.districts[request.district]?.built ||
+            !city.districts[request.district]?.productive ||
             !Number.isInteger(values.requested) ||
             !Number.isInteger(values.served) ||
             values.served < 0 ||
@@ -154,7 +155,8 @@ export function deriveLivingCity(decisions = {}, economy = null) {
       : [];
   // Traffic illustrates a few relationships only; not a prediction.
   const linkageCount = CONNECTIONS.filter(
-    ({ from, to }) => city.districts[from].built && city.districts[to].built,
+    ({ from, to }) =>
+      city.districts[from].productive && city.districts[to].productive,
   ).length;
   return {
     built: city.completed,

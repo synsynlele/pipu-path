@@ -302,7 +302,7 @@ export function sanitizeOpportunityState(value) {
 }
 const capacity = (city, id, maximum) => {
   const d = city.districts[id];
-  if (!d?.built) return 0;
+  if (!d?.productive || d.service <= 0) return 0;
   return clamp(Math.round((d.service / 100) * maximum), 1, maximum);
 };
 const need = (available, desired) => Math.min(available, Math.max(0, desired));

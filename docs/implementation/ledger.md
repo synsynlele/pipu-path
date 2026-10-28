@@ -1420,3 +1420,49 @@ preview build is necessary to include this correction; no production change.
 Correction validation: `npm run validate` passed again, including the new real
 software raster pixel regression, 527 unit/component tests, 251 integration
 tests and local production build.
+
+## 28 October 2026 — Relevant construction and honest no-build consequences
+
+Owner rejected the prior iteration's generic miniatures and automatic construction
+for poor answers. Branch `feat/meaningful-city-infrastructure` changes the
+construction contract: 108 explicit stable choice-ID mappings now distinguish
+working, limited, failed and no-construction outcomes. Thirty promises, ignored
+needs, cancellations and other non-building choices add no asset at all. An
+advert may appear without counting as a clinic; hazardous piles or burn sites
+are physical consequences, not useful infrastructure.
+
+Recognisable, plot-sized health centres, pharmacies, public technology hubs,
+offline service centres, waterworks, housing courts, industrial machinery bays,
+training workshops, civic halls and arts facilities replace generic tiny houses
+and props. Foundation tools now use equipment scale in their existing premises.
+Good and poor technology choices visibly differ: a usable hub versus unfinished
+steel framing or a registration gate. Models use shared low-poly geometry and
+no downloaded assets or new texture maps. Local actual-software-raster review
+verified health/technology/water/manufacturing/housing and no-build examples.
+
+A safe crossing is now built on its designated road in the transport district;
+it is a walkable surface rather than a miniature road placed in a courtyard.
+Normal project collision reservations and street clearance remain in force.
+
+Answered-decision progression and existing saves remain unchanged. City summaries
+now distinguish physical infrastructure, working solutions and unresolved needs.
+Service capacity is reduced by limited plans; districts with no productive
+solution have zero service, attract no new ambient residents or deliveries and
+have no automatic enterprise production capacity. Revising removes the old
+consequence from the same plot and updates the same city, rather than rewarding
+every answer with another completed building. This is fictional simulation,
+not verified learning, health outcomes, money or XP.
+
+New policy checks cover all 108 mappings, thirty empty outcomes, intended sector
+assets, zero usefulness for promises and negative revision effects. Existing
+scene/geometry tests now assert the requested absence of construction as well
+as its presence. The real software-road pixel check and 108 actual-runtime
+journeys remain acceptance tests. Physical Android and actual GPU performance
+must be checked separately; no production release is implied.
+
+Validation: final `npm run validate` passed formatting, lint, types, all city
+checks including semantic/no-build contracts, 108 navigation journeys and the
+actual software-road pixel regression, 527 unit/component tests with coverage,
+251 integration tests and production build. The build emitted two unauthenticated
+progress-load diagnostics and exited successfully. No physical Android or GPU
+performance claim is inferred. One preview build is planned for visual review.
