@@ -39,13 +39,9 @@ export function createNavigator(
       }
   }
   const free = (p) => {
-    if (p.x < minX || p.x > maxX || p.z < minZ || p.z > maxZ)
-      return false;
+    if (p.x < minX || p.x > maxX || p.z < minZ || p.z > maxZ) return false;
     const nearby = cells.get(
-      cellKey(
-        Math.floor(p.x / cellSize),
-        Math.floor(p.z / cellSize),
-      ),
+      cellKey(Math.floor(p.x / cellSize), Math.floor(p.z / cellSize)),
     );
     return !nearby?.some(
       (b) => p.x >= b.minX && p.x <= b.maxX && p.z >= b.minZ && p.z <= b.maxZ,

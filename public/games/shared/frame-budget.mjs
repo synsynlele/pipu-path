@@ -12,7 +12,10 @@ export function createFrameBudget({ mobile = false, software = false } = {}) {
         lastFrame = now;
         return false;
       }
-      if (now - lastFrame < (reduced ? Math.max(baseInterval, 48) : baseInterval))
+      if (
+        now - lastFrame <
+        (reduced ? Math.max(baseInterval, 48) : baseInterval)
+      )
         return false;
       lastFrame = now;
       return true;

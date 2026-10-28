@@ -73,10 +73,7 @@ const cityNav = createNavigator(manyBuildings, {
 });
 const startTime = performance.now();
 for (let i = 0; i < 8; i++) {
-  const route = cityNav.route(
-    { x: -50, z: -0.5 },
-    { x: 49 - i, z: i + 1 },
-  );
+  const route = cityNav.route({ x: -50, z: -0.5 }, { x: 49 - i, z: i + 1 });
   assert(route && cityNav.free(route.destination));
 }
 assert(

@@ -19,4 +19,6 @@ assert(!software.takeFrame(50));
 assert(software.takeFrame(91));
 assert(!software.takeFrame(92, true));
 assert(software.takeFrame(200));
-console.log("PASS: mobile and software frame pacing, hidden tabs, adaptive quality.");
+console.log(
+  "PASS: mobile and software frame pacing, hidden tabs, adaptive quality.",
+);

@@ -212,10 +212,7 @@ function box(w, h, d, c, x = 0, y = 0, z = 0, parent = scene) {
 function cyl(r, h, c, x, y, z, parent = scene, r2 = r, sides = 12) {
   const key = [r, h, r2, sides].join(":");
   if (!cylinderGeometries.has(key))
-    cylinderGeometries.set(
-      key,
-      new T.CylinderGeometry(r2, r, h, sides),
-    );
+    cylinderGeometries.set(key, new T.CylinderGeometry(r2, r, h, sides));
   const m = new T.Mesh(cylinderGeometries.get(key), mat(c));
   m.position.set(x, y, z);
   m.castShadow = !compactDevice;
