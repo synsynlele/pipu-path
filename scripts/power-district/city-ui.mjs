@@ -24,7 +24,12 @@ assert(game.includes("function streetLight("));
 assert(game.includes("function parkSeat("));
 assert(game.includes("player.arms.forEach("));
 assert(game.includes("createNavigator(obstacles, {"));
-assert(game.includes("minX: -24.5"));
+assert(game.includes("minX: -57.5"));
+assert(html.includes('id="districts-toggle"'));
+assert(html.includes('id="district-directory"'));
+assert(game.includes("createOuterDistricts("));
+assert(game.includes("showFutureDistrict("));
+assert(css.includes("#district-list"));
 console.log(
   "PASS: living city scene, on-demand guide and construction, focused simulation and expanded navigation contracts.",
 );

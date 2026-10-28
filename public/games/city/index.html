@@ -65,11 +65,19 @@
           Hide guide
         </button>
         <button id="city-map" type="button">City map</button>
+        <button id="districts-toggle" type="button" aria-controls="district-directory" aria-expanded="false">Places (14)</button>
         <button id="explore-free" type="button">Explore freely</button>
         <button id="build-toggle" type="button" aria-controls="build-dock">
           Build
         </button>
       </nav>
+      <section id="district-directory" class="panel" hidden aria-label="Explore all 14 districts">
+        <div class="district-menu-heading">
+          <div><div class="eyebrow">ONE CONNECTED WORLD</div><h2>Explore the 14 districts</h2><p>Four districts are playable. Ten are open to explore while their challenges are developed.</p></div>
+          <button id="district-close" type="button" aria-label="Close district directory">×</button>
+        </div>
+        <div id="district-list"></div>
+      </section>
       <div id="test-status" role="status" aria-live="polite" hidden>
         Testing the city day…
       </div>
@@ -129,7 +137,7 @@
       <div id="intro" class="overlay">
         <section class="intro-card">
           <div class="eyebrow">
-            <span class="live-dot"></span> POWER · FOOD · LEARNING
+            <span class="live-dot"></span> 14 DISTRICTS · 4 PLAYABLE
           </div>
           <h1>One city.<br /><em>Many possibilities.</em></h1>
           <p>
@@ -162,10 +170,11 @@
           controls.
         </p>
         <p>
-          Follow the yellow Take me there button to meet the city builders one
-          at a time. You can explore freely whenever you want. Use City map to
-          see the whole neighbourhood, then Follow me to return to your
-          character. Later, you can build, test and improve the whole city.
+          Follow Take me there to meet your first builders. Next step reopens
+          the guide. Places (14) shows every part of this city: four districts
+          have working challenges and ten can be explored while we build
+          theirs. Use City map to see the whole city and Follow me to return.
+          Build shows construction tools only when they are needed.
         </p>
         <p>
           All energy units and costs are fictional. This is a learning

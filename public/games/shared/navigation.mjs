@@ -73,23 +73,55 @@ export function createNavigator(
     const scores = new Float64Array(open.length).fill(Infinity),
       parents = new Int32Array(open.length).fill(-1),
       closed = new Uint8Array(open.length),
-      front = new Set([from]);
+      heap = [];
     scores[from] = 0;
     const end = point(to);
     const heuristic = (id) => {
       const p = point(id);
       return Math.hypot(p.x - end.x, p.z - end.z);
     };
-    while (front.size) {
-      let current = -1,
-        best = Infinity;
-      for (const id of front) {
-        const f = scores[id] + heuristic(id);
-        if (f < best) {
-          best = f;
-          current = id;
-        }
+    // Priority queue keeps long-city pathfinding from scanning every candidate
+    // on each A* iteration. Old/stale entries are skipped after extraction.
+    const push = (id, priority) => {
+      const item = { id, priority };
+      let i = heap.length;
+      heap.push(item);
+      while (i > 0) {
+        const parent = (i - 1) >> 1;
+        if (heap[parent].priority <= priority) break;
+        heap[i] = heap[parent];
+        i = parent;
       }
+      heap[i] = item;
+    };
+    const pop = () => {
+      const top = heap[0];
+      const tail = heap.pop();
+      if (heap.length) {
+        let i = 0;
+        while (true) {
+          let child = i * 2 + 1;
+          if (child >= heap.length) break;
+          if (
+            child + 1 < heap.length &&
+            heap[child + 1].priority < heap[child].priority
+          ) child++;
+          if (heap[child].priority >= tail.priority) break;
+          heap[i] = heap[child];
+          i = child;
+        }
+        heap[i] = tail;
+      }
+      return top;
+    };
+    push(from, heuristic(from));
+    while (heap.length) {
+      const candidate = pop();
+      const current = candidate.id;
+      if (
+        closed[current] ||
+        candidate.priority > scores[current] + heuristic(current) + 1e-7
+      ) continue;
       if (current === to) {
         const raw = [];
         for (let id = to; id !== -1; id = parents[id]) raw.push(point(id));
@@ -125,7 +157,6 @@ export function createNavigator(
             ) > 0.3,
         };
       }
-      front.delete(current);
       closed[current] = 1;
       const cx = current % nx,
         cz = Math.floor(current / nx);
@@ -143,7 +174,7 @@ export function createNavigator(
           if (score < scores[next]) {
             scores[next] = score;
             parents[next] = current;
-            front.add(next);
+            push(next, score + heuristic(next));
           }
         }
     }

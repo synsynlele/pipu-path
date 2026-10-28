@@ -1,5 +1,24 @@
 # Implementation status
 
+## 28 October 2026 — The Unbuilt City 14-district pilot world candidate
+
+Branch `feat/unbuilt-city-fourteen-districts` extends the existing single city
+rather than making separate challenge screens. The map covers fourteen named
+districts: Repair, Power, Food and Education retain the two-day playable city
+economy; ten other locations have distinct explorable 3D landmarks and clearly
+state that their dedicated challenges remain in development. The city directory
+and expanded camera/world bounds give discoverable navigation; the shared A*
+navigator now uses a priority queue for longer trips. NPC navigation obstacles
+and mobile detail-panel behaviour are preserved. The world and practice
+progress remain session-only, and no fabricated mission completion, verified
+XP or reward is introduced.
+
+Acceptance requires full CI, confirmed exact-preview loading, playthrough
+of the five existing stations, route reachability to the ten new locations,
+mobile frame rate and accessibility proof, and pilot feedback. This is an
+isolated preview candidate, not production or a finished 14-district game.
+
+
 ## 28 October 2026 — richer city visuals and on-demand controls
 
 On `feat/unbuilt-city-living-visuals` the city now uses detailed masonry houses, pitched roofs, streetside furniture, market awnings and more human-like characters. The guide and construction dock are dismissible and collapse as the player acts; all background controls hide during the test-day animation. The new UI smoke assertions run with the existing power-district checks. Preview, browser interactions, accessibility and physical-device QA must be verified separately; not production.
