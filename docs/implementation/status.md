@@ -31,7 +31,6 @@ Android portrait, landscape, canvas orbit/zoom, overlay spacing and
 software-renderer fallback still require hands-on testing. Production
 is unchanged.
 
-
 ## 28 October 2026 — Compact in-city decision cards
 
 The decision and consequence overlays were occupying most of the

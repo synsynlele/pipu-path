@@ -857,30 +857,52 @@ function updateBuiltCityView() {
   if (!builtCityView) return;
   const summary = cityViewSummary(state.decisions);
   $("city-view-summary").textContent =
-    summary.built + "/" + summary.possible + " projects · " +
-    summary.active + "/" + summary.total + " districts built";
+    summary.built +
+    "/" +
+    summary.possible +
+    " projects · " +
+    summary.active +
+    "/" +
+    summary.total +
+    " districts built";
   const select = $("city-view-district");
   select.replaceChildren();
   const first = document.createElement("option");
   first.value = "";
   first.textContent = "Choose a district";
   select.append(first);
-  for (const district of [...summary.districts].sort((a, b) =>
-    Number(b.built > 0) - Number(a.built > 0))) {
+  for (const district of [...summary.districts].sort(
+    (a, b) => Number(b.built > 0) - Number(a.built > 0),
+  )) {
     const option = document.createElement("option");
     option.value = district.id;
-    option.textContent = district.emoji + " " + district.name +
-      " · " + district.built + "/" + district.possible + " built";
+    option.textContent =
+      district.emoji +
+      " " +
+      district.name +
+      " · " +
+      district.built +
+      "/" +
+      district.possible +
+      " built";
     select.append(option);
   }
   const focused = findCityViewDistrict(summary, builtCityView.districtId);
   select.value = focused?.id ?? "";
   $("city-view-overview").setAttribute("aria-pressed", String(!focused));
   if (focused) {
-    $("city-view-info").textContent = focused.emoji + " " + focused.name +
-      " · " + focused.built + "/" + focused.possible + " projects · " +
-      (focused.built ? "City service: " + focused.activity :
-        "Not built yet. Make decisions here to shape this district.");
+    $("city-view-info").textContent =
+      focused.emoji +
+      " " +
+      focused.name +
+      " · " +
+      focused.built +
+      "/" +
+      focused.possible +
+      " projects · " +
+      (focused.built
+        ? "City service: " + focused.activity
+        : "Not built yet. Make decisions here to shape this district.");
   } else {
     $("city-view-info").textContent = summary.built
       ? "Your saved decisions built these structures. Look around or select a district."
@@ -916,7 +938,8 @@ function openBuiltCityView() {
     far: camera.far,
     fogFar: scene.fog.far,
   };
-  if (wasRunning) pauseJourney("Your journey is paused while you inspect your city.");
+  if (wasRunning)
+    pauseJourney("Your journey is paused while you inspect your city.");
   cancelWalk();
   keys.clear();
   closeCasebook();
@@ -2720,7 +2743,11 @@ canvas.addEventListener("pointermove", (e) => {
     const a = [...pointers.values()],
       d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
     if (pinchDistance)
-      distance = clamp(distance - (d - pinchDistance) * 0.055, builtCityView ? 20 : 16, builtCityView ? 250 : 128);
+      distance = clamp(
+        distance - (d - pinchDistance) * 0.055,
+        builtCityView ? 20 : 16,
+        builtCityView ? 250 : 128,
+      );
     pinchDistance = d;
     dragging = true;
     return;
@@ -2769,7 +2796,11 @@ canvas.addEventListener(
   "wheel",
   (e) => {
     e.preventDefault();
-    distance = clamp(distance + e.deltaY * 0.02, builtCityView ? 20 : 16, builtCityView ? 250 : 128);
+    distance = clamp(
+      distance + e.deltaY * 0.02,
+      builtCityView ? 20 : 16,
+      builtCityView ? 250 : 128,
+    );
   },
   { passive: false },
 );
@@ -2818,7 +2849,8 @@ function animate(now) {
   if (builtCityView?.focus)
     desiredTarget.set(builtCityView.focus.x, 0, builtCityView.focus.z);
   else if (builtCityView) desiredTarget.set(0, 0, 0);
-  else if (activeFeedback) desiredTarget.set(activeFeedback.x, 0, activeFeedback.z);
+  else if (activeFeedback)
+    desiredTarget.set(activeFeedback.x, 0, activeFeedback.z);
   else if ($("intro").hidden && !mapMode)
     desiredTarget.set(player.g.position.x, 0, player.g.position.z);
   else desiredTarget.set(0, 0, 0);
@@ -2840,7 +2872,12 @@ function animate(now) {
     if (keys.has("s") || keys.has("ArrowDown")) dz += 1;
     if (keys.has("a") || keys.has("ArrowLeft")) dx -= 1;
     if (keys.has("d") || keys.has("ArrowRight")) dx += 1;
-    if ((dx || dz) && !simulating && !builtCityView && journey.status !== "running") {
+    if (
+      (dx || dz) &&
+      !simulating &&
+      !builtCityView &&
+      journey.status !== "running"
+    ) {
       cancelWalk();
       const mx = dx * Math.cos(yaw) + dz * Math.sin(yaw),
         mz = -dx * Math.sin(yaw) + dz * Math.cos(yaw),

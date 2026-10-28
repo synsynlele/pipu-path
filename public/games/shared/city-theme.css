@@ -2560,8 +2560,16 @@ body.city-viewing .corner-note {
   align-items: center;
   gap: 10px;
 }
-.city-view-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.city-view-label strong { font-size: 15px; color: #243c68; }
+.city-view-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.city-view-label strong {
+  font-size: 15px;
+  color: #243c68;
+}
 #city-view-summary {
   font-size: 10px;
   color: #526b89;
@@ -2644,19 +2652,54 @@ body.city-viewing .corner-note {
     padding: 9px 10px 8px;
     border-radius: 13px;
   }
-  .city-view-label strong { font-size: 13px; }
-  #city-view-summary { font-size: 9px; }
-  #city-view-return { padding: 8px 9px; font-size: 10px; min-height: 42px; }
-  .city-view-controls { gap: 5px; margin-top: 6px; flex-wrap: wrap; }
-  .city-view-district-label { display: none; }
-  #city-view-district { min-width: 95px; max-width: none; font-size: 10px; }
-  .city-view-controls .city-view-action { min-width: 38px; padding: 7px 9px; }
-  .city-view-info { font-size: 10px; margin-top: 5px; }
-  .city-view-hint { font-size: 9px; }
+  .city-view-label strong {
+    font-size: 13px;
+  }
+  #city-view-summary {
+    font-size: 9px;
+  }
+  #city-view-return {
+    padding: 8px 9px;
+    font-size: 10px;
+    min-height: 42px;
+  }
+  .city-view-controls {
+    gap: 5px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+  .city-view-district-label {
+    display: none;
+  }
+  #city-view-district {
+    min-width: 95px;
+    max-width: none;
+    font-size: 10px;
+  }
+  .city-view-controls .city-view-action {
+    min-width: 38px;
+    padding: 7px 9px;
+  }
+  .city-view-info {
+    font-size: 10px;
+    margin-top: 5px;
+  }
+  .city-view-hint {
+    font-size: 9px;
+  }
 }
 @media (max-height: 480px) and (orientation: landscape) {
-  #city-view { max-width: min(690px, calc(100vw - 16px)); padding: 5px 9px; }
-  .city-view-controls { margin-top: 4px; }
-  .city-view-hint { display: none; }
-  .city-view-info { margin-top: 3px; }
+  #city-view {
+    max-width: min(690px, calc(100vw - 16px));
+    padding: 5px 9px;
+  }
+  .city-view-controls {
+    margin-top: 4px;
+  }
+  .city-view-hint {
+    display: none;
+  }
+  .city-view-info {
+    margin-top: 3px;
+  }
 }

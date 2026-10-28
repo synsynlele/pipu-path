@@ -4,7 +4,7 @@ Status: Development preview only, 28 October 2026.
 
 ## Classroom goal
 
-Learners should be able to admire and examine the *real fictional city*
+Learners should be able to admire and examine the _real fictional city_
 their actions have constructed, not just see progress numbers on a card.
 The city keeps existing chapter navigation and all 36 reversible
 decisions. No new city, account data, rewards, scores, photo storage
@@ -44,6 +44,7 @@ never be presented as verified real-world measures.
 ## Device acceptance tests
 
 Test Android portrait/landscape and a tablet:
+
 - open during travel, while choosing, during city construction and
   while reading consequences;
 - inspect built and unbuilt neighbourhoods, orbit and zoom without
