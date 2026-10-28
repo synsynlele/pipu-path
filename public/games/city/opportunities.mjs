@@ -63,26 +63,67 @@ export const DAY_EVENTS = Object.freeze([
 ]);
 export const ENTERPRISE_PRODUCTS = Object.freeze(["water", "parts", "food"]);
 export const OWNED_ENTERPRISES = Object.freeze([
-  { id: "water", title: "Clean Water Service", district: "water", detail: "Keep clean water reaching the clinic." },
-  { id: "food", title: "Food Growers", district: "market", detail: "Turn limited water into food for the city." },
-  { id: "repair", title: "Repair Team", district: "workshop", detail: "Use parts to restore essential equipment." },
-  { id: "shop", title: "Neighbourhood Shop", district: "business", detail: "Get real stock into customers' hands." },
+  {
+    id: "water",
+    title: "Clean Water Service",
+    district: "water",
+    detail: "Keep clean water reaching the clinic.",
+  },
+  {
+    id: "food",
+    title: "Food Growers",
+    district: "market",
+    detail: "Turn limited water into food for the city.",
+  },
+  {
+    id: "repair",
+    title: "Repair Team",
+    district: "workshop",
+    detail: "Use parts to restore essential equipment.",
+  },
+  {
+    id: "shop",
+    title: "Neighbourhood Shop",
+    district: "business",
+    detail: "Get real stock into customers' hands.",
+  },
 ]);
 export const ENTERPRISE_ACTIONS = Object.freeze([
-  { id: "steady", title: "Keep it steady", detail: "Work with what you already have." },
-  { id: "tools", title: "Improve tools", detail: "Use one spare part to improve today's capacity, if a part is available." },
-  { id: "reach", title: "Reach more people", detail: "Invite more demand. Without enough supplies, more people may wait." },
+  {
+    id: "steady",
+    title: "Keep it steady",
+    detail: "Work with what you already have.",
+  },
+  {
+    id: "tools",
+    title: "Improve tools",
+    detail:
+      "Use one spare part to improve today's capacity, if a part is available.",
+  },
+  {
+    id: "reach",
+    title: "Reach more people",
+    detail:
+      "Invite more demand. Without enough supplies, more people may wait.",
+  },
 ]);
-const validEnterprise = (id) => OWNED_ENTERPRISES.some((item) => item.id === id);
+const validEnterprise = (id) =>
+  OWNED_ENTERPRISES.some((item) => item.id === id);
 const validAction = (id) => ENTERPRISE_ACTIONS.some((item) => item.id === id);
 const emptyEnterprise = () => ({ id: null, action: "steady" });
 function safeEnterpriseSnapshot(value) {
   if (value === null || value === undefined) return null; // Older day records.
   if (
-    !value || typeof value !== "object" || Array.isArray(value) ||
-    !validEnterprise(value.id) || !validAction(value.action) ||
-    !["output", "customers", "workers", "shortfall"].every((key) => isInt(value[key], 30))
-  ) return false;
+    !value ||
+    typeof value !== "object" ||
+    Array.isArray(value) ||
+    !validEnterprise(value.id) ||
+    !validAction(value.action) ||
+    !["output", "customers", "workers", "shortfall"].every((key) =>
+      isInt(value[key], 30),
+    )
+  )
+    return false;
   return {
     id: value.id,
     action: value.action,
@@ -120,13 +161,17 @@ export function sanitizeOpportunityState(value) {
   )
     return null;
   // Older Chapter 3 saves did not have owner-operated enterprises.
-  const enterprise = value.enterprise === undefined ? emptyEnterprise() : value.enterprise;
+  const enterprise =
+    value.enterprise === undefined ? emptyEnterprise() : value.enterprise;
   if (
-    !enterprise || typeof enterprise !== "object" || Array.isArray(enterprise) ||
+    !enterprise ||
+    typeof enterprise !== "object" ||
+    Array.isArray(enterprise) ||
     !(enterprise.id === null || validEnterprise(enterprise.id)) ||
     !validAction(enterprise.action) ||
     (enterprise.id === null && enterprise.action !== "steady")
-  ) return null;
+  )
+    return null;
   const history = [];
   for (const item of value.history) {
     if (
@@ -158,7 +203,8 @@ export function sanitizeOpportunityState(value) {
   }
   const last = value.last;
   if (value.day === 0 && last != null) return null;
-  if (value.day > 0 && safeEnterpriseSnapshot(last?.enterprise) === false) return null;
+  if (value.day > 0 && safeEnterpriseSnapshot(last?.enterprise) === false)
+    return null;
   if (
     value.day > 0 &&
     (!last ||
@@ -226,9 +272,7 @@ export function runOpportunityDay(decisions, previous) {
   );
   // Tool improvement consumes an actual part, so it competes with repairs.
   const toolsReady =
-    owner.id !== null &&
-    owner.action === "tools" &&
-    stocks.parts + parts >= 1;
+    owner.id !== null && owner.action === "tools" && stocks.parts + parts >= 1;
   const tools = (id) => toolsReady && owner.id === id;
   const water = clamp(
     capacity(city, "water", 10) +
@@ -251,12 +295,20 @@ export function runOpportunityDay(decisions, previous) {
     return units;
   }
   const clinicNeed = clamp(
-    capacity(city, "health", 7) + (day === 3 ? 2 : 0) + (reach("water") ? 2 : 0),
+    capacity(city, "health", 7) +
+      (day === 3 ? 2 : 0) +
+      (reach("water") ? 2 : 0),
     0,
     11,
   );
-  const farmNeed = clamp(capacity(city, "market", 6) + (reach("food") ? 1 : 0), 0, 7);
-  const repairNeed = (state.policy === "repair" ? 5 : 3) + (reach("repair") || tools("repair") ? 2 : 0);
+  const farmNeed = clamp(
+    capacity(city, "market", 6) + (reach("food") ? 1 : 0),
+    0,
+    7,
+  );
+  const repairNeed =
+    (state.policy === "repair" ? 5 : 3) +
+    (reach("repair") || tools("repair") ? 2 : 0);
   let patients = 0,
     wateredFarm = 0;
   if (state.policy === "people") {
@@ -272,18 +324,26 @@ export function runOpportunityDay(decisions, previous) {
   }
   const repairs = transfer("parts", "industry", "workshop", repairNeed);
   const foodMade = Math.min(
-    capacity(city, "market", 12) + (repairs >= 2 ? 1 : 0) + (tools("food") ? 2 : 0),
+    capacity(city, "market", 12) +
+      (repairs >= 2 ? 1 : 0) +
+      (tools("food") ? 2 : 0),
     wateredFarm * 2,
   );
   stocks.food = clamp(stocks.food + foodMade, 0, 30);
   const shopCapacity = capacity(city, "business", 9) + (tools("shop") ? 2 : 0);
   const retailNeed = clamp(
     capacity(city, "business", 9) +
-      (day === 2 || day === 6 ? 2 : 0) + (reach("shop") ? 2 : 0),
+      (day === 2 || day === 6 ? 2 : 0) +
+      (reach("shop") ? 2 : 0),
     0,
     13,
   );
-  const meals = transfer("food", "market", "business", Math.min(retailNeed, shopCapacity));
+  const meals = transfer(
+    "food",
+    "market",
+    "business",
+    Math.min(retailNeed, shopCapacity),
+  );
   const unserved =
     clinicNeed -
     patients +
@@ -317,7 +377,12 @@ export function runOpportunityDay(decisions, previous) {
         id: owner.id,
         action: owner.action,
         output,
-        customers: owner.id === "water" ? patients : owner.id === "food" || owner.id === "shop" ? meals : repairs,
+        customers:
+          owner.id === "water"
+            ? patients
+            : owner.id === "food" || owner.id === "shop"
+              ? meals
+              : repairs,
         workers: output > 0 ? Math.min(3, 1 + Math.floor(output / 5)) : 0,
         shortfall: Math.max(0, enterpriseShortfall[owner.id]),
       }
@@ -351,11 +416,18 @@ export function selectOpportunityPolicy(previous, policy) {
 
 export function chooseOwnedEnterprise(previous, id) {
   const state = sanitizeOpportunityState(previous);
-  if (!state || state.day >= ENTERPRISE_DAYS || !validEnterprise(id)) return null;
+  if (!state || state.day >= ENTERPRISE_DAYS || !validEnterprise(id))
+    return null;
   return { ...state, enterprise: { id, action: "steady" } };
 }
 export function chooseEnterpriseAction(previous, action) {
   const state = sanitizeOpportunityState(previous);
-  if (!state || state.day >= ENTERPRISE_DAYS || !state.enterprise.id || !validAction(action)) return null;
+  if (
+    !state ||
+    state.day >= ENTERPRISE_DAYS ||
+    !state.enterprise.id ||
+    !validAction(action)
+  )
+    return null;
   return { ...state, enterprise: { ...state.enterprise, action } };
 }

@@ -1486,7 +1486,10 @@ function renderOpportunityPanel() {
       button.className = "opportunity-action";
       button.textContent = action.title;
       button.title = action.detail;
-      button.setAttribute("aria-pressed", String(economy.enterprise.action === action.id));
+      button.setAttribute(
+        "aria-pressed",
+        String(economy.enterprise.action === action.id),
+      );
       button.disabled = completed;
       button.onclick = () => {
         const next = chooseEnterpriseAction(state.economy, action.id);
@@ -1572,14 +1575,21 @@ function renderOpportunityPanel() {
       economy.stocks.food;
     result.append(title);
     if (ownedLast) {
-      const business = OWNED_ENTERPRISES.find((item) => item.id === ownedLast.id);
+      const business = OWNED_ENTERPRISES.find(
+        (item) => item.id === ownedLast.id,
+      );
       const performance = document.createElement("p");
       performance.textContent =
-        (business?.title ?? "Your enterprise") + ": " +
-        ownedLast.output + " units of activity · " +
-        ownedLast.customers + " customer/service visits · " +
-        ownedLast.workers + " workers active · " +
-        ownedLast.shortfall + " needs still waiting." +
+        (business?.title ?? "Your enterprise") +
+        ": " +
+        ownedLast.output +
+        " units of activity · " +
+        ownedLast.customers +
+        " customer/service visits · " +
+        ownedLast.workers +
+        " workers active · " +
+        ownedLast.shortfall +
+        " needs still waiting." +
         (ownedLast.shortfall > 0
           ? " Try a different operating priority or improvement tomorrow."
           : " The business met its immediate needs.");

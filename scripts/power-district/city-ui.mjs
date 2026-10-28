@@ -70,7 +70,9 @@ assert(html.includes('id="opportunities-run"'));
 assert(html.includes('id="opportunities-business"'));
 assert(html.includes('id="opportunities-actions"'));
 assert(html.includes('id="opportunities-view-business"'));
-assert(game.includes("chooseOwnedEnterprise(state.economy, event.target.value)"));
+assert(
+  game.includes("chooseOwnedEnterprise(state.economy, event.target.value)"),
+);
 assert(game.includes("chooseEnterpriseAction(state.economy, action.id)"));
 assert(game.includes("focusBuiltCityDistrict(business.district)"));
 assert(css.includes(".opportunity-business"));

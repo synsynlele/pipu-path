@@ -177,7 +177,8 @@ export function createLivingCityScene({
       });
     }
     const owner = latest.enterpriseActivity;
-    const district = owner && CITY_DISTRICTS.find((site) => site.id === owner.district);
+    const district =
+      owner && CITY_DISTRICTS.find((site) => site.id === owner.district);
     enterpriseStand.visible = Boolean(district);
     if (district) {
       enterpriseStand.position.set(district.x + 6.6, 0, district.z + 4.8);
@@ -257,7 +258,9 @@ export function createLivingCityScene({
       ownedCustomers.forEach((person, i) => {
         if (!person.visible) return;
         const phase = now / 1600 + i * 1.8;
-        person.position.x = reduceMotion ? 1.5 + i * 0.45 : 1.45 + i * 0.45 - Math.abs(Math.sin(phase)) * 0.8;
+        person.position.x = reduceMotion
+          ? 1.5 + i * 0.45
+          : 1.45 + i * 0.45 - Math.abs(Math.sin(phase)) * 0.8;
         person.rotation.y = reduceMotion ? 0 : Math.sin(phase) * 0.25;
       });
     }

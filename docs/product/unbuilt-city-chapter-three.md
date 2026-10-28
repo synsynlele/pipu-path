@@ -71,6 +71,7 @@ only stores validated strategy IDs and bounded numerical totals.
   usage and touch-accessible controls require student testing.
 
 ## Founder-operated enterprise extension (development branch)
+
 Players now establish one of four starter businesses: Clean Water Service,
 Food Growers, Repair Team or Neighbourhood Shop. This is an operating role
 inside one connected city, not a disconnected minigame. Players can revise

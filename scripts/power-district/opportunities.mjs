@@ -84,7 +84,10 @@ const improved = runOpportunityDay(decisions, improvedOwner);
 assert.equal(improved.last.enterprise.id, "water");
 assert(improved.last.enterprise.workers > 0);
 assert(improved.last.water >= baseline.last.water);
-assert(improved.stocks.parts <= baseline.stocks.parts, "Tool upgrades use finite parts");
+assert(
+  improved.stocks.parts <= baseline.stocks.parts,
+  "Tool upgrades use finite parts",
+);
 assert.deepEqual(sanitizeOpportunityState(improved), improved);
 const active = deriveLivingCity(decisions, improved).enterpriseActivity;
 assert.equal(active.district, "water");
@@ -108,19 +111,36 @@ const reached = runOpportunityDay(
   decisions,
   chooseEnterpriseAction(chooseOwnedEnterprise(fresh, "shop"), "reach"),
 );
-assert(reached.last.unserved >= runOpportunityDay(
-  decisions,
-  chooseOwnedEnterprise(fresh, "shop"),
-).last.unserved, "Inviting customers cannot magically create stock");
-assert.equal(chooseOwnedEnterprise(state, "shop"), null, "Do not alter completed history");
-assert.equal(sanitizeOpportunityState({
-  ...improved,
-  enterprise: { id: "<img>", action: "tools" },
-}), null);
-assert.equal(sanitizeOpportunityState({
-  ...improved,
-  history: [{ ...improved.history[0], enterprise: { ...improved.last.enterprise, workers: 999 } }],
-}), null);
+assert(
+  reached.last.unserved >=
+    runOpportunityDay(decisions, chooseOwnedEnterprise(fresh, "shop")).last
+      .unserved,
+  "Inviting customers cannot magically create stock",
+);
+assert.equal(
+  chooseOwnedEnterprise(state, "shop"),
+  null,
+  "Do not alter completed history",
+);
+assert.equal(
+  sanitizeOpportunityState({
+    ...improved,
+    enterprise: { id: "<img>", action: "tools" },
+  }),
+  null,
+);
+assert.equal(
+  sanitizeOpportunityState({
+    ...improved,
+    history: [
+      {
+        ...improved.history[0],
+        enterprise: { ...improved.last.enterprise, workers: 999 },
+      },
+    ],
+  }),
+  null,
+);
 const scene = deriveLivingCity(decisions, state);
 assert(scene.deliveries.length > 0 && scene.deliveries.length <= 5);
 assert(
