@@ -40,8 +40,8 @@ export function PowerDistrictFrame({
       aria-label="Power District 3D practice"
       className={
         expanded
-          ? "fixed inset-0 z-[1000] flex flex-col bg-[#f4efe4] text-[#233e35]"
-          : "overflow-hidden rounded-2xl border border-[#d1d8c4] bg-[#f4efe4] text-[#233e35]"
+          ? "power-district-frame fixed inset-0 z-[1000] flex flex-col bg-[#f4efe4] text-[#233e35]"
+          : "power-district-frame overflow-hidden rounded-2xl border border-[#d1d8c4] bg-[#f4efe4] text-[#233e35]"
       }
     >
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#d1d8c4] px-4 py-2">

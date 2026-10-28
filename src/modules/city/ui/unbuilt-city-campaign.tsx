@@ -17,7 +17,7 @@ export function UnbuiltCityCampaign({ playHref }: { playHref: string }) {
         </p>
         <Link
           href={playHref}
-          className="mt-5 inline-flex min-h-12 items-center rounded-full bg-[#d8e7a8] px-5 text-sm font-extrabold text-[#233e35]"
+          className="adventure-action mt-5 inline-flex min-h-12 items-center rounded-full bg-[#d8e7a8] px-5 text-sm font-extrabold text-[#233e35]"
         >
           Enter The Unbuilt City →
         </Link>

@@ -121,3 +121,15 @@
 .pp-app-experience main.adventure-dark details > summary {
   color: #f6f8fc;
 }
+
+/* The game frame is a light surface inside the authenticated dark route. */
+.adventure-dark .power-district-frame {
+  color: #233e35;
+  color-scheme: light;
+}
+.adventure-dark .power-district-frame a,
+.adventure-dark .power-district-frame a:hover,
+.adventure-dark .power-district-frame a:focus-visible {
+  color: #233e35;
+  -webkit-text-fill-color: #233e35;
+}

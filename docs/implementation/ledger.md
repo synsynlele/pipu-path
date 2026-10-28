@@ -1264,3 +1264,11 @@ parent document. Corrected the app's frame-src to permit self across navigation;
 frame-ancestors none and X-Frame-Options DENY still protect every application page
 except the explicitly bundled game document, which permits same-origin only.
 No external frame host is added. Updated the policy regression accordingly.
+
+Final authenticated-preview traversal confirmed campaign replacement, standard
+client-side entry, a working same-origin game frame, one-click station travel and
+arrival evidence, plus focus-view expansion. Corrected an observed dark-route
+anchor rule that made the light frame's real-Quest return link low contrast; the
+campaign CTA now uses the established readable action scope. These are shared
+surface fixes, not changes to Quest state or game rules. Physical phones and
+GPU rendering remain separate verification work; browser review used software 3D.
