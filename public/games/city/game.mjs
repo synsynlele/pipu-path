@@ -32,6 +32,7 @@ import {
 import { previousKeptCase, canRevise } from "./decision-review.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
+import { createFrameBudget } from "../shared/frame-budget.mjs";
 import {
   CASE_DISTRICTS,
   FOUNDATION_CASE_COUNT,
@@ -114,11 +115,16 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => $("toast").classList.remove("show"), 3200);
 }
+// Rendered 3D must remain responsive as learners add more buildings.
+const compactDevice =
+  innerWidth <= 700 ||
+  (window.navigator.hardwareConcurrency ?? 8) <= 4 ||
+  (window.navigator.deviceMemory ?? 8) <= 4;
 let renderer;
 try {
   renderer = new T.WebGLRenderer({
     canvas: $("world"),
-    antialias: true,
+    antialias: !compactDevice,
     alpha: false,
     powerPreference: "low-power",
   });
@@ -130,8 +136,17 @@ try {
   $("webgl-note").textContent =
     "Software 3D mode is active on this device. All mission interactions remain available.";
 }
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.4));
-renderer.shadowMap.enabled = true;
+const softwareMode = renderer instanceof SoftwareRenderer;
+const frameBudget = createFrameBudget({
+  mobile: compactDevice,
+  software: softwareMode,
+});
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio, softwareMode ? 0.9 : compactDevice ? 1 : 1.3),
+);
+// Shadows are a second full rendering pass. Ambient and sun lighting
+// preserve depth and visual interest on phones without that GPU overhead.
+renderer.shadowMap.enabled = !compactDevice && !softwareMode;
 renderer.shadowMap.type = T.PCFSoftShadowMap;
 renderer.setClearColor(0xe9e2d2);
 renderer.outputColorSpace = T.SRGBColorSpace;
@@ -149,7 +164,7 @@ const hemi = new T.HemisphereLight(0xfff9e4, 0x798268, 2.9);
 scene.add(hemi);
 const sun = new T.DirectionalLight(0xffe1af, 3.5);
 sun.position.set(-12, 20, 8);
-sun.castShadow = true;
+sun.castShadow = !compactDevice && !softwareMode;
 sun.shadow.mapSize.set(1024, 1024);
 sun.shadow.camera.left = -62;
 sun.shadow.camera.right = 62;
@@ -158,6 +173,8 @@ sun.shadow.camera.bottom = -52;
 sun.shadow.normalBias = 0.04;
 scene.add(sun);
 const mats = {};
+const boxGeometries = new Map();
+const cylinderGeometries = new Map();
 function mat(c, rough = 0.85) {
   return (mats[c] ??= new T.MeshStandardMaterial({
     color: c,
@@ -166,27 +183,40 @@ function mat(c, rough = 0.85) {
 }
 function box(w, h, d, c, x = 0, y = 0, z = 0, parent = scene) {
   const m = new T.Mesh(
-    new T.BoxGeometry(
-      w,
-      h,
-      d,
-      w > 4 ? Math.ceil(w / 1.5) : 1,
-      h > 4 ? Math.ceil(h / 1.5) : 1,
-      d > 4 ? Math.ceil(d / 1.5) : 1,
-    ),
+    (() => {
+      // Reuse GPU geometry between repeatable buildings and all three
+      // decision outcomes; mesh transforms still create unique structures.
+      const key = [w, h, d].join(":");
+      if (!boxGeometries.has(key))
+        boxGeometries.set(
+          key,
+          new T.BoxGeometry(
+            w,
+            h,
+            d,
+            w > 4 ? Math.ceil(w / 1.5) : 1,
+            h > 4 ? Math.ceil(h / 1.5) : 1,
+            d > 4 ? Math.ceil(d / 1.5) : 1,
+          ),
+        );
+      return boxGeometries.get(key);
+    })(),
     typeof c === "string" || typeof c === "number" ? mat(c) : c,
   );
   m.position.set(x, y, z);
-  m.castShadow = true;
-  m.receiveShadow = true;
+  m.castShadow = !compactDevice;
+  m.receiveShadow = !compactDevice;
   parent.add(m);
   return m;
 }
 function cyl(r, h, c, x, y, z, parent = scene, r2 = r, sides = 12) {
-  const m = new T.Mesh(new T.CylinderGeometry(r2, r, h, sides), mat(c));
+  const key = [r, h, r2, sides].join(":");
+  if (!cylinderGeometries.has(key))
+    cylinderGeometries.set(key, new T.CylinderGeometry(r2, r, h, sides));
+  const m = new T.Mesh(cylinderGeometries.get(key), mat(c));
   m.position.set(x, y, z);
-  m.castShadow = true;
-  m.receiveShadow = true;
+  m.castShadow = !compactDevice;
+  m.receiveShadow = !compactDevice;
   parent.add(m);
   return m;
 }
@@ -3236,6 +3266,7 @@ let last = performance.now(),
 const v = new T.Vector3();
 function animate(now) {
   requestAnimationFrame(animate);
+  if (!frameBudget.takeFrame(now, document.hidden)) return;
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
   time += dt;
@@ -3402,7 +3433,15 @@ function animate(now) {
     bike.position.z =
       3.8 - Math.sin(Math.min(1, (now - runStarted) / 4800) * Math.PI) * 7;
   }
+  const renderStarted = performance.now();
   renderer.render(scene, camera);
+  // Adapt once when sustained rendering pressure is detected. Avoid
+  // endlessly resizing buffers or dropping simulation decisions.
+  if (frameBudget.noteRenderTime(performance.now() - renderStarted)) {
+    renderer.setPixelRatio(softwareMode ? 0.7 : 0.75);
+    resize();
+    toast("Using lighter 3D graphics to keep your city moving.");
+  }
 }
 function resize() {
   renderer.setSize(innerWidth, innerHeight);

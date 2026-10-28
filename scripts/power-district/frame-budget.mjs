@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { createFrameBudget } from "../../public/games/shared/frame-budget.mjs";
+
+const mobile = createFrameBudget({ mobile: true });
+assert(mobile.takeFrame(0));
+assert(!mobile.takeFrame(16));
+assert(mobile.takeFrame(34));
+assert(!mobile.takeFrame(60, true));
+assert(mobile.takeFrame(96));
+assert.equal(mobile.noteRenderTime(30), false);
+for (let i = 0; i < 3; i++) assert.equal(mobile.noteRenderTime(60), false);
+assert.equal(mobile.noteRenderTime(60), true);
+assert.equal(mobile.noteRenderTime(70), false);
+assert(!mobile.takeFrame(132));
+assert(mobile.takeFrame(147));
+const software = createFrameBudget({ software: true });
+assert(software.takeFrame(0));
+assert(!software.takeFrame(50));
+assert(software.takeFrame(91));
+assert(!software.takeFrame(92, true));
+assert(software.takeFrame(200));
+console.log(
+  "PASS: mobile and software frame pacing, hidden tabs, adaptive quality.",
+);
