@@ -3,6 +3,8 @@ import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
 import { cityViewSummary, findCityViewDistrict } from "./city-view.mjs";
+import { deriveLivingCity } from "./living-city.mjs";
+import { createLivingCityScene } from "./living-scene.mjs";
 import { chapterPressure } from "./chapter-two.mjs";
 import {
   firstUnanswered,
@@ -772,6 +774,19 @@ const futureNeighbours = createOuterDistricts({
 });
 // Decisions construct fictional, scenario-specific objects in the 3D city.
 const caseScenes = createCaseSceneEffects({ T, scene, box, cyl, mat });
+// Small-school phones and the software canvas get a reduced ambient budget.
+// City decisions themselves remain identical across devices.
+const livingScene = createLivingCityScene({
+  T,
+  scene,
+  box,
+  cyl,
+  mat,
+  lowPower:
+    innerWidth <= 650 ||
+    (window.navigator.hardwareConcurrency ?? 8) <= 4 ||
+    renderer instanceof SoftwareRenderer,
+});
 const decisionSparks = new T.Group();
 scene.add(decisionSparks);
 const sparkUnits = Array.from({ length: 12 }, (_, i) => {
@@ -801,6 +816,8 @@ let builtCityView = null;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
+  livingScene.sync(state.decisions);
+  if (builtCityView) updateBuiltCityView();
 }
 function rememberJourney() {
   state.journey =
@@ -856,6 +873,7 @@ function refreshJourneyControls() {
 function updateBuiltCityView() {
   if (!builtCityView) return;
   const summary = cityViewSummary(state.decisions);
+  const living = deriveLivingCity(state.decisions);
   $("city-view-summary").textContent =
     summary.built +
     "/" +
@@ -864,7 +882,9 @@ function updateBuiltCityView() {
     summary.active +
     "/" +
     summary.total +
-    " districts built";
+    " districts built · " +
+    living.deliveries.length +
+    " moving services";
   const select = $("city-view-district");
   select.replaceChildren();
   const first = document.createElement("option");
@@ -2927,8 +2947,10 @@ function animate(now) {
   }
 
   // City buildings and small community workers reflect each retained choice.
-  // Construction rises, sparks scatter and nearby characters react.
+  // The same retained choices animate a living neighbourhood in both play
+  // and aerial inspection. Hidden tabs avoid unnecessary simulation work.
   caseScenes.animate(now, reduceMotion.matches);
+  livingScene.animate(now, reduceMotion.matches, document.hidden || simulating);
   if (activeFeedback && !reduceMotion.matches) {
     const progress = Math.min(1, (now - activeFeedback.started) / 1450);
     sparkUnits.forEach((particle, i) => {
