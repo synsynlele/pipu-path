@@ -2003,21 +2003,6 @@ function inspect(id) {
   if (id === "school") schoolPanel();
   if (id === "council") councilPanel();
 }
-function showFutureDistrict(d) {
-  showDetail(
-    '<div class="eyebrow">EXPLORE THE CITY · DISTRICT IN DEVELOPMENT</div>' +
-      "<h2>" +
-      d.name +
-      "</h2><p>Explore the buildings and neighbourhood. " +
-      "Full problem-solving missions are not playable in this district yet.</p>" +
-      '<div class="evidence"><strong>A QUESTION FOR BUILDERS</strong>' +
-      d.challenge +
-      "</div><p>For now, working decisions and consequences " +
-      "are available in Repair, Power, Food and Learning.</p>" +
-      '<button class="primary" id="future-back">Keep exploring →</button>',
-  );
-  $("future-back").onclick = closeDetail;
-}
 function closeDirectory() {
   $("district-directory").hidden = true;
   $("districts-toggle").setAttribute("aria-expanded", "false");

@@ -125,7 +125,7 @@ assert(game.includes("saveEnabled = false"));
 assert(css.includes("#casebook-list"));
 assert(css.includes(".case-choice"));
 assert(game.includes("createOuterDistricts("));
-assert(game.includes("showFutureDistrict("));
+assert(game.includes("if (district && OUTER_DISTRICTS.some("));
 assert(game.includes("function showChapterTransition()"));
 assert(game.includes("isChapterTransition(id)"));
 assert(game.includes("nextPlayableAfter(id, state.decisions)"));
