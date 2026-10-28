@@ -403,6 +403,7 @@ export function runOpportunityDay(decisions, previous) {
   return {
     day,
     policy: state.policy,
+    enterprise: { ...state.enterprise },
     stocks,
     history: [...state.history, row],
     last: { ...row, shipments },
