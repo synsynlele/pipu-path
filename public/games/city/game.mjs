@@ -4,6 +4,7 @@ import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
+  CITY_CASES,
   CASE_DISTRICTS,
   IMPACT_LABELS,
   casesFor,
@@ -1116,7 +1117,11 @@ function startCase(id) {
   const scenario = getCase(id);
   if (!scenario) return;
   closeCasebook();
-  goToStation(scenario.district, () => showCase(id));
+  if (!goToStation(scenario.district, () => showCase(id))) {
+    // Reaching the learning choice must not depend on a perfect 3D path.
+    showCase(id);
+    toast("Your next problem is ready.");
+  }
 }
 function showCase(id) {
   cancelAutoAdvance();
@@ -1928,11 +1933,17 @@ $("start").onclick = () => {
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
-  toast(
-    previousPractice
-      ? "Your saved city is open. Continue exploring."
-      : "Start with the yellow Take me there button.",
+  const nextUnsolved = CITY_CASES.find(
+    (scenario) => !getChoice(scenario.id, state.decisions[scenario.id]),
   );
+  if (nextUnsolved) {
+    toast(previousPractice
+      ? "Welcome back! Walking to your next unsolved problem."
+      : "Welcome! Walking to your first problem.");
+    startCase(nextUnsolved.id);
+  } else {
+    toast("Your 16 decisions are here. Explore freely or replay any problem.");
+  }
 };
 $("sound").onclick = () => {
   sound = !sound;

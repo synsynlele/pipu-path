@@ -3,7 +3,12 @@
 ## 28 October 2026 — hands-free case progression and varied answer positions
 
 The branch `feat/unbuilt-city-auto-flow-options` builds on the visible-action
-preview. Learners now make **one choice** per authored practice problem.
+preview. Selecting **Enter the city** now starts the next unsolved
+practice problem automatically, including walking to that district.
+No Problems (16) menu click or manual Take me there step is required.
+Returning device-save players resume at the first unanswered problem;
+a blocked route falls back to showing the decision rather than trapping
+the player. Learners now make **one choice** per authored practice problem.
 That single tap records the fictional decision (and saves it on the
 current device only if they previously opted in), immediately activates
 the physical district effect, shows the outcome, and then automatically

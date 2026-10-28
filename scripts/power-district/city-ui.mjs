@@ -42,6 +42,9 @@ assert(
   ),
 );
 assert(game.includes("choicesForCase(id, answerOrderSeed)"));
+assert(game.includes("const nextUnsolved = CITY_CASES.find("));
+assert(game.includes("startCase(nextUnsolved.id)"));
+assert(game.includes("if (!goToStation(scenario.district, () => showCase(id)))"));
 assert(game.includes("autoAdvanceTimer = setTimeout("));
 assert(
   game.includes("if (!goToStation(next.district, () => showCase(next.id)))"),
