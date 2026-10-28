@@ -3,7 +3,10 @@
 import { initialPlan } from "./model.mjs";
 import { getCase, getChoice } from "./cases.mjs";
 import { JOURNEY_STAGES } from "./journey-flow.mjs";
-import { newOpportunityState, sanitizeOpportunityState } from "./opportunities.mjs";
+import {
+  newOpportunityState,
+  sanitizeOpportunityState,
+} from "./opportunities.mjs";
 
 export const PRACTICE_KEY = "unbuilt-city:practice:v1";
 const VERSION = 1;

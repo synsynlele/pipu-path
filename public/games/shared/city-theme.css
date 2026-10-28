@@ -2840,7 +2840,9 @@ body.city-viewing #opportunities-panel {
   margin: 11px 0 6px;
   font-size: 11px;
 }
-.opportunities-note { display: block; }
+.opportunities-note {
+  display: block;
+}
 #opportunities-toggle:disabled {
   opacity: 0.6;
 }
@@ -2852,11 +2854,22 @@ body.city-viewing #opportunities-panel {
     max-height: min(58dvh, 445px);
     padding: 11px;
   }
-  #opportunities-panel .district-menu-heading h2 { font-size: 15px; }
-  .opportunity-policy { padding: 8px; }
-  .opportunity-policy strong { font-size: 10px; }
-  .opportunity-policy small { font-size: 9px; }
+  #opportunities-panel .district-menu-heading h2 {
+    font-size: 15px;
+  }
+  .opportunity-policy {
+    padding: 8px;
+  }
+  .opportunity-policy strong {
+    font-size: 10px;
+  }
+  .opportunity-policy small {
+    font-size: 9px;
+  }
 }
 @media (max-height: 480px) and (orientation: landscape) {
-  #opportunities-panel { max-height: 70dvh; width: min(355px, 48vw); }
+  #opportunities-panel {
+    max-height: 70dvh;
+    width: min(355px, 48vw);
+  }
 }

@@ -84,11 +84,24 @@ assert.equal(
 );
 const firstEconomy = { ...newOpportunityState(), policy: "people" };
 assert.equal(savePractice({ ...state, economy: firstEconomy }, fake), true);
-assert.deepEqual(loadPractice(fake).economy, firstEconomy,
-  "Optional seven-day practice settings restore without leaking details");
-assert.deepEqual(sanitizePractice({ ...state, economy: {
-  day: 999, policy: "unsafe", stocks: null, history: [] } }).economy,
-  newOpportunityState(), "Invalid enterprise state resets safely while 36 choices survive");
+assert.deepEqual(
+  loadPractice(fake).economy,
+  firstEconomy,
+  "Optional seven-day practice settings restore without leaking details",
+);
+assert.deepEqual(
+  sanitizePractice({
+    ...state,
+    economy: {
+      day: 999,
+      policy: "unsafe",
+      stocks: null,
+      history: [],
+    },
+  }).economy,
+  newOpportunityState(),
+  "Invalid enterprise state resets safely while 36 choices survive",
+);
 assert.equal(clearPractice(fake), true);
 assert.equal(loadPractice(fake), null);
 assert.equal(sanitizePractice({ ...state, day: 7 }), null);

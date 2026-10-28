@@ -1438,15 +1438,17 @@ function closeOpportunityPanel() {
   $("opportunities-toggle").setAttribute("aria-expanded", "false");
 }
 function renderOpportunityPanel() {
-  const economy = sanitizeOpportunityState(state.economy) ?? newOpportunityState();
+  const economy =
+    sanitizeOpportunityState(state.economy) ?? newOpportunityState();
   const last = economy.last;
   const completed = economy.day === ENTERPRISE_DAYS;
-  const people = economy.history.reduce((total, row) =>
-    total + row.meals + row.patients, 0);
+  const people = economy.history.reduce(
+    (total, row) => total + row.meals + row.patients,
+    0,
+  );
   $("opportunities-day").textContent =
     "Day " + economy.day + " / " + ENTERPRISE_DAYS;
-  $("opportunities-people").textContent =
-    "Service visits so far: " + people;
+  $("opportunities-people").textContent = "Service visits so far: " + people;
   $("opportunities-summary").textContent =
     "Water and parts feed production. Farms supply shops, clinics serve residents, and repairs support tomorrow.";
   const event = DAY_EVENTS[completed ? ENTERPRISE_DAYS - 1 : economy.day];
@@ -1489,25 +1491,40 @@ function renderOpportunityPanel() {
     title.textContent = "DAY " + last.day + " · WHAT YOUR CITY PRODUCED";
     const production = document.createElement("p");
     production.textContent =
-      "Water: " + last.water + " · Parts: " + last.parts +
-      " · Food: " + last.food;
+      "Water: " +
+      last.water +
+      " · Parts: " +
+      last.parts +
+      " · Food: " +
+      last.food;
     const served = document.createElement("p");
     served.textContent =
-      "Market visits: " + last.meals + " · Clinic visits: " +
-      last.patients + " · Repairs: " + last.repairs;
+      "Market visits: " +
+      last.meals +
+      " · Clinic visits: " +
+      last.patients +
+      " · Repairs: " +
+      last.repairs;
     const impact = document.createElement("p");
     impact.textContent =
-      "Work activities: " + last.jobs +
-      " · Needs not met: " + last.unserved;
+      "Work activities: " + last.jobs + " · Needs not met: " + last.unserved;
     const delivery = document.createElement("p");
     delivery.textContent = last.shipments.length
-      ? "Deliveries: " + last.shipments.map((route) =>
-          route.units + " from " + route.from + " to " + route.to).join("; ")
+      ? "Deliveries: " +
+        last.shipments
+          .map(
+            (route) => route.units + " from " + route.from + " to " + route.to,
+          )
+          .join("; ")
       : "No supplies were delivered today.";
     const stocks = document.createElement("p");
-    stocks.textContent = "Carried to tomorrow · Water: " +
-      economy.stocks.water + " · Parts: " + economy.stocks.parts +
-      " · Food: " + economy.stocks.food;
+    stocks.textContent =
+      "Carried to tomorrow · Water: " +
+      economy.stocks.water +
+      " · Parts: " +
+      economy.stocks.parts +
+      " · Food: " +
+      economy.stocks.food;
     result.append(title, production, served, impact, delivery, stocks);
   }
   const ledger = $("opportunities-ledger");
@@ -1518,9 +1535,16 @@ function renderOpportunityPanel() {
     ledger.append(heading);
     for (const row of economy.history) {
       const line = document.createElement("div");
-      line.textContent = "Day " + row.day + " · " + row.policy +
-        " · " + (row.meals + row.patients) + " visits · " +
-        row.unserved + " needs still waiting";
+      line.textContent =
+        "Day " +
+        row.day +
+        " · " +
+        row.policy +
+        " · " +
+        (row.meals + row.patients) +
+        " visits · " +
+        row.unserved +
+        " needs still waiting";
       ledger.append(line);
     }
   }
@@ -1982,7 +2006,7 @@ function proceedAfterCase(id) {
         " choices made. " +
         "Every decision can be revisited.</div>" +
         "<p>Now see what happens when your city's businesses must produce real supplies for people. This is a fictional learning model, not verified XP.</p>" +
-        '<button class="primary" id="finish-practice">Start Chapter 3 — Opportunities →</button>'
+        '<button class="primary" id="finish-practice">Start Chapter 3 — Opportunities →</button>',
     );
     $("finish-practice").onclick = () => {
       closeDetail();
@@ -2719,7 +2743,9 @@ $("opportunities-close").onclick = closeOpportunityPanel;
 $("opportunities-run").onclick = () => {
   const next = runOpportunityDay(state.decisions, state.economy);
   if (!next) {
-    toast("Finish the city foundations first, or restart the seven-day practice.");
+    toast(
+      "Finish the city foundations first, or restart the seven-day practice.",
+    );
     return;
   }
   state.economy = next;
@@ -2728,7 +2754,12 @@ $("opportunities-run").onclick = () => {
   toast("Day " + next.day + " completed. See which needs your city met.");
 };
 $("opportunities-reset").onclick = () => {
-  if (!confirm("Restart only the seven-day enterprise practice? Your 36 city decisions stay.")) return;
+  if (
+    !confirm(
+      "Restart only the seven-day enterprise practice? Your 36 city decisions stay.",
+    )
+  )
+    return;
   state.economy = newOpportunityState();
   render();
   renderOpportunityPanel();

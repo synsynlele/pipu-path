@@ -31,7 +31,7 @@ No new personal data, remote calls or other backend changes are required.
 The optional, consented device save has an allowlisted `economy` field,
 bounded to seven days and small non-identifying integer values. Existing
 v1 saves without this field remain valid and start with an empty
-Chapter 3 practice. The player can restart *only* the enterprise
+Chapter 3 practice. The player can restart _only_ the enterprise
 practice while preserving the 36 decisions, buildings and the entire
 city. Decision revision affects subsequent production days; past
 fictional days remain historical records and are not rewritten.
@@ -42,7 +42,6 @@ Release gate: full CI, Vercel preview and classroom Android tests for
 mobile panel space, operating-day resets, reopening a saved game,
 live delivery visibility, memory stability and impact of revised choices.
 Production remains unchanged.
-
 
 ## 28 October 2026 — Build a more beautiful, visibly living city
 
