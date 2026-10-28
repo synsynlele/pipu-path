@@ -73,6 +73,7 @@
         >
           Places (14)
         </button>
+        <button id="cases-toggle" type="button" aria-controls="casebook" aria-expanded="false">Problems (16)</button>
         <button id="explore-free" type="button">Explore freely</button>
         <button id="build-toggle" type="button" aria-controls="build-dock">
           Build
@@ -102,6 +103,22 @@
           </button>
         </div>
         <div id="district-list"></div>
+      </section>
+      <section id="casebook" class="panel" hidden aria-label="Problem-solving practice across four districts">
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">BUILDER PRACTICE · 4 DISTRICTS</div>
+            <h2>16 real-life-inspired problems</h2>
+            <p id="casebook-summary">Choose a problem. Explore decisions, trade-offs and what happens next.</p>
+          </div>
+          <button id="casebook-close" type="button" aria-label="Close problems">×</button>
+        </div>
+        <div id="casebook-list"></div>
+        <div class="casebook-save">
+          <p>Practice is fictional. It does not award XP or complete a real PipuPath Quest.</p>
+          <button id="save-practice" type="button">Save on this device</button>
+          <small id="save-note">Not saved. Only choices and city settings can be stored here, never personal reflections. Saving is optional and is not cloud backup.</small>
+        </div>
       </section>
       <div id="test-status" role="status" aria-live="polite" hidden>
         Testing the city day…
@@ -167,7 +184,8 @@
           <h1>One city.<br /><em>Many possibilities.</em></h1>
           <p>
             Your city is full of possibilities. Start by meeting Ama at her
-            workshop. She needs your help to solve a real problem.
+            workshop. She needs your help to solve a real problem. You can
+            also try 16 choices-based practice problems across four districts.
           </p>
           <button id="start" class="primary">
             Enter the city <span>↗</span>
@@ -176,10 +194,7 @@
             <span>MEET PEOPLE</span><span>SOLVE PROBLEMS</span
             ><span>BUILD TOGETHER</span>
           </div>
-          <small
-            >Playable prototype · fictional city systems · session-only
-            progress</small
-          >
+          <small>Playable prototype · fictional city systems · optional device-only save</small>
         </section>
       </div>
       <dialog id="help-dialog">

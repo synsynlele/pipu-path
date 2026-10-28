@@ -28,7 +28,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate": "npm run format:check && npm run lint && npm run typecheck && npm run test:power-district && npm run test:coverage && npm run test:integration && npm run build",
-    "test:power-district": "node scripts/power-district/model.mjs && node scripts/power-district/navigation.mjs && node scripts/power-district/city.mjs && node scripts/power-district/city-ui.mjs && node scripts/power-district/districts.mjs && node --check public/games/city/game.mjs"
+    "test:power-district": "node scripts/power-district/model.mjs && node scripts/power-district/navigation.mjs && node scripts/power-district/city.mjs && node scripts/power-district/city-ui.mjs && node scripts/power-district/districts.mjs && node scripts/power-district/cases.mjs && node scripts/power-district/practice-save.mjs && node --check public/games/city/game.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",

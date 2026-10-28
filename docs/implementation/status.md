@@ -1,5 +1,34 @@
 # Implementation status
 
+## 28 October 2026 — Four-district engagement practice and opt-in device save
+
+The candidate `feat/unbuilt-city-pilot-challenges` adds 16 authored
+decision cases: four each for Repair & Maintenance, Power & Energy,
+Agriculture & Food and Education & Skills. Every case offers three choices
+with distinct consequences, trade-offs and interdependent city sectors.
+The single 3D world and 14-location directory remain; choosing a problem
+walks to its corresponding district. Players may compare approaches, keep
+one, replay, or move to the next. Keeping a fictional practice approach
+produces a small coloured landmark in that neighbourhood. These markers
+reflect authored practice only; they never write verified XP, complete
+Quests, or modify the separate two-day power/food economy.
+
+Practice progression can be **optionally saved to this browser** with an
+explicit opt-in in the casebook; only whitelisted fictional plan state,
+visited stations and case choices are saved. Names, reflections, uploads,
+accounts and genuine Quest evidence are excluded. Schema validation,
+bounded restoration, expiry, failure handling and user-controlled clear
+are tested. Device/browser clearing or device change loses the record;
+there is no cloud backup, cross-device continuation or PipuPath account
+sync. The prior two-day operating model and ten not-yet-playable districts
+remain unchanged.
+
+This is **preview-only**, not validated engagement or a public release.
+Release gates include CI, verified browser playthrough, storage/clear on
+Android, collision- and overlay-safe tap navigation, minor safeguarding,
+and consented KNS learner testing without coaching.
+
+
 ## 28 October 2026 — The Unbuilt City 14-district pilot world candidate
 
 Branch `feat/unbuilt-city-fourteen-districts` extends the existing single city
