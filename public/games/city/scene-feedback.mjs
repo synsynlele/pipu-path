@@ -2,7 +2,7 @@
 // These props are fiction-only visual effects and do not alter the budget,
 // power model, Quest achievements or skill verification.
 import { CASE_BUILD_SITES, visualTone } from "./feedback.mjs";
-import { getCase, getChoice } from "./cases.mjs";
+import { getChoice } from "./cases.mjs";
 import { choiceStructure, deriveBuilderCity } from "./city-growth.mjs";
 
 export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
@@ -207,8 +207,7 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       alt.visible = false;
       variants.set(choiceId, alt);
     };
-    const scenario = getCase(spec.caseId);
-    for (const option of scenario.options) buildChoice(spec.caseId, option.id);
+    // Build only the selected variant; avoid loading all 48 3D alternatives on low-end phones.
     const light = B(1.28, 0.12, 0.14, 0x709e7b, 0, 0.18, 0.57);
     const flag = C(0.15, 0.19, 0x709e7b, 0.43, 1.37, 0.44);
     const halo = new T.Mesh(
@@ -225,7 +224,7 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     halo.userData.ignoreNavigation = true;
     group.add(halo);
     group.visible = false;
-    return { group, light, flag, halo, variants, choiceId: null, started: 0 };
+    return { group, light, flag, halo, variants, buildChoice, choiceId: null, started: 0 };
   }
   for (const [id, spec] of Object.entries(CASE_BUILD_SITES)) {
     effects.set(id, build({ ...spec, caseId: id }));
@@ -287,7 +286,10 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       const changed = effect.choiceId !== choiceId;
       effect.choiceId = choiceId;
       effect.group.visible = Boolean(choiceId);
-      for (const [id, variant] of effect.variants) variant.visible = id === choiceId;
+      if (choiceId && !effect.variants.has(choiceId))
+        effect.buildChoice(id, choiceId);
+      for (const [variantId, variant] of effect.variants)
+        variant.visible = variantId === choiceId;
       if (!choiceId) continue;
       const option = getChoice(id, choiceId);
       const toneName = visualTone(option);
