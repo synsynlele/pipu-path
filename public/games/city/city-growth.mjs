@@ -1,7 +1,7 @@
 // Choice-to-City v1: deterministic fictional district operating indicators.
 // This is NOT the original two-day budget/power simulator, verified XP,
 // personal assessment, or advice for real infrastructure operations.
-import { CITY_CASES, CASE_DISTRICTS, getChoice } from "./cases.mjs";
+import { CITY_CASES, getChoice } from "./cases.mjs";
 
 export const CITY_SYSTEMS = Object.freeze([
   { id: "workshop", name: "Repair", icon: "🔧" },

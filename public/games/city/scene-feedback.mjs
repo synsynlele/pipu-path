@@ -287,12 +287,14 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
         mat(i ? 0xba865b : 0x6987ac),
       );
       shirt.position.y = 0.35;
+      shirt.userData.ignoreNavigation = true;
       p.add(shirt);
       const head = new T.Mesh(
         new T.SphereGeometry(0.115, 7, 6),
         mat(i ? 0x88654e : 0xb88a63),
       );
       head.position.y = 0.62;
+      head.userData.ignoreNavigation = true;
       p.add(head);
       p.userData.ignoreNavigation = true;
       hub.add(p);
