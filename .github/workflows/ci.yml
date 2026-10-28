@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,24 +19,11 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: One-time format of owned enterprise draft branch
-        if: github.event_name == 'pull_request' && github.head_ref == 'feat/unbuilt-city-enterprise-ownership' && github.event.pull_request.head.repo.full_name == 'synsynlele/pipu-path'
-        run: |
-          npx prettier --write docs/product/unbuilt-city-chapter-three.md public/games/city/game.mjs public/games/city/index.html public/games/city/living-scene.mjs public/games/city/opportunities.mjs scripts/power-district/city-ui.mjs scripts/power-district/opportunities.mjs
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/product/unbuilt-city-chapter-three.md public/games/city/game.mjs public/games/city/index.html public/games/city/living-scene.mjs public/games/city/opportunities.mjs scripts/power-district/city-ui.mjs scripts/power-district/opportunities.mjs
-          if ! git diff --cached --quiet; then
-            git commit -m 'Format Chapter 3 enterprise ownership files'
-            git push origin HEAD:feat/unbuilt-city-enterprise-ownership
-          fi
       - run: npm run validate
 
   staging-e2e:
