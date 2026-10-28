@@ -94,6 +94,4 @@ and bounded under the existing consented device-only save.
 
 **Next milestone:** customer orders, apprenticeships, skill transfer and
 meaningful collaboration between enterprises, validated first with students.
-Chapter 4 remains future work, not implemented in this branch. Chapter 4 will introduce time-based resident
-needs, maintenance and city resilience only after Chapter 3 is
-validated in real classroom use.
+Chapter 4 will introduce time-based resident needs, maintenance and city resilience only after Chapter 3 is validated in real classroom use.
