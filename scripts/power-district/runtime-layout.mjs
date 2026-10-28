@@ -13,6 +13,13 @@ const dom = new JSDOM(
   },
 );
 const w = dom.window;
+const scheduled = new Map();
+let timerId = 0;
+const schedule = (callback, delay) => {
+  const id = ++timerId;
+  scheduled.set(id, { callback, delay });
+  return id;
+};
 const ctx = new Proxy(
   { canvas: {} },
   { get: (o, k) => (k in o ? o[k] : () => {}) },
@@ -28,6 +35,8 @@ for (const [key, value] of Object.entries({
   devicePixelRatio: 2,
   matchMedia: () => ({ matches: false, addEventListener() {} }),
   requestAnimationFrame: () => {},
+  setTimeout: schedule,
+  clearTimeout: (id) => scheduled.delete(id),
   localStorage: w.localStorage,
   confirm: () => true,
 }))
@@ -45,7 +54,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -120,6 +129,106 @@ for (let option = 0; option < 3; option++) {
     );
   }
 }
+// Execute the actual answer -> reveal -> next -> chapter -> travel callbacks.
+// Previous navigation tests jumped straight into cases and missed this boundary.
+function fireTimer(id) {
+  const task = scheduled.get(id);
+  assert(task, "Expected a scheduled journey callback");
+  scheduled.delete(id);
+  task.callback();
+}
+function arrive() {
+  let frames = 0;
+  while (game.route.length && frames++ < 1800) {
+    now += 100;
+    game.animateWorld(now);
+  }
+  assert.equal(
+    game.route.length,
+    0,
+    "Journey failed to reach the next question",
+  );
+}
+for (const optionIndex of [0, 2]) {
+  for (const key of Object.keys(game.state.decisions))
+    delete game.state.decisions[key];
+  game.render();
+  game.goToJourneyCase(CITY_CASES[0].id);
+  arrive();
+  for (const [index, item] of CITY_CASES.entries()) {
+    assert.equal(game.journey.caseId, item.id);
+    assert.equal(game.journey.stage, "question");
+    const choice = item.options[optionIndex];
+    const button = w.document.querySelector(
+      '[data-case-choice="' + choice.id + '"]',
+    );
+    assert(button, "Missing actual answer control at decision " + (index + 1));
+    button.click();
+    assert.equal(Object.keys(game.state.decisions).length, index + 1);
+    fireTimer(game.feedbackTimer);
+    assert.equal(game.journey.stage, "outcome");
+    let error;
+    try {
+      fireTimer(game.autoAdvanceTimer);
+    } catch (failure) {
+      error = failure.message;
+    }
+    assert.equal(
+      error,
+      undefined,
+      "Advancing after decision " + (index + 1) + " threw",
+    );
+    if (index === 15) {
+      assert.equal(game.journey.stage, "chapter");
+      assert(
+        w.document.getElementById("chapter-start"),
+        "Chapter 2 start control missing",
+      );
+      // Exercise manual start in one playthrough and automatic start in another.
+      if (optionIndex === 0) {
+        game.pauseJourney();
+        assert.equal(game.journey.status, "paused");
+        assert.equal(game.state.journey.stage, "chapter");
+        game.resumeJourney();
+        assert.equal(game.journey.stage, "chapter");
+        w.document.getElementById("chapter-start").click();
+      } else {
+        Object.defineProperty(w.document, "hidden", {
+          configurable: true,
+          value: true,
+        });
+        fireTimer(game.autoAdvanceTimer);
+        assert.equal(game.journey.status, "paused");
+        assert.equal(game.journey.stage, "chapter");
+        Object.defineProperty(w.document, "hidden", {
+          configurable: true,
+          value: false,
+        });
+        game.resumeJourney();
+        fireTimer(game.autoAdvanceTimer);
+      }
+      assert.equal(game.journey.caseId, CITY_CASES[16].id);
+      assert.equal(
+        Object.keys(game.state.decisions).length,
+        16,
+        "Handoff erased decisions",
+      );
+    }
+    if (index < 35) {
+      arrive();
+      assert.equal(game.journey.caseId, CITY_CASES[index + 1].id);
+      assert.equal(game.journey.stage, "question");
+    }
+  }
+  assert.equal(game.journey.stage, "complete");
+  assert.equal(
+    w.document.getElementById("opportunities-toggle").disabled,
+    false,
+  );
+}
+console.log(
+  "PASS: two complete 36-answer journeys execute real callbacks through manual and automatic Chapter 2 handoff and unlock Chapter 3.",
+);
 game.openBuiltCityView();
 now += 100;
 game.animateWorld(now);

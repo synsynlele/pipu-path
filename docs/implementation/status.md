@@ -1074,3 +1074,35 @@ actual software-road pixel regression, 527 unit/component tests with coverage,
 251 integration tests and production build. The build emitted two unauthenticated
 progress-load diagnostics and exited successfully. No physical Android or GPU
 performance claim is inferred. One preview build is planned for visual review.
+
+## 29 October 2026 — Repair decision-16 Chapter 2 handoff
+
+User reported that questions stopped after the 16 foundation decisions. The
+actual Chapter 2 reveal referenced `summary.working` and `summary.unresolved`,
+but only `city` existed in that function. Rendering threw `summary is not
+defined` after setting the chapter cursor and before creating its start button
+or auto-advance timer. The earlier summary UI update introduced the error.
+
+Use `city.workingSolutions`, `city.unresolvedNeeds` and the actual infrastructure
+count in the reveal. Its wording no longer claims new residents are arriving
+regardless of the player's choices. Same-device saves and chapter prerequisites
+are unchanged.
+
+The real-runtime regression reproduced the precise decision-16 exception before
+the fix. It now executes answer clicks, construction callbacks, outcome timers,
+chapter start controls and travel through two full 36-answer playthroughs, using
+both manual and automatic starts. It also pauses/resumes the chapter and checks
+background-tab recovery. Unlike the old route tests, this exercises the actual
+handoff UI and callbacks instead of jumping straight to each case.
+
+ESLint now keeps `no-undef` enabled for the standalone JavaScript city runner,
+with its explicit browser globals. This catches an undefined summary variable
+before a rarely visited screen reaches students. The framework TypeScript rules
+remain unchanged. Runtime canvas is stubbed; physical Android/GPU checks remain
+separate. Preview only, no production merge or learner-record mutation.
+
+Validation: `npm run validate` passed all gates, 527 unit/component tests,
+251 integration tests, the full city suite and local production build. The
+new static check also rejects the previous runner with two `summary is not
+defined` errors. Pre-fix runtime proof fails at decision 16; post-fix manual,
+automatic and background-resume handoffs continue through all 36 answers.
