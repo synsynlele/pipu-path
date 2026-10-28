@@ -4,7 +4,6 @@ import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { CASE_BUILD_SITES, feedbackCopy, visualTone } from "./feedback.mjs";
 import { createNavigator } from "../shared/navigation.mjs";
 import {
-  CITY_CASES,
   CASE_DISTRICTS,
   IMPACT_LABELS,
   casesFor,
