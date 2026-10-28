@@ -887,6 +887,18 @@ function resumeJourney() {
     toast("All 16 problems completed. Revisit any problem from Problems (16).");
     return;
   }
+  // A returned learner must see the requested case, not a still-open
+  // legacy map, district panel, construction dock or stale walking route.
+  closeCasebook();
+  closeCityStatus();
+  closeDirectory();
+  if (mapMode) {
+    mapMode = false;
+    distance = 27;
+    $("city-map").textContent = "City map";
+  }
+  $("build-dock").hidden = true;
+  if (target.stage !== "travelling") cancelWalk();
   journey = { status: "running", ...target };
   guideExpanded = false;
   dockExpanded = false;
