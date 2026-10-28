@@ -340,6 +340,7 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
   for (const d of OUTER_DISTRICTS)
     hubSites[d.id] = { x: d.x + 5.5, z: d.z + 2.6 };
   const hubs = new Map();
+  const citySites = new Map(Object.entries(hubSites));
   for (const [id, anchor] of Object.entries(hubSites)) {
     const hub = new T.Group();
     hub.position.set(anchor.x, 0.16, anchor.z);
@@ -434,6 +435,20 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     e.light.material = mat(color);
     e.flag.material = mat(color);
   }
+  function setFocus(focus, overview = false, range = 30) {
+    // Mobile devices render only districts near the player or a decision.
+    // Overview mode always restores all completed construction.
+    const near = (position) =>
+      overview ||
+      !focus ||
+      Math.hypot(position.x - focus.x, position.z - focus.z) < range;
+    for (const effect of effects.values())
+      effect.group.visible = Boolean(effect.choiceId) && near(effect.group.position);
+    for (const [id, item] of hubs) {
+      const district = citySites.get(id);
+      item.hub.visible = Boolean(item.service) && near(district);
+    }
+  }
   function animate(now, reducedMotion) {
     for (const item of hubs.values()) {
       if (!item.hub.visible) continue;
@@ -467,5 +482,5 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
           : 0.08;
     }
   }
-  return { sync, setTone, animate, effects, hubs };
+  return { sync, setTone, setFocus, animate, effects, hubs };
 }
