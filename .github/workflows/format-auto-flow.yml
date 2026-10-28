@@ -1,0 +1,32 @@
+name: Format Unbuilt City automatic flow preview
+on:
+  pull_request:
+    branches: [feat/unbuilt-city-visible-actions]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feat/unbuilt-city-auto-flow-options'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/unbuilt-city-auto-flow-options
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format changed files
+        run: npx prettier --write public/games/city/case-flow.mjs public/games/city/game.mjs public/games/shared/city-theme.css scripts/power-district/auto-flow.mjs scripts/power-district/city-ui.mjs docs/implementation/status.md docs/product/unbuilt-city-seamless-flow.md .github/workflows/format-auto-flow.yml
+      - name: Commit formatted code
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/games/city/case-flow.mjs public/games/city/game.mjs public/games/shared/city-theme.css scripts/power-district/auto-flow.mjs scripts/power-district/city-ui.mjs docs/implementation/status.md docs/product/unbuilt-city-seamless-flow.md .github/workflows/format-auto-flow.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "style: format automated city flow"
+            git push origin HEAD:feat/unbuilt-city-auto-flow-options
+          fi
