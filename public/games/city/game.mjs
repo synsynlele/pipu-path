@@ -1443,15 +1443,10 @@ function marketPanel() {
     .forEach(
       (b) => (b.onclick = () => change("agreement", b.dataset.agreement)),
     );
-}
-// Local practices remain on the same market street as food/cash decisions.
-const previousMarketPanel = marketPanel;
-marketPanel = function() {
-  previousMarketPanel();
   $("detail-body").insertAdjacentHTML("beforeend",
     '<button class="secondary" id="district-cases">Explore 4 food problems →</button>');
   $("district-cases").onclick = () => showDistrictCases("market");
-};
+}
 function schoolPanel() {
   const c = state.config;
   const choices = (key, items) =>
@@ -1505,14 +1500,10 @@ function schoolPanel() {
     .forEach(
       (b) => (b.onclick = () => change(b.dataset.lesson, b.dataset.value)),
     );
-}
-const previousSchoolPanel = schoolPanel;
-schoolPanel = function() {
-  previousSchoolPanel();
   $("detail-body").insertAdjacentHTML("beforeend",
     '<button class="secondary" id="district-cases">Explore 4 learning problems →</button>');
   $("district-cases").onclick = () => showDistrictCases("school");
-};
+}
 function councilPanel() {
   if (state.day > 2) {
     handoverPanel();
