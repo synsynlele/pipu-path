@@ -34,8 +34,8 @@ const variant = cityViewSummary({
 });
 assert.equal(
   variant.built,
-  partial.built,
-  "Revising changes shapes, not number of projects",
+  0,
+  "An unfinished repair backlog is not useful infrastructure",
 );
 assert.notEqual(
   deriveBuilderCity(decisions).districts.workshop.direct,

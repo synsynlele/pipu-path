@@ -1,66 +1,61 @@
-# Choice-to-City v1 — first integrated builder-city contract
+# Choice-to-City v2 — useful infrastructure and honest consequences
 
 Date: 28 October 2026 · Status: development preview · Not production
 
 ## Purpose
 
-Every fictional decision must be reflected in the city a player has
-built. The same empty four-district core can turn into a coordinated
-service city, a crowded overbuilt city, or a struggling underused city,
-depending on choice. This is not another success/failure quiz: every
-option alters a physical structure, with visible compromises.
+A choice changes the same city through relevant buildings, tools, service
+capacity, visible damage, or the absence of needed construction. Answering a
+question is not itself evidence that the player built something useful.
 
-## Behaviour
+## Construction contract
 
-- **16 sites × 3 options = 48 structural states.** Each case keeps its
-  authored functional props, and adds a distinct built architecture
-  selected by its choice ID. The coordinated option produces a staffed,
-  sheltered facility; the second produces crowded/overbuilt structures;
-  the third produces underused or incomplete infrastructure. Props,
-  silhouettes, equipment and resident activity change, not only colour.
-- When a player changes an earlier choice, the previous structure is
-  replaced (not stacked). A construction animation plays, and the
-  change remains visible in that session and on returning to the same
-  browser after the player opts into local saving.
-- Four district civic sites display service condition through building
-  development and activity of small workers. These use a fictional
-  deterministic model derived from all currently chosen case options.
-- Power has effects on Food, Learning and Repair; Repair helps Power
-  and Food; Learning helps Repair; Food helps Repair and Learning.
-  The `My City` panel shows how completed choices and connected
-  influences contribute to its current fictional operating profile.
-- The automatic problem-to-problem journey and the balanced shuffled
-  answer positions remain unchanged; the player only chooses.
+- All 36 cases and 108 stable choice IDs have explicit entries in
+  `construction-plans.mjs`. No mapping depends on the shuffled answer position.
+- Each entry identifies working, limited, failed or no-construction status,
+  physical assets (which may be empty), whether infrastructure was constructed,
+  and a concise explanation tied to the authored answer's result.
+- Good health and technology choices produce recognisable medical and technology
+  facilities and appropriate equipment. They do not share a generic house or
+  token-object silhouette with every other sector.
+- A physical object can be unhelpful: an advert is not a functioning clinic;
+  unfinished framing is not a tested technology service; burnt waste is damage.
+- Thirty no-construction choices add no mesh, marker pretending to be a building,
+  infrastructure count, service capacity or new ambient population. Their unmet
+  need remains visible through the empty plot and honest city summary.
+- Poor choices that genuinely construct something can still create a limited,
+  unsafe or unfinished site. City quality reflects usefulness, not just size.
+- Revision replaces the same site's consequence, including removing a formerly
+  useful building after an ineffective revision. Other decisions are preserved.
+- Working infrastructure assembles from foundation to equipment and roof.
+  No-construction answers show their explanation without a build celebration.
+- The protected transport crossing is installed on its reserved road, remains
+  walkable, and does not place a miniature road in a development plot.
+
+## Progress and simulation
+
+Answered decisions still control the existing chapter prerequisites. Physical
+infrastructure, working solutions and unresolved needs are separate counters.
+Limited plans reduce useful capacity. An answered district with no productive
+solution has zero service and no automatic enterprise capacity. New ambient
+residents, working courtyard activity and deliveries require productive service.
+Connected-city effects remain fictional and deterministic.
 
 ## State and privacy
 
-`deriveBuilderCity(decisions)` is pure and versionable. The existing
-optional browser save records the allowlisted `decisions` keys and
-the original day/economy state. Physical geometry, service meters and
-district residents are reconstructed from those validated IDs at
-start or reload; **no additional stored identifiers, location,
-personal reflections, uploads or tracking**. There is no cloud sync.
+Existing allowlisted choice IDs and optional same-device saves remain the source
+of truth. Geometry, city summaries and service activity are reconstructed from
+those IDs. This version adds no cloud saves, account permissions, learner data,
+verified achievements, capability claims or XP.
 
-## Reality boundary
+## Acceptance
 
-These service bars are simplified fictional heuristics for learning
-interdependence; not empirical predictions or professional advice.
-Changing a case choice does NOT silently change the earlier
-two-day energy/cash evaluation, nor award verifiable Quest XP, nor
-activate the ten additional district economic models. This is an
-initial, reproducible choice-to-world engine; deeper economic
-simulation coupling requires a separately tested integrated
-simulation contract and calibration.
-
-## Release gates
-
-- All 16 sites show three unique, stable architectural variants.
-- A revision replaces the prior variant, updates district service
-  and relevant connected districts, and survives a save/reload.
-- Same decisions always rebuild the same city.
-- No new permissions or personal-data storage are introduced.
-- Android WebGL and software fallback visual, motion-reduction,
-  automatic navigation, load-time, frame-rate and screen layout
-  must be tested on physical devices.
-- Obtain real comprehension/engagement evidence from consented
-  learners before production.
+- Check all 108 IDs and the intended sector assets, including all 30 empty cases.
+- Check geometry, plot boundaries and the one designated road-surface project.
+- Check a good clinic choice, an advert-only choice, a medical shortage concealed
+  without construction, a functioning technology hub and unfinished technology.
+- Verify that revising to or from an empty choice updates the same plot, city
+  counts, population and capacity without losing decision progress.
+- Preserve software road rendering, reduced motion, continuous navigation and
+  Android stability. Automated model/runtime/raster checks supplement actual
+  physical Android and WebGL testing; they do not replace it.

@@ -37,7 +37,7 @@ for (const scenario of CITY_CASES) {
   const outer = OUTER_DISTRICTS.some((d) => d.id === scenario.district);
   for (const choice of scenario.options) {
     const plan = infrastructurePlan(scenario.id, choice.id);
-    assert(plan && plan.assets.length > 0);
+    assert(plan);
     assert.equal(plan.title, choice.title);
     choices = { ...choices, [scenario.id]: choice.id };
     effects.sync(choices);
@@ -48,21 +48,31 @@ for (const scenario of CITY_CASES) {
       [...effect.variants.values()].filter((v) => v.visible).length,
       1,
     );
+    if (!plan.assets.length) {
+      assert.equal(
+        effect.group.visible,
+        false,
+        "Inaction must not create visible construction",
+      );
+      assert.equal(chosen.children.length, 0);
+      continue;
+    }
     scene.updateMatrixWorld(true);
     const bounds = new T.Box3().setFromObject(chosen);
     const size = bounds.getSize(new T.Vector3());
     assert(size.x <= (outer ? 5 : 1.3), scenario.id + " plot width");
     assert(size.z <= (outer ? 4.2 : 1.3), scenario.id + " plot depth");
     assert(
-      !overlapsRoad(
-        (bounds.min.x + bounds.max.x) / 2,
-        (bounds.min.z + bounds.max.z) / 2,
-        size.x,
-        size.z,
-      ),
+      scenario.id === "transit-people" ||
+        !overlapsRoad(
+          (bounds.min.x + bounds.max.x) / 2,
+          (bounds.min.z + bounds.max.z) / 2,
+          size.x,
+          size.z,
+        ),
       scenario.id + " intrudes into a street",
     );
-    if (outer)
+    if (outer && scenario.id !== "transit-people")
       assert(
         Math.abs(
           site.x - OUTER_DISTRICTS.find((d) => d.id === scenario.district).x,
@@ -122,5 +132,5 @@ assert(
   "Truck never resumed after person cleared",
 );
 console.log(
-  "PASS: all 108 authored projects fit street-free plots; districts, overview framing and pedestrian yielding verified.",
+  "PASS: 108 authored outcomes fit reserved plots; the crossing uses its assigned street, no-build plots stay empty, and yielding is verified.",
 );

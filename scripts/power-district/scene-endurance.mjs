@@ -1,3 +1,4 @@
+import { infrastructurePlan } from "../../public/games/city/construction-plans.mjs";
 import assert from "node:assert/strict";
 import * as T from "../../public/games/shared/vendor/three.module.js";
 import { createCaseSceneEffects } from "../../public/games/city/scene-feedback.mjs";
@@ -41,9 +42,11 @@ for (const [index, item] of CITY_CASES.entries()) {
   built.sync(decisions, { caseId: item.id, choiceId: choice.id });
   living.sync(decisions);
   const effect = built.effects.get(item.id);
-  assert(
+  const visible = infrastructurePlan(item.id, choice.id).assets.length > 0;
+  assert.equal(
     effect.group.visible,
-    "Answer " + (index + 1) + " must show a physical effect",
+    visible,
+    "Answer must match its authored physical consequence",
   );
   assert(effect.variants.get(choice.id)?.visible);
   for (let frame = 0; frame < 5; frame++) {
@@ -52,16 +55,14 @@ for (const [index, item] of CITY_CASES.entries()) {
     built.animate(now() + frame * 250, false);
     living.animate(now() + frame * 250, false);
   }
-  assert(
-    effect.group.visible,
-    "Answer " + (index + 1) + " remains visible in its district",
-  );
+  assert.equal(effect.group.visible, visible);
   built.setFocus({ x: 999, z: 999 }, false);
   assert(!effect.group.visible, "Faraway scenery is culled on mobile");
   built.setFocus({ x: 999, z: 999 }, true);
-  assert(
+  assert.equal(
     effect.group.visible,
-    "Aerial city view restores all completed buildings",
+    visible,
+    "Aerial view cannot invent infrastructure for inaction",
   );
   assert.equal(Object.keys(decisions).length, index + 1);
   total++;
@@ -73,7 +74,7 @@ for (const item of CITY_CASES) {
   assert(effect.variants.get(decisions[item.id])?.visible);
 }
 console.log(
-  "PASS: 36 consecutive choices construct and animate across the 3D city; nearby culling and aerial restoration preserve all effects.",
+  "PASS: 36 consecutive choices preserve construction and no-build states through animation, nearby culling and aerial restoration.",
 );
 
 // Mobile allocates fewer visual actors than the domain's resident count.
