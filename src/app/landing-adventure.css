@@ -2,6 +2,7 @@
 /* Public pages have their own light palette; the authenticated app is dark. */
 .pp-landing {
   background: #f6f7fc !important;
+  color-scheme: light;
   color: #243451;
   -webkit-text-fill-color: initial;
 }
