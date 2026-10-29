@@ -135,7 +135,7 @@ assert(game.includes("function openBuiltCityView()"));
 assert(game.includes("function closeBuiltCityView({ resume = true } = {})"));
 assert(game.includes('const wasRunning = journey.status === "running"'));
 assert(game.includes("if (wasRunning)"));
-assert(game.includes("if (snapshot.wasRunning) resumeJourney()"));
+assert(game.includes("if (resume && snapshot.wasRunning) resumeJourney()"));
 assert(game.includes('detailVisible: !$("detail").hidden'));
 assert(game.includes("if (builtCityView?.focus)"));
 assert(game.includes("!builtCityView &&"));
