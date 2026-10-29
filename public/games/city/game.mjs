@@ -3514,10 +3514,6 @@ $("reset").onclick = () => {
   render();
   closeDetail();
 };
-document.querySelector(".brand").onclick = (e) => {
-  e.preventDefault();
-  $("help-dialog").showModal();
-};
 // Orbit and ground movement; raycast only the observed floor geometry.
 const ray = new T.Raycaster(),
   pointer = new T.Vector2();
