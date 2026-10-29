@@ -19,7 +19,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
             <ContextBackLink />
             <div className="flex min-w-0 items-center gap-1.5">
-              <BrandMark compact inverse href="/app" className="shrink-0" />
+              <BrandMark
+                compact
+                inverse
+                href="/real-quests"
+                className="shrink-0"
+              />
               <span className="min-w-0 leading-none" aria-hidden="true">
                 <span className="block text-[0.72rem] font-bold tracking-[0.02em] text-white">
                   PipuPath
@@ -41,7 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex min-h-18 max-w-6xl items-center justify-between gap-3 px-8">
           <div className="flex min-w-0 items-center gap-3">
             <ContextBackLink />
-            <BrandMark href="/app" />
+            <BrandMark href="/real-quests" />
           </div>
 
           <AppNavigation />
