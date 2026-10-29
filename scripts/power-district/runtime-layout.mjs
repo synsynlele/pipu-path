@@ -55,9 +55,28 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
 );
 code +=
   "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey};";
-const game = await import(
-  "data:text/javascript;base64," + Buffer.from(code).toString("base64")
-);
+let game;
+try {
+  game = await import(
+    "data:text/javascript;base64," + Buffer.from(code).toString("base64")
+  );
+} catch (error) {
+  // Node otherwise prints the entire huge inlined game source, hiding the
+  // actual runtime failure that made the learner's scene disappear.
+  console.error("City game initialization error:", error?.message);
+  const trace = String(error?.stack ?? "")
+    .split("\n")
+    .map((line) =>
+      line.replace(
+        /data:text\/javascript;base64,[A-Za-z0-9+/=]+/g,
+        "<inlined game module>",
+      ),
+    )
+    .slice(0, 6)
+    .join("\n");
+  console.error(trace);
+  process.exit(1);
+}
 // Keep the real game setup, navigation, simulation and DOM; the canvas context
 // is a stub. This verifies integration, not WebGL or physical-device performance.
 game.renderer.render = () => {};

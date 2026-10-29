@@ -39,7 +39,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
           <div className="pp-public-header-actions flex items-center gap-1.5 sm:gap-3">
             <LandingDistributionButton />
             <ButtonLink
-              href="/login"
+              href="/login?next=/build/play"
               variant="ghost"
               className="px-2.5 sm:px-4"
               style={{ flexShrink: 0, whiteSpace: "nowrap" }}
