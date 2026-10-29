@@ -54,7 +54,7 @@ describe("optional game resume", () => {
     fireEvent.click(
       screen.getByRole("checkbox", { name: /Keep my place on this device/ }),
     );
-    expect(localStorage.getItem(key)).toBeNull();
+    await waitFor(() => expect(localStorage.getItem(key)).toBeNull());
     expect(
       screen.getByRole("button", { name: "Garden square 1: Seedlings" }),
     ).toBeInTheDocument();
