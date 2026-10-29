@@ -1,3 +1,4 @@
+import { choiceConsequence } from "../../public/games/city/consequences.mjs";
 import assert from "node:assert/strict";
 import * as T from "../../public/games/shared/vendor/three.module.js";
 import { CITY_CASES } from "../../public/games/city/cases.mjs";
@@ -51,10 +52,20 @@ for (const scenario of CITY_CASES) {
     if (!plan.assets.length) {
       assert.equal(
         effect.group.visible,
-        false,
-        "Inaction must not create visible construction",
+        Boolean(choiceConsequence(scenario.id, choice.id)),
+        "An unresolved need can show harm without inventing infrastructure",
       );
       assert.equal(chosen.children.length, 0);
+      // Consequence marks are separate from infrastructure and stay in-plot.
+      scene.updateMatrixWorld(true);
+      const marks = effect.consequences.get(choice.id);
+      if (marks) {
+        const extent = new T.Box3()
+          .setFromObject(marks)
+          .getSize(new T.Vector3());
+        assert(extent.x <= (outer ? 5 : 1.3));
+        assert(extent.z <= (outer ? 4.2 : 1.3));
+      }
       continue;
     }
     scene.updateMatrixWorld(true);

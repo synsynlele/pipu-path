@@ -1,3 +1,4 @@
+import { choiceConsequence, cityConsequences } from "./consequences.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
 import {
   ROAD_X,
@@ -1029,6 +1030,31 @@ function updateBuiltCityView() {
     " districts serving people · " +
     living.deliveries.length +
     " moving services";
+  const consequences = cityConsequences(
+    state.decisions,
+    builtCityView.districtId,
+  );
+  const firstProblem = consequences.problems[0];
+  $("city-view-consequence").textContent = firstProblem
+    ? firstProblem.label +
+      ": " +
+      firstProblem.description +
+      ". " +
+      consequences.harmful +
+      " harmful outcomes · " +
+      consequences.limited +
+      " limited responses."
+    : summary.answered
+      ? "No warnings from the choices in this view."
+      : "Your choices will shape this city.";
+  const repair = $("city-view-repair");
+  repair.hidden = !firstProblem;
+  repair.onclick = firstProblem
+    ? () => {
+        closeBuiltCityView();
+        beginDecisionReview(firstProblem.caseId);
+      }
+    : null;
   const select = $("city-view-district");
   select.replaceChildren();
   const first = document.createElement("option");
@@ -1041,6 +1067,7 @@ function updateBuiltCityView() {
     const option = document.createElement("option");
     option.value = district.id;
     option.textContent =
+      (cityConsequences(state.decisions, district.id).harmful ? "⚠ " : "") +
       district.emoji +
       " " +
       district.name +
@@ -2106,6 +2133,13 @@ function renderCityStatus() {
         const explanation = document.createElement("span");
         explanation.textContent =
           action.result + " Trade-off: " + action.tradeoff;
+        const consequence = choiceConsequence(
+          action.caseId,
+          state.decisions[action.caseId],
+        );
+        if (consequence)
+          explanation.textContent +=
+            " Visible here: " + consequence.description + ".";
         result.append(label, document.createElement("br"), explanation);
         details.append(result);
       }
@@ -2319,7 +2353,9 @@ function showDecisionReviewOutcome(id, choiceId) {
       "</p>" +
       '<div class="case-result"><b>What changed</b><p>' +
       choice.result +
-      "</p><b>The trade-off</b><p>" +
+      "</p>" +
+      visibleConsequenceNote(id, choiceId) +
+      "<b>The trade-off</b><p>" +
       choice.tradeoff +
       "</p></div>" +
       '<div class="evidence"><strong>YOUR DISTRICT NOW</strong>' +
@@ -2525,6 +2561,18 @@ function proceedAfterCase(id) {
   // inspectors cannot replace the next question with their old panels.
   goToJourneyCase(next.id);
 }
+function visibleConsequenceNote(id, choiceId) {
+  const problem = choiceConsequence(id, choiceId);
+  return (
+    '<p class="case-consequence"><strong>' +
+    (problem ? problem.label + ": " : "Working response: ") +
+    "</strong>" +
+    (problem
+      ? problem.description + ". You can revise this decision."
+      : "This choice leaves no warning on its plot. Other city needs may remain.") +
+    "</p>"
+  );
+}
 function showCaseOutcome(id, choiceId) {
   journey = { status: "running", caseId: id, stage: "outcome", choiceId };
   refreshJourneyControls();
@@ -2559,7 +2607,9 @@ function showCaseOutcome(id, choiceId) {
       "</p>" +
       '<div class="case-result"><b>What changed</b><p>' +
       option.result +
-      "</p><b>The trade-off</b><p>" +
+      "</p>" +
+      visibleConsequenceNote(id, choiceId) +
+      "<b>The trade-off</b><p>" +
       option.tradeoff +
       '</p></div><div class="case-impact">' +
       signals +

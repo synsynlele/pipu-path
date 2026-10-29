@@ -315,4 +315,41 @@ assert.equal(game.camera.type, "PerspectiveCamera");
 console.log(
   "PASS: actual mobile game runtime, all 108 journeys without teleportation, road-free trees/houses, overview zoom and camera restoration. Canvas/GPU not tested.",
 );
+// Consequences are visible in inspection and repair opens the exact source.
+for (const c of CITY_CASES) game.state.decisions[c.id] = c.options[0].id;
+game.state.decisions["repair-waste"] = "burn";
+game.render();
+game.openBuiltCityView();
+const inspectDistrict = w.document.getElementById("city-view-district");
+inspectDistrict.value = "workshop";
+inspectDistrict.dispatchEvent(new w.Event("change", { bubbles: true }));
+assert(
+  w.document
+    .getElementById("city-view-consequence")
+    .textContent.includes("Burnt ground"),
+);
+const repairDecision = w.document.getElementById("city-view-repair");
+assert.equal(repairDecision.hidden, false);
+repairDecision.click();
+assert.equal(w.document.getElementById("city-view").hidden, true);
+assert(w.document.querySelector('[data-case-choice="sort"]'));
+assert.equal(
+  game.state.decisions["repair-waste"],
+  "burn",
+  "Inspecting repair must not grant a fix",
+);
+w.document.getElementById("review-cancel").click();
+game.state.decisions["repair-waste"] = "sort";
+game.render();
+game.openBuiltCityView();
+assert.equal(w.document.getElementById("city-view-repair").hidden, true);
+assert(
+  w.document
+    .getElementById("city-view-consequence")
+    .textContent.includes("No warnings"),
+);
+game.closeBuiltCityView();
+console.log(
+  "PASS: city inspection names the retained harm, targets its real revision and clears warnings only after a working choice.",
+);
 process.exit(0);

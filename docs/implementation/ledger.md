@@ -1625,3 +1625,23 @@ Clean full validation passed: formatting, lint, types, city runtime checks,
 build used stale generated chunks after switching branches; rebuilding from a
 fresh build directory passed. No extra Vercel preview build is needed for this
 public-launch compatibility correction. Production confirmation follows release.
+
+## 29 October 2026 — Visible city consequences and repair
+
+Owner authorised clearer negative consequences and repair across the same city.
+The consequence projection derives all 108 outcomes from existing retained
+choices, distinguishes limited amber warnings from harmful physical waste,
+scorch/water marks and access/service warnings, and creates no infrastructure
+for inaction. Working revisions remove only the previous local warning.
+Existing saved choices reconstruct the same state without a save-format change.
+City inspection identifies the current problem and opens its exact existing
+review flow; it never grants repair merely for opening the control. Existing
+service interdependence and authored tradeoffs remain authoritative.
+
+At most eight static noncolliding meshes per chosen case, lazy cached and
+subject to existing culling, add no particle system or frame loop. No schema,
+learner-data, XP, dependency or Android-launch changes. Based on production
+3d66bde, preserving the latest installed-app public-welcome compatibility fix.
+See product/city-visible-consequences.md. Targeted policy, restoration, geometry,
+mesh-reuse and actual inspector/review runtime checks passed; full validation
+and deployed visual checks follow. Physical GPU reliability remains separate.

@@ -1,3 +1,4 @@
+import { choiceConsequence, constructConsequence } from "./consequences.mjs";
 import { CASE_BUILD_SITES, visualTone } from "./feedback.mjs";
 import { getChoice } from "./cases.mjs";
 import { OUTER_DISTRICTS } from "./districts.mjs";
@@ -16,6 +17,7 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     scene.add(group);
     const outer = OUTER_DISTRICTS.some((d) => d.id === spec.district);
     const variants = new Map();
+    const consequences = new Map();
     const light = box(
       outer ? 4.6 : 1.2,
       0.07,
@@ -45,7 +47,16 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       variants.set(choiceId, variant);
     };
     group.visible = false;
-    return { group, light, variants, buildChoice, choiceId: null, started: 0 };
+    return {
+      group,
+      light,
+      variants,
+      consequences,
+      outer,
+      buildChoice,
+      choiceId: null,
+      started: 0,
+    };
   }
   for (const [id, spec] of Object.entries(CASE_BUILD_SITES))
     effects.set(id, build(spec));
@@ -56,7 +67,25 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
       if (effect.choiceId !== choiceId) effect.started = performance.now();
       effect.choiceId = choiceId;
       effect.plan = infrastructurePlan(id, choiceId);
-      effect.group.visible = Boolean(effect.plan?.assets.length);
+      effect.consequence = choiceConsequence(id, choiceId);
+      effect.group.visible = Boolean(
+        effect.plan?.assets.length || effect.consequence,
+      );
+      if (effect.consequence && !effect.consequences.has(choiceId)) {
+        const marks = new T.Group();
+        marks.userData.ignoreNavigation = true;
+        constructConsequence({
+          consequence: effect.consequence,
+          box,
+          parent: marks,
+          outer: effect.outer,
+        });
+        effect.group.add(marks);
+        effect.consequences.set(choiceId, marks);
+      }
+      for (const [markedChoice, marks] of effect.consequences)
+        marks.visible =
+          markedChoice === choiceId && Boolean(effect.consequence);
       if (choiceId && !effect.variants.has(choiceId))
         effect.buildChoice(id, choiceId);
       for (const [variantId, variant] of effect.variants)
@@ -74,7 +103,7 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
   function setFocus(focus, overview = false, range = 30) {
     for (const effect of effects.values())
       effect.group.visible =
-        Boolean(effect.plan?.assets.length) &&
+        Boolean(effect.plan?.assets.length || effect.consequence) &&
         (overview ||
           !focus ||
           Math.hypot(

@@ -1,3 +1,4 @@
+import { choiceConsequence } from "../../public/games/city/consequences.mjs";
 import { infrastructurePlan } from "../../public/games/city/construction-plans.mjs";
 import assert from "node:assert/strict";
 import * as T from "../../public/games/shared/vendor/three.module.js";
@@ -42,7 +43,9 @@ for (const [index, item] of CITY_CASES.entries()) {
   built.sync(decisions, { caseId: item.id, choiceId: choice.id });
   living.sync(decisions);
   const effect = built.effects.get(item.id);
-  const visible = infrastructurePlan(item.id, choice.id).assets.length > 0;
+  const visible =
+    infrastructurePlan(item.id, choice.id).assets.length > 0 ||
+    Boolean(choiceConsequence(item.id, choice.id));
   assert.equal(
     effect.group.visible,
     visible,

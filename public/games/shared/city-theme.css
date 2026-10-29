@@ -3783,3 +3783,26 @@ body #city-hud #journey-bar[hidden] {
 #game:has(#intro:not([hidden])) > .corner-note {
   visibility: hidden;
 }
+
+/* Inspection remains an optional compact route to the existing choice review. */
+#city-view {
+  max-height: calc(100svh - 24px);
+  overflow-y: auto;
+}
+#city-view-repair {
+  min-height: 44px;
+  margin-top: 7px;
+  padding: 8px 14px;
+  border: 1px solid #99543c;
+  border-radius: 10px;
+  background: #fff4e3;
+  color: #663923;
+  font-weight: 700;
+}
+#city-view-repair[hidden] {
+  display: none;
+}
+.case-consequence {
+  border-left: 3px solid #bc8b4b;
+  padding-left: 9px;
+}
