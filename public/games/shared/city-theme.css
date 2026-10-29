@@ -3775,3 +3775,11 @@ body #city-hud #journey-bar[hidden] {
     min-height: 44px;
   }
 }
+
+/* Keep play-only labels out of the welcome invitation. They return on Play. */
+#game:has(#intro:not([hidden])) > header,
+#game:has(#intro:not([hidden])) > #weather,
+#game:has(#intro:not([hidden])) > #controls,
+#game:has(#intro:not([hidden])) > .corner-note {
+  visibility: hidden;
+}

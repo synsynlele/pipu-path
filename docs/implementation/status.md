@@ -1221,3 +1221,14 @@ remain on this invitation; login returns, protected routes and actual next-step
 resolution remain unchanged. Reduced-motion, graphics budgets, saving and
 recovery retain the current game implementation. Source is based on production
 merge e1f1050. Full validation and live visual verification follow.
+
+Validation: format, lint, types, city runtime/endurance and the local production
+build passed. CI passed 542 unit/component tests with coverage and found one
+obsolete integration assertion requiring the old signed-in root redirect;
+updated it to preserve the new universal welcome while retaining /continue for
+sign-in. The focused 15-test launch contract passes. Browser preview verified
+the live-city backdrop and same-frame Play transition; old game header labels
+showed through the intro and are now hidden only while that intro is visible.
+A single successful preview build was used; one earlier request was skipped by
+the configured ignore rule before compilation. Final CI and production checks
+remain required. Physical Android/GPU reliability is not claimed.
