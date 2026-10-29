@@ -22,12 +22,18 @@ export default function HomePage() {
               <Link
                 href="/play"
                 className="inline-flex min-h-14 items-center justify-center rounded-full bg-[#5436df] px-7 font-bold text-white"
+                style={{ color: "#ffffff", WebkitTextFillColor: "#ffffff" }}
               >
                 Play free →
               </Link>
               <Link
                 href="/signup"
-                className="inline-flex min-h-14 items-center justify-center rounded-full border border-[#c6cce0] px-7 font-bold text-[#26375a]"
+                className="inline-flex min-h-14 items-center justify-center rounded-full border border-[#a2afc6] bg-white px-7 font-bold text-[#243b78]"
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#243b78",
+                  WebkitTextFillColor: "#243b78",
+                }}
               >
                 Build in real life
               </Link>

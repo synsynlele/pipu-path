@@ -945,6 +945,15 @@ function refreshJourneyControls() {
   $("journey-bar").hidden = !visible;
   // Always keep essential navigation available. Opening it pauses the journey.
   $("city-tools").hidden = !entered || simulating;
+  $("city-hud").hidden = !entered || simulating;
+  const currentChapter = state.resilience
+    ? 4
+    : foundationForOpportunities(state.decisions)
+      ? 3
+      : foundationComplete(state.decisions)
+        ? 2
+        : 1;
+  $("chapter-badge").textContent = "Chapter " + currentChapter;
   const unlocked = foundationForOpportunities(state.decisions);
   $("opportunities-toggle").disabled = !unlocked || simulating;
   $("resilience-toggle").disabled =
@@ -3205,6 +3214,8 @@ $("journey-toggle").onclick = () => {
   if (journey.status === "running") pauseJourney();
   else resumeJourney();
 };
+$("resource").onclick = () => $("fund-dialog").showModal();
+$("fund-close").onclick = () => $("fund-dialog").close();
 $("journey-back").onclick = () => {
   const previous = previousKeptCase(state.decisions, journey.caseId);
   if (previous) beginDecisionReview(previous.id);

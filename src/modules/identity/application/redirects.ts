@@ -2,6 +2,7 @@ const allowedExactPaths = new Set([
   "/account-deletion",
   "/account-privacy",
   "/app",
+  "/real-quests",
   "/build",
   "/build/adventures",
   "/build/play/neighbourhood-garden-v1",
