@@ -33,9 +33,9 @@ describe("Stage 25 blue restoration and mobile installation", () => {
   });
 
   it("keeps the Stage 23 Home and Discover interaction grammar", () => {
-    expect(home).toContain('aria-label="Your growth path"');
-    expect(home).toContain("Today&apos;s Next Step");
-    expect(home).toContain("Your momentum");
+    expect(home).toContain("PipuPath · Your world begins here");
+    expect(home).toContain('href="/build/play"');
+    expect(home).toContain('href="/real-quests"');
     expect(discover).toContain("Your living insight");
     expect(discover).toContain(
       "Useful places based on your current adventure.",
@@ -78,8 +78,9 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(manifest).toContain('start_url: "/continue"');
     expect(manifest).toContain('background_color: "#020817"');
     expect(manifest).toContain('theme_color: "#07142f"');
-    expect(manifest).toContain('name: "Discover"');
-    expect(manifest).toContain('name: "Profile"');
+    expect(manifest).toContain('name: "Play"');
+    expect(manifest).toContain('name: "Real Quests"');
+    expect(manifest).toContain('name: "You"');
   });
 
   it("lets the Stage 26 authenticated scope own colours across every Builder route", () => {

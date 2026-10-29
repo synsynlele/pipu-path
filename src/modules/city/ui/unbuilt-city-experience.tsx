@@ -1,46 +1,35 @@
 import Link from "next/link";
 import { PowerDistrictFrame } from "./power-district-frame";
 
-/** The new mission replaces the original city runner at its existing route. */
 export function UnbuiltCityExperience({
-  questHref,
-  questLabel,
   questTitle,
   outcome,
 }: {
-  questHref: string;
-  questLabel: string;
+  questHref?: string;
+  questLabel?: string;
   questTitle?: string;
   outcome?: string;
 }) {
   return (
     <main
       id="main-content"
-      className="adventure-dark unbuilt-city-experience min-h-screen bg-[#07142f] px-3 py-4 pb-24 text-white sm:px-6"
+      className="adventure-dark unbuilt-city-experience min-h-screen bg-[#07142f] p-3 pb-24 text-white sm:p-6"
     >
-      <div className="mx-auto max-w-7xl space-y-4">
-        <Link
-          href="/build/adventures"
-          className="inline-flex min-h-11 items-center text-sm font-semibold text-[#dce5dc]"
-        >
-          ← The Unbuilt City · Mission path
-        </Link>
-        <header className="max-w-2xl space-y-2">
-          <p className="text-xs font-bold tracking-widest text-[#e4c185] uppercase">
-            The Unbuilt City · one world, shared consequences
-          </p>
-          <h1 className="text-2xl font-extrabold">
-            Your city. Your next move.
-          </h1>
-          <p className="text-sm leading-6 text-[#d1e1dd]">
-            Walk between the workshop, market and learning club. Build, run the
-            city day, and watch how each decision affects the whole place.
+      <div className="mx-auto max-w-7xl space-y-3">
+        <header>
+          <h1 className="text-2xl font-extrabold">The Unbuilt City</h1>
+          <p className="mt-1 text-sm text-[#d1e1dd]">
+            Build a city that helps people live better. Your next step is real.
           </p>
         </header>
-        <PowerDistrictFrame questHref={questHref} questLabel={questLabel} />
+        <PowerDistrictFrame
+          questHref="/real-quests"
+          questLabel="Real Quests →"
+          initialFocus
+        />
         {questTitle ? (
           <section
-            aria-label="Your real-world connection"
+            aria-label="Your current real Quest"
             className="rounded-2xl border border-white/20 p-4"
           >
             <h2 className="text-sm font-bold">Your real Quest: {questTitle}</h2>
@@ -48,18 +37,16 @@ export function UnbuiltCityExperience({
               <p className="mt-2 text-sm leading-6 text-[#d1e1dd]">{outcome}</p>
             ) : null}
             <Link
-              href={questHref}
+              href="/real-quests"
               className="mt-2 inline-flex min-h-11 items-center text-sm font-bold text-[#e4c185]"
             >
-              {questLabel}
+              Continue my real Quest →
             </Link>
           </section>
         ) : null}
         <p className="text-xs leading-5 text-[#bdcfc9]">
-          Fictional practice. Reflection stays in this session; leaving or
-          reloading resets it. Practice does not award XP, submit evidence or
-          complete your real Quest. Take what you learn into your real-world
-          challenge.
+          The city is a fictional simulation. It does not award verified XP or
+          create Quest evidence. Only real-world action does that.
         </p>
       </div>
     </main>

@@ -934,6 +934,7 @@ function rememberJourney() {
           status: journey.status,
         };
   if (saveEnabled) persistPractice();
+  else reportParentState();
 }
 function refreshJourneyControls() {
   rememberJourney();
@@ -1539,7 +1540,37 @@ function showDetail(html, mode = "other") {
   panel.scrollTop = 0;
   panel.hidden = false;
 }
+function reportParentState() {
+  if (window.parent === window) return;
+  window.parent.postMessage(
+    {
+      type: "pipupath:city:state",
+      saved: saveEnabled,
+      district: getCase(journey.caseId)?.district ?? null,
+    },
+    window.location.origin,
+  );
+}
+window.addEventListener("message", (event) => {
+  if (event.source !== window.parent || event.origin !== window.location.origin)
+    return;
+  if (event.data?.type === "pipupath:city:get-state") {
+    reportParentState();
+    return;
+  }
+  if (event.data?.type !== "pipupath:city:save") return;
+  rememberJourney();
+  const ok = savePractice(state);
+  saveEnabled = ok;
+  window.parent.postMessage(
+    { type: "pipupath:city:saved", ok },
+    window.location.origin,
+  );
+  reportParentState();
+  if (ok) renderCasebook();
+});
 function persistPractice() {
+  reportParentState();
   if (!saveEnabled) return;
   if (!savePractice(state)) {
     saveEnabled = false;
@@ -3313,6 +3344,7 @@ $("save-practice").onclick = () => {
     toast("Device storage is unavailable. Practice stays in this open game.");
   }
   renderCasebook();
+  reportParentState();
 };
 $("districts-toggle").onclick = () => {
   if ($("district-directory").hidden) openDirectory();

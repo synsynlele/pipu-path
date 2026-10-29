@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { ContextBackLink } from "@/components/navigation/context-back-link";
 import { AppNavigation } from "@/components/navigation/app-navigation";
@@ -33,13 +32,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5">
-            <Link
-              href="/build/adventures"
-              style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
-              className="inline-flex min-h-11 items-center rounded-full border border-white/30 px-3 text-xs font-bold text-white"
-            >
-              ◈ Games
-            </Link>
             <form action={signOutAction}>
               <Button
                 type="submit"
@@ -67,13 +59,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <AppNavigation />
 
           <div className="flex items-center gap-2">
-            <Link
-              href="/build/adventures"
-              style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
-              className="inline-flex min-h-11 items-center rounded-full bg-[#172a40] px-3 text-sm font-bold text-white"
-            >
-              ◈ Games
-            </Link>
             <form action={signOutAction}>
               <Button type="submit" variant="ghost" className="min-h-10 px-3.5">
                 Sign out
