@@ -103,8 +103,8 @@ describe("Stage 8 Builder Project structural contract", () => {
   });
 
   it("integrates Projects into the complete Builder shell", () => {
-    expect(navigation).toContain('label: "Build"');
-    expect(navigation).toContain('href: "/build"');
+    expect(navigation).toContain('label: "Real Quests"');
+    expect(navigation).toContain('href: "/real-quests"');
     expect(navigation).toContain('pathname.startsWith("/quests")');
     expect(navigation).toContain('pathname.startsWith("/projects")');
     expect(projectPage).toContain("Projects prove what you can build.");

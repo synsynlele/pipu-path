@@ -10,7 +10,7 @@ const connectPage = read("src/app/connect/page.tsx");
 
 describe("Stage 22 application navigation shell", () => {
   it("keeps the authenticated application navigation contract while allowing a later presentation authority", () => {
-    for (const label of ["Home", "Build", "Connect"]) {
+    for (const label of ["Play", "Real Quests", "You"]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
     expect(navigation).toContain('"PipuPath application"');
