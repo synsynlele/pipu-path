@@ -938,12 +938,15 @@ function rememberJourney() {
 }
 function refreshJourneyControls() {
   rememberJourney();
-  const activeChapter =
-    state.resilience ? 4
-    : foundationForOpportunities(state.decisions) ? 3
-    : journey.status !== "idle" && journey.caseId
-      ? (chapterForCase(journey.caseId) ?? 1)
-      : foundationComplete(state.decisions) ? 2 : 1;
+  const activeChapter = state.resilience
+    ? 4
+    : foundationForOpportunities(state.decisions)
+      ? 3
+      : journey.status !== "idle" && journey.caseId
+        ? (chapterForCase(journey.caseId) ?? 1)
+        : foundationComplete(state.decisions)
+          ? 2
+          : 1;
   $("city-chapter-chip").textContent = "Chapter " + activeChapter;
   const entered = $("intro").hidden;
   const running = journey.status === "running";
@@ -2697,7 +2700,8 @@ function render() {
   $("credits").textContent = q.available;
   $("resource").setAttribute(
     "aria-label",
-    q.available + " fictional credits available in the shared city fund. Tap to learn how they work.",
+    q.available +
+      " fictional credits available in the shared city fund. Tap to learn how they work.",
   );
   $("resource").hidden = !$("intro").hidden;
   $("build-dock").hidden =

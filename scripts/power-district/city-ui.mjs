@@ -6,7 +6,10 @@ const game = readFileSync("public/games/city/game.mjs", "utf8");
 const css = readFileSync("public/games/shared/city-theme.css", "utf8");
 const landing = readFileSync("src/app/page.tsx", "utf8");
 const landingCss = readFileSync("src/app/landing-adventure.css", "utf8");
-const publicShell = readFileSync("src/components/shells/public-shell.tsx", "utf8");
+const publicShell = readFileSync(
+  "src/components/shells/public-shell.tsx",
+  "utf8",
+);
 
 // Keep the in-city navigation next to the chapter indicator throughout the
 // guided journey. Audio/help/reset must not disappear with the old header.
@@ -15,8 +18,18 @@ const chapter = html.indexOf('id="city-chapter-chip"');
 const menu = html.indexOf('id="city-tools"');
 assert(toolbar >= 0 && toolbar < chapter && chapter < menu);
 assert(html.indexOf('id="city-tools"') === html.lastIndexOf('id="city-tools"'));
-for (const id of ["sound", "help", "reset", "city-menu", "resource-guide", "resource-close"]) {
-  assert(html.includes('id="' + id + '"'), "missing available game control: " + id);
+for (const id of [
+  "sound",
+  "help",
+  "reset",
+  "city-menu",
+  "resource-guide",
+  "resource-close",
+]) {
+  assert(
+    html.includes('id="' + id + '"'),
+    "missing available game control: " + id,
+  );
 }
 assert(game.includes('$("resource-guide").showModal()'));
 assert(game.includes('$("city-chapter-chip").textContent'));

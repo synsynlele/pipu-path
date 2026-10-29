@@ -1,4 +1,3 @@
-
 /* Public pages have their own light palette; the authenticated app is dark. */
 .pp-landing {
   background: #f6f7fc !important;

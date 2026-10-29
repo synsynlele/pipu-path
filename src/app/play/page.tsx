@@ -13,7 +13,10 @@ export default function PublicPlayPage() {
         <Link href="/" className="text-sm font-bold">
           ← PipuPath
         </Link>
-        <Link href="/login?next=/build/play" className="text-sm font-bold text-[#f2d489]">
+        <Link
+          href="/login?next=/build/play"
+          className="text-sm font-bold text-[#f2d489]"
+        >
           Sign in
         </Link>
       </header>
