@@ -138,8 +138,16 @@ export async function updatePasswordAction(
   return { status: "success", message: "Password updated. You can continue." };
 }
 
-export async function signOutAction() {
+export async function signOutAction(
+  _previous: { message: string } = { message: "" },
+) {
+  void _previous;
   const client = await createServerSupabaseClient();
-  await client.auth.signOut();
+  const { error } = await client.auth.signOut({ scope: "local" });
+  if (error)
+    return {
+      message:
+        "We could not sign you out. Check your connection and try again.",
+    };
   redirect("/login");
 }

@@ -51,7 +51,7 @@ export default async function QuestsPage() {
       id="main-content"
       className="mx-auto max-w-6xl px-4 py-7 sm:px-8 sm:py-12 lg:px-10"
     >
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-6 text-white sm:p-9">
+      <section className="pp-real-world-hero relative overflow-hidden rounded-[2rem] border border-white/10 p-6 text-white sm:p-9">
         <div
           aria-hidden="true"
           className="absolute -top-28 -right-20 size-72 rounded-full border border-white/10"
@@ -111,11 +111,12 @@ export default async function QuestsPage() {
               New Quest chain
             </p>
             <h2 className="text-navy mt-2 text-3xl font-semibold tracking-tight">
-              Shape three challenges for this chapter.
+              Generate your real-world Quest.
             </h2>
             <p className="text-muted mt-3 max-w-2xl text-sm leading-6">
-              Quest 1 creates a useful result. Quest 2 tests and improves it.
-              Quest 3 demonstrates stronger capability and clears the milestone.
+              We use your goal and current plan to prepare three small Quests.
+              Start with one. Each has action steps, the proof to bring back and
+              a short reflection. Nothing is completed just by generating it.
             </p>
             <div className="mt-5">
               <QuestGenerationForm attemptsRemaining={attemptsRemaining} />

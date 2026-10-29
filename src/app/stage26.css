@@ -350,3 +350,55 @@
     transition: none;
   }
 }
+
+/* One light canvas through setup, planning, evidence and deployment. */
+.pp-app-experience {
+  --color-success: #137e73;
+  --color-danger: #b42343;
+  --color-gold-400: #5744c4;
+}
+.pp-app-experience .bg-panel {
+  background-color: #fff;
+}
+.pp-app-experience .bg-panel-raised {
+  background-color: #fff;
+}
+.pp-app-experience .bg-background {
+  background-color: #f6f7fb;
+}
+.pp-app-experience .text-gold {
+  color: #5744c4;
+}
+.pp-app-experience .text-success {
+  color: #137e73;
+}
+.pp-app-experience .text-error {
+  color: #b42343;
+}
+.pp-real-world-hero {
+  background:
+    radial-gradient(ellipse at 95% 10%, #6746be 0%, transparent 65%),
+    linear-gradient(135deg, #24205f, #302575);
+  color: #fff;
+  box-shadow: 0 20px 45px -30px #30257580;
+}
+.pp-real-world-hero .text-gold {
+  color: #e2dcff;
+}
+.pp-app-experience main {
+  overflow-wrap: anywhere;
+}
+.pp-app-experience textarea,
+.pp-app-experience input,
+.pp-app-experience select {
+  font-size: max(16px, 1em);
+}
+
+@media (min-width: 1024px) {
+  .pp-app-experience .pp-auth-brand .text-foreground {
+    color: #fff;
+  }
+  .pp-app-experience .pp-auth-brand .text-muted {
+    color: #dbeafe;
+  }
+}

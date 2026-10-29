@@ -67,7 +67,11 @@ export function validateHumanPotentialProfileOutput(
         section !== "emerging_strengths" && (perSection.get(section) ?? 0) < 1,
     )
   ) {
-    return { ok: false, code: "HPI_OUTPUT_INVALID" };
+    return {
+      ok: false,
+      code: "HPI_OUTPUT_INVALID",
+      issues: ["sections:required_distribution"],
+    };
   }
 
   const base = validateInterpretationOutput(input, {
@@ -88,7 +92,11 @@ export function validateHumanPotentialProfileOutput(
     containsUnqualifiedClaim(prose, permanentIdentityClaim) ||
     containsUnqualifiedClaim(prose, unsafeConstraintLanguage)
   ) {
-    return { ok: false, code: "HPI_OUTPUT_INVALID" };
+    return {
+      ok: false,
+      code: "HPI_OUTPUT_INVALID",
+      issues: ["prose:fixed_identity_or_shaming"],
+    };
   }
 
   return { ok: true, value: parsed.data };

@@ -91,7 +91,7 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(stage26).toContain("-webkit-text-fill-color: #ffffff");
     expect(stage26).toContain(".pp-responsive-action-row");
     expect(button).toContain('light: "pp-button-light"');
-    expect(appShell).toContain("<BrandMark compact inverse");
+    expect(appShell).toMatch(/<BrandMark\s+compact\s+inverse/);
     expect(appShell).not.toContain("InstallPwaButton");
     expect(home).not.toContain(
       'className="absolute right-5 bottom-5 left-5 z-10',

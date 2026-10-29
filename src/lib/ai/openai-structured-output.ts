@@ -161,6 +161,7 @@ async function requestOnce(input: {
 }
 
 export async function requestOpenAIStructuredOutput(input: {
+  timeoutMs?: number;
   instructions: string;
   prompt: string;
   schemaName: string;
@@ -168,7 +169,9 @@ export async function requestOpenAIStructuredOutput(input: {
   maxOutputTokens: number;
 }) {
   const { apiKey, model } = requireOpenAIEnvironment();
-  const deadline = Date.now() + requestTimeoutMs;
+  const deadline =
+    Date.now() +
+    Math.min(requestTimeoutMs, input.timeoutMs ?? requestTimeoutMs);
   let lastError: unknown = new Error("OPENAI_HTTP_503");
 
   for (let attempt = 0; attempt < 2; attempt += 1) {

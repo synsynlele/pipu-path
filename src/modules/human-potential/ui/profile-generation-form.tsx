@@ -53,7 +53,7 @@ export function ProfileGenerationForm({
 
       {pending ? (
         <div
-          className="bg-background/85 fixed inset-0 z-[100] grid place-items-center px-5 backdrop-blur-sm"
+          className="border-primary/20 bg-primary-soft/30 mt-5 grid place-items-center rounded-3xl border px-5 py-6"
           role="status"
           aria-live="polite"
         >

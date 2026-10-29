@@ -50,7 +50,7 @@ export function QuestEvidenceForm({
               htmlFor="evidenceText"
               className="text-navy text-sm font-semibold"
             >
-              Tell the proof story
+              What did you do?
             </label>
             <p
               id="evidenceTextHelp"

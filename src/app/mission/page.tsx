@@ -101,7 +101,7 @@ export default async function MissionPage() {
       id="main-content"
       className="mx-auto max-w-6xl px-4 py-7 sm:px-8 sm:py-12 lg:px-10"
     >
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-6 text-white sm:p-9">
+      <section className="pp-real-world-hero relative overflow-hidden rounded-[2rem] border border-white/10 p-6 text-white sm:p-9">
         <div
           aria-hidden="true"
           className="absolute -top-28 -right-20 size-72 rounded-full border border-white/10"

@@ -13,10 +13,10 @@ export function AuthShell({
   return (
     <main
       id="main-content"
-      className="relative min-h-screen px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:p-0"
+      className="pp-app-experience relative min-h-screen px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:p-0"
     >
       <div className="absolute top-6 left-5 z-20 sm:left-8 lg:top-12 lg:left-12">
-        <BrandMark />
+        <BrandMark className="pp-auth-brand" />
       </div>
 
       <section className="relative hidden overflow-hidden bg-[linear-gradient(145deg,#06132f_0%,#0a2251_58%,#173c82_100%)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
@@ -24,7 +24,7 @@ export function AuthShell({
         <div className="absolute right-12 bottom-24 size-56 rounded-full bg-white/8 blur-2xl" />
         <div className="relative mt-20">
           <div className="mt-24 max-w-xl">
-            <p className="text-gold text-sm font-semibold tracking-[0.18em] uppercase">
+            <p className="text-sm font-semibold tracking-[0.18em] text-blue-100 uppercase">
               Discover. Develop. Deploy.
             </p>
             <h2 className="mt-5 text-5xl leading-tight font-semibold tracking-tight">

@@ -1,3 +1,7 @@
+document.documentElement.classList.toggle(
+  "city-embedded",
+  new URLSearchParams(window.location.search).get("embedded") === "1",
+);
 import { infrastructurePlan } from "./infrastructure.mjs";
 import {
   ROAD_X,

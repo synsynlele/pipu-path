@@ -51,7 +51,7 @@ export default async function QuestProofPage({
       id="main-content"
       className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10 lg:px-10"
     >
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white shadow-[0_30px_90px_-52px_rgba(79,124,255,0.9)] sm:p-8 lg:p-10">
+      <section className="pp-real-world-hero relative overflow-hidden rounded-[2rem] border border-white/10 p-5 text-white shadow-[0_30px_90px_-52px_rgba(79,124,255,0.9)] sm:p-8 lg:p-10">
         <div
           aria-hidden="true"
           className="absolute -top-24 -right-16 size-72 rounded-full border border-white/10"

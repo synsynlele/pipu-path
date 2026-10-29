@@ -18,6 +18,10 @@ describe("City to Quest handoff", () => {
         welcome
       />,
     );
+    expect(screen.getByRole("link", { name: "Sign in ↗" })).toHaveAttribute(
+      "href",
+      "/login?next=%2Freal-quests",
+    );
     const frame = screen.getByTitle(
       "The Unbuilt City · 14 connected districts",
     ) as HTMLIFrameElement;
@@ -40,6 +44,7 @@ describe("City to Quest handoff", () => {
       }),
     );
     expect(screen.getByRole("button", { name: "Real Quests" })).toBeVisible();
+    expect(screen.queryByRole("link", { name: "Sign in ↗" })).toBeNull();
     expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
       frame,
     );

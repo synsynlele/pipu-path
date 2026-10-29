@@ -176,80 +176,68 @@ describe("Stage 7 Quest generation orchestration", () => {
     expect(mocks.generate).not.toHaveBeenCalled();
   });
 
-  it("replaces malformed model output with a validated fallback", async () => {
-    mocks.generate.mockResolvedValue({ quests: [] });
-
-    await expect(generateCurrentQuestPack()).resolves.toEqual({
-      ok: true,
-      firstQuestId: "quest-1",
-    });
+  it("repairs invalid output once, then persists only the validated AI result", async () => {
+    mocks.generate
+      .mockResolvedValueOnce({ title: "Incomplete" })
+      .mockResolvedValueOnce(output);
+    expect(await generateCurrentQuestPack()).toMatchObject({ ok: true });
+    expect(mocks.generate).toHaveBeenCalledTimes(2);
+    expect(mocks.generate).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ timeoutMs: expect.any(Number) }),
+    );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
       "persist_stage7_quest_pack",
-      expect.objectContaining({
-        quest_pack_input: expect.objectContaining({
-          quests: expect.arrayContaining([
-            expect.objectContaining({ sequence_order: 1 }),
-            expect.objectContaining({ sequence_order: 2 }),
-            expect.objectContaining({ sequence_order: 3 }),
-          ]),
-        }),
-      }),
+      expect.anything(),
     );
+  });
+  it("keeps invalid retries out of saved work", async () => {
+    mocks.generate.mockResolvedValue({ title: "Incomplete" });
+    expect(await generateCurrentQuestPack()).toMatchObject({
+      ok: false,
+      code: "QUEST_OUTPUT_INVALID",
+    });
+    expect(mocks.generate).toHaveBeenCalledTimes(2);
     expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
-      "fail_stage7_quest_request",
-      expect.anything(),
-    );
-  });
-
-  it("uses the fallback when OpenAI times out", async () => {
-    mocks.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
-
-    await expect(generateCurrentQuestPack()).resolves.toEqual({
-      ok: true,
-      firstQuestId: "quest-1",
-    });
-    expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "persist_stage7_quest_pack",
-      expect.objectContaining({
-        quest_pack_input: expect.objectContaining({
-          quests: expect.any(Array),
-        }),
-      }),
-    );
-  });
-
-  it("uses the fallback after an unclassified provider failure", async () => {
-    mocks.generate.mockRejectedValue(new Error("network disconnected"));
-
-    await expect(generateCurrentQuestPack()).resolves.toEqual({
-      ok: true,
-      firstQuestId: "quest-1",
-    });
-    expect(mocks.serviceRpc).toHaveBeenCalledWith(
       "persist_stage7_quest_pack",
       expect.anything(),
     );
   });
-
-  it("uses the fallback when OpenAI configuration is unavailable", async () => {
+  it.each(["OPENAI_TIMEOUT", "OPENAI_HTTP_429", "network disconnected"])(
+    "shows provider failure %s without saving a template",
+    async (reason) => {
+      mocks.generate.mockRejectedValue(new Error(reason));
+      expect(await generateCurrentQuestPack()).toMatchObject({ ok: false });
+      expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
+        "persist_stage7_quest_pack",
+        expect.anything(),
+      );
+    },
+  );
+  it("does not spend a generation attempt if AI configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
-      throw new Error("missing environment");
+      throw new Error("missing");
     });
-
-    await expect(generateCurrentQuestPack()).resolves.toEqual({
-      ok: true,
-      firstQuestId: "quest-1",
+    expect(await generateCurrentQuestPack()).toMatchObject({
+      ok: false,
+      code: "QUEST_PROVIDER_UNAVAILABLE",
     });
+    expect(mocks.browserRpc).not.toHaveBeenCalled();
+    expect(mocks.generate).not.toHaveBeenCalled();
+  });
+  it("keeps under-18 generation local and validated", async () => {
+    mocks.getContext.mockResolvedValue({
+      ...context,
+      isMinor: true,
+      ageBand: "16_17",
+    });
+    expect(await generateCurrentQuestPack()).toMatchObject({ ok: true });
     expect(mocks.generate).not.toHaveBeenCalled();
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "claim_stage7_quest_request",
-      expect.objectContaining({
-        provider_input: "evidence_fallback",
-        model_input: "evidence-fallback-v1",
-      }),
+      "persist_stage7_quest_pack",
+      expect.anything(),
     );
   });
-
   it("records a safe failure when persistence fails", async () => {
     mocks.serviceRpc.mockImplementation(async (name: string) =>
       name === "claim_stage7_quest_request"

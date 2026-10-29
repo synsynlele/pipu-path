@@ -85,6 +85,7 @@ export async function generateCurrentJourney(input: {
     ({ model } = requireOpenAIEnvironment());
   } catch {
     openAIAvailable = false;
+    if (!context.isMinor) return fail("JOURNEY_PROVIDER_UNAVAILABLE");
   }
   const current = await getCurrentJourneyState(context.missionId);
   let currentJourney: JourneyOutput | undefined;
@@ -168,6 +169,7 @@ export async function generateCurrentJourney(input: {
     let fallbackReason: string | null = null;
     let output: unknown;
 
+    const providerStarted = Date.now();
     if (openAIAvailable) {
       try {
         output = await new OpenAIJourneyProvider().generate({
@@ -177,14 +179,9 @@ export async function generateCurrentJourney(input: {
           continuation: input.kind === "continue",
         });
       } catch (error) {
-        generationMode = "evidence_fallback";
-        fallbackReason =
-          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
-        output = buildEvidenceBasedJourney({
-          context,
-          currentJourney,
-          continuation: input.kind === "continue",
-        });
+        throw error instanceof Error && /^OPENAI_/.test(error.message)
+          ? error
+          : new Error("OPENAI_PROVIDER_FAILURE");
       }
     } else {
       generationMode = "evidence_fallback";
@@ -199,15 +196,24 @@ export async function generateCurrentJourney(input: {
     }
 
     let validated = validateJourneyForContext(context, output);
-    if (!validated.ok) {
-      generationMode = "evidence_fallback";
-      fallbackReason = validated.code;
-      output = buildEvidenceBasedJourney({
-        context,
-        currentJourney,
-        continuation: input.kind === "continue",
+    if (!validated.ok && generationMode === "openai") {
+      logger.warn("journey_provider_output_rejected", {
+        requestId,
+        code: validated.code,
       });
-      validated = validateJourneyForContext(context, output);
+      const remainingMs = 45_000 - (Date.now() - providerStarted);
+      if (remainingMs > 5_000) {
+        output = await new OpenAIJourneyProvider().generate(
+          {
+            context,
+            currentJourney,
+            refinementInstruction,
+            continuation: input.kind === "continue",
+          },
+          { issue: validated.code, timeoutMs: remainingMs },
+        );
+        validated = validateJourneyForContext(context, output);
+      }
     }
     if (!validated.ok) throw new Error(validated.code);
 

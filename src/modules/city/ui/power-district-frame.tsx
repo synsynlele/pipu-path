@@ -132,7 +132,7 @@ export function PowerDistrictFrame({
       className={
         expanded
           ? "unbuilt-city-frame fixed inset-0 z-[1000] flex flex-col bg-[#f4f6fd] text-[#142a52]"
-          : "unbuilt-city-frame overflow-hidden rounded-2xl border border-[#d6deed] bg-[#f4f6fd] text-[#142a52]"
+          : "unbuilt-city-frame relative overflow-hidden rounded-2xl border border-[#d6deed] bg-[#f4f6fd] text-[#142a52]"
       }
     >
       <div
@@ -178,6 +178,14 @@ export function PowerDistrictFrame({
           )}
         </div>
       </div>
+      {welcome && !entered ? (
+        <a
+          href="/login?next=%2Freal-quests"
+          className="absolute top-[max(22px,env(safe-area-inset-top))] right-[7vw] z-10 inline-flex min-h-11 items-center rounded-full border border-white/40 bg-[#0b2638] px-5 text-sm font-semibold text-white"
+        >
+          Sign in ↗
+        </a>
+      ) : null}
       <iframe
         ref={frameRef}
         title="The Unbuilt City · 14 connected districts"

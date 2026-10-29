@@ -11,7 +11,7 @@ const initialState: QuestFormState = { status: "idle" };
 
 export function QuestGenerationForm({
   attemptsRemaining,
-  autoStart = true,
+  autoStart = false,
 }: {
   attemptsRemaining: number;
   autoStart?: boolean;
@@ -44,7 +44,7 @@ export function QuestGenerationForm({
             ? "Try again"
             : autoStart
               ? "Prepare my next steps"
-              : "Create my first Quest"}
+              : "Generate my Quest"}
       </Button>
       {pending || (autoStart && state.status === "idle") ? (
         <p role="status" className="text-muted mt-4 text-sm">

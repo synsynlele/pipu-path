@@ -44,7 +44,7 @@ export default async function ProjectDetailPage({
       id="main-content"
       className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10 lg:px-10"
     >
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white sm:p-8 lg:p-9">
+      <section className="pp-real-world-hero relative overflow-hidden rounded-[2rem] border border-white/10 p-5 text-white sm:p-8 lg:p-9">
         <div
           aria-hidden="true"
           className="absolute -top-24 -right-16 size-64 rounded-full border border-white/10"
@@ -57,7 +57,7 @@ export default async function ProjectDetailPage({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold tracking-[0.17em] text-[#f3c86b] uppercase">
-                Major Build · Private
+                Put it to use · Private project
               </p>
               <p className="mt-1 text-xs text-blue-100/60">
                 Built from verified Quest evidence
@@ -90,6 +90,29 @@ export default async function ProjectDetailPage({
         </div>
       </section>
 
+      <details className="border-border bg-panel mt-5 rounded-2xl border p-5">
+        <summary className="text-navy cursor-pointer font-semibold">
+          How do I put my build to use?
+        </summary>
+        <ol className="text-muted mt-4 list-decimal space-y-3 pl-5 text-sm leading-6">
+          <li>
+            Choose one real person or group with the problem your build
+            addresses.
+          </li>
+          <li>
+            Try your smallest useful version with their permission. Ask what
+            helped and what needs changing.
+          </li>
+          <li>
+            Use the progress form below to record what you tried, the result,
+            honest proof and your next improvement.
+          </li>
+          <li>
+            When your Project is complete, choose whether to share selected
+            work. Publishing is optional; private evidence stays private.
+          </li>
+        </ol>
+      </details>
       <section className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-5">
           <Surface className="p-5 sm:p-7">
@@ -206,7 +229,7 @@ export default async function ProjectDetailPage({
                   turn into public-safe Builder Vault proof.
                 </p>
                 <ButtonLink href={`/portfolio/${project.id}`} className="mt-5">
-                  Prepare Builder Vault Proof →
+                  Choose what to share →
                 </ButtonLink>
               </div>
             </Surface>
