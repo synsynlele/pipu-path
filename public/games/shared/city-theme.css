@@ -2080,6 +2080,27 @@ body.city-impact-view #weather {
 .city-service-meter i.struggling {
   background: #bc7d68;
 }
+.city-life-goal {
+  margin: 10px 0 4px;
+  font-weight: 600;
+}
+.city-life-results {
+  margin-top: 10px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.city-life-results summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.city-life-review {
+  margin-top: 10px;
+  min-height: 44px;
+  max-width: 100%;
+  white-space: normal;
+}
 .city-connections {
   color: #56708d;
   font-size: 10px;

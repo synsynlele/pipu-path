@@ -11,6 +11,45 @@ import {
   CONNECTIONS,
 } from "../../public/games/city/city-growth.mjs";
 import { CASE_BUILD_SITES } from "../../public/games/city/feedback.mjs";
+import {
+  districtLife,
+  LIFE_GOALS,
+} from "../../public/games/city/better-lives.mjs";
+import { infrastructurePlan } from "../../public/games/city/construction-plans.mjs";
+
+assert.equal(Object.keys(LIFE_GOALS).length, CITY_SYSTEMS.length);
+for (const district of CITY_SYSTEMS) {
+  const life = districtLife(district.id);
+  assert(life.goal);
+  assert.equal(life.state, "Meet the need");
+  assert.equal(life.working.length, 0);
+  assert.equal(life.nextReview, null);
+}
+// Every authored outcome remains tied to its actual choice, including empty
+// promises and partial plans. Revision must remove the previous benefit.
+for (const scenario of CITY_CASES) {
+  for (const choice of scenario.options) {
+    const decisions = { [scenario.id]: choice.id };
+    const before = JSON.stringify(decisions);
+    const life = districtLife(scenario.district, decisions);
+    const working =
+      infrastructurePlan(scenario.id, choice.id).status === "working";
+    assert.equal(life.working.length, Number(working));
+    assert.equal(life.needsAttention.length, Number(!working));
+    assert.equal(life.nextReview, working ? null : scenario.id);
+    const action = [...life.working, ...life.needsAttention][0];
+    assert.equal(action.result, choice.result);
+    assert.equal(action.tradeoff, choice.tradeoff);
+    assert.equal(JSON.stringify(decisions), before);
+  }
+}
+const revisedLife = districtLife("workshop", { "repair-parts": "guess" });
+assert.equal(revisedLife.working.length, 0);
+assert.equal(revisedLife.nextReview, "repair-parts");
+assert.equal(
+  districtLife("workshop", { "repair-parts": "track" }).nextReview,
+  null,
+);
 
 const empty = deriveBuilderCity();
 assert.equal(empty.completed, 0);

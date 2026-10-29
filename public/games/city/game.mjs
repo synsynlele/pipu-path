@@ -11,6 +11,7 @@ import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
+import { districtLife } from "./better-lives.mjs";
 import { cityViewSummary, findCityViewDistrict } from "./city-view.mjs";
 import { deriveLivingCity } from "./living-city.mjs";
 import {
@@ -1823,9 +1824,7 @@ function renderCityStatus() {
     city.workingSolutions +
     " working solutions · " +
     city.unresolvedNeeds +
-    " unresolved needs. Fictional service health: " +
-    city.cityHealth +
-    "/100. Revise any decision to reshape the city.";
+    " needs to revisit. Build services that help people live better. Explore each district's results below.";
   const rows = $("city-status-list");
   rows.replaceChildren();
   for (const id of CASE_DISTRICTS) {
@@ -1861,6 +1860,53 @@ function renderCityStatus() {
     bar.className = d.activity;
     meter.append(bar);
     section.append(head, meter);
+    const life = districtLife(id, state.decisions);
+    const goal = document.createElement("p");
+    goal.className = "city-life-goal";
+    goal.textContent = life.goal;
+    const status = document.createElement("p");
+    status.className = "city-connections";
+    status.textContent =
+      life.state +
+      " · " +
+      life.working.length +
+      " working plans · " +
+      life.needsAttention.length +
+      " to revisit · " +
+      life.unanswered +
+      " decisions ahead";
+    section.append(goal, status);
+    if (life.working.length || life.needsAttention.length) {
+      const details = document.createElement("details");
+      details.className = "city-life-results";
+      const summary = document.createElement("summary");
+      summary.textContent = "How your choices affect people";
+      details.append(summary);
+      for (const action of [...life.needsAttention, ...life.working]) {
+        const result = document.createElement("p");
+        const label = document.createElement("strong");
+        label.textContent =
+          action.title +
+          (action.status === "working"
+            ? " · Working plan"
+            : " · Needs attention");
+        const explanation = document.createElement("span");
+        explanation.textContent =
+          action.result + " Trade-off: " + action.tradeoff;
+        result.append(label, document.createElement("br"), explanation);
+        details.append(result);
+      }
+      section.append(details);
+    }
+    if (life.nextReview) {
+      const improve = document.createElement("button");
+      improve.type = "button";
+      improve.className = "secondary city-life-review";
+      improve.textContent = "Improve a decision →";
+      improve.setAttribute("aria-label", "Improve a decision in " + d.name);
+      improve.onclick = () => beginDecisionReview(life.nextReview);
+      section.append(improve);
+    }
     if (d.links.length) {
       const effects = document.createElement("p");
       effects.className = "city-connections";

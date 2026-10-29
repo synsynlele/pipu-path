@@ -59,3 +59,26 @@ verified achievements, capability claims or XP.
 - Preserve software road rendering, reduced motion, continuous navigation and
   Android stability. Automated model/runtime/raster checks supplement actual
   physical Android and WebGL testing; they do not replace it.
+
+## Better lives inspection — 29 October 2026
+
+The governing promise is “Build your city. Make the world a better place.”
+My City now explains the everyday human purpose of all 14 districts. Each
+answered choice contributes its original authored result and trade-off, shown
+on demand rather than adding another permanent overlay over the city. Working
+plans, partial or ineffective plans, and unanswered needs remain distinct.
+An incomplete district never claims a completed human outcome. No resident
+counts, measured wellbeing, verified learning or actual economic impact are
+invented.
+
+The reusable `better-lives.mjs` projection derives everything from existing
+choice IDs. No new saved state, cloud data, per-frame simulation, geometry or
+textures are added. Revisiting a need opens the existing revision controller;
+returning without changing preserves every answer and the original journey.
+The existing service model and visible infrastructure remain authoritative.
+
+Acceptance covers all 108 outcomes, empty cities, ineffective-to-working
+revisions, actual My City rendering and revision navigation, alongside the
+full 36-answer manual/automatic chapter handoff regression. This slice explains
+existing consequences; richer resident routines and service dependencies remain
+future work rather than claimed completed features.
