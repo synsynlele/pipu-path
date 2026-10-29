@@ -1106,3 +1106,24 @@ Validation: `npm run validate` passed all gates, 527 unit/component tests,
 new static check also rejects the previous runner with two `summary is not
 defined` errors. Pre-fix runtime proof fails at decision 16; post-fix manual,
 automatic and background-resume handoffs continue through all 36 answers.
+
+## 29 October 2026 — Better lives city inspection
+
+Implemented the first bounded slice of the people-first city direction.
+Each district has a concise human purpose. My City explains the player's actual
+choice outcomes and trade-offs on demand and offers a direct path to improve
+an unresolved decision. Partial and ineffective plans never count as working
+benefits; unanswered decisions stay visible. Data derives from current choice
+IDs and revisions, preserving device saves and chapter progress.
+
+The shared projection supports further authored neighbourhoods without adding
+one-off screens or founder approval steps. It adds no scene geometry, per-frame
+work, resident population claims, cloud records or verified developmental XP.
+More sophisticated routines and service dependencies are not implemented in
+this slice. Targeted model and actual runtime checks passed, including all
+108 choice outcomes, revision navigation and both 36-answer chapter handoffs.
+Validation: `npm run validate` passed formatting, lint, types, all city checks,
+527 unit/component tests, 251 integration tests and the local production build.
+The build emitted the known two unauthenticated progress-load diagnostics and
+exited successfully. No physical Android/GPU validation or production release
+is implied. One deliberate preview build is planned for browser review.

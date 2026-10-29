@@ -129,6 +129,29 @@ for (let option = 0; option < 3; option++) {
     );
   }
 }
+// My City exposes human needs and the exact authored consequence, and its
+// repair action opens the existing revision flow without dropping progress.
+w.document.getElementById("intro").hidden = true;
+game.state.decisions["repair-parts"] = "guess";
+game.render();
+w.document.getElementById("city-status-toggle").click();
+assert.equal(w.document.getElementById("city-status").hidden, false);
+assert.equal(w.document.querySelectorAll(".city-life-goal").length, 14);
+assert(w.document.querySelectorAll(".city-life-results").length > 0);
+const improveWorkshop = w.document.querySelector(".city-life-review");
+assert(improveWorkshop);
+assert.equal(
+  improveWorkshop.getAttribute("aria-label"),
+  "Improve a decision in Repair & Maintenance",
+);
+const preservedDecisions = JSON.stringify(game.state.decisions);
+improveWorkshop.click();
+assert.equal(w.document.getElementById("city-status").hidden, true);
+assert(w.document.querySelector("[data-case-choice]"));
+assert.equal(JSON.stringify(game.state.decisions), preservedDecisions);
+// Leave revision before exercising the independent full journey regressions.
+w.document.getElementById("review-cancel").click();
+
 // Execute the actual answer -> reveal -> next -> chapter -> travel callbacks.
 // Previous navigation tests jumped straight into cases and missed this boundary.
 function fireTimer(id) {

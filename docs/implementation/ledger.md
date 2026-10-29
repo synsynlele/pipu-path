@@ -1498,3 +1498,20 @@ Validation: `npm run validate` passed all gates, 527 unit/component tests,
 new static check also rejects the previous runner with two `summary is not
 defined` errors. Pre-fix runtime proof fails at decision 16; post-fix manual,
 automatic and background-resume handoffs continue through all 36 answers.
+
+## 29 October 2026 — Better lives city inspection
+
+- Added a pure, reusable human-purpose projection for all fourteen districts,
+  derived from existing allowlisted choice IDs and construction statuses.
+- My City exposes exact authored results and trade-offs in expandable sections,
+  distinguishes working plans from unmet needs, and links directly into the
+  existing revision controller without losing the original journey.
+- Updated entry and inspection copy around building a city that improves life.
+  No extra scene objects, animation loops, saved fields, account records or XP.
+- Added all-108-choice projection checks, revision checks and actual DOM/runtime
+  coverage for inspection, revision entry and returning without changes.
+- Full `npm run validate` passed: formatting, lint, types, city suite,
+  527 unit/component tests, 251 integration tests and local production build.
+  Known unauthenticated build diagnostics remain; build exited successfully.
+- Scope: fictional game outcomes, not measured wellbeing or a new resident
+  simulation. Preview-only delivery; production remains separate.
