@@ -938,6 +938,13 @@ function rememberJourney() {
 }
 function refreshJourneyControls() {
   rememberJourney();
+  const activeChapter =
+    state.resilience ? 4
+    : foundationForOpportunities(state.decisions) ? 3
+    : journey.status !== "idle" && journey.caseId
+      ? (chapterForCase(journey.caseId) ?? 1)
+      : foundationComplete(state.decisions) ? 2 : 1;
+  $("city-chapter-chip").textContent = "Chapter " + activeChapter;
   const entered = $("intro").hidden;
   const running = journey.status === "running";
   const paused = journey.status === "paused";
@@ -2688,6 +2695,10 @@ function render() {
     ? "ONE STEP AT A TIME"
     : "POWER ↔ FOOD ↔ LEARNING";
   $("credits").textContent = q.available;
+  $("resource").setAttribute(
+    "aria-label",
+    q.available + " fictional credits available in the shared city fund. Tap to learn how they work.",
+  );
   $("resource").hidden = !$("intro").hidden;
   $("build-dock").hidden =
     !$("intro").hidden || Boolean(guided) || !dockExpanded || simulating;
@@ -3453,6 +3464,8 @@ $("sound").onclick = () => {
   toast(sound ? "City sound enabled for this session." : "City sound off.");
 };
 $("help").onclick = () => $("help-dialog").showModal();
+$("resource").onclick = () => $("resource-guide").showModal();
+$("resource-close").onclick = () => $("resource-guide").close();
 $("help-done").onclick = $("close-help").onclick = () =>
   $("help-dialog").close();
 $("reset").onclick = () => {

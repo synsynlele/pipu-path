@@ -3250,3 +3250,192 @@ body.city-viewing #resilience-panel {
     width: min(330px, calc(100vw - 20px));
   }
 }
+
+/* PipuPath 2.0: compact chapter / city menu, always-accessible audio and help. */
+#city-topbar {
+  position: absolute;
+  z-index: 62;
+  top: max(8px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;
+}
+#city-topbar .city-topline {
+  display: flex;
+  width: 100%;
+  min-height: 36px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+#city-topbar .city-top-title {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  padding: 7px 11px;
+  border: 1px solid #d8e1ee;
+  border-radius: 12px;
+  background: #fbfcfff2;
+  color: #213862;
+  font-size: 13px;
+  font-weight: 850;
+  box-shadow: 0 5px 16px #152c3e20;
+}
+#city-topbar .city-quick-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+}
+#city-topbar .city-quick-actions .icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border: 1px solid #cbd8e8;
+  border-radius: 12px;
+  background: #fbfcfff2;
+  color: #203a6a;
+  font-size: 18px;
+  box-shadow: 0 4px 14px #152b4523;
+  touch-action: manipulation;
+}
+#city-topbar .city-chapter-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  pointer-events: none;
+}
+#city-chapter-chip {
+  display: inline-flex;
+  min-height: 41px;
+  align-items: center;
+  white-space: nowrap;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #1f3964ef;
+  border: 1px solid #466184;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 5px 16px #152c3e27;
+}
+body #city-topbar #city-tools,
+body.city-journey #city-topbar #city-tools,
+body.city-journey-paused #city-topbar #city-tools {
+  position: relative;
+  z-index: 63;
+  display: block;
+  top: auto;
+  left: auto;
+  right: auto;
+  width: auto;
+  max-width: min(250px, calc(100vw - 140px));
+  margin: 0;
+  transform: none;
+  pointer-events: auto;
+}
+body #city-topbar #city-tools[hidden] {
+  display: none;
+}
+#city-topbar #city-menu > summary {
+  display: flex;
+  min-height: 41px;
+  align-items: center;
+  padding: 9px 13px;
+  font-size: 12px;
+}
+#city-topbar #city-menu-options {
+  max-height: min(60dvh, 450px);
+}
+body.city-journey #journey-bar,
+body.city-journey-paused #journey-bar {
+  top: max(112px, calc(env(safe-area-inset-top) + 105px));
+}
+body.city-viewing #city-topbar {
+  display: none;
+}
+#resource {
+  border: 1px solid #cdd9dd;
+  color: #253c58;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+#resource:focus-visible {
+  outline: 3px solid #5440bc;
+}
+#resource-guide {
+  max-width: min(390px, calc(100vw - 32px));
+  padding: 22px;
+  border: 1px solid #c8d9db;
+  border-radius: 18px;
+  background: #fbfcff;
+  color: #233851;
+  box-shadow: 0 18px 60px #17233c50;
+}
+#resource-guide::backdrop {
+  background: #101d2b95;
+}
+#resource-guide h2 {
+  margin: 0 0 10px;
+  color: #20375c;
+  font-size: 21px;
+}
+#resource-guide p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+#resource-guide button {
+  min-height: 44px;
+  width: 100%;
+  border: 0;
+  border-radius: 11px;
+  background: #254f42;
+  color: #fff;
+  font-weight: 750;
+}
+@media (max-width: 650px) {
+  #city-topbar {
+    left: 8px;
+    right: 8px;
+    gap: 5px;
+  }
+  #city-topbar .city-top-title {
+    font-size: 12px;
+  }
+  #city-topbar .city-quick-actions {
+    gap: 4px;
+  }
+  #city-topbar .city-quick-actions .icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+  #city-chapter-chip {
+    padding: 9px 10px;
+    font-size: 11px;
+  }
+  #city-topbar #city-menu > summary {
+    padding: 9px 11px;
+    font-size: 11px;
+  }
+  body.city-journey #journey-bar,
+  body.city-journey-paused #journey-bar {
+    top: max(112px, calc(env(safe-area-inset-top) + 106px));
+  }
+  #resource {
+    bottom: auto;
+    top: max(191px, calc(env(safe-area-inset-top) + 183px));
+    left: auto;
+    right: 9px;
+    padding: 7px 10px;
+  }
+}

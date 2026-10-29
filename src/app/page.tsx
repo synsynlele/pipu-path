@@ -1,10 +1,11 @@
 import Link from "next/link";
+import "./landing-adventure.css";
 import { PublicShell } from "@/components/shells/public-shell";
 
 export default function HomePage() {
   return (
     <PublicShell>
-      <main id="main-content" className="bg-[#f7f8fc]">
+      <main id="main-content" className="pp-landing bg-[#f7f8fc]">
         <section className="mx-auto grid min-h-[80svh] max-w-6xl items-center gap-9 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:py-20">
           <div>
             <p className="text-xs font-bold tracking-[0.16em] text-[#5436df] uppercase">
@@ -21,13 +22,13 @@ export default function HomePage() {
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
                 href="/play"
-                className="inline-flex min-h-14 items-center justify-center rounded-full bg-[#5436df] px-7 font-bold text-white"
+                className="pp-landing-action-primary inline-flex min-h-14 items-center justify-center rounded-full bg-[#5436df] px-7 font-bold text-white"
               >
                 Play free →
               </Link>
               <Link
                 href="/signup"
-                className="inline-flex min-h-14 items-center justify-center rounded-full border border-[#c6cce0] px-7 font-bold text-[#26375a]"
+                className="pp-landing-action-secondary inline-flex min-h-14 items-center justify-center rounded-full border border-[#c6cce0] px-7 font-bold text-[#26375a]"
               >
                 Build in real life
               </Link>
@@ -37,7 +38,7 @@ export default function HomePage() {
               personal, private and account-linked.
             </p>
           </div>
-          <div className="rounded-[2.25rem] bg-gradient-to-br from-[#183255] via-[#267b7a] to-[#71986e] p-8 text-white shadow-xl">
+          <div className="pp-landing-journey rounded-[2.25rem] bg-gradient-to-br from-[#183255] via-[#267b7a] to-[#71986e] p-8 text-white shadow-xl">
             <p className="text-xs font-bold tracking-widest text-[#f3d17e] uppercase">
               One connected journey
             </p>

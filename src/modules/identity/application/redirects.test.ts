@@ -12,6 +12,10 @@ describe("safeNextPath", () => {
     expect(safeNextPath("/reset-password")).toBe("/reset-password");
     expect(safeNextPath("/build/play?quest=abc")).toBe("/build/play?quest=abc");
     expect(safeNextPath("/build/adventures")).toBe("/build/adventures");
+    expect(safeNextPath("/real-quests?district=power")).toBe(
+      "/real-quests?district=power",
+    );
+    expect(postAuthDestination("/app", "/real-quests")).toBe("/real-quests");
     expect(safeNextPath("/build/play/neighbourhood-garden-v1")).toBe(
       "/build/play/neighbourhood-garden-v1",
     );
