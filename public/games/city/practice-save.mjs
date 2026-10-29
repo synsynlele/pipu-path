@@ -3,6 +3,7 @@
 import { initialPlan } from "./model.mjs";
 import { getCase, getChoice } from "./cases.mjs";
 import { JOURNEY_STAGES } from "./journey-flow.mjs";
+import { sanitizeResilience } from "./resilience.mjs";
 import {
   newOpportunityState,
   sanitizeOpportunityState,
@@ -108,6 +109,7 @@ export function sanitizePractice(state) {
     // Existing saves without a Chapter 3 record restore as a fresh
     // enterprise practice, without affecting the student's city decisions.
     economy: sanitizeOpportunityState(state.economy) ?? newOpportunityState(),
+    resilience: sanitizeResilience(state.resilience),
   };
 }
 function getStorage(storage) {

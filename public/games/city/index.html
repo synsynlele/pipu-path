@@ -78,61 +78,75 @@
         </div>
       </div>
       <nav id="city-tools" hidden aria-label="City navigation">
-        <button
-          id="cases-toggle"
-          type="button"
-          aria-controls="casebook"
-          aria-expanded="false"
-        >
-          Decisions <span id="decision-count">0/36</span>
-        </button>
-        <button
-          id="city-status-toggle"
-          type="button"
-          aria-controls="city-status"
-          aria-expanded="false"
-        >
-          My City <span id="city-health-badge">0/14</span>
-        </button>
-        <button
-          id="view-city-toggle"
-          type="button"
-          aria-controls="city-view"
-          aria-expanded="false"
-        >
-          View My City
-        </button>
-        <button
-          id="opportunities-toggle"
-          type="button"
-          aria-controls="opportunities-panel"
-          aria-expanded="false"
-          title="Finish the 36 city decisions to open Chapter 3"
-          disabled
-        >
-          Opportunities
-        </button>
-        <button id="city-map" type="button">City map</button>
-        <button
-          id="districts-toggle"
-          type="button"
-          aria-controls="district-directory"
-          aria-expanded="false"
-        >
-          Places (14)
-        </button>
-        <button id="build-toggle" type="button" aria-controls="build-dock">
-          Build
-        </button>
-        <button id="explore-free" type="button">Explore</button>
-        <button
-          id="guide-toggle"
-          type="button"
-          aria-controls="mission"
-          aria-expanded="false"
-        >
-          Guide
-        </button>
+        <details id="city-menu">
+          <summary aria-controls="city-menu-options">City menu ▾</summary>
+          <div id="city-menu-options">
+            <button
+              id="cases-toggle"
+              type="button"
+              aria-controls="casebook"
+              aria-expanded="false"
+            >
+              Decisions <span id="decision-count">0/36</span>
+            </button>
+            <button
+              id="city-status-toggle"
+              type="button"
+              aria-controls="city-status"
+              aria-expanded="false"
+            >
+              My City <span id="city-health-badge">0/14</span>
+            </button>
+            <button
+              id="view-city-toggle"
+              type="button"
+              aria-controls="city-view"
+              aria-expanded="false"
+            >
+              View My City
+            </button>
+            <button
+              id="opportunities-toggle"
+              type="button"
+              aria-controls="opportunities-panel"
+              aria-expanded="false"
+              title="Finish the 36 city decisions to open Chapter 3"
+              disabled
+            >
+              Opportunities
+            </button>
+            <button id="city-map" type="button">City map</button>
+            <button
+              id="resilience-toggle"
+              type="button"
+              disabled
+              aria-controls="resilience-panel"
+              aria-expanded="false"
+            >
+              Chapter 4 · Resilience
+            </button>
+            <button
+              id="districts-toggle"
+              type="button"
+              aria-controls="district-directory"
+              aria-expanded="false"
+            >
+              Places (14)
+            </button>
+            <button id="build-toggle" type="button" aria-controls="build-dock">
+              Build
+            </button>
+            <button id="explore-free" type="button">Explore</button>
+            <button
+              id="guide-toggle"
+              type="button"
+              aria-controls="mission"
+              aria-expanded="false"
+            >
+              Guide
+            </button>
+          </div>
+        </details>
       </nav>
       <section
         id="district-directory"
@@ -317,6 +331,9 @@
         <button id="opportunities-run" class="primary" type="button">
           Run city day →
         </button>
+        <button id="chapter-four-start" class="primary" type="button" hidden>
+          Continue to Chapter 4 →
+        </button>
         <div
           id="opportunities-result"
           class="opportunities-result"
@@ -336,6 +353,47 @@
         <small class="opportunities-note"
           >Fictional learning simulation. No real jobs, money, health outcomes
           or PipuPath XP are awarded.</small
+        >
+      </section>
+      <section
+        id="resilience-panel"
+        class="panel"
+        hidden
+        aria-label="Chapter 4 the resilient city"
+      >
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">CHAPTER 4 · THE RESILIENT CITY</div>
+            <h2>Keep life moving</h2>
+          </div>
+          <button
+            id="resilience-close"
+            type="button"
+            aria-label="Close Chapter 4"
+          >
+            ×
+          </button>
+        </div>
+        <p id="resilience-progress" aria-live="polite"></p>
+        <p id="resilience-stocks"></p>
+        <h3 id="resilience-event"></h3>
+        <p id="resilience-story"></p>
+        <div
+          id="resilience-choices"
+          role="group"
+          aria-label="Choose the next resilience priority"
+        ></div>
+        <div id="resilience-result" aria-live="polite"></div>
+        <button id="resilience-view" type="button" class="secondary">
+          See deliveries in my city
+        </button>
+        <button id="resilience-reset" type="button" class="secondary">
+          Restart Chapter 4 (keep my city)
+        </button>
+        <small
+          >Fictional service simulation, not real health outcomes or XP. Chapter
+          3 supplies and city capacity are recorded at the start. Restart this
+          chapter to apply later city revisions.</small
         >
       </section>
       <section
@@ -480,7 +538,8 @@
           <p>
             Build your city. Make the world a better place. Meet Ama at her
             workshop, understand what people need, and watch your choices change
-            their city. Explore 14 districts across two chapters.
+            their city. Shape 14 districts, run their services, then protect
+            them through new challenges.
           </p>
           <button id="start" class="primary">
             Enter the city <span>↗</span>

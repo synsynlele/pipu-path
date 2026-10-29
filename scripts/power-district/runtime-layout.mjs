@@ -252,6 +252,57 @@ for (const optionIndex of [0, 2]) {
 console.log(
   "PASS: two complete 36-answer journeys execute real callbacks through manual and automatic Chapter 2 handoff and unlock Chapter 3.",
 );
+// Chapter 3 -> 4 through the actual controls, rather than a direct model jump.
+for (const c of CITY_CASES) game.state.decisions[c.id] = c.options[0].id;
+game.render();
+assert.equal(w.document.getElementById("resilience-toggle").disabled, true);
+w.document.querySelector("#city-menu > summary").click();
+assert.equal(w.document.getElementById("city-menu").open, true);
+w.document.getElementById("opportunities-toggle").click();
+assert.equal(w.document.getElementById("city-menu").open, false);
+assert.equal(w.document.getElementById("opportunities-panel").hidden, false);
+const enterpriseSelect = w.document.getElementById("opportunities-business");
+enterpriseSelect.value = "water";
+enterpriseSelect.dispatchEvent(new w.Event("change", { bubbles: true }));
+for (let day = 0; day < 7; day++) {
+  assert.equal(w.document.getElementById("chapter-four-start").hidden, true);
+  w.document.getElementById("opportunities-run").click();
+  assert.equal(game.state.economy.day, day + 1);
+}
+assert.equal(w.document.getElementById("chapter-four-start").hidden, false);
+assert.equal(w.document.getElementById("resilience-toggle").disabled, false);
+const previousEconomy = JSON.stringify(game.state.economy);
+const previousCity = JSON.stringify(game.state.decisions);
+w.document.getElementById("chapter-four-start").click();
+assert.equal(w.document.getElementById("opportunities-panel").hidden, true);
+assert.equal(w.document.getElementById("resilience-panel").hidden, false);
+for (let round = 0; round < 3; round++) {
+  const button = w.document.querySelector("#resilience-choices button");
+  assert(button);
+  button.click();
+  assert.equal(game.state.resilience.choices.length, round + 1);
+  // A closed/reopened panel resumes; it never seeds another city or chapter.
+  w.document.getElementById("resilience-close").click();
+  w.document.getElementById("resilience-toggle").click();
+  assert.equal(game.state.resilience.choices.length, round + 1);
+}
+assert.equal(
+  w.document.querySelectorAll("#resilience-choices button").length,
+  0,
+);
+assert.equal(JSON.stringify(game.state.economy), previousEconomy);
+assert.equal(JSON.stringify(game.state.decisions), previousCity);
+w.document.getElementById("resilience-view").click();
+assert.equal(game.camera.type, "OrthographicCamera");
+game.closeBuiltCityView();
+w.document.getElementById("resilience-toggle").click();
+w.document.getElementById("resilience-reset").click();
+assert.equal(game.state.resilience.choices.length, 0);
+assert.equal(JSON.stringify(game.state.economy), previousEconomy);
+w.document.getElementById("resilience-close").click();
+console.log(
+  "PASS: actual dropdown, seven Chapter 3 days, Chapter 4 handoff, three challenges, reopen/resume, city inspection and isolated restart.",
+);
 game.openBuiltCityView();
 now += 100;
 game.animateWorld(now);

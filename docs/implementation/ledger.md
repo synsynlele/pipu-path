@@ -1515,3 +1515,23 @@ automatic and background-resume handoffs continue through all 36 answers.
   Known unauthenticated build diagnostics remain; build exited successfully.
 - Scope: fictional game outcomes, not measured wellbeing or a new resident
   simulation. Preview-only delivery; production remains separate.
+
+## 29 October 2026 — Clearer city view and Chapter 4 handoff
+
+- Replaced the navigation strip with a native City menu disclosure; selecting
+  an option closes it, opening pauses the journey, Escape restores focus.
+- Construction response occupies the question's existing bottom corner with
+  identical responsive width/position limits, rather than a second central card.
+- Added the seven-day Chapter 3 completion CTA and gated permanent Chapter 4
+  entry. Three resilience rounds allocate actual finite supplies across care,
+  food and repairs with maintenance effects on later disruptions.
+- Deterministic seed/choice replay preserves results; backward-compatible
+  opt-in device saves store no personal text. Isolated Chapter 4 restart keeps
+  the city/Chapter 3; restarting Chapter 3 clears its dependent attempt.
+- Shared renderer consumes calculated Chapter 4 shipments/request signals;
+  no extra scene assets or animation pools. No real health/learning/XP claims.
+- Targeted checks passed: 27 policy sequences, resource conservation, actual
+  seven-day UI handoff, three-round UI flow, reopening, city inspection and reset.
+  Full `npm run validate` passed formatting, lint, types, all city checks,
+  527 unit/component tests, 251 integration tests and local production build.
+  Known unauthenticated build diagnostics emitted; exit status was successful.

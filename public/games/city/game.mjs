@@ -12,6 +12,15 @@ import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
 import { districtLife } from "./better-lives.mjs";
+import {
+  RESILIENCE_EVENTS,
+  RESILIENCE_PRIORITIES,
+  canStartResilience,
+  startResilience,
+  resilienceReport,
+  chooseResilience,
+  resilienceCityActivity,
+} from "./resilience.mjs";
 import { cityViewSummary, findCityViewDistrict } from "./city-view.mjs";
 import { deriveLivingCity } from "./living-city.mjs";
 import {
@@ -85,6 +94,7 @@ const fresh = () => ({
   decisions: {},
   journey: null,
   economy: newOpportunityState(),
+  resilience: null,
 });
 const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
@@ -907,7 +917,10 @@ $("graphics-recover").onclick = () => {
 };
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
-  livingScene.sync(state.decisions, state.economy);
+  livingScene.sync(
+    state.decisions,
+    resilienceCityActivity(state.economy, state.resilience),
+  );
   if (builtCityView) updateBuiltCityView();
 }
 function rememberJourney() {
@@ -933,6 +946,8 @@ function refreshJourneyControls() {
   $("city-tools").hidden = !entered || simulating;
   const unlocked = foundationForOpportunities(state.decisions);
   $("opportunities-toggle").disabled = !unlocked || simulating;
+  $("resilience-toggle").disabled =
+    !canStartResilience(state.decisions, state.economy) || simulating;
   $("opportunities-toggle").title = unlocked
     ? "Manage your city's production, services and opportunities"
     : "Finish all 36 city decisions to unlock Chapter 3";
@@ -969,7 +984,10 @@ function refreshJourneyControls() {
 function updateBuiltCityView() {
   if (!builtCityView) return;
   const summary = cityViewSummary(state.decisions);
-  const living = deriveLivingCity(state.decisions, state.economy);
+  const living = deriveLivingCity(
+    state.decisions,
+    resilienceCityActivity(state.economy, state.resilience),
+  );
   $("city-view-summary").textContent =
     summary.built +
     "/" +
@@ -1189,7 +1207,13 @@ function resumeJourney() {
   if (target.stage === "complete") {
     journey.status = "complete";
     refreshJourneyControls();
-    toast("Chapters 1 and 2 complete. Open Opportunities to manage your city.");
+    if (state.resilience && canStartResilience(state.decisions, state.economy))
+      openResiliencePanel();
+    else if (state.economy.day > 0) openOpportunityPanel();
+    else
+      toast(
+        "Chapters 1 and 2 complete. Open City menu → Opportunities to manage your city.",
+      );
     return;
   }
   // A returned learner must see the requested case, not a still-open
@@ -1508,6 +1532,7 @@ function closeDetail() {
   if (previewDecision) cancelCasePreview();
 }
 function showDetail(html, mode = "other") {
+  closeResiliencePanel();
   const panel = $("detail");
   panel.dataset.mode = mode;
   $("detail-body").innerHTML = html;
@@ -1529,7 +1554,133 @@ function closeOpportunityPanel() {
   $("opportunities-panel").hidden = true;
   $("opportunities-toggle").setAttribute("aria-expanded", "false");
 }
+function closeResiliencePanel() {
+  $("resilience-panel").hidden = true;
+  $("resilience-toggle").setAttribute("aria-expanded", "false");
+}
+function renderResiliencePanel() {
+  const report = resilienceReport(state.resilience);
+  if (!report) return;
+  const event = RESILIENCE_EVENTS[report.round];
+  $("resilience-progress").textContent =
+    "Challenges completed: " + report.round + "/" + RESILIENCE_EVENTS.length;
+  $("resilience-stocks").textContent =
+    "Stored supplies · Water " +
+    report.stocks.water +
+    " · Parts " +
+    report.stocks.parts +
+    " · Food " +
+    report.stocks.food;
+  $("resilience-event").textContent =
+    event?.title || "Your city has faced three disruptions";
+  $("resilience-story").textContent =
+    event?.detail ||
+    "Review who was still waiting. Which service would you strengthen before the next disruption? You can revisit city decisions or try another plan.";
+  const choices = $("resilience-choices");
+  choices.replaceChildren();
+  if (!report.completed)
+    for (const priority of RESILIENCE_PRIORITIES) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "case-choice";
+      const title = document.createElement("strong");
+      title.textContent = priority.title;
+      const detail = document.createElement("small");
+      detail.textContent = priority.detail;
+      button.append(title, detail);
+      button.onclick = () => {
+        if (!canStartResilience(state.decisions, state.economy)) return;
+        const next = chooseResilience(state.resilience, priority.id);
+        if (!next) return;
+        state.resilience = next;
+        render();
+        renderResiliencePanel();
+        toast(
+          "Challenge completed. Inspect the deliveries and needs still waiting.",
+        );
+      };
+      choices.append(button);
+    }
+  const results = $("resilience-result");
+  results.replaceChildren();
+  for (const row of [...report.history].reverse()) {
+    const details = document.createElement("details");
+    details.open = row === report.last;
+    const summary = document.createElement("summary");
+    summary.textContent =
+      "Challenge " +
+      row.day +
+      " · " +
+      RESILIENCE_PRIORITIES.find((p) => p.id === row.priority).title +
+      " · " +
+      row.waiting +
+      " requests waiting";
+    details.append(summary);
+    for (const request of CITY_REQUESTS) {
+      const values = row.requests[request.id];
+      const p = document.createElement("p");
+      p.textContent =
+        request.title +
+        ": " +
+        values.served +
+        "/" +
+        values.requested +
+        " supplied";
+      details.append(p);
+    }
+    const supplies = document.createElement("p");
+    supplies.textContent =
+      "Produced: " +
+      row.produced.water +
+      " water, " +
+      row.produced.parts +
+      " parts, " +
+      row.produced.food +
+      " food. Food spoiled: " +
+      row.spoiled +
+      ". Storage overflow: " +
+      Object.values(row.overflow).reduce((a, b) => a + b, 0) +
+      ".";
+    details.append(supplies);
+    results.append(details);
+  }
+  $("resilience-view").disabled = !report.last;
+}
+function openResiliencePanel() {
+  if (simulating || !$("intro").hidden) return;
+  if (!canStartResilience(state.decisions, state.economy)) {
+    toast("Finish Chapter 3's seven days before starting Chapter 4.");
+    return;
+  }
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (journey.status === "running") pauseJourney("Your journey is paused.");
+  cancelAutoAdvance();
+  cancelWalk();
+  hideRequestInspection();
+  closeOpportunityPanel();
+  closeCityStatus();
+  closeCasebook();
+  closeDirectory();
+  $("detail").hidden = true;
+  guideExpanded = false;
+  dockExpanded = false;
+  $("build-dock").hidden = true;
+  state.resilience ||= startResilience(state.decisions, state.economy);
+  updateGuideVisibility();
+  persistPractice();
+  renderResiliencePanel();
+  $("resilience-panel").hidden = false;
+  $("resilience-toggle").setAttribute("aria-expanded", "true");
+  $("resilience-close").focus();
+}
 function renderOpportunityPanel() {
+  $("chapter-four-start").hidden = !canStartResilience(
+    state.decisions,
+    state.economy,
+  );
+  $("chapter-four-start").textContent = state.resilience
+    ? "Return to Chapter 4 →"
+    : "Continue to Chapter 4 →";
   const economy =
     sanitizeOpportunityState(state.economy) ?? newOpportunityState();
   const last = economy.last;
@@ -1545,7 +1696,7 @@ function renderOpportunityPanel() {
     "Water and parts feed production. Farms supply shops, clinics serve residents, and repairs support tomorrow.";
   const event = DAY_EVENTS[completed ? ENTERPRISE_DAYS - 1 : economy.day];
   $("opportunities-event").textContent = completed
-    ? "Your seven-day city challenge is complete. Explore the results or restart just this practice."
+    ? "Chapter 3 complete. Your supplies and services will face rain, outages and heat in Chapter 4. Continue when you are ready."
     : "Next challenge: " + event.name + " — " + event.detail;
   const enterpriseInput = $("opportunities-business");
   enterpriseInput.replaceChildren();
@@ -1789,6 +1940,7 @@ function visitCityRequest(id) {
   }
 }
 function openOpportunityPanel() {
+  closeResiliencePanel();
   if (simulating || !$("intro").hidden) return;
   hideRequestInspection();
   if (!foundationForOpportunities(state.decisions)) {
@@ -1927,6 +2079,7 @@ function renderCityStatus() {
   }
 }
 function openCityStatus() {
+  closeResiliencePanel();
   if (reviewCaseId) finishDecisionReview({ resume: false });
   if (journey.status === "running") pauseJourney("Your place is saved.");
   closeDirectory();
@@ -2463,11 +2616,13 @@ function render() {
     q = r.quote;
   $("chapter").textContent =
     "THE UNBUILT CITY · CHAPTER " +
-    (foundationForOpportunities(state.decisions)
-      ? 3
-      : foundationComplete(state.decisions)
-        ? 2
-        : 1) +
+    (state.resilience
+      ? 4
+      : foundationForOpportunities(state.decisions)
+        ? 3
+        : foundationComplete(state.decisions)
+          ? 2
+          : 1) +
     " · DAY " +
     state.day;
   $("mission-title").textContent = guided
@@ -2568,6 +2723,13 @@ function render() {
   $("weather-title").textContent =
     state.day === 1 ? "Collection at 14:00" : "Dust · late collection";
   $("weather-icon").textContent = state.day === 1 ? "☀" : "☁";
+  const resilience = resilienceReport(state.resilience);
+  if (resilience) {
+    const eventIndex = resilience.last ? resilience.last.day - 1 : 0;
+    $("weather-title").textContent =
+      "Chapter 4 · " + RESILIENCE_EVENTS[eventIndex].title;
+    $("weather-icon").textContent = ["☂", "⚡", "☀"][eventIndex];
+  }
   updateGuideVisibility();
   updateWorld();
   syncCaseScenes();
@@ -3039,6 +3201,37 @@ $("opportunities-toggle").onclick = () => {
   else closeOpportunityPanel();
 };
 $("opportunities-close").onclick = closeOpportunityPanel;
+$("city-menu").addEventListener("toggle", () => {
+  if ($("city-menu").open && journey.status === "running")
+    pauseJourney("Paused while you choose a city action.");
+});
+$("city-menu-options").addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button || button.disabled) return;
+  $("city-menu").open = false;
+  if (button.id !== "resilience-toggle") closeResiliencePanel();
+});
+document.addEventListener("click", (event) => {
+  if (!$("city-menu").contains(event.target)) $("city-menu").open = false;
+});
+$("chapter-four-start").onclick = openResiliencePanel;
+$("resilience-toggle").onclick = openResiliencePanel;
+$("resilience-close").onclick = closeResiliencePanel;
+$("resilience-view").onclick = () => {
+  closeResiliencePanel();
+  openBuiltCityView();
+};
+$("resilience-reset").onclick = () => {
+  if (
+    !confirm(
+      "Restart only Chapter 4 with your current city and Chapter 3 supplies?",
+    )
+  )
+    return;
+  state.resilience = startResilience(state.decisions, state.economy);
+  render();
+  renderResiliencePanel();
+};
 $("request-inspection-back").onclick = () => {
   hideRequestInspection();
   cancelWalk();
@@ -3086,6 +3279,8 @@ $("opportunities-reset").onclick = () => {
   )
     return;
   state.economy = newOpportunityState();
+  state.resilience = null;
+  closeResiliencePanel();
   hideRequestInspection();
   render();
   renderOpportunityPanel();
@@ -3181,6 +3376,16 @@ $("start").onclick = () => {
   $("mobile-move").hidden = true;
   render();
   const nextUnsolved = firstUnanswered(state.decisions);
+  if (
+    !nextUnsolved &&
+    state.resilience &&
+    canStartResilience(state.decisions, state.economy)
+  ) {
+    journey.status = "complete";
+    refreshJourneyControls();
+    openResiliencePanel();
+    return;
+  }
   if (nextUnsolved || journey.status === "paused") {
     // Preserve the Chapter 2 reveal for older saves that completed all 16
     // foundation cases before Chapter 2 existed.
@@ -3240,6 +3445,8 @@ $("reset").onclick = () => {
   const cleared = clearPractice();
   state = fresh();
   saveEnabled = false;
+  closeResiliencePanel();
+  $("city-menu").open = false;
   closeCasebook();
   closeCityStatus();
   closeOpportunityPanel();
@@ -3357,6 +3564,11 @@ canvas.addEventListener(
 );
 const keys = new Set();
 window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && $("city-menu").open) {
+    $("city-menu").open = false;
+    $("city-menu").querySelector("summary").focus();
+    return;
+  }
   if (
     ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName) ||
     $("help-dialog").open
