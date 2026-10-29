@@ -37,12 +37,16 @@ it("keeps game assets on the same origin and preserves focus without a reload", 
   const expand = screen.getByRole("button", { name: "Focus on my city ↗" });
   expand.focus();
   fireEvent.click(expand);
-  expect(screen.getByRole("button", { name: "Close focus view" })).toHaveFocus();
+  expect(
+    screen.getByRole("button", { name: "Close focus view" }),
+  ).toHaveFocus();
   expect(document.body.style.overflow).toBe("hidden");
   fireEvent.keyDown(window, { key: "Escape" });
   expect(document.body.style.overflow).not.toBe("hidden");
   expect(expand).toHaveFocus();
-  expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(frame);
+  expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
+    frame,
+  );
 });
 it("requires authenticated, owned Quest context and offers explicit saving choices", async () => {
   mocks.home.mockRejectedValueOnce(new Error("AUTH_REQUIRED"));
@@ -60,8 +64,12 @@ it("requires authenticated, owned Quest context and offers explicit saving choic
       questLabel={locked.props.questLabel}
     />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Find my real-world Quest →" }));
-  expect(screen.getByRole("dialog", { name: "Continue to a real Quest" })).toBeVisible();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Find my real-world Quest →" }),
+  );
+  expect(
+    screen.getByRole("dialog", { name: "Continue to a real Quest" }),
+  ).toBeVisible();
   expect(mocks.push).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "Stay in my city" }));
   view.unmount();
@@ -73,13 +81,19 @@ it("requires authenticated, owned Quest context and offers explicit saving choic
     },
   });
   const owned = await PowerDistrictPage({ searchParams: Promise.resolve({}) });
-  expect(owned.props.questHref).toBe("/quests/12345678-1234-4234-8234-123456789abc");
+  expect(owned.props.questHref).toBe(
+    "/quests/12345678-1234-4234-8234-123456789abc",
+  );
   render(
     <PowerDistrictFrame
       questHref={owned.props.questHref}
       questLabel={owned.props.questLabel}
     />,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Reflect on my real attempt →" }));
-  expect(screen.getByRole("button", { name: "Save my city, then continue" })).toBeVisible();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Reflect on my real attempt →" }),
+  );
+  expect(
+    screen.getByRole("button", { name: "Save my city, then continue" }),
+  ).toBeVisible();
 });
