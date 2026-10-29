@@ -8,6 +8,7 @@ const requireOpenAIEnvironment = vi.fn();
 const rpc = vi.fn();
 const from = vi.fn();
 const interpret = vi.fn();
+const repair = vi.fn();
 const recordUsage = vi.fn();
 const validateHumanPotentialProfileOutput = vi.fn();
 const profileOutputForPersistence = vi.fn();
@@ -25,6 +26,7 @@ vi.mock("./interpretation-requests", () => ({
 vi.mock("../infrastructure/openai-provider", () => ({
   OpenAIInterpretationProvider: class {
     interpret = interpret;
+    repair = repair;
     recordUsage = recordUsage;
   },
 }));
@@ -149,6 +151,7 @@ describe("Stage 4 profile generation orchestration", () => {
       return evidenceQuery();
     });
     interpret.mockResolvedValue({ provider: "structured-output" });
+    repair.mockResolvedValue({ provider: "repaired-output" });
     validateHumanPotentialProfileOutput.mockReturnValue({
       ok: true,
       value: { summary: "A provisional profile", insights: [] },
@@ -245,11 +248,14 @@ describe("Stage 4 profile generation orchestration", () => {
     expect(await generateCurrentHumanPotentialProfile()).toMatchObject({
       ok: true,
     });
-    expect(interpret).toHaveBeenCalledTimes(2);
-    expect(interpret).toHaveBeenLastCalledWith(expect.anything(), {
-      issues: ["sections:required_distribution"],
-      timeoutMs: expect.any(Number),
-    });
+    expect(interpret).toHaveBeenCalledTimes(1);
+    expect(repair).toHaveBeenCalledTimes(1);
+    expect(repair).toHaveBeenLastCalledWith(
+      expect.anything(),
+      { provider: "structured-output" },
+      ["sections:required_distribution"],
+      expect.any(Number),
+    );
     expect(rpc).toHaveBeenCalledWith(
       "persist_stage4_human_potential_profile",
       expect.objectContaining({
@@ -268,7 +274,24 @@ describe("Stage 4 profile generation orchestration", () => {
     expect(await generateCurrentHumanPotentialProfile()).toMatchObject({
       ok: false,
     });
-    expect(interpret).toHaveBeenCalledTimes(2);
+    expect(interpret).toHaveBeenCalledTimes(1);
+    expect(repair).toHaveBeenCalledTimes(1);
+    expect(rpc).not.toHaveBeenCalledWith(
+      "persist_stage4_human_potential_profile",
+      expect.anything(),
+    );
+  });
+  it("reports a repair timeout accurately and preserves saved work", async () => {
+    validateHumanPotentialProfileOutput.mockReturnValueOnce({
+      ok: false,
+      code: "HPI_OUTPUT_INVALID",
+      issues: ["summary:fixed_identity"],
+    });
+    repair.mockRejectedValueOnce(new Error("OPENAI_TIMEOUT"));
+    expect(await generateCurrentHumanPotentialProfile()).toMatchObject({
+      ok: false,
+      message: expect.stringContaining("took too long"),
+    });
     expect(rpc).not.toHaveBeenCalledWith(
       "persist_stage4_human_potential_profile",
       expect.anything(),

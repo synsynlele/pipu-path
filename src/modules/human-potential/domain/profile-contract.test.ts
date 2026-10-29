@@ -1,3 +1,7 @@
+import {
+  prepareProfileLanguageRepair,
+  applyProfileLanguageRepair,
+} from "./profile-language-repair";
 import { describe, expect, it } from "vitest";
 import { interpretationInputSchema } from "./contracts";
 import { validateHumanPotentialProfileOutput } from "./profile-contract";
@@ -155,5 +159,69 @@ describe("Human Potential Profile output validation", () => {
       summary: "You definitely are a teacher.",
     };
     expect(validateHumanPotentialProfileOutput(input, unsafe).ok).toBe(false);
+  });
+});
+
+describe("profile language recovery", () => {
+  it("accepts work broken into smaller steps without treating it as a personal label", () => {
+    const output = structuredClone(validOutput);
+    output.insights[5].explanation =
+      "Your project can be broken into smaller steps so you can try one useful action.";
+    expect(validateHumanPotentialProfileOutput(input, output).ok).toBe(true);
+  });
+  it.each(["You are broken.", "You are lazy.", "You should be ashamed."])(
+    "still rejects the personal judgement %s",
+    (text) => {
+      const output = structuredClone(validOutput);
+      output.insights[5].explanation = text;
+      expect(validateHumanPotentialProfileOutput(input, output)).toMatchObject({
+        ok: false,
+        issues: ["insights.5.explanation:shaming"],
+      });
+    },
+  );
+  it("targets the rejected fields and preserves all evidence and other insights", () => {
+    const output = structuredClone(validOutput);
+    output.summary = "Your purpose is to teach.";
+    output.insights[0].summary = "You are broken.";
+    const rejected = validateHumanPotentialProfileOutput(input, output);
+    if (rejected.ok) throw new Error("Expected rejection");
+    const repair = prepareProfileLanguageRepair(output, rejected.issues ?? []);
+    expect(repair?.fields.map((field) => field.id)).toEqual([
+      "summary",
+      "insight_0_summary",
+    ]);
+    const patched = applyProfileLanguageRepair(repair!, {
+      summary: validOutput.summary,
+      insight_0_summary: validOutput.insights[0].summary,
+    });
+    expect(patched).toEqual(validOutput);
+    expect(validateHumanPotentialProfileOutput(input, patched).ok).toBe(true);
+  });
+  it("refuses patches that try to change provenance or add unrelated fields", () => {
+    const repair = prepareProfileLanguageRepair(validOutput, [
+      "summary:fixed_identity",
+    ]);
+    expect(
+      applyProfileLanguageRepair(repair!, {
+        summary: "A possible pattern",
+        evidence: [],
+      }),
+    ).toBeNull();
+    expect(
+      prepareProfileLanguageRepair(validOutput, [
+        "insights.0.evidence:shaming",
+      ]),
+    ).toBeNull();
+    expect(applyProfileLanguageRepair(repair!, {})).toBeNull();
+  });
+  it("revalidates repaired wording instead of trusting the repair model", () => {
+    const repair = prepareProfileLanguageRepair(validOutput, [
+      "summary:fixed_identity",
+    ]);
+    const patched = applyProfileLanguageRepair(repair!, {
+      summary: "Your destiny is to teach.",
+    });
+    expect(validateHumanPotentialProfileOutput(input, patched).ok).toBe(false);
   });
 });

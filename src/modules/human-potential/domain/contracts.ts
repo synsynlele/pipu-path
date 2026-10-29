@@ -153,7 +153,7 @@ export function validateInterpretationOutput(
   const parsed = interpretationOutputSchema.safeParse(output);
   if (!parsed.success) return { ok: false, code: "HPI_OUTPUT_INVALID" };
   const evidenceIds = new Set(input.evidence.map((evidence) => evidence.id));
-  for (const insight of parsed.data.insights) {
+  for (const [index, insight] of parsed.data.insights.entries()) {
     if (!insight.evidence.length)
       return { ok: false, code: "HPI_OUTPUT_MISSING_PROVENANCE" };
     if (insight.evidence.some((link) => !evidenceIds.has(link.evidenceId)))
@@ -161,12 +161,11 @@ export function validateInterpretationOutput(
     const prose = [insight.title, insight.summary, insight.explanation].join(
       " ",
     );
-    if (containsUnqualifiedClaim(prose, prohibitedClaim))
-      return {
-        ok: false,
-        code: "HPI_OUTPUT_INVALID",
-        issues: ["insights:prohibited_claim"],
-      };
+    const claimFields = (["title", "summary", "explanation"] as const)
+      .filter((key) => containsUnqualifiedClaim(insight[key], prohibitedClaim))
+      .map((key) => `insights.${index}.${key}:prohibited_claim`);
+    if (claimFields.length)
+      return { ok: false, code: "HPI_OUTPUT_INVALID", issues: claimFields };
     if (
       input.isMinor &&
       (!insight.ageAppropriate ||
