@@ -24,7 +24,7 @@ export function AuthShell({
         <div className="absolute right-12 bottom-24 size-56 rounded-full bg-white/8 blur-2xl" />
         <div className="relative mt-20">
           <div className="mt-24 max-w-xl">
-            <p className="text-gold text-sm font-semibold tracking-[0.18em] uppercase">
+            <p className="text-sm font-semibold tracking-[0.18em] text-blue-100 uppercase">
               Discover. Develop. Deploy.
             </p>
             <h2 className="mt-5 text-5xl leading-tight font-semibold tracking-tight">
