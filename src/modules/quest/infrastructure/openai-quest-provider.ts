@@ -131,11 +131,21 @@ export function normalizeQuestProviderOutput(input: unknown): unknown {
 }
 
 export class OpenAIQuestProvider {
-  async generate(input: { context: QuestContext }): Promise<unknown> {
+  async generate(
+    input: { context: QuestContext },
+    repair?: { issue: string; timeoutMs: number },
+  ): Promise<unknown> {
     const output = await requestOpenAIStructuredOutput({
       instructions:
         "You create safe, practical HQLS Quest packs for PipuPath. Follow the supplied schema exactly and ground every Quest in the approved Journey milestone. Return the three Quests in the exact developmental order they should be completed.",
-      prompt: buildPrompt(input),
+      prompt:
+        buildPrompt(input) +
+        (repair
+          ? "\nCorrect the previous validation failure: " +
+            repair.issue +
+            ". Return a complete new result meeting every rule."
+          : ""),
+      ...(repair ? { timeoutMs: repair.timeoutMs } : {}),
       schemaName: "pipupath_quest_pack_v2",
       schema: questPackResponseSchema,
       maxOutputTokens: 6144,

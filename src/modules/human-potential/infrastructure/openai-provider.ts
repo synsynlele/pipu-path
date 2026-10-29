@@ -155,33 +155,70 @@ const profileResponseSchema = {
 export function profileSchemaForEvidence(evidenceIds: string[]) {
   const item = profileResponseSchema.properties.insights.items;
   const refs = item.properties.evidence;
-  return {
-    ...profileResponseSchema,
-    properties: {
-      ...profileResponseSchema.properties,
-      insights: {
-        ...profileResponseSchema.properties.insights,
+  const properties = Object.fromEntries(
+    profileSections.map(({ key }) => [
+      key,
+      {
+        type: "array",
+        minItems: key === "emerging_strengths" ? 2 : 1,
+        maxItems: key === "emerging_strengths" ? 2 : 1,
         items: {
           ...item,
           properties: {
             ...item.properties,
+            profileSection: { type: "string", enum: [key] },
             evidence: {
               ...refs,
               items: {
                 ...refs.items,
                 properties: {
                   ...refs.items.properties,
-                  evidenceId: {
-                    ...refs.items.properties.evidenceId,
-                    enum: evidenceIds,
-                  },
+                  evidenceId: { type: "string", enum: evidenceIds },
                 },
               },
             },
           },
         },
       },
+    ]),
+  );
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["schemaVersion", "summary", "sections"],
+    properties: {
+      schemaVersion: profileResponseSchema.properties.schemaVersion,
+      summary: profileResponseSchema.properties.summary,
+      sections: {
+        type: "object",
+        additionalProperties: false,
+        required: [...humanPotentialProfileSectionKeys],
+        properties,
+      },
     },
+  };
+}
+
+/** Translate the provider's complete section object into the unchanged saved contract.
+ * Missing or malformed sections remain invalid; no insights are invented.
+ */
+export function flattenProfileSections(output: unknown): unknown {
+  if (!output || typeof output !== "object") return output;
+  const value = output as Record<string, unknown>;
+  if (!value.sections || typeof value.sections !== "object") return output;
+  const sections = value.sections as Record<string, unknown>;
+  if (
+    humanPotentialProfileSectionKeys.some(
+      (key) => !Array.isArray(sections[key]),
+    )
+  )
+    return output;
+  return {
+    schemaVersion: value.schemaVersion,
+    summary: value.summary,
+    insights: humanPotentialProfileSectionKeys.flatMap(
+      (key) => sections[key] as unknown[],
+    ),
   };
 }
 
@@ -189,12 +226,12 @@ function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
   return [
     builderLanguageInstructions,
     "Create a private, provisional Human Potential Profile from supplied Discovery evidence.",
-    "Do not diagnose, predict the future, assign a fixed personality, life purpose, destiny, permanent career or certainty.",
+    "Do not diagnose, predict the future, assign a fixed personality, life purpose, destiny, permanent career or certainty. Do not repeat these labels in disclaimers; simply call this a provisional pattern to test.",
     'Use cautious wording such as "Based on your answers..." or "You may...". Never invent evidence.',
     "Current constraints must be respectful and encouraging. Do not label the person lazy, broken, deficient or a failure.",
     "Do not provide unsafe, legal, medical, investment or adult-contact advice.",
     "Every insight must cite one or more exact supplied evidence IDs.",
-    "Create exactly 7 insights: exactly 2 emerging_strengths insights and exactly 1 insight in every other required section.",
+    "Return sections as an object with every required section key. Create exactly 2 emerging_strengths insights and exactly 1 insight in every other section. Do not put all insights into one section.",
     "Required sections: " +
       profileSections
         .map((section) => `${section.key} (${section.instruction})`)
@@ -211,15 +248,25 @@ function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
 export class OpenAIInterpretationProvider {
   async interpret(
     input: z.infer<typeof interpretationInputSchema>,
+    repair?: { issues: string[]; timeoutMs: number },
   ): Promise<unknown> {
-    return requestOpenAIStructuredOutput({
-      instructions:
-        "You create cautious, evidence-grounded Human Potential Profiles for PipuPath. Follow the supplied schema exactly and never invent evidence.",
-      prompt: buildPrompt(input),
-      schemaName: "pipupath_human_potential_profile_v1",
-      schema: profileSchemaForEvidence(input.evidence.map((item) => item.id)),
-      maxOutputTokens: 8192,
-    });
+    return flattenProfileSections(
+      await requestOpenAIStructuredOutput({
+        instructions:
+          "You create cautious, evidence-grounded Human Potential Profiles for PipuPath. Follow the supplied schema exactly and never invent evidence.",
+        prompt:
+          buildPrompt(input) +
+          (repair
+            ? "\nThe previous response failed these rules: " +
+              repair.issues.join(", ") +
+              ". Return a new complete profile, correcting them. Use only the supplied evidence."
+            : ""),
+        ...(repair ? { timeoutMs: repair.timeoutMs } : {}),
+        schemaName: "pipupath_human_potential_profile_sections_v2",
+        schema: profileSchemaForEvidence(input.evidence.map((item) => item.id)),
+        maxOutputTokens: 8192,
+      }),
+    );
   }
 
   mapProviderError(error: unknown) {

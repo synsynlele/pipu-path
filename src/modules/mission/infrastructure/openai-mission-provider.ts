@@ -87,17 +87,41 @@ function buildPrompt(input: {
 }
 
 export class OpenAIMissionProvider {
-  async generate(input: {
-    context: MissionProfileContext;
-    currentMission?: MissionOutput;
-    refinementInstruction?: string;
-  }): Promise<unknown> {
+  async generate(
+    input: {
+      context: MissionProfileContext;
+      currentMission?: MissionOutput;
+      refinementInstruction?: string;
+    },
+    repair?: { issue: string; timeoutMs: number },
+  ): Promise<unknown> {
     return requestOpenAIStructuredOutput({
       instructions:
         "You create safe, evidence-grounded Builder Missions for PipuPath. Follow the supplied schema exactly, respect the user's selected Possible Path and never invent evidence or promise income.",
-      prompt: buildPrompt(input),
+      prompt:
+        buildPrompt(input) +
+        (repair
+          ? "\nCorrect the previous validation failure: " +
+            repair.issue +
+            ". Return a complete new result meeting every rule."
+          : ""),
+      ...(repair ? { timeoutMs: repair.timeoutMs } : {}),
       schemaName: "pipupath_mission_v1",
-      schema: missionResponseSchema,
+      schema: {
+        ...missionResponseSchema,
+        properties: {
+          ...missionResponseSchema.properties,
+          profile_evidence_refs: {
+            ...missionResponseSchema.properties.profile_evidence_refs,
+            items: {
+              type: "string",
+              enum: input.context.sections.flatMap((section) =>
+                section.insights.map((insight) => insight.id),
+              ),
+            },
+          },
+        },
+      },
       maxOutputTokens: 4096,
     });
   }

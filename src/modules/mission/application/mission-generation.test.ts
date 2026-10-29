@@ -137,76 +137,74 @@ describe("mission generation orchestration", () => {
     );
   });
 
-  it("replaces invalid provider output with a validated fallback mission", async () => {
-    mocks.generate.mockResolvedValue({ title: "Incomplete" });
-    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+  it("repairs invalid output once, then persists only the validated AI result", async () => {
+    mocks.generate
+      .mockResolvedValueOnce({ title: "Incomplete" })
+      .mockResolvedValueOnce(output);
+    expect(await generateCurrentMission({ kind: "initial" })).toMatchObject({
       ok: true,
-      missionId: "mission-1",
     });
+    expect(mocks.generate).toHaveBeenCalledTimes(2);
+    expect(mocks.generate).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ timeoutMs: expect.any(Number) }),
+    );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
       "persist_stage5_mission",
-      expect.objectContaining({
-        mission_input: expect.objectContaining({
-          title: "Test One Useful Improvement",
-          profile_evidence_refs: insightIds,
-        }),
-      }),
-    );
-    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
-      "fail_stage5_mission_request",
       expect.anything(),
     );
   });
-
-  it("uses the fallback when OpenAI times out", async () => {
-    mocks.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
-    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
-      ok: true,
-      missionId: "mission-1",
+  it("keeps invalid retries out of saved work", async () => {
+    mocks.generate.mockResolvedValue({ title: "Incomplete" });
+    expect(await generateCurrentMission({ kind: "initial" })).toMatchObject({
+      ok: false,
+      code: "MISSION_OUTPUT_INVALID",
     });
-    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+    expect(mocks.generate).toHaveBeenCalledTimes(2);
+    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
       "persist_stage5_mission",
-      expect.objectContaining({
-        mission_input: expect.objectContaining({
-          title: "Test One Useful Improvement",
-        }),
-      }),
+      expect.anything(),
     );
   });
-
-  it("uses the fallback for a non-standard provider failure", async () => {
-    mocks.generate.mockRejectedValue(new Error("network disconnected"));
-    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
-      ok: true,
-      missionId: "mission-1",
-    });
-    expect(mocks.info).toHaveBeenCalledWith(
-      "mission_generation_completed",
-      expect.objectContaining({
-        generationMode: "evidence_fallback",
-        fallbackReason: "OPENAI_PROVIDER_FAILURE",
-      }),
-    );
-  });
-
-  it("uses the fallback when OpenAI configuration is unavailable", async () => {
+  it.each(["OPENAI_TIMEOUT", "OPENAI_HTTP_429", "network disconnected"])(
+    "shows provider failure %s without saving a template",
+    async (reason) => {
+      mocks.generate.mockRejectedValue(new Error(reason));
+      expect(await generateCurrentMission({ kind: "initial" })).toMatchObject({
+        ok: false,
+      });
+      expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
+        "persist_stage5_mission",
+        expect.anything(),
+      );
+    },
+  );
+  it("does not spend a generation attempt if AI configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
       throw new Error("missing");
     });
-    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
+    expect(await generateCurrentMission({ kind: "initial" })).toMatchObject({
+      ok: false,
+      code: "MISSION_PROVIDER_UNAVAILABLE",
+    });
+    expect(mocks.browserRpc).not.toHaveBeenCalled();
+    expect(mocks.generate).not.toHaveBeenCalled();
+  });
+  it("keeps under-18 generation local and validated", async () => {
+    mocks.getContext.mockResolvedValue({
+      ...context,
+      isMinor: true,
+      ageBand: "16_17",
+    });
+    expect(await generateCurrentMission({ kind: "initial" })).toMatchObject({
       ok: true,
-      missionId: "mission-1",
     });
     expect(mocks.generate).not.toHaveBeenCalled();
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "claim_stage5_mission_request",
-      expect.objectContaining({
-        provider_input: "evidence_fallback",
-        model_input: "evidence-fallback-v1",
-      }),
+      "persist_stage5_mission",
+      expect.anything(),
     );
   });
-
   it("requires a completed profile before creating a request", async () => {
     mocks.getContext.mockResolvedValue(null);
 
@@ -233,7 +231,7 @@ describe("mission generation orchestration", () => {
     expect(mocks.browserRpc).not.toHaveBeenCalled();
   });
 
-  it("preserves a valid draft when refinement falls back", async () => {
+  it("preserves a valid draft when refinement fails", async () => {
     mocks.getState.mockResolvedValue({
       active: null,
       draft,
@@ -241,33 +239,18 @@ describe("mission generation orchestration", () => {
       requestRunning: false,
     });
     mocks.generate.mockRejectedValue(new Error("OPENAI_HTTP_429"));
-
-    await expect(
-      generateCurrentMission({
+    expect(
+      await generateCurrentMission({
         kind: "refine",
         sourceMissionId: draft.id,
         refinementInstruction: "Keep it practical and smaller",
       }),
-    ).resolves.toEqual({ ok: true, missionId: "mission-1" });
-    expect(mocks.browserRpc).toHaveBeenCalledWith(
-      "create_stage5_mission_request",
-      expect.objectContaining({
-        source_mission_id_input: draft.id,
-        refinement_instruction_input: "Keep it practical and smaller",
-      }),
-    );
-    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+    ).toMatchObject({ ok: false });
+    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
       "persist_stage5_mission",
-      expect.objectContaining({
-        mission_input: expect.objectContaining({
-          title: draft.title,
-          current_caution:
-            "Keep the scope small, use resources already available and confirm the next step through real feedback.",
-        }),
-      }),
+      expect.anything(),
     );
   });
-
   it("returns the database request limit error", async () => {
     mocks.browserRpc.mockResolvedValue({
       data: null,
@@ -312,31 +295,6 @@ describe("mission generation orchestration", () => {
       "fail_stage5_mission_request",
       expect.objectContaining({
         failure_code_input: "MISSION_SAVE_FAILED",
-      }),
-    );
-  });
-
-  it("records profile insufficiency when no valid fallback can be built", async () => {
-    mocks.getContext.mockResolvedValue({
-      ...context,
-      sections: [
-        {
-          key: "emerging_strengths",
-          insights: [context.sections[0].insights[0]],
-        },
-      ],
-    });
-    mocks.generate.mockRejectedValue(new Error("OPENAI_HTTP_429"));
-
-    await expect(generateCurrentMission({ kind: "initial" })).resolves.toEqual({
-      ok: false,
-      code: "MISSION_PROFILE_REQUIRED",
-      message: "Complete your Human Potential Profile first.",
-    });
-    expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "fail_stage5_mission_request",
-      expect.objectContaining({
-        failure_code_input: "MISSION_PROFILE_REQUIRED",
       }),
     );
   });

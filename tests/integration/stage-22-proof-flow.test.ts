@@ -36,7 +36,7 @@ describe("Stage 22 proof-flow finalization", () => {
       "<QuestEvidenceForm questId={quest.id} today={today} />",
     );
     expect(questFocus).toContain("href={`/quests/${quest.id}/proof`}");
-    expect(questFocus).toContain("Continue to Prove →");
+    expect(questFocus).toContain("Add my evidence →");
   });
 
   it("keeps mobile proof controls usable without Safari zoom or nav overlap", () => {

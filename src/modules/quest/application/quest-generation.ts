@@ -88,13 +88,14 @@ export async function generateCurrentQuestPack(): Promise<Result> {
   const context = await getQuestContext();
   if (!context) return fail("QUEST_MILESTONE_REQUIRED");
 
-  // OpenAI is primary, while the validated fallback guarantees availability.
+  // Adult AI failures remain visible; youth guided planning stays local.
   let model = "evidence-fallback-v1";
   let openAIAvailable = !context.isMinor;
   try {
     ({ model } = requireOpenAIEnvironment());
   } catch {
     openAIAvailable = false;
+    if (!context.isMinor) return fail("QUEST_PROVIDER_UNAVAILABLE");
   }
 
   const current = await getCurrentQuestState(context.milestoneId);
@@ -128,14 +129,14 @@ export async function generateCurrentQuestPack(): Promise<Result> {
     let fallbackReason: string | null = null;
     let output: unknown;
 
+    const providerStarted = Date.now();
     if (openAIAvailable) {
       try {
         output = await new OpenAIQuestProvider().generate({ context });
       } catch (error) {
-        generationMode = "evidence_fallback";
-        fallbackReason =
-          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
-        output = buildEvidenceBasedQuestPack(context);
+        throw error instanceof Error && /^OPENAI_/.test(error.message)
+          ? error
+          : new Error("OPENAI_PROVIDER_FAILURE");
       }
     } else {
       generationMode = "evidence_fallback";
@@ -146,11 +147,19 @@ export async function generateCurrentQuestPack(): Promise<Result> {
     }
 
     let validated = validateQuestPackForContext(context, output);
-    if (!validated.ok) {
-      generationMode = "evidence_fallback";
-      fallbackReason = validated.code;
-      output = buildEvidenceBasedQuestPack(context);
-      validated = validateQuestPackForContext(context, output);
+    if (!validated.ok && generationMode === "openai") {
+      logger.warn("quest_provider_output_rejected", {
+        requestId,
+        code: validated.code,
+      });
+      const remainingMs = 45_000 - (Date.now() - providerStarted);
+      if (remainingMs > 5_000) {
+        output = await new OpenAIQuestProvider().generate(
+          { context },
+          { issue: validated.code, timeoutMs: remainingMs },
+        );
+        validated = validateQuestPackForContext(context, output);
+      }
     }
     if (!validated.ok) throw new Error(validated.code);
 

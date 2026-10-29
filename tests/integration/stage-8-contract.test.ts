@@ -108,13 +108,13 @@ describe("Stage 8 Builder Project structural contract", () => {
     expect(navigation).toContain('path.startsWith("/quests")');
     expect(navigation).toContain('path.startsWith("/projects")');
     expect(projectPage).toContain("Projects prove what you can build.");
-    expect(detailPage).toContain("Major Build · Private");
+    expect(detailPage).toContain("Put it to use · Private project");
   });
 
   it("preserves private Stage 8 proof while allowing the authorised Portfolio handoff", () => {
     expect(adr).toContain("Stage 9 remains locked");
     expect(adr).toContain("public Projects or evidence portfolios");
     expect(detailPage).toContain("The full Project remains private.");
-    expect(detailPage).toContain("Prepare Builder Vault Proof");
+    expect(detailPage).toContain("Choose what to share");
   });
 });

@@ -211,56 +211,66 @@ describe("Stage 4 profile generation orchestration", () => {
     expect(interpret).not.toHaveBeenCalled();
   });
 
-  it("generates a validated fallback when OpenAI configuration is missing", async () => {
+  it("shows a recoverable error without replacing saved work when AI is unavailable", async () => {
     requireOpenAIEnvironment.mockImplementation(() => {
       throw new Error("missing");
     });
-
-    await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
-      ok: true,
-      profileId: "55555555-5555-4555-8555-555555555555",
+    expect(await generateCurrentHumanPotentialProfile()).toMatchObject({
+      ok: false,
     });
-    expect(createCurrentInterpretationRequest).toHaveBeenCalledOnce();
+    expect(createCurrentInterpretationRequest).not.toHaveBeenCalled();
     expect(interpret).not.toHaveBeenCalled();
-    expect(rpc).toHaveBeenNthCalledWith(
-      1,
-      "claim_stage4_interpretation_request",
-      expect.objectContaining({
-        provider_input: "evidence_fallback",
-        model_input: "evidence-fallback-v1",
-      }),
+    expect(rpc).not.toHaveBeenCalled();
+  });
+  it("fails a provider request without claiming a new AI profile was generated", async () => {
+    interpret.mockRejectedValue(new Error("OPENAI_HTTP_403"));
+    expect(await generateCurrentHumanPotentialProfile()).toMatchObject({
+      ok: false,
+    });
+    expect(rpc).toHaveBeenCalledWith(
+      "fail_stage4_interpretation_request",
+      expect.objectContaining({ failure_detail_safe_input: "OPENAI_HTTP_403" }),
     );
-    expect(rpc).toHaveBeenNthCalledWith(
-      2,
+    expect(rpc).not.toHaveBeenCalledWith(
+      "persist_stage4_human_potential_profile",
+      expect.anything(),
+    );
+  });
+  it("repairs an invalid AI result once within the shared request budget before saving", async () => {
+    validateHumanPotentialProfileOutput.mockReturnValueOnce({
+      ok: false,
+      code: "HPI_OUTPUT_INVALID",
+      issues: ["sections:required_distribution"],
+    });
+    expect(await generateCurrentHumanPotentialProfile()).toMatchObject({
+      ok: true,
+    });
+    expect(interpret).toHaveBeenCalledTimes(2);
+    expect(interpret).toHaveBeenLastCalledWith(expect.anything(), {
+      issues: ["sections:required_distribution"],
+      timeoutMs: expect.any(Number),
+    });
+    expect(rpc).toHaveBeenCalledWith(
       "persist_stage4_human_potential_profile",
       expect.objectContaining({
         profile_metadata_input: expect.objectContaining({
-          generation_mode: "evidence_fallback",
-          fallback_reason: "OPENAI_ENVIRONMENT_UNAVAILABLE",
+          generation_mode: "openai",
         }),
       }),
     );
   });
-
-  it("generates a validated fallback after a privacy-safe OpenAI failure", async () => {
-    interpret.mockRejectedValue(new Error("OPENAI_HTTP_403"));
-
-    await expect(generateCurrentHumanPotentialProfile()).resolves.toEqual({
-      ok: true,
-      profileId: "55555555-5555-4555-8555-555555555555",
+  it("never saves a generic replacement if the repaired result is also invalid", async () => {
+    validateHumanPotentialProfileOutput.mockReturnValue({
+      ok: false,
+      code: "HPI_OUTPUT_INVALID",
+      issues: ["insights:prohibited_claim"],
     });
-    expect(rpc).toHaveBeenNthCalledWith(
-      2,
-      "persist_stage4_human_potential_profile",
-      expect.objectContaining({
-        profile_metadata_input: expect.objectContaining({
-          generation_mode: "evidence_fallback",
-          fallback_reason: "OPENAI_HTTP_403",
-        }),
-      }),
-    );
+    expect(await generateCurrentHumanPotentialProfile()).toMatchObject({
+      ok: false,
+    });
+    expect(interpret).toHaveBeenCalledTimes(2);
     expect(rpc).not.toHaveBeenCalledWith(
-      "fail_stage4_interpretation_request",
+      "persist_stage4_human_potential_profile",
       expect.anything(),
     );
   });

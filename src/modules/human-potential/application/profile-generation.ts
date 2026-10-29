@@ -28,9 +28,9 @@ const safeMessages: Record<string, string> = {
   HPI_REQUEST_ALREADY_EXISTS:
     "Your profile is already being prepared. Please wait a moment and refresh.",
   HPI_OUTPUT_INVALID:
-    "PipuPath could not safely prepare this profile. Please try again.",
+    "The AI response did not pass our checks. Your saved work is unchanged. Please try again.",
   HPI_INTERPRETATION_NOT_ALLOWED:
-    "Profile generation is temporarily unavailable. Please try again.",
+    "AI generation could not finish. Your saved work is unchanged. Please try again in a moment.",
 };
 
 function failure(code: string): ProfileExecutionResult {
@@ -75,6 +75,7 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     ({ model } = requireOpenAIEnvironment());
   } catch {
     openAIAvailable = false;
+    if (!profile.is_minor) return failure("HPI_INTERPRETATION_NOT_ALLOWED");
   }
 
   const created = await createCurrentInterpretationRequest({
@@ -174,15 +175,9 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
     let fallbackReason: string | null = null;
     let output: unknown;
 
+    const providerStarted = Date.now();
     if (openAIAvailable) {
-      try {
-        output = await provider.interpret(providerInput);
-      } catch (error) {
-        generationMode = "evidence_fallback";
-        fallbackReason =
-          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
-        output = buildEvidenceBasedFallbackProfile(providerInput);
-      }
+      output = await provider.interpret(providerInput);
     } else {
       generationMode = "evidence_fallback";
       fallbackReason = profile.is_minor
@@ -198,12 +193,32 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
         code: validated.code,
         issues: (validated.issues ?? []).join(","),
       });
-      generationMode = "evidence_fallback";
-      fallbackReason = validated.code;
-      output = buildEvidenceBasedFallbackProfile(providerInput);
-      validated = validateHumanPotentialProfileOutput(providerInput, output);
+      const remainingMs = 45_000 - (Date.now() - providerStarted);
+      if (generationMode === "openai" && remainingMs > 5_000) {
+        try {
+          output = await provider.interpret(providerInput, {
+            issues: validated.issues?.length
+              ? validated.issues
+              : [validated.code],
+            timeoutMs: remainingMs,
+          });
+          validated = validateHumanPotentialProfileOutput(
+            providerInput,
+            output,
+          );
+        } catch (error) {
+          logger.warn("hpi_profile_repair_failed", {
+            requestId,
+            reason: safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE",
+          });
+        }
+      }
+      if (!validated.ok) {
+        // Keep existing saved work. An adult retry must not silently replace it
+        // with another generic starter and appear to have generated an AI result.
+        throw new Error(validated.code);
+      }
     }
-    if (!validated.ok) throw new Error(validated.code);
 
     const persistence = profileOutputForPersistence(validated.value);
     const { data: profileId, error: persistError } = await service.rpc(

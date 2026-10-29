@@ -149,7 +149,7 @@ export function validateInterpretationOutput(
   output: unknown,
 ):
   | { ok: true; value: z.infer<typeof interpretationOutputSchema> }
-  | { ok: false; code: HpiDomainErrorCode } {
+  | { ok: false; code: HpiDomainErrorCode; issues?: string[] } {
   const parsed = interpretationOutputSchema.safeParse(output);
   if (!parsed.success) return { ok: false, code: "HPI_OUTPUT_INVALID" };
   const evidenceIds = new Set(input.evidence.map((evidence) => evidence.id));
@@ -162,7 +162,11 @@ export function validateInterpretationOutput(
       " ",
     );
     if (containsUnqualifiedClaim(prose, prohibitedClaim))
-      return { ok: false, code: "HPI_OUTPUT_INVALID" };
+      return {
+        ok: false,
+        code: "HPI_OUTPUT_INVALID",
+        issues: ["insights:prohibited_claim"],
+      };
     if (
       input.isMinor &&
       (!insight.ageAppropriate ||

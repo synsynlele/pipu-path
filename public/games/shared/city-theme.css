@@ -3839,3 +3839,9 @@ body #city-hud #journey-bar[hidden] {
     flex: 0 0 auto;
   }
 }
+
+/* The app owns the embedded welcome sign-in link so Android navigates the full app. */
+html.city-embedded .welcome-signin {
+  visibility: hidden;
+  pointer-events: none;
+}

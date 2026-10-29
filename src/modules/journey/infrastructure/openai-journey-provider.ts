@@ -111,16 +111,26 @@ function buildPrompt(input: {
 }
 
 export class OpenAIJourneyProvider {
-  async generate(input: {
-    context: JourneyContext;
-    currentJourney?: JourneyOutput;
-    refinementInstruction?: string;
-    continuation?: boolean;
-  }): Promise<unknown> {
+  async generate(
+    input: {
+      context: JourneyContext;
+      currentJourney?: JourneyOutput;
+      refinementInstruction?: string;
+      continuation?: boolean;
+    },
+    repair?: { issue: string; timeoutMs: number },
+  ): Promise<unknown> {
     return requestOpenAIStructuredOutput({
       instructions:
         "You create safe, practical Builder Journeys for PipuPath. When a Possible Path is selected, create exactly the four-week Learn → Practice → Build → Test pathway required by the context.",
-      prompt: buildPrompt(input),
+      prompt:
+        buildPrompt(input) +
+        (repair
+          ? "\nCorrect the previous validation failure: " +
+            repair.issue +
+            ". Return a complete new result meeting every rule."
+          : ""),
+      ...(repair ? { timeoutMs: repair.timeoutMs } : {}),
       schemaName: "pipupath_journey_v1",
       schema: journeyResponseSchema,
       maxOutputTokens: 6144,

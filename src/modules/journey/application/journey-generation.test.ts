@@ -120,61 +120,72 @@ describe("Journey generation orchestration", () => {
     );
   });
 
-  it("replaces invalid provider output with a validated fallback Journey", async () => {
-    mocks.generate.mockResolvedValue({ title: "Incomplete" });
-    await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
+  it("repairs invalid output once, then persists only the validated AI result", async () => {
+    mocks.generate
+      .mockResolvedValueOnce({ title: "Incomplete" })
+      .mockResolvedValueOnce(output);
+    expect(await generateCurrentJourney({ kind: "initial" })).toMatchObject({
       ok: true,
-      journeyId: "journey-1",
     });
+    expect(mocks.generate).toHaveBeenCalledTimes(2);
+    expect(mocks.generate).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({ timeoutMs: expect.any(Number) }),
+    );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
       "persist_stage6_journey",
-      expect.objectContaining({
-        journey_input: expect.objectContaining({
-          title: "Build Evidence Through One Practical Test",
-          milestones: expect.arrayContaining([
-            expect.objectContaining({ sequence_order: 1 }),
-            expect.objectContaining({ sequence_order: 4 }),
-          ]),
-        }),
-      }),
-    );
-    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
-      "fail_stage6_journey_request",
       expect.anything(),
     );
   });
-
-  it("uses the fallback when OpenAI times out", async () => {
-    mocks.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
-    await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
-      ok: true,
-      journeyId: "journey-1",
+  it("keeps invalid retries out of saved work", async () => {
+    mocks.generate.mockResolvedValue({ title: "Incomplete" });
+    expect(await generateCurrentJourney({ kind: "initial" })).toMatchObject({
+      ok: false,
+      code: "JOURNEY_OUTPUT_INVALID",
     });
-    expect(mocks.serviceRpc).toHaveBeenCalledWith(
+    expect(mocks.generate).toHaveBeenCalledTimes(2);
+    expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
       "persist_stage6_journey",
-      expect.objectContaining({
-        journey_input: expect.objectContaining({
-          title: "Build Evidence Through One Practical Test",
-        }),
-      }),
+      expect.anything(),
     );
   });
-
-  it("uses the fallback when OpenAI configuration is unavailable", async () => {
+  it.each(["OPENAI_TIMEOUT", "OPENAI_HTTP_429", "network disconnected"])(
+    "shows provider failure %s without saving a template",
+    async (reason) => {
+      mocks.generate.mockRejectedValue(new Error(reason));
+      expect(await generateCurrentJourney({ kind: "initial" })).toMatchObject({
+        ok: false,
+      });
+      expect(mocks.serviceRpc).not.toHaveBeenCalledWith(
+        "persist_stage6_journey",
+        expect.anything(),
+      );
+    },
+  );
+  it("does not spend a generation attempt if AI configuration is unavailable", async () => {
     mocks.env.mockImplementation(() => {
       throw new Error("missing");
     });
-    await expect(generateCurrentJourney({ kind: "initial" })).resolves.toEqual({
+    expect(await generateCurrentJourney({ kind: "initial" })).toMatchObject({
+      ok: false,
+      code: "JOURNEY_PROVIDER_UNAVAILABLE",
+    });
+    expect(mocks.browserRpc).not.toHaveBeenCalled();
+    expect(mocks.generate).not.toHaveBeenCalled();
+  });
+  it("keeps under-18 generation local and validated", async () => {
+    mocks.getContext.mockResolvedValue({
+      ...context,
+      isMinor: true,
+      ageBand: "16_17",
+    });
+    expect(await generateCurrentJourney({ kind: "initial" })).toMatchObject({
       ok: true,
-      journeyId: "journey-1",
     });
     expect(mocks.generate).not.toHaveBeenCalled();
     expect(mocks.serviceRpc).toHaveBeenCalledWith(
-      "claim_stage6_journey_request",
-      expect.objectContaining({
-        provider_input: "evidence_fallback",
-        model_input: "evidence-fallback-v1",
-      }),
+      "persist_stage6_journey",
+      expect.anything(),
     );
   });
 });

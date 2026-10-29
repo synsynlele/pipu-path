@@ -100,7 +100,7 @@ export default async function QuestFocusPage({
       id="main-content"
       className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10 lg:px-10"
     >
-      <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07142f] p-5 text-white sm:p-8 lg:p-9">
+      <section className="pp-real-world-hero relative overflow-hidden rounded-[2rem] border border-white/10 p-5 text-white sm:p-8 lg:p-9">
         <div
           aria-hidden="true"
           className="absolute -top-24 -right-16 size-64 rounded-full border border-white/10"
@@ -198,7 +198,7 @@ export default async function QuestFocusPage({
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-primary text-xs font-semibold tracking-[0.15em] uppercase">
-                      Phase 2 · Act
+                      Step 3 · Take action
                     </p>
                     <h2 className="text-navy mt-2 text-2xl font-semibold tracking-tight">
                       Do it in the real world. Bring back proof.
@@ -218,14 +218,14 @@ export default async function QuestFocusPage({
                   Finished the real-world action?
                 </p>
                 <p className="text-muted mt-1 max-w-2xl text-sm leading-6">
-                  Move into the dedicated Prove step to record what happened,
-                  add optional supporting evidence and unlock Reflection.
+                  Record what happened, add optional supporting evidence and
+                  unlock Reflection.
                 </p>
                 <ButtonLink
                   href={`/quests/${quest.id}/proof`}
                   className="mt-4 w-full touch-manipulation sm:w-auto"
                 >
-                  Continue to Prove →
+                  Add my evidence →
                 </ButtonLink>
               </div>
             </Surface>
@@ -244,7 +244,7 @@ export default async function QuestFocusPage({
                     </h2>
                   </div>
                   <span className="border-success/20 bg-success/10 text-success rounded-full border px-3 py-1.5 text-xs font-semibold">
-                    Phase 4 · Reflect
+                    Reflect on your attempt
                   </span>
                 </div>
                 <details className="border-border mt-5 rounded-2xl border p-4">

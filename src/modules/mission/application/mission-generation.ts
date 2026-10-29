@@ -19,7 +19,7 @@ import {
 import { buildEvidenceBasedMission } from "./mission-fallback";
 
 const logger = createLogger();
-// OpenAI enriches the result, but validated profile evidence guarantees completion.
+// External AI and youth guided planning remain distinct execution modes.
 const messages: Record<MissionErrorCode, string> = {
   MISSION_PROFILE_REQUIRED: "Complete your Human Potential Profile first.",
   MISSION_CONSENT_REQUIRED:
@@ -83,6 +83,7 @@ export async function generateCurrentMission(input: {
     ({ model } = requireOpenAIEnvironment());
   } catch {
     openAIAvailable = false;
+    if (!context.isMinor) return fail("MISSION_PROVIDER_UNAVAILABLE");
   }
 
   const current = await getCurrentMissionState(context.profileId);
@@ -146,6 +147,7 @@ export async function generateCurrentMission(input: {
     let fallbackReason: string | null = null;
     let output: unknown;
 
+    const providerStarted = Date.now();
     if (openAIAvailable) {
       try {
         output = await new OpenAIMissionProvider().generate({
@@ -154,10 +156,9 @@ export async function generateCurrentMission(input: {
           refinementInstruction,
         });
       } catch (error) {
-        generationMode = "evidence_fallback";
-        fallbackReason =
-          safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE";
-        output = buildEvidenceBasedMission({ context, currentMission });
+        throw error instanceof Error && /^OPENAI_/.test(error.message)
+          ? error
+          : new Error("OPENAI_PROVIDER_FAILURE");
       }
     } else {
       generationMode = "evidence_fallback";
@@ -168,11 +169,19 @@ export async function generateCurrentMission(input: {
     }
 
     let validated = validateMissionOutput(context, output);
-    if (!validated.ok) {
-      generationMode = "evidence_fallback";
-      fallbackReason = validated.code;
-      output = buildEvidenceBasedMission({ context, currentMission });
-      validated = validateMissionOutput(context, output);
+    if (!validated.ok && generationMode === "openai") {
+      logger.warn("mission_provider_output_rejected", {
+        requestId,
+        code: validated.code,
+      });
+      const remainingMs = 45_000 - (Date.now() - providerStarted);
+      if (remainingMs > 5_000) {
+        output = await new OpenAIMissionProvider().generate(
+          { context, currentMission, refinementInstruction },
+          { issue: validated.code, timeoutMs: remainingMs },
+        );
+        validated = validateMissionOutput(context, output);
+      }
     }
     if (!validated.ok) throw new Error(validated.code);
 

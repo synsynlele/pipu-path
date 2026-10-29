@@ -14,7 +14,7 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
-  const next = (await searchParams).next;
+  const next = (await searchParams).next ?? "/real-quests";
   return (
     <AuthShell
       title="Welcome back"
