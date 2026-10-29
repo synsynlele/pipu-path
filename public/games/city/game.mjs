@@ -954,6 +954,16 @@ function refreshJourneyControls() {
         ? 2
         : 1;
   $("chapter-badge").textContent = "Chapter " + currentChapter;
+  $("chapter-badge").setAttribute(
+    "aria-label",
+    "Chapter " +
+      currentChapter +
+      " · " +
+      caseProgress(state.decisions) +
+      "/" +
+      CITY_CASES.length +
+      " decisions",
+  );
   const unlocked = foundationForOpportunities(state.decisions);
   $("opportunities-toggle").disabled = !unlocked || simulating;
   $("resilience-toggle").disabled =
@@ -965,15 +975,21 @@ function refreshJourneyControls() {
   document.body.classList.toggle("city-journey-paused", paused);
   const previous = previousKeptCase(state.decisions, journey.caseId);
   $("journey-back").disabled = !previous;
+  $("journey-back").hidden = !visible || !previous;
   $("journey-back").title = previous
     ? "Change your earlier decision: " + previous.title
     : "No earlier decisions yet";
   $("decision-count").textContent =
     caseProgress(state.decisions) + "/" + CITY_CASES.length;
   if (!visible) return;
-  $("journey-toggle").textContent = running
-    ? "Pause journey"
-    : "Resume journey →";
+  $("journey-toggle").textContent = running ? "Pause" : "Resume";
+  $("journey-toggle").setAttribute(
+    "aria-label",
+    running ? "Pause journey" : "Resume journey",
+  );
+  $("journey-toggle").title = running
+    ? "Pause the automatic builder journey"
+    : "Resume the automatic builder journey";
   const chapter = chapterForCase(journey.caseId) ?? 1;
   $("journey-status").textContent = running
     ? "Chapter " +
