@@ -12,7 +12,7 @@ describe("AppNavigation proof orientation", () => {
     });
 
     expect(
-      within(navigation).getByRole("link", { name: "Build" }),
+      within(navigation).getByRole("link", { name: "Real Quests" }),
     ).toHaveAttribute("aria-current", "page");
   });
 });
