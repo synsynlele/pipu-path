@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,23 +19,11 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: feat/pipupath-2-unified-play-quests-you
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format unified app integration once
-        run: |
-          npx prettier --write public/games/city/game.mjs src/app/app/page.tsx src/app/page.tsx src/app/play/page.tsx src/app/profile/page.tsx src/app/real-quests/page.tsx src/components/navigation/app-navigation.test.tsx src/components/navigation/app-navigation.tsx src/components/shells/app-shell.tsx src/modules/city/ui/power-district-frame.test.tsx src/modules/city/ui/power-district-frame.tsx src/modules/city/ui/unbuilt-city-experience.tsx src/modules/city/ui/power-district.test.tsx src/modules/city/ui/unbuilt-city-campaign.test.tsx tests/integration/stage-10-launch-readiness.test.ts tests/integration/stage-11-builder-connect.test.ts tests/integration/stage-16-living-builder-profile.test.ts tests/integration/stage-18-opportunity-mvp.test.ts tests/integration/stage-22-build-after-path-switch.test.ts tests/integration/stage-22-navigation-shell.test.ts tests/integration/stage-23-mobile-pwa.test.ts tests/integration/stage-24-visual-install.test.ts tests/integration/stage-29-builder-network.test.ts tests/integration/stage-8-contract.test.ts tests/integration/stage-9-contract.test.ts
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/games/city/game.mjs src/app/app/page.tsx src/app/page.tsx src/app/play/page.tsx src/app/profile/page.tsx src/app/real-quests/page.tsx src/components/navigation/app-navigation.test.tsx src/components/navigation/app-navigation.tsx src/components/shells/app-shell.tsx src/modules/city/ui/power-district-frame.test.tsx src/modules/city/ui/power-district-frame.tsx src/modules/city/ui/unbuilt-city-experience.tsx src/modules/city/ui/power-district.test.tsx src/modules/city/ui/unbuilt-city-campaign.test.tsx tests/integration/stage-10-launch-readiness.test.ts tests/integration/stage-11-builder-connect.test.ts tests/integration/stage-16-living-builder-profile.test.ts tests/integration/stage-18-opportunity-mvp.test.ts tests/integration/stage-22-build-after-path-switch.test.ts tests/integration/stage-22-navigation-shell.test.ts tests/integration/stage-23-mobile-pwa.test.ts tests/integration/stage-24-visual-install.test.ts tests/integration/stage-29-builder-network.test.ts tests/integration/stage-8-contract.test.ts tests/integration/stage-9-contract.test.ts
-          if ! git diff --cached --quiet; then
-            git commit -m "Format unified navigation and Quest handoff"
-            git push origin HEAD:feat/pipupath-2-unified-play-quests-you
-          fi
       - run: npm run validate
 
   staging-e2e:
