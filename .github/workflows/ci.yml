@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,11 +19,23 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: fix/unbuilt-city-one-row-mobile-controls
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Format compact HUD files once
+        run: |
+          npx prettier --write public/games/city/index.html public/games/shared/city-theme.css scripts/power-district/city-ui.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/games/city/index.html public/games/shared/city-theme.css scripts/power-district/city-ui.mjs
+          if ! git diff --cached --quiet; then
+            git commit -m "Format compact mobile city HUD"
+            git push origin HEAD:fix/unbuilt-city-one-row-mobile-controls
+          fi
       - run: npm run validate
 
   staging-e2e:
