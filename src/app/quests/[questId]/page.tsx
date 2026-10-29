@@ -126,6 +126,12 @@ export default async function QuestFocusPage({
             </span>
           </div>
 
+          {detail.guidedPlan ? (
+            <p className="mt-4 text-xs leading-5 text-blue-100">
+              Guided starter Quest · Your private answers are not sent to an
+              external AI provider for this account.
+            </p>
+          ) : null}
           <h1 className="mt-5 max-w-4xl text-3xl font-semibold tracking-tight text-white sm:text-5xl">
             {quest.title}
           </h1>

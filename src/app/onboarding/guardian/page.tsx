@@ -21,11 +21,11 @@ export default async function GuardianOnboardingPage() {
   if (!identity.profile || identity.checkpoint?.status !== "completed") {
     redirect("/onboarding/identity");
   }
-  if (!identity.profile.is_minor) redirect("/continue");
+  if (!identity.profile.is_minor) redirect("/real-quests");
 
   const guardian = await getGuardianAuthorizationState();
   if (guardian?.status === "granted" || guardian?.status === "parent_declared")
-    redirect("/continue");
+    redirect("/real-quests");
 
   return (
     <OnboardingShell

@@ -46,11 +46,12 @@ function confidenceLabel(confidence: string) {
 }
 
 export default async function HumanPotentialProfilePage() {
-  const [{ user }, handoff, profile] = await Promise.all([
-    requireAuthenticatedIdentity(),
-    getStage4DiscoveryHandoff(),
-    getCurrentHumanPotentialProfile(),
-  ]);
+  const [{ user, profile: identityProfile }, handoff, profile] =
+    await Promise.all([
+      requireAuthenticatedIdentity(),
+      getStage4DiscoveryHandoff(),
+      getCurrentHumanPotentialProfile(),
+    ]);
   if (!handoff) redirect("/onboarding/discovery");
 
   const pathways = profile
@@ -96,6 +97,13 @@ export default async function HumanPotentialProfilePage() {
         </div>
       </div>
 
+      {profile ? (
+        <div className="mt-6">
+          <ButtonLink href="/real-quests">
+            Continue to my next step →
+          </ButtonLink>
+        </div>
+      ) : null}
       {!profile ? (
         <Surface className="mt-9 grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
@@ -153,20 +161,25 @@ export default async function HumanPotentialProfilePage() {
                   {profile.generationMode === "openai"
                     ? "AI interpretation"
                     : profile.generationMode === "evidence_fallback"
-                      ? "Evidence-based backup"
+                      ? "Guided starter profile"
                       : "Evidence interpretation"}
                 </p>
                 <p className="text-muted mt-2 text-sm leading-6">
                   {profile.generationMode === "openai"
                     ? "AI connected patterns across your private Discovery evidence."
                     : profile.generationMode === "evidence_fallback"
-                      ? "The AI service was unavailable or too slow, so PipuPath protected your flow with its evidence-based backup."
+                      ? identityProfile?.is_minor ||
+                        profile.fallbackReason === "MINOR_EXTERNAL_AI_DISABLED"
+                        ? "This account uses guided planning. Your answers are not sent to an external AI provider. Build through real actions and honest proof."
+                        : "The AI result could not be used. This starter is based on your answers; it is not an AI-generated interpretation."
                       : "Built from your completed Discovery evidence."}
                 </p>
                 <p className="text-muted mt-4 text-xs">
                   {new Date(profile.createdAt).toLocaleDateString()}
                 </p>
-                {profile.generationMode === "evidence_fallback" ? (
+                {profile.generationMode === "evidence_fallback" &&
+                !identityProfile?.is_minor &&
+                profile.fallbackReason !== "MINOR_EXTERNAL_AI_DISABLED" ? (
                   <div className="mt-5">
                     <ProfileGenerationForm buttonLabel="Retry AI interpretation" />
                   </div>
@@ -175,72 +188,77 @@ export default async function HumanPotentialProfilePage() {
             </div>
           </Surface>
 
-          <section className="mt-10" aria-labelledby="potential-map">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
-                  Your Potential Map
-                </p>
-                <h2
-                  id="potential-map"
-                  className="mt-2 text-3xl font-semibold tracking-tight"
-                >
-                  Six signals worth noticing
-                </h2>
-              </div>
-              <p className="text-muted max-w-md text-sm leading-6">
-                Keep what feels true. Open any card when you want the reasoning
-                behind it.
-              </p>
-            </div>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {humanPotentialProfileSectionKeys.map((section) => (
-                <Surface key={section} className="p-5 sm:p-6">
-                  <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                    {sectionEyebrow[section]}
+          <details className="border-border mt-6 rounded-2xl border p-5">
+            <summary className="cursor-pointer font-semibold">
+              See how your answers shaped this profile
+            </summary>
+            <section className="mt-5" aria-labelledby="potential-map">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
+                    Your Potential Map
                   </p>
-                  <h3 className="mt-2 text-xl font-semibold">
-                    {sectionCopy[section]}
-                  </h3>
-                  <div className="mt-4 space-y-4">
-                    {profile.sections[section].map((insight) => (
-                      <article
-                        key={insight.id}
-                        className="border-border/80 border-t pt-4 first:border-t-0 first:pt-0"
-                      >
-                        <div className="flex flex-wrap items-start justify-between gap-2">
-                          <h4 className="max-w-[20rem] font-semibold">
-                            {insight.title}
-                          </h4>
-                          <span className="text-gold text-[0.68rem] font-semibold tracking-wide uppercase">
-                            {confidenceLabel(insight.confidence)}
-                          </span>
-                        </div>
-                        <p className="text-muted mt-2 text-sm leading-6">
-                          {insight.summary}
-                        </p>
-                        <details className="group mt-3">
-                          <summary className="text-gold cursor-pointer list-none text-sm font-semibold marker:hidden">
-                            Why PipuPath sees this +
-                          </summary>
-                          <div className="border-border mt-3 border-t pt-3">
-                            <p className="text-muted text-sm leading-6">
-                              {insight.description}
-                            </p>
-                            <ProfileFeedbackForm
-                              insightId={insight.id}
-                              savedFeedback={insight.feedback}
-                            />
+                  <h2
+                    id="potential-map"
+                    className="mt-2 text-3xl font-semibold tracking-tight"
+                  >
+                    Six signals worth noticing
+                  </h2>
+                </div>
+                <p className="text-muted max-w-md text-sm leading-6">
+                  Keep what feels true. Open any card when you want the
+                  reasoning behind it.
+                </p>
+              </div>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {humanPotentialProfileSectionKeys.map((section) => (
+                  <Surface key={section} className="p-5 sm:p-6">
+                    <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                      {sectionEyebrow[section]}
+                    </p>
+                    <h3 className="mt-2 text-xl font-semibold">
+                      {sectionCopy[section]}
+                    </h3>
+                    <div className="mt-4 space-y-4">
+                      {profile.sections[section].map((insight) => (
+                        <article
+                          key={insight.id}
+                          className="border-border/80 border-t pt-4 first:border-t-0 first:pt-0"
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <h4 className="max-w-[20rem] font-semibold">
+                              {insight.title}
+                            </h4>
+                            <span className="text-gold text-[0.68rem] font-semibold tracking-wide uppercase">
+                              {confidenceLabel(insight.confidence)}
+                            </span>
                           </div>
-                        </details>
-                      </article>
-                    ))}
-                  </div>
-                </Surface>
-              ))}
-            </div>
-          </section>
+                          <p className="text-muted mt-2 text-sm leading-6">
+                            {insight.summary}
+                          </p>
+                          <details className="group mt-3">
+                            <summary className="text-gold cursor-pointer list-none text-sm font-semibold marker:hidden">
+                              Why PipuPath sees this +
+                            </summary>
+                            <div className="border-border mt-3 border-t pt-3">
+                              <p className="text-muted text-sm leading-6">
+                                {insight.description}
+                              </p>
+                              <ProfileFeedbackForm
+                                insightId={insight.id}
+                                savedFeedback={insight.feedback}
+                              />
+                            </div>
+                          </details>
+                        </article>
+                      ))}
+                    </div>
+                  </Surface>
+                ))}
+              </div>
+            </section>
+          </details>
 
           <section className="mt-12" aria-labelledby="possible-paths">
             <div className="flex flex-wrap items-end justify-between gap-4">

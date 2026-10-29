@@ -47,7 +47,7 @@ describe("Stage 22 Path pivot handoff", () => {
   it("automatically prepares a missing Quest chain with a safe retry", () => {
     expect(questGenerationForm).toContain("autoStart = true");
     expect(questGenerationForm).toContain("requestSubmit()");
-    expect(questGenerationForm).toContain("Retry Quest Generation");
+    expect(questGenerationForm).toContain("Try again");
   });
 
   it("prepares the next Quest chain when completion opens a milestone", () => {

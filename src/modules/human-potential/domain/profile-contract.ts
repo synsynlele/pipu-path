@@ -1,3 +1,4 @@
+import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { z } from "zod";
 import {
   interpretationInsightSchema,
@@ -39,9 +40,16 @@ export function validateHumanPotentialProfileOutput(
   output: unknown,
 ):
   | { ok: true; value: z.infer<typeof humanPotentialProfileOutputSchema> }
-  | { ok: false; code: HpiDomainErrorCode } {
+  | { ok: false; code: HpiDomainErrorCode; issues?: string[] } {
   const parsed = humanPotentialProfileOutputSchema.safeParse(output);
-  if (!parsed.success) return { ok: false, code: "HPI_OUTPUT_INVALID" };
+  if (!parsed.success)
+    return {
+      ok: false,
+      code: "HPI_OUTPUT_INVALID",
+      issues: parsed.error.issues
+        .slice(0, 8)
+        .map((issue) => issue.path.join(".") + ":" + issue.code),
+    };
 
   const perSection = new Map<HumanPotentialProfileSectionKey, number>();
   for (const insight of parsed.data.insights) {
@@ -77,8 +85,8 @@ export function validateHumanPotentialProfileOutput(
     ]),
   ].join(" ");
   if (
-    permanentIdentityClaim.test(prose) ||
-    unsafeConstraintLanguage.test(prose)
+    containsUnqualifiedClaim(prose, permanentIdentityClaim) ||
+    containsUnqualifiedClaim(prose, unsafeConstraintLanguage)
   ) {
     return { ok: false, code: "HPI_OUTPUT_INVALID" };
   }

@@ -39,20 +39,21 @@ export function QuestGenerationForm({
     <form ref={formRef} action={action} aria-busy={pending}>
       <Button type="submit" disabled={pending || attemptsRemaining < 1}>
         {pending
-          ? "Shaping your Quest pack…"
+          ? "Preparing your next steps…"
           : state.status === "error"
-            ? "Retry Quest Generation"
+            ? "Try again"
             : autoStart
-              ? "Prepare Quests Now"
-              : "Generate My First Quests"}
+              ? "Prepare my next steps"
+              : "Create my first Quest"}
       </Button>
       {pending || (autoStart && state.status === "idle") ? (
         <p role="status" className="text-muted mt-4 text-sm">
-          PipuPath is creating three practical HQLS Quests from this milestone…
+          Preparing small actions for your current goal. You will try one at a
+          time.
         </p>
       ) : null}
       <p className="text-muted mt-3 text-xs">
-        {attemptsRemaining} of 3 safe generation attempts remaining.
+        {attemptsRemaining} of 3 planning attempts available.
       </p>
       {state.status === "error" ? (
         <p role="alert" className="text-error mt-4 text-sm">

@@ -73,7 +73,7 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(callback).toContain("state.destination.path");
     expect(authActions).toContain("getAuthenticatedHomeState(client)");
     expect(proxy).toContain("if (user && authRoutes.includes(path))");
-    expect(proxy).toContain('destination.pathname = "/continue"');
+    expect(proxy).toContain('destination.pathname = "/real-quests"');
     expect(redirects).toContain("readOnlyEntry");
     expect(progress.indexOf("snapshot.activeProjectId")).toBeLessThan(
       progress.indexOf('snapshot.journeyStatus === "active"'),

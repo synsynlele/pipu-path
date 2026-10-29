@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function IdentityCheckpointPage() {
   const state = await getIdentityState();
   if (!state.user) redirect("/login?next=/onboarding/identity");
-  if (state.checkpoint?.status === "completed") redirect("/continue");
+  if (state.checkpoint?.status === "completed") redirect("/real-quests");
 
   return (
     <OnboardingShell

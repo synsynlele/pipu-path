@@ -1,3 +1,4 @@
+import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { z } from "zod";
 
 export const questStatuses = [
@@ -127,10 +128,10 @@ export function validateQuestPackOutput(
 
   const text = JSON.stringify(parsed.data);
   if (
-    unsafeLanguage.test(text) ||
-    purchaseLanguage.test(text) ||
-    inflatedLanguage.test(text) ||
-    fabricatedEvidenceLanguage.test(text)
+    containsUnqualifiedClaim(text, unsafeLanguage) ||
+    containsUnqualifiedClaim(text, purchaseLanguage) ||
+    containsUnqualifiedClaim(text, inflatedLanguage) ||
+    containsUnqualifiedClaim(text, fabricatedEvidenceLanguage)
   ) {
     return { ok: false, code: "QUEST_OUTPUT_UNSAFE" };
   }

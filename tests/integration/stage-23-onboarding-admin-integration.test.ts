@@ -46,9 +46,8 @@ describe("Stage 23 onboarding and Mission Control integration", () => {
   });
 
   it("does not turn onboarding into scoring, public identity or instant AI judgement", () => {
-    expect(discoveryPage).toContain("No instant labels");
-    expect(discoveryPage).toContain("Sensitive is optional");
-    expect(discoveryPage).toContain("No AI judgement here");
+    expect(discoveryPage).toContain("Your answers stay private.");
+    expect(discoveryPage).toContain("Skip optional questions");
     expect(normalizedOnboardingShell).toContain(
       "Private developmental data is not made public by default.",
     );

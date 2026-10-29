@@ -33,7 +33,9 @@ describe("session redirects", () => {
     });
     refresh.mockResolvedValue({ response, user: { id: "builder" } });
     const result = await proxy(new NextRequest("https://pipu.test/login"));
-    expect(result.headers.get("location")).toBe("https://pipu.test/continue");
+    expect(result.headers.get("location")).toBe(
+      "https://pipu.test/real-quests",
+    );
     expect(result.headers.get("Cache-Control")).toBe("private, no-store");
     expect(result.cookies.get("sb-test-auth-token")).toMatchObject({
       value: "rotated",
@@ -106,6 +108,8 @@ describe("session redirects", () => {
     const external = await proxy(
       new NextRequest("https://pipu.test/login?next=https://bad.test"),
     );
-    expect(external.headers.get("location")).toBe("https://pipu.test/continue");
+    expect(external.headers.get("location")).toBe(
+      "https://pipu.test/real-quests",
+    );
   });
 });

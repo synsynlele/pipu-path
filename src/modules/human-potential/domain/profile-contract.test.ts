@@ -95,6 +95,14 @@ const validOutput = {
 };
 
 describe("Human Potential Profile output validation", () => {
+  it("accepts a non-diagnostic caveat but still rejects a positive diagnosis", () => {
+    const cautious = structuredClone(validOutput);
+    cautious.insights[0].explanation =
+      "This is not a diagnosis. Treat it as a possible pattern to test.";
+    expect(validateHumanPotentialProfileOutput(input, cautious).ok).toBe(true);
+    cautious.insights[0].explanation += " Your diagnosis is certain.";
+    expect(validateHumanPotentialProfileOutput(input, cautious).ok).toBe(false);
+  });
   it("accepts all six evidence-linked sections", () => {
     expect(validateHumanPotentialProfileOutput(input, validOutput).ok).toBe(
       true,

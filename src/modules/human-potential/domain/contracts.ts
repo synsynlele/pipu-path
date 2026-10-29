@@ -1,3 +1,4 @@
+import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { z } from "zod";
 
 export const confidenceLevels = [
@@ -160,11 +161,12 @@ export function validateInterpretationOutput(
     const prose = [insight.title, insight.summary, insight.explanation].join(
       " ",
     );
-    if (prohibitedClaim.test(prose))
+    if (containsUnqualifiedClaim(prose, prohibitedClaim))
       return { ok: false, code: "HPI_OUTPUT_INVALID" };
     if (
       input.isMinor &&
-      (!insight.ageAppropriate || minorSafeguardingClaim.test(prose))
+      (!insight.ageAppropriate ||
+        containsUnqualifiedClaim(prose, minorSafeguardingClaim))
     )
       return { ok: false, code: "HPI_SAFEGUARDING_RESTRICTION" };
   }

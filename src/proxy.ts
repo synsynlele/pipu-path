@@ -101,7 +101,7 @@ export async function proxy(request: NextRequest) {
 
   if (user && authRoutes.includes(path)) {
     const destination = request.nextUrl.clone();
-    destination.pathname = "/continue";
+    destination.pathname = "/real-quests";
     if (
       path === "/login" &&
       request.nextUrl.searchParams.get("next") === "/account-deletion"

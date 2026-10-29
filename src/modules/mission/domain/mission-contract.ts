@@ -1,3 +1,4 @@
+import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { z } from "zod";
 import { possiblePathSchema } from "@/modules/economic-pathways/domain/economic-pathway-contract";
 
@@ -122,15 +123,16 @@ export function validateMissionOutput(
   ].join(" ");
 
   if (
-    permanentPurposeClaim.test(prose) ||
-    inflatedScope.test(prose) ||
-    moneyPromise.test(prose)
+    containsUnqualifiedClaim(prose, permanentPurposeClaim) ||
+    containsUnqualifiedClaim(prose, inflatedScope) ||
+    containsUnqualifiedClaim(prose, moneyPromise)
   ) {
     return { ok: false, code: "MISSION_OUTPUT_INVALID" };
   }
   if (
-    diagnosis.test(prose) ||
-    (parsedContext.data.isMinor && unsafeMinorAdvice.test(prose))
+    containsUnqualifiedClaim(prose, diagnosis) ||
+    (parsedContext.data.isMinor &&
+      containsUnqualifiedClaim(prose, unsafeMinorAdvice))
   ) {
     return { ok: false, code: "MISSION_OUTPUT_UNSAFE" };
   }

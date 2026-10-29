@@ -1,3 +1,4 @@
+import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { z } from "zod";
 import { possiblePathSchema } from "@/modules/economic-pathways/domain/economic-pathway-contract";
 
@@ -96,7 +97,11 @@ export function validateJourneyOutput(
   if (new Set(titles).size !== titles.length)
     return { ok: false, code: "JOURNEY_OUTPUT_INVALID" };
   const text = JSON.stringify(parsed.data);
-  if (unsafe.test(text) || inflated.test(text) || questLanguage.test(text))
+  if (
+    containsUnqualifiedClaim(text, unsafe) ||
+    containsUnqualifiedClaim(text, inflated) ||
+    questLanguage.test(text)
+  )
     return { ok: false, code: "JOURNEY_OUTPUT_UNSAFE" };
   return { ok: true, value: parsed.data };
 }

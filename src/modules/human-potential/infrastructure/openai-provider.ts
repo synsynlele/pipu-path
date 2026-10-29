@@ -61,7 +61,7 @@ const profileResponseSchema = {
   required: ["schemaVersion", "summary", "insights"],
   properties: {
     schemaVersion: { type: "string", enum: ["hpi-profile-v1"] },
-    summary: { type: "string" },
+    summary: { type: "string", minLength: 1, maxLength: 1200 },
     insights: {
       type: "array",
       minItems: 7,
@@ -91,17 +91,17 @@ const profileResponseSchema = {
             enum: humanPotentialProfileSectionKeys,
           },
           insightType: { type: "string", enum: insightTypes },
-          insightKey: { type: "string" },
-          title: { type: "string" },
-          summary: { type: "string" },
-          explanation: { type: "string" },
+          insightKey: { type: "string", pattern: "^[a-z][a-z0-9_]{2,79}$" },
+          title: { type: "string", minLength: 1, maxLength: 120 },
+          summary: { type: "string", minLength: 1, maxLength: 320 },
+          explanation: { type: "string", minLength: 1, maxLength: 500 },
           confidenceLevel: { type: "string", enum: confidenceLevels },
           confidenceScore: { type: "number", minimum: 0, maximum: 1 },
           confidenceFactors: {
             type: "array",
             minItems: 1,
             maxItems: 6,
-            items: { type: "string" },
+            items: { type: "string", minLength: 1, maxLength: 160 },
           },
           evidence: {
             type: "array",
@@ -112,12 +112,12 @@ const profileResponseSchema = {
               additionalProperties: false,
               required: ["evidenceId", "supportType", "explanation", "weight"],
               properties: {
-                evidenceId: { type: "string" },
+                evidenceId: { type: "string", format: "uuid" },
                 supportType: {
                   type: "string",
                   enum: ["supporting", "contradicting", "context"],
                 },
-                explanation: { type: "string" },
+                explanation: { type: "string", minLength: 1, maxLength: 500 },
                 weight: { type: "number", minimum: 0.01, maximum: 1 },
               },
             },
@@ -132,11 +132,15 @@ const profileResponseSchema = {
               required: ["type", "description"],
               properties: {
                 type: { type: "string", enum: uncertaintyTypes },
-                description: { type: "string" },
+                description: { type: "string", minLength: 1, maxLength: 400 },
               },
             },
           },
-          confirmationQuestion: { type: "string" },
+          confirmationQuestion: {
+            type: "string",
+            minLength: 1,
+            maxLength: 400,
+          },
           sensitivity: {
             type: "string",
             enum: ["standard", "sensitive"],
@@ -147,6 +151,39 @@ const profileResponseSchema = {
     },
   },
 } as const;
+
+export function profileSchemaForEvidence(evidenceIds: string[]) {
+  const item = profileResponseSchema.properties.insights.items;
+  const refs = item.properties.evidence;
+  return {
+    ...profileResponseSchema,
+    properties: {
+      ...profileResponseSchema.properties,
+      insights: {
+        ...profileResponseSchema.properties.insights,
+        items: {
+          ...item,
+          properties: {
+            ...item.properties,
+            evidence: {
+              ...refs,
+              items: {
+                ...refs.items,
+                properties: {
+                  ...refs.items.properties,
+                  evidenceId: {
+                    ...refs.items.properties.evidenceId,
+                    enum: evidenceIds,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+}
 
 function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
   return [
@@ -180,7 +217,7 @@ export class OpenAIInterpretationProvider {
         "You create cautious, evidence-grounded Human Potential Profiles for PipuPath. Follow the supplied schema exactly and never invent evidence.",
       prompt: buildPrompt(input),
       schemaName: "pipupath_human_potential_profile_v1",
-      schema: profileResponseSchema,
+      schema: profileSchemaForEvidence(input.evidence.map((item) => item.id)),
       maxOutputTokens: 8192,
     });
   }

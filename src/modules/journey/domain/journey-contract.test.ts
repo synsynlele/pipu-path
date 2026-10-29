@@ -75,6 +75,16 @@ const validPathway = {
   ],
 };
 
+it("keeps safety cautions without admitting a later unsafe action", () => {
+  const cautioned = structuredClone(valid);
+  cautioned.milestones[0].resource_note =
+    "Avoid dangerous work. Do not contact strangers.";
+  expect(validateJourneyOutput(cautioned).ok).toBe(true);
+  cautioned.milestones[0].purpose =
+    "Contact strangers to test the idea with unknown people.";
+  expect(validateJourneyOutput(cautioned).ok).toBe(false);
+});
+
 describe("Journey contract", () => {
   it("accepts four to six ordered milestones", () =>
     expect(validateJourneyOutput(valid).ok).toBe(true));

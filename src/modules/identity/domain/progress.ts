@@ -54,9 +54,8 @@ export function progressDestination(
     return {
       stage: "identity",
       path: "/onboarding/identity",
-      label: "Complete identity setup",
-      description:
-        "Set the minimum identity and consent information PipuPath needs.",
+      label: "Set up my account",
+      description: "Choose a name, your age group and your privacy choices.",
     };
   }
 
@@ -65,10 +64,10 @@ export function progressDestination(
       stage: "discovery",
       path: "/onboarding/discovery",
       label: snapshot.discoveryStatus
-        ? "Continue Discovery"
-        : "Begin Discovery",
+        ? "Continue my introduction"
+        : "Find my starting point",
       description:
-        "Complete the 15 questions that create your private evidence base.",
+        "Answer one short question at a time. Your answers save as you go.",
     };
   }
 
@@ -76,7 +75,7 @@ export function progressDestination(
     return {
       stage: "discovery-review",
       path: "/onboarding/discovery/review",
-      label: "Review Discovery",
+      label: "Check my answers",
       description: "Check your answers before completing Discovery.",
     };
   }
@@ -85,9 +84,9 @@ export function progressDestination(
     return {
       stage: "potential-profile",
       path: "/onboarding/discovery/profile",
-      label: "Generate your Potential Profile",
+      label: "Create my starting profile",
       description:
-        "Turn completed Discovery evidence into a private, reviewable profile.",
+        "Use your answers to find a practical starting direction. You can review it.",
     };
   }
 
@@ -102,8 +101,8 @@ export function progressDestination(
       path: "/mission",
       label:
         snapshot.missionStatus === "draft"
-          ? "Activate your Mission"
-          : "Choose your Mission",
+          ? "Choose this direction"
+          : "Choose my direction",
       description: "Choose one practical direction for your current season.",
     };
   }
@@ -119,9 +118,10 @@ export function progressDestination(
       path: "/journey",
       label:
         snapshot.journeyStatus === "draft"
-          ? "Activate your Journey"
-          : "Build your Journey",
-      description: "Turn your Mission into a realistic sequence of milestones.",
+          ? "Use this plan"
+          : "Make my action plan",
+      description:
+        "Break your direction into small results you can try in real life.",
     };
   }
 
@@ -130,8 +130,7 @@ export function progressDestination(
       stage: "project",
       path: `/projects/${snapshot.activeProjectId}`,
       label: "Continue your Builder Project",
-      description:
-        "Advance the active Project through its next evidence-backed milestone.",
+      description: "Keep building, test what works and record real results.",
     };
   }
 
@@ -139,7 +138,7 @@ export function progressDestination(
     return {
       stage: "journey",
       path: "/journey",
-      label: "Build your next Journey",
+      label: "Plan my next build",
       description:
         "Use completed Project evidence to open the next growth cycle. Public Portfolio proof remains optional.",
     };

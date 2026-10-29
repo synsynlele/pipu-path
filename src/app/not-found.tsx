@@ -12,7 +12,7 @@ export default function NotFound() {
           The address may be incorrect, or this part of PipuPath may not be
           available for your current stage.
         </p>
-        <ButtonLink href="/continue" className="mt-7">
+        <ButtonLink href="/real-quests" className="mt-7">
           Continue Your Journey
         </ButtonLink>
       </div>

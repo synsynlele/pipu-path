@@ -29,7 +29,7 @@ export async function ensureGuardianAuthorizationAction() {
   if (!state.profile || state.checkpoint?.status !== "completed") {
     redirect("/onboarding/identity");
   }
-  if (!state.profile.is_minor) redirect("/continue");
+  if (!state.profile.is_minor) redirect("/real-quests");
 
   const { error } = await invoke("ensure_guardian_authorization_request");
   if (error) redirect("/onboarding/guardian?error=request_failed");
@@ -115,7 +115,7 @@ export async function recordParentLearningAttestationAction(
   if (!state.user) redirect("/login?next=/onboarding/guardian");
   if (!state.profile || state.checkpoint?.status !== "completed")
     redirect("/onboarding/identity");
-  if (!state.profile.is_minor) redirect("/continue");
+  if (!state.profile.is_minor) redirect("/real-quests");
   const parsed = parentDeclarationSchema.safeParse({
     parentName: formData.get("parent_name"),
     relationship: formData.get("relationship"),
@@ -137,7 +137,7 @@ export async function recordParentLearningAttestationAction(
         "We could not save the approval. Please try again. Your approval must be saved before you can continue.",
     };
   revalidatePath("/", "layout");
-  redirect("/continue");
+  redirect("/real-quests");
 }
 
 export async function withdrawParentLearningAttestationAction(

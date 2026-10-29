@@ -37,6 +37,18 @@ const quest = (sequence_order: number, title = `Quest ${sequence_order}`) => ({
 const valid = { quests: [1, 2, 3].map((order) => quest(order)) };
 
 describe("Stage 7 Quest contract", () => {
+  it("accepts explicit safety cautions while rejecting a later unsafe instruction", () => {
+    const cautioned = structuredClone(valid);
+    cautioned.quests[0].safety_guidance =
+      "Avoid dangerous activities. Do not contact strangers or borrow money.";
+    expect(validateQuestPackOutput(cautioned).ok).toBe(true);
+    cautioned.quests[0].action_steps[0] =
+      "Contact strangers and ask them to participate.";
+    expect(validateQuestPackOutput(cautioned)).toEqual({
+      ok: false,
+      code: "QUEST_OUTPUT_UNSAFE",
+    });
+  });
   it("accepts exactly three ordered HQLS Quests", () => {
     expect(validateQuestPackOutput(valid)).toEqual({ ok: true, value: valid });
   });
