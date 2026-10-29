@@ -23,6 +23,21 @@ export function PowerDistrictFrame({
   const expandButton = useRef<HTMLButtonElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const saving = useRef(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const handoffButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!handoff) return;
+    const dialog = dialogRef.current;
+    const trigger = handoffButton.current;
+    if (!dialog) return;
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+    return () => {
+      dialog.close?.();
+      trigger?.focus();
+    };
+  }, [handoff]);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
@@ -65,7 +80,7 @@ export function PowerDistrictFrame({
     document.body.style.overflow = "hidden";
     closeButton.current?.focus();
     const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && !dialogRef.current?.open) {
         setExpanded(false);
         expandButton.current?.focus();
       }
@@ -86,10 +101,6 @@ export function PowerDistrictFrame({
 
   function navigate() {
     setProblem("");
-    if (saved) {
-      router.push(questHrefWithDistrict());
-      return;
-    }
     setHandoff(true);
   }
 
@@ -124,6 +135,7 @@ export function PowerDistrictFrame({
         <strong className="text-xs sm:text-sm">The Unbuilt City</strong>
         <div className="flex items-center gap-2">
           <button
+            ref={handoffButton}
             type="button"
             onClick={navigate}
             className="min-h-11 rounded-full bg-[#e6cd83] px-3 text-xs font-bold text-[#213449]"
@@ -174,20 +186,26 @@ export function PowerDistrictFrame({
         referrerPolicy="no-referrer"
       />
       {handoff ? (
-        <div
-          role="dialog"
-          aria-modal="true"
+        <dialog
+          ref={dialogRef}
           aria-label="Continue to a real Quest"
-          className="absolute inset-0 z-20 grid place-items-center bg-[#08162d]/80 p-4"
+          onCancel={() => {
+            saving.current = false;
+            setHandoff(false);
+            setProblem("");
+          }}
+          className="fixed inset-0 m-auto max-h-[90svh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-3xl border-0 bg-[#ffffff] p-0 backdrop:bg-[#08162d]/80"
         >
-          <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-[#1e3150] shadow-2xl">
+          <div className="w-full max-w-sm rounded-3xl bg-[#ffffff] p-6 text-[#1e3150] shadow-2xl">
             <h2 className="text-xl font-bold">
               Take your learning into real life?
             </h2>
             <p className="mt-3 text-sm leading-6 text-[#65758b]">
-              Your city choices stay in this open game unless you save them on
-              this device. Saving is optional, private to this browser, and is
-              not an account backup.
+              {saved
+                ? "A device copy is enabled. Save your latest choices before continuing, or leave with the existing copy."
+                : "Your city choices stay in this open game unless you save them on this device."}{" "}
+              Saving is optional, private to this browser, and is not an account
+              backup.
             </p>
             {problem ? (
               <p
@@ -214,6 +232,7 @@ export function PowerDistrictFrame({
               </button>
               <button
                 onClick={() => {
+                  saving.current = false;
                   setHandoff(false);
                   setProblem("");
                 }}
@@ -224,7 +243,7 @@ export function PowerDistrictFrame({
               </button>
             </div>
           </div>
-        </div>
+        </dialog>
       ) : null}
     </section>
   );

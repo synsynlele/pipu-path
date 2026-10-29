@@ -21,6 +21,7 @@ describe("session redirects", () => {
     refresh.mockResolvedValue({ response, user: { id: "builder" } });
     const result = await proxy(new NextRequest("https://pipu.test/login"));
     expect(result.headers.get("location")).toBe("https://pipu.test/continue");
+    expect(result.headers.get("Cache-Control")).toBe("private, no-store");
     expect(result.cookies.get("sb-test-auth-token")).toMatchObject({
       value: "rotated",
       httpOnly: true,
@@ -55,5 +56,42 @@ describe("session redirects", () => {
       "https://pipu.test/account-deletion",
     );
     expect(result.cookies.get("sb-test-auth-token")?.value).toBe("rotated");
+  });
+  it("preserves only recognised city context through sign-in", async () => {
+    refresh.mockResolvedValue({ response: NextResponse.next(), user: null });
+    const result = await proxy(
+      new NextRequest(
+        "https://pipu.test/real-quests?district=water&next=https://bad.test",
+      ),
+    );
+    expect(
+      new URL(result.headers.get("location")!).searchParams.get("next"),
+    ).toBe("/real-quests?district=water");
+    const invalid = await proxy(
+      new NextRequest("https://pipu.test/real-quests?district=unknown"),
+    );
+    expect(
+      new URL(invalid.headers.get("location")!).searchParams.get("next"),
+    ).toBe("/real-quests");
+  });
+  it("returns signed-in players to the city-inspired action hub with rotated cookies", async () => {
+    const response = NextResponse.next();
+    response.cookies.set("sb-test-auth-token", "rotated");
+    refresh.mockResolvedValue({ response, user: { id: "builder" } });
+    const result = await proxy(
+      new NextRequest(
+        "https://pipu.test/login?next=%2Freal-quests%3Fdistrict%3Dwater",
+      ),
+    );
+    expect(result.headers.get("location")).toBe(
+      "https://pipu.test/real-quests?district=water",
+    );
+    expect(result.cookies.get("sb-test-auth-token")?.value).toBe("rotated");
+    const home = await proxy(new NextRequest("https://pipu.test/"));
+    expect(home.headers.get("location")).toBe("https://pipu.test/app");
+    const external = await proxy(
+      new NextRequest("https://pipu.test/login?next=https://bad.test"),
+    );
+    expect(external.headers.get("location")).toBe("https://pipu.test/continue");
   });
 });

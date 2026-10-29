@@ -18,7 +18,7 @@ export default function PublicPlayPage() {
         </Link>
       </header>
       <PowerDistrictFrame
-        questHref="/signup"
+        questHref="/real-quests"
         questLabel="Start my real Quest"
         initialFocus
       />

@@ -27,7 +27,7 @@ export default function HomePage() {
                 Play free →
               </Link>
               <Link
-                href="/signup"
+                href="/real-quests"
                 className="inline-flex min-h-14 items-center justify-center rounded-full border border-[#a2afc6] bg-white px-7 font-bold text-[#243b78]"
                 style={{
                   backgroundColor: "#ffffff",

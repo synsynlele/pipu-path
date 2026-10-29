@@ -35,7 +35,7 @@ describe("Stage 23 social-grade mobile and PWA foundation", () => {
 
   it("makes the same web product installable without caching private Builder state", () => {
     expect(manifest).toContain('display: "standalone"');
-    expect(manifest).toContain('start_url: "/continue"');
+    expect(manifest).toContain('start_url: "/"');
     expect(manifest).toContain('src: "/brand/pipupath-icon-192.png"');
     expect(manifest).toContain('src: "/brand/pipupath-icon-512.png"');
     expect(installPrompt).toContain("beforeinstallprompt");

@@ -1172,3 +1172,35 @@ all gates, including 527 unit/component tests, 251 integration tests, the city
 runtime suite and production build. Existing unauthenticated build diagnostics
 remain; exit status was successful. The correction is prepared as the second
 and final preview build for this iteration.
+
+## 2026-10-29 — Full journey release candidate
+
+Latest owner instruction authorises production after verification. Candidate is
+based on c75b576, retaining the newest single-row city controls and mobile/auth
+improvements. Public play now hands off to the protected Real Quests route.
+Recognised city context survives login. Real Quests uses the shared shell and
+actual account prerequisites, current Quest/reflection or active Project. All
+fourteen districts offer safe starting ideas, not fabricated assigned Quests.
+Native modal saving and cache-safe session redirects are included. No database
+migration, learner-data mutation, evidence submission or production release is
+claimed. Full repository checks and browser acceptance are pending.
+
+Pre-release dependency audit found six affected production packages, including
+critical Next.js exposure. The release candidate updates and pins the patched
+framework, validator and affected transitive dependencies in the lockfile;
+full validation and dependency audit must pass on that exact set. Installed
+web-app entry now respects public free play and signed-in Play-first Home.
+
+The patched production dependency audit (`npm audit --omit=dev`) reports zero
+known vulnerabilities. New framework lint rules retain explicit, documented
+exceptions for native APK downloads; switching those actions to App Router
+navigation would change download behaviour.
+
+Compatible development-tool patches, including Vitest and coverage 4.1.12,
+are also locked. The complete `npm audit` now reports zero known vulnerabilities
+across production and development dependencies.
+
+Final local validation passed: formatting, lint, types, city runtime/endurance,
+541 unit/component tests, 251 integration tests and the production build on
+Next.js 16.4.3. Complete dependency audit: zero known vulnerabilities. Live
+learner browser acceptance remains pending; this is not yet a production release.

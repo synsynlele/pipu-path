@@ -1546,3 +1546,36 @@ focus could scroll the hidden-overflow game container: projected labels extended
 its scroll area far below the viewport. Clip the world and label layer so only
 the bounded panels scroll. This requires one corrective preview build after the
 initial preview; production remains untouched. Full checks rerun for the CSS fix.
+
+## 2026-10-29 — Game to real-world release review
+
+Owner authorises full journey review and production release after verification.
+Use latest compact-controls source c75b576, preserving newer preview fixes rather
+than replacing them with the older local integration draft. Correct public play
+handoff, district-preserving sign-in, shared Real Quests navigation and account-
+authoritative next steps including identity, Discovery review and active Projects.
+Fourteen safe inspirations remain separate from generated Quests and earned XP.
+Use a native save modal, correct failed-save reporting and private session cache
+headers. No schema/RLS changes, real learner mutations or fabricated evidence.
+See `docs/product/game-to-real-world-release.md`. Release validation and live
+browser acceptance are pending; no production success is asserted here.
+
+Pre-release dependency audit found six affected production packages, including
+critical Next.js exposure. The release candidate updates and pins the patched
+framework, validator and affected transitive dependencies in the lockfile;
+full validation and dependency audit must pass on that exact set. Installed
+web-app entry now respects public free play and signed-in Play-first Home.
+
+The patched production dependency audit (`npm audit --omit=dev`) reports zero
+known vulnerabilities. New framework lint rules retain explicit, documented
+exceptions for native APK downloads; switching those actions to App Router
+navigation would change download behaviour.
+
+Compatible development-tool patches, including Vitest and coverage 4.1.12,
+are also locked. The complete `npm audit` now reports zero known vulnerabilities
+across production and development dependencies.
+
+Final local validation passed: formatting, lint, types, city runtime/endurance,
+541 unit/component tests, 251 integration tests and the production build on
+Next.js 16.4.3. Complete dependency audit: zero known vulnerabilities. Live
+learner browser acceptance remains pending; this is not yet a production release.

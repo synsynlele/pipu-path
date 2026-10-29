@@ -53,4 +53,71 @@ describe("City to Quest handoff", () => {
       screen.getByRole("button", { name: "Focus on my city ↗" }),
     ).toBeVisible();
   });
+  it("ignores forged state and saves only after explicit consent, retaining the city on storage failure", () => {
+    render(
+      <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,
+    );
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    ) as HTMLIFrameElement;
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: window,
+        data: { type: "pipupath:city:state", saved: true },
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Real Quests" }));
+    expect(screen.getByRole("dialog")).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Save my city, then continue" }),
+    );
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: frame.contentWindow,
+        data: { type: "pipupath:city:saved", ok: false },
+      }),
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent("could not save");
+    expect(push).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Stay in my city" }));
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: frame.contentWindow,
+        data: { type: "pipupath:city:saved", ok: true },
+      }),
+    );
+    expect(push).not.toHaveBeenCalled();
+  });
+  it("returns to the real Quest hub with only city district context", () => {
+    render(
+      <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,
+    );
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    ) as HTMLIFrameElement;
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: frame.contentWindow,
+        data: {
+          type: "pipupath:city:state",
+          saved: false,
+          district: "transport",
+          href: "https://bad.test",
+        },
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Real Quests" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Continue without saving" }),
+    );
+    expect(push).toHaveBeenCalledWith("/real-quests?district=transport");
+  });
 });

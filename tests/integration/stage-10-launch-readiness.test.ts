@@ -72,7 +72,8 @@ describe("Stage 10 MVP launch-readiness contract", () => {
   it("shares one progression resolver across Google and email authentication", () => {
     expect(callback).toContain("state.destination.path");
     expect(authActions).toContain("getAuthenticatedHomeState(client)");
-    expect(proxy).toContain('destination.pathname = "/continue"');
+    expect(proxy).toContain('path === "/" ? "/app" : "/continue"');
+    expect(redirects).toContain("readOnlyEntry");
     expect(progress.indexOf("snapshot.activeProjectId")).toBeLessThan(
       progress.indexOf('snapshot.journeyStatus === "active"'),
     );

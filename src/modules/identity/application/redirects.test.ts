@@ -76,4 +76,24 @@ describe("postAuthDestination", () => {
       postAuthDestination("/onboarding/discovery", "/reset-password"),
     ).toBe("/reset-password");
   });
+  it("lets read-only play and Quest orientation precede Discovery while preserving mandatory consent gates", () => {
+    expect(
+      postAuthDestination(
+        "/onboarding/discovery",
+        "/real-quests?district=water",
+      ),
+    ).toBe("/real-quests?district=water");
+    expect(postAuthDestination("/onboarding/discovery", "/build/play")).toBe(
+      "/build/play",
+    );
+    expect(postAuthDestination("/onboarding/identity", "/real-quests")).toBe(
+      "/onboarding/identity",
+    );
+    expect(postAuthDestination("/onboarding/guardian", "/real-quests")).toBe(
+      "/onboarding/guardian",
+    );
+    expect(
+      postAuthDestination("/onboarding/discovery", "/quests/private"),
+    ).toBe("/onboarding/discovery");
+  });
 });

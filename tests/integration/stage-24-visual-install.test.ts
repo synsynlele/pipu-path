@@ -74,8 +74,8 @@ describe("Stage 25 blue restoration and mobile installation", () => {
     expect(globals).toContain("@media (display-mode: standalone)");
   });
 
-  it("keeps the installed app resume-first and blue-aligned", () => {
-    expect(manifest).toContain('start_url: "/continue"');
+  it("keeps the installed app Play-first and blue-aligned", () => {
+    expect(manifest).toContain('start_url: "/"');
     expect(manifest).toContain('background_color: "#020817"');
     expect(manifest).toContain('theme_color: "#07142f"');
     expect(manifest).toContain('name: "Play"');

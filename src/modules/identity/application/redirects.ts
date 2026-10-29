@@ -63,6 +63,19 @@ export function postAuthDestination(
     requiredPath !== "/onboarding/identity"
   )
     return "/guardian";
+  // Read-only play and the action hub can explain the next prerequisite.
+  // Identity and guardian checks remain mandatory, as do all actual Quest gates.
+  const readOnlyEntry = [
+    "/app",
+    "/real-quests",
+    "/build/play",
+    "/build/adventures",
+  ].includes(new URL(safeRequestedPath, "https://pipupath.local").pathname);
+  if (
+    readOnlyEntry &&
+    !["/onboarding/identity", "/onboarding/guardian"].includes(requiredPath)
+  )
+    return safeRequestedPath;
   if (requiredPath !== "/app") return requiredPath;
   return safeRequestedPath;
 }

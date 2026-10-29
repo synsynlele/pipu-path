@@ -1595,12 +1595,15 @@ window.addEventListener("message", (event) => {
   if (ok) renderCasebook();
 });
 function persistPractice() {
-  reportParentState();
-  if (!saveEnabled) return;
+  if (!saveEnabled) {
+    reportParentState();
+    return;
+  }
   if (!savePractice(state)) {
     saveEnabled = false;
     toast("Device storage is unavailable. Progress is only in this open game.");
   }
+  reportParentState();
 }
 function closeCasebook() {
   $("casebook").hidden = true;

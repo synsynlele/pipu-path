@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/button";
+import { realWorldMove } from "@/modules/city/domain/real-world-move";
+import {
+  cityInspiration,
+  cityInterests,
+} from "@/modules/city/domain/city-inspiration";
 import { requireAuthenticatedHomeState } from "@/modules/identity/infrastructure/progress-dal";
 
 export const metadata: Metadata = {
@@ -17,50 +23,8 @@ export default async function RealQuestsPage({
     requireAuthenticatedHomeState(),
     searchParams,
   ]);
-  const quest = state.quest?.status === "locked" ? null : state.quest;
-  const destination = quest
-    ? `/quests/${encodeURIComponent(quest.id)}`
-    : state.journey?.status === "active"
-      ? "/quests"
-      : state.snapshot.hasHumanPotentialProfile
-        ? state.mission?.status === "active"
-          ? "/journey"
-          : "/mission"
-        : state.snapshot.discoveryStatus === "completed"
-          ? "/onboarding/discovery/profile"
-          : "/onboarding/discovery";
-  const stage = quest
-    ? quest.status === "evidence_submitted"
-      ? "Reflect on your real attempt"
-      : quest.status === "completed"
-        ? "Review your completed Quest"
-        : "Continue your current real Quest"
-    : state.journey?.status === "active"
-      ? "Open your next real-world challenge"
-      : "Prepare for your first real Quest";
-  const district =
-    typeof params.district === "string" &&
-    /^[a-z-]{1,32}$/.test(params.district)
-      ? params.district
-      : null;
-  const ideas: Record<string, string> = {
-    power:
-      "Notice how people cope when power stops. Ask what would genuinely help.",
-    market:
-      "Observe how food or everyday goods reach people. Where do delays occur?",
-    school:
-      "Ask someone which part of learning is hardest, and listen before suggesting.",
-    workshop:
-      "Find someone who repairs or makes useful things. Learn what slows their work.",
-    health:
-      "Ask how people learn about available health services; do not give medical advice.",
-    housing:
-      "Notice which shared spaces or home features could work better for residents.",
-    water:
-      "Explore where reliable clean water matters, without testing unsafe water.",
-    roads:
-      "Observe safe pedestrian routes and obstacles in a familiar public space.",
-  };
+  const move = realWorldMove(state);
+  const idea = cityInspiration(params.district);
   return (
     <main
       id="main-content"
@@ -79,14 +43,57 @@ export default async function RealQuestsPage({
           proof.
         </p>
       </section>
-      {district && ideas[district] ? (
+      <form
+        method="get"
+        className="mt-5 rounded-2xl border border-[#d9e1ed] bg-white p-5 text-[#20324e]"
+      >
+        <label htmlFor="city-interest" className="block font-bold">
+          Which need inspired you?
+        </label>
+        <select
+          id="city-interest"
+          name="district"
+          defaultValue={idea?.id ?? ""}
+          className="mt-3 min-h-12 w-full rounded-xl border border-[#b3c2d1] bg-white p-3 text-[#20324e]"
+        >
+          <option value="">Choose a need</option>
+          {cityInterests.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.title}
+            </option>
+          ))}
+        </select>
+        <button
+          type="submit"
+          className="mt-3 min-h-11 rounded-xl bg-[#5436df] px-5 font-bold text-white"
+        >
+          Explore this idea
+        </button>
+      </form>
+      {idea ? (
         <section className="mt-5 rounded-2xl border border-[#d6e8de] bg-[#f0f8f2] p-5 text-[#265343]">
           <p className="text-xs font-bold tracking-[0.12em] uppercase">
-            An idea to explore
+            A starting idea · {idea.title}
           </p>
-          <p className="mt-2 text-sm leading-6">{ideas[district]}</p>
+          <p className="mt-2 text-sm leading-6">{idea.idea}</p>
+          <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm">
+            <li>Notice the need in a familiar place, with permission.</li>
+            <li>Listen to someone you know who experiences it.</li>
+            <li>Sketch one small, safe improvement using what you have.</li>
+            <li>
+              Try it with appropriate adult guidance and ask for feedback.
+            </li>
+            <li>
+              Keep a sketch or notes, then explain what you would improve.
+            </li>
+          </ol>
+          <p className="mt-3 text-sm">
+            What changed for the person? What would you try next? Keep names,
+            faces and private details out of your notes.
+          </p>
           <p className="mt-2 text-xs">
-            This is inspiration, not an assigned or completed Quest.
+            This is inspiration, not an assigned or completed Quest, and earns
+            no XP. Follow your own Quest’s steps and evidence requirements.
           </p>
         </section>
       ) : null}
@@ -94,20 +101,14 @@ export default async function RealQuestsPage({
         <p className="text-xs font-bold tracking-widest text-[#5436df] uppercase">
           Your next genuine step
         </p>
-        <h2 className="mt-3 text-2xl font-bold text-[#20324e]">
-          {quest?.title ?? stage}
-        </h2>
-        <p className="mt-3 text-sm leading-7 text-[#62738b]">
-          {quest
-            ? "Your existing Quest belongs to your account and Journey. Continue it here; any proof and progress must come from real activity."
-            : "Your next step follows your existing Discovery, Mission and Journey. The game does not create a Quest or unlock one on its own."}
-        </p>
-        <Link
-          href={destination}
+        <h2 className="mt-3 text-2xl font-bold text-[#20324e]">{move.title}</h2>
+        <p className="mt-3 text-sm leading-7 text-[#62738b]">{move.detail}</p>
+        <ButtonLink
+          href={move.href}
           className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-[#5436df] px-6 font-bold text-white"
         >
-          {stage} →
-        </Link>
+          {move.label} →
+        </ButtonLink>
       </section>
       <div className="mt-5 flex flex-wrap gap-3">
         <Link
