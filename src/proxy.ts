@@ -1,3 +1,5 @@
+import { cityInspiration } from "@/modules/city/domain/city-inspiration";
+import { safeNextPath } from "@/modules/identity/application/redirects";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { requireSupabasePublicEnvironment } from "@/lib/config/env";
@@ -7,6 +9,7 @@ const authRoutes = ["/login", "/signup"];
 const protectedPrefixes = [
   "/app",
   "/build",
+  "/real-quests",
   "/connect",
   "/continue",
   "/discover",
@@ -64,6 +67,7 @@ export async function proxy(request: NextRequest) {
   // deliver those changes too, otherwise the next page sees stale auth.
   function sessionRedirect(destination: URL) {
     const redirected = NextResponse.redirect(destination);
+    redirected.headers.set("Cache-Control", "private, no-store");
     response.cookies.getAll().forEach((cookie) => {
       redirected.cookies.set(cookie);
     });
@@ -73,19 +77,36 @@ export async function proxy(request: NextRequest) {
   if (!user && protectedPrefixes.some((prefix) => path.startsWith(prefix))) {
     const destination = request.nextUrl.clone();
     destination.pathname = "/login";
-    destination.searchParams.set("next", path);
+    const interest =
+      path === "/real-quests"
+        ? cityInspiration(request.nextUrl.searchParams.get("district"))
+        : null;
+    destination.search = "";
+    destination.searchParams.set(
+      "next",
+      interest ? `${path}?district=${interest.id}` : path,
+    );
     return sessionRedirect(destination);
   }
 
   if (user && (path === "/" || authRoutes.includes(path))) {
     const destination = request.nextUrl.clone();
-    destination.pathname = "/continue";
+    destination.pathname = path === "/" ? "/app" : "/continue";
     if (
       path === "/login" &&
       request.nextUrl.searchParams.get("next") === "/account-deletion"
     )
       destination.pathname = "/account-deletion";
     destination.search = "";
+    const next = safeNextPath(request.nextUrl.searchParams.get("next"));
+    if (
+      path === "/login" &&
+      new URL(next, request.url).pathname === "/real-quests"
+    ) {
+      const target = new URL(next, request.url);
+      destination.pathname = target.pathname;
+      destination.search = target.search;
+    }
     return sessionRedirect(destination);
   }
 

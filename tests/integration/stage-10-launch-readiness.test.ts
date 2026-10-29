@@ -72,7 +72,8 @@ describe("Stage 10 MVP launch-readiness contract", () => {
   it("shares one progression resolver across Google and email authentication", () => {
     expect(callback).toContain("state.destination.path");
     expect(authActions).toContain("getAuthenticatedHomeState(client)");
-    expect(proxy).toContain('destination.pathname = "/continue"');
+    expect(proxy).toContain('path === "/" ? "/app" : "/continue"');
+    expect(redirects).toContain("readOnlyEntry");
     expect(progress.indexOf("snapshot.activeProjectId")).toBeLessThan(
       progress.indexOf('snapshot.journeyStatus === "active"'),
     );
@@ -108,33 +109,38 @@ describe("Stage 10 MVP launch-readiness contract", () => {
   });
 
   it("positions the public product without fake proof", () => {
-    expect(landing).toContain("The University for Human Potential");
-    expect(landing).toContain("Discover who you are");
-    expect(landing).toContain("Start Your Journey");
-    expect(landing).toContain("How PipuPath Works");
-    expect(landing).toContain("Private by default");
+    expect(landing).toContain("Your city. Your choices.");
+    expect(landing).toContain('href="/play"');
+    expect(landing).toContain("No account needed");
+    expect(landing).toContain("Real Quests");
+    expect(landing).toContain("real life");
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 
-  it("preserves the complete product beneath the five-destination navigation", () => {
-    for (const label of ["Home", "Discover", "Build", "Connect", "Profile"]) {
+  it("preserves deep routes beneath the three PipuPath 2.0 destinations", () => {
+    for (const label of ["Play", "Real Quests", "You"]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
-    expect(navigation.match(/label: "/g)).toHaveLength(5);
-    expect(navigation).toContain('pathname.startsWith("/journey")');
-    expect(navigation).toContain('pathname.startsWith("/portfolio")');
-    expect(navigation).toContain('pathname.startsWith("/opportunities")');
+    expect(navigation.match(/label: "/g)).toHaveLength(3);
+    for (const path of [
+      "/journey",
+      "/quests",
+      "/projects",
+      "/portfolio",
+      "/opportunities",
+    ]) {
+      expect(navigation).toContain(`path.startsWith("${path}")`);
+    }
     expect(navigation).toContain("PipuPath mobile navigation");
   });
 
-  it("builds Home from persisted data and one next destination", () => {
+  it("builds a game-first authenticated home without fabricating progress", () => {
     expect(home).toContain("requireAuthenticatedHomeState");
-    expect(home).toContain("state.destination.path");
-    expect(home).toContain("state.snapshot");
-    expect(home).toContain("state.totalXp");
-    expect(home).toContain("state.recentAchievement");
     expect(home).toContain("state.quest");
-    expect(home).toContain("state.project");
+    expect(home).toContain('href="/build/play"');
+    expect(home).toContain('href="/real-quests"');
+    expect(home).toContain('href="/profile"');
+    expect(home).toContain("real action");
     expect(home).not.toContain("fake");
   });
 

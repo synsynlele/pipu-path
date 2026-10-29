@@ -1011,3 +1011,571 @@ the www endpoint with only the direct-download certificate; the apex endpoint
 redirects and is not used by the current Android host configuration. Production
 verification must check the new associations through Google Digital Asset Links
 and a fresh launch of the Play-installed app. Android may cache verification.
+
+## 27 October 2026 — The Unbuilt City first episode candidate
+
+User authorised a real game using the current PipuPath template. Added a Build
+entry and authenticated `/build/play` episode using existing AppShell and UI
+primitives. Pure simulation rules and separate React presentation provide a
+seven-part curiosity-to-reflection flow, clear/rain attempts, three orientation
+roles, resource feedback and an optional downloadable experiment. No backend,
+XP, learner profile, evidence or safeguarding change. No automatic persistence
+or real-world completion is claimed. See product/unbuilt-city-first-episode.md.
+Validation and release evidence follow below.
+
+Validation: formatting, zero-warning lint, TypeScript, 446 unit/component tests
+with coverage and 251 integration tests passed. The initial build encountered
+an executor-only external node_modules symlink; a local dependency tree resolved
+it and the unmodified Next.js production build passed. Managed browser preview
+could not start because its launcher passes Vite-only `--host`/`--strictPort`
+flags to Next.js. No application workaround was added. Temporary QA route was
+removed; visual/mobile browser verification remains incomplete. Production is
+unchanged. The React checklist found no new server fetch, SDK, animation or
+cross-user state; stage transitions focus headings and controls are labelled.
+
+Final `npm run validate` passed in full after the dependency-path repair:
+format, lint, types, 446 unit/component tests with coverage, 251 integration tests
+and production build. Commit is retained locally. Automatic approval review
+rejected pushing new feature source to the public GitHub repository because
+explicit authorisation for that publication was not established. No push, PR,
+Vercel Preview or production deployment is claimed.
+
+## 27 October — visual city and connected Quest slice
+
+Authority: user requested more graphics, less writing and one PipuPath journey.
+Added a generated dusk environment, live illustrated build sites, consistent
+resource/action icons, short character voices, visual meters/targets, rain and
+crowd feedback. Removed the old diagram and duplicate text-heavy build cards.
+All primary controls remain semantic buttons with costs/effects in their labels.
+Motion respects reduced-motion; background is a 284 KB WebP, no video/3D engine.
+
+Shared JourneyPlayCard reads current Quest state on Home, Build, Journey and
+Quest. Owned Quest context is resolved on the server and carried into the game;
+its final CTA returns to the real Quest, never to an invented completion. Evidence
+and completed states prioritise real reflection/progression over practice.
+Regression tests cover malformed/foreign/locked context, exact destination
+continuity, changed-plan feedback, complete flow and the exact auth-return path.
+No schema, learner writes, XP rule or evidence contract changed. Game state is
+still tab-local; no cloud save, multiple episode catalogue or broad potential
+assessment is claimed. Full validation and browser evidence follow.
+
+Validation: npm run validate passed: formatting, zero-warning lint, strict types,
+452 unit/component tests with coverage, 251 integration tests and the production
+build. Focused city/redirect tests passed (20). Exact new-preview browser proof
+is pending; the previous plain episode's browser success does not certify the
+new visuals. No production promotion or phone-device pass is claimed.
+
+## 27 October — contrast repair and adaptive world decisions
+
+User reported matching text/background colours and repetitive worlds. Root cause:
+unlayered global `.bg-white`, anchor inheritance and button theme rules can override
+Tailwind game surfaces and intended CTA colours. Added scoped adventure light/dark
+rules with explicit foreground/background pairs; protected photograph labels with
+dark plates and fixed field/placeholder/primary/secondary states. No global theme
+was changed. Shared JourneyPlayCard now advertises all six worlds.
+
+Added five curated first-scene twists using the existing runner, not five copies
+of the UI. A successful plan unlocks a disruption. Choices remain present; the
+player adapts to new requirements or blocked options. Blocked selected options
+can be removed but not re-added and contribute no fictional benefit. Result
+feedback compares the latest test with the previous test in the same conditions.
+Resources have plain-language errors. Progressbar accessible values are bounded.
+No timer, lost lives, AI inference, XP or real completion was added. Practice stays
+tab-local. These are richer variations of the planning mechanic, not five new
+genres or validated retention improvements.
+
+Focused tests passed: 26, including every possible selection for each disruption,
+changed-solution requirements and the garden flow through initial success,
+disruption, revision and later scenes. Full validation and exact-preview visual
+proof follow; no live release is implied.
+
+Full npm run validate passed: format, zero-warning lint, TypeScript, 470
+unit/component tests with coverage, 251 integration tests and production build.
+No browser contrast or new-twist walkthrough pass is implied by automated tests.
+
+Exact-preview screenshot caught a second AppShell rule (`.pp-app-experience main`)
+forcing dark headings/numbers even after action labels were fixed. Added the
+more-specific dark-game main scope and summary foreground. Readable label/CTA
+pairs and the complete garden disruption/revision path were observed; full-screen
+contrast verification is repeated after this cascade correction.
+
+## 27 October — connected neighbourhood story slice
+
+Authority: user approved the proposed life-simulation-inspired direction. Added
+one original neighbourhood with tap/keyboard character movement, recurring
+fictional neighbours, three linked interaction types, visible creations and
+references to the earlier invitation motif. The opening sign, assembly and route
+puzzles introduce the new controls; entertainment/retention is not measured.
+
+Implemented a versioned, bounded, opt-in browser save scoped to authenticated user
+ID. Parse rejects malformed/oversized/invalid/inconsistent records. Saves contain
+only fictional enum/coordinate/tile/route state. Opt-out removes the save; unavailable
+storage never blocks play. No user profile/evidence/reflection/Quest narrative is
+stored. No cloud save, backend migration, multiplayer, XP or capability write.
+Actual Quest continuation is obtained server-side through the existing identity
+and progress DAL. An exact auth-return entry supports the protected new route.
+
+Focused city tests passed (32): full linked story, sequential gates, route blocking,
+assembly, corruption recovery, opt-in save/resume/opt-out, keyboard movement and
+storage failure. Types passed. Full validation and exact-preview checks follow.
+
+Full npm run validate passed: formatting, zero-warning lint, strict types, 476
+unit/component tests with coverage, 251 integration tests and production build.
+No physical-device, retention or real-life transfer result is claimed.
+
+Exact initial-preview walkthrough completed Ada's art invitation, Timi's assembly,
+and Mama Jo's five-move supply route. Earlier choices appeared in later dialogue;
+all three encounters resolved without any real Quest action. Opt-in device save
+reported success. Screenshot inspection found player/location-label overlap;
+spawn/arrival points now stand beside labels and neighbours have visible character
+markers. Full validation passed again (476 + 251 tests and production build).
+Save restoration and corrected-layout verification follow on the final preview.
+
+## 27 October — game discoverability and direct manipulation
+
+User requested visible game access, movement and building by moving objects.
+Added authenticated Games shortcuts and a complete directory across Build routes.
+The hub's first action enters the neighbourhood. Extracted reusable pointer-based
+stall workbench with touch capture, drag ghost, snap placement, swaps, outside-drop
+recovery and keyboard/tap parity. Added hold-to-walk controls, walking/arrival and
+placement motion, and an animated vehicle along the chosen delivery route.
+Reduced-motion alternatives preserve controls and route outcomes. No XP, evidence,
+profile, database or save-schema changes. Other worlds retain planning mechanics.
+Validation and deployed-browser results follow; no production release claimed.
+
+Full npm run validate passed: 478 unit/component tests, 251 integration tests,
+formatting, zero-warning lint, types and production build. Pointer tests cover
+material placement, swaps and outside drops; hold-control tests cover repeated
+movement, cancellation and timer cleanup. Existing linked-story/save tests pass.
+Deployed browser/touch/Android verification remains distinct from these checks.
+
+Authenticated preview fa706041: all seven game destinations and Games shortcut
+were present. Holding Walk right for 640ms moved the visible player from x42 to
+x60; releasing stopped the control. Native pointer drag placed a roof into cell
+1; dragging that placed roof to cell 2 moved it and emptied cell 1. No learner
+records were changed. Browser review caught low-contrast header shortcut text;
+explicit foreground fixes it. Drag threshold now measures from the gesture origin,
+so slow movements accumulate correctly. Final full validation and exact-preview
+review apply to these corrections; physical touch/Android proof remains pending.
+
+## 27 October — current game selection
+
+The neighbourhood link was permanently styled as selected. Replaced static styling
+with a small pathname-aware link boundary. Exactly the current game receives the
+gold marker, filled background and aria-current; /build/play does not also match
+its chapter routes. The server still owns catalogue composition. Regression walks
+all seven routes and returns to the hub without a false game selection.
+
+Full npm run validate passed: 479 unit/component and 251 integration tests,
+formatting, zero-warning lint, types and production build. Deployed route-switch
+proof follows separately. No production release or new level is implied.
+
+## 27 October — meaningful build systems across seven worlds
+
+User rejected static, basic neighbourhood puzzles despite improved path navigation.
+Added a shared pure simulation engine with distinct world briefs and rules for
+community backup services, flood-ready city infrastructure, irrigated food systems,
+riverbank treatment/wetlands, powered learning campuses, circular manufacturing
+and refrigerated food distribution. Replaced default world-route content with a
+live editable construction scene; preserved earlier runners/saves as Story practice.
+The existing 19-node path now projects only evaluated new-build proofs; legacy
+story progress is preserved separately and never relabelled as new completion.
+
+Supports construction, moving/swapping, refunds, camera pan/zoom, keyboard/tap
+alternatives, normal-operation tests followed by disruption/repair, capacity,
+network reach, energy, ecology and waste diagnostics. Motion represents connected
+service traffic and declared weather. This remains simplified 2D simulation; no
+claim of 3D realism, proven difficulty, retention or learning transfer.
+
+Added bounded opt-in user/world-scoped device saves with re-evaluated blueprint
+proofs; no schema, dependency, Quest/evidence/XP change. See product/world-build-
+simulations.md. Full validation and deployed browser evidence follow separately.
+
+Full npm run validate passed: 520 unit/component tests, 251 integration tests,
+formatting, zero-warning lint, strict types and production build. Reviewed fixture
+blueprints pass every mission under normal and disrupted conditions; alternate
+solutions pass. Negative cases cover lost access/power, incorrect river placement,
+unprocessed waste, drought/heat/flood consequences, reserved terrain and forged
+save proofs. UI coverage verifies two-stage completion, pause, save/resume,
+keyboard placement, diagnostics and path projection. Exact browser/mobile proof
+is reported independently; no engagement or real-world outcome is inferred.
+
+Browser review confirmed failed-plan diagnostics and manual construction of a
+connected access network. Review identified an asynchronous save opt-out race:
+a pending result could use the earlier save preference. The result now reads the
+current explicit preference; a regression opts out during the pending simulation
+and verifies that the removed save is not recreated.
+
+Deployed initial candidate walkthrough: built a district through UI placement,
+passed normal capacity/power/three-zone access, observed the flood disable two
+shelters and access, then placed two barriers to restore the same system. Visual
+review found three SVG face coordinates using scene origin instead of module
+origin; corrected them so facilities remain within their own construction tiles.
+Final checks and corrected-preview review follow. No real Quest action was taken.
+
+Corrected-preview inspection confirmed building faces are local to their tiles,
+but found one remaining solar-panel path closing to the scene origin. Corrected
+that coordinate too, and gave grid coordinates dark plates for readability over
+light roads. Browser geometry bounds and final visual proof must be checked after
+this correction; earlier gameplay proof remains separate from final art proof.
+
+## 28 October — Power District 3D integration candidate
+
+Implemented user-requested tap-once travel, obstacle-aware routes, station arrival
+interactions, Stop/re-target, and shared manual collision. Solid scene geometry
+and newly installed equipment determine clearance. Added authenticated
+`/build/power-district` with Hub/navigation entry and same-origin game frame.
+Real Quest links use existing server state; embedded reflection is in-session
+only. No practice XP/evidence writes, migrations, production promotion or changes
+to the existing seven-world simulations. See product/power-district-3d.md.
+Validation and exact-preview browser results will be recorded separately.
+
+Local validation: format check, zero-warning ESLint, strict TypeScript, 523
+unit/component tests with coverage and 251 integration tests passed. The build
+step initially rejected a workspace dependency symlink; replaced that local-only
+symlink with a real dependency directory and reran `npm run build` successfully.
+Navigation/model checks passed, including every energy configuration and both
+reduced-service plans. Browser software-3D review verified a single station tap
+starts travel, Ama and Bisi dialogue opens on arrival, and Stop cancels travel.
+GPU/mobile and authenticated deployed app checks remain separate.
+
+## 28 October — Replace the Unbuilt City entry and campaign
+
+Owner authorised GitHub source upload and Vercel preview deployment, then clarified
+this is a replacement game rather than a parallel app feature. Replaced the
+canonical city runner and published mission map, retired earlier challenge entry
+routes through authenticated recovery, preserved owned Quest validation and the
+real developmental return link. Kept a prototype URL alias. The only playable
+new mission is Power District; food and learning are explicitly planned.
+Fixed same-origin frame restrictions narrowly for the canonical game document.
+No database migration, save conversion, verified reward write or production push.
+
+Replacement validation: canonical `npm run validate` passed formatting,
+zero-warning lint, strict types, pure energy/navigation checks, 527 unit/component
+tests with coverage, 251 integration tests and the production Next.js build.
+New regressions cover canonical city replacement, planned/unplayable mission
+briefs, retired-route recovery, owned Quest context and scoped framing policy.
+The existing preview browser has an authenticated session for exact-deployment
+checks; preview publication and browser results are recorded separately.
+
+Exact-preview browser found inherited document CSP after client-side Hub → Play
+navigation. A route-only frame-src exception cannot update an already loaded
+parent document. Corrected the app's frame-src to permit self across navigation;
+frame-ancestors none and X-Frame-Options DENY still protect every application page
+except the explicitly bundled game document, which permits same-origin only.
+No external frame host is added. Updated the policy regression accordingly.
+
+Final authenticated-preview traversal confirmed campaign replacement, standard
+client-side entry, a working same-origin game frame, one-click station travel and
+arrival evidence, plus focus-view expansion. Corrected an observed dark-route
+anchor rule that made the light frame's real-Quest return link low contrast; the
+campaign CTA now uses the established readable action scope. These are shared
+surface fixes, not changes to Quest state or game rules. Physical phones and
+GPU rendering remain separate verification work; browser review used software 3D.
+
+## 28 October — One connected city and unified game identity
+
+Replaced the playable standalone workshop challenge with one city document at the
+existing /build/play entry. Power, market, collection/cooling and learning club
+share a clock, plan and city fund. Tested operating days commit evaluated results
+once; the disruption affects the existing city. Added financial timing, power
+interdependence, learning diagnostics, alternate agreements and handover. No game
+writes real XP, Quest proof or cloud state. Extracted renderer/navigation/theme
+and vendor assets into games/shared; preserved the old energy/navigation tests.
+Removed the alternative P logo and PipuPath brand from game documents. App and
+game controls share the established navy/blue/gold family. See the connected-world
+product contract for limitations, ownership and scale. Browser and release proof
+follow validation separately.
+
+Connected-city local validation passed: formatting, zero-warning lint, strict
+TypeScript, 527 unit/component tests, 251 integration tests, the production build
+and the new shared-city model checks alongside the existing energy/navigation
+checks. A later small intro-visibility correction passed syntax and targeted lint.
+Browser review confirmed the sole city wordmark and navy/gold interface, travel
+between the power station, market and school in the same scene, shared asset
+spending, collection configuration and the learning activity. Operating-day and
+exact-preview verification remain separate below/at handoff.
+
+## 28 October 2026 — Mobile resident animation crash isolated locally
+
+On `investigate/android-city-stability`, based on PR #100 head
+`75e5a5863b155af2a3a0db6762e15ba4c0680bc2`, reproduced a deterministic
+TypeError without WebGL: low-power scenes allocate one pedestrian per district,
+while thriving domain activity requests two. The animation indexed the missing
+second actor and read its position. An all-first-option path fails at decision 3
+(`repair-training`); timing depends on choices. The outer frame handler catches
+this before `renderer.render`, causing the graphics interruption banner. Recovery
+re-synchronises the same state and cannot repair the missing visual actor.
+
+Animation now bounds iteration by both domain residents and allocated actors.
+No extra mobile actors, domain changes, save changes or quality reduction.
+The former 36-decision mixed-path test passes before the fix, while the new
+regression fails with the reproduced TypeError before the fix and passes after.
+Coverage includes all 243 opening five-decision paths in each graphics mode,
+reduced motion, all three uniform 36-decision paths per mode and revisions.
+`npm run test:power-district` passes after the fix.
+
+This proves a mobile-specific logic defect and its correction, not the absence
+of separate GPU/context or memory faults. Physical Android, real WebGL endurance
+and exact-preview acceptance remain pending. No push, PR creation, Vercel build,
+deployment, production change or live student-data operation was performed.
+Repository Vercel config disables selected named branches only; this local branch
+is not covered. Do not push it assuming automatic previews are disabled.
+
+### Next acceptance gate — QA facilitator owned
+
+After local validation and one deliberately authorised preview, a QA facilitator
+should test the previously failing Android phone and a second ordinary Android
+phone. Record candidate commit, browser/version, device model, selected choices,
+first failure/error if any and whether the canvas continues drawing. Complete
+all 36 decisions, inspect the full city, revise early choices, rotate the phone,
+background/restore the page, and verify opt-in save/reload separately. Capture
+console/render errors where available. Do not call a fast model sequence a GPU
+endurance test. Escalate any recurrence with the exact choice path; the founder
+should not have to diagnose or approve each test run. No claim of 100x capacity
+or physical-device reliability follows from these local regressions.
+
+Local validation completed: `npm run validate` passed (formatting, lint, types,
+city regressions, 527 unit/component tests with coverage, 251 integration tests,
+and local production build). Build emitted two `authenticated_progress_load_failed`
+diagnostics while prerendering without live authentication; it exited successfully.
+No authenticated live-flow verification is inferred from the build.
+
+## 28 October 2026 — Street layout, answer-built infrastructure and continuous journeys
+
+Branch `feat/city-streets-and-construction` follows the owner-reported successful
+Android stability test of PR #101. User then reported teleporting between cases,
+poor city arrangement, generic decision props, traffic clipping, trees on roads
+and a blurry aerial view.
+
+A shared layout reserves streets; ten outer districts now have separate blocks
+with two empty development plots rather than completed buildings before choices.
+Scenery excludes street reservations. Deliveries use that street graph, separate
+lanes and continuous end turns. Vehicles yield with swept clearance checks around
+characters; guided walking can detour around a waiting vehicle. Long guided trips
+walk continuously instead of timed teleportation. Exceptional invalid-position
+recovery remains separate from normal travel.
+
+All 108 authored answers map to explicit physical consequences in
+`infrastructure.mjs`: e.g. housing plans build homes/drainage, rushed housing shows
+unfinished structures/water, safe crossings build crossings/lighting, and burning
+waste shows a burn site. Non-construction decisions install relevant equipment,
+desks or information boards rather than inventing unrelated buildings. Components
+assemble in height order; revision changes the same plot. Choice IDs and saves
+remain authoritative and backward-compatible. Foundation projects remain compact
+within existing premises; outer projects use larger reserved footprints.
+
+City inspection uses an angled orthographic camera, district focus, functional
+pinch/button/wheel zoom, no overview fog and restores the play camera afterward.
+Rendering stays capped at one device pixel per CSS pixel during overview rather
+than escalating to high-DPI buffers. Flat boxes no longer carry unnecessary
+subdivision. Software rendering now includes horizontal streets that its old
+wide-mesh filter incorrectly skipped. Lighting exposure is reduced for contrast.
+
+New geometry tests cover all 108 project footprints and street clearance, layout
+reservations, overview framing and a real simulated vehicle stop/resume. A JSDOM
+harness loads actual game setup and checks 108 full guided journeys, static tree/
+house street clearance, zoom and camera restoration. Canvas is stubbed in that
+harness: it is navigation/integration proof, not rendered WebGL or Android proof.
+Existing mobile resident regressions remain in place.
+
+The next acceptance gate is the same Android phone: walk across districts,
+inspect the whole and focused city, watch live builds and revisions, cross a
+traffic route, finish all 36 choices and open Chapter 3 enterprise operations.
+Chapter 3 already exists; this change does not claim Chapter 4 or a new economic
+simulation. No production merge or learner-data change is authorised here.
+
+Layout audit also moved the pre-existing market off the main road and relocated
+power decision equipment away from the traffic corridor. The runtime test now
+checks every static collision rectangle against streets, not just tree/house
+labels. Project geometry tests update world transforms before measuring bounds.
+
+Validation: final `npm run validate` passed formatting, lint, types, all city
+checks (including actual-runtime navigation and all-option plot checks), 527
+unit/component tests with coverage, 251 integration tests and local production
+build. The runtime harness deliberately falls back to a stub canvas and logs
+WebGL creation failure; it does not establish WebGL rendering performance.
+Build logged two unauthenticated progress-load diagnostics and exited 0.
+Courtyard planting, ambient people and enterprise stalls now use separate
+pedestrian/service anchors rather than the former road-crossing offsets.
+A single controlled preview is the next verification step; production is unchanged.
+
+## 28 October 2026 — Close-view software road correction
+
+Visual verification on preview `a62b3d1` exercised software rendering because
+cloud Chrome has WebGL disabled. Whole-city orthographic view, first answer's
+physical assembly and journey arrival worked. Close perspective revealed long
+road triangles disappearing at the camera clipping boundary after flattening
+box geometry. The software renderer discards a triangle when a vertex is beyond
+the clip plane; ordinary WebGL clipping does not have this limitation.
+
+Only software-mode surfaces longer than 40 world units now receive four-unit
+segments; buildings and WebGL boxes keep simple geometry. The fallback continues
+to skip broad ground slabs while retaining long narrow roads. A real software
+raster test samples a known road pixel: it fails with the unsegmented road
+(233,226,210 background) and passes with segmented geometry. This is pixel
+raster proof, independent of the stubbed navigation harness. A second controlled
+preview build is necessary to include this correction; no production change.
+
+Correction validation: `npm run validate` passed again, including the new real
+software raster pixel regression, 527 unit/component tests, 251 integration
+tests and local production build.
+
+## 28 October 2026 — Relevant construction and honest no-build consequences
+
+Owner rejected the prior iteration's generic miniatures and automatic construction
+for poor answers. Branch `feat/meaningful-city-infrastructure` changes the
+construction contract: 108 explicit stable choice-ID mappings now distinguish
+working, limited, failed and no-construction outcomes. Thirty promises, ignored
+needs, cancellations and other non-building choices add no asset at all. An
+advert may appear without counting as a clinic; hazardous piles or burn sites
+are physical consequences, not useful infrastructure.
+
+Recognisable, plot-sized health centres, pharmacies, public technology hubs,
+offline service centres, waterworks, housing courts, industrial machinery bays,
+training workshops, civic halls and arts facilities replace generic tiny houses
+and props. Foundation tools now use equipment scale in their existing premises.
+Good and poor technology choices visibly differ: a usable hub versus unfinished
+steel framing or a registration gate. Models use shared low-poly geometry and
+no downloaded assets or new texture maps. Local actual-software-raster review
+verified health/technology/water/manufacturing/housing and no-build examples.
+
+A safe crossing is now built on its designated road in the transport district;
+it is a walkable surface rather than a miniature road placed in a courtyard.
+Normal project collision reservations and street clearance remain in force.
+
+Answered-decision progression and existing saves remain unchanged. City summaries
+now distinguish physical infrastructure, working solutions and unresolved needs.
+Service capacity is reduced by limited plans; districts with no productive
+solution have zero service, attract no new ambient residents or deliveries and
+have no automatic enterprise production capacity. Revising removes the old
+consequence from the same plot and updates the same city, rather than rewarding
+every answer with another completed building. This is fictional simulation,
+not verified learning, health outcomes, money or XP.
+
+New policy checks cover all 108 mappings, thirty empty outcomes, intended sector
+assets, zero usefulness for promises and negative revision effects. Existing
+scene/geometry tests now assert the requested absence of construction as well
+as its presence. The real software-road pixel check and 108 actual-runtime
+journeys remain acceptance tests. Physical Android and actual GPU performance
+must be checked separately; no production release is implied.
+
+Validation: final `npm run validate` passed formatting, lint, types, all city
+checks including semantic/no-build contracts, 108 navigation journeys and the
+actual software-road pixel regression, 527 unit/component tests with coverage,
+251 integration tests and production build. The build emitted two unauthenticated
+progress-load diagnostics and exited successfully. No physical Android or GPU
+performance claim is inferred. One preview build is planned for visual review.
+
+## 29 October 2026 — Repair decision-16 Chapter 2 handoff
+
+User reported that questions stopped after the 16 foundation decisions. The
+actual Chapter 2 reveal referenced `summary.working` and `summary.unresolved`,
+but only `city` existed in that function. Rendering threw `summary is not
+defined` after setting the chapter cursor and before creating its start button
+or auto-advance timer. The earlier summary UI update introduced the error.
+
+Use `city.workingSolutions`, `city.unresolvedNeeds` and the actual infrastructure
+count in the reveal. Its wording no longer claims new residents are arriving
+regardless of the player's choices. Same-device saves and chapter prerequisites
+are unchanged.
+
+The real-runtime regression reproduced the precise decision-16 exception before
+the fix. It now executes answer clicks, construction callbacks, outcome timers,
+chapter start controls and travel through two full 36-answer playthroughs, using
+both manual and automatic starts. It also pauses/resumes the chapter and checks
+background-tab recovery. Unlike the old route tests, this exercises the actual
+handoff UI and callbacks instead of jumping straight to each case.
+
+ESLint now keeps `no-undef` enabled for the standalone JavaScript city runner,
+with its explicit browser globals. This catches an undefined summary variable
+before a rarely visited screen reaches students. The framework TypeScript rules
+remain unchanged. Runtime canvas is stubbed; physical Android/GPU checks remain
+separate. Preview only, no production merge or learner-record mutation.
+
+Validation: `npm run validate` passed all gates, 527 unit/component tests,
+251 integration tests, the full city suite and local production build. The
+new static check also rejects the previous runner with two `summary is not
+defined` errors. Pre-fix runtime proof fails at decision 16; post-fix manual,
+automatic and background-resume handoffs continue through all 36 answers.
+
+## 29 October 2026 — Better lives city inspection
+
+- Added a pure, reusable human-purpose projection for all fourteen districts,
+  derived from existing allowlisted choice IDs and construction statuses.
+- My City exposes exact authored results and trade-offs in expandable sections,
+  distinguishes working plans from unmet needs, and links directly into the
+  existing revision controller without losing the original journey.
+- Updated entry and inspection copy around building a city that improves life.
+  No extra scene objects, animation loops, saved fields, account records or XP.
+- Added all-108-choice projection checks, revision checks and actual DOM/runtime
+  coverage for inspection, revision entry and returning without changes.
+- Full `npm run validate` passed: formatting, lint, types, city suite,
+  527 unit/component tests, 251 integration tests and local production build.
+  Known unauthenticated build diagnostics remain; build exited successfully.
+- Scope: fictional game outcomes, not measured wellbeing or a new resident
+  simulation. Preview-only delivery; production remains separate.
+
+## 29 October 2026 — Clearer city view and Chapter 4 handoff
+
+- Replaced the navigation strip with a native City menu disclosure; selecting
+  an option closes it, opening pauses the journey, Escape restores focus.
+- Construction response occupies the question's existing bottom corner with
+  identical responsive width/position limits, rather than a second central card.
+- Added the seven-day Chapter 3 completion CTA and gated permanent Chapter 4
+  entry. Three resilience rounds allocate actual finite supplies across care,
+  food and repairs with maintenance effects on later disruptions.
+- Deterministic seed/choice replay preserves results; backward-compatible
+  opt-in device saves store no personal text. Isolated Chapter 4 restart keeps
+  the city/Chapter 3; restarting Chapter 3 clears its dependent attempt.
+- Shared renderer consumes calculated Chapter 4 shipments/request signals;
+  no extra scene assets or animation pools. No real health/learning/XP claims.
+- Targeted checks passed: 27 policy sequences, resource conservation, actual
+  seven-day UI handoff, three-round UI flow, reopening, city inspection and reset.
+  Full `npm run validate` passed formatting, lint, types, all city checks,
+  527 unit/component tests, 251 integration tests and local production build.
+  Known unauthenticated build diagnostics emitted; exit status was successful.
+
+### Browser proof and viewport correction
+
+The actual browser completed 36 choices, all seven Chapter 3 days and the
+Chapter 4 handoff; it saved/reloaded after one challenge and completed all three.
+DOM measurements confirmed question/feedback width and right/bottom coordinates
+match. Dropdown, pause and Escape dismissal worked. Visual review then found
+focus could scroll the hidden-overflow game container: projected labels extended
+its scroll area far below the viewport. Clip the world and label layer so only
+the bounded panels scroll. This requires one corrective preview build after the
+initial preview; production remains untouched. Full checks rerun for the CSS fix.
+
+## 2026-10-29 — Game to real-world release review
+
+Owner authorises full journey review and production release after verification.
+Use latest compact-controls source c75b576, preserving newer preview fixes rather
+than replacing them with the older local integration draft. Correct public play
+handoff, district-preserving sign-in, shared Real Quests navigation and account-
+authoritative next steps including identity, Discovery review and active Projects.
+Fourteen safe inspirations remain separate from generated Quests and earned XP.
+Use a native save modal, correct failed-save reporting and private session cache
+headers. No schema/RLS changes, real learner mutations or fabricated evidence.
+See `docs/product/game-to-real-world-release.md`. Release validation and live
+browser acceptance are pending; no production success is asserted here.
+
+Pre-release dependency audit found six affected production packages, including
+critical Next.js exposure. The release candidate updates and pins the patched
+framework, validator and affected transitive dependencies in the lockfile;
+full validation and dependency audit must pass on that exact set. Installed
+web-app entry now respects public free play and signed-in Play-first Home.
+
+The patched production dependency audit (`npm audit --omit=dev`) reports zero
+known vulnerabilities. New framework lint rules retain explicit, documented
+exceptions for native APK downloads; switching those actions to App Router
+navigation would change download behaviour.
+
+Compatible development-tool patches, including Vitest and coverage 4.1.12,
+are also locked. The complete `npm audit` now reports zero known vulnerabilities
+across production and development dependencies.
+
+Final local validation passed: formatting, lint, types, city runtime/endurance,
+541 unit/component tests, 251 integration tests and the production build on
+Next.js 16.4.3. Complete dependency audit: zero known vulnerabilities. Live
+learner browser acceptance remains pending; this is not yet a production release.

@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "PipuPath",
     description:
       "Discover, develop and deploy your potential through real-world action.",
-    start_url: "/continue",
+    start_url: "/",
     scope: "/",
     display: "standalone",
     background_color: "#020817",
@@ -48,31 +48,9 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
     shortcuts: [
-      {
-        name: "Home",
-        short_name: "Home",
-        url: "/app",
-      },
-      {
-        name: "Discover",
-        short_name: "Discover",
-        url: "/discover",
-      },
-      {
-        name: "Build",
-        short_name: "Build",
-        url: "/build",
-      },
-      {
-        name: "Connect",
-        short_name: "Connect",
-        url: "/connect",
-      },
-      {
-        name: "Profile",
-        short_name: "Profile",
-        url: "/profile",
-      },
+      { name: "Play", short_name: "Play", url: "/play" },
+      { name: "Real Quests", short_name: "Quests", url: "/real-quests" },
+      { name: "You", short_name: "You", url: "/profile" },
     ],
   };
 }

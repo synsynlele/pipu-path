@@ -1,0 +1,60 @@
+import assert from "node:assert/strict";
+import { CITY_CASES, saveDecision } from "../../public/games/city/cases.mjs";
+import {
+  reviewedCases,
+  previousKeptCase,
+  canRevise,
+} from "../../public/games/city/decision-review.mjs";
+import { recoverJourney } from "../../public/games/city/journey-flow.mjs";
+import { deriveBuilderCity } from "../../public/games/city/city-growth.mjs";
+const [first, second, third, fourth] = CITY_CASES;
+let decisions = {};
+assert.equal(previousKeptCase(decisions, first.id), null);
+assert.equal(previousKeptCase(decisions, null), null);
+assert.deepEqual(reviewedCases(decisions), []);
+assert.equal(canRevise(decisions, first.id), false);
+decisions = saveDecision(decisions, first.id, first.options[0].id);
+decisions = saveDecision(decisions, second.id, second.options[0].id);
+decisions = saveDecision(decisions, third.id, third.options[0].id);
+assert.equal(previousKeptCase(decisions, fourth.id)?.id, third.id);
+assert.equal(previousKeptCase(decisions, third.id)?.id, second.id);
+assert.equal(previousKeptCase(decisions, first.id), null);
+assert.equal(previousKeptCase(decisions, null)?.id, third.id);
+assert.equal(reviewedCases(decisions).length, 3);
+assert.equal(canRevise(decisions, first.id), true);
+assert.equal(canRevise(decisions, "made-up"), false);
+const checkpoint = {
+  caseId: fourth.id,
+  stage: "question",
+  status: "paused",
+  choiceId: null,
+};
+const before = recoverJourney({ ...checkpoint, decisions });
+const cityBefore = deriveBuilderCity(decisions);
+const revised = { ...decisions, [first.id]: first.options[1].id };
+const after = recoverJourney({ ...checkpoint, decisions: revised });
+assert.deepEqual(
+  before,
+  after,
+  "Reviewing a past decision must not alter the paused main-journey checkpoint",
+);
+assert.notEqual(
+  deriveBuilderCity(revised).districts.workshop.direct,
+  cityBefore.districts.workshop.direct,
+  "Changing a past answer must change the city",
+);
+assert.equal(
+  previousKeptCase(revised, fourth.id)?.id,
+  third.id,
+  "Review does not consume earlier cases",
+);
+let full = {};
+for (const c of CITY_CASES) full[c.id] = c.options[0].id;
+assert.equal(previousKeptCase(full, null)?.id, CITY_CASES.at(-1).id);
+assert.equal(
+  recoverJourney({ decisions: full, stage: "complete" }).stage,
+  "complete",
+);
+console.log(
+  "PASS: review any saved choice, find previous answers, change architecture without losing the main journey and revisit after completion.",
+);

@@ -10,6 +10,17 @@ describe("safeNextPath", () => {
     expect(safeNextPath("/guardian")).toBe("/guardian");
     expect(safeNextPath("/onboarding/guardian")).toBe("/onboarding/guardian");
     expect(safeNextPath("/reset-password")).toBe("/reset-password");
+    expect(safeNextPath("/build/play?quest=abc")).toBe("/build/play?quest=abc");
+    expect(safeNextPath("/build/adventures")).toBe("/build/adventures");
+    expect(safeNextPath("/real-quests?district=power")).toBe(
+      "/real-quests?district=power",
+    );
+    expect(safeNextPath("/build/play/neighbourhood-garden-v1")).toBe(
+      "/build/play/neighbourhood-garden-v1",
+    );
+    expect(safeNextPath("/build/unknown")).toBe("/app");
+    expect(safeNextPath("/build/neighbourhood")).toBe("/build/neighbourhood");
+    expect(safeNextPath("/build/neighbourhood-evil")).toBe("/app");
   });
 
   it("rejects external, protocol-relative and unknown redirects", () => {
@@ -51,11 +62,38 @@ describe("postAuthDestination", () => {
 
   it("honours a safe requested route after the developmental loop is ready", () => {
     expect(postAuthDestination("/app", "/portfolio")).toBe("/portfolio");
+    expect(postAuthDestination("/app", "/real-quests")).toBe("/real-quests");
+    expect(postAuthDestination("/app", "/build/adventures")).toBe(
+      "/build/adventures",
+    );
+    expect(
+      postAuthDestination("/app", "/build/play/neighbourhood-garden-v1"),
+    ).toBe("/build/play/neighbourhood-garden-v1");
   });
 
   it("allows a verified recovery callback to reach password reset", () => {
     expect(
       postAuthDestination("/onboarding/discovery", "/reset-password"),
     ).toBe("/reset-password");
+  });
+  it("lets read-only play and Quest orientation precede Discovery while preserving mandatory consent gates", () => {
+    expect(
+      postAuthDestination(
+        "/onboarding/discovery",
+        "/real-quests?district=water",
+      ),
+    ).toBe("/real-quests?district=water");
+    expect(postAuthDestination("/onboarding/discovery", "/build/play")).toBe(
+      "/build/play",
+    );
+    expect(postAuthDestination("/onboarding/identity", "/real-quests")).toBe(
+      "/onboarding/identity",
+    );
+    expect(postAuthDestination("/onboarding/guardian", "/real-quests")).toBe(
+      "/onboarding/guardian",
+    );
+    expect(
+      postAuthDestination("/onboarding/discovery", "/quests/private"),
+    ).toBe("/onboarding/discovery");
   });
 });

@@ -31,3 +31,25 @@ export function resolveTrustedRequestOrigin(
   if (protocol === "http" && !localHost.test(host)) return configured.origin;
   return `${protocol}://${host}`;
 }
+
+/**
+ * OAuth PKCE cookies are host-scoped. Start Google sign-in on the stable Vercel
+ * branch alias so a per-commit preview and its callback never use two hosts.
+ * Production domains, localhost and non-Vercel hosts are never redirected.
+ */
+export function previewGoogleHandoffOrigin(
+  currentHostname: string,
+  branchHostname: string | undefined,
+  environment: string | undefined,
+) {
+  if (environment !== "preview" || !branchHostname) return null;
+  const branch = branchHostname.toLowerCase();
+  const previewHostPattern = /^[a-z0-9-]+\.vercel\.app$/i;
+  if (
+    !previewHostPattern.test(currentHostname) ||
+    !previewHostPattern.test(branch) ||
+    currentHostname.toLowerCase() === branch
+  )
+    return null;
+  return `https://${branch}`;
+}

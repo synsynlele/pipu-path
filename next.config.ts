@@ -12,7 +12,7 @@ const toolbarImage = enableVercelToolbar
 const toolbarConnect = enableVercelToolbar
   ? " https://vercel.live wss://ws-us3.pusher.com"
   : "";
-const toolbarFrame = enableVercelToolbar ? "https://vercel.live" : "'none'";
+const toolbarFrame = enableVercelToolbar ? " https://vercel.live" : "";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -26,7 +26,7 @@ const contentSecurityPolicy = [
   `img-src 'self' data: blob: https:${toolbarImage}`,
   "media-src 'self' blob:",
   `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com${toolbarConnect}`,
-  `frame-src ${toolbarFrame}`,
+  `frame-src 'self'${toolbarFrame}`,
   "worker-src 'self' blob:",
   "upgrade-insecure-requests",
 ].join("; ");
@@ -62,7 +62,22 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      {
+        source: "/games/city/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: contentSecurityPolicy.replace(
+              "frame-ancestors 'none'",
+              "frame-ancestors 'self'",
+            ),
+          },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
+    ];
   },
 };
 

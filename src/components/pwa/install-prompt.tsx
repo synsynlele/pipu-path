@@ -203,6 +203,8 @@ function useInstallExperience() {
     if (!experience.ready || experience.installed) return;
 
     if (experience.androidWebsite) {
+      // Native APK downloads require document navigation, not an App Router fetch.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign(ANDROID_APK_PATH);
       return;
     }

@@ -12,7 +12,7 @@ describe("AppNavigation Builder Guide orientation", () => {
     });
 
     expect(
-      within(navigation).getByRole("link", { name: "Profile" }),
+      within(navigation).getByRole("link", { name: "You" }),
     ).toHaveAttribute("aria-current", "page");
   });
 });

@@ -41,7 +41,8 @@ const connectTables = [
 describe("Stage 11 Builder Connect and Journey continuity contract", () => {
   it("protects the complete Connect route family", () => {
     expect(proxy).toContain('"/connect"');
-    expect(navigation).toContain('label: "Connect"');
+    expect(navigation).toContain('label: "You"');
+    expect(navigation).toContain('path.startsWith("/connect")');
     for (const path of [
       "src/app/connect/page.tsx",
       "src/app/connect/layout.tsx",

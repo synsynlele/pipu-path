@@ -144,6 +144,8 @@ export function LandingDistributionButton() {
 
   async function runDistributionAction() {
     if (mode === "android") {
+      // Native APK downloads require document navigation, not an App Router fetch.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign(ANDROID_DOWNLOAD_PATH);
       return;
     }

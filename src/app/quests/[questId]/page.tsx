@@ -1,3 +1,4 @@
+import { JourneyPlayCard } from "@/modules/city/ui/journey-play-card";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button";
@@ -149,6 +150,8 @@ export default async function QuestFocusPage({
           <QuestPhasePath status={status} />
         </div>
       </section>
+
+      <JourneyPlayCard quest={quest} journeyTitle={journey?.title} />
 
       <Surface className="mt-5 p-5 sm:p-6">
         <p className="text-primary text-xs font-semibold tracking-[0.14em] uppercase">

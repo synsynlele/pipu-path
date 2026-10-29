@@ -10,20 +10,20 @@ const proxy = read("src/proxy.ts");
 const installPrompt = read("src/components/pwa/install-prompt.tsx");
 
 describe("Stage 23 social-grade mobile and PWA foundation", () => {
-  it("presents five human destinations while preserving deep product routes beneath them", () => {
-    for (const label of ["Home", "Discover", "Build", "Connect", "Profile"]) {
+  it("presents three clear destinations while preserving deep product routes", () => {
+    for (const label of ["Play", "Real Quests", "You"]) {
       expect(navigation).toContain(`label: "${label}"`);
     }
-    expect(navigation).toContain("grid-cols-5");
-    expect(navigation).toContain('pathname.startsWith("/journey")');
-    expect(navigation).toContain('pathname.startsWith("/portfolio")');
-    expect(navigation).toContain('pathname.startsWith("/opportunities")');
+    expect(navigation).toContain("grid-cols-3");
+    for (const path of ["/journey", "/portfolio", "/opportunities"]) {
+      expect(navigation).toContain(`path.startsWith("${path}")`);
+    }
   });
 
   it("keeps Home and Discover action-led instead of introducing an infinite social feed", () => {
-    expect(home).toContain("nextMove(");
-    expect(home).toContain("Today&apos;s Next Step");
-    expect(home).toContain("Your momentum");
+    expect(home).toContain('href="/build/play"');
+    expect(home).toContain('href="/real-quests"');
+    expect(home).toContain("Your potential, your growth");
     expect(home).toContain("requireAuthenticatedHomeState");
     expect(discover).toContain(
       "Useful places based on your current adventure.",
@@ -35,7 +35,7 @@ describe("Stage 23 social-grade mobile and PWA foundation", () => {
 
   it("makes the same web product installable without caching private Builder state", () => {
     expect(manifest).toContain('display: "standalone"');
-    expect(manifest).toContain('start_url: "/continue"');
+    expect(manifest).toContain('start_url: "/"');
     expect(manifest).toContain('src: "/brand/pipupath-icon-192.png"');
     expect(manifest).toContain('src: "/brand/pipupath-icon-512.png"');
     expect(installPrompt).toContain("beforeinstallprompt");

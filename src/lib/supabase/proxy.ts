@@ -38,7 +38,7 @@ export async function refreshSupabaseSession(request: NextRequest) {
   const client = createServerClient<Database>(url, key, {
     cookies: {
       getAll: () => request.cookies.getAll(),
-      setAll: (cookiesToSet) => {
+      setAll: (cookiesToSet, cacheHeaders) => {
         cookiesToSet.forEach(({ name, value }) =>
           request.cookies.set(name, value),
         );
@@ -46,6 +46,10 @@ export async function refreshSupabaseSession(request: NextRequest) {
         cookiesToSet.forEach(({ name, value, options }) =>
           response.cookies.set(name, value, options),
         );
+        Object.entries(cacheHeaders ?? {}).forEach(([name, value]) =>
+          response.headers.set(name, value),
+        );
+        response.headers.set("Cache-Control", "private, no-store");
       },
     },
   });

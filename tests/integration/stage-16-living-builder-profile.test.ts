@@ -71,7 +71,7 @@ describe("Stage 16 Living Builder Profile structure", () => {
     expect(page.replace(/\s+/g, " ")).toContain(
       "Nothing in your private development space becomes public automatically.",
     );
-    expect(nav).toContain('{ label: "Profile", href: "/profile"');
-    expect(nav).toContain('pathname.startsWith("/portfolio")');
+    expect(nav).toContain('{ label: "You", href: "/profile"');
+    expect(nav).toContain('path.startsWith("/portfolio")');
   });
 });

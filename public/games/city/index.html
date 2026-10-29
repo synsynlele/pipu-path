@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#efe8d9" />
+    <title>The Unbuilt City · Living City</title>
+    <link rel="stylesheet" href="../shared/city-theme.css" />
+  </head>
+  <body>
+    <main id="game" aria-label="The Unbuilt City interactive world">
+      <canvas
+        id="world"
+        aria-label="The Unbuilt City 3D world. Tap the highlighted next step to walk automatically. Drag to look around or tap an open spot to walk there."
+      ></canvas>
+      <div id="vignette"></div>
+      <header>
+        <a class="brand" href="#" aria-label="The Unbuilt City controls"
+          ><b
+            >The Unbuilt City<small
+              >BUILD YOUR CITY. MAKE LIFE BETTER.</small
+            ></b
+          ></a
+        >
+        <div class="district">
+          <span class="live-dot"></span> ONE CONNECTED CITY
+          <span class="divider">/</span> CITY DESK
+        </div>
+      </header>
+      <div id="city-hud" hidden role="region" aria-label="City controls">
+        <div class="city-hud-left">
+          <strong class="city-hud-title">The Unbuilt City</strong>
+          <div class="city-hud-navigation">
+            <span id="chapter-badge">Chapter 1</span>
+            <nav id="city-tools" hidden aria-label="City navigation">
+              <details id="city-menu">
+                <summary aria-controls="city-menu-options">City menu ▾</summary>
+                <div id="city-menu-options">
+                  <button id="journey-back" type="button" disabled hidden>
+                    ↶ Last decision
+                  </button>
+                  <button
+                    id="cases-toggle"
+                    type="button"
+                    aria-controls="casebook"
+                    aria-expanded="false"
+                  >
+                    Decisions <span id="decision-count">0/36</span>
+                  </button>
+                  <button
+                    id="city-status-toggle"
+                    type="button"
+                    aria-controls="city-status"
+                    aria-expanded="false"
+                  >
+                    My City <span id="city-health-badge">0/14</span>
+                  </button>
+                  <button
+                    id="view-city-toggle"
+                    type="button"
+                    aria-controls="city-view"
+                    aria-expanded="false"
+                  >
+                    View My City
+                  </button>
+                  <button
+                    id="opportunities-toggle"
+                    type="button"
+                    aria-controls="opportunities-panel"
+                    aria-expanded="false"
+                    title="Finish the 36 city decisions to open Chapter 3"
+                    disabled
+                  >
+                    Opportunities
+                  </button>
+                  <button id="city-map" type="button">City map</button>
+                  <button
+                    id="resilience-toggle"
+                    type="button"
+                    disabled
+                    aria-controls="resilience-panel"
+                    aria-expanded="false"
+                  >
+                    Chapter 4 · Resilience
+                  </button>
+                  <button
+                    id="districts-toggle"
+                    type="button"
+                    aria-controls="district-directory"
+                    aria-expanded="false"
+                  >
+                    Places (14)
+                  </button>
+                  <button
+                    id="build-toggle"
+                    type="button"
+                    aria-controls="build-dock"
+                  >
+                    Build
+                  </button>
+                  <button id="explore-free" type="button">Explore</button>
+                  <button
+                    id="guide-toggle"
+                    type="button"
+                    aria-controls="mission"
+                    aria-expanded="false"
+                  >
+                    Guide
+                  </button>
+                </div>
+              </details>
+            </nav>
+            <div
+              id="journey-bar"
+              hidden
+              role="region"
+              aria-label="Automatic builder journey"
+            >
+              <span id="journey-status" aria-live="polite"
+                >Your city journey is running</span
+              >
+              <div class="journey-actions">
+                <button id="journey-toggle" class="primary" type="button">
+                  Pause journey
+                </button>
+              </div>
+            </div>
+            <div class="top-actions">
+              <button
+                id="sound"
+                class="icon"
+                aria-label="Turn sound on"
+                title="Sound"
+              >
+                ♫</button
+              ><button
+                id="help"
+                class="icon"
+                aria-label="Open controls"
+                title="Controls"
+              >
+                ?</button
+              ><button
+                id="reset"
+                class="icon"
+                aria-label="Restart mission"
+                title="Restart"
+              >
+                ↻
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="weather">
+        <span id="weather-icon">☀</span
+        ><span id="weather-title">A bright beginning</span
+        ><span class="weather-time">08:00</span>
+      </div>
+
+      <section
+        id="district-directory"
+        class="panel"
+        hidden
+        aria-label="Explore all 14 districts"
+      >
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">ONE CONNECTED WORLD</div>
+            <h2>Explore the 14 districts</h2>
+            <p>
+              Four foundation districts are available first. Complete their 16
+              decisions to unlock challenges in the other ten districts.
+            </p>
+          </div>
+          <button
+            id="district-close"
+            type="button"
+            aria-label="Close district directory"
+          >
+            ×
+          </button>
+        </div>
+        <div id="district-list"></div>
+      </section>
+      <section
+        id="city-status"
+        class="panel"
+        hidden
+        aria-label="Your changing city"
+      >
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">
+              BUILD YOUR CITY. MAKE THE WORLD A BETTER PLACE.
+            </div>
+            <h2>A better life for your people</h2>
+            <p id="city-status-summary">
+              Your decisions shape buildings, services and neighbouring
+              districts.
+            </p>
+          </div>
+          <button
+            id="city-status-close"
+            type="button"
+            aria-label="Close My City"
+          >
+            ×
+          </button>
+        </div>
+        <div id="city-status-list"></div>
+        <div class="city-state-disclaimer">
+          Fictional builder simulation. These numbers are not grades, money or
+          verified capabilities. All choices can be revised.
+        </div>
+      </section>
+      <section
+        id="city-view"
+        hidden
+        role="region"
+        aria-label="View the city you have built"
+      >
+        <div class="city-view-header">
+          <div class="city-view-label">
+            <strong>🏙️ My Built City</strong>
+            <span id="city-view-summary" role="status" aria-live="polite"
+              >Your city so far</span
+            >
+          </div>
+          <button id="city-view-return" type="button" class="primary">
+            Return to journey →
+          </button>
+        </div>
+        <div class="city-view-controls">
+          <button
+            id="city-view-overview"
+            class="city-view-action"
+            type="button"
+            aria-pressed="true"
+          >
+            Whole city
+          </button>
+          <label class="city-view-district-label" for="city-view-district"
+            >Look closer</label
+          >
+          <select
+            id="city-view-district"
+            aria-label="Choose a district to inspect"
+          >
+            <option value="">Choose a district</option>
+          </select>
+          <button
+            id="city-view-zoom-out"
+            type="button"
+            class="city-view-action"
+            aria-label="Zoom out"
+          >
+            −
+          </button>
+          <button
+            id="city-view-zoom-in"
+            type="button"
+            class="city-view-action"
+            aria-label="Zoom in"
+          >
+            +
+          </button>
+        </div>
+        <div
+          id="city-view-info"
+          class="city-view-info"
+          aria-live="polite"
+        ></div>
+        <p class="city-view-hint">
+          Drag to look around · Pinch or use +/− to zoom · Your journey is
+          paused
+        </p>
+      </section>
+      <section
+        id="opportunities-panel"
+        class="panel"
+        hidden
+        aria-label="Chapter 3 city enterprises"
+      >
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">CHAPTER 3 · THE CITY OF OPPORTUNITIES</div>
+            <h2>Make your city work</h2>
+            <p id="opportunities-summary">
+              Enterprises need supplies, customers and people.
+            </p>
+          </div>
+          <button
+            id="opportunities-close"
+            type="button"
+            aria-label="Close Chapter 3"
+          >
+            ×
+          </button>
+        </div>
+        <div class="opportunities-metrics" aria-live="polite">
+          <span id="opportunities-day">Day 0 / 7</span>
+          <span id="opportunities-people">People served: 0</span>
+        </div>
+        <div id="opportunities-event" class="opportunities-event"></div>
+        <div class="opportunity-business">
+          <label for="opportunities-business"
+            >1 · Choose a business to run</label
+          >
+          <select id="opportunities-business" aria-label="My enterprise">
+            <option value="">Choose your enterprise</option>
+          </select>
+          <p id="opportunities-business-note">
+            Choose one business. You can change it on a future day.
+          </p>
+          <div
+            id="opportunities-actions"
+            class="opportunities-actions"
+            role="group"
+            aria-label="Enterprise improvement"
+          ></div>
+          <button
+            id="opportunities-view-business"
+            type="button"
+            class="secondary"
+            disabled
+          >
+            See my enterprise in the city
+          </button>
+        </div>
+        <p class="opportunities-caption">
+          2 · Choose the whole city's priority. Supplies are limited, so some
+          people may have to wait.
+        </p>
+        <div
+          id="opportunities-policies"
+          class="opportunities-policies"
+          role="group"
+          aria-label="City operating priority"
+        ></div>
+        <button id="opportunities-run" class="primary" type="button">
+          Run city day →
+        </button>
+        <button id="chapter-four-start" class="primary" type="button" hidden>
+          Continue to Chapter 4 →
+        </button>
+        <div
+          id="opportunities-result"
+          class="opportunities-result"
+          aria-live="polite"
+        ></div>
+        <section
+          id="opportunities-requests"
+          class="opportunities-requests"
+          aria-label="Today's city requests and unmet needs"
+          aria-live="polite"
+          hidden
+        ></section>
+        <div id="opportunities-ledger" class="opportunities-ledger"></div>
+        <button id="opportunities-reset" class="secondary" type="button">
+          Restart seven-day practice (keep my city)
+        </button>
+        <small class="opportunities-note"
+          >Fictional learning simulation. No real jobs, money, health outcomes
+          or PipuPath XP are awarded.</small
+        >
+      </section>
+      <section
+        id="resilience-panel"
+        class="panel"
+        hidden
+        aria-label="Chapter 4 the resilient city"
+      >
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">CHAPTER 4 · THE RESILIENT CITY</div>
+            <h2>Keep life moving</h2>
+          </div>
+          <button
+            id="resilience-close"
+            type="button"
+            aria-label="Close Chapter 4"
+          >
+            ×
+          </button>
+        </div>
+        <p id="resilience-progress" aria-live="polite"></p>
+        <p id="resilience-stocks"></p>
+        <h3 id="resilience-event"></h3>
+        <p id="resilience-story"></p>
+        <div
+          id="resilience-choices"
+          role="group"
+          aria-label="Choose the next resilience priority"
+        ></div>
+        <div id="resilience-result" aria-live="polite"></div>
+        <button id="resilience-view" type="button" class="secondary">
+          See deliveries in my city
+        </button>
+        <button id="resilience-reset" type="button" class="secondary">
+          Restart Chapter 4 (keep my city)
+        </button>
+        <small
+          >Fictional service simulation, not real health outcomes or XP. Chapter
+          3 supplies and city capacity are recorded at the start. Restart this
+          chapter to apply later city revisions.</small
+        >
+      </section>
+      <section
+        id="casebook"
+        class="panel"
+        hidden
+        aria-label="City building decisions across fourteen districts"
+      >
+        <div class="district-menu-heading">
+          <div>
+            <div class="eyebrow">BUILDER PRACTICE · 4 DISTRICTS</div>
+            <h2>36 builder problems · 14 districts</h2>
+            <p id="casebook-summary">
+              Choose a problem. Explore decisions, trade-offs and what happens
+              next.
+            </p>
+          </div>
+          <button id="casebook-close" type="button" aria-label="Close problems">
+            ×
+          </button>
+        </div>
+        <div id="casebook-list"></div>
+        <div class="casebook-save">
+          <p>
+            Practice is fictional. It does not award XP or complete a real
+            PipuPath Quest.
+          </p>
+          <button id="save-practice" type="button">Save on this device</button>
+          <small id="save-note"
+            >Not saved. Only choices and city settings can be stored here, never
+            personal reflections. Saving is optional and is not cloud
+            backup.</small
+          >
+        </div>
+      </section>
+      <section
+        id="world-feedback"
+        hidden
+        role="status"
+        aria-live="polite"
+        aria-label="Your decision changes the city"
+      >
+        <span class="build-activity">● LIVE CITY RESPONSE</span>
+        <strong id="world-feedback-title">YOUR IDEA IS TAKING SHAPE</strong>
+        <p id="world-feedback-copy">Something is changing in the district.</p>
+        <div class="build-progress" aria-hidden="true"><i></i></div>
+        <small>Look at your city. The consequences come next.</small>
+      </section>
+      <div id="test-status" role="status" aria-live="polite" hidden>
+        Testing the city day…
+      </div>
+      <section id="mission" class="panel" hidden>
+        <div class="eyebrow" id="chapter">01 / DISCOVER</div>
+        <h1 id="mission-title">A workshop worth keeping.</h1>
+        <p id="mission-copy"></p>
+        <div id="objectives"></div>
+        <div id="mission-action"></div>
+        <div class="progress-track"><i id="progress"></i></div>
+        <div class="mission-footer">
+          <span id="step-label">DISCOVER</span
+          ><span>POWER • PEOPLE • PURPOSE</span>
+        </div>
+      </section>
+      <div id="scene-labels"></div>
+      <div id="travel" hidden>
+        <span class="live-dot"></span><span id="travel-text">Walking…</span
+        ><button id="stop-walking" type="button">Stop ×</button>
+      </div>
+      <div id="toast" role="status" aria-live="polite"></div>
+      <aside
+        id="graphics-recovery"
+        role="alert"
+        aria-label="3D graphics recovery"
+        hidden
+      >
+        <strong>The city graphics paused</strong>
+        <p id="graphics-recovery-detail">Your decisions are still here.</p>
+        <button type="button" id="graphics-recover">
+          Recover 3D without restarting
+        </button>
+      </aside>
+      <aside
+        id="request-inspection"
+        hidden
+        role="region"
+        aria-label="District service request"
+      >
+        <button
+          id="request-inspection-close"
+          type="button"
+          aria-label="Close district request"
+        >
+          ×
+        </button>
+        <strong id="request-inspection-title"></strong>
+        <p id="request-inspection-detail"></p>
+        <button id="request-inspection-back" type="button">
+          Back to city requests
+        </button>
+      </aside>
+      <section id="detail" class="panel" hidden aria-label="Station details">
+        <button class="close" id="close-detail" aria-label="Close details">
+          ×
+        </button>
+        <div id="detail-body"></div>
+      </section>
+      <button
+        id="resource"
+        type="button"
+        hidden
+        aria-haspopup="dialog"
+        aria-controls="fund-dialog"
+        aria-label="Shared city fund: fictional credits. Tap to understand how to use them."
+      >
+        <span class="coin">◈</span
+        ><span
+          ><b id="credits">8</b> credits<small
+            >CITY FUND · TAP TO LEARN</small
+          ></span
+        >
+      </button>
+      <dialog id="fund-dialog" aria-labelledby="fund-title">
+        <h2 id="fund-title">Your city's shared fund</h2>
+        <p>
+          These are fictional city credits, not real money or PipuPath XP. Your
+          city begins with 18 credits. Use them to improve services and manage
+          costs so residents can live better.
+        </p>
+        <p>
+          For example: solar power uses 4 credits, storage 5, maintenance 2, and
+          a teaching kit 2. Some choices also have running costs. Think about
+          which investment helps people most.
+        </p>
+        <button type="button" id="fund-close">Back to my city</button>
+      </dialog>
+      <div id="build-dock" hidden>
+        <div class="dock-title">
+          <span class="eyebrow">CITY CONSTRUCTION</span
+          ><span>Tap to add · tap again to remove</span>
+        </div>
+        <div id="build-options"></div>
+        <button id="test" class="primary">Run a day <span>→</span></button>
+      </div>
+      <div id="controls">
+        <span class="control-icon">↔</span> Drag to look <span>·</span> Tap once
+        to travel <span>·</span> Scroll to zoom
+      </div>
+      <div id="mobile-move" hidden>
+        <button data-move="up" aria-label="Walk forward">↑</button>
+        <div>
+          <button data-move="left" aria-label="Walk left">←</button
+          ><button data-move="down" aria-label="Walk backward">↓</button
+          ><button data-move="right" aria-label="Walk right">→</button>
+        </div>
+      </div>
+      <div class="corner-note">
+        A world of builders. A future you can shape.
+      </div>
+      <div id="intro" class="overlay">
+        <section class="intro-card">
+          <div class="eyebrow">
+            <span class="live-dot"></span> 14 DISTRICTS · BUILD YOUR CITY
+          </div>
+          <h1>One city.<br /><em>Many possibilities.</em></h1>
+          <p>
+            Build your city. Make the world a better place. Meet Ama at her
+            workshop, understand what people need, and watch your choices change
+            their city. Shape 14 districts, run their services, then protect
+            them through new challenges.
+          </p>
+          <button id="start" class="primary">
+            Enter the city <span>↗</span>
+          </button>
+          <div class="intro-meta">
+            <span>MEET PEOPLE</span><span>SOLVE PROBLEMS</span
+            ><span>BUILD TOGETHER</span>
+          </div>
+          <small
+            >Playable prototype · fictional city systems · optional device-only
+            save</small
+          >
+        </section>
+      </div>
+      <dialog id="help-dialog">
+        <button class="close" id="close-help" aria-label="Close help">×</button>
+        <div class="eyebrow">MAKE YOURSELF AT HOME</div>
+        <h2>Your world. Your moves.</h2>
+        <p>
+          Drag the scene to orbit. Scroll or pinch to zoom. Tap once on the
+          ground and your character walks there automatically, routing around
+          walls and equipment. Tap a station label to walk over and interact on
+          arrival. Choose a new destination to change course, or use Stop. WASD
+          / arrow keys also respect obstacles. On a phone, use the arrow
+          controls.
+        </p>
+        <p>
+          Follow Take me there to meet your first builders. Next step reopens
+          the guide. Places (14) shows every part of this city: four districts
+          have working challenges and ten can be explored while we build theirs.
+          Use City map to see the whole city and Follow me to return. Build
+          shows construction tools only when they are needed.
+        </p>
+        <p>
+          All energy units and costs are fictional. This is a learning
+          simulation, not electrical installation guidance. Sound is optional.
+          Progress lasts only while this game stays open.
+        </p>
+        <button id="help-done" class="primary">Back to the workshop →</button>
+        <p id="webgl-note"></p>
+      </dialog>
+      <div id="loading">Opening the district…</div>
+    </main>
+    <script type="module" src="game.mjs"></script>
+  </body>
+</html>
