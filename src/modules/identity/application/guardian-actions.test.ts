@@ -59,7 +59,7 @@ describe("parent-on-device approval", () => {
   it("saves an explicit declaration through the authenticated database boundary before continuing", async () => {
     await expect(
       recordParentLearningAttestationAction(previous, form()),
-    ).rejects.toThrow("REDIRECT:/continue");
+    ).rejects.toThrow("REDIRECT:/real-quests");
     expect(mocks.rpc).toHaveBeenCalledWith(
       "record_parent_learning_attestation",
       {

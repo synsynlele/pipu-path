@@ -260,275 +260,280 @@ export default async function HumanPotentialProfilePage() {
             </section>
           </details>
 
-          <section className="mt-12" aria-labelledby="possible-paths">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
-                  Explore, do not predict
-                </p>
-                <h2
-                  id="possible-paths"
-                  className="mt-2 text-3xl font-semibold tracking-tight"
-                >
-                  Paths to Test
-                </h2>
-              </div>
-              <p className="text-muted max-w-md text-sm leading-6">
-                Choose one direction to test with learning and real evidence.
-                You can change it later.
-              </p>
-            </div>
-
-            {!pathways ? (
-              <Surface className="mt-6 grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
-                <div>
-                  <h3 className="text-xl font-semibold">
-                    Turn self-knowledge into practical directions.
-                  </h3>
-                  <p className="text-muted mt-2 max-w-2xl leading-7">
-                    PipuPath will connect several profile signals into paths you
-                    can test—not permanent careers or predictions.
-                  </p>
-                </div>
-                <EconomicPathwayGenerationForm />
-              </Surface>
-            ) : (
-              <>
-                {pathways.selectedPath ? (
-                  <Surface className="border-gold/40 bg-gold/5 mt-6 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-                    <div>
-                      <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                        Your path to test
-                      </p>
-                      <p className="mt-1 text-xl font-semibold">
-                        {pathways.selectedPath.pathName}
-                      </p>
-                    </div>
-                    <ButtonLink
-                      href="/onboarding/discovery/profile/complete"
-                      variant="premium"
-                      className="w-full sm:w-auto"
-                    >
-                      Continue to Mission →
-                    </ButtonLink>
-                  </Surface>
-                ) : null}
-
-                <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                  {pathways.possiblePaths.map((path) => (
-                    <Surface
-                      key={path.key}
-                      className={
-                        pathways.selectedPathKey === path.key
-                          ? "border-gold/50 bg-gold/5 p-5 sm:p-6"
-                          : "p-5 sm:p-6"
-                      }
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                            Path to test
-                          </p>
-                          <h3 className="mt-1 text-2xl font-semibold">
-                            {path.pathName}
-                          </h3>
-                        </div>
-                        {pathways.selectedPathKey === path.key ? (
-                          <span className="border-gold/30 bg-gold/10 text-gold rounded-full border px-3 py-1 text-xs font-semibold uppercase">
-                            Selected
-                          </span>
-                        ) : null}
-                      </div>
-
-                      <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                        <div>
-                          <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                            Pattern
-                          </p>
-                          <p className="mt-1 text-sm leading-6">
-                            {path.observedPattern}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                            Test next
-                          </p>
-                          <p className="mt-1 text-sm leading-6">
-                            {path.howToTest}
-                          </p>
-                        </div>
-                      </div>
-
-                      <details className="mt-5">
-                        <summary className="text-gold cursor-pointer list-none text-sm font-semibold marker:hidden">
-                          See why it fits +
-                        </summary>
-                        <div className="border-border mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2">
-                          <div>
-                            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                              Interpretation
-                            </p>
-                            <p className="mt-1 text-sm leading-6">
-                              {path.possibleInterpretation}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                              Why it fits
-                            </p>
-                            <p className="mt-1 text-sm leading-6">
-                              {path.whyItFits}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                              Skills to build
-                            </p>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {path.skillsNeeded.map((skill) => (
-                                <span
-                                  key={skill}
-                                  className="border-border bg-background/40 rounded-full border px-2.5 py-1 text-xs"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                              Proof to look for
-                            </p>
-                            <p className="mt-1 text-sm leading-6">
-                              {path.evidenceNeeded}
-                            </p>
-                          </div>
-                          <div className="sm:col-span-2">
-                            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                              How it could create value
-                            </p>
-                            <ul className="mt-2 grid gap-2 text-sm leading-6 sm:grid-cols-2">
-                              {path.valueOrIncome.map((item) => (
-                                <li
-                                  key={item}
-                                  className="border-border/70 border-l-2 pl-3"
-                                >
-                                  {item}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </details>
-
-                      <PathSelectionForm
-                        recommendationId={pathways.id}
-                        pathKey={path.key}
-                        selected={pathways.selectedPathKey === path.key}
-                      />
-                    </Surface>
-                  ))}
-                </div>
-              </>
-            )}
-          </section>
-
-          {pathways ? (
-            <section className="mt-12" aria-labelledby="earn-from-strengths">
+          <details className="border-border mt-4 rounded-2xl border p-5">
+            <summary className="cursor-pointer font-semibold">
+              Explore other directions and earning ideas · optional
+            </summary>
+            <section className="mt-5" aria-labelledby="possible-paths">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
-                    Create value first
+                    Explore, do not predict
                   </p>
                   <h2
-                    id="earn-from-strengths"
+                    id="possible-paths"
                     className="mt-2 text-3xl font-semibold tracking-tight"
                   >
-                    Ways to Create Value
+                    Paths to Test
                   </h2>
                 </div>
                 <p className="text-muted max-w-md text-sm leading-6">
-                  Small experiments that can turn capability into usefulness,
-                  proof and—where appropriate—income.
+                  Choose one direction to test with learning and real evidence.
+                  You can change it later.
                 </p>
               </div>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {pathways.earnFromStrengths.map((item) => (
-                  <Surface key={item.key} className="p-5 sm:p-6">
-                    <h3 className="text-xl font-semibold">{item.title}</h3>
-                    <p className="text-muted mt-3 text-xs font-semibold tracking-wide uppercase">
-                      What you could offer
+              {!pathways ? (
+                <Surface className="mt-6 grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+                  <div>
+                    <h3 className="text-xl font-semibold">
+                      Turn self-knowledge into practical directions.
+                    </h3>
+                    <p className="text-muted mt-2 max-w-2xl leading-7">
+                      PipuPath will connect several profile signals into paths
+                      you can test—not permanent careers or predictions.
                     </p>
-                    <p className="mt-1 text-sm leading-6">
-                      {item.whatYouCouldOffer}
+                  </div>
+                  <EconomicPathwayGenerationForm />
+                </Surface>
+              ) : (
+                <>
+                  {pathways.selectedPath ? (
+                    <Surface className="border-gold/40 bg-gold/5 mt-6 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                      <div>
+                        <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+                          Your path to test
+                        </p>
+                        <p className="mt-1 text-xl font-semibold">
+                          {pathways.selectedPath.pathName}
+                        </p>
+                      </div>
+                      <ButtonLink
+                        href="/onboarding/discovery/profile/complete"
+                        variant="premium"
+                        className="w-full sm:w-auto"
+                      >
+                        Continue to Mission →
+                      </ButtonLink>
+                    </Surface>
+                  ) : null}
+
+                  <div className="mt-5 grid gap-5 lg:grid-cols-2">
+                    {pathways.possiblePaths.map((path) => (
+                      <Surface
+                        key={path.key}
+                        className={
+                          pathways.selectedPathKey === path.key
+                            ? "border-gold/50 bg-gold/5 p-5 sm:p-6"
+                            : "p-5 sm:p-6"
+                        }
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+                              Path to test
+                            </p>
+                            <h3 className="mt-1 text-2xl font-semibold">
+                              {path.pathName}
+                            </h3>
+                          </div>
+                          {pathways.selectedPathKey === path.key ? (
+                            <span className="border-gold/30 bg-gold/10 text-gold rounded-full border px-3 py-1 text-xs font-semibold uppercase">
+                              Selected
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                          <div>
+                            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                              Pattern
+                            </p>
+                            <p className="mt-1 text-sm leading-6">
+                              {path.observedPattern}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                              Test next
+                            </p>
+                            <p className="mt-1 text-sm leading-6">
+                              {path.howToTest}
+                            </p>
+                          </div>
+                        </div>
+
+                        <details className="mt-5">
+                          <summary className="text-gold cursor-pointer list-none text-sm font-semibold marker:hidden">
+                            See why it fits +
+                          </summary>
+                          <div className="border-border mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2">
+                            <div>
+                              <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                                Interpretation
+                              </p>
+                              <p className="mt-1 text-sm leading-6">
+                                {path.possibleInterpretation}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                                Why it fits
+                              </p>
+                              <p className="mt-1 text-sm leading-6">
+                                {path.whyItFits}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                                Skills to build
+                              </p>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {path.skillsNeeded.map((skill) => (
+                                  <span
+                                    key={skill}
+                                    className="border-border bg-background/40 rounded-full border px-2.5 py-1 text-xs"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                                Proof to look for
+                              </p>
+                              <p className="mt-1 text-sm leading-6">
+                                {path.evidenceNeeded}
+                              </p>
+                            </div>
+                            <div className="sm:col-span-2">
+                              <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                                How it could create value
+                              </p>
+                              <ul className="mt-2 grid gap-2 text-sm leading-6 sm:grid-cols-2">
+                                {path.valueOrIncome.map((item) => (
+                                  <li
+                                    key={item}
+                                    className="border-border/70 border-l-2 pl-3"
+                                  >
+                                    {item}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        </details>
+
+                        <PathSelectionForm
+                          recommendationId={pathways.id}
+                          pathKey={path.key}
+                          selected={pathways.selectedPathKey === path.key}
+                        />
+                      </Surface>
+                    ))}
+                  </div>
+                </>
+              )}
+            </section>
+
+            {pathways ? (
+              <section className="mt-12" aria-labelledby="earn-from-strengths">
+                <div className="flex flex-wrap items-end justify-between gap-4">
+                  <div>
+                    <p className="text-gold font-mono text-xs tracking-[0.18em] uppercase">
+                      Create value first
                     </p>
-                    <div className="border-gold/25 bg-gold/5 mt-4 rounded-2xl border p-4">
-                      <p className="text-gold text-xs font-semibold tracking-wide uppercase">
-                        First experiment
+                    <h2
+                      id="earn-from-strengths"
+                      className="mt-2 text-3xl font-semibold tracking-tight"
+                    >
+                      Ways to Create Value
+                    </h2>
+                  </div>
+                  <p className="text-muted max-w-md text-sm leading-6">
+                    Small experiments that can turn capability into usefulness,
+                    proof and—where appropriate—income.
+                  </p>
+                </div>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {pathways.earnFromStrengths.map((item) => (
+                    <Surface key={item.key} className="p-5 sm:p-6">
+                      <h3 className="text-xl font-semibold">{item.title}</h3>
+                      <p className="text-muted mt-3 text-xs font-semibold tracking-wide uppercase">
+                        What you could offer
                       </p>
                       <p className="mt-1 text-sm leading-6">
-                        {item.firstExperiment}
+                        {item.whatYouCouldOffer}
                       </p>
-                    </div>
-                    <details className="mt-4">
-                      <summary className="text-gold cursor-pointer list-none text-sm font-semibold marker:hidden">
-                        What else to know +
-                      </summary>
-                      <dl className="border-border mt-4 space-y-4 border-t pt-4 text-sm">
-                        <div>
-                          <dt className="font-semibold">Who may need it</dt>
-                          <dd className="text-muted mt-1 leading-6">
-                            {item.whoMayNeedIt}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="font-semibold">Learn first</dt>
-                          <dd className="text-muted mt-1 leading-6">
-                            {item.learnFirst}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="font-semibold">
-                            Evidence of improvement
-                          </dt>
-                          <dd className="text-muted mt-1 leading-6">
-                            {item.evidenceOfImprovement}
-                          </dd>
-                        </div>
-                      </dl>
-                    </details>
-                  </Surface>
-                ))}
-              </div>
-            </section>
-          ) : null}
+                      <div className="border-gold/25 bg-gold/5 mt-4 rounded-2xl border p-4">
+                        <p className="text-gold text-xs font-semibold tracking-wide uppercase">
+                          First experiment
+                        </p>
+                        <p className="mt-1 text-sm leading-6">
+                          {item.firstExperiment}
+                        </p>
+                      </div>
+                      <details className="mt-4">
+                        <summary className="text-gold cursor-pointer list-none text-sm font-semibold marker:hidden">
+                          What else to know +
+                        </summary>
+                        <dl className="border-border mt-4 space-y-4 border-t pt-4 text-sm">
+                          <div>
+                            <dt className="font-semibold">Who may need it</dt>
+                            <dd className="text-muted mt-1 leading-6">
+                              {item.whoMayNeedIt}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="font-semibold">Learn first</dt>
+                            <dd className="text-muted mt-1 leading-6">
+                              {item.learnFirst}
+                            </dd>
+                          </div>
+                          <div>
+                            <dt className="font-semibold">
+                              Evidence of improvement
+                            </dt>
+                            <dd className="text-muted mt-1 leading-6">
+                              {item.evidenceOfImprovement}
+                            </dd>
+                          </div>
+                        </dl>
+                      </details>
+                    </Surface>
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
-          {pathways?.selectedPath ? (
-            <Surface className="mt-10 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-              <div>
-                <p className="text-muted text-xs font-semibold tracking-wide uppercase">
-                  Ready for action
-                </p>
-                <p className="mt-1 font-semibold">
-                  Turn {pathways.selectedPath.pathName} into a practical
-                  mission.
-                </p>
-              </div>
-              <ButtonLink
-                href="/onboarding/discovery/profile/complete"
-                variant="premium"
-                className="w-full sm:w-auto"
-              >
-                Continue →
-              </ButtonLink>
-            </Surface>
-          ) : pathways ? (
-            <p className="text-muted mt-8 max-w-2xl text-sm leading-6">
-              Choose one Path to Test when you are ready. It is an experiment,
-              not a permanent decision.
-            </p>
-          ) : null}
+            {pathways?.selectedPath ? (
+              <Surface className="mt-10 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                <div>
+                  <p className="text-muted text-xs font-semibold tracking-wide uppercase">
+                    Ready for action
+                  </p>
+                  <p className="mt-1 font-semibold">
+                    Turn {pathways.selectedPath.pathName} into a practical
+                    mission.
+                  </p>
+                </div>
+                <ButtonLink
+                  href="/onboarding/discovery/profile/complete"
+                  variant="premium"
+                  className="w-full sm:w-auto"
+                >
+                  Continue →
+                </ButtonLink>
+              </Surface>
+            ) : pathways ? (
+              <p className="text-muted mt-8 max-w-2xl text-sm leading-6">
+                Choose one Path to Test when you are ready. It is an experiment,
+                not a permanent decision.
+              </p>
+            ) : null}
+          </details>
         </>
       )}
     </main>
