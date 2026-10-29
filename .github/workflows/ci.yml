@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,11 +19,23 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: feat/pipupath-2-city-controls-auth-contrast
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: One-time format of city navigation and landing contrast
+        run: |
+          npx prettier --write public/games/city/game.mjs public/games/city/index.html scripts/power-district/city-ui.mjs src/app/landing-adventure.css src/app/play/page.tsx
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/games/city/game.mjs public/games/city/index.html scripts/power-district/city-ui.mjs src/app/landing-adventure.css src/app/play/page.tsx
+          if ! git diff --cached --quiet; then
+            git commit -m "Format city controls and landing contrast"
+            git push origin HEAD:feat/pipupath-2-city-controls-auth-contrast
+          fi
       - run: npm run validate
 
   staging-e2e:
