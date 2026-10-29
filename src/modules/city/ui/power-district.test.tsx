@@ -1,7 +1,11 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { PowerDistrictFrame } from "./power-district-frame";
-const mocks = vi.hoisted(() => ({ home: vi.fn() }));
+
+const mocks = vi.hoisted(() => ({ home: vi.fn(), push: vi.fn() }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mocks.push }),
+}));
 vi.mock("@/modules/identity/infrastructure/progress-dal", () => ({
   requireAuthenticatedHomeState: mocks.home,
 }));
@@ -15,32 +19,32 @@ vi.mock("@/modules/quest/infrastructure/quest-dal", () => ({
   }),
 }));
 import PowerDistrictPage from "@/app/build/power-district/page";
-afterEach(cleanup);
-it("keeps game assets same-origin and offers an escape without exporting private context", () => {
+
+afterEach(() => {
+  cleanup();
+  mocks.push.mockClear();
+});
+it("keeps game assets on the same origin and preserves focus without a reload", () => {
   render(
     <PowerDistrictFrame
       questHref="/quests/owned-quest"
       questLabel="Continue my real-world Quest →"
+      initialFocus={false}
     />,
   );
-  const frame = screen.getByTitle("The Unbuilt City: Power, Food and Learning");
+  const frame = screen.getByTitle("The Unbuilt City · 14 connected districts");
   expect(frame).toHaveAttribute("src", "/games/city/index.html?embedded=1");
-  expect(screen.getByRole("link")).toHaveAttribute(
-    "href",
-    "/quests/owned-quest",
-  );
-  const expand = screen.getByRole("button", { name: "Expand game ↗" });
+  const expand = screen.getByRole("button", { name: "Focus on my city ↗" });
   expand.focus();
   fireEvent.click(expand);
-  expect(
-    screen.getByRole("button", { name: "Close focus view" }),
-  ).toHaveFocus();
+  expect(screen.getByRole("button", { name: "Close focus view" })).toHaveFocus();
   expect(document.body.style.overflow).toBe("hidden");
   fireEvent.keyDown(window, { key: "Escape" });
   expect(document.body.style.overflow).not.toBe("hidden");
   expect(expand).toHaveFocus();
+  expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(frame);
 });
-it("requires existing authenticated state and respects locked Quest routing", async () => {
+it("requires authenticated, owned Quest context and offers explicit saving choices", async () => {
   mocks.home.mockRejectedValueOnce(new Error("AUTH_REQUIRED"));
   await expect(
     PowerDistrictPage({ searchParams: Promise.resolve({}) }),
@@ -56,9 +60,10 @@ it("requires existing authenticated state and respects locked Quest routing", as
       questLabel={locked.props.questLabel}
     />,
   );
-  expect(
-    screen.getByRole("link", { name: "Find my real-world Quest →" }),
-  ).toHaveAttribute("href", "/quests");
+  fireEvent.click(screen.getByRole("button", { name: "Find my real-world Quest →" }));
+  expect(screen.getByRole("dialog", { name: "Continue to a real Quest" })).toBeVisible();
+  expect(mocks.push).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Stay in my city" }));
   view.unmount();
   mocks.home.mockResolvedValue({
     quest: {
@@ -68,13 +73,13 @@ it("requires existing authenticated state and respects locked Quest routing", as
     },
   });
   const owned = await PowerDistrictPage({ searchParams: Promise.resolve({}) });
+  expect(owned.props.questHref).toBe("/quests/12345678-1234-4234-8234-123456789abc");
   render(
     <PowerDistrictFrame
       questHref={owned.props.questHref}
       questLabel={owned.props.questLabel}
     />,
   );
-  expect(
-    screen.getByRole("link", { name: "Reflect on my real attempt →" }),
-  ).toHaveAttribute("href", "/quests/12345678-1234-4234-8234-123456789abc");
+  fireEvent.click(screen.getByRole("button", { name: "Reflect on my real attempt →" }));
+  expect(screen.getByRole("button", { name: "Save my city, then continue" })).toBeVisible();
 });

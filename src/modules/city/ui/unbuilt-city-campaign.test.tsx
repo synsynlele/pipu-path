@@ -10,6 +10,7 @@ vi.mock("next/navigation", () => ({
   redirect: (href: string) => {
     throw new Error(`REDIRECT:${href}`);
   },
+  useRouter: () => ({ push: () => {} }),
   notFound: () => {
     throw new Error("NOT_FOUND");
   },
@@ -38,10 +39,10 @@ it("preserves the owned real-Quest return around the connected city", () => {
     />,
   );
   expect(
-    screen.getByRole("heading", { name: "Your city. Your next move." }),
+    screen.getByRole("heading", { name: "The Unbuilt City" }),
   ).toBeVisible();
   expect(
-    screen.getByTitle("The Unbuilt City: Power, Food and Learning"),
+    screen.getByTitle("The Unbuilt City · 14 connected districts"),
   ).toHaveAttribute("src", "/games/city/index.html?embedded=1");
   expect(
     screen.getByRole("heading", { name: "Your real Quest: Listen locally" }),
