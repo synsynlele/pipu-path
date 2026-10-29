@@ -29,54 +29,12 @@
           <span class="live-dot"></span> ONE CONNECTED CITY
           <span class="divider">/</span> CITY DESK
         </div>
-        <div class="top-actions">
-          <button
-            id="sound"
-            class="icon"
-            aria-label="Turn sound on"
-            title="Sound"
-          >
-            ♫</button
-          ><button
-            id="help"
-            class="icon"
-            aria-label="Open controls"
-            title="Controls"
-          >
-            ?</button
-          ><button
-            id="reset"
-            class="icon"
-            aria-label="Restart mission"
-            title="Restart"
-          >
-            ↻
-          </button>
-        </div>
       </header>
-      <div id="weather">
-        <span id="weather-icon">☀</span
-        ><span id="weather-title">A bright beginning</span
-        ><span class="weather-time">08:00</span>
-      </div>
-      <div
-        id="journey-bar"
-        hidden
-        role="region"
-        aria-label="Automatic builder journey"
-      >
-        <span id="journey-status" aria-live="polite"
-          >Your city journey is running</span
-        >
-        <div class="journey-actions">
-          <button id="journey-back" type="button" disabled>
-            ↶ Last decision
-          </button>
-          <button id="journey-toggle" class="primary" type="button">
-            Pause journey
-          </button>
-        </div>
-      </div>
+      <div id="city-hud" hidden role="region" aria-label="City controls">
+        <div class="city-hud-left">
+          <strong class="city-hud-title">The Unbuilt City</strong>
+          <div class="city-hud-navigation">
+            <span id="chapter-badge">Chapter 1</span>
       <nav id="city-tools" hidden aria-label="City navigation">
         <details id="city-menu">
           <summary aria-controls="city-menu-options">City menu ▾</summary>
@@ -148,6 +106,57 @@
           </div>
         </details>
       </nav>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button
+            id="sound"
+            class="icon"
+            aria-label="Turn sound on"
+            title="Sound"
+          >
+            ♫</button
+          ><button
+            id="help"
+            class="icon"
+            aria-label="Open controls"
+            title="Controls"
+          >
+            ?</button
+          ><button
+            id="reset"
+            class="icon"
+            aria-label="Restart mission"
+            title="Restart"
+          >
+            ↻
+          </button>
+        </div>
+      </div>
+      <div id="weather">
+        <span id="weather-icon">☀</span
+        ><span id="weather-title">A bright beginning</span
+        ><span class="weather-time">08:00</span>
+      </div>
+      <div
+        id="journey-bar"
+        hidden
+        role="region"
+        aria-label="Automatic builder journey"
+      >
+        <span id="journey-status" aria-live="polite"
+          >Your city journey is running</span
+        >
+        <div class="journey-actions">
+          <button id="journey-back" type="button" disabled>
+            ↶ Last decision
+          </button>
+          <button id="journey-toggle" class="primary" type="button">
+            Pause journey
+          </button>
+        </div>
+      </div>
+
       <section
         id="district-directory"
         class="panel"
@@ -500,12 +509,26 @@
         </button>
         <div id="detail-body"></div>
       </section>
-      <div id="resource" hidden>
+      <button id="resource" type="button" hidden aria-haspopup="dialog" aria-controls="fund-dialog" aria-label="Shared city fund: fictional credits. Tap to understand how to use them.">
         <span class="coin">◈</span
         ><span
-          ><b id="credits">8</b> credits<small>SHARED CITY FUND</small></span
+          ><b id="credits">8</b> credits<small>CITY FUND · TAP TO LEARN</small></span
         >
-      </div>
+      </button>
+      <dialog id="fund-dialog" aria-labelledby="fund-title">
+        <h2 id="fund-title">Your city's shared fund</h2>
+        <p>
+          These are fictional city credits, not real money or PipuPath XP.
+          Your city begins with 18 credits. Use them to improve services
+          and manage costs so residents can live better.
+        </p>
+        <p>
+          For example: solar power uses 4 credits, storage 5, maintenance 2,
+          and a teaching kit 2. Some choices also have running costs.
+          Think about which investment helps people most.
+        </p>
+        <button type="button" id="fund-close">Back to my city</button>
+      </dialog>
       <div id="build-dock" hidden>
         <div class="dock-title">
           <span class="eyebrow">CITY CONSTRUCTION</span
