@@ -18,7 +18,10 @@ const adminDal = read("src/modules/admin/infrastructure/admin-dal.ts");
 
 describe("Stage 23 onboarding and Mission Control integration", () => {
   it("keeps /continue as the single progression router for new and returning Builders", () => {
-    expect(continuePage).toContain("resolveAuthenticatedDestination");
+    expect(continuePage).toContain('redirect("/")');
+    const realQuests = read("src/app/real-quests/page.tsx");
+    expect(realQuests).toContain("requireAuthenticatedHomeState");
+    expect(realQuests).toContain("realWorldMove(state)");
     expect(progress).toContain('path: "/onboarding/identity"');
     expect(progress).toContain('path: "/onboarding/discovery"');
     expect(progress).toContain('path: "/onboarding/discovery/review"');

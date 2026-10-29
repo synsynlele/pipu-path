@@ -1232,3 +1232,21 @@ showed through the intro and are now hidden only while that intro is visible.
 A single successful preview build was used; one earlier request was skipped by
 the configured ignore rule before compilation. Final CI and production checks
 remain required. Physical Android/GPU reliability is not claimed.
+
+## 29 October 2026 — Existing Android launch compatibility
+
+Installed Android packages still start at `/continue`, a protected legacy resume
+route, so signed-out users reached sign-in despite the new public root welcome.
+Redirect that exact legacy entry to `/` before authentication, with no-store and
+query removal. The route fallback also redirects to root. Real Quests and all
+private work retain their authentication and ownership boundaries. Future TWA
+manifests and the generated manifest use `/`. Existing signed APK/AAB downloads
+are unchanged; the server redirect supports them without reinstalling. Unit
+checks cover both session states and untrusted query removal. Full validation
+and production verification are pending.
+
+Clean full validation passed: formatting, lint, types, city runtime checks,
+544 unit/component tests, 251 integration tests and production build. An initial
+build used stale generated chunks after switching branches; rebuilding from a
+fresh build directory passed. No extra Vercel preview build is needed for this
+public-launch compatibility correction. Production confirmation follows release.

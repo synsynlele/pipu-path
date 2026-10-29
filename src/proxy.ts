@@ -45,6 +45,16 @@ async function hasPublishedProjectProof(slug: string) {
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  // Existing Android packages launch here. Keep their entry public even when
+  // no account session exists; actual learner routes keep their auth gates.
+  if (path === "/continue") {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/";
+    destination.search = "";
+    const response = NextResponse.redirect(destination);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
+  }
   const publicProofMatch = path.match(publicProofPattern);
 
   if (publicProofMatch) {

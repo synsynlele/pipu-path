@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { resolveAuthenticatedDestination } from "@/modules/identity/infrastructure/progress-dal";
 
 export const dynamic = "force-dynamic";
 
@@ -9,5 +8,5 @@ export const metadata = {
 };
 
 export default async function ContinuePage() {
-  redirect(await resolveAuthenticatedDestination());
+  redirect("/");
 }

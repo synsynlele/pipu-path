@@ -10,6 +10,19 @@ vi.mock("@/lib/supabase/proxy", () => ({
 describe("session redirects", () => {
   beforeEach(() => refresh.mockReset());
 
+  it.each([null, { id: "builder" }])(
+    "opens old Android launch URLs at the public city welcome (session: %j)",
+    async (user) => {
+      refresh.mockResolvedValue({ response: NextResponse.next(), user });
+      const result = await proxy(
+        new NextRequest("https://pipu.test/continue?next=https://bad.test"),
+      );
+      expect(result.headers.get("location")).toBe("https://pipu.test/");
+      expect(result.headers.get("Cache-Control")).toBe("no-store");
+      expect(refresh).not.toHaveBeenCalled();
+    },
+  );
+
   it("preserves rotated session cookies when sending a signed-in user onward", async () => {
     const response = NextResponse.next();
     response.cookies.set("sb-test-auth-token", "rotated", {

@@ -128,7 +128,7 @@ web_manifest = {
     "name": "PipuPath",
     "short_name": "PipuPath",
     "description": "Discover, develop and deploy your potential.",
-    "start_url": "https://www.pipupath.name.ng/continue",
+    "start_url": "https://www.pipupath.name.ng/",
     "scope": "https://www.pipupath.name.ng/",
     "display": "standalone",
     "theme_color": "#07142f",
