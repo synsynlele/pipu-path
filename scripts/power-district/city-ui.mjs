@@ -132,7 +132,7 @@ assert(html.includes('id="city-view-district"'));
 assert(html.includes('id="city-view-zoom-in"'));
 assert(html.includes('id="city-view-zoom-out"'));
 assert(game.includes("function openBuiltCityView()"));
-assert(game.includes("function closeBuiltCityView()"));
+assert(game.includes("function closeBuiltCityView({ resume = true } = {})"));
 assert(game.includes('const wasRunning = journey.status === "running"'));
 assert(game.includes("if (wasRunning)"));
 assert(game.includes("if (snapshot.wasRunning) resumeJourney()"));
