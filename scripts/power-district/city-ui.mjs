@@ -118,15 +118,24 @@ assert(
 assert(css.includes("#opportunities-panel"));
 assert(css.includes(".opportunity-policy"));
 assert(html.includes('id="city-view-return"'));
+assert(html.includes('id="city-view-problems"'));
+assert(game.includes("createConsequenceScene({ T, scene, box, cyl })"));
+assert(
+  game.includes("consequenceScene.sync(state.decisions, previewDecision)"),
+);
+assert(game.includes("consequenceScene.setFocus(focus, overview)"));
+assert(game.includes("function reviseCityProblem(caseId)"));
+assert(game.includes("closeBuiltCityView({ resume: false })"));
+assert(css.includes("#city-view-problems .city-view-repair"));
 assert(html.includes('id="city-view-overview"'));
 assert(html.includes('id="city-view-district"'));
 assert(html.includes('id="city-view-zoom-in"'));
 assert(html.includes('id="city-view-zoom-out"'));
 assert(game.includes("function openBuiltCityView()"));
-assert(game.includes("function closeBuiltCityView()"));
+assert(game.includes("function closeBuiltCityView({ resume = true } = {})"));
 assert(game.includes('const wasRunning = journey.status === "running"'));
 assert(game.includes("if (wasRunning)"));
-assert(game.includes("if (snapshot.wasRunning) resumeJourney()"));
+assert(game.includes("if (resume && snapshot.wasRunning) resumeJourney()"));
 assert(game.includes('detailVisible: !$("detail").hidden'));
 assert(game.includes("if (builtCityView?.focus)"));
 assert(game.includes("!builtCityView &&"));

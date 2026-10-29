@@ -10,6 +10,10 @@ import {
 import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
+import {
+  createConsequenceScene,
+  consequencesForCity,
+} from "./consequences.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
 import { districtLife } from "./better-lives.mjs";
 import {
@@ -823,6 +827,7 @@ const futureNeighbours = createOuterDistricts({
 });
 // Decisions construct fictional, scenario-specific objects in the 3D city.
 const caseScenes = createCaseSceneEffects({ T, scene, box, cyl, mat });
+const consequenceScene = createConsequenceScene({ T, scene, box, cyl });
 // Small-school phones and the software canvas get a reduced ambient budget.
 // City decisions themselves remain identical across devices.
 const livingScene = createLivingCityScene({
@@ -917,6 +922,7 @@ $("graphics-recover").onclick = () => {
 };
 function syncCaseScenes() {
   caseScenes.sync(state.decisions, previewDecision);
+  consequenceScene.sync(state.decisions, previewDecision);
   livingScene.sync(
     state.decisions,
     resilienceCityActivity(state.economy, state.resilience),
@@ -1081,6 +1087,40 @@ function updateBuiltCityView() {
         " needs remain unresolved. Select a district or revise a decision."
       : "Your city is waiting for its first project. Return to the journey to begin building.";
   }
+  const problems = $("city-view-problems");
+  problems.replaceChildren();
+  problems.hidden = !focused;
+  if (focused) {
+    const outstanding = consequencesForCity(state.decisions).filter(
+      (problem) => problem.district === focused.id,
+    );
+    const heading = document.createElement("strong");
+    heading.textContent = outstanding.length
+      ? "Problems your decisions left here · choose one to repair"
+      : "No unresolved consequences from choices made here";
+    problems.append(heading);
+    for (const problem of outstanding) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "city-view-repair";
+      button.textContent = problem.label + " · Change decision →";
+      button.setAttribute("aria-label", "Review " + problem.label);
+      button.onclick = () => reviseCityProblem(problem.caseId);
+      problems.append(button);
+    }
+  }
+}
+function reviseCityProblem(caseId) {
+  if (
+    !builtCityView ||
+    !consequencesForCity(state.decisions).some(
+      (problem) => problem.caseId === caseId,
+    )
+  )
+    return;
+  const resumeAfter = builtCityView.snapshot.wasRunning;
+  closeBuiltCityView({ resume: false });
+  beginDecisionReview(caseId, resumeAfter);
 }
 function focusBuiltCityDistrict(id = null) {
   if (!builtCityView) return;
@@ -1149,7 +1189,7 @@ function openBuiltCityView() {
     : "Return to game →";
   updateBuiltCityView();
 }
-function closeBuiltCityView() {
+function closeBuiltCityView({ resume = true } = {}) {
   if (!builtCityView) return;
   const { snapshot } = builtCityView;
   builtCityView = null;
@@ -1170,8 +1210,8 @@ function closeBuiltCityView() {
   camera.updateProjectionMatrix();
   $("city-map").textContent = mapMode ? "Follow me" : "City map";
   $("detail").hidden = !snapshot.detailVisible;
-  if (snapshot.opportunityVisible) openOpportunityPanel();
-  if (snapshot.wasRunning) resumeJourney();
+  if (resume && snapshot.opportunityVisible) openOpportunityPanel();
+  if (resume && snapshot.wasRunning) resumeJourney();
   else refreshJourneyControls();
 }
 function pauseJourney(
@@ -3810,6 +3850,7 @@ function animateWorld(now) {
   const focus = activeFeedback ?? player.g.position;
   const overview = !compactDevice || mapMode || Boolean(builtCityView);
   caseScenes.setFocus(focus, overview);
+  consequenceScene.setFocus(focus, overview);
   livingScene.setFocus(focus, overview);
   // City buildings and small community workers reflect each retained choice.
   // The same retained choices animate a living neighbourhood in both play

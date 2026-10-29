@@ -3783,3 +3783,59 @@ body #city-hud #journey-bar[hidden] {
 #game:has(#intro:not([hidden])) > .corner-note {
   visibility: hidden;
 }
+
+/* Aerial problem review is short and district-scoped. The city stays visible. */
+#city-view-problems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  margin-top: 7px;
+  max-height: min(23dvh, 160px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+#city-view-problems[hidden] {
+  display: none !important;
+}
+#city-view-problems > strong {
+  width: 100%;
+  color: #364e67;
+  font-size: 11px;
+  line-height: 1.35;
+}
+#city-view-problems .city-view-repair {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #c5a478;
+  border-radius: 10px;
+  background: #fff0db;
+  color: #604326;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: normal;
+  text-align: left;
+  touch-action: manipulation;
+}
+#city-view-problems .city-view-repair:focus-visible {
+  outline: 3px solid #244e81;
+  outline-offset: 2px;
+}
+@media (max-width: 650px) {
+  #city-view-problems {
+    max-height: 18dvh;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  #city-view-problems > strong {
+    min-width: 112px;
+    max-width: 130px;
+    flex: 0 0 auto;
+  }
+  #city-view-problems .city-view-repair {
+    min-width: 128px;
+    max-width: 200px;
+    flex: 0 0 auto;
+  }
+}
