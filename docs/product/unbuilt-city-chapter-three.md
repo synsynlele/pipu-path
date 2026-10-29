@@ -95,7 +95,9 @@ and bounded under the existing consented device-only save.
 
 **Next milestone:** customer orders, apprenticeships, skill transfer and
 meaningful collaboration between enterprises, validated first with students.
-Chapter 4 will introduce time-based resident needs, maintenance and city resilience only after Chapter 3 is validated in real classroom use.
+The user has authorised a first Chapter 4 resilience slice; see
+`unbuilt-city-chapter-four.md`. The seven-day completion now reveals its entry.
+Further expansion still needs classroom validation.
 
 ## Community request board (next milestone)
 

@@ -47,15 +47,15 @@ assert(game.includes("function openCasebook()"));
 assert(game.includes("function showCaseOutcome("));
 assert(game.includes("const caseScenes = createCaseSceneEffects("));
 assert(game.includes("const livingScene = createLivingCityScene("));
-assert(game.includes("livingScene.sync(state.decisions, state.economy)"));
+assert(
+  game.includes("resilienceCityActivity(state.economy, state.resilience)"),
+);
 assert(game.includes("livingScene.animate("));
 assert(game.includes("...futureNeighbours].map"));
 assert(game.includes("lowPower:"));
 assert(game.includes("innerWidth <= 650"));
 assert(
-  game.includes(
-    "const living = deriveLivingCity(state.decisions, state.economy)",
-  ),
+  game.includes("resilienceCityActivity(state.economy, state.resilience)"),
 );
 assert(game.includes("living.deliveries.length"));
 
@@ -103,7 +103,9 @@ assert(game.includes("runOpportunityDay(state.decisions, state.economy)"));
 assert(game.includes("selectOpportunityPolicy(state.economy, policy.id)"));
 assert(game.includes("foundationForOpportunities(state.decisions)"));
 assert(game.includes("Start Chapter 3 — Opportunities"));
-assert(game.includes("livingScene.sync(state.decisions, state.economy)"));
+assert(
+  game.includes("resilienceCityActivity(state.economy, state.resilience)"),
+);
 assert(css.includes("#opportunities-panel"));
 assert(css.includes(".opportunity-policy"));
 assert(html.includes('id="city-view-return"'));

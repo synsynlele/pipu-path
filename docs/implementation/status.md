@@ -1127,3 +1127,48 @@ Validation: `npm run validate` passed formatting, lint, types, all city checks,
 The build emitted the known two unauthenticated progress-load diagnostics and
 exited successfully. No physical Android/GPU validation or production release
 is implied. One deliberate preview build is planned for browser review.
+
+## 29 October 2026 — Clear view and first playable Chapter 4
+
+Implemented the requested City menu dropdown and moved construction feedback
+into the same responsive corner used by questions/outcomes. Native disclosure
+keyboard behaviour, selection/outside dismissal and Escape focus return are
+supported; Pause/Resume remains directly available.
+
+Chapter 3 now reveals Continue to Chapter 4 after its seventh operating day.
+Chapter 4, The Resilient City, is a bounded three-disruption first slice using
+the existing city: rain, a power interruption and heat. Players prioritise care,
+food or repairs using conserved water, parts and food. Maintenance can improve
+next-round continuity but competes for today's water. Shipments and request
+signals reuse existing scene pools and represent actual calculated transfers.
+
+An allowlisted bounded seed and three priority IDs reconstruct the attempt.
+Optional device saves resume Chapter 4; legacy/corrupt records preserve city
+choices. Restarting Chapter 4 preserves Chapter 3 and construction; restarting
+Chapter 3 clears its dependent attempt. Capacity snapshots prevent silent
+history rewrites after city revisions. No extra textures, meshes, frame loops,
+account changes, XP or real outcomes are claimed.
+
+Targeted acceptance passed: 27 policy combinations conserve resources, repair
+carryover and priority trade-offs, actual Chapter 3 seven-day controls, Chapter
+4 handoff/three rounds, close/reopen, city view and isolated reset. Canvas in
+runtime tests is stubbed. Full `npm run validate` passed formatting, lint, types, all city checks,
+527 unit/component tests, 251 integration tests and local production build.
+The known two unauthenticated progress-load diagnostics emitted; build exited
+successfully. Physical Android/GPU and student comprehension checks remain
+separate. One deliberate preview is planned; no production release.
+
+Browser acceptance completed all 36 choices, seven operating days, the Chapter
+4 handoff, a saved one-challenge reload and all three resilience rounds. Question
+and feedback have identical measured width and right/bottom coordinates. Native
+menu selection/pause and Escape dismissal passed. Visual proof exposed a focus
+scroll defect caused by distant projected labels expanding the hidden-overflow
+world's scroll area. The world and label layer now use overflow clipping;
+independent panels retain scrolling. One corrective preview is needed after the
+initial preview. Production remains unchanged; full checks rerun for this fix.
+
+Final validation of the viewport/panel correction: `npm run validate` passed
+all gates, including 527 unit/component tests, 251 integration tests, the city
+runtime suite and production build. Existing unauthenticated build diagnostics
+remain; exit status was successful. The correction is prepared as the second
+and final preview build for this iteration.
