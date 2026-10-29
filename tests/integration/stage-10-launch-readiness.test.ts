@@ -121,7 +121,13 @@ describe("Stage 10 MVP launch-readiness contract", () => {
       expect(navigation).toContain(`label: "${label}"`);
     }
     expect(navigation.match(/label: "/g)).toHaveLength(3);
-    for (const path of ["/journey", "/quests", "/projects", "/portfolio", "/opportunities"]) {
+    for (const path of [
+      "/journey",
+      "/quests",
+      "/projects",
+      "/portfolio",
+      "/opportunities",
+    ]) {
       expect(navigation).toContain(`path.startsWith("${path}")`);
     }
     expect(navigation).toContain("PipuPath mobile navigation");
