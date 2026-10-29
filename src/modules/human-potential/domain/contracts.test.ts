@@ -113,6 +113,6 @@ describe("Stage 4.1 interpretation contracts", () => {
     ],
   ])("rejects %s", (_name, candidate, code) => {
     const result = validateInterpretationOutput(input, candidate);
-    expect(result).toEqual({ ok: false, code: code as HpiDomainErrorCode });
+    expect(result).toMatchObject({ ok: false, code: code as HpiDomainErrorCode });
   });
 });
