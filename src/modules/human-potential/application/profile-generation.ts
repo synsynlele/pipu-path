@@ -196,21 +196,28 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
       const remainingMs = 45_000 - (Date.now() - providerStarted);
       if (generationMode === "openai" && remainingMs > 5_000) {
         try {
-          output = await provider.interpret(providerInput, {
-            issues: validated.issues?.length
-              ? validated.issues
-              : [validated.code],
-            timeoutMs: remainingMs,
-          });
+          output = await provider.repair(
+            providerInput,
+            output,
+            validated.issues?.length ? validated.issues : [validated.code],
+            remainingMs,
+          );
           validated = validateHumanPotentialProfileOutput(
             providerInput,
             output,
           );
+          if (!validated.ok)
+            logger.warn("hpi_profile_repair_rejected", {
+              requestId,
+              code: validated.code,
+              issues: (validated.issues ?? []).join(","),
+            });
         } catch (error) {
           logger.warn("hpi_profile_repair_failed", {
             requestId,
             reason: safeProviderFailure(error) ?? "OPENAI_PROVIDER_FAILURE",
           });
+          throw error;
         }
       }
       if (!validated.ok) {
@@ -269,6 +276,13 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
       code,
       providerFailure,
     });
+    if (providerFailure === "OPENAI_TIMEOUT")
+      return {
+        ok: false,
+        code,
+        message:
+          "The AI took too long to finish. Your saved work is unchanged. Please try again.",
+      };
     return failure(code);
   }
 }

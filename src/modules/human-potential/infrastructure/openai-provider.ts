@@ -1,4 +1,8 @@
 import "server-only";
+import {
+  prepareProfileLanguageRepair,
+  applyProfileLanguageRepair,
+} from "../domain/profile-language-repair";
 
 import { builderLanguageInstructions } from "@/lib/ai/builder-language";
 
@@ -240,6 +244,7 @@ function buildPrompt(input: z.infer<typeof interpretationInputSchema>) {
     "Every insightKey must be unique lowercase snake_case matching ^[a-z][a-z0-9_]{2,79}$.",
     "For best_next_direction, include why it fits and one realistic thing to try next in its explanation.",
     "Every insight needs at least one uncertainty and one evidence item using an exact supplied evidence UUID.",
+    "Keep the profile concise: at most 60 words for the profile summary, 20 words for each insight summary and 40 words for its explanation. Prefer one confidence factor, one uncertainty and one or two evidence references per insight.",
     "Evidence follows:",
     JSON.stringify(input),
   ].join("\n");
@@ -267,6 +272,40 @@ export class OpenAIInterpretationProvider {
         maxOutputTokens: 8192,
       }),
     );
+  }
+
+  async repair(
+    input: z.infer<typeof interpretationInputSchema>,
+    output: unknown,
+    issues: string[],
+    timeoutMs: number,
+  ): Promise<unknown> {
+    const repair = prepareProfileLanguageRepair(output, issues);
+    if (!repair) return this.interpret(input, { issues, timeoutMs });
+    const patch = await requestOpenAIStructuredOutput({
+      instructions:
+        "Rewrite only the supplied rejected wording as short, provisional, respectful observations. Remove fixed-identity, destiny and shaming labels. Preserve the meaning; invent no facts. Return only the requested fields. Do not repeat prohibited labels even in disclaimers. Prefer under 45 words per field.",
+      prompt: JSON.stringify({
+        fields: repair.fields.map(({ id, value }) => ({ id, value })),
+      }),
+      schemaName: "pipupath_profile_wording_repair_v1",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        required: repair.fields.map((field) => field.id),
+        properties: Object.fromEntries(
+          repair.fields.map((field) => [
+            field.id,
+            { type: "string", minLength: 1, maxLength: field.maxLength },
+          ]),
+        ),
+      },
+      maxOutputTokens: 2048,
+      timeoutMs,
+    });
+    const repaired = applyProfileLanguageRepair(repair, patch);
+    if (!repaired) throw new Error("OPENAI_INVALID_JSON");
+    return repaired;
   }
 
   mapProviderError(error: unknown) {

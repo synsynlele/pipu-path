@@ -80,24 +80,34 @@ export function validateHumanPotentialProfileOutput(
   });
   if (!base.ok) return base;
 
-  const prose = [
-    parsed.data.summary,
-    ...parsed.data.insights.flatMap((insight) => [
-      insight.title,
-      insight.summary,
-      insight.explanation,
-    ]),
-  ].join(" ");
-  if (
-    containsUnqualifiedClaim(prose, permanentIdentityClaim) ||
-    containsUnqualifiedClaim(prose, unsafeConstraintLanguage)
-  ) {
+  const fields = [
+    { path: "summary", text: parsed.data.summary },
+    ...parsed.data.insights.flatMap((insight, index) =>
+      (["title", "summary", "explanation"] as const).map((key) => ({
+        path: `insights.${index}.${key}`,
+        text: insight[key],
+      })),
+    ),
+  ];
+  const issues: string[] = [];
+  for (const { path, text } of fields) {
+    if (containsUnqualifiedClaim(text, permanentIdentityClaim))
+      issues.push(`${path}:fixed_identity`);
+    // Dividing work into steps describes a process, not a broken person.
+    // Remove only that literal construction; other labels still face the rule.
+    const constraintText = text.replace(
+      /\bbroken\s+(?:down\s+)?into\s+(?:(?:small|smaller|simple|manageable|clear|practical)\s+){0,2}(?:steps|tasks|parts|actions|chunks)\b/gi,
+      "divided into steps",
+    );
+    if (containsUnqualifiedClaim(constraintText, unsafeConstraintLanguage))
+      issues.push(`${path}:shaming`);
+  }
+  if (issues.length)
     return {
       ok: false,
       code: "HPI_OUTPUT_INVALID",
-      issues: ["prose:fixed_identity_or_shaming"],
+      issues: issues.slice(0, 8),
     };
-  }
 
   return { ok: true, value: parsed.data };
 }
