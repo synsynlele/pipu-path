@@ -112,7 +112,7 @@ describe("Stage 10 MVP launch-readiness contract", () => {
     expect(landing).toContain('href="/play"');
     expect(landing).toContain("No account needed");
     expect(landing).toContain("Real Quests");
-    expect(landing).toContain("real-world action");
+    expect(landing).toContain("real life");
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 
