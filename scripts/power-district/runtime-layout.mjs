@@ -66,7 +66,12 @@ try {
   console.error("City game initialization error:", error?.message);
   const trace = String(error?.stack ?? "")
     .split("\n")
-    .map((line) => line.replace(/data:text\/javascript;base64,[A-Za-z0-9+/=]+/g, "<inlined game module>"))
+    .map((line) =>
+      line.replace(
+        /data:text\/javascript;base64,[A-Za-z0-9+/=]+/g,
+        "<inlined game module>",
+      ),
+    )
     .slice(0, 6)
     .join("\n");
   console.error(trace);
