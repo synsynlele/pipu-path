@@ -69,24 +69,10 @@ export default async function DiscoveryIntroductionPage({
               </div>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <DiscoveryPromise
-                title="Private by default"
-                detail="Your answers are not a public profile."
-              />
-              <DiscoveryPromise
-                title="No instant labels"
-                detail="One answer never becomes your identity."
-              />
-              <DiscoveryPromise
-                title="Sensitive is optional"
-                detail="Optional reflection can be skipped."
-              />
-              <DiscoveryPromise
-                title="No AI judgement here"
-                detail="Discovery first gathers your own evidence."
-              />
-            </div>
+            <p className="text-muted mt-4 text-sm leading-6">
+              Your answers stay private. Skip optional questions and return
+              whenever you need.
+            </p>
 
             <form action={startDiscoveryAction} className="mt-7">
               <button
@@ -165,20 +151,5 @@ export default async function DiscoveryIntroductionPage({
         )}
       </Surface>
     </OnboardingShell>
-  );
-}
-
-function DiscoveryPromise({
-  title,
-  detail,
-}: {
-  title: string;
-  detail: string;
-}) {
-  return (
-    <div className="border-border bg-panel-raised/65 rounded-2xl border p-4">
-      <p className="text-navy text-sm font-semibold">{title}</p>
-      <p className="text-muted mt-1 text-xs leading-5">{detail}</p>
-    </div>
   );
 }

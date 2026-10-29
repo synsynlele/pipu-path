@@ -121,7 +121,7 @@ describe("Stage 11 Builder Connect and Journey continuity contract", () => {
     expect(journeyPage).toContain("Next route available");
     expect(journeyPage).toContain("Open growth cycle {state.nextCycleNumber}");
     expect(journeyPage).toContain('kind="continue"');
-    expect(progress).toContain('label: "Build your next Journey"');
+    expect(progress).toContain('label: "Plan my next build"');
     expect(progressDal).toContain('.eq("journey_id", journey.id)');
   });
 });

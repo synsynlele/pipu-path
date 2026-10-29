@@ -193,6 +193,11 @@ export async function generateCurrentHumanPotentialProfile(): Promise<ProfileExe
 
     let validated = validateHumanPotentialProfileOutput(providerInput, output);
     if (!validated.ok) {
+      logger.warn("hpi_provider_output_rejected", {
+        requestId,
+        code: validated.code,
+        issues: (validated.issues ?? []).join(","),
+      });
       generationMode = "evidence_fallback";
       fallbackReason = validated.code;
       output = buildEvidenceBasedFallbackProfile(providerInput);

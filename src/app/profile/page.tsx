@@ -143,40 +143,53 @@ export default async function LivingBuilderProfilePage() {
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <nav
             aria-label="Builder identity spaces"
-            className="pp-stage26-scroll -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0"
+            className="flex flex-wrap gap-2"
           >
-            <div className="flex w-max gap-2.5">
+            <IdentityChip href="/portfolio" icon="▣" label="My work" />
+            <IdentityChip href="/projects" icon="+" label="Projects" />
+            <IdentityChip
+              href="/account-privacy"
+              icon="⚙"
+              label="Account & privacy"
+            />
+          </nav>
+          <details className="pp-app-card mt-4 rounded-2xl p-4">
+            <summary className="cursor-pointer text-sm font-bold">
+              Guidance, support & more
+            </summary>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <IdentityChip href="/guide" icon="✦" label="Ask for guidance" />
+              <IdentityChip href="/connect" icon="◎" label="Find help" />
               <IdentityChip
                 href="/onboarding/discovery/profile"
                 icon="◇"
-                label="Potential"
+                label="My starting profile"
               />
-              <IdentityChip href="/growth" icon="↗" label="Growth" />
-              <IdentityChip href="/portfolio" icon="▣" label="Vault" />
-              <IdentityChip href="/passport" icon="◎" label="Passport" />
-              <IdentityChip href="/projects" icon="+" label="Projects" />
-              <IdentityChip href="/discover" icon="◇" label="Discover" />
-              <IdentityChip href="/guide" icon="✦" label="Guidance" />
-              <IdentityChip href="/connect" icon="◎" label="Collaborate" />
+              <IdentityChip href="/growth" icon="↗" label="Learning support" />
+              <IdentityChip
+                href="/passport"
+                icon="◎"
+                label="Share my achievements"
+              />
               <IdentityChip
                 href="/opportunities"
                 icon="↗"
-                label="Opportunities"
+                label="Put my skills to use"
               />
               <IdentityChip
-                href="/account-privacy"
-                icon="⚙"
-                label="Account & privacy"
+                href="/discover"
+                icon="◇"
+                label="Explore my direction"
               />
               {profile ? (
                 <IdentityChip
                   href="/profile/verification"
                   icon="✓"
-                  label="Verification"
+                  label="Review my evidence"
                 />
               ) : null}
             </div>
-          </nav>
+          </details>
 
           <section className="pp-app-card pp-mobile-section mt-5 flex items-start gap-3 p-4 sm:p-5">
             <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#e7f8f5] text-lg text-[#159f8a]">

@@ -61,5 +61,5 @@ export async function completeIdentityAction(
         : "Your identity checkpoint could not be saved.",
     };
   }
-  redirect("/continue");
+  redirect("/real-quests");
 }

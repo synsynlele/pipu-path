@@ -1250,3 +1250,23 @@ Clean full validation passed: formatting, lint, types, city runtime checks,
 build used stale generated chunks after switching branches; rebuilding from a
 fresh build directory passed. No extra Vercel preview build is needed for this
 public-launch compatibility correction. Production confirmation follows release.
+
+## 29 October 2026 — Clear real-world flow and AI validation repair
+
+Owner authorises simplifying the non-game journey and fixing repetitive AI
+results. Based on current main 5a30b11, preserving the released city consequences
+and installed-app welcome. Production logs confirm invalid-profile fallback
+and youth external-AI-disabled fallback. Fix narrow false-positive safety
+checks, align profile generation with saved text/provenance limits, and log
+only validation paths/codes. Keep existing external-processing boundaries.
+Guided youth profiles explain their actual mode and offer no futile AI retry.
+
+Internal onboarding/guardian completion now reaches Real Quests rather than
+legacy /continue, which remains the public installed-app entry. Real Quests
+leads with actual next work; inspiration, explanations and Project help are
+secondary. You groups optional support tools; onboarding removes repeated
+explanations, and direction/plan copy becomes simpler. Required saved answers,
+actual Quest proof/reflection and all ownership/lifecycle gates remain. No new
+schema, AI recipient, data rewrites or fake progress. See
+product/real-world-guided-flow.md. Focused regression checks passed; full
+validation and live authenticated acceptance follow.

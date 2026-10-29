@@ -23,105 +23,144 @@ export default async function RealQuestsPage({
     requireAuthenticatedHomeState(),
     searchParams,
   ]);
-  const move = realWorldMove(state);
-  const idea = cityInspiration(params.district);
+  const move = realWorldMove(state),
+    idea = cityInspiration(params.district);
   return (
     <main
       id="main-content"
-      className="mx-auto max-w-4xl px-4 py-7 pb-14 sm:px-8"
+      className="mx-auto max-w-2xl px-4 py-7 pb-14 sm:px-8"
     >
-      <section className="rounded-[2rem] bg-[#172a47] px-6 py-9 text-white sm:p-10">
-        <p className="text-xs font-bold tracking-[0.16em] text-[#e9cd82] uppercase">
-          PipuPath · Beyond the city
-        </p>
-        <h1 className="mt-3 text-3xl font-extrabold sm:text-5xl">
-          Real Quests
-        </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-[#dfebf3]">
-          The city lets you practise making decisions. A real Quest is where you
-          try something useful, learn what happened, and bring back honest
-          proof.
-        </p>
-      </section>
-      <form
-        method="get"
-        className="mt-5 rounded-2xl border border-[#d9e1ed] bg-white p-5 text-[#20324e]"
+      <p className="text-primary text-xs font-bold tracking-widest uppercase">
+        PipuPath · Real Quests
+      </p>
+      <h1 className="text-navy mt-3 text-3xl font-extrabold sm:text-4xl">
+        Build something real.
+      </h1>
+      <p className="text-muted mt-3 text-sm leading-6">
+        One useful action. Honest proof. A better next attempt.
+      </p>
+      <div
+        aria-label="Your building journey"
+        className="text-muted mt-5 flex flex-wrap gap-2 text-xs font-semibold"
       >
-        <label htmlFor="city-interest" className="block font-bold">
-          Which need inspired you?
-        </label>
-        <select
-          id="city-interest"
-          name="district"
-          defaultValue={idea?.id ?? ""}
-          className="mt-3 min-h-12 w-full rounded-xl border border-[#b3c2d1] bg-white p-3 text-[#20324e]"
-        >
-          <option value="">Choose a need</option>
-          {cityInterests.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.title}
-            </option>
-          ))}
-        </select>
-        <button
-          type="submit"
-          className="mt-3 min-h-11 rounded-xl bg-[#5436df] px-5 font-bold text-white"
-        >
-          Explore this idea
-        </button>
-      </form>
-      {idea ? (
-        <section className="mt-5 rounded-2xl border border-[#d6e8de] bg-[#f0f8f2] p-5 text-[#265343]">
-          <p className="text-xs font-bold tracking-[0.12em] uppercase">
-            A starting idea · {idea.title}
-          </p>
-          <p className="mt-2 text-sm leading-6">{idea.idea}</p>
-          <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm">
-            <li>Notice the need in a familiar place, with permission.</li>
-            <li>Listen to someone you know who experiences it.</li>
-            <li>Sketch one small, safe improvement using what you have.</li>
-            <li>
-              Try it with appropriate adult guidance and ask for feedback.
-            </li>
-            <li>
-              Keep a sketch or notes, then explain what you would improve.
-            </li>
-          </ol>
-          <p className="mt-3 text-sm">
-            What changed for the person? What would you try next? Keep names,
-            faces and private details out of your notes.
-          </p>
-          <p className="mt-2 text-xs">
-            This is inspiration, not an assigned or completed Quest, and earns
-            no XP. Follow your own Quest’s steps and evidence requirements.
-          </p>
-        </section>
-      ) : null}
-      <section className="mt-5 rounded-3xl border border-[#d9e1ed] bg-white p-6 shadow-sm sm:p-8">
-        <p className="text-xs font-bold tracking-widest text-[#5436df] uppercase">
-          Your next genuine step
+        <span>Prepare</span>
+        <span aria-hidden="true">→</span>
+        <span>Try</span>
+        <span aria-hidden="true">→</span>
+        <span>Proof & reflection</span>
+        <span aria-hidden="true">→</span>
+        <span>Put it to use</span>
+      </div>
+      <section
+        aria-labelledby="next-move"
+        className="border-border bg-panel mt-6 rounded-3xl border p-6 shadow-sm"
+      >
+        <p className="text-primary text-xs font-bold tracking-widest uppercase">
+          Your next move
         </p>
-        <h2 className="mt-3 text-2xl font-bold text-[#20324e]">{move.title}</h2>
-        <p className="mt-3 text-sm leading-7 text-[#62738b]">{move.detail}</p>
-        <ButtonLink
-          href={move.href}
-          className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-[#5436df] px-6 font-bold text-white"
-        >
+        <h2 id="next-move" className="text-navy mt-3 text-2xl font-bold">
+          {move.title}
+        </h2>
+        <p className="text-muted mt-3 text-sm leading-6">{move.detail}</p>
+        <ButtonLink href={move.href} className="mt-5 min-h-12 rounded-full">
           {move.label} →
         </ButtonLink>
       </section>
-      <div className="mt-5 flex flex-wrap gap-3">
-        <Link
-          href="/build/play"
-          className="inline-flex min-h-11 items-center rounded-full border border-[#d6dfea] px-5 text-sm font-bold text-[#34425f]"
-        >
+      <details className="border-border bg-panel mt-5 rounded-2xl border p-5">
+        <summary className="text-navy cursor-pointer font-bold">
+          {idea
+            ? `Inspired by ${idea.title}`
+            : "Find inspiration from your city"}
+        </summary>
+        {idea ? (
+          <p className="text-muted mt-4 text-sm leading-6">{idea.idea}</p>
+        ) : null}
+        <form method="get" className="mt-4">
+          <label
+            htmlFor="city-interest"
+            className="text-navy text-sm font-semibold"
+          >
+            Which need matters to you?
+          </label>
+          <select
+            id="city-interest"
+            name="district"
+            defaultValue={idea?.id ?? ""}
+            className="border-border bg-panel text-navy mt-2 min-h-12 w-full rounded-xl border p-3"
+          >
+            <option value="">Choose a need</option>
+            {cityInterests.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.title}
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            className="text-primary mt-3 min-h-11 font-bold"
+          >
+            Explore this idea →
+          </button>
+        </form>
+        <p className="text-muted mt-3 text-xs leading-5">
+          Inspiration earns no XP. Your personal Quest has its own actions,
+          proof and reflection.
+        </p>
+      </details>
+      {state.project?.status === "completed" ? (
+        <section className="border-border bg-panel mt-5 rounded-2xl border p-5">
+          <h2 className="text-navy font-bold">Put your build to use</h2>
+          <p className="text-muted mt-2 text-sm leading-6">
+            {state.project.title}
+          </p>
+          <ButtonLink
+            href={`/projects/${encodeURIComponent(state.project.id)}`}
+            className="mt-3"
+          >
+            Review my completed build →
+          </ButtonLink>
+          <p className="text-muted mt-3 text-xs">
+            Choose what to share. Your private proof stays private until you
+            deliberately publish selected work.
+          </p>
+        </section>
+      ) : null}
+      <details className="border-border bg-panel mt-4 rounded-2xl border p-5">
+        <summary className="text-navy cursor-pointer font-bold">
+          How this works
+        </summary>
+        <p className="text-muted mt-3 text-sm leading-6">
+          Tell us a little about yourself. Choose a direction, follow a small
+          plan, then try your Quest in real life. Bring back what really
+          happened, reflect and improve. Build a Project when you are ready;
+          find help when you need it.
+        </p>
+        <p className="text-muted mt-3 text-sm leading-6">
+          You can save and return. Opening a suggestion or finishing a game does
+          not complete real-world work.
+        </p>
+      </details>
+      {state.project ? (
+        <details className="border-border bg-panel mt-4 rounded-2xl border p-5">
+          <summary className="text-navy cursor-pointer font-bold">
+            Need help with your build?
+          </summary>
+          <div className="mt-3 flex flex-wrap gap-5 text-sm font-bold">
+            <Link href="/guide" className="text-primary min-h-11 py-3">
+              Ask for guidance
+            </Link>
+            <Link href="/connect" className="text-primary min-h-11 py-3">
+              Find someone to help
+            </Link>
+          </div>
+        </details>
+      ) : null}
+      <div className="mt-5 flex flex-wrap gap-5 text-sm font-bold">
+        <Link href="/build/play" className="text-primary min-h-11 py-3">
           Return to the city
         </Link>
-        <Link
-          href="/profile"
-          className="inline-flex min-h-11 items-center rounded-full border border-[#d6dfea] px-5 text-sm font-bold text-[#34425f]"
-        >
-          My potential and tools
+        <Link href="/profile" className="text-primary min-h-11 py-3">
+          My work & account
         </Link>
       </div>
     </main>

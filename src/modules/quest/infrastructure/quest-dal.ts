@@ -178,7 +178,8 @@ export async function getCurrentQuestState(milestoneId?: string) {
 }
 
 export async function getQuestById(questId: string) {
-  const { user } = await requireAuthenticatedIdentity();
+  const { user, profile: identityProfile } =
+    await requireAuthenticatedIdentity();
   const client = await createQuestServerClient();
 
   const { data: quest } = await client
@@ -252,6 +253,7 @@ export async function getQuestById(questId: string) {
     ) ?? null;
 
   return {
+    guidedPlan: identityProfile.is_minor,
     quest: quest as QuestRow,
     evidence: (evidence as EvidenceRow | null) ?? null,
     reflection: (reflection as ReflectionRow | null) ?? null,

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 const home = vi.hoisted(() => vi.fn());
 vi.mock("@/modules/identity/infrastructure/progress-dal", () => ({
   requireAuthenticatedHomeState: home,
@@ -27,8 +27,8 @@ describe("game inspiration to real-world build", () => {
     expect(
       screen.getByRole("link", { name: "Complete identity setup →" }),
     ).toHaveAttribute("href", "/onboarding/identity");
+    fireEvent.click(screen.getByText(/^Inspired by/));
     expect(screen.getAllByRole("option")).toHaveLength(15);
-    expect(screen.getAllByRole("listitem")).toHaveLength(5);
     expect(screen.getByText(/earns no XP/)).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Return to the city" }),
