@@ -3575,3 +3575,211 @@ body #city-hud #journey-bar[hidden] {
     width: 28px;
   }
 }
+
+/* One live city, from the opening invitation into play. */
+.city-welcome {
+  padding: max(90px, 12svh) 7vw max(100px, 13svh);
+  color: #fff9ed;
+  background:
+    linear-gradient(90deg, #0b2638e8 0%, #123243a6 36%, #102c3420 78%),
+    linear-gradient(0deg, #0b2638db, transparent 40%);
+}
+.city-welcome .welcome-top {
+  position: absolute;
+  top: max(22px, env(safe-area-inset-top));
+  left: 7vw;
+  right: 7vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.city-welcome a {
+  color: #fff9ed;
+  text-decoration: none;
+}
+.city-welcome a:focus-visible,
+.city-welcome button:focus-visible {
+  outline: 3px solid #ffe397;
+  outline-offset: 6px;
+}
+.city-welcome .welcome-brand {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.city-welcome .welcome-brand span {
+  display: block;
+  margin-top: 5px;
+  font-size: 8px;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+.city-welcome .welcome-signin {
+  font-size: 13px;
+  padding: 12px 17px;
+  border: 1px solid #ffffff55;
+  border-radius: 30px;
+  background: #0b263850;
+}
+.city-welcome .intro-card {
+  margin: 0;
+  max-width: 640px;
+}
+.city-welcome .eyebrow {
+  color: #ffe397;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+}
+.city-welcome h1 {
+  font-size: clamp(58px, 7.5vw, 108px);
+  color: #fff9ed;
+  line-height: 0.94;
+  letter-spacing: -4px;
+  margin: 24px 0;
+  text-shadow: 0 4px 30px #08213660;
+}
+.city-welcome h1 em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 800;
+  color: #ffe397;
+}
+.city-welcome .intro-card p {
+  color: #f1f0e9;
+  font-size: clamp(16px, 2vw, 22px);
+  margin: 0 0 28px;
+}
+.city-welcome .primary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(310px, 100%);
+  min-height: 60px;
+  margin: 0;
+  padding: 17px 25px;
+  border: 0;
+  border-radius: 18px;
+  color: #142e39;
+  background: #ffe397;
+  box-shadow: 0 8px 35px #071a3440;
+  font-size: 18px;
+  font-weight: 800;
+}
+.city-welcome .primary:hover {
+  background: #fff0bc;
+  transform: translateY(-2px);
+}
+.city-welcome .welcome-journey {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: min(310px, 100%);
+  min-height: 48px;
+  margin: 12px 0;
+  padding: 8px 25px;
+  border: 1px solid #ffffff65;
+  border-radius: 18px;
+  background: #0b263866;
+  font-size: 14px;
+  font-weight: 600;
+}
+.city-welcome .intro-card > small {
+  color: #e3e9e8;
+  font-size: 11px;
+  display: block;
+  margin-top: 17px;
+}
+.city-welcome .welcome-bottom {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: 7vw;
+  right: 7vw;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 9px;
+  letter-spacing: 1.7px;
+  color: #e4eae7;
+}
+.city-welcome .welcome-bottom b {
+  margin: 0 8px;
+  color: #ffe397;
+}
+.city-welcome .welcome-bottom nav {
+  display: flex;
+  gap: 20px;
+  letter-spacing: 0;
+  font-size: 11px;
+}
+@media (max-width: 650px) {
+  .city-welcome {
+    align-items: flex-end;
+    padding: 110px 7vw 110px;
+    background: linear-gradient(
+      0deg,
+      #0b2638f5 0%,
+      #0b2638dd 25%,
+      #102c3433 78%,
+      #0b263890 100%
+    );
+  }
+  .city-welcome h1 {
+    font-size: clamp(54px, 14vw, 76px);
+    letter-spacing: -2.5px;
+    margin: 16px 0;
+  }
+  .city-welcome .intro-card {
+    width: 100%;
+  }
+  .city-welcome .intro-card p {
+    margin-bottom: 22px;
+  }
+  .city-welcome .primary,
+  .city-welcome .welcome-journey {
+    width: 100%;
+  }
+  .city-welcome .welcome-bottom {
+    gap: 12px;
+  }
+}
+@media (max-height: 540px) {
+  .city-welcome {
+    padding-top: 85px;
+    padding-bottom: 75px;
+    align-items: center;
+    overflow-y: auto;
+  }
+  .city-welcome h1 {
+    font-size: 46px;
+    margin: 10px 0;
+  }
+  .city-welcome h1 br {
+    display: none;
+  }
+  .city-welcome .intro-card p {
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+  .city-welcome .primary {
+    min-height: 48px;
+    padding: 12px 22px;
+  }
+  .city-welcome .intro-card > small {
+    margin-top: 6px;
+  }
+  .city-welcome .welcome-journey {
+    margin: 8px 0;
+    min-height: 44px;
+  }
+}
+
+/* Keep play-only labels out of the welcome invitation. They return on Play. */
+#game:has(#intro:not([hidden])) > header,
+#game:has(#intro:not([hidden])) > #weather,
+#game:has(#intro:not([hidden])) > #controls,
+#game:has(#intro:not([hidden])) > .corner-note {
+  visibility: hidden;
+}

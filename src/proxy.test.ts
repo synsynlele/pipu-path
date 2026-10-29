@@ -88,7 +88,8 @@ describe("session redirects", () => {
     );
     expect(result.cookies.get("sb-test-auth-token")?.value).toBe("rotated");
     const home = await proxy(new NextRequest("https://pipu.test/"));
-    expect(home.headers.get("location")).toBe("https://pipu.test/app");
+    expect(home.headers.get("location")).toBeNull();
+    expect(home.cookies.get("sb-test-auth-token")?.value).toBe("rotated");
     const external = await proxy(
       new NextRequest("https://pipu.test/login?next=https://bad.test"),
     );

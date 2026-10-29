@@ -10,6 +10,41 @@ afterEach(() => {
 });
 
 describe("City to Quest handoff", () => {
+  it("opens the welcome city once and reveals controls only after its own start signal", () => {
+    render(
+      <PowerDistrictFrame
+        questHref="/real-quests"
+        questLabel="Real Quests"
+        welcome
+      />,
+    );
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    ) as HTMLIFrameElement;
+    expect(screen.queryByRole("button", { name: "Real Quests" })).toBeNull();
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: window,
+        data: { type: "pipupath:city:state", entered: true },
+      }),
+    );
+    expect(screen.queryByRole("button", { name: "Real Quests" })).toBeNull();
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: frame.contentWindow,
+        data: { type: "pipupath:city:state", entered: true, saved: false },
+      }),
+    );
+    expect(screen.getByRole("button", { name: "Real Quests" })).toBeVisible();
+    expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
+      frame,
+    );
+    expect(push).not.toHaveBeenCalled();
+  });
   it("shows an explicit save/discard choice without converting game progress to proof", () => {
     render(
       <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,

@@ -8,13 +8,16 @@ export function PowerDistrictFrame({
   questHref,
   questLabel,
   initialFocus = true,
+  welcome = false,
 }: {
   questHref: string;
   questLabel: string;
   initialFocus?: boolean;
+  welcome?: boolean;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(initialFocus);
+  const [entered, setEntered] = useState(!welcome);
   const [handoff, setHandoff] = useState(false);
   const [saved, setSaved] = useState<boolean | null>(null);
   const [district, setDistrict] = useState<string | null>(null);
@@ -50,6 +53,7 @@ export function PowerDistrictFrame({
       if (!data || typeof data !== "object") return;
       if (data.type === "pipupath:city:state") {
         setSaved(data.saved === true);
+        if (data.entered === true) setEntered(true);
         if (
           typeof data.district === "string" &&
           /^[a-z-]{1,32}$/.test(data.district)
@@ -78,7 +82,7 @@ export function PowerDistrictFrame({
     if (!expanded) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    closeButton.current?.focus();
+    if (entered) closeButton.current?.focus();
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !dialogRef.current?.open) {
         setExpanded(false);
@@ -90,7 +94,7 @@ export function PowerDistrictFrame({
       document.body.style.overflow = previous;
       window.removeEventListener("keydown", escape);
     };
-  }, [expanded]);
+  }, [expanded, entered]);
 
   function questHrefWithDistrict() {
     if (!district || !questHref.startsWith("/real-quests")) return questHref;
@@ -131,7 +135,14 @@ export function PowerDistrictFrame({
           : "unbuilt-city-frame overflow-hidden rounded-2xl border border-[#d6deed] bg-[#f4f6fd] text-[#142a52]"
       }
     >
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#d6deed] px-3 py-2">
+      <div
+        hidden={!entered}
+        className={
+          entered
+            ? "flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#d6deed] px-3 py-2"
+            : "hidden"
+        }
+      >
         <strong className="text-xs sm:text-sm">The Unbuilt City</strong>
         <div className="flex items-center gap-2">
           <button
