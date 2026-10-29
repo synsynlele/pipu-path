@@ -1645,6 +1645,7 @@ function renderResiliencePanel() {
     results.append(details);
   }
   $("resilience-view").disabled = !report.last;
+  $("resilience-panel").scrollTop = 0;
 }
 function openResiliencePanel() {
   if (simulating || !$("intro").hidden) return;

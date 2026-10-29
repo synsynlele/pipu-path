@@ -1535,3 +1535,14 @@ automatic and background-resume handoffs continue through all 36 answers.
   Full `npm run validate` passed formatting, lint, types, all city checks,
   527 unit/component tests, 251 integration tests and local production build.
   Known unauthenticated build diagnostics emitted; exit status was successful.
+
+### Browser proof and viewport correction
+
+The actual browser completed 36 choices, all seven Chapter 3 days and the
+Chapter 4 handoff; it saved/reloaded after one challenge and completed all three.
+DOM measurements confirmed question/feedback width and right/bottom coordinates
+match. Dropdown, pause and Escape dismissal worked. Visual review then found
+focus could scroll the hidden-overflow game container: projected labels extended
+its scroll area far below the viewport. Clip the world and label layer so only
+the bounded panels scroll. This requires one corrective preview build after the
+initial preview; production remains untouched. Full checks rerun for the CSS fix.

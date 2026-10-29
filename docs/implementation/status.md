@@ -1157,3 +1157,18 @@ runtime tests is stubbed. Full `npm run validate` passed formatting, lint, types
 The known two unauthenticated progress-load diagnostics emitted; build exited
 successfully. Physical Android/GPU and student comprehension checks remain
 separate. One deliberate preview is planned; no production release.
+
+Browser acceptance completed all 36 choices, seven operating days, the Chapter
+4 handoff, a saved one-challenge reload and all three resilience rounds. Question
+and feedback have identical measured width and right/bottom coordinates. Native
+menu selection/pause and Escape dismissal passed. Visual proof exposed a focus
+scroll defect caused by distant projected labels expanding the hidden-overflow
+world's scroll area. The world and label layer now use overflow clipping;
+independent panels retain scrolling. One corrective preview is needed after the
+initial preview. Production remains unchanged; full checks rerun for this fix.
+
+Final validation of the viewport/panel correction: `npm run validate` passed
+all gates, including 527 unit/component tests, 251 integration tests, the city
+runtime suite and production build. Existing unauthenticated build diagnostics
+remain; exit status was successful. The correction is prepared as the second
+and final preview build for this iteration.
