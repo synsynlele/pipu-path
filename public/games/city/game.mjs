@@ -1571,6 +1571,7 @@ function reportParentState() {
     {
       type: "pipupath:city:state",
       saved: saveEnabled,
+      entered: $("intro").hidden,
       district: getCase(journey.caseId)?.district ?? null,
     },
     window.location.origin,
@@ -3427,6 +3428,7 @@ $("city-map").onclick = () => {
 };
 $("start").onclick = () => {
   $("intro").hidden = true;
+  reportParentState();
   $("city-tools").hidden = false;
   mapMode = false;
   closeCasebook();
@@ -3922,9 +3924,9 @@ window.addEventListener("resize", resize);
 resize();
 render();
 document.querySelector(".intro-card>small").textContent =
-  "Build one connected city · 36 fictional choices across 14 districts · optional device-only save";
+  "Free to play · No account needed";
 if (previousPractice) {
-  $("start").textContent = "Continue saved city →";
+  $("start").textContent = "Continue my city →";
 }
 $("loading").hidden = true;
 requestAnimationFrame(animate);

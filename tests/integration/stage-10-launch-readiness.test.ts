@@ -109,11 +109,9 @@ describe("Stage 10 MVP launch-readiness contract", () => {
   });
 
   it("positions the public product without fake proof", () => {
-    expect(landing).toContain("Your city. Your choices.");
-    expect(landing).toContain('href="/play"');
-    expect(landing).toContain("No account needed");
-    expect(landing).toContain("Real Quests");
-    expect(landing).toContain("real life");
+    expect(landing).toContain("PowerDistrictFrame");
+    expect(landing).toContain("welcome");
+    expect(landing).toContain('questHref="/real-quests"');
     expect(landing).not.toMatch(/10,?000|million users|trusted by/i);
   });
 

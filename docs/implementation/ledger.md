@@ -1579,3 +1579,20 @@ Final local validation passed: formatting, lint, types, city runtime/endurance,
 541 unit/component tests, 251 integration tests and the production build on
 Next.js 16.4.3. Complete dependency audit: zero known vulnerabilities. Live
 learner browser acceptance remains pending; this is not yet a production release.
+
+## 29 October 2026 — Live-city opening invitation
+
+Owner authorised an exciting, minimal-word landing screen as the first website
+and installed-app entry, with free play and returning-player continuation.
+Root now mounts the actual existing city frame, rather than a separate marketing
+page. The city intro shows the living scene, The Unbuilt City, one short promise,
+Play free and Continue my journey, plus small sign-in/policy links. A validated
+existing device save changes Play free to Continue my city. No demonstration
+buildings, invented saves, XP or account writes are introduced.
+
+Play enters the same mounted scene; a same-origin, same-frame entered signal
+reveals the existing Quest handoff and focus controls. Signed-in root visits
+remain on this invitation; login returns, protected routes and actual next-step
+resolution remain unchanged. Reduced-motion, graphics budgets, saving and
+recovery retain the current game implementation. Source is based on production
+merge e1f1050. Full validation and live visual verification follow.

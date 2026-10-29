@@ -89,9 +89,9 @@ export async function proxy(request: NextRequest) {
     return sessionRedirect(destination);
   }
 
-  if (user && (path === "/" || authRoutes.includes(path))) {
+  if (user && authRoutes.includes(path)) {
     const destination = request.nextUrl.clone();
-    destination.pathname = path === "/" ? "/app" : "/continue";
+    destination.pathname = "/continue";
     if (
       path === "/login" &&
       request.nextUrl.searchParams.get("next") === "/account-deletion"
