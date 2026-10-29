@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,23 +19,11 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: feat/unbuilt-city-visible-consequences-release
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format consequence release files once
-        run: |
-          npx prettier --write public/games/city/consequences.mjs public/games/city/game.mjs public/games/shared/city-theme.css scripts/power-district/city-ui.mjs scripts/power-district/consequences.mjs
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/games/city/consequences.mjs public/games/city/game.mjs public/games/shared/city-theme.css scripts/power-district/city-ui.mjs scripts/power-district/consequences.mjs
-          if ! git diff --cached --quiet; then
-            git commit -m "Format persistent city consequence layer"
-            git push origin HEAD:feat/unbuilt-city-visible-consequences-release
-          fi
       - run: npm run validate
 
   staging-e2e:
