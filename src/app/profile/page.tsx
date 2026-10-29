@@ -158,7 +158,11 @@ export default async function LivingBuilderProfilePage() {
               <IdentityChip href="/discover" icon="◇" label="Discover" />
               <IdentityChip href="/guide" icon="✦" label="Guidance" />
               <IdentityChip href="/connect" icon="◎" label="Collaborate" />
-              <IdentityChip href="/opportunities" icon="↗" label="Opportunities" />
+              <IdentityChip
+                href="/opportunities"
+                icon="↗"
+                label="Opportunities"
+              />
               <IdentityChip
                 href="/account-privacy"
                 icon="⚙"

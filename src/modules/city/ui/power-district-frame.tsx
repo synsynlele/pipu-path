@@ -26,14 +26,20 @@ export function PowerDistrictFrame({
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin ||
-        event.source !== frameRef.current?.contentWindow) return;
+      if (
+        event.origin !== window.location.origin ||
+        event.source !== frameRef.current?.contentWindow
+      )
+        return;
       const data = event.data;
       if (!data || typeof data !== "object") return;
       if (data.type === "pipupath:city:state") {
         setSaved(data.saved === true);
-        if (typeof data.district === "string" &&
-          /^[a-z-]{1,32}$/.test(data.district)) setDistrict(data.district);
+        if (
+          typeof data.district === "string" &&
+          /^[a-z-]{1,32}$/.test(data.district)
+        )
+          setDistrict(data.district);
       }
       if (data.type === "pipupath:city:saved" && saving.current) {
         saving.current = false;
@@ -41,7 +47,9 @@ export function PowerDistrictFrame({
           setSaved(true);
           router.push(questHrefWithDistrict());
         } else {
-          setProblem("This browser could not save the city. You can remain here or leave without saving.");
+          setProblem(
+            "This browser could not save the city. You can remain here or leave without saving.",
+          );
         }
       }
     };
@@ -89,7 +97,9 @@ export function PowerDistrictFrame({
     setProblem("");
     const target = frameRef.current?.contentWindow;
     if (!target) {
-      setProblem("The city has not finished loading. Try again or choose to leave without saving.");
+      setProblem(
+        "The city has not finished loading. Try again or choose to leave without saving.",
+      );
       return;
     }
     saving.current = true;
@@ -104,28 +114,42 @@ export function PowerDistrictFrame({
   return (
     <section
       aria-label="The Unbuilt City 3D city"
-      className={expanded
-        ? "unbuilt-city-frame fixed inset-0 z-[1000] flex flex-col bg-[#f4f6fd] text-[#142a52]"
-        : "unbuilt-city-frame overflow-hidden rounded-2xl border border-[#d6deed] bg-[#f4f6fd] text-[#142a52]"}
+      className={
+        expanded
+          ? "unbuilt-city-frame fixed inset-0 z-[1000] flex flex-col bg-[#f4f6fd] text-[#142a52]"
+          : "unbuilt-city-frame overflow-hidden rounded-2xl border border-[#d6deed] bg-[#f4f6fd] text-[#142a52]"
+      }
     >
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#d6deed] px-3 py-2">
         <strong className="text-xs sm:text-sm">The Unbuilt City</strong>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={navigate}
-            className="min-h-11 rounded-full bg-[#e6cd83] px-3 text-xs font-bold text-[#213449]">
+          <button
+            type="button"
+            onClick={navigate}
+            className="min-h-11 rounded-full bg-[#e6cd83] px-3 text-xs font-bold text-[#213449]"
+          >
             {questLabel}
           </button>
           {expanded ? (
-            <button ref={closeButton} type="button" onClick={() => {
-              setExpanded(false);
-              expandButton.current?.focus();
-            }} className="min-h-11 rounded-xl border border-[#bccbe4] px-3 text-xs font-bold">
+            <button
+              ref={closeButton}
+              type="button"
+              onClick={() => {
+                setExpanded(false);
+                expandButton.current?.focus();
+              }}
+              className="min-h-11 rounded-xl border border-[#bccbe4] px-3 text-xs font-bold"
+            >
               Close focus view
             </button>
           ) : (
-            <button ref={expandButton} type="button" onClick={() => setExpanded(true)}
+            <button
+              ref={expandButton}
+              type="button"
+              onClick={() => setExpanded(true)}
               aria-expanded={expanded}
-              className="min-h-11 rounded-xl bg-[#243b78] px-3 text-xs font-bold text-white">
+              className="min-h-11 rounded-xl bg-[#243b78] px-3 text-xs font-bold text-white"
+            >
               Focus on my city ↗
             </button>
           )}
@@ -135,33 +159,67 @@ export function PowerDistrictFrame({
         ref={frameRef}
         title="The Unbuilt City · 14 connected districts"
         src="/games/city/index.html?embedded=1"
-        onLoad={() => frameRef.current?.contentWindow?.postMessage(
-          { type: "pipupath:city:get-state" },
-          window.location.origin,
-        )}
-        className={expanded ? "min-h-0 w-full flex-1 border-0" : "h-[min(860px,85svh)] min-h-[620px] w-full border-0"}
+        onLoad={() =>
+          frameRef.current?.contentWindow?.postMessage(
+            { type: "pipupath:city:get-state" },
+            window.location.origin,
+          )
+        }
+        className={
+          expanded
+            ? "min-h-0 w-full flex-1 border-0"
+            : "h-[min(860px,85svh)] min-h-[620px] w-full border-0"
+        }
         allow="fullscreen"
         referrerPolicy="no-referrer"
       />
       {handoff ? (
-        <div role="dialog" aria-modal="true" aria-label="Continue to a real Quest"
-          className="absolute inset-0 z-20 grid place-items-center bg-[#08162d]/80 p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Continue to a real Quest"
+          className="absolute inset-0 z-20 grid place-items-center bg-[#08162d]/80 p-4"
+        >
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-[#1e3150] shadow-2xl">
-            <h2 className="text-xl font-bold">Take your learning into real life?</h2>
+            <h2 className="text-xl font-bold">
+              Take your learning into real life?
+            </h2>
             <p className="mt-3 text-sm leading-6 text-[#65758b]">
-              Your city choices stay in this open game unless you save them on this device.
-              Saving is optional, private to this browser, and is not an account backup.
+              Your city choices stay in this open game unless you save them on
+              this device. Saving is optional, private to this browser, and is
+              not an account backup.
             </p>
-            {problem ? <p role="alert" className="mt-3 text-sm font-semibold text-[#9d433b]">{problem}</p> : null}
+            {problem ? (
+              <p
+                role="alert"
+                className="mt-3 text-sm font-semibold text-[#9d433b]"
+              >
+                {problem}
+              </p>
+            ) : null}
             <div className="mt-5 grid gap-2">
-              <button onClick={saveAndContinue} type="button" className="min-h-12 rounded-xl bg-[#284f40] px-4 font-bold text-white">
+              <button
+                onClick={saveAndContinue}
+                type="button"
+                className="min-h-12 rounded-xl bg-[#284f40] px-4 font-bold text-white"
+              >
                 Save my city, then continue
               </button>
-              <button onClick={leaveWithoutSaving} type="button" className="min-h-12 rounded-xl border border-[#b3c2d1] px-4 font-semibold">
+              <button
+                onClick={leaveWithoutSaving}
+                type="button"
+                className="min-h-12 rounded-xl border border-[#b3c2d1] px-4 font-semibold"
+              >
                 Continue without saving
               </button>
-              <button onClick={() => { setHandoff(false); setProblem(""); }}
-                type="button" className="min-h-12 rounded-xl px-4 font-bold text-[#5142a2]">
+              <button
+                onClick={() => {
+                  setHandoff(false);
+                  setProblem("");
+                }}
+                type="button"
+                className="min-h-12 rounded-xl px-4 font-bold text-[#5142a2]"
+              >
                 Stay in my city
               </button>
             </div>

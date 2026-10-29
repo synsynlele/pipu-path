@@ -1552,8 +1552,8 @@ function reportParentState() {
   );
 }
 window.addEventListener("message", (event) => {
-  if (event.source !== window.parent ||
-      event.origin !== window.location.origin) return;
+  if (event.source !== window.parent || event.origin !== window.location.origin)
+    return;
   if (event.data?.type === "pipupath:city:get-state") {
     reportParentState();
     return;

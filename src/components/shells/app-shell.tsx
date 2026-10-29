@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5">
-              <form action={signOutAction}>
+            <form action={signOutAction}>
               <Button
                 type="submit"
                 variant="ghost"
