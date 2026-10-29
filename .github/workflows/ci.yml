@@ -28,10 +28,10 @@ jobs:
       - run: npm ci
       - name: One-time format of city navigation and landing contrast
         run: |
-          npx prettier --write public/games/city/game.mjs public/games/city/index.html scripts/power-district/city-ui.mjs src/app/landing-adventure.css src/app/play/page.tsx
+          npx prettier --write public/games/city/game.mjs public/games/city/index.html scripts/power-district/city-ui.mjs src/app/landing-adventure.css src/app/play/page.tsx scripts/power-district/runtime-layout.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/games/city/game.mjs public/games/city/index.html scripts/power-district/city-ui.mjs src/app/landing-adventure.css src/app/play/page.tsx
+          git add public/games/city/game.mjs public/games/city/index.html scripts/power-district/city-ui.mjs src/app/landing-adventure.css src/app/play/page.tsx scripts/power-district/runtime-layout.mjs
           if ! git diff --cached --quiet; then
             git commit -m "Format city controls and landing contrast"
             git push origin HEAD:feat/pipupath-2-city-controls-auth-contrast
