@@ -39,6 +39,9 @@
               <details id="city-menu">
                 <summary aria-controls="city-menu-options">City menu ▾</summary>
                 <div id="city-menu-options">
+                  <button id="journey-back" type="button" disabled hidden>
+                    ↶ Last decision
+                  </button>
                   <button
                     id="cases-toggle"
                     type="button"
@@ -110,6 +113,19 @@
                 </div>
               </details>
             </nav>
+        <div
+          id="journey-bar"
+          hidden
+          role="region"
+          aria-label="Automatic builder journey"
+        >
+          <span id="journey-status" aria-live="polite"
+            >Your city journey is running</span
+          >
+          <div class="journey-actions">
+            <button id="journey-toggle" class="primary" type="button">
+              Pause journey
+            </button>
           </div>
         </div>
         <div class="top-actions">
@@ -136,30 +152,15 @@
             ↻
           </button>
         </div>
+          </div>
+        </div>
       </div>
       <div id="weather">
         <span id="weather-icon">☀</span
         ><span id="weather-title">A bright beginning</span
         ><span class="weather-time">08:00</span>
       </div>
-      <div
-        id="journey-bar"
-        hidden
-        role="region"
-        aria-label="Automatic builder journey"
-      >
-        <span id="journey-status" aria-live="polite"
-          >Your city journey is running</span
-        >
-        <div class="journey-actions">
-          <button id="journey-back" type="button" disabled>
-            ↶ Last decision
-          </button>
-          <button id="journey-toggle" class="primary" type="button">
-            Pause journey
-          </button>
-        </div>
-      </div>
+
 
       <section
         id="district-directory"

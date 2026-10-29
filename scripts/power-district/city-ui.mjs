@@ -140,6 +140,36 @@ assert(css.includes("#city-view-district"));
 
 assert(html.includes('id="journey-toggle"'));
 assert(html.includes('id="journey-back"'));
+// Chapter, City menu, pause/resume and sound now share one compact HUD row.
+const hudStart = html.indexOf('id="city-hud"');
+const controlsStart = html.indexOf('class="city-hud-navigation"', hudStart);
+const menuPos = html.indexOf('id="city-tools"', controlsStart);
+const journeyPos = html.indexOf('id="journey-bar"', menuPos);
+const soundPos = html.indexOf('class="top-actions"', journeyPos);
+const hudEnd = html.indexOf('id="weather"', hudStart);
+assert(
+  hudStart >= 0 &&
+    controlsStart > hudStart &&
+    menuPos > controlsStart &&
+    journeyPos > menuPos &&
+    soundPos > journeyPos &&
+    hudEnd > soundPos,
+  "Chapter, City menu, journey and sound must share the same HUD row",
+);
+assert(
+  html.indexOf('id="journey-back"') <
+    html.indexOf('id="cases-toggle"'),
+  "Last decision must be available inside the City menu",
+);
+assert(
+  !html.slice(soundPos, hudEnd).includes('id="journey-bar"'),
+  "Do not create a second full-width journey panel",
+);
+assert(css.includes("body.city-journey #city-hud #journey-bar"));
+assert(css.includes("#city-hud #journey-status"));
+assert(css.includes("#city-hud .top-actions"));
+assert(game.includes('"journey-back").hidden = !visible || !previous'));
+assert(game.includes('running ? "Pause" : "Resume"'));
 assert(html.includes('id="decision-count"'));
 assert(game.includes("function beginDecisionReview(id, autoResume = false)"));
 assert(game.includes("function showDecisionReviewOutcome(id, choiceId)"));

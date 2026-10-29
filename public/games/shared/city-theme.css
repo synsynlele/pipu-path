@@ -3411,3 +3411,168 @@ body.city-journey-paused #journey-bar {
     font-size: 16px;
   }
 }
+
+
+/* The chapter and automatic journey are ONE row with City menu and sound.
+   No separate opaque panel is permitted over the moving city. */
+#city-hud {
+  display: block;
+  max-width: 100%;
+  z-index: 62;
+}
+#city-hud[hidden],
+body.city-testing #city-hud,
+body.city-viewing #city-hud {
+  display: none !important;
+}
+#city-hud .city-hud-left {
+  width: 100%;
+  min-width: 0;
+}
+#city-hud .city-hud-title {
+  display: inline-block;
+  background: #f8fbffb8;
+  box-shadow: none;
+  padding: 0 4px;
+  line-height: 1.4;
+}
+#city-hud .city-hud-navigation {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  gap: 5px;
+  margin-top: 3px;
+}
+#city-hud #chapter-badge {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 9px;
+  box-shadow: 0 2px 8px #172c5418;
+  background: #f9fbffdd;
+}
+#city-hud #city-menu > summary {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  background: #f9fbffdd;
+}
+body #city-hud #journey-bar,
+body.city-journey #city-hud #journey-bar,
+body.city-journey-paused #city-hud #journey-bar {
+  position: relative;
+  inset: auto;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  transform: none;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  z-index: auto;
+}
+body #city-hud #journey-bar[hidden] {
+  display: none !important;
+}
+#city-hud #journey-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+#city-hud #journey-toggle {
+  min-height: 40px;
+  margin: 0;
+  padding: 8px 11px;
+  border-radius: 12px;
+  font-size: 11px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px #172c5418;
+}
+#city-hud .journey-actions {
+  display: contents;
+}
+#city-hud .top-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 0 auto;
+}
+#city-hud .top-actions .icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 12px;
+  background: #f9fbffdd;
+  box-shadow: 0 2px 8px #172c5418;
+}
+#city-menu-options #journey-back[hidden] {
+  display: none !important;
+}
+#city-menu-options #journey-back:not([hidden]) {
+  background: #edf2fc;
+  color: #254170;
+}
+@media (max-width: 420px) {
+  #city-hud {
+    left: 6px;
+    right: 6px;
+  }
+  #city-hud .city-hud-navigation {
+    gap: 3px;
+  }
+  #city-hud #chapter-badge {
+    min-height: 38px;
+    padding: 0 6px;
+    font-size: 10px;
+  }
+  #city-hud #city-menu > summary {
+    min-height: 38px;
+    padding: 6px 7px;
+    font-size: 10px;
+  }
+  #city-hud #journey-toggle {
+    min-height: 38px;
+    padding: 7px 8px;
+    font-size: 10px;
+  }
+  #city-hud .top-actions {
+    gap: 3px;
+  }
+  #city-hud .top-actions .icon {
+    width: 30px;
+    height: 38px;
+    min-height: 38px;
+    font-size: 15px;
+  }
+}
+@media (max-width: 340px) {
+  #city-hud .city-hud-title {
+    font-size: 10px;
+  }
+  #city-hud #chapter-badge {
+    padding: 0 4px;
+  }
+  #city-hud .top-actions .icon {
+    width: 28px;
+  }
+}
