@@ -7,6 +7,7 @@ const authRoutes = ["/login", "/signup"];
 const protectedPrefixes = [
   "/app",
   "/build",
+  "/real-quests",
   "/connect",
   "/continue",
   "/discover",
