@@ -10,7 +10,10 @@ import {
 import * as T from "../shared/vendor/three.module.js";
 import { SoftwareRenderer } from "../shared/software-renderer.mjs";
 import { createCaseSceneEffects } from "./scene-feedback.mjs";
-import { createConsequenceScene, consequencesForCity } from "./consequences.mjs";
+import {
+  createConsequenceScene,
+  consequencesForCity,
+} from "./consequences.mjs";
 import { deriveBuilderCity } from "./city-growth.mjs";
 import { districtLife } from "./better-lives.mjs";
 import {
@@ -1108,9 +1111,13 @@ function updateBuiltCityView() {
   }
 }
 function reviseCityProblem(caseId) {
-  if (!builtCityView || !consequencesForCity(state.decisions).some(
-    (problem) => problem.caseId === caseId,
-  )) return;
+  if (
+    !builtCityView ||
+    !consequencesForCity(state.decisions).some(
+      (problem) => problem.caseId === caseId,
+    )
+  )
+    return;
   const resumeAfter = builtCityView.snapshot.wasRunning;
   closeBuiltCityView({ resume: false });
   beginDecisionReview(caseId, resumeAfter);

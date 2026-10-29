@@ -62,8 +62,8 @@ assert.equal(CITY_CASES.length, 36);
 
 // A working revision repairs the very same plot and clears its warning.
 for (const scenario of CITY_CASES) {
-  const working = scenario.options.find((item) =>
-    infrastructurePlan(scenario.id, item.id).status === "working",
+  const working = scenario.options.find(
+    (item) => infrastructurePlan(scenario.id, item.id).status === "working",
   );
   assert(working, "Every scenario needs a constructive option");
   decisions = saveDecision(decisions, scenario.id, working.id);
@@ -75,7 +75,8 @@ assert.equal(layer.sync(decisions), 0);
 
 // Reconstructed from device-saved choices, never extra marker persistence.
 const failed = CITY_CASES[0].options.find(
-  (option) => infrastructurePlan(CITY_CASES[0].id, option.id).status !== "working",
+  (option) =>
+    infrastructurePlan(CITY_CASES[0].id, option.id).status !== "working",
 );
 decisions = saveDecision(decisions, CITY_CASES[0].id, failed.id);
 const saved = JSON.parse(JSON.stringify(decisions));

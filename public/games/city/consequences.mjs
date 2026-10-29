@@ -6,7 +6,11 @@ import { CASE_BUILD_SITES } from "./feedback.mjs";
 
 function consequenceType(plan) {
   const asset = plan.assets.join(" ");
-  if (/burn-pit|scrap-pile|spoiled-food|unsafe-food|unused-goods|repair-backlog/.test(asset))
+  if (
+    /burn-pit|scrap-pile|spoiled-food|unsafe-food|unused-goods|repair-backlog/.test(
+      asset,
+    )
+  )
     return "waste";
   if (/flooded-route|sealed-yard/.test(asset)) return "flood";
   if (/unfinished-housing|unfinished-tech/.test(asset)) return "unfinished";
@@ -70,14 +74,19 @@ export function createConsequenceScene({ T, scene, box, cyl }) {
     if (problem.type === "waste") {
       // Visible waste or spoilage ONLY when the authored choice causes it.
       B(0.65, 0.11, 0.55, 0x958b70, 0.22, 0.08, 0.19);
-      for (const [x, z] of [[-0.04, 0.12], [0.27, 0.27], [0.46, 0.02]])
+      for (const [x, z] of [
+        [-0.04, 0.12],
+        [0.27, 0.27],
+        [0.46, 0.02],
+      ])
         C(0.14, 0.16, 0x746b55, x, 0.19, z);
     } else if (problem.type === "flood") {
       B(0.88, 0.025, 0.67, 0x6498ac, 0.14, 0.1, 0.13);
       B(0.33, 0.022, 0.13, 0xb1cfd1, 0.24, 0.13, 0.14);
     } else if (problem.type === "unfinished") {
-      for (const x of [-0.06, 0.4]) for (const z of [0.02, 0.42])
-        B(0.055, 0.68, 0.055, 0x9a8872, x, 0.42, z);
+      for (const x of [-0.06, 0.4])
+        for (const z of [0.02, 0.42])
+          B(0.055, 0.68, 0.055, 0x9a8872, x, 0.42, z);
       B(0.52, 0.055, 0.52, 0xa08c73, 0.17, 0.78, 0.22);
     } else if (problem.type === "hazard") {
       B(0.73, 0.12, 0.12, red, 0.2, 0.17, 0.21);
@@ -85,16 +94,14 @@ export function createConsequenceScene({ T, scene, box, cyl }) {
       B(0.48, 0.11, 0.09, 0xe5bd7a, 0.16, 0.32, 0.21);
     } else if (problem.type === "access") {
       B(0.72, 0.11, 0.08, color, 0.12, 0.5, 0.27);
-      for (const x of [-0.2, 0.43])
-        B(0.07, 0.47, 0.07, dark, x, 0.29, 0.27);
+      for (const x of [-0.2, 0.43]) B(0.07, 0.47, 0.07, dark, x, 0.29, 0.27);
     } else if (problem.type === "limited") {
       B(0.66, 0.12, 0.53, 0xc8bc9d, 0.15, 0.1, 0.18);
       B(0.4, 0.25, 0.13, amber, 0.2, 0.34, 0.2);
     } else {
       // Unmet need: an empty station, not made-up pollution or a building.
       B(0.62, 0.055, 0.55, 0xb8b4a3, 0.14, 0.08, 0.16);
-      for (const x of [-0.1, 0.38])
-        B(0.08, 0.27, 0.08, amber, x, 0.25, 0.17);
+      for (const x of [-0.1, 0.38]) B(0.08, 0.27, 0.08, amber, x, 0.25, 0.17);
     }
     return group;
   }
@@ -103,9 +110,7 @@ export function createConsequenceScene({ T, scene, box, cyl }) {
     const active = new Set();
     for (const scenario of CITY_CASES) {
       const id = scenario.id;
-      const chosen = preview?.caseId === id
-        ? preview.choiceId
-        : decisions[id];
+      const chosen = preview?.caseId === id ? preview.choiceId : decisions[id];
       const problem = consequenceFor(id, chosen);
       const entry = markers.get(id);
       if (!problem) {
@@ -146,8 +151,11 @@ export function createConsequenceScene({ T, scene, box, cyl }) {
   function setFocus(focus, overview = false, range = 34) {
     for (const marker of markers.values()) {
       const p = marker.root.position;
-      marker.root.visible = Boolean(marker.current) &&
-        (overview || !focus || Math.hypot(p.x - focus.x, p.z - focus.z) < range);
+      marker.root.visible =
+        Boolean(marker.current) &&
+        (overview ||
+          !focus ||
+          Math.hypot(p.x - focus.x, p.z - focus.z) < range);
     }
   }
 
