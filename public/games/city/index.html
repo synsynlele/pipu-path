@@ -35,77 +35,81 @@
           <strong class="city-hud-title">The Unbuilt City</strong>
           <div class="city-hud-navigation">
             <span id="chapter-badge">Chapter 1</span>
-      <nav id="city-tools" hidden aria-label="City navigation">
-        <details id="city-menu">
-          <summary aria-controls="city-menu-options">City menu ▾</summary>
-          <div id="city-menu-options">
-            <button
-              id="cases-toggle"
-              type="button"
-              aria-controls="casebook"
-              aria-expanded="false"
-            >
-              Decisions <span id="decision-count">0/36</span>
-            </button>
-            <button
-              id="city-status-toggle"
-              type="button"
-              aria-controls="city-status"
-              aria-expanded="false"
-            >
-              My City <span id="city-health-badge">0/14</span>
-            </button>
-            <button
-              id="view-city-toggle"
-              type="button"
-              aria-controls="city-view"
-              aria-expanded="false"
-            >
-              View My City
-            </button>
-            <button
-              id="opportunities-toggle"
-              type="button"
-              aria-controls="opportunities-panel"
-              aria-expanded="false"
-              title="Finish the 36 city decisions to open Chapter 3"
-              disabled
-            >
-              Opportunities
-            </button>
-            <button id="city-map" type="button">City map</button>
-            <button
-              id="resilience-toggle"
-              type="button"
-              disabled
-              aria-controls="resilience-panel"
-              aria-expanded="false"
-            >
-              Chapter 4 · Resilience
-            </button>
-            <button
-              id="districts-toggle"
-              type="button"
-              aria-controls="district-directory"
-              aria-expanded="false"
-            >
-              Places (14)
-            </button>
-            <button id="build-toggle" type="button" aria-controls="build-dock">
-              Build
-            </button>
-            <button id="explore-free" type="button">Explore</button>
-            <button
-              id="guide-toggle"
-              type="button"
-              aria-controls="mission"
-              aria-expanded="false"
-            >
-              Guide
-            </button>
-          </div>
-        </details>
-      </nav>
+            <nav id="city-tools" hidden aria-label="City navigation">
+              <details id="city-menu">
+                <summary aria-controls="city-menu-options">City menu ▾</summary>
+                <div id="city-menu-options">
+                  <button
+                    id="cases-toggle"
+                    type="button"
+                    aria-controls="casebook"
+                    aria-expanded="false"
+                  >
+                    Decisions <span id="decision-count">0/36</span>
+                  </button>
+                  <button
+                    id="city-status-toggle"
+                    type="button"
+                    aria-controls="city-status"
+                    aria-expanded="false"
+                  >
+                    My City <span id="city-health-badge">0/14</span>
+                  </button>
+                  <button
+                    id="view-city-toggle"
+                    type="button"
+                    aria-controls="city-view"
+                    aria-expanded="false"
+                  >
+                    View My City
+                  </button>
+                  <button
+                    id="opportunities-toggle"
+                    type="button"
+                    aria-controls="opportunities-panel"
+                    aria-expanded="false"
+                    title="Finish the 36 city decisions to open Chapter 3"
+                    disabled
+                  >
+                    Opportunities
+                  </button>
+                  <button id="city-map" type="button">City map</button>
+                  <button
+                    id="resilience-toggle"
+                    type="button"
+                    disabled
+                    aria-controls="resilience-panel"
+                    aria-expanded="false"
+                  >
+                    Chapter 4 · Resilience
+                  </button>
+                  <button
+                    id="districts-toggle"
+                    type="button"
+                    aria-controls="district-directory"
+                    aria-expanded="false"
+                  >
+                    Places (14)
+                  </button>
+                  <button
+                    id="build-toggle"
+                    type="button"
+                    aria-controls="build-dock"
+                  >
+                    Build
+                  </button>
+                  <button id="explore-free" type="button">Explore</button>
+                  <button
+                    id="guide-toggle"
+                    type="button"
+                    aria-controls="mission"
+                    aria-expanded="false"
+                  >
+                    Guide
+                  </button>
+                </div>
+              </details>
+            </nav>
           </div>
         </div>
         <div class="top-actions">
@@ -509,23 +513,32 @@
         </button>
         <div id="detail-body"></div>
       </section>
-      <button id="resource" type="button" hidden aria-haspopup="dialog" aria-controls="fund-dialog" aria-label="Shared city fund: fictional credits. Tap to understand how to use them.">
+      <button
+        id="resource"
+        type="button"
+        hidden
+        aria-haspopup="dialog"
+        aria-controls="fund-dialog"
+        aria-label="Shared city fund: fictional credits. Tap to understand how to use them."
+      >
         <span class="coin">◈</span
         ><span
-          ><b id="credits">8</b> credits<small>CITY FUND · TAP TO LEARN</small></span
+          ><b id="credits">8</b> credits<small
+            >CITY FUND · TAP TO LEARN</small
+          ></span
         >
       </button>
       <dialog id="fund-dialog" aria-labelledby="fund-title">
         <h2 id="fund-title">Your city's shared fund</h2>
         <p>
-          These are fictional city credits, not real money or PipuPath XP.
-          Your city begins with 18 credits. Use them to improve services
-          and manage costs so residents can live better.
+          These are fictional city credits, not real money or PipuPath XP. Your
+          city begins with 18 credits. Use them to improve services and manage
+          costs so residents can live better.
         </p>
         <p>
-          For example: solar power uses 4 credits, storage 5, maintenance 2,
-          and a teaching kit 2. Some choices also have running costs.
-          Think about which investment helps people most.
+          For example: solar power uses 4 credits, storage 5, maintenance 2, and
+          a teaching kit 2. Some choices also have running costs. Think about
+          which investment helps people most.
         </p>
         <button type="button" id="fund-close">Back to my city</button>
       </dialog>

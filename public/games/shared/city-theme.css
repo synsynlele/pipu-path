@@ -3251,7 +3251,6 @@ body.city-viewing #resilience-panel {
   }
 }
 
-
 /* Mobile game HUD: the City menu belongs beside the chapter badge.
    Keep sound/help/restart accessible even when the large game header hides. */
 #city-hud {

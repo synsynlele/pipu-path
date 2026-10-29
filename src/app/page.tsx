@@ -29,7 +29,11 @@ export default function HomePage() {
               <Link
                 href="/signup"
                 className="inline-flex min-h-14 items-center justify-center rounded-full border border-[#a2afc6] bg-white px-7 font-bold text-[#243b78]"
-                style={{ backgroundColor: "#ffffff", color: "#243b78", WebkitTextFillColor: "#243b78" }}
+                style={{
+                  backgroundColor: "#ffffff",
+                  color: "#243b78",
+                  WebkitTextFillColor: "#243b78",
+                }}
               >
                 Build in real life
               </Link>

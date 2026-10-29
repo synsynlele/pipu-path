@@ -22,9 +22,9 @@ export default async function LoginPage({
     >
       {process.env.VERCEL_ENV === "preview" ? (
         <p className="mb-4 rounded-xl border border-[#bdcce7] bg-[#eff5ff] p-3 text-sm leading-6 text-[#233b60]">
-          This is the test version of PipuPath. Use email and password to
-          sign in here. Google sign-in also needs the test address allowed
-          in our authentication settings to return here rather than live.
+          This is the test version of PipuPath. Use email and password to sign
+          in here. Google sign-in also needs the test address allowed in our
+          authentication settings to return here rather than live.
         </p>
       ) : null}
       <GoogleAuthForm next={next} />
