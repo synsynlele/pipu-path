@@ -3412,7 +3412,6 @@ body.city-journey-paused #journey-bar {
   }
 }
 
-
 /* The chapter and automatic journey are ONE row with City menu and sound.
    No separate opaque panel is permitted over the moving city. */
 #city-hud {

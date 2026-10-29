@@ -157,8 +157,7 @@ assert(
   "Chapter, City menu, journey and sound must share the same HUD row",
 );
 assert(
-  html.indexOf('id="journey-back"') <
-    html.indexOf('id="cases-toggle"'),
+  html.indexOf('id="journey-back"') < html.indexOf('id="cases-toggle"'),
   "Last decision must be available inside the City menu",
 );
 assert(
