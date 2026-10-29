@@ -13,7 +13,7 @@ single source of truth.
 - Current version: read `twa-manifest.production.json` (currently `1.0.2`)
 - Version code: read `twa-manifest.production.json` (currently `3`)
 - Production origin: `https://www.pipupath.name.ng`
-- Start route: `/continue`
+- Start route: `/` (public city welcome; older installed packages launching `/continue` are redirected here)
 - Minimum Android API: 21
 - Orientation: portrait-primary
 - Bubblewrap toolchain: `1.25.0`
