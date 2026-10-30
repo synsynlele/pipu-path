@@ -20,6 +20,12 @@ import { skillRecommendation } from "./build-progression.mjs";
 import { mountCityServiceDesk } from "./city-service-ui.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
+import {
+  integratedStep,
+  canEnterQuestion,
+  canOpenWorksite,
+} from "./integrated-journey.mjs";
+import { createCityAudio } from "./city-audio.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
 import {
   ROAD_X,
@@ -139,24 +145,12 @@ let state = previousPractice ? { ...fresh(), ...previousPractice } : fresh(),
   simulating = false,
   simPeriod = -1,
   simRows = [],
-  lastResult = null,
-  sound = false;
-let cityAudio;
+  lastResult = null;
+const cityAudio = createCityAudio();
 function playTone(frequency = 520) {
-  if (!sound) return;
-  try {
-    cityAudio ??= new (window.AudioContext || window.webkitAudioContext)();
-    cityAudio.resume();
-    const o = cityAudio.createOscillator(),
-      g = cityAudio.createGain();
-    o.frequency.value = frequency;
-    g.gain.setValueAtTime(0.025, cityAudio.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, cityAudio.currentTime + 0.2);
-    o.connect(g);
-    g.connect(cityAudio.destination);
-    o.start();
-    o.stop(cityAudio.currentTime + 0.2);
-  } catch {}
+  cityAudio.cue(
+    frequency >= 720 ? "built" : frequency < 390 ? "revise" : "decision",
+  );
 }
 let toastTimer;
 function toast(msg) {
@@ -3971,16 +3965,37 @@ function startCity(mode = "build") {
   }
 }
 
-$("sound").onclick = () => {
-  sound = !sound;
-  playTone();
-  $("sound").textContent = sound ? "♪" : "♫";
+function syncAudioControls() {
+  $("sound").textContent = cityAudio.sound ? "🔊" : "🔇";
   $("sound").setAttribute(
     "aria-label",
-    sound ? "Turn sound off" : "Turn sound on",
+    cityAudio.sound ? "Turn sound effects off" : "Turn sound effects on",
   );
-  toast(sound ? "City sound enabled for this session." : "City sound off.");
+  $("sound").setAttribute("aria-pressed", String(cityAudio.sound));
+  $("music").textContent = cityAudio.music ? "♫" : "♬";
+  $("music").setAttribute(
+    "aria-label",
+    cityAudio.music ? "Turn background music off" : "Turn background music on",
+  );
+  $("music").setAttribute("aria-pressed", String(cityAudio.music));
+}
+$("sound").onclick = () => {
+  const enabled = cityAudio.toggleSound();
+  syncAudioControls();
+  toast(enabled ? "Sound effects on." : "Sound effects off or unavailable.");
 };
+$("music").onclick = () => {
+  const enabled = cityAudio.toggleMusic();
+  syncAudioControls();
+  toast(enabled ? "Original background music on." : "Background music off or unavailable.");
+};
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && cityAudio.music) {
+    cityAudio.toggleMusic();
+    syncAudioControls();
+  }
+});
+syncAudioControls();
 $("help").onclick = () => {
   $("playtest-summary").textContent = playtest.report();
   $("playtest-copy-status").textContent = "";
