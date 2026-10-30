@@ -1,0 +1,38 @@
+name: Format PipuPath entry UX (temporary)
+on:
+  push:
+    branches:
+      - preview/game-world-class-phase1
+    paths:
+      - .github/workflows/format-entry-preview.yml
+permissions:
+  contents: read
+jobs:
+  formatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format the first-play patch
+        run: |
+          npx prettier --write \
+            public/games/city/index.html \
+            public/games/city/build-lab-ui.mjs \
+            public/games/shared/city-theme.css \
+            public/games/city/game.mjs \
+            scripts/power-district/runtime-layout.mjs \
+            src/modules/city/ui/build-lab.test.ts \
+            docs/product/pipupath-world-class-game-roadmap.md \
+            scripts/power-district/city-ui.mjs
+      - name: Output formatted sources for integration
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync} from "node:fs";
+          const files = ["public/games/city/index.html","public/games/city/build-lab-ui.mjs","public/games/shared/city-theme.css","public/games/city/game.mjs","scripts/power-district/runtime-layout.mjs","src/modules/city/ui/build-lab.test.ts","docs/product/pipupath-world-class-game-roadmap.md","scripts/power-district/city-ui.mjs"];
+          for (const path of files)
+            console.log("FIRSTPLAY_FMT:" + JSON.stringify({path,content:readFileSync(path,"utf8")}));
+          JS
