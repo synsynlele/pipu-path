@@ -68,10 +68,10 @@ export default async function RealQuestsPage({
             >
               <p className="font-bold">From your city: {suggestion.title}</p>
               <p className="mt-1">
-                You tested an idea in a fictional city. Here is a safe
-                real-life starting point. Change it to suit your own
-                surroundings before creating your Quest. Playing the game
-                does not count as real-world evidence or earn XP.
+                You tested an idea in a fictional city. Here is a safe real-life
+                starting point. Change it to suit your own surroundings before
+                creating your Quest. Playing the game does not count as
+                real-world evidence or earn XP.
               </p>
             </section>
           ) : null}
