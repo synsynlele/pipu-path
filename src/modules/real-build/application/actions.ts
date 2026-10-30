@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { createHash } from "node:crypto";
+import { buildGoalKey } from "../infrastructure/goal-key";
 import { generateBuildTemplate } from "../infrastructure/provider";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -12,7 +12,6 @@ import {
   canRecordAttempt,
   emptyDraft,
   isRetiredPaperworkChallenge,
-  REAL_BUILD_CONTENT_VERSION,
   validateChallenge,
 } from "../domain/build";
 import { buildServiceClient } from "../infrastructure/client";
@@ -67,17 +66,7 @@ export async function tailorReviewedBuild(
       message:
         "This goal needs a fresh Quest. Set aside the starter and try again.",
     };
-  const focusKey = createHash("sha256")
-    .update(
-      REAL_BUILD_CONTENT_VERSION +
-        ":" +
-        choice.data.focus
-          .normalize("NFKC")
-          .toLowerCase()
-          .replace(/\s+/g, " ")
-          .trim(),
-    )
-    .digest("hex");
+  const focusKey = buildGoalKey(choice.data);
   const pool = await service
     .from("real_build_templates")
     .select("*")
@@ -188,6 +177,16 @@ export async function startRealBuild(
     topic: form.get("topic"),
     minutes: form.get("minutes"),
     focus: form.get("focus"),
+    ...(form.has("kind")
+      ? {
+          discovery: {
+            kind: form.get("kind"),
+            setting: form.get("setting"),
+            obstacle: form.get("obstacle"),
+            resources: form.get("resources"),
+          },
+        }
+      : {}),
   });
   if (!choice.success)
     return {

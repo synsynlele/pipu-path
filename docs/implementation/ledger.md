@@ -1790,3 +1790,24 @@ changed, and no frontend deployment was requested for this candidate. Apply and
 verify the migration on the actual PipuPath database before releasing the new
 routes. Live AI, authenticated evidence writes and physical Android acceptance
 are not proved by mocked or embedded tests.
+
+## 30 October 2026 — Smart Quest Discovery and tailored stages
+
+Owner authorises building and releasing the discovery-to-action loop. Reuse PR
+131's five-stage guide and evidence-safe explicit tailoring for old starters.
+New discovery has four short screens: exact goal and kind, adaptive obstacle and
+setting, available resources and first-session time, then an editable review.
+Follow-ups are deterministic and cost no AI calls. Only the disclosed goal and
+validated catalogue answers enter the bounded provider request; no identity,
+evidence or reflections are forwarded. The generated Quest reflects the brief.
+
+Cache keys include all discovery constraints and a new content version. Existing
+schema is unchanged: private goal stays in its owner attempt, discovery options
+shape the generated guide and are not written as new attempt columns. New AI
+failures and exhausted allowance preserve answers and return an error, without
+automatically creating an unrelated generic starter. Existing reviewed work and
+evidence remain intact. Exact structured text bounds reduce avoidable validation
+failures; validation and all safety checks still apply. No new database migration,
+dependency, learner rewrite or verified achievement. Full validation and release
+results follow below; physical Android and fresh signed-in AI acceptance remain
+separate from deterministic checks.

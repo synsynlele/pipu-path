@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
+      "fix/real-quest-tailored-stages": false,
       "agent/stage-19-institution-workspace": false,
       "agent/stage-20-opportunity-marketplace": false,
       "agent/stage-21-builder-passport-api": false,

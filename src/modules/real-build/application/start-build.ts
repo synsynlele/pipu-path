@@ -1,16 +1,14 @@
 import "server-only";
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
+import { buildGoalKey } from "../infrastructure/goal-key";
 import { createLogger } from "@/lib/observability/logger";
 import { buildServiceClient } from "../infrastructure/client";
 import { generateBuildTemplate } from "../infrastructure/provider";
-import { reviewedStarter } from "../domain/reviewed-starters";
 import {
   difficultySchema,
-  REAL_BUILD_CONTENT_VERSION,
   validateChallenge,
   type BuildChoice,
   type BuildDifficulty,
-  type BuildChallenge,
 } from "../domain/build";
 
 const logger = createLogger();
@@ -39,17 +37,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
   const parsedLevel = difficultySchema.safeParse(progress.data);
   if (!parsedLevel.success) throw new Error("BUILD_LOAD_FAILED");
   const difficulty = parsedLevel.data as BuildDifficulty;
-  const focusKey = createHash("sha256")
-    .update(
-      REAL_BUILD_CONTENT_VERSION +
-        ":" +
-        choice.focus
-          .normalize("NFKC")
-          .toLowerCase()
-          .replace(/\s+/g, " ")
-          .trim(),
-    )
-    .digest("hex");
+  const focusKey = buildGoalKey(choice);
 
   const unseen = await service.rpc("find_unseen_real_build_template_for_goal", {
     user_input: userId,
@@ -63,6 +51,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
   let template: TemplateRow | null = unseen.data?.[0] ?? null;
   if (template) {
     try {
+      if (template.source !== "openai") throw new Error("BUILD_NOT_TAILORED");
       validateChallenge(template.challenge);
     } catch {
       // Bad legacy content must not block creating a real Quest.
@@ -96,53 +85,26 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
         user_input: userId,
       });
       if (allowance.error) throw new Error("BUILD_LOAD_FAILED");
-      let challenge: BuildChallenge;
-      let source: "openai" | "reviewed" = "openai";
-      if (!allowance.data) {
-        // No additional AI request when the account's cost allowance is reached.
-        source = "reviewed";
-        challenge = reviewedStarter(choice, difficulty);
-      } else {
-        try {
-          challenge = await generateBuildTemplate(
-            choice,
-            (pool.data ?? [])
-              .map((v) => v.challenge?.title)
-              .filter((title): title is string => typeof title === "string"),
-            difficulty,
-          );
-          if (
-            (pool.data ?? []).some(
-              (v) =>
-                typeof v.challenge?.title === "string" &&
-                v.challenge.title.toLowerCase() ===
-                  challenge.title.toLowerCase(),
-            )
-          )
-            throw new Error("BUILD_REPEATED");
-        } catch (error) {
-          // Do not charge a second provider request or skip safety validation.
-          logger.warn("real_build_reviewed_fallback", {
-            reason: reason(error),
-          });
-          source = "reviewed";
-          challenge = reviewedStarter(choice, difficulty);
-        }
-      }
-      if (source === "reviewed") {
-        // Previously approved starter for this exact goal may be reused.
-        const existing = (pool.data ?? []).find((v) => {
-          try {
-            return (
-              v.source === "reviewed" &&
-              validateChallenge(v.challenge).title === challenge.title
-            );
-          } catch {
-            return false;
-          }
-        });
-        if (existing) template = existing;
-      }
+      if (!allowance.data) throw new Error("BUILD_AI_LIMIT");
+      const challenge = await generateBuildTemplate(
+        choice,
+        (pool.data ?? [])
+          .map((v) => v.challenge?.title)
+          .filter((title): title is string => typeof title === "string"),
+        difficulty,
+      ).catch((error) => {
+        logger.warn("real_build_generation_failed", { reason: reason(error) });
+        throw error;
+      });
+      if (
+        (pool.data ?? []).some(
+          (v) =>
+            typeof v.challenge?.title === "string" &&
+            v.challenge.title.toLowerCase() === challenge.title.toLowerCase(),
+        )
+      )
+        throw new Error("BUILD_REPEATED");
+      const source = "openai" as const;
       if (!template) {
         const saved = await service
           .from("real_build_templates")
@@ -181,7 +143,9 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
     .insert({
       user_id: userId,
       template_id: template.id,
-      ...choice,
+      topic: choice.topic,
+      minutes: choice.minutes,
+      focus: choice.focus,
       difficulty,
       challenge,
       source: template.source,

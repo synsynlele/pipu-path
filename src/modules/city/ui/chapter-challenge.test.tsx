@@ -73,7 +73,8 @@ describe("cinematic garden chapter", () => {
       screen.getByRole("button", { name: "Garden square 1: empty" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Test my plan/ })).toBeDisabled();
-  });
+    // This full multi-round DOM interaction exceeds 5 seconds under shared-runner coverage.
+  }, 15000);
   it("clears stale feedback when a player changes a choice", () => {
     render(<ChapterChallenge chapter={gardenChapter} />);
     place("Plant seedlings", 1);

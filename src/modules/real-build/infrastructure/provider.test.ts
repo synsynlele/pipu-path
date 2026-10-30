@@ -89,3 +89,38 @@ it("passes only public level instructions to AI at higher difficulty", async () 
     ].sort(),
   );
 });
+
+it("passes validated discovery constraints to the coach without private extras", async () => {
+  request.mockResolvedValue({
+    title: "Reduce unplanned scrolling",
+    outcome: "Use a practical daily routine and compare screen time.",
+    steps: Array(5).fill(
+      "Set up and test a working routine using existing phone settings.",
+    ),
+    materials: ["Existing phone"],
+    evidence: "Describe the real difference in usage.",
+    safety: "Keep private screen information to yourself.",
+  });
+  await generateBuildTemplate(
+    {
+      topic: "technology",
+      minutes: 15,
+      focus: "I want to reduce social-media scrolling.",
+      discovery: {
+        kind: "habit",
+        setting: "personal",
+        obstacle: "automatic",
+        resources: "phone",
+      },
+    },
+    [],
+  );
+  const input = request.mock.lastCall?.[0];
+  expect(JSON.parse(input.prompt).discovery).toEqual({
+    kind: "Improve a habit",
+    setting: "My own routine",
+    obstacle: "I do it without noticing",
+    resources: "An existing phone or computer",
+  });
+  expect(input.instructions).toContain("Respect all of those constraints");
+});

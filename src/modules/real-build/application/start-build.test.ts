@@ -23,7 +23,7 @@ const choice = {
   focus: "I want to help students track homework more clearly.",
 };
 const focusKey = createHash("sha256")
-  .update("goal-stages-v3:" + choice.focus.toLowerCase())
+  .update("discovery-stages-v4:" + choice.focus.toLowerCase())
   .digest("hex");
 const template = {
   id: "template",
@@ -99,26 +99,23 @@ it("reuses an unseen validated public template with a new private attempt", asyn
     }),
   ]);
 });
-it("recovers from a provider timeout without a second AI call and releases the lease", async () => {
+it("reports a timeout without creating an unrelated fallback and releases the lease", async () => {
   results = [
     { data: null },
     { data: 1 },
     { data: [] },
-    { data: [template] },
+    { data: [] },
     { data: true },
     { data: "request" },
-    { data: { ...template, id: "reviewed", source: "reviewed" } },
     { data: null },
-    { data: { id: "safe-starter" } },
   ];
   m.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
-  expect(await startBuildForUser("owner", choice)).toBe("safe-starter");
+  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
+    "OPENAI_TIMEOUT",
+  );
   expect(m.generate).toHaveBeenCalledTimes(1);
   expect(calls).toContainEqual(["from", "real_build_generation_leases"]);
-  expect(calls).toContainEqual([
-    "insert",
-    expect.objectContaining({ source: "reviewed" }),
-  ]);
+  expect(calls.some((call) => call[0] === "insert")).toBe(false);
 });
 it("avoids duplicate provider work when another request holds the authoring lease", async () => {
   results = [
@@ -143,7 +140,7 @@ it("resolves a concurrent active-attempt insert by returning the winning owned r
   ];
   expect(await startBuildForUser("owner", choice)).toBe("winner");
 });
-it("ignores an unsafe cached template and creates a safe reviewed Quest instead", async () => {
+it("rejects unsafe cached and provider content without saving an attempt", async () => {
   results = [
     { data: null },
     { data: 1 },
@@ -161,17 +158,13 @@ it("ignores an unsafe cached template and creates a safe reviewed Quest instead"
     { data: [] },
     { data: true },
     { data: "request" },
-    { data: { ...template, id: "safe-reviewed", source: "reviewed" } },
     { data: null },
-    { data: { id: "safe-attempt" } },
   ];
-  m.generate.mockRejectedValue(new Error("INVALID_MODEL_OUTPUT"));
-  expect(await startBuildForUser("owner", choice)).toBe("safe-attempt");
-  expect(calls.filter((call) => call[0] === "insert")).toHaveLength(2);
-  expect(calls).toContainEqual([
-    "insert",
-    expect.objectContaining({ source: "reviewed" }),
-  ]);
+  m.generate.mockRejectedValue(new Error("BUILD_UNSAFE"));
+  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
+    "BUILD_UNSAFE",
+  );
+  expect(calls.some((call) => call[0] === "insert")).toBe(false);
 });
 
 it("matches cache and new attempts to a higher, server-computed level", async () => {
@@ -215,7 +208,31 @@ it("rejects an unexpectedly different cached difficulty before saving progress",
   expect(calls.filter((c) => c[0] === "insert")).toHaveLength(0);
 });
 
-it("recovers from invalid AI output with one reviewed and safe Quest, without a second AI call", async () => {
+it("stops without a provider call or generic attempt when allowance is exhausted", async () => {
+  results = [
+    { data: null },
+    { data: 1 },
+    { data: [] },
+    { data: [] },
+    { data: true },
+    { data: null },
+    { data: null },
+  ];
+  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
+    "BUILD_AI_LIMIT",
+  );
+  expect(m.generate).not.toHaveBeenCalled();
+  expect(calls.some((call) => call[0] === "insert")).toBe(false);
+});
+it("creates and saves a tailored guide once, without adding discovery columns to attempts", async () => {
+  const discovery = {
+    kind: "habit",
+    setting: "personal",
+    obstacle: "automatic",
+    resources: "phone",
+  } as const;
+  const { buildGoalKey } = await import("../infrastructure/goal-key");
+  const contextual = { ...choice, discovery };
   results = [
     { data: null },
     { data: 1 },
@@ -223,65 +240,18 @@ it("recovers from invalid AI output with one reviewed and safe Quest, without a 
     { data: [] },
     { data: true },
     { data: "request" },
-    {
-      data: {
-        ...template,
-        id: "reviewed-template",
-        source: "reviewed",
-        challenge: {
-          ...challenge,
-          title: "Give an unused item a useful second life",
-        },
-      },
-    },
+    { data: { ...template, focus_key: buildGoalKey(contextual) } },
     { data: null },
-    { data: { id: "reviewed-attempt" } },
+    { data: { id: "tailored" } },
   ];
-  m.generate.mockRejectedValue(new Error("INVALID_MODEL_PAYLOAD"));
-  const result = await startBuildForUser("owner", {
-    ...choice,
-    topic: "workshop",
-  });
-  expect(result).toBe("reviewed-attempt");
-  expect(m.generate).toHaveBeenCalledTimes(1);
-  const inserts = calls.filter((call) => call[0] === "insert");
-  expect(inserts).toHaveLength(2);
-  expect(inserts[0]).toEqual([
-    "insert",
-    expect.objectContaining({
-      topic: "workshop",
-      source: "reviewed",
-      challenge: expect.objectContaining({
-        steps: expect.arrayContaining([
-          expect.stringContaining("Ask a familiar person"),
-        ]),
-      }),
-    }),
-  ]);
-  expect(inserts[1]).toEqual([
-    "insert",
-    expect.objectContaining({
-      user_id: "owner",
-      source: "reviewed",
-    }),
-  ]);
-});
-it("uses reviewed content without calling AI when generation allowance is exhausted", async () => {
-  results = [
-    { data: null },
-    { data: 1 },
-    { data: [] },
-    { data: [] },
-    { data: true },
-    { data: null },
-    { data: { ...template, source: "reviewed" } },
-    { data: null },
-    { data: { id: "no-charge-starter" } },
-  ];
-  expect(await startBuildForUser("owner", choice)).toBe("no-charge-starter");
-  expect(m.generate).not.toHaveBeenCalled();
-  expect(calls).toContainEqual([
-    "insert",
-    expect.objectContaining({ source: "reviewed" }),
-  ]);
+  m.generate.mockResolvedValue(challenge);
+  await expect(startBuildForUser("owner", contextual)).resolves.toBe(
+    "tailored",
+  );
+  expect(m.generate).toHaveBeenCalledWith(contextual, [], 1);
+  const insert = calls
+    .filter((call) => call[0] === "insert")
+    .at(-1)?.[1] as Record<string, unknown>;
+  expect(insert.focus).toBe(choice.focus);
+  expect(insert).not.toHaveProperty("discovery");
 });

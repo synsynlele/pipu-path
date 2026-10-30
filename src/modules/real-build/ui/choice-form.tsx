@@ -1,8 +1,22 @@
 "use client";
 import { useRef, useState, useTransition } from "react";
-import { buildTopics } from "../domain/build";
+import { buildTopics, choiceSchema } from "../domain/build";
+import {
+  questKinds,
+  questSettings,
+  questResources,
+  questObstacles,
+  type QuestKind,
+} from "../domain/discovery";
 import { startRealBuild } from "../application/actions";
 
+const titles = [
+  "What do you want to change?",
+  "What is happening now?",
+  "What can you start with?",
+  "Ready for your Builder Quest?",
+];
+const selectClass = "mt-2 bg-white text-[#17375f]";
 export function BuildChoiceForm({
   initialTopic = "",
   initialFocus = "",
@@ -10,15 +24,31 @@ export function BuildChoiceForm({
   initialTopic?: string;
   initialFocus?: string;
 }) {
+  const [step, setStep] = useState(0);
+  const heading = useRef<HTMLHeadingElement>(null);
   const [topic, setTopic] = useState(initialTopic);
   const [focus, setFocus] = useState(initialFocus);
+  const [kind, setKind] = useState<QuestKind>("habit");
+  const [setting, setSetting] = useState("personal");
+  const [obstacle, setObstacle] = useState("unsure");
+  const [resources, setResources] = useState("none");
   const [minutes, setMinutes] = useState("30");
   const [message, setMessage] = useState("");
   const [working, setWorking] = useState(false);
   const submitting = useRef(false);
   const [pending, startTransition] = useTransition();
   const busy = working || pending;
-
+  function navigate(next: number) {
+    setMessage("");
+    setStep(next);
+    heading.current?.focus();
+  }
+  const choice = {
+    topic,
+    focus,
+    minutes,
+    discovery: { kind, setting, obstacle, resources },
+  };
   return (
     <form
       method="post"
@@ -27,8 +57,36 @@ export function BuildChoiceForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (submitting.current) return;
+        if (step === 0) {
+          const result = choiceSchema.safeParse(choice);
+          if (!result.success) {
+            setMessage(
+              result.error.issues[0]?.message ?? "Check your goal and topic.",
+            );
+            return;
+          }
+        }
+        if (step < 3) {
+          navigate(step + 1);
+          return;
+        }
+        const parsed = choiceSchema.safeParse(choice);
+        if (!parsed.success) {
+          setMessage("Check your answers before creating your Quest.");
+          return;
+        }
+        const form = new FormData();
+        for (const [key, value] of Object.entries({
+          topic,
+          focus,
+          minutes,
+          kind,
+          setting,
+          obstacle,
+          resources,
+        }))
+          form.set(key, value);
         submitting.current = true;
-        const form = new FormData(event.currentTarget);
         setMessage("");
         setWorking(true);
         startTransition(async () => {
@@ -40,7 +98,7 @@ export function BuildChoiceForm({
             setMessage(result.message);
           } catch {
             setMessage(
-              "The connection was interrupted. Your chosen goal is still here. Try again.",
+              "The connection was interrupted. Your answers are still here. Try again.",
             );
           } finally {
             submitting.current = false;
@@ -49,100 +107,258 @@ export function BuildChoiceForm({
         });
       }}
     >
-      <label>
-        What would you like to improve?
-        <select
-          name="topic"
-          required
-          disabled={busy}
-          value={topic}
-          onChange={(event) => setTopic(event.target.value)}
-          className="mt-2"
-        >
-          <option value="">Choose a topic</option>
-          {buildTopics.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.title}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        What exactly would you like to improve?
-        <textarea
-          name="focus"
-          required
-          minLength={12}
-          maxLength={160}
-          rows={3}
-          disabled={busy}
-          value={focus}
-          onChange={(event) => setFocus(event.target.value)}
-          className="mt-2"
-          placeholder="For example: I want to reduce food waste in our school."
-        />
-        <span className="mt-2 block text-xs leading-5 font-normal text-[#536883]">
-          Describe a real problem or change you care about. Leave out names,
-          phone numbers, addresses and other private details.
-        </span>
-      </label>
-      <fieldset disabled={busy}>
-        <legend className="text-sm font-semibold">
-          How much time do you have?
-        </legend>
-        <div className="mt-3 flex gap-3">
-          {[15, 30, 60].map((value) => (
-            <label
-              key={value}
-              className="flex flex-1 items-center gap-2 rounded-xl border border-[#c6d8f2] bg-[#f0f6ff] p-3"
-            >
-              <input
-                type="radio"
-                name="minutes"
-                value={value}
-                checked={minutes === String(value)}
-                onChange={(event) => setMinutes(event.target.value)}
-              />
-              {value} min
-            </label>
-          ))}
-        </div>
-      </fieldset>
-      <p className="rounded-xl border border-[#c4d7f5] bg-[#eef5ff] p-3 text-xs leading-5 text-[#264e89]">
-        <strong>Quests grow with you:</strong> Start with a real improvement.
-        Later levels add comparison, testing and systems thinking.
-      </p>
-      <button
-        type="submit"
-        className="build-primary flex w-full items-center justify-center gap-3"
-        disabled={busy}
+      <div className="flex items-center justify-between gap-3 text-xs font-bold text-[#2059bd]">
+        <span>QUEST DISCOVERY</span>
+        <span>Step {step + 1} of 4</span>
+      </div>
+      <div className="flex gap-2" aria-hidden="true">
+        {titles.map((title, index) => (
+          <span
+            key={title}
+            className={`h-1.5 flex-1 rounded-full ${index <= step ? "bg-[#2059bd]" : "bg-[#dce7f6]"}`}
+          />
+        ))}
+      </div>
+      <h2
+        ref={heading}
+        tabIndex={-1}
+        className="text-xl font-extrabold outline-none"
       >
-        {busy ? (
-          <>
-            <span
-              aria-hidden="true"
-              className="inline-block size-5 animate-spin rounded-full border-[3px] border-white border-t-transparent motion-reduce:animate-none"
+        {titles[step]}
+      </h2>
+      {step === 0 ? (
+        <>
+          <label>
+            What exactly would you like to improve?
+            <textarea
+              name="focus"
+              required
+              minLength={12}
+              maxLength={160}
+              rows={3}
+              value={focus}
+              onChange={(event) => setFocus(event.target.value)}
+              className="mt-2"
+              placeholder="For example: I want to spend less time scrolling on social media."
             />
-            Creating your Quest…
-          </>
-        ) : (
-          "Get my Quest →"
-        )}
-      </button>
+          </label>
+          <p className="text-xs leading-5 text-[#536883]">
+            Describe the change, without names, contact details or private
+            information.
+          </p>
+          <label>
+            Choose the closest topic
+            <select
+              name="topic"
+              required
+              value={topic}
+              onChange={(event) => setTopic(event.target.value)}
+              className={selectClass}
+            >
+              <option value="">Choose a topic</option>
+              {buildTopics.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            What kind of change is this?
+            <select
+              name="kind"
+              value={kind}
+              onChange={(event) => {
+                setKind(event.target.value as QuestKind);
+                setObstacle("unsure");
+              }}
+              className={selectClass}
+            >
+              {Object.entries(questKinds).map(([id, title]) => (
+                <option key={id} value={id}>
+                  {title}
+                </option>
+              ))}
+            </select>
+          </label>
+        </>
+      ) : null}
+      {step === 1 ? (
+        <>
+          <label>
+            Where will you try this?
+            <select
+              name="setting"
+              value={setting}
+              onChange={(event) => setSetting(event.target.value)}
+              className={selectClass}
+            >
+              {Object.entries(questSettings).map(([id, title]) => (
+                <option key={id} value={id}>
+                  {title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            {kind === "habit"
+              ? "What makes this habit difficult to change?"
+              : kind === "community"
+                ? "What is getting in the way for people?"
+                : "Where are you with your build?"}
+            <select
+              name="obstacle"
+              value={obstacle}
+              onChange={(event) => setObstacle(event.target.value)}
+              className={selectClass}
+            >
+              {Object.entries(questObstacles[kind]).map(([id, title]) => (
+                <option key={id} value={id}>
+                  {title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="text-sm leading-6 text-[#536883]">
+            Start with one small change you can actually try. Your Quest will
+            include a baseline and a real test.
+          </p>
+        </>
+      ) : null}
+      {step === 2 ? (
+        <>
+          <label>
+            What is already available to you?
+            <select
+              name="resources"
+              value={resources}
+              onChange={(event) => setResources(event.target.value)}
+              className={selectClass}
+            >
+              {Object.entries(questResources).map(([id, title]) => (
+                <option key={id} value={id}>
+                  {title}
+                </option>
+              ))}
+            </select>
+          </label>
+          <fieldset>
+            <legend className="text-sm font-semibold">
+              Time for your first session
+            </legend>
+            <div className="mt-3 flex gap-2">
+              {[15, 30, 60].map((value) => (
+                <label
+                  key={value}
+                  className="flex flex-1 items-center gap-2 rounded-xl border border-[#c6d8f2] bg-[#f0f6ff] p-3"
+                >
+                  <input
+                    type="radio"
+                    name="minutes"
+                    value={value}
+                    checked={minutes === String(value)}
+                    onChange={(event) => setMinutes(event.target.value)}
+                  />
+                  {value} min
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <p className="text-xs leading-5 text-[#536883]">
+            Use what you have. No spending required. Testing a routine may
+            continue over several days.
+          </p>
+        </>
+      ) : null}
+      {step === 3 ? (
+        <>
+          <section
+            aria-label="Your Quest brief"
+            className="rounded-2xl border border-[#c8dbf7] bg-[#f2f7ff] p-4 text-sm leading-6"
+          >
+            <p className="font-bold">{focus}</p>
+            <dl className="mt-3 space-y-2">
+              <div>
+                <dt className="font-bold">Direction</dt>
+                <dd>
+                  {questKinds[kind]} ·{" "}
+                  {buildTopics.find((item) => item.id === topic)?.title}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-bold">Starting point</dt>
+                <dd>
+                  {questSettings[setting as keyof typeof questSettings]} ·{" "}
+                  {(questObstacles[kind] as Record<string, string>)[obstacle]}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-bold">Resources and time</dt>
+                <dd>
+                  {questResources[resources as keyof typeof questResources]} ·{" "}
+                  {minutes} min to start
+                </dd>
+              </div>
+            </dl>
+          </section>
+          <p className="text-sm leading-6 text-[#536883]">
+            Your guide: Understand → Prepare → Build → Test → Improve. Save what
+            actually happened, then use that lesson for your next attempt.
+          </p>
+          <p className="text-xs leading-5 text-[#52647c]">
+            <strong>
+              Your improvement goal and selected answers are sent to AI.
+            </strong>{" "}
+            Your account identity, saved evidence, photos and reflections are
+            not sent. A matching, validated AI Quest may be reused. Generated
+            steps can reflect your answers; keep private details out of your
+            goal.
+          </p>
+        </>
+      ) : null}
+      <div className="flex gap-3">
+        {step > 0 ? (
+          <button
+            type="button"
+            disabled={busy}
+            className="border border-[#b8cde6] bg-white text-[#2059bd]"
+            onClick={() => navigate(step - 1)}
+          >
+            Back
+          </button>
+        ) : null}
+        <button
+          type="submit"
+          disabled={busy}
+          className="build-primary flex flex-1 items-center justify-center gap-3"
+        >
+          {busy ? (
+            <>
+              <span
+                aria-hidden="true"
+                className="size-5 animate-spin rounded-full border-[3px] border-white border-t-transparent motion-reduce:animate-none"
+              />
+              Creating your Quest…
+            </>
+          ) : step === 3 ? (
+            "Create my Quest →"
+          ) : step === 2 ? (
+            "Review my answers →"
+          ) : (
+            "Continue →"
+          )}
+        </button>
+      </div>
       {busy ? (
         <div
           role="status"
           aria-live="polite"
           className="rounded-xl border border-[#bcd2f4] bg-[#edf5ff] p-4 text-sm leading-6 text-[#244d86]"
         >
-          <p className="font-bold">AI is preparing your real-world Quest.</p>
+          <p className="font-bold">Preparing your personalised Quest…</p>
           <p className="mt-1">
-            Checking the steps for a useful, safe activity and saving your
-            Quest. If AI cannot finish, a reviewed hands-on starter is
-            available.
-          </p>
-          <p className="mt-1 text-xs">
-            You can keep this page open. Please do not press Get my Quest twice.
+            Checking for a matching AI guide, or generating and checking five
+            practical stages. Keep this page open.
           </p>
         </div>
       ) : null}
@@ -152,14 +368,8 @@ export function BuildChoiceForm({
         </p>
       ) : null}
       <p className="text-xs leading-5 text-[#52647c]">
-        AI uses your topic, improvement goal, available time and anonymous
-        difficulty level. If AI is unavailable, PipuPath can offer a clearly
-        labelled, pre-reviewed practical starter without another AI call.
-      </p>
-      <p className="text-xs leading-5 text-[#52647c]">
-        <strong>Your improvement goal is sent to AI.</strong> Do not include
-        names, contact information or other private details. Your account
-        identity, saved evidence, photos and reflections are not sent to AI.
+        Discovery questions use no AI calls. If generation cannot finish, your
+        answers stay here so you can retry.
       </p>
     </form>
   );

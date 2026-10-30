@@ -1,3 +1,4 @@
+vi.mock("server-only", () => ({}));
 import { beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   auth: vi.fn(),
@@ -237,4 +238,38 @@ it("protects an existing reviewed Quest with saved evidence from silent AI repla
   expect(result.ok).toBe(false);
   expect(result.message).toContain("evidence");
   expect(calls.some((call) => call[0] === "insert")).toBe(false);
+});
+
+it("validates adaptive discovery at the server boundary and forwards only selected options", async () => {
+  const request = new FormData();
+  for (const [key, value] of Object.entries({
+    topic: "school",
+    minutes: "30",
+    focus: "I want to help classmates learn useful skills.",
+    kind: "community",
+    setting: "school",
+    obstacle: "automatic",
+    resources: "support",
+    private_notes: "never forward me",
+  }))
+    request.set(key, value);
+  const invalid = await startRealBuild({ ok: false, message: "" }, request);
+  expect(invalid.ok).toBe(false);
+  expect(m.start).not.toHaveBeenCalled();
+  request.set("obstacle", "coordination");
+  m.start.mockResolvedValue(id);
+  await expect(
+    startRealBuild({ ok: false, message: "" }, request),
+  ).rejects.toThrow("REDIRECT");
+  expect(m.start).toHaveBeenCalledWith("owner", {
+    topic: "school",
+    minutes: 30,
+    focus: "I want to help classmates learn useful skills.",
+    discovery: {
+      kind: "community",
+      setting: "school",
+      obstacle: "coordination",
+      resources: "support",
+    },
+  });
 });
