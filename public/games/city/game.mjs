@@ -128,6 +128,7 @@ const fresh = () => ({
   economy: newOpportunityState(),
   resilience: null,
   lab: sanitizeLab(null),
+  stageThree: { round: 0, active: null },
 });
 const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
