@@ -113,8 +113,9 @@ export function BuildChoiceForm({
         </p>
       ) : null}
       <p className="text-xs leading-5 text-[#52647c]">
-        AI uses your chosen topic, the improvement goal you write, your available
-        time and an anonymous difficulty level to create a practical Quest.
+        AI uses your chosen topic, the improvement goal you write, your
+        available time and an anonymous difficulty level to create a practical
+        Quest.
       </p>
       <p className="text-xs leading-5 text-[#52647c]">
         <strong>Your improvement goal is sent to AI.</strong> Do not include
