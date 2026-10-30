@@ -4118,3 +4118,28 @@ html.city-embedded .welcome-signin {
   font-weight: 800;
   font-size: 13px;
 }
+
+/* Privacy-first, optional in-game playtest summary under Help. */
+#help-dialog .playtest-details { margin: 14px 0; }
+#help-dialog .playtest-details summary {
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 44px;
+  padding: 10px 0;
+}
+#help-dialog #playtest-summary {
+  background: #edf4fc;
+  color: #14345b;
+  border: 1px solid #bdcfe5;
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  border-radius: 10px;
+}
+#help-dialog #playtest-copy {
+  border: 1px solid #7fa8d7;
+  padding: 10px 12px;
+  min-height: 44px;
+  border-radius: 10px;
+}

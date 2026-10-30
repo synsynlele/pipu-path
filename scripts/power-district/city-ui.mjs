@@ -85,6 +85,8 @@ assert(html.includes('id="city-view"'));
 assert(html.includes('id="opportunities-toggle"'));
 assert(html.includes('id="opportunities-panel"'));
 assert(html.includes('id="lab-progress"'));
+assert(html.includes('id="playtest-summary"'));
+assert(game.includes("playtest.note("));
 assert(game.includes("case-worksite"));
 assert(game.includes("buildLab.open(worksiteMission)"));
 assert(html.includes('id="opportunities-policies"'));

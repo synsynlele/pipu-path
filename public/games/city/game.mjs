@@ -3,6 +3,7 @@ document.documentElement.classList.toggle(
   new URLSearchParams(window.location.search).get("embedded") === "1",
 );
 import { sanitizeLab } from "./build-lab.mjs";
+import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
 import {
@@ -113,6 +114,7 @@ const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
 // varied across sessions; no learner tracking or personally identifiable data.
 const answerOrderSeed = Math.floor(Math.random() * 3);
+const playtest = createPlaytestObservation();
 let state = previousPractice ? { ...fresh(), ...previousPractice } : fresh(),
   saveEnabled = Boolean(previousPractice),
   freeExplore = false,
@@ -1342,6 +1344,7 @@ function runCaseWorldAction(caseId, choiceId) {
   }
   // One choice is the only required action: the world and practice record
   // update immediately. No second 'Keep' confirmation is needed.
+  playtest.note(getChoice(caseId, state.decisions[caseId]) ? "revision" : "decision");
   state.decisions = saveDecision(state.decisions, caseId, choiceId);
   previewDecision = { caseId, choiceId };
   render();
@@ -3620,6 +3623,7 @@ $("city-map").onclick = () => {
 };
 const buildLab = mountBuildLab({
   read: () => state.lab,
+  onTest: ({ success }) => playtest.note(success ? "prototype_pass" : "prototype_retry"),
   write: (lab) => {
     state.lab = lab;
     persistPractice();
@@ -3657,6 +3661,7 @@ const buildLab = mountBuildLab({
 $("build-lab-toggle").onclick = () => buildLab.open();
 $("start").onclick = () => startCity();
 function startCity() {
+  if (!$("intro").hidden) playtest.note("start");
   $("intro").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
@@ -3715,7 +3720,20 @@ $("sound").onclick = () => {
   );
   toast(sound ? "City sound enabled for this session." : "City sound off.");
 };
-$("help").onclick = () => $("help-dialog").showModal();
+$("help").onclick = () => {
+  $("playtest-summary").textContent = playtest.report();
+  $("playtest-copy-status").textContent = "";
+  $("help-dialog").showModal();
+};
+$("playtest-copy").onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(playtest.report());
+    $("playtest-copy-status").textContent = "Summary copied.";
+  } catch {
+    $("playtest-copy-status").textContent =
+      "Clipboard is unavailable. You can select and copy the numbers above.";
+  }
+};
 $("help-done").onclick = $("close-help").onclick = () =>
   $("help-dialog").close();
 $("reset").onclick = () => {
