@@ -4388,3 +4388,16 @@ html.city-embedded .welcome-signin {
   /* Two competing floating panels must never cover the city together. */
   body:has(#build-victory:not([hidden])) #pilot-mission { display: none !important; }
 }
+
+/* Keep test controls reachable inside the smaller phone dock. */
+@media (max-width: 620px) {
+  #build-lab .lab-actions {
+    position: sticky;
+    bottom: -10px;
+    z-index: 3;
+    margin-top: 5px;
+    padding: 7px 0;
+    background: #f5f8ff;
+  }
+  #build-lab .lab-actions button { min-height: 44px; }
+}

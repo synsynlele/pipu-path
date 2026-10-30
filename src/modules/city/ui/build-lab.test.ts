@@ -57,6 +57,7 @@ it("builds and tests an actual route using place and rotate controls, then inval
   fireEvent.click(screen.getByRole("button", { name: /Row 2, column 5:/ }));
   fireEvent.click(screen.getByRole("button", { name: "Test my network" }));
   expect(screen.getByRole("status")).toHaveTextContent("It works!");
+  expect((state as {tested:string[]}).tested).toContain("workshop-link");
   expect(
     screen.getByRole("button", { name: "Next challenge →" }),
   ).toBeVisible();

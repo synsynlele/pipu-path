@@ -65,7 +65,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, mixedJourney, buildMilestoneScene};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -108,17 +108,27 @@ w.document.getElementById("lab-test").click();
 assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
 assert.equal(w.document.getElementById("lab-see-city").hidden, false);
 assert.equal(game.workshopBlueprint.visible, true);
+assert(game.workshopBlueprint.children.length > 5, "A physical 3D station must be constructed");
+assert(game.state.lab.tested.includes("workshop-link"));
 w.document.getElementById("lab-see-city").click();
 assert.equal(w.document.getElementById("build-lab").open, false);
-assert.equal(w.document.getElementById("pilot-mission").hidden, false);
-assert.match(w.document.getElementById("pilot-title").textContent, /works!/);
+assert.equal(w.document.getElementById("build-victory").hidden, false);
+assert.match(w.document.getElementById("victory-title").textContent, /built!/);
+assert.match(w.document.getElementById("victory-progress").textContent, /1 \/ 5/);
 assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
 assert.equal(w.document.querySelectorAll("[data-case-choice]").length, 0);
-// The original authored chapters remain available without losing work.
-w.document.getElementById("pilot-story").click();
+// The default completion button starts the mixed question-and-puzzle adventure.
+w.document.getElementById("victory-continue").click();
+assert.equal(game.mixedJourney, true);
 assert.equal(game.firstBuildMode, false);
+assert.equal(w.document.getElementById("build-victory").hidden, true);
+// A returning player can still select the legacy authored story.
+game.pauseJourney();
+w.document.getElementById("pilot-story").click();
+assert.equal(game.mixedJourney, false);
 assert.equal(w.document.getElementById("pilot-mission").hidden, true);
 assert.equal(game.state.lab.boards["workshop-link"].filter(Boolean).length, 5);
+assert(game.state.lab.tested.includes("workshop-link"));
 game.pauseJourney();
 console.log(
   "PASS: first tap builds without questions, tested network glows, and story resumes without resetting.",
