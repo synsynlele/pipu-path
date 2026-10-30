@@ -1891,6 +1891,6 @@ Live signed-in AI acceptance remains distinct from deterministic CI checks.
 
 ## 30 October 2026 — Complete AI prompts and shared builder slogan
 
-Quest generation now instructs the coach to supply the actual quoted prompt whenever a step requires AI, plus an action to check/adapt its output. Prompts must fit existing action bounds and omit private information; when a useful prompt cannot fit, the coach must give direct build instructions. AI drafts remain distinct from real-use evidence. The template content version advances so new requests do not reuse older templates missing these instructions; active Quests and evidence remain intact.
+Quest generation now supplies ready-to-use words and actions for carrying out the work: actual interview questions, invitations, participant instructions, feedback/test scripts and concrete setup sequences. It must not delegate missing instructions to the Builder or another AI. Scripts fit existing action bounds and omit private information; follow-up actions explain how to use the answers. The template content version advances so new requests do not reuse older templates missing these instructions; active Quests and evidence remain intact.
 
 The shared brand mark, mobile app header, metadata and Android download copy now use “Build a Better World,” matching the game. The brand subtitle is also visible on the real-Quest mobile header. No database migration or game runtime changes. Validation and production deployment follow the existing CI gate.
