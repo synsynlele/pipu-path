@@ -1,11 +1,6 @@
 // Lightweight skill-adaptive recommendations. No age gates or opaque scores.
 // Users can always override the recommendation and choose any challenge.
-import {
-  LAB_MISSIONS,
-  labMission,
-  evaluateLab,
-  sanitizeLab,
-} from "./build-lab.mjs";
+import { LAB_MISSIONS, evaluateLab, sanitizeLab } from "./build-lab.mjs";
 
 const DIFFICULTY = Object.freeze({
   "workshop-link": 1,
