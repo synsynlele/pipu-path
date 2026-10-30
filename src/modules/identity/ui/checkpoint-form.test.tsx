@@ -34,7 +34,7 @@ it("suggests an editable username and never overwrites the learner's edit", () =
   });
   expect(screen.getByLabelText("Username")).toHaveValue("my_builder");
 });
-it("retains entered details and explicit consent after a failed save", async () => {
+it("retains entered details and requires consent to be checked again after a failed save", async () => {
   render(<CheckpointForm />);
   fireEvent.change(screen.getByLabelText("What should we call you?"), {
     target: { value: "Tosin" },
@@ -58,7 +58,7 @@ it("retains entered details and explicit consent after a failed save", async () 
   expect(screen.getByLabelText("Username")).toHaveValue("tosin");
   expect(screen.getByLabelText("Your age group")).toHaveValue("18_24");
   for (const checkbox of screen.getAllByRole("checkbox"))
-    expect(checkbox).toBeChecked();
+    expect(checkbox).not.toBeChecked();
   expect(save).toHaveBeenCalledOnce();
 });
 it("shows guardian guidance without offering adult AI consent to a child", () => {

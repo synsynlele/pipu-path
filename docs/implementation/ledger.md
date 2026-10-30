@@ -1750,7 +1750,8 @@ Keep onboarding as a compact private setup. Shared onboarding shell uses blue
 and white, a single heading and section navigation without invented completion
 percentages or checkmarks. Back to play remains visible. Identity setup asks
 for name, editable suggested username, age group and explicit privacy choices.
-Keep controlled input and consent values through failed submissions; remove the
+Keep entered details through failed submissions and ask the learner to recheck
+consent before retrying; remove the
 blocking save overlay and show saving inline. Preserve server validation, guardian
 authorization, policy version and current AI eligibility. This is the onboarding
 foundation of the Real Quests rebuild, not a claim that its generation and

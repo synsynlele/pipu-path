@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { completeIdentityAction } from "../application/checkpoint-actions";
@@ -20,6 +20,11 @@ export function CheckpointForm() {
     initialFormState,
   );
   const [ageBand, setAgeBand] = useState("");
+  const ageSelect = useRef<HTMLSelectElement>(null);
+  useEffect(() => {
+    // Reapply the controlled selection after a server-action form reset.
+    if (ageSelect.current) ageSelect.current.value = ageBand;
+  }, [state, pending, ageBand]);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [editedUsername, setEditedUsername] = useState(false);
@@ -83,6 +88,7 @@ export function CheckpointForm() {
           <select
             required
             name="age_band"
+            ref={ageSelect}
             value={ageBand}
             onChange={(event) => setAgeBand(event.target.value)}
             className="border-border bg-panel-raised focus:border-primary mt-2 min-h-12 w-full rounded-xl border px-3 shadow-sm transition-colors"
@@ -127,7 +133,7 @@ export function CheckpointForm() {
         </fieldset>
         {state.message ? (
           <p role="alert" className="text-error">
-            {state.message}
+            {state.message} Check your privacy choices again before retrying.
           </p>
         ) : null}
         <Button type="submit" disabled={pending} className="w-full gap-2">
@@ -155,17 +161,9 @@ function Consent({
   name: string;
   children: React.ReactNode;
 }) {
-  const [checked, setChecked] = useState(false);
   return (
     <label className="flex items-start gap-3 text-sm">
-      <input
-        required
-        type="checkbox"
-        name={name}
-        checked={checked}
-        onChange={(event) => setChecked(event.target.checked)}
-        className="mt-1 size-5"
-      />
+      <input required type="checkbox" name={name} className="mt-1 size-5" />
       <span>{children}</span>
     </label>
   );
