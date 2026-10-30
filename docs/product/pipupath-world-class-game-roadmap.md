@@ -165,6 +165,30 @@ consequences, navigation, pause/resume, device save, sound, music and
 continuing challenges. It uses expandable optional controls so the main
 instruction is concise on phones.
 
+## Phase 4 · context-aware real Quest handoff (first preview slice)
+
+Branch `preview/game-world-class-phase4` stacks on Phase 3 and makes the
+existing Play & build → Real Quests action genuinely contextual. The embedded
+city sends only a fixed, allowlisted service ID alongside the already-used
+non-identifying district hint. The parent validates the iframe origin/source,
+and the Real Quests route resolves one of five reviewed safe starter prompts.
+It preselects the matching topic and offers an editable focus; the Builder
+must still choose, submit and complete an actual Quest with evidence.
+No game answer, identity, evidence, AI prompt or progress is transferred;
+no server-side game completion, XP or cloud save is invented.
+
+The public game remains playable without login; the existing Real Quests
+account/privacy boundary remains authoritative. A current saved real Quest
+is never replaced by a game handoff. The invitation adds no game card,
+blocking overlay, backend migration, social contact or commercial incentive.
+
+**Not yet delivered in Phase 4:** signed-in optional cross-device city saves
+with owner-scoped RLS and conflict recovery; moderated classroom teams;
+student Android acceptance; and a production-verified AI Quest journey.
+The existing real-world candidate's database migration and environment
+must be verified independently before a production rollout. Stage 3's
+unfinished content-diversity gates still apply to this stacked preview.
+
 **Remaining Phase 3 gates:** genuinely new validated topologies and demands,
 automated content review/solvability testing beyond the first catalogue,
 student testing on low-end Android, moderation and safe AI-authored
