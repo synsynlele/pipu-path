@@ -1,5 +1,25 @@
 # Implementation status
 
+## 30 October 2026 — Game Phase 4: safe city-to-Quest handoff preview
+
+Development branch `preview/game-world-class-phase4` stacks on Phase 3's
+draft PR; it does not alter the main branch or production. A new allowlisted
+service-to-action catalogue connects certified fictional city builds and
+continuing scenarios to the existing Real Quests creation screen. The same
+iframe-parent bridge accepts only same-origin messages from the embedded
+city, validates the service ID, and transports no free-text player data.
+Real Quests proposes a topic and editable, safe first focus; it neither
+starts a Quest without the Builder's decision nor pretends game play earned
+XP or real-life proof. If a real Quest is already active, it is preserved.
+
+The in-game guide also explains the transition. Domain tests check every
+reviewed mapping, exact value allowlisting and input-length limits. This is
+the first Phase 4 slice; account-authorized cloud city saves, supervised
+multi-school collaboration, real Android trials and full production QA
+remain unshipped. The candidate Real Quests migration/environment gate noted
+below still applies.
+
+
 ## 28 October 2026 — Chapter 3, City of Opportunities: operating enterprises
 
 The development branch `feat/unbuilt-city-chapter-three-enterprises` extends the
