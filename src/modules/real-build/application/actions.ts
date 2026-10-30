@@ -230,6 +230,7 @@ export async function improveRealBuild(
         previous_attempt_id: old.data.id,
         topic: old.data.topic,
         minutes: old.data.minutes,
+        difficulty: old.data.difficulty,
         challenge: old.data.challenge,
         source: "openai",
         draft: emptyDraft,
