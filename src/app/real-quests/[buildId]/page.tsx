@@ -74,9 +74,17 @@ export default async function RealBuildPage({
               {improvement}
             </p>
             <p className="mt-3 text-xs text-[#77788e]">
-              Use this lesson in a fresh attempt. Your previous evidence stays
-              with the previous attempt.
+              These steps build on your previous work. Record fresh evidence for
+              this change; your earlier evidence stays with its attempt.
             </p>
+            {build.previous_attempt_id ? (
+              <Link
+                href={`/real-quests/${build.previous_attempt_id}`}
+                className="mt-3 inline-block py-2 text-sm font-bold"
+              >
+                View the previous attempt →
+              </Link>
+            ) : null}
           </section>
         ) : null}
         <BuildStageGuide
@@ -153,17 +161,17 @@ export default async function RealBuildPage({
               {build.draft.nextChange || "No next change saved."}
             </p>
             {build.status === "recorded" && !retired ? (
-              <ImproveBuildForm id={build.id} />
+              <ImproveBuildForm id={build.id} draft={build.draft} />
             ) : null}
             <Link
               href={`/real-quests?district=${encodeURIComponent(build.topic)}`}
               className="build-primary w-full"
             >
-              Choose my next Quest →
+              Start a new Quest →
             </Link>
             <p className="text-xs leading-5 text-[#77788e]">
-              Your next challenge can use the same topic or a different one.
-              Keep your next change in mind.
+              Start a separate solution with a new goal or topic. Your recorded
+              work stays in your history.
             </p>
           </section>
         )}

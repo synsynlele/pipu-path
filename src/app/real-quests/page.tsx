@@ -20,6 +20,9 @@ export default async function RealQuestsPage({
   const [home, params] = await Promise.all([getBuildHome(), searchParams]);
   const suggestion = cityQuestHandoff(params.service);
   const idea = cityInspiration(suggestion?.topic ?? params.district);
+  const latestRecorded = home.history.find(
+    (attempt) => attempt.status === "recorded",
+  );
   return (
     <main id="main-content">
       <BuildHero
@@ -65,6 +68,26 @@ export default async function RealQuestsPage({
           </section>
         ) : (
           <>
+            {latestRecorded ? (
+              <section className="build-card mt-6">
+                <p className="text-xs font-bold text-[#5b3dd4]">
+                  KEEP BUILDING
+                </p>
+                <h2 className="mt-2 text-lg font-bold">
+                  {latestRecorded.challenge.title}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-[#77788e]">
+                  You recorded an attempt. Continue the same solution using what
+                  you learned, or start a new Quest below.
+                </p>
+                <Link
+                  href={`/real-quests/${latestRecorded.id}`}
+                  className="build-primary mt-4 w-full"
+                >
+                  Plan a continuation →
+                </Link>
+              </section>
+            ) : null}
             {suggestion ? (
               <section
                 aria-label="From your city to real life"

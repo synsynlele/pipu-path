@@ -4,6 +4,7 @@ const m = vi.hoisted(() => ({
   auth: vi.fn(),
   service: vi.fn(),
   start: vi.fn(),
+  continue: vi.fn(),
   revalidate: vi.fn(),
   redirect: vi.fn(),
 }));
@@ -12,6 +13,7 @@ vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
 }));
 vi.mock("../infrastructure/client", () => ({ buildServiceClient: m.service }));
 vi.mock("./start-build", () => ({ startBuildForUser: m.start }));
+vi.mock("./continue-build", () => ({ continueBuildForUser: m.continue }));
 vi.mock("../infrastructure/provider", () => ({
   generateBuildTemplate: vi.fn(),
 }));
@@ -64,6 +66,8 @@ beforeEach(() => {
     throw new Error("REDIRECT");
   });
   m.start.mockReset();
+  m.continue.mockReset();
+  m.redirect.mockClear();
 });
 it("requires identity authorization before any mutation", async () => {
   m.auth.mockRejectedValue(new Error("AUTH_REQUIRED"));
@@ -141,73 +145,30 @@ it("does not forward extra prose to the template generator", async () => {
   });
 });
 
-it("opens a fresh improvement attempt without copying old evidence or calling AI", async () => {
-  results = [
-    {
-      data: {
-        id,
-        template_id: "template",
-        topic: "school",
-        minutes: 30,
-        focus: "I want to make homework reminders clearer.",
-        difficulty: 1,
-        challenge: { title: "A useful tracker" },
-      },
-    },
-    { data: null },
-    { data: { id: "next" } },
-  ];
+it("requires explicit use of saved notes before requesting a continuation", async () => {
   const f = new FormData();
   f.set("id", id);
+  expect((await improveRealBuild({ ok: false, message: "" }, f)).ok).toBe(
+    false,
+  );
+  expect(m.continue).not.toHaveBeenCalled();
+  f.set("useNotes", "yes");
+  m.continue.mockResolvedValue("next");
   await expect(improveRealBuild({ ok: false, message: "" }, f)).rejects.toThrow(
     "REDIRECT",
   );
-  expect(calls).toContainEqual([
-    "insert",
-    expect.objectContaining({
-      previous_attempt_id: id,
-      user_id: "owner",
-      focus: "I want to make homework reminders clearer.",
-      draft: {
-        evidence: "",
-        link: "",
-        reflection: "",
-        nextChange: "",
-        outcome: "",
-      },
-    }),
-  ]);
-  expect(m.start).not.toHaveBeenCalled();
+  expect(m.continue).toHaveBeenCalledWith("owner", id);
+  expect(m.redirect).toHaveBeenCalledWith("/real-quests/next");
 });
-
-// Recorded coursework may remain in history but cannot be cloned into new Quests.
-it("blocks improvement cloning of a retired paper-only Quest", async () => {
-  results = [
-    {
-      data: {
-        id,
-        template_id: "legacy",
-        topic: "school",
-        minutes: 30,
-        difficulty: 1,
-        focus: "Help classmates with study routines",
-        challenge: {
-          title: "Draw a paper plan",
-          outcome: "Prepare a paper layout.",
-          steps: Array(5).fill("Draw a sketch on paper."),
-          materials: ["Paper"],
-          evidence: "Describe the planned layout.",
-          safety: "Keep details private.",
-        },
-      },
-    },
-  ];
+it("keeps continuation failures recoverable without exposing provider details", async () => {
   const f = new FormData();
   f.set("id", id);
+  f.set("useNotes", "yes");
+  m.continue.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
   const answer = await improveRealBuild({ ok: false, message: "" }, f);
   expect(answer.ok).toBe(false);
-  expect(answer.message).toContain("retired");
-  expect(calls.some((call) => call[0] === "insert")).toBe(false);
+  expect(answer.message).toContain("notes are safe");
+  expect(m.redirect).not.toHaveBeenCalled();
 });
 
 it("protects an existing reviewed Quest with saved evidence from silent AI replacement", async () => {

@@ -143,3 +143,40 @@ it("passes the exact goal, validated discovery choices and public difficulty ins
   expect(brief.difficulty).toBe(5);
   expect(brief.discovery.resources).toBe("An existing phone or computer");
 });
+
+it("uses explicitly supplied continuation context in initial and correction requests without changing fresh Quest briefs", async () => {
+  const previous = await (async () => {
+    request.mockResolvedValue(draft);
+    return generateBuildTemplate(choice, []);
+  })();
+  request.mockReset();
+  request
+    .mockResolvedValueOnce({
+      ...draft,
+      stages: draft.stages.map((a) => a.join(" ")),
+    })
+    .mockResolvedValueOnce(draft);
+  const continuation = {
+    previousSolution: previous,
+    reportedOutcome: "not_yet" as const,
+    whatWasDone: "We ran a focus session but notifications still interrupted.",
+    whatWasLearned: "The session needs a quiet signal.",
+    plannedChange: "Try a silent timer and compare interruptions.",
+  };
+  await generateBuildTemplate(choice, [], 1, continuation);
+  expect(JSON.parse(request.mock.calls[0][0].prompt).continuation).toEqual(
+    continuation,
+  );
+  expect(
+    JSON.parse(request.mock.calls[1][0].prompt).brief.continuation,
+  ).toEqual(continuation);
+  expect(request.mock.calls[0][0].instructions).toContain(
+    "Do not restart completed setup",
+  );
+  request.mockReset();
+  request.mockResolvedValue(draft);
+  await generateBuildTemplate(choice, []);
+  expect(JSON.parse(request.mock.calls[0][0].prompt)).not.toHaveProperty(
+    "continuation",
+  );
+});
