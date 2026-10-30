@@ -117,9 +117,8 @@ w.document.getElementById("case-next").click();
 assert.equal(w.document.getElementById("build-lab").open, true);
 assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
 assert.equal(
-  w.document.querySelector(
-    '#lab-mission option[value="clinic-power"]',
-  ).disabled,
+  w.document.querySelector('#lab-mission option[value="clinic-power"]')
+    .disabled,
   true,
 );
 assert.equal(game.journey.caseId, "repair-queue");
