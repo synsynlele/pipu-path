@@ -23,7 +23,7 @@ const choice = {
   focus: "I want to help students track homework more clearly.",
 };
 const focusKey = createHash("sha256")
-  .update("hands-on-v2:" + choice.focus.toLowerCase())
+  .update("goal-stages-v3:" + choice.focus.toLowerCase())
   .digest("hex");
 const template = {
   id: "template",

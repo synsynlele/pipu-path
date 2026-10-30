@@ -216,7 +216,7 @@ export function BuildAttemptForm({
         Recording an attempt saves your account of the work. It does not verify
         success, award XP or publish your evidence.
       </p>
-      <details open={retired}>
+      <details id="quest-set-aside" open={retired}>
         <summary className="cursor-pointer text-sm text-[#52647c]">
           This Quest is not right for me
         </summary>

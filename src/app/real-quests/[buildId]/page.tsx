@@ -9,6 +9,8 @@ import {
 } from "@/modules/real-build/domain/build";
 import { ImproveBuildForm } from "@/modules/real-build/ui/improve-form";
 import { BuildAttemptForm } from "@/modules/real-build/ui/attempt-form";
+import { BuildStageGuide } from "@/modules/real-build/ui/stage-guide";
+import { TailorReviewedButton } from "@/modules/real-build/ui/tailor-reviewed-button";
 export const metadata: Metadata = {
   title: "My real Quest",
   robots: { index: false, follow: false },
@@ -43,9 +45,13 @@ export default async function RealBuildPage({
       {build.source === "reviewed" ? (
         <p className="mt-3 rounded-xl border border-[#c8dbf7] bg-[#eef5ff] p-3 text-sm leading-6 text-[#264e89]">
           Reviewed starter Quest · This practical activity was prepared by
-          PipuPath rather than generated for your exact goal by AI. Adapt the
-          safe activity to your own situation and test it in real life.
+          PipuPath rather than generated for your exact goal by AI. It may
+          not fit your problem. You can ask AI to design a more specific Quest
+          without losing any saved evidence.
         </p>
+      ) : null}
+      {build.source === "reviewed" && build.status === "active" ? (
+        <TailorReviewedButton id={build.id} />
       ) : null}
       <h1 className="mt-3 text-3xl font-extrabold">{build.challenge.title}</h1>
       <p className="mt-3 text-sm leading-6 text-[#52647c]">
@@ -67,15 +73,14 @@ export default async function RealBuildPage({
           </p>
         </section>
       ) : null}
-      <section className="build-card mt-6">
-        <h2 className="text-lg font-extrabold">1. Try it in real life</h2>
-        <ol className="mt-4 list-decimal space-y-4 pl-5 text-sm leading-6">
-          {build.challenge.steps.map((s, i) => (
-            <li key={i}>{s}</li>
-          ))}
-        </ol>
-        <details className="mt-5">
-          <summary className="cursor-pointer text-sm font-bold text-[#1d4ed8]">
+      <BuildStageGuide
+        id={build.id}
+        challenge={build.challenge}
+        status={build.status}
+      />
+      <section className="build-card mt-5">
+        <details>
+          <summary className="cursor-pointer py-2 text-sm font-bold text-[#2059bd]">
             Materials and safety
           </summary>
           <p className="mt-3 text-sm leading-6">
