@@ -100,7 +100,7 @@ describe("Stage 29 Builder Network structure", () => {
 
   it("makes Builder World the primary Connect destination without deleting legacy Connect", () => {
     expect(navigation).toContain('path.startsWith("/connect")');
-    expect(navigation).toContain('{ label: "You", href: "/profile"');
+    expect(navigation).toContain('{ label: "You", href: "/you"');
     expect(worldPage).toContain('href="/connect"');
     expect(worldPage).toContain("Connect home");
   });

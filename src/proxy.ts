@@ -10,6 +10,7 @@ const protectedPrefixes = [
   "/app",
   "/build",
   "/real-quests",
+  "/you",
   "/connect",
   "/continue",
   "/discover",
@@ -111,7 +112,8 @@ export async function proxy(request: NextRequest) {
     const next = safeNextPath(request.nextUrl.searchParams.get("next"));
     if (
       path === "/login" &&
-      new URL(next, request.url).pathname === "/real-quests"
+      (new URL(next, request.url).pathname.startsWith("/real-quests") ||
+        new URL(next, request.url).pathname === "/you")
     ) {
       const target = new URL(next, request.url);
       destination.pathname = target.pathname;

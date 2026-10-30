@@ -1756,3 +1756,37 @@ blocking save overlay and show saving inline. Preserve server validation, guardi
 authorization, policy version and current AI eligibility. This is the onboarding
 foundation of the Real Quests rebuild, not a claim that its generation and
 continuation architecture have been replaced. No schema or learner-data rewrite.
+
+## 30 October 2026 — Simple real-world replacement candidate
+
+Owner explicitly replaces the non-game experience. New Real Quests asks only
+catalogue topic and time after current account/private-learning authorization.
+No Discovery/profile/Mission/Journey prerequisite for this loop. Existing records
+and routes remain reachable under Earlier work on the new You page. City is unchanged.
+
+New server-only AI authoring receives generic catalogue parameters and public
+challenge titles; no names, account IDs, private answers, photos or reflections.
+Validated templates are reused across accounts, with private independently owned
+attempts. A global authoring lease prevents duplicate provider work; per-user
+request accounting includes failures and bounds spend. Failed AI does not create
+an attempt or a disguised fallback. One current attempt, optimistic version
+checks, draft saves, optional private photo/link and honest unsuccessful outcomes.
+Recording requires evidence and reflection; no XP or capability is invented.
+Try my improvement creates a fresh blank attempt with a link to the prior lesson;
+choose another Quest continues without a terminal cycle. Blue/white UI, recovery,
+privacy copy, pagination, private photo signing and deletion-worker coverage are
+part of the slice. Photos are bounded to 3 MB under the 4 MB action body limit.
+
+Additive migration: 20261030080345_simple_real_world_builds.sql. PostgreSQL tests
+verify grants, ownership, active uniqueness, recording constraints, authoring
+leases and request limits; application/interaction tests cover retry and saved
+state boundaries. Local full validation passed with 611 unit/component tests,
+252 integration tests, city runtime checks and production build; CI and final
+release evidence belong in the PR.
+
+Production gate: the current Supabase connector denies access to PipuPath project
+kvjcswnmhwegpakbtvlh. No migration was applied, no other project's database was
+changed, and no frontend deployment was requested for this candidate. Apply and
+verify the migration on the actual PipuPath database before releasing the new
+routes. Live AI, authenticated evidence writes and physical Android acceptance
+are not proved by mocked or embedded tests.

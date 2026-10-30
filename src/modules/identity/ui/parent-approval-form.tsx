@@ -45,8 +45,10 @@ export function ParentApprovalForm() {
         </select>
       </label>
       <p className="text-muted text-sm leading-6">
-        This lets them do missions, projects and reflections. Networking and
-        external AI are not included in this approval.
+        This lets them save challenges, evidence and reflections. It does not
+        approve networking or sending their private answers to external AI.
+        AI-authored public challenge templates do not contain their private
+        data.
       </p>
       <label className="flex items-start gap-3 text-sm leading-6">
         <input

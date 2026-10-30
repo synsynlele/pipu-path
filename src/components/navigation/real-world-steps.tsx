@@ -9,6 +9,7 @@ const steps = [
 ];
 export function RealWorldSteps() {
   const path = usePathname();
+  if (path.startsWith("/real-quests") || path.startsWith("/you")) return null;
   if (
     !/^\/(?:real-quests|onboarding|mission|journey|quests|projects|portfolio)(?:\/|$)/.test(
       path,

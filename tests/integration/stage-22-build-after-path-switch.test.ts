@@ -9,9 +9,9 @@ const currentQuestPage = readFileSync("src/app/quests/page.tsx", "utf8");
 describe("Stage 22 real-work access after Path switching", () => {
   it("redirects old Build bookmarks to a single authenticated Quest hub", () => {
     expect(buildPage).toContain('redirect("/real-quests")');
-    expect(questsPage).toContain("requireAuthenticatedHomeState");
-    expect(questsPage).toContain('href="/profile"');
-    expect(questsPage).toContain("realWorldMove(state)");
+    expect(questsPage).toContain("getBuildHome");
+    expect(questsPage).toContain('href="/you"');
+    expect(questsPage).toContain("<BuildChoiceForm");
     const destination = {
       path: "/journey",
       label: "Activate Journey",
