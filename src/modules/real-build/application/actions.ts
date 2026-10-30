@@ -10,12 +10,11 @@ import {
   choiceSchema,
   draftSchema,
   canRecordAttempt,
-  emptyDraft,
-  isRetiredPaperworkChallenge,
   validateChallenge,
 } from "../domain/build";
 import { buildServiceClient } from "../infrastructure/client";
 import { startBuildForUser } from "./start-build";
+import { continueBuildForUser } from "./continue-build";
 export type BuildFormState = { ok: boolean; message: string; version?: number };
 const logger = createLogger();
 
@@ -372,67 +371,35 @@ export async function improveRealBuild(
   const id = z.uuid().safeParse(form.get("id"));
   if (!id.success)
     return { ok: false, message: "Open your saved attempt and try again." };
-  const service = buildServiceClient();
-  const old = await service
-    .from("real_build_attempts")
-    .select("*")
-    .eq("id", id.data)
-    .eq("user_id", user.id)
-    .eq("status", "recorded")
-    .maybeSingle();
-  if (old.error || !old.data)
-    return { ok: false, message: "This recorded attempt could not be opened." };
-  if (isRetiredPaperworkChallenge(old.data.challenge))
+  if (form.get("useNotes") !== "yes")
     return {
       ok: false,
       message:
-        "This old planning-only Quest has been retired. Choose a new practical Quest instead.",
+        "Choose whether AI may use your saved written notes to plan the next step.",
     };
-  const current = await service
-    .from("real_build_attempts")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .maybeSingle();
-  if (current.error)
+  let nextId: string;
+  try {
+    nextId = await continueBuildForUser(user.id, id.data);
+  } catch (error) {
+    const code =
+      error instanceof Error &&
+      /^(BUILD_|OPENAI_)[A-Z_0-9]+$/.test(error.message)
+        ? error.message
+        : "BUILD_UNKNOWN";
+    logger.warn("real_build_continuation_failed", { code });
     return {
       ok: false,
-      message: "Your current work could not be loaded. Try again.",
+      message:
+        code === "BUILD_RETIRED"
+          ? "This old planning-only Quest has been retired. Start a new practical Quest instead."
+          : code === "BUILD_PREVIOUS_MISSING"
+            ? "This recorded attempt could not be opened. Return to your saved Quests."
+            : code === "BUILD_AI_LIMIT"
+              ? "Your AI request limit has been reached. Your saved work is safe; try later."
+              : code === "BUILD_BUSY"
+                ? "Your next step is already being prepared. Try again in a moment."
+                : "We could not prepare your continuation right now. Your previous Quest and notes are safe. Please try again.",
     };
-  let nextId = current.data?.id;
-  if (!nextId) {
-    const next = await service
-      .from("real_build_attempts")
-      .insert({
-        user_id: user.id,
-        template_id: old.data.template_id,
-        previous_attempt_id: old.data.id,
-        topic: old.data.topic,
-        minutes: old.data.minutes,
-        focus: old.data.focus,
-        difficulty: old.data.difficulty,
-        challenge: old.data.challenge,
-        source: "openai",
-        draft: emptyDraft,
-      })
-      .select("id")
-      .single();
-    nextId = next.data?.id;
-    if (next.error?.code === "23505") {
-      const winner = await service
-        .from("real_build_attempts")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .maybeSingle();
-      nextId = winner.data?.id;
-    }
-    if (!nextId)
-      return {
-        ok: false,
-        message:
-          "Your next attempt was not saved. Your previous work is safe. Try again.",
-      };
   }
   revalidatePath("/real-quests");
   revalidatePath("/you");
