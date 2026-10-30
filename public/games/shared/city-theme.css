@@ -4777,3 +4777,68 @@ body.city-integrated #detail[data-mode="outcome"] .case-tools button {
     width: 28px;
   }
 }
+
+
+/* The ? guide stays scrollable, friendly and usable on narrow Android screens. */
+#help-dialog {
+  width: min(540px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: min(88svh, 730px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+  border-radius: 18px;
+}
+#help-dialog .guide-lead {
+  line-height: 1.45;
+  margin: 8px 0;
+}
+#help-dialog .guide-now {
+  border-inline-start: 4px solid #31846e;
+  border-radius: 8px;
+  background: #e7f5ed;
+  color: #16463b;
+  padding: 10px 12px;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1.45;
+}
+#help-dialog .game-guide-steps {
+  padding-left: 23px;
+  margin: 12px 0;
+  display: grid;
+  gap: 10px;
+}
+#help-dialog .game-guide-steps li {
+  padding-left: 3px;
+  line-height: 1.5;
+  font-size: 13px;
+}
+#help-dialog .game-guide-steps strong {
+  color: #154e43;
+}
+#help-dialog .game-guide-extra {
+  border-top: 1px solid #c8d7df;
+  padding: 5px 0;
+}
+#help-dialog .game-guide-extra summary {
+  cursor: pointer;
+  font-weight: 750;
+  min-height: 44px;
+  padding: 10px 0;
+}
+#help-dialog .game-guide-extra p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+#help-dialog #help-done {
+  position: sticky;
+  bottom: 0;
+  min-height: 44px;
+  width: 100%;
+  margin-top: 10px;
+}
+@media (max-width: 620px) {
+  #help-dialog { padding: 12px; max-height: 83svh; }
+  #help-dialog .game-guide-steps li { font-size: 12px; }
+}

@@ -4038,6 +4038,14 @@ document.addEventListener("visibilitychange", () => {
 });
 syncAudioControls();
 $("help").onclick = () => {
+  const step = integratedStep(state.decisions, state.lab);
+  const current = $("help-next-step");
+  current.textContent =
+    step.kind === "question"
+      ? "YOUR NEXT STEP · Decide: " + getCase(step.caseId).title
+      : step.kind === "build"
+        ? "YOUR NEXT STEP · Build and test: " + labMission(step.missionId).title
+        : "YOUR NEXT STEP · Main city complete. Inspect services or try the next Builder Challenge.";
   $("playtest-summary").textContent = playtest.report();
   $("playtest-copy-status").textContent = "";
   $("help-dialog").showModal();
