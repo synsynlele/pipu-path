@@ -68,4 +68,6 @@ it("uses separate explicit save, record and set-aside intents", async () => {
   await waitFor(() => expect(m.save).toHaveBeenCalledOnce());
   expect((m.save.mock.calls[0][1] as FormData).get("intent")).toBe("record");
   expect(screen.getByText(/does not verify success/)).toBeInTheDocument();
+  expect(screen.getByText("Save for later")).toHaveClass("pp-button-ghost");
+  expect(screen.getByText("Save for later")).toHaveClass("text-[#16488f]");
 });

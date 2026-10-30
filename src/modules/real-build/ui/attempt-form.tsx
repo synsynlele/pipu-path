@@ -174,13 +174,13 @@ export function BuildAttemptForm({ build }: { build: SavedBuild }) {
           />
         </label>
       </section>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <button
           type="submit"
           name="intent"
           value="save"
           disabled={pending}
-          className="border border-[#b9cce5] bg-white"
+          className="pp-button-ghost flex w-full items-center justify-center gap-2 border-2 border-[#b9cce5] bg-white text-[#16488f] shadow-sm sm:w-auto"
         >
           Save for later
         </button>
@@ -189,7 +189,7 @@ export function BuildAttemptForm({ build }: { build: SavedBuild }) {
           name="intent"
           value="record"
           disabled={pending}
-          className="build-primary flex-1"
+          className="build-primary w-full sm:flex-1"
         >
           Record my attempt →
         </button>
@@ -223,7 +223,7 @@ export function BuildAttemptForm({ build }: { build: SavedBuild }) {
           name="intent"
           value="archive"
           disabled={pending}
-          className="mt-3 border border-[#b9cce5] bg-white"
+          className="pp-button-ghost mt-3 w-full border-2 border-[#b9cce5] bg-white text-[#16488f] shadow-sm sm:w-auto"
         >
           Set aside and choose another
         </button>

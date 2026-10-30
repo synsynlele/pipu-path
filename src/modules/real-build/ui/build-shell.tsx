@@ -13,7 +13,8 @@ export function BuildShell({ children }: { children: React.ReactNode }) {
  .pp-simple-build input[type=file] {font-size:14px;}
  .pp-simple-build button,.pp-simple-build .build-primary {min-height:48px;border-radius:12px;padding:12px 18px;font-weight:700;}
  .pp-simple-build .build-primary {background:#2059bd;color:white;-webkit-text-fill-color:white;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(32,89,189,.16);}
- .pp-simple-build .pp-button-ghost,.pp-simple-build .pp-button-ghost:hover {background:#fff;color:#2059bd;-webkit-text-fill-color:#2059bd;border-color:#b8cde6;}
+ .pp-simple-build .pp-button-ghost {background:#fff;color:#16488f;-webkit-text-fill-color:#16488f;border-color:#b8cde6;transition:background-color .15s ease;}
+ .pp-simple-build .pp-button-ghost:hover {background:#eff6ff;color:#16488f;-webkit-text-fill-color:#16488f;border-color:#91b6e8;}
  .pp-simple-build button:disabled {opacity:.55;cursor:wait;}
  .pp-simple-build :focus-visible {outline:3px solid #60a5fa;outline-offset:3px;}
  .pp-simple-build .build-card {border:1px solid #d8e5f5;background:white;border-radius:20px;padding:20px;box-shadow:0 7px 24px rgba(22,53,96,.04);}
