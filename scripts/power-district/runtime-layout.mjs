@@ -83,14 +83,19 @@ w.document.getElementById("start").click();
 assert.equal(w.document.getElementById("intro").hidden, true);
 assert.equal(w.document.getElementById("build-lab").open, true);
 assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
-assert.match(w.document.getElementById("lab-title").textContent, /first build/i);
+assert.match(
+  w.document.getElementById("lab-title").textContent,
+  /first build/i,
+);
 assert.equal(w.document.querySelectorAll("[data-case-choice]").length, 0);
 assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
 assert.equal(game.workshopBlueprint.visible, false);
 assert.equal(game.firstBuildMode, true);
 // Solve an actual playable supply route using its touch-friendly controls.
 const pilotCell = (row, col) =>
-  w.document.querySelector('[aria-label^="Row ' + row + ', column ' + col + ':"]');
+  w.document.querySelector(
+    '[aria-label^="Row ' + row + ", column " + col + ':"]',
+  );
 w.document.querySelector('[data-lab-tool="bend"]').click();
 w.document.getElementById("lab-rotate").click();
 pilotCell(2, 1).click();

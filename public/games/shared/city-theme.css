@@ -4153,7 +4153,6 @@ html.city-embedded .welcome-signin {
   border-radius: 10px;
 }
 
-
 /* First-play hands-on worksite; status remains honest prototype practice. */
 .city-welcome #resume-city {
   display: block;
@@ -4169,7 +4168,9 @@ html.city-embedded .welcome-signin {
   font-size: 14px;
   font-weight: 800;
 }
-.city-welcome #resume-city[hidden] { display: none !important; }
+.city-welcome #resume-city[hidden] {
+  display: none !important;
+}
 #pilot-mission {
   position: absolute;
   z-index: 72;
@@ -4185,7 +4186,9 @@ html.city-embedded .welcome-signin {
   box-shadow: 0 12px 40px #06172699;
   color: #fffbee;
 }
-#pilot-mission[hidden] { display: none !important; }
+#pilot-mission[hidden] {
+  display: none !important;
+}
 #pilot-mission .pilot-kicker {
   display: block;
   color: #e4d487;
@@ -4193,9 +4196,21 @@ html.city-embedded .welcome-signin {
   font-weight: 800;
   letter-spacing: 0.09em;
 }
-#pilot-mission h2 { margin: 8px 0 6px; font-size: clamp(17px, 3.8vw, 23px); line-height: 1.2; }
-#pilot-mission p { font-size: 13px; line-height: 1.45; margin: 0 0 10px; }
-#pilot-mission .pilot-actions { display: flex; flex-direction: column; gap: 7px; }
+#pilot-mission h2 {
+  margin: 8px 0 6px;
+  font-size: clamp(17px, 3.8vw, 23px);
+  line-height: 1.2;
+}
+#pilot-mission p {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+#pilot-mission .pilot-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
 #pilot-mission button {
   min-height: 44px;
   width: 100%;
@@ -4214,7 +4229,13 @@ html.city-embedded .welcome-signin {
   color: #113340;
   -webkit-text-fill-color: #113340;
 }
-#pilot-mission small { display: block; font-size: 10px; line-height: 1.4; margin-top: 10px; color: #cadde5; }
+#pilot-mission small {
+  display: block;
+  font-size: 10px;
+  line-height: 1.4;
+  margin-top: 10px;
+  color: #cadde5;
+}
 #build-lab #lab-first-brief {
   border-left: 4px solid #169e81;
   background: #e3f5ef;
@@ -4225,7 +4246,9 @@ html.city-embedded .welcome-signin {
   font-weight: 700;
 }
 #build-lab #lab-first-brief[hidden],
-#build-lab #lab-hint-copy[hidden] { display: none !important; }
+#build-lab #lab-hint-copy[hidden] {
+  display: none !important;
+}
 #build-lab #lab-hint {
   display: block;
   margin: 4px 0 10px;

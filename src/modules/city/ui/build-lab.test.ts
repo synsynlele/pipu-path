@@ -70,12 +70,16 @@ it("builds and tests an actual route using place and rotate controls, then inval
 it("opens a hands-on first mission with accessible hint and no question selection", () => {
   const starter = mountBuildLab({
     read: () => state,
-    write: (next: unknown) => { state = next; },
+    write: (next: unknown) => {
+      state = next;
+    },
     beforeOpen,
     afterClose,
   });
   starter.open("workshop-link", { firstMission: true });
-  expect(screen.getByText(/Your first build: power the workshop/)).toBeVisible();
+  expect(
+    screen.getByText(/Your first build: power the workshop/),
+  ).toBeVisible();
   expect(screen.getByText(/lost its supply/)).toBeVisible();
   expect(screen.getByText(/going above the tree/i)).not.toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: /Need a hint/ }));

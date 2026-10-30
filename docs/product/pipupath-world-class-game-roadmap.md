@@ -66,7 +66,6 @@ No mandatory signup just to play; no forced tutorial; no monetization gimmicks.
 Founder-independent engine: approved scenarios, automatic validation, anonymized
 pilot feedback, teacher review, release quality gates and rollback.
 
-
 ## Corrective first-entry experience (30 October 2026)
 
 User validation identified a fundamental implementation error: the Play
@@ -84,6 +83,6 @@ explicit choice. Returning players with local saved practice can resume
 the original journey directly. The old 36-choice, seven-day enterprise,
 Chapter 4 crises and saved-game structure remain unchanged.
 
-Regression gate: the first real Play click produces *zero answer-choice
-buttons*, successful UI-built networks illuminate the prototype layer,
+Regression gate: the first real Play click produces _zero answer-choice
+buttons_, successful UI-built networks illuminate the prototype layer,
 and the original story remains fully playable without data loss.
