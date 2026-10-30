@@ -2689,6 +2689,21 @@ function showCaseOutcome(id, choiceId) {
   cancelAutoAdvance();
   outcomePaused = false;
   const next = nextPlayableAfter(id, state.decisions);
+  // A short, optional hands-on worksite; the established journey still
+  // advances automatically for everyone who chooses not to open it.
+  const worksiteMission =
+    id === "repair-queue"
+      ? "workshop-link"
+      : id === "repair-parts"
+        ? "shared-recovery"
+        : scenario.district === "power" && caseNumber(id) === 5
+          ? "clinic-power"
+          : null;
+  const worksitePrompt = worksiteMission
+    ? '<div class="case-worksite"><strong>Want to build a solution yourself?</strong>' +
+      '<p>Place connections, test your plan, and improve it. Optional practice only; your city progress is unchanged.</p>' +
+      '<button id="case-worksite" type="button">Try hands-on building →</button></div>'
+    : "";
   const signals = option.impact
     .map(
       (value, i) =>
@@ -2724,6 +2739,7 @@ function showCaseOutcome(id, choiceId) {
       "</p><p><strong>Safe observation:</strong> " +
       scenario.bridge +
       "</p><small>Fictional signals, not verified XP or actual city funds.</small></details>" +
+      worksitePrompt +
       '<div class="auto-next"><span id="autonext-caption">✓ Your decision is kept.' +
       (next
         ? " Next: " + next.title
@@ -2739,6 +2755,8 @@ function showCaseOutcome(id, choiceId) {
       "</button></div>",
     "outcome",
   );
+  if ($("case-worksite"))
+    $("case-worksite").onclick = () => buildLab.open(worksiteMission);
   $("case-pause").onclick = () => {
     pauseJourney("Paused to read. Use Resume journey when you're ready.");
     outcomePaused = true;

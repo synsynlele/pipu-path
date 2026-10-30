@@ -22,7 +22,7 @@ function symbol(piece) {
     '"/><circle cx="20" cy="20" r="3"/></svg>'
   );
 }
-export function mountBuildLab({ read, write, beforeOpen, afterClose }) {
+export function mountBuildLab({ read, write, beforeOpen, afterClose, onTest = () => {} }) {
   const $ = (id) => document.getElementById(id);
   const dialog = $("build-lab");
   let brush = { kind: "straight", turn: 0 },
@@ -62,6 +62,11 @@ export function mountBuildLab({ read, write, beforeOpen, afterClose }) {
     $("lab-brief").textContent = mission.brief;
     $("lab-budget").textContent =
       `${evaluateLab(mission, board).cost} / ${mission.budget} pieces used`;
+    const working = LAB_MISSIONS.filter((item) =>
+      evaluateLab(item, state.boards[item.id]).success,
+    ).length;
+    $("lab-progress").textContent =
+      `${working}/${LAB_MISSIONS.length} working city prototypes`;
     $("lab-brush").textContent =
       brush.kind === "remove"
         ? "Remove: tap a piece to lift it."
@@ -143,6 +148,7 @@ export function mountBuildLab({ read, write, beforeOpen, afterClose }) {
   $("lab-test").onclick = () => {
     const state = sanitizeLab(read());
     result = evaluateLab(labMission(state.active), state.boards[state.active]);
+    onTest({ missionId: state.active, success: result.success });
     render();
   };
   $("lab-clear").onclick = () => {
@@ -173,10 +179,15 @@ export function mountBuildLab({ read, write, beforeOpen, afterClose }) {
     ).focus();
   });
   return {
-    open() {
+    open(missionId = null) {
       if (dialog.open) return;
       returnFocus = document.activeElement;
       beforeOpen();
+      if (missionId && LAB_MISSIONS.some((item) => item.id === missionId)) {
+        const current = sanitizeLab(read());
+        current.active = missionId;
+        write(current);
+      }
       result = null;
       render();
       dialog.showModal();

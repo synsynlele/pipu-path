@@ -107,6 +107,36 @@ assert(
   evaluateLab(third, resilient).success,
   "Two independent routes survive every single-link failure",
 );
+
+const clinic = LAB_MISSIONS.find((m) => m.id === "clinic-power");
+const clinicBoard = route(emptyLabBoard(), clinic, [
+  2, 1, 0, 5, 10, 15, 20, 21, 22,
+]);
+assert.equal(evaluateLab(clinic, clinicBoard).cost, 7);
+assert(evaluateLab(clinic, clinicBoard).success);
+assert(!evaluateLab(clinic, emptyLabBoard()).success);
+assert.deepEqual(
+  placeLabPiece(clinic, clinicBoard, 12, { kind: "bend", turn: 1 }),
+  clinicBoard,
+);
+
+const sharedRecovery = LAB_MISSIONS.find((m) => m.id === "shared-recovery");
+let recoveryBoard = route(emptyLabBoard(), sharedRecovery, [
+  12, 11, 10, 5, 0, 1, 2, 3, 4,
+]);
+assert.equal(evaluateLab(sharedRecovery, recoveryBoard).served, 1);
+recoveryBoard = route(recoveryBoard, sharedRecovery, [
+  12, 11, 10, 15, 20,
+]);
+assert.equal(evaluateLab(sharedRecovery, recoveryBoard).cost, 9);
+assert(evaluateLab(sharedRecovery, recoveryBoard).success);
+assert.equal(
+  evaluateLab(
+    sharedRecovery,
+    placeLabPiece(sharedRecovery, recoveryBoard, 15, null),
+  ).success,
+  false,
+);
 const safe = sanitizeLab({
   active: third.id,
   boards: { [third.id]: resilient },
@@ -148,6 +178,8 @@ const city = {
 };
 assert(savePractice(city, storage));
 assert.deepEqual(loadPractice(storage).lab.boards[third.id], resilient);
+assert.equal(loadPractice(storage).lab.boards[clinic.id].length, 25);
+assert.equal(loadPractice(storage).lab.boards[sharedRecovery.id].length, 25);
 assert.deepEqual(loadPractice(storage).decisions, {});
 assert(!stored.includes("Never save personal text"));
 assert(

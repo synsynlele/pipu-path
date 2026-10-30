@@ -37,6 +37,31 @@ export const LAB_MISSIONS = [
     budget: 12,
     resilient: true,
   },
+  {
+    id: "clinic-power",
+    title: "Get reliable power to the clinic",
+    brief:
+      "The middle connection is blocked. Route power safely to the clinic within seven pieces. This is a fictional puzzle, not electrical work.",
+    source: 2,
+    targets: [{ cell: 22, name: "Clinic" }],
+    blocked: [7, 12, 17],
+    budget: 7,
+    resilient: false,
+  },
+  {
+    id: "shared-recovery",
+    title: "Restore the clinic and market together",
+    brief:
+      "From the central supply, connect both services around blocked work areas. A junction costs two pieces. Your total budget is nine.",
+    source: 12,
+    targets: [
+      { cell: 4, name: "Clinic" },
+      { cell: 20, name: "Market" },
+    ],
+    blocked: [6, 8, 16, 18],
+    budget: 9,
+    resilient: false,
+  },
 ];
 const ports = { straight: [0, 2], bend: [0, 1], junction: [0, 1, 3] };
 const directions = [

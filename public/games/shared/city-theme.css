@@ -4090,3 +4090,31 @@ html.city-embedded .welcome-signin {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* Pilot worksite invitation: small, opt-in, and local to a case outcome. */
+#detail .case-worksite {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-left: 4px solid #16866c;
+  border-radius: 12px;
+  background: #e8f7f0;
+  color: #214b3d;
+}
+#detail .case-worksite strong { display: block; font-size: 13px; }
+#detail .case-worksite p { margin: 6px 0; font-size: 12px; line-height: 1.45; }
+#detail .case-worksite button {
+  min-height: 44px;
+  width: 100%;
+  border: 2px solid #126854;
+  border-radius: 10px;
+  background: #126854;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  font-weight: 800;
+}
+#build-lab #lab-progress {
+  margin: 8px 0 12px;
+  color: #204e77;
+  font-weight: 800;
+  font-size: 13px;
+}

@@ -152,6 +152,36 @@ assert.equal(JSON.stringify(game.state.decisions), preservedDecisions);
 // Leave revision before exercising the independent full journey regressions.
 w.document.getElementById("review-cancel").click();
 
+// Optional city worksite: the first practice result opens the same Build Lab,
+// pauses the journey, and leaves its kept decision untouched.
+game.goToJourneyCase(CITY_CASES[0].id);
+let pilotFrames = 0;
+while (game.route.length && pilotFrames++ < 1800) {
+  now += 100;
+  game.animateWorld(now);
+}
+const pilotButton = w.document.querySelector("[data-case-choice]");
+assert(pilotButton);
+pilotButton.click();
+const pilotCase = JSON.stringify(game.state.decisions);
+const pilotFeedback = [...scheduled.entries()].find(
+  ([, task]) => task.delay > 0 && task.delay < 7200,
+);
+assert(pilotFeedback, "Pilot outcome reveal is scheduled");
+scheduled.delete(pilotFeedback[0]);
+pilotFeedback[1].callback();
+assert(w.document.getElementById("case-worksite"));
+w.document.getElementById("case-worksite").click();
+assert(w.document.getElementById("build-lab").open);
+assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
+assert.equal(JSON.stringify(game.state.decisions), pilotCase);
+w.document.getElementById("lab-close").click();
+assert.equal(JSON.stringify(game.state.decisions), pilotCase);
+game.pauseJourney();
+for (const key of Object.keys(game.state.decisions))
+  delete game.state.decisions[key];
+game.render();
+
 // Execute the actual answer -> reveal -> next -> chapter -> travel callbacks.
 // Previous navigation tests jumped straight into cases and missed this boundary.
 function fireTimer(id) {
