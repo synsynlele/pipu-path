@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PowerDistrictFrame } from "@/modules/city/ui/power-district-frame";
 
 export default function HomePage() {
@@ -12,7 +13,7 @@ export default function HomePage() {
       <noscript>
         <p>
           The city needs JavaScript.{" "}
-          <a href="/real-quests">Continue my journey</a>
+          <Link href="/real-quests">Continue my journey</Link>
         </p>
       </noscript>
     </main>

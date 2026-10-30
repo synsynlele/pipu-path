@@ -22,7 +22,7 @@ describe("AppNavigation", () => {
     ).toHaveAttribute("aria-current", "page");
     expect(within(nav).getByRole("link", { name: "You" })).toHaveAttribute(
       "href",
-      "/profile",
+      "/you",
     );
   });
   it("uses a lightweight desktop nav and full-height mobile touch targets", () => {

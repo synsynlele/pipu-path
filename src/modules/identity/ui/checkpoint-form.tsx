@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useEffect, useRef } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { completeIdentityAction } from "../application/checkpoint-actions";
@@ -15,16 +15,9 @@ const bands = [
 ] as const;
 
 export function CheckpointForm() {
-  const [state, action, pending] = useActionState(
-    completeIdentityAction,
-    initialFormState,
-  );
+  const [state, setState] = useState(initialFormState);
+  const [pending, startTransition] = useTransition();
   const [ageBand, setAgeBand] = useState("");
-  const ageSelect = useRef<HTMLSelectElement>(null);
-  useEffect(() => {
-    // Reapply the controlled selection after a server-action form reset.
-    if (ageSelect.current) ageSelect.current.value = ageBand;
-  }, [state, pending, ageBand]);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [editedUsername, setEditedUsername] = useState(false);
@@ -32,7 +25,39 @@ export function CheckpointForm() {
   const adultSelected = ["18_24", "25_plus"].includes(ageBand);
   return (
     <>
-      <form action={action} className="space-y-5" aria-busy={pending}>
+      <form
+        method="post"
+        className="space-y-5"
+        aria-busy={pending}
+        onSubmit={(event) => {
+          event.preventDefault();
+          const form = event.currentTarget,
+            data = new FormData(form);
+          startTransition(async () => {
+            try {
+              const result = await completeIdentityAction(state, data);
+              setState(result);
+              if (result.status === "error")
+                form
+                  .querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
+                  .forEach((input) => {
+                    input.checked = false;
+                  });
+            } catch {
+              form
+                .querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
+                .forEach((input) => {
+                  input.checked = false;
+                });
+              setState({
+                status: "error",
+                message:
+                  "The connection was interrupted. Your details are still here. Try again.",
+              });
+            }
+          });
+        }}
+      >
         <label className="block">
           <span className="text-sm font-medium">What should we call you?</span>
           <input
@@ -88,7 +113,6 @@ export function CheckpointForm() {
           <select
             required
             name="age_band"
-            ref={ageSelect}
             value={ageBand}
             onChange={(event) => setAgeBand(event.target.value)}
             className="border-border bg-panel-raised focus:border-primary mt-2 min-h-12 w-full rounded-xl border px-3 shadow-sm transition-colors"
@@ -123,7 +147,7 @@ export function CheckpointForm() {
                 A parent or legal guardian must approve this account.
               </p>
               <p className="text-muted mt-1">
-                Under-18 accounts do not use external AI providers at launch.
+                Under-18 private answers are not sent to external AI providers.
                 After this step, hand this device to your parent or legal
                 guardian so they can approve private learning. They do not need
                 their own account.

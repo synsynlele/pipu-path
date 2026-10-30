@@ -43,7 +43,7 @@ describe("guardian authorization release gate", () => {
     expect(checkpointAction).toContain("accept_ai: z.string().optional()");
     expect(checkpointAction).toContain("accept_ai: !minor");
     expect(checkpointForm).toContain(
-      "Under-18 accounts do not use external AI providers at launch",
+      "Under-18 private answers are not sent to external AI providers",
     );
     expect(migration).toContain(
       "'ai_processing', policy_version_input, 'declined', 'identity_checkpoint'",

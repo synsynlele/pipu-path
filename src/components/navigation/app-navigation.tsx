@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const items = [
   { label: "Play", href: "/build/play", icon: "play" },
   { label: "Real Quests", href: "/real-quests", icon: "quest" },
-  { label: "You", href: "/profile", icon: "you" },
+  { label: "You", href: "/you", icon: "you" },
 ] as const;
 
 function isActive(path: string, href: string) {
@@ -21,7 +21,7 @@ function isActive(path: string, href: string) {
   }
   if (href === "/real-quests") {
     return (
-      path === "/real-quests" ||
+      path.startsWith("/real-quests") ||
       path === "/build" ||
       path.startsWith("/quests") ||
       path.startsWith("/journey") ||
@@ -31,6 +31,7 @@ function isActive(path: string, href: string) {
     );
   }
   return (
+    path.startsWith("/you") ||
     path.startsWith("/profile") ||
     path.startsWith("/discover") ||
     path.startsWith("/onboarding") ||

@@ -3,6 +3,7 @@ const allowedExactPaths = new Set([
   "/account-privacy",
   "/app",
   "/real-quests",
+  "/you",
   "/build",
   "/build/adventures",
   "/build/play/neighbourhood-garden-v1",
@@ -23,6 +24,7 @@ const allowedExactPaths = new Set([
 ]);
 
 const allowedPrefixes = [
+  "/real-quests/",
   "/onboarding/discovery/",
   "/mission/",
   "/journey/",
@@ -73,6 +75,13 @@ export function postAuthDestination(
   ].includes(new URL(safeRequestedPath, "https://pipupath.local").pathname);
   if (
     readOnlyEntry &&
+    !["/onboarding/identity", "/onboarding/guardian"].includes(requiredPath)
+  )
+    return safeRequestedPath;
+  const simpleBuild = new URL(safeRequestedPath, "https://pipupath.local")
+    .pathname;
+  if (
+    (simpleBuild === "/you" || simpleBuild.startsWith("/real-quests/")) &&
     !["/onboarding/identity", "/onboarding/guardian"].includes(requiredPath)
   )
     return safeRequestedPath;
