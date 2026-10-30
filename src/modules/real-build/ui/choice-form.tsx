@@ -113,9 +113,11 @@ export function BuildChoiceForm({
         </p>
       ) : null}
       <p className="text-xs leading-5 text-[#52647c]">
-        AI writes reusable challenges from your topic, time and an anonymous
-        difficulty level. Your name, answers, photos and reflections are not
-        sent to it.
+        AI uses your chosen topic, the improvement goal you write, your available
+        time and an anonymous difficulty level to create a practical Quest.
+        <strong> Your improvement goal is sent to AI.</strong> Do not include
+        names, contact information or other private details. Your account
+        identity, saved evidence, photos and reflections are not sent to AI.
       </p>
     </form>
   );
