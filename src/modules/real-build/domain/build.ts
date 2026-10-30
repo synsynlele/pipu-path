@@ -31,9 +31,9 @@ export type BuildDifficulty = 1 | 2 | 3 | 4 | 5;
 // Task complexity, not a score for the person. All levels remain low-cost and safe.
 export const difficultyGuides = {
   1: {
-    label: "Starter",
+    label: "First Challenge",
     design:
-      "Find one need, make a simple paper prototype and test it once with a familiar trusted person.",
+      "Investigate the specific improvement goal, think of two possible solutions, make a simple version of the better idea, test it and record one measurable result.",
   },
   2: {
     label: "Explorer",
