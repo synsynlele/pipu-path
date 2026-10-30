@@ -164,12 +164,10 @@ const pilotButton = w.document.querySelector("[data-case-choice]");
 assert(pilotButton);
 pilotButton.click();
 const pilotCase = JSON.stringify(game.state.decisions);
-const pilotFeedback = [...scheduled.entries()].find(
-  ([, task]) => task.delay > 0 && task.delay < 7200,
-);
+const pilotFeedback = scheduled.get(game.feedbackTimer);
 assert(pilotFeedback, "Pilot outcome reveal is scheduled");
-scheduled.delete(pilotFeedback[0]);
-pilotFeedback[1].callback();
+scheduled.delete(game.feedbackTimer);
+pilotFeedback.callback();
 assert(w.document.getElementById("case-worksite"));
 w.document.getElementById("case-worksite").click();
 assert(w.document.getElementById("build-lab").open);
