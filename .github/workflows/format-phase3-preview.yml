@@ -1,0 +1,40 @@
+name: Format Stage 3 Preview (temporary)
+on:
+  push:
+    branches:
+      - preview/game-world-class-phase3
+    paths:
+      - .github/workflows/format-phase3-preview.yml
+permissions:
+  contents: read
+jobs:
+  formatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format changed preview sources
+        run: |
+          npx prettier --write \
+            public/games/city/index.html \
+            public/games/city/game.mjs \
+            public/games/city/city-service-ui.mjs \
+            public/games/city/stage-three-scenarios.mjs \
+            public/games/city/practice-save.mjs \
+            public/games/shared/city-theme.css \
+            scripts/power-district/stage-three-scenarios.mjs \
+            scripts/power-district/runtime-layout.mjs \
+            scripts/power-district/city-ui.mjs \
+            docs/product/pipupath-world-class-game-roadmap.md \
+            package.json
+      - name: Print formatted sources
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync} from "node:fs";
+          for (const path of ["public/games/city/index.html","public/games/city/game.mjs","public/games/city/city-service-ui.mjs","public/games/city/stage-three-scenarios.mjs","public/games/city/practice-save.mjs","public/games/shared/city-theme.css","scripts/power-district/stage-three-scenarios.mjs","scripts/power-district/runtime-layout.mjs","scripts/power-district/city-ui.mjs","docs/product/pipupath-world-class-game-roadmap.md","package.json"])
+            console.log("STAGE3_FMT:" + JSON.stringify({path,content:readFileSync(path,"utf8")}));
+          JS
