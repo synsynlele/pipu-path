@@ -4672,3 +4672,65 @@ body:has(#service-panel:not([hidden])) #pilot-mission {
     transition: none;
   }
 }
+
+
+/* Phase 2 release gate: one reward, one outcome and compact, visible audio. */
+#pilot-mission { display: none !important; }
+#build-victory {
+  width: min(315px, calc(100vw - 20px));
+  max-height: min(34svh, 270px);
+  padding: 11px 13px;
+  border-radius: 15px;
+}
+#build-victory h2 { font-size: 18px; margin: 4px 0; }
+#build-victory .build-victory-sparks { font-size: 15px; }
+#build-victory .victory-actions { margin-top: 8px; }
+#build-victory #victory-progress { display: none; }
+#build-victory #victory-description { font-size: 12px; margin: 5px 0; }
+#build-victory #victory-service { font-size: 11px; margin: 5px 0; }
+#build-victory small { font-size: 9px; }
+#build-victory .victory-actions button[hidden] { display:none!important; }
+#city-hud .top-actions #sound,
+#city-hud .top-actions #music {
+  background:#edf8f4;
+  font-size:17px;
+  min-height:40px;
+}
+#city-hud .top-actions .icon[aria-pressed="true"] {
+  background:#d7f5de;
+  border: 1px solid #389578;
+}
+body.city-integrated #build-lab #lab-recommendation,
+body.city-integrated #build-lab #lab-progress,
+body.city-integrated #build-lab #lab-first-brief { display:none!important; }
+body.city-integrated #detail[data-mode="outcome"] {
+  max-height:min(38svh, 280px);
+  width:min(325px, calc(100vw - 20px));
+}
+body.city-integrated #detail[data-mode="outcome"] .auto-next-track,
+body.city-integrated #detail[data-mode="outcome"] .case-impact { display:none; }
+body.city-integrated #detail[data-mode="outcome"] .case-actions { display:block; }
+body.city-integrated #detail[data-mode="outcome"] .case-actions > button.primary {
+  display:block; width:100%; min-height:44px;
+}
+body.city-integrated #detail[data-mode="outcome"] .case-tools > summary {
+  cursor:pointer; font-size:11px; padding:8px 0; color:#37536b;
+}
+body.city-integrated #detail[data-mode="outcome"] .case-tools {
+  margin-top:6px;
+}
+body.city-integrated #detail[data-mode="outcome"] .case-tools button {
+  margin:4px 3px; min-height:38px;
+}
+@media(max-width:620px){
+  #build-victory {
+    left:10px;right:10px;width:auto;
+    max-height:min(33svh,260px);
+    bottom:max(10px,env(safe-area-inset-bottom));
+  }
+  #city-hud .top-actions { gap:2px; }
+  #city-hud .top-actions .icon { width:32px; }
+}
+@media (max-width:350px){
+  #city-hud .top-actions .icon { width:28px; }
+}
