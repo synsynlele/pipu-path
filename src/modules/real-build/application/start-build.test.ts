@@ -238,7 +238,7 @@ it("recovers from invalid AI output with one reviewed and safe Quest, without a 
     expect.objectContaining({
       topic: "workshop",
       source: "reviewed",
-      challenge: expect.objectContaining({ steps: expect.arrayContaining([expect.stringContaining("Test")]) }),
+      challenge: expect.objectContaining({ steps: expect.arrayContaining([expect.stringContaining("Ask a familiar person")]) }),
     }),
   ]);
   expect(inserts[1]).toEqual([
