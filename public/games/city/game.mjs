@@ -101,7 +101,7 @@ import {
   caseProgress,
   districtProgress,
 } from "./cases.mjs";
-import { loadPractice, savePractice, clearPractice } from "./practice-save.mjs";
+import { loadPractice, savePractice, clearPractice, sanitizePractice } from "./practice-save.mjs";
 import { choicesForCase, caseNumber, OUTCOME_VIEW_MS } from "./case-flow.mjs";
 import {
   CITY_DISTRICTS,
@@ -1686,6 +1686,24 @@ window.addEventListener("message", (event) => {
     return;
   if (event.data?.type === "pipupath:city:get-state") {
     reportParentState();
+    return;
+  }
+  if (event.data?.type === "pipupath:city:cloud-export") {
+    rememberJourney();
+    window.parent.postMessage(
+      { type: "pipupath:city:cloud-export", state: sanitizePractice(state) },
+      window.location.origin,
+    );
+    return;
+  }
+  if (event.data?.type === "pipupath:city:cloud-import") {
+    const safe = sanitizePractice(event.data.state);
+    const ok = Boolean(safe) && savePractice(safe);
+    window.parent.postMessage(
+      { type: "pipupath:city:cloud-imported", ok },
+      window.location.origin,
+    );
+    if (ok) window.location.reload();
     return;
   }
   if (event.data?.type !== "pipupath:city:save") return;

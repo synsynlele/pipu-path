@@ -4,11 +4,13 @@ import { PowerDistrictFrame } from "./power-district-frame";
 export function UnbuiltCityExperience({
   questTitle,
   outcome,
+  cloudEligible = false,
 }: {
   questHref?: string;
   questLabel?: string;
   questTitle?: string;
   outcome?: string;
+  cloudEligible?: boolean;
 }) {
   return (
     <main
@@ -26,6 +28,7 @@ export function UnbuiltCityExperience({
           questHref="/real-quests"
           questLabel="Real Quests →"
           initialFocus
+          cloudEligible={cloudEligible}
         />
         {questTitle ? (
           <section

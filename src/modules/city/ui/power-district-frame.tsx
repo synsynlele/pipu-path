@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CityCloudControls } from "./city-cloud-controls";
 
 /** One mounted 3D city. Focus mode never resets a player's open game. */
 export function PowerDistrictFrame({
@@ -9,11 +10,13 @@ export function PowerDistrictFrame({
   questLabel,
   initialFocus = true,
   welcome = false,
+  cloudEligible = false,
 }: {
   questHref: string;
   questLabel: string;
   initialFocus?: boolean;
   welcome?: boolean;
+  cloudEligible?: boolean;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(initialFocus);
@@ -154,7 +157,8 @@ export function PowerDistrictFrame({
         }
       >
         <strong className="text-xs sm:text-sm">Play &amp; build</strong>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {cloudEligible ? <CityCloudControls frameRef={frameRef} /> : null}
           <button
             ref={handoffButton}
             type="button"

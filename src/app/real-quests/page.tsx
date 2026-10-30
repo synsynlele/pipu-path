@@ -89,6 +89,21 @@ export default async function RealQuestsPage({
         <p>2. Save honest evidence</p>
         <p>3. Grow to harder levels</p>
       </section>
+      <section className="build-card mt-7">
+        <h2 className="text-lg font-extrabold">Build with people you trust</h2>
+        <p className="mt-2 text-sm leading-6 text-[#52647c]">
+          Eligible adult Builders and authorised school networks can use
+          the existing protected Project collaboration system. Invitations
+          require accepted connections; contributions are recorded without
+          unrestricted stranger chat. Your Quest evidence remains private.
+        </p>
+        <Link
+          href="/connect/collaborations"
+          className="mt-3 inline-block py-3 text-sm font-bold text-[#2059bd]"
+        >
+          Open protected Builder collaboration →
+        </Link>
+      </section>
       <Link href="/you" className="mt-7 inline-block py-3 text-sm font-bold">
         My saved attempts →
       </Link>
