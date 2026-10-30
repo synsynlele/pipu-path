@@ -92,10 +92,10 @@ export default async function RealQuestsPage({
       <section className="build-card mt-7">
         <h2 className="text-lg font-extrabold">Build with people you trust</h2>
         <p className="mt-2 text-sm leading-6 text-[#52647c]">
-          Eligible adult Builders and authorised school networks can use
-          the existing protected Project collaboration system. Invitations
-          require accepted connections; contributions are recorded without
-          unrestricted stranger chat. Your Quest evidence remains private.
+          Eligible adult Builders and authorised school networks can use the
+          existing protected Project collaboration system. Invitations require
+          accepted connections; contributions are recorded without unrestricted
+          stranger chat. Your Quest evidence remains private.
         </p>
         <Link
           href="/connect/collaborations"

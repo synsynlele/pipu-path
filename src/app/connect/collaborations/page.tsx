@@ -131,12 +131,13 @@ export default async function CollaborationsPage({
             Safeguarding boundary
           </p>
           <h2 className="mt-3 text-2xl font-semibold">
-            Collaboration is adult-only in this MVP.
+            Collaboration needs approved safeguarding.
           </h2>
           <p className="text-muted mt-3 max-w-3xl leading-7">
-            Younger Builders keep their complete private development pathway.
-            Cross-user collaboration needs a dedicated guardian and institution
-            safeguarding model before it can expand safely.
+            Your account must be eligible for a safeguarded Project collaboration.
+            Adults may collaborate with accepted trusted connections.
+            School Builders participate only where an authorised school network
+            permits it. There is no public stranger chat.
           </p>
           <ButtonLink href="/journey" className="mt-6">
             Continue Private Journey

@@ -158,27 +158,44 @@ export function CityCloudControls({
       <div className="absolute top-full right-0 z-40 mt-2 w-[min(320px,85vw)] space-y-3 rounded-2xl border border-[#b7c9e2] bg-white p-4 text-[#17375f] shadow-xl">
         <p className="font-bold">Private city backup</p>
         <p className="leading-5">
-          Optional on signed-in accounts. Your fictional city is not XP or real Quest evidence.
+          Optional on signed-in accounts. Your fictional city is not XP or real
+          Quest evidence.
         </p>
         <p role="status" className="leading-5">
           {busy ? "Working…" : status}
         </p>
         <div className="grid gap-2">
-          <button type="button" disabled={busy || !snapshot} onClick={backUp}
-            className="min-h-11 rounded-xl bg-[#244a8a] px-3 font-bold text-white disabled:opacity-60">
+          <button
+            type="button"
+            disabled={busy || !snapshot}
+            onClick={backUp}
+            className="min-h-11 rounded-xl bg-[#244a8a] px-3 font-bold text-white disabled:opacity-60"
+          >
             Back up this city
           </button>
-          <button type="button" disabled={busy || !snapshot?.state} onClick={restore}
-            className="min-h-11 rounded-xl border border-[#bdcce2] px-3 font-bold disabled:opacity-60">
+          <button
+            type="button"
+            disabled={busy || !snapshot?.state}
+            onClick={restore}
+            className="min-h-11 rounded-xl border border-[#bdcce2] px-3 font-bold disabled:opacity-60"
+          >
             Restore from account
           </button>
-          <button type="button" disabled={busy} onClick={() => void read()}
-            className="min-h-11 rounded-xl border border-[#bdcce2] px-3">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void read()}
+            className="min-h-11 rounded-xl border border-[#bdcce2] px-3"
+          >
             Check latest backup
           </button>
           {snapshot?.state ? (
-            <button type="button" disabled={busy} onClick={() => void remove()}
-              className="min-h-11 px-3 text-[#a12540]">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void remove()}
+              className="min-h-11 px-3 text-[#a12540]"
+            >
               Delete account backup
             </button>
           ) : null}

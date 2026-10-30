@@ -211,3 +211,31 @@ existing per-account request limits, template reuse and generation leases remain
 No new backend tables, services or automatic Vercel deployments are required.
 Physical Android testing and school-safe multi-user features are still release
 gates; no claim of completing the full Phase 4 platform scope.
+
+## Phase 4 · audio, account backup and protected collaboration release
+
+The in-city original music and effects use a verified resumed AudioContext:
+Android cannot present the switches as enabled until the audio device starts.
+Cues use audible, conservative gain and the iframe explicitly permits autoplay.
+Playback begins only on Play or user interaction; it stops on page hiding.
+System media-volume and physical Android verification remain user acceptance
+items, not guarantees established by automated tests.
+
+Signed-in builders can opt into a sanitized fictional-city backup with one
+private record per account. Device/browser-only play remains available without
+login. Server verifies identity, active-account standing and guardian
+authorization before using the service client, checks old revision before an
+update, limits payloads, and never stores profile prose, uploaded evidence,
+real-world Quest state, or XP. Backup, restore and delete each require a
+user decision. An old device cannot silently overwrite a newer server copy.
+
+The existing safeguarded Project collaboration infrastructure remains the
+only cross-user collaboration service. Real Quests links to it without
+introducing a new open chat or exposing private school profiles. School group
+eligibility is enforced by the existing backend. The city itself is
+teacher-facilitated shared play, not a multiplayer backend; this distinction
+must stay clear to testers.
+
+Single fast-forward of validated stacked Phase 1–4 source to main is preferable
+to four independent Vercel builds. The public release does not certify Android
+device volume, AI provider uptime, or verified learner outcomes.

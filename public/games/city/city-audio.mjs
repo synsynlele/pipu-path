@@ -175,7 +175,9 @@ export function createCityAudio({
       return music;
     },
     get available() {
-      return Boolean(context && (!context.state || context.state === "running"));
+      return Boolean(
+        context && (!context.state || context.state === "running"),
+      );
     },
     get error() {
       return failure;

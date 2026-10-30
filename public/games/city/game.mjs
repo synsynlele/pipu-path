@@ -101,7 +101,12 @@ import {
   caseProgress,
   districtProgress,
 } from "./cases.mjs";
-import { loadPractice, savePractice, clearPractice, sanitizePractice } from "./practice-save.mjs";
+import {
+  loadPractice,
+  savePractice,
+  clearPractice,
+  sanitizePractice,
+} from "./practice-save.mjs";
 import { choicesForCase, caseNumber, OUTCOME_VIEW_MS } from "./case-flow.mjs";
 import {
   CITY_DISTRICTS,
