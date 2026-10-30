@@ -2,7 +2,14 @@ document.documentElement.classList.toggle(
   "city-embedded",
   new URLSearchParams(window.location.search).get("embedded") === "1",
 );
-import { LAB_MISSIONS, evaluateLab, sanitizeLab } from "./build-lab.mjs";
+import { LAB_MISSIONS, labMission, evaluateLab, sanitizeLab } from "./build-lab.mjs";
+import {
+  CITY_BUILD_MILESTONES,
+  formatForCase,
+  milestoneForMission,
+  completedMilestones,
+} from "./build-milestones.mjs";
+import { createMilestoneScene } from "./build-milestone-scene.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
@@ -2650,6 +2657,21 @@ function showChapterTransition() {
 function proceedAfterCase(id) {
   cancelAutoAdvance();
   $("detail").hidden = true;
+  // Only implementation challenges become puzzles; ethical and resource
+  // decisions stay questions. Existing story-only and saved journeys do not
+  // unexpectedly change format.
+  const format = formatForCase(id);
+  if (
+    mixedJourney &&
+    format.missionId &&
+    !state.lab.tested.includes(format.missionId) &&
+    !promptedBuildCases.has(id)
+  ) {
+    promptedBuildCases.add(id);
+    pendingBuildCase = id;
+    buildLab.open(format.missionId);
+    return;
+  }
   const next = nextPlayableAfter(id, state.decisions);
   if (journey.status === "paused") journey.status = "running";
   if (isChapterTransition(id) && foundationComplete(state.decisions)) {
@@ -2696,14 +2718,7 @@ function showCaseOutcome(id, choiceId) {
   const next = nextPlayableAfter(id, state.decisions);
   // A short, optional hands-on worksite; the established journey still
   // advances automatically for everyone who chooses not to open it.
-  const worksiteMission =
-    id === "repair-queue"
-      ? "workshop-link"
-      : id === "repair-parts"
-        ? "shared-recovery"
-        : scenario.district === "power" && caseNumber(id) === 5
-          ? "clinic-power"
-          : null;
+  const worksiteMission = formatForCase(id).missionId;
   const worksitePrompt = worksiteMission
     ? '<div class="case-worksite"><strong>Want to build a solution yourself?</strong>' +
       "<p>Place connections, test your plan, and improve it. Optional practice only; your city progress is unchanged.</p>" +
@@ -2749,7 +2764,10 @@ function showCaseOutcome(id, choiceId) {
       (next
         ? " Next: " + next.title
         : " All " + CITY_CASES.length + " problems reached.") +
-      " The game continues automatically.</span>" +
+      (worksiteMission && mixedJourney && !state.lab.tested.includes(worksiteMission)
+        ? " Your next challenge is to build the solution."
+        : " The game continues automatically.") +
+      "</span>" +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
       '<div class="case-actions">' +
       '<button class="secondary" id="case-pause">Pause to read</button>' +
@@ -3625,49 +3643,99 @@ $("city-map").onclick = () => {
 };
 // A visual *prototype* of the supply network. This intentionally does not
 // affect the authoritative 36 choices, city services, budget or Quest evidence.
-const workshopBlueprint = new T.Group();
-const blueprintCurve = new T.CatmullRomCurve3([
-  new T.Vector3(3.4, 1.65, -5.6),
-  new T.Vector3(1.8, 1.65, -5.6),
-  new T.Vector3(0.3, 1.65, -3.7),
-  new T.Vector3(-2.6, 1.65, -2.8),
-]);
-workshopBlueprint.add(
-  new T.Mesh(
-    new T.TubeGeometry(blueprintCurve, 24, 0.085, 6, false),
-    new T.MeshBasicMaterial({ color: 0x25e8ae }),
-  ),
-);
-for (const point of [blueprintCurve.getPoint(0), blueprintCurve.getPoint(1)]) {
-  const beacon = new T.Mesh(
-    new T.SphereGeometry(0.25, 10, 8),
-    new T.MeshBasicMaterial({ color: 0xffd973 }),
-  );
-  beacon.position.copy(point);
-  workshopBlueprint.add(beacon);
+// Five physically constructed city milestones, each tied to a real test.
+// They are visually built *in the city* without inventing simulated money or XP.
+const buildMilestoneScene = createMilestoneScene({ T, scene, box, cyl });
+buildMilestoneScene.sync(state.lab);
+const workshopBlueprint = buildMilestoneScene.buildings.get("workshop-link").group;
+let mixedJourney = false;
+let pendingBuildCase = null;
+const promptedBuildCases = new Set();
+let victoryCamera = null;
+let lastVictoryMission = null;
+function hideBuildVictory() {
+  $("build-victory").hidden = true;
+  if (victoryCamera) {
+    ({ yaw, pitch, distance, activeFeedback } = victoryCamera);
+    victoryCamera = null;
+  }
 }
-// The glowing blueprint is informational scenery, not a new wall or
-// collision object. Keep the original city pathfinder completely unchanged.
-workshopBlueprint.traverse((object) => {
-  object.userData.ignoreNavigation = true;
-});
-workshopBlueprint.visible = false;
-scene.add(workshopBlueprint);
+function showBuildVictory(missionId, { retry = false } = {}) {
+  const mission = milestoneForMission(missionId);
+  if (!mission) return;
+  hideBuildVictory();
+  lastVictoryMission = missionId;
+  if (!retry) {
+    victoryCamera = { yaw, pitch, distance, activeFeedback };
+    activeFeedback = { x: mission.x, z: mission.z };
+    yaw = 0.46;
+    pitch = 0.75;
+    distance = 22;
+  }
+  const completed = completedMilestones(state.lab, evaluateLab, labMission);
+  $("victory-kicker").textContent = retry
+    ? "EVERY BUILDER REVISES"
+    : "✦ YOU BUILT IT! ✦";
+  $("victory-title").textContent = retry
+    ? "Your city still needs this connection"
+    : mission.title + " is built!";
+  $("victory-description").textContent = retry
+    ? "Your design is kept. Try another layout, or return to decisions and build this later."
+    : mission.result + " Look at the new 3D station built in your city!";
+  $("victory-progress").textContent =
+    completed.length + " / " + CITY_BUILD_MILESTONES.length +
+    " city structures constructed by solving puzzles.";
+  $("victory-continue").textContent = pendingBuildCase
+    ? "Continue to the next decision →"
+    : "Next: solve a city decision →";
+  $("victory-build").textContent = retry
+    ? "Improve this design →"
+    : "Build another city improvement →";
+  $("build-victory").dataset.retry = retry ? "true" : "false";
+  $("build-victory").hidden = false;
+  if (!retry) playTone(784);
+}
+$("victory-continue").onclick = () => {
+  const completedCase = pendingBuildCase;
+  pendingBuildCase = null;
+  hideBuildVictory();
+  if (completedCase) {
+    proceedAfterCase(completedCase);
+  } else if (firstBuildMode) {
+    mixedJourney = true;
+    startCity("story");
+  } else {
+    resumeJourney();
+  }
+};
+$("victory-build").onclick = () => {
+  const retry = $("build-victory").dataset.retry === "true";
+  const next =
+    retry && lastVictoryMission
+      ? lastVictoryMission
+      : CITY_BUILD_MILESTONES.find(
+          (m) => !completedMilestones(state.lab, evaluateLab, labMission)
+            .some((item) => item.id === m.id),
+        )?.id ?? lastVictoryMission ?? "workshop-link";
+  hideBuildVictory();
+  buildLab.open(next);
+};
 let firstBuildMode = false;
 let workshopTested = false;
 function renderPilotMission() {
   const panel = $("pilot-mission");
-  panel.hidden = !firstBuildMode || !$("intro").hidden;
+  panel.hidden = !firstBuildMode || !$("intro").hidden ||
+    !$("build-victory").hidden;
   if (panel.hidden) return;
   const next = LAB_MISSIONS.find(
-    (mission) => !evaluateLab(mission, state.lab.boards[mission.id]).success,
+    (mission) => !state.lab.tested.includes(mission.id),
   );
   $("pilot-title").textContent = workshopTested
-    ? "Your workshop blueprint works!"
+    ? "You built Ama's supply station!"
     : "Ama's workshop needs a working supply";
   $("pilot-message").textContent = workshopTested
-    ? "Look at the glowing prototype connection in your 3D city. You built and tested this plan. Want a harder problem?"
-    : "Connect supply to the workshop around the tree, test the design, then improve it until the supply reaches the worksite.";
+    ? "You can see your new supply station in the city. Continue to a decision or build another useful structure."
+    : "Connect supply to the workshop around the tree, then test and improve it until you can build the supply station.";
   $("pilot-build").textContent = workshopTested
     ? next
       ? "Next build: " + next.title + " →"
@@ -3678,32 +3746,34 @@ $("pilot-build").onclick = () => {
   const next =
     workshopTested &&
     LAB_MISSIONS.find(
-      (mission) => !evaluateLab(mission, state.lab.boards[mission.id]).success,
+      (mission) => !state.lab.tested.includes(mission.id),
     );
   buildLab.open(next?.id ?? "workshop-link");
 };
-$("pilot-story").onclick = () => startCity("story");
+$("pilot-story").onclick = () => {
+  // Explicit original-story route stays available for returning learners.
+  mixedJourney = false;
+  startCity("story");
+};
 const buildLab = mountBuildLab({
   read: () => state.lab,
   onTest: ({ missionId, success }) => {
     playtest.note(success ? "prototype_pass" : "prototype_retry");
-    if (missionId === "workshop-link") {
-      workshopTested = success;
-      workshopBlueprint.visible = success;
-      if (success) playTone(660);
-    }
+    buildMilestoneScene.sync(state.lab);
+    if (missionId === "workshop-link") workshopTested = success;
     renderPilotMission();
   },
+  onReveal: ({ missionId }) => {
+    if (state.lab.tested.includes(missionId)) showBuildVictory(missionId);
+  },
   write: (lab) => {
-    const before = JSON.stringify(state.lab.boards["workshop-link"]);
     state.lab = lab;
-    if (JSON.stringify(lab.boards["workshop-link"]) !== before) {
-      workshopTested = false;
-      workshopBlueprint.visible = false;
-    }
+    workshopTested = state.lab.tested.includes("workshop-link");
+    buildMilestoneScene.sync(state.lab);
     persistPractice();
   },
   beforeOpen: () => {
+    hideBuildVictory();
     if (reviewCaseId) finishDecisionReview({ resume: false });
     if (builtCityView) closeBuiltCityView();
     if (journey.status === "running")
@@ -3732,6 +3802,12 @@ const buildLab = mountBuildLab({
     keys.clear();
     refreshJourneyControls();
     renderPilotMission();
+    if (pendingBuildCase && !$("build-victory").hidden === false) {
+      const milestone = formatForCase(pendingBuildCase);
+      if (milestone.missionId && !state.lab.tested.includes(milestone.missionId)) {
+        showBuildVictory(milestone.missionId, { retry: true });
+      }
+    }
   },
 });
 $("build-lab-toggle").onclick = () => buildLab.open();
@@ -3743,6 +3819,7 @@ $("resume-city").hidden =
 function startCity(mode = "build") {
   if (!$("intro").hidden) playtest.note("start");
   firstBuildMode = mode === "build";
+  if (firstBuildMode) mixedJourney = true;
   $("intro").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
@@ -3756,6 +3833,7 @@ function startCity(mode = "build") {
   $("mission").hidden = firstBuildMode;
   $("mobile-move").hidden = true;
   $("pilot-mission").hidden = !firstBuildMode;
+  hideBuildVictory();
   render();
   if (firstBuildMode) {
     // The main Play button opens hands-on building before any question.
