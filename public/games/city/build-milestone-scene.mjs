@@ -57,6 +57,13 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
       if (!ready) build.group.scale.setScalar(1);
     }
   }
+  function reveal(id, at = performance.now()) {
+    const build = buildings.get(id);
+    if (!build?.ready) return false;
+    build.revealedAt = at;
+    build.group.scale.setScalar(0.2);
+    return true;
+  }
   function animate(at, reducedMotion) {
     for (const build of buildings.values()) {
       if (!build.ready) continue;
@@ -66,5 +73,5 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
       build.group.scale.setScalar(0.2 + 0.8 * (1 - Math.pow(1 - t, 3)));
     }
   }
-  return { sync, animate, buildings };
+  return { sync, reveal, animate, buildings };
 }

@@ -73,6 +73,7 @@ assert(
 lab = sanitizeLab({ ...lab, tested: ["workshop-link"] });
 milestones.sync(lab, 200);
 assert(milestones.buildings.get("workshop-link").group.visible);
+assert(milestones.reveal("workshop-link", 200));
 milestones.animate(200, false);
 assert(milestones.buildings.get("workshop-link").group.scale.x < 1);
 milestones.animate(2000, false);

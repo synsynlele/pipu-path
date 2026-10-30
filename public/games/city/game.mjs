@@ -3736,7 +3736,7 @@ $("victory-build").onclick = () => {
   buildLab.open(next);
 };
 let firstBuildMode = false;
-let workshopTested = state.lab.tested.includes("workshop-link");
+let workshopTested = workshopBlueprint.visible;
 function renderPilotMission() {
   const panel = $("pilot-mission");
   panel.hidden =
@@ -3777,12 +3777,15 @@ const buildLab = mountBuildLab({
     renderPilotMission();
   },
   onReveal: ({ missionId }) => {
-    if (state.lab.tested.includes(missionId)) showBuildVictory(missionId);
+    if (state.lab.tested.includes(missionId)) {
+      buildMilestoneScene.reveal(missionId);
+      showBuildVictory(missionId);
+    }
   },
   write: (lab) => {
     state.lab = lab;
-    workshopTested = state.lab.tested.includes("workshop-link");
     buildMilestoneScene.sync(state.lab);
+    workshopTested = workshopBlueprint.visible;
     persistPractice();
   },
   beforeOpen: () => {
