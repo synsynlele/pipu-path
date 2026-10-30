@@ -279,7 +279,22 @@ assert.equal(w.document.getElementById("resilience-panel").hidden, false);
 for (let round = 0; round < 3; round++) {
   const button = w.document.querySelector("#resilience-choices button");
   assert(button);
+  const beforePlan = JSON.stringify(game.state.resilience);
   button.click();
+  assert.equal(
+    JSON.stringify(game.state.resilience),
+    beforePlan,
+    "Testing a plan must not advance or overwrite saved Chapter 4 progress",
+  );
+  assert.equal(w.document.getElementById("resilience-preview").hidden, false);
+  assert.equal(w.document.getElementById("resilience-commit").hidden, false);
+  if (round === 0) {
+    const another = w.document.querySelectorAll("#resilience-choices button")[1];
+    another.click();
+    assert.equal(JSON.stringify(game.state.resilience), beforePlan);
+    assert.equal(w.document.querySelectorAll("[aria-pressed=true]").length >= 1, true);
+  }
+  w.document.getElementById("resilience-commit").click();
   assert.equal(game.state.resilience.choices.length, round + 1);
   // A closed/reopened panel resumes; it never seeds another city or chapter.
   w.document.getElementById("resilience-close").click();
