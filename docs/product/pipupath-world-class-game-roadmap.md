@@ -65,3 +65,25 @@ One game and one evolving simulation, not one app per level or district.
 No mandatory signup just to play; no forced tutorial; no monetization gimmicks.
 Founder-independent engine: approved scenarios, automatic validation, anonymized
 pilot feedback, teacher review, release quality gates and rollback.
+
+
+## Corrective first-entry experience (30 October 2026)
+
+User validation identified a fundamental implementation error: the Play
+button still entered the 36 multiple-choice campaign. Optional Build Lab
+links appearing after a decision cannot satisfy "build before answering".
+
+The first Play action now starts inside the existing 3D city with an
+immediately editable workshop-supply network puzzle. Learners place,
+rotate, test, revise and inspect a visibly illuminated **prototype**
+connection in their city. The label must clearly distinguish a
+successful prototype from an actual change to city services, XP,
+progress or real-world evidence. A compact post-test control allows a
+harder hands-on challenge; the legacy authored story opens only by an
+explicit choice. Returning players with local saved practice can resume
+the original journey directly. The old 36-choice, seven-day enterprise,
+Chapter 4 crises and saved-game structure remain unchanged.
+
+Regression gate: the first real Play click produces *zero answer-choice
+buttons*, successful UI-built networks illuminate the prototype layer,
+and the original story remains fully playable without data loss.

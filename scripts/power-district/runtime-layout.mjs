@@ -65,7 +65,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -76,6 +76,49 @@ const { CITY_CASES } = await import(
   pathToFileURL(root + "public/games/city/cases.mjs")
 );
 let now = performance.now();
+// Actual first tap: a hands-on network, never a question panel.
+const freshDecisions = JSON.stringify(game.state.decisions);
+assert.equal(w.document.getElementById("intro").hidden, false);
+w.document.getElementById("start").click();
+assert.equal(w.document.getElementById("intro").hidden, true);
+assert.equal(w.document.getElementById("build-lab").open, true);
+assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
+assert.match(w.document.getElementById("lab-title").textContent, /first build/i);
+assert.equal(w.document.querySelectorAll("[data-case-choice]").length, 0);
+assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
+assert.equal(game.workshopBlueprint.visible, false);
+assert.equal(game.firstBuildMode, true);
+// Solve an actual playable supply route using its touch-friendly controls.
+const pilotCell = (row, col) =>
+  w.document.querySelector('[aria-label^="Row ' + row + ', column ' + col + ':"]');
+w.document.querySelector('[data-lab-tool="bend"]').click();
+w.document.getElementById("lab-rotate").click();
+pilotCell(2, 1).click();
+w.document.querySelector('[data-lab-tool="straight"]').click();
+for (const col of [2, 3, 4]) pilotCell(2, col).click();
+w.document.querySelector('[data-lab-tool="bend"]').click();
+w.document.getElementById("lab-rotate").click();
+pilotCell(2, 5).click();
+w.document.getElementById("lab-test").click();
+assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
+assert.equal(w.document.getElementById("lab-see-city").hidden, false);
+assert.equal(game.workshopBlueprint.visible, true);
+w.document.getElementById("lab-see-city").click();
+assert.equal(w.document.getElementById("build-lab").open, false);
+assert.equal(w.document.getElementById("pilot-mission").hidden, false);
+assert.match(w.document.getElementById("pilot-title").textContent, /works!/);
+assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
+assert.equal(w.document.querySelectorAll("[data-case-choice]").length, 0);
+// The original authored chapters remain available without losing work.
+w.document.getElementById("pilot-story").click();
+assert.equal(game.firstBuildMode, false);
+assert.equal(w.document.getElementById("pilot-mission").hidden, true);
+assert.equal(game.state.lab.boards["workshop-link"].filter(Boolean).length, 5);
+game.pauseJourney();
+console.log(
+  "PASS: first tap builds without questions, tested network glows, and story resumes without resetting.",
+);
+
 w.document.getElementById("intro").hidden = true;
 for (let option = 0; option < 3; option++) {
   for (const c of CITY_CASES) game.state.decisions[c.id] = c.options[option].id;
