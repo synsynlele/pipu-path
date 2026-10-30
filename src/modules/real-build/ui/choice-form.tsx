@@ -75,7 +75,9 @@ export function BuildChoiceForm({
         </div>
       </fieldset>
       <p className="rounded-xl border border-[#c4d7f5] bg-[#eef5ff] p-3 text-xs leading-5 text-[#264e89]">
-        <strong>Quests grow with you:</strong> Level 1 starts with a simple test. Later levels ask you to compare ideas, measure results and solve connected problems. Each new topic starts gently.
+        <strong>Quests grow with you:</strong> Level 1 starts with a simple
+        test. Later levels ask you to compare ideas, measure results and solve
+        connected problems. Each new topic starts gently.
       </p>
       <button className="build-primary w-full" disabled={pending}>
         {pending ? "Preparing your challenge…" : "Get my Quest →"}
@@ -93,7 +95,8 @@ export function BuildChoiceForm({
       ) : null}
       <p className="text-xs leading-5 text-[#52647c]">
         AI writes reusable challenges from your topic, time and an anonymous
-        difficulty level. Your name, answers, photos and reflections are not sent to it.
+        difficulty level. Your name, answers, photos and reflections are not
+        sent to it.
       </p>
     </form>
   );

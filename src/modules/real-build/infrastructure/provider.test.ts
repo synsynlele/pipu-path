@@ -47,8 +47,11 @@ it("authors a bounded public template without forwarding private properties", as
 it("passes only public level instructions to AI at higher difficulty", async () => {
   const challenge = {
     title: "Compare two safe paper solutions",
-    outcome: "Compare simple proposed routes on paper using a measurable fictional example.",
-    steps: Array(5).fill("Test two safe paper scenarios and compare the results."),
+    outcome:
+      "Compare simple proposed routes on paper using a measurable fictional example.",
+    steps: Array(5).fill(
+      "Test two safe paper scenarios and compare the results.",
+    ),
     materials: ["Paper"],
     evidence: "Write the comparison and describe a useful revision.",
     safety: "Use fictional scenarios, no names or private details.",
@@ -59,6 +62,13 @@ it("passes only public level instructions to AI at higher difficulty", async () 
   expect(data.difficulty).toBe(5);
   expect(data.challengeDesign).toContain("connected system");
   expect(Object.keys(data).sort()).toEqual(
-    ["avoidTitles", "challengeDesign", "difficulty", "minutes", "safeStartingIdea", "topic"].sort(),
+    [
+      "avoidTitles",
+      "challengeDesign",
+      "difficulty",
+      "minutes",
+      "safeStartingIdea",
+      "topic",
+    ].sort(),
   );
 });

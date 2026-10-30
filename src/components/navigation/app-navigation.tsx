@@ -71,7 +71,7 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 className={
                   mobile
                     ? `flex min-h-[4.5rem] w-full touch-manipulation flex-col items-center justify-center gap-1 rounded-xl px-1 text-xs font-semibold ${active ? "text-[#2059bd]" : "text-[#61718c]"}`
-                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold ${active ? "bg-[#e8f1ff] text-[#2059bd]" : "hover:bg-[#f0f5ff] text-[#61718c]"}`
+                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold ${active ? "bg-[#e8f1ff] text-[#2059bd]" : "text-[#61718c] hover:bg-[#f0f5ff]"}`
                 }
               >
                 <span
@@ -93,4 +93,3 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
     </nav>
   );
 }
-

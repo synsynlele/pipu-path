@@ -18,23 +18,28 @@ export type BuildDifficulty = 1 | 2 | 3 | 4 | 5;
 export const difficultyGuides = {
   1: {
     label: "Starter",
-    design: "Find one need, make a simple paper prototype and test it once with a familiar trusted person.",
+    design:
+      "Find one need, make a simple paper prototype and test it once with a familiar trusted person.",
   },
   2: {
     label: "Explorer",
-    design: "Create two possible solutions and compare them in one small test. Explain why one is better.",
+    design:
+      "Create two possible solutions and compare them in one small test. Explain why one is better.",
   },
   3: {
     label: "Builder",
-    design: "Work within two constraints such as time and materials. Try a prototype twice, measure a simple result and revise.",
+    design:
+      "Work within two constraints such as time and materials. Try a prototype twice, measure a simple result and revise.",
   },
   4: {
     label: "Problem Solver",
-    design: "Consider two different needs or stakeholders, show a trade-off, test alternatives and record a measurable comparison.",
+    design:
+      "Consider two different needs or stakeholders, show a trade-off, test alternatives and record a measurable comparison.",
   },
   5: {
     label: "Systems Thinker",
-    design: "Model a small connected system using paper or safe digital tools. Compare scenarios, predict a trade-off, test one assumption and iterate using evidence.",
+    design:
+      "Model a small connected system using paper or safe digital tools. Compare scenarios, predict a trade-off, test one assumption and iterate using evidence.",
   },
 } as const satisfies Record<BuildDifficulty, { label: string; design: string }>;
 

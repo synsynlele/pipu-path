@@ -30,9 +30,12 @@ export default async function RealQuestsPage({
       {home.current ? (
         <section className="build-card mt-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-bold text-[#2059bd]">YOUR CURRENT QUEST</p>
+            <p className="text-xs font-bold text-[#2059bd]">
+              YOUR CURRENT QUEST
+            </p>
             <span className="rounded-full border border-[#c8dbf7] bg-[#eef5ff] px-3 py-1 text-xs font-bold text-[#16488f]">
-              Level {home.current.difficulty}/5 · {difficultyLabel(home.current.difficulty)}
+              Level {home.current.difficulty}/5 ·{" "}
+              {difficultyLabel(home.current.difficulty)}
             </span>
           </div>
           <h2 className="mt-3 text-xl font-bold">

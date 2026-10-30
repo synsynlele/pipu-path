@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PipuNavIcon, type PipuNavIconName } from "@/components/navigation/pipu-nav-icon";
+import {
+  PipuNavIcon,
+  type PipuNavIconName,
+} from "@/components/navigation/pipu-nav-icon";
 
 const tabs: { href: string; name: string; icon: PipuNavIconName }[] = [
   { href: "/build/play", name: "Play", icon: "play" },
@@ -15,11 +18,12 @@ export function BuildNavigation() {
   return (
     <nav
       aria-label="PipuPath"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-[#dbe5f6] bg-white/95 shadow-[0_-9px_30px_rgba(20,49,92,0.07)] backdrop-blur-xl pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-[#dbe5f6] bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-9px_30px_rgba(20,49,92,0.07)] backdrop-blur-xl"
     >
       <ul className="mx-auto grid max-w-2xl grid-cols-3 gap-2 px-3 pt-2">
         {tabs.map((tab) => {
-          const active = pathname === tab.href || pathname.startsWith(tab.href + "/");
+          const active =
+            pathname === tab.href || pathname.startsWith(tab.href + "/");
           return (
             <li key={tab.href} className="min-w-0">
               <Link
@@ -35,7 +39,10 @@ export function BuildNavigation() {
                 </span>
                 <span className="truncate">{tab.name}</span>
                 {active ? (
-                  <span aria-hidden="true" className="absolute bottom-0 h-1 w-8 rounded-t-full bg-[#e5a73b]" />
+                  <span
+                    aria-hidden="true"
+                    className="absolute bottom-0 h-1 w-8 rounded-t-full bg-[#e5a73b]"
+                  />
                 ) : null}
               </Link>
             </li>

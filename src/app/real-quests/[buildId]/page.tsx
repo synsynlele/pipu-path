@@ -27,14 +27,16 @@ export default async function RealBuildPage({
         ← Real Quests
       </Link>
       <p className="mt-3 text-xs font-bold tracking-widest text-[#1d4ed8] uppercase">
-        Level {build.difficulty}/5 · {difficultyLabel(build.difficulty)} · {build.minutes} minutes
+        Level {build.difficulty}/5 · {difficultyLabel(build.difficulty)} ·{" "}
+        {build.minutes} minutes
       </p>
       <h1 className="mt-3 text-3xl font-extrabold">{build.challenge.title}</h1>
       <p className="mt-3 text-sm leading-6 text-[#52647c]">
         {build.challenge.outcome}
       </p>
       <p className="mt-3 text-xs font-semibold text-[#536883]">
-        Higher levels add comparison, testing and problem-solving—not unsafe tools or expenses.
+        Higher levels add comparison, testing and problem-solving—not unsafe
+        tools or expenses.
       </p>
       {improvement ? (
         <section className="build-card mt-5">

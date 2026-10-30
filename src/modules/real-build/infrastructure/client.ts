@@ -1,7 +1,11 @@
 import "server-only";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
-import type { BuildChallenge, BuildDraft, BuildDifficulty } from "../domain/build";
+import type {
+  BuildChallenge,
+  BuildDraft,
+  BuildDifficulty,
+} from "../domain/build";
 type Row = {
   id: string;
   user_id: string;

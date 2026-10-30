@@ -34,7 +34,8 @@ export default async function MyWorkPage({
               className="build-card block"
             >
               <span className="text-xs font-semibold text-[#52647c]">
-                Level {a.difficulty}/5 · {difficultyLabel(a.difficulty)} · {a.status === "active"
+                Level {a.difficulty}/5 · {difficultyLabel(a.difficulty)} ·{" "}
+                {a.status === "active"
                   ? "In progress"
                   : a.status === "recorded"
                     ? "Attempt recorded"

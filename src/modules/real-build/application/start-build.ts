@@ -2,7 +2,12 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { buildServiceClient } from "../infrastructure/client";
 import { generateBuildTemplate } from "../infrastructure/provider";
-import { difficultySchema, validateChallenge, type BuildChoice, type BuildDifficulty } from "../domain/build";
+import {
+  difficultySchema,
+  validateChallenge,
+  type BuildChoice,
+  type BuildDifficulty,
+} from "../domain/build";
 
 export async function startBuildForUser(userId: string, choice: BuildChoice) {
   const service = buildServiceClient();
