@@ -7,6 +7,12 @@ import {
   startServiceDrill,
 } from "./city-service-system.mjs";
 import { skillRecommendation } from "./build-progression.mjs";
+import {
+  STAGE_THREE_CHOICES,
+  stageThreeCase,
+  stageThreeAvailable,
+  sanitizeStageThree,
+} from "./stage-three-scenarios.mjs";
 
 export function mountCityServiceDesk({
   read,
@@ -15,6 +21,8 @@ export function mountCityServiceDesk({
   onClose,
   onFocus,
   onBuild,
+  readStageThree = () => ({ decisions: {}, lab: null, stage: null }),
+  onStageThreeStart = () => ({ status: "locked" }),
 }) {
   const $ = (id) => document.getElementById(id);
   let selected = CITY_BUILD_MILESTONES[0].id;
@@ -74,6 +82,76 @@ export function mountCityServiceDesk({
         entry.demand;
       list.append(line);
     }
+    // Stage 3 lives in this same compact panel; it cannot create a new
+    // challenge until the entire decision + certified-build journey is done.
+    const journey = readStageThree();
+    const unlocked = stageThreeAvailable(journey.decisions, journey.lab);
+    const studio = $("stage-three");
+    studio.hidden = !unlocked;
+    if (unlocked) {
+      const stage = sanitizeStageThree(journey.stage, journey.lab);
+      const story = stageThreeCase(stage.round);
+      $("stage-three-counter").textContent =
+        "Challenge " + story.number + " · Cycle " + story.cycle;
+      $("stage-three-title").textContent = story.title;
+      $("stage-three-problem").textContent = story.situation;
+      $("stage-three-question").textContent = stage.active
+        ? "Your plan is chosen. Now restore the actual network."
+        : story.question;
+      const choices = $("stage-three-choices");
+      choices.replaceChildren();
+      const repair = $("stage-three-repair");
+      const notice = $("stage-three-status");
+      if (stage.active) {
+        const choice = STAGE_THREE_CHOICES.find(
+          (item) => item.id === stage.active.choiceId,
+        );
+        const location = serviceFor(journey.lab, story.missionId);
+        const exposure =
+          Math.max(0, location.unmet) * choice.assumedPeriods;
+        notice.textContent =
+          choice.response + " " +
+          location.unmet + " of " + location.demand +
+          " fictional local requests are currently unmet. " +
+          "Illustrative response exposure: " + exposure +
+          " unmet request-periods. The orange connector must be repaired and tested.";
+        repair.hidden = false;
+        repair.textContent = "Repair and test this same challenge →";
+      } else {
+        notice.textContent =
+          "Choose a response. Then the game will identify a real weak " +
+          "connection in your built service for you to diagnose and repair.";
+        repair.hidden = true;
+        for (const choice of STAGE_THREE_CHOICES) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = choice.label;
+          button.setAttribute("aria-label", choice.label);
+          button.onclick = () => {
+            const outcome = onStageThreeStart(choice.id);
+            if (outcome.status === "repair-required") {
+              selected = outcome.scenario.missionId;
+              statusMessage =
+                "You chose a response. The " + outcome.scenario.title +
+                " disruption is now visible in your city.";
+              onFocus(selected);
+            } else if (outcome.status === "already-resilient") {
+              statusMessage =
+                "Your tested network survived the planned break. " +
+                "This is a verified resilient design.";
+            } else if (outcome.status === "repair-existing") {
+              statusMessage =
+                "Finish the unfinished district repair before this challenge can begin.";
+            } else {
+              statusMessage =
+                "Continue the main city journey before starting new challenges.";
+            }
+            render();
+          };
+          choices.append(button);
+        }
+      }
+    }
   }
   function close() {
     const wasVisible = !panel.hidden;
@@ -94,6 +172,14 @@ export function mountCityServiceDesk({
   };
   $("service-build").onclick = () => {
     const id = selected;
+    close();
+    onBuild(id);
+  };
+  $("stage-three-repair").onclick = () => {
+    const journey = readStageThree();
+    const stage = sanitizeStageThree(journey.stage, journey.lab);
+    if (!stage.active) return;
+    const id = stageThreeCase(stage.round).missionId;
     close();
     onBuild(id);
   };
