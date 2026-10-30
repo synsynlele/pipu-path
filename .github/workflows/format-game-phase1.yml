@@ -1,0 +1,37 @@
+name: Format world-class game Phase 1 (temporary)
+on:
+  push:
+    branches:
+      - preview/game-world-class-phase1
+    paths:
+      - .github/workflows/format-game-phase1.yml
+permissions:
+  contents: read
+jobs:
+  formatter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format only affected files
+        run: |
+          npx prettier --write \
+            docs/product/pipupath-world-class-game-roadmap.md \
+            public/games/city/build-lab-ui.mjs \
+            public/games/city/game.mjs \
+            public/games/city/index.html \
+            public/games/shared/city-theme.css \
+            scripts/power-district/build-lab.mjs \
+            scripts/power-district/playtest-observation.mjs
+      - name: Display formatted files for reviewer
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync} from "node:fs";
+          const files = ["docs/product/pipupath-world-class-game-roadmap.md","public/games/city/build-lab-ui.mjs","public/games/city/game.mjs","public/games/city/index.html","public/games/shared/city-theme.css","scripts/power-district/build-lab.mjs","scripts/power-district/playtest-observation.mjs"];
+          for (const path of files)
+            console.log("PHASE1_FMT:" + JSON.stringify({path,content:readFileSync(path,"utf8")}));
+          JS
