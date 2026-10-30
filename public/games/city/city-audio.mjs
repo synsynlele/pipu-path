@@ -1,6 +1,8 @@
 // Original, minimal Web Audio cues and ambient motif. Nothing plays until
 // a real user tap turns sound or music on. No audio files or downloads.
-const MELODY = Object.freeze([196, 246.94, 293.66, 246.94, 220, 261.63, 329.63, 261.63]);
+const MELODY = Object.freeze([
+  196, 246.94, 293.66, 246.94, 220, 261.63, 329.63, 261.63,
+]);
 const CUES = Object.freeze({
   decision: [392, 523.25],
   built: [392, 523.25, 659.25, 783.99],
@@ -18,11 +20,13 @@ export function createCityAudio({
   let music = false;
   let tick = null;
   let position = 0;
-  const ctor = contextFactory ?? (() => {
-    const Ctor = window.AudioContext || window.webkitAudioContext;
-    if (!Ctor) return null;
-    return new Ctor();
-  });
+  const ctor =
+    contextFactory ??
+    (() => {
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return null;
+      return new Ctor();
+    });
   function ready() {
     try {
       context ??= ctor();
@@ -33,7 +37,13 @@ export function createCityAudio({
       return false;
     }
   }
-  function note(freq, offset = 0, duration = 0.17, volume = 0.018, kind = "sine") {
+  function note(
+    freq,
+    offset = 0,
+    duration = 0.17,
+    volume = 0.018,
+    kind = "sine",
+  ) {
     if (!context) return;
     try {
       const at = context.currentTime + offset;
@@ -82,7 +92,10 @@ export function createCityAudio({
     return true;
   }
   function toggleSound() {
-    if (sound) { sound = false; return false; }
+    if (sound) {
+      sound = false;
+      return false;
+    }
     if (!ready()) return false;
     sound = true;
     cue("tap");
@@ -93,9 +106,18 @@ export function createCityAudio({
     context?.suspend?.().catch?.(() => {});
   }
   return {
-    cue, toggleSound, toggleMusic, suspend,
-    get sound() { return sound; },
-    get music() { return music; },
-    get available() { return Boolean(context); },
+    cue,
+    toggleSound,
+    toggleMusic,
+    suspend,
+    get sound() {
+      return sound;
+    },
+    get music() {
+      return music;
+    },
+    get available() {
+      return Boolean(context);
+    },
   };
 }

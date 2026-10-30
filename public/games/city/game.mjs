@@ -989,12 +989,13 @@ function refreshJourneyControls() {
       " decisions",
   );
   const step = integratedStep(state.decisions, state.lab);
-  const unlocked = foundationForOpportunities(state.decisions) &&
-    step.kind === "complete";
+  const unlocked =
+    foundationForOpportunities(state.decisions) && step.kind === "complete";
   $("opportunities-toggle").disabled = !unlocked || simulating;
   $("resilience-toggle").disabled =
     !canStartResilience(state.decisions, state.economy) ||
-    step.kind !== "complete" || simulating;
+    step.kind !== "complete" ||
+    simulating;
   $("opportunities-toggle").title = unlocked
     ? "Manage your city's production, services and opportunities"
     : "Finish all 36 city decisions to unlock Chapter 3";
@@ -1008,9 +1009,10 @@ function refreshJourneyControls() {
     : "No earlier decisions yet";
   $("decision-count").textContent =
     caseProgress(state.decisions) + "/" + CITY_CASES.length;
-  $("build-lab-toggle").textContent = step.kind === "build"
-    ? "Build required · " + labMission(step.missionId).title
-    : "Build Lab · completed builds";
+  $("build-lab-toggle").textContent =
+    step.kind === "build"
+      ? "Build required · " + labMission(step.missionId).title
+      : "Build Lab · completed builds";
   if (!visible) return;
   $("journey-toggle").textContent = running ? "Pause" : "Resume";
   $("journey-toggle").setAttribute(
@@ -1021,21 +1023,22 @@ function refreshJourneyControls() {
     ? "Pause the automatic builder journey"
     : "Resume the automatic builder journey";
   const chapter = chapterForCase(journey.caseId) ?? 1;
-  $("journey-status").textContent = step.kind === "build"
-    ? "Build required · " + labMission(step.missionId).title
-    : running
-      ? "Chapter " +
-      chapter +
-      " · problem " +
-      caseNumber(journey.caseId) +
-      "/" +
-      CITY_CASES.length
-    : "Paused · Chapter " +
-      chapter +
-      " · problem " +
-      caseNumber(journey.caseId) +
-      "/" +
-      CITY_CASES.length;
+  $("journey-status").textContent =
+    step.kind === "build"
+      ? "Build required · " + labMission(step.missionId).title
+      : running
+        ? "Chapter " +
+          chapter +
+          " · problem " +
+          caseNumber(journey.caseId) +
+          "/" +
+          CITY_CASES.length
+        : "Paused · Chapter " +
+          chapter +
+          " · problem " +
+          caseNumber(journey.caseId) +
+          "/" +
+          CITY_CASES.length;
 }
 // Read-only aerial inspection of the actual selected construction states.
 // It pauses the guided flow and keeps its original stage, including review.
@@ -1302,9 +1305,12 @@ function resumeJourney() {
     return;
   }
   const target = recoverJourney({ ...journey, decisions: state.decisions });
-  if (step.kind === "question" &&
-    (target.caseId !== step.caseId || target.stage === "complete" ||
-      ["outcome", "building"].includes(target.stage))) {
+  if (
+    step.kind === "question" &&
+    (target.caseId !== step.caseId ||
+      target.stage === "complete" ||
+      ["outcome", "building"].includes(target.stage))
+  ) {
     goToJourneyCase(step.caseId);
     return;
   }
@@ -2380,8 +2386,11 @@ function renderCasebook() {
     for (const scenario of casesFor(district)) {
       const button = document.createElement("button");
       const nextStep = integratedStep(state.decisions, state.lab);
-      const alreadyDecided = Boolean(getChoice(scenario.id, state.decisions[scenario.id]));
-      button.disabled = !unlocked ||
+      const alreadyDecided = Boolean(
+        getChoice(scenario.id, state.decisions[scenario.id]),
+      );
+      button.disabled =
+        !unlocked ||
         (!alreadyDecided &&
           (nextStep.kind !== "question" || nextStep.caseId !== scenario.id));
       button.type = "button";
@@ -2453,9 +2462,11 @@ function startCase(id) {
   if (!getCase(id)) return;
   if (!canEnterQuestion(id, state.decisions, state.lab)) {
     const step = integratedStep(state.decisions, state.lab);
-    toast(step.kind === "build"
-      ? "Finish your linked build before opening another question."
-      : "Complete the current challenge to unlock this problem.");
+    toast(
+      step.kind === "build"
+        ? "Finish your linked build before opening another question."
+        : "Complete the current challenge to unlock this problem.",
+    );
     return;
   }
   if (getCase(id).chapter === 2 && !foundationComplete(state.decisions)) {
@@ -3721,7 +3732,9 @@ function showBuildVictory(
   const service = serviceFor(state.lab, missionId);
   $("victory-service").textContent = retry
     ? "Repair the connection to continue."
-    : service.served + "/" + service.demand +
+    : service.served +
+      "/" +
+      service.demand +
       " simulated local service requests now met.";
   $("victory-continue").textContent =
     integratedStep(state.decisions, state.lab).kind === "build"
@@ -3759,7 +3772,8 @@ $("victory-build").onclick = () => {
     retry && lastVictoryMission
       ? lastVictoryMission
       : (integratedStep(state.decisions, state.lab).missionId ??
-        lastVictoryMission ?? "workshop-link");
+        lastVictoryMission ??
+        "workshop-link");
   hideBuildVictory();
   buildLab.open(next);
 };
@@ -3848,8 +3862,10 @@ const buildLab = mountBuildLab({
   afterClose: () => {
     keys.clear();
     refreshJourneyControls();
-    if (integratedStep(state.decisions, state.lab).kind === "build" &&
-        $("build-victory").hidden) {
+    if (
+      integratedStep(state.decisions, state.lab).kind === "build" &&
+      $("build-victory").hidden
+    ) {
       toast("Build paused. Press Resume to finish before the next challenge.");
     }
   },
@@ -3911,9 +3927,11 @@ $("build-lab-toggle").onclick = () => {
   const step = integratedStep(state.decisions, state.lab);
   if (step.kind === "build") return buildLab.open(step.missionId);
   const prior = LAB_MISSIONS.find((m) =>
-    canOpenWorksite(m.id, state.decisions, state.lab));
+    canOpenWorksite(m.id, state.decisions, state.lab),
+  );
   if (prior) buildLab.open(prior.id);
-  else toast("First decide how to help Ama. Your building puzzle unlocks next.");
+  else
+    toast("First decide how to help Ama. Your building puzzle unlocks next.");
 };
 $("start").onclick = () => startCity("build");
 $("resume-city").onclick = () => startCity("story");
@@ -4000,7 +4018,11 @@ $("sound").onclick = () => {
 $("music").onclick = () => {
   const enabled = cityAudio.toggleMusic();
   syncAudioControls();
-  toast(enabled ? "Original background music on." : "Background music off or unavailable.");
+  toast(
+    enabled
+      ? "Original background music on."
+      : "Background music off or unavailable.",
+  );
 };
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && cityAudio.music) {

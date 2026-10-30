@@ -54,8 +54,10 @@ export function remainingSteps(decisions = {}, labInput = null) {
       const id = formatForCase(c.id).missionId;
       if (!id) return false;
       const lab = sanitizeLab(labInput);
-      return lab.tested.includes(id) &&
-        evaluateLab(labMission(id), lab.boards[id]).success;
+      return (
+        lab.tested.includes(id) &&
+        evaluateLab(labMission(id), lab.boards[id]).success
+      );
     }).length,
   };
 }

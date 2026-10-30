@@ -119,9 +119,11 @@ export function mountBuildLab({
           String(button.dataset.labTool === brush.kind),
         ),
       );
-    $("lab-mission").querySelectorAll("option").forEach((option) => {
-      option.disabled = !canSelectMission(option.value);
-    });
+    $("lab-mission")
+      .querySelectorAll("option")
+      .forEach((option) => {
+        option.disabled = !canSelectMission(option.value);
+      });
     buttons.forEach((button, cell) => {
       const target = mission.targets.find((t) => t.cell === cell),
         source = mission.source === cell,
@@ -178,8 +180,9 @@ export function mountBuildLab({
       : "lab-result";
     $("lab-next").hidden =
       !result?.success ||
-      !LAB_MISSIONS.slice(LAB_MISSIONS.findIndex((m) => m.id === mission.id) + 1)
-        .some((item) => canSelectMission(item.id));
+      !LAB_MISSIONS.slice(
+        LAB_MISSIONS.findIndex((m) => m.id === mission.id) + 1,
+      ).some((item) => canSelectMission(item.id));
   }
   function selectMission(id) {
     if (!canSelectMission(id)) {

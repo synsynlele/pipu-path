@@ -97,8 +97,8 @@ while (game.route.length && firstTravel++ < 1800) {
   game.animateWorld(now);
 }
 assert.equal(game.journey.stage, "question");
-assert(w.document.querySelector('[data-case-choice]'));
-const selected = w.document.querySelector('[data-case-choice]');
+assert(w.document.querySelector("[data-case-choice]"));
+const selected = w.document.querySelector("[data-case-choice]");
 selected.click();
 assert.equal(Object.keys(game.state.decisions).length, 1);
 assert.equal(game.state.decisions["repair-queue"], selected.dataset.caseChoice);
@@ -116,7 +116,10 @@ assert.match(
 w.document.getElementById("case-next").click();
 assert.equal(w.document.getElementById("build-lab").open, true);
 assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
-assert.equal(w.document.querySelector('option[value="clinic-power"]').disabled, true);
+assert.equal(
+  w.document.querySelector('option[value="clinic-power"]').disabled,
+  true,
+);
 assert.equal(game.journey.caseId, "repair-queue");
 // Closing the build must not let the player jump to the next question.
 w.document.getElementById("lab-close").click();
@@ -126,7 +129,7 @@ assert.equal(w.document.getElementById("build-lab").open, true);
 // Solve an actual playable supply route using touch-equivalent controls.
 const pilotCell = (row, col) =>
   w.document.querySelector(
-    '[aria-label^="Row ' + row + ', column ' + col + ':"]',
+    '[aria-label^="Row ' + row + ", column " + col + ':"]',
   );
 w.document.querySelector('[data-lab-tool="bend"]').click();
 w.document.getElementById("lab-rotate").click();
@@ -154,7 +157,9 @@ w.document.getElementById("victory-continue").click();
 assert.equal(w.document.getElementById("build-victory").hidden, true);
 assert.equal(game.journey.caseId, CITY_CASES[1].id);
 assert.equal(game.journey.stage, "travelling");
-console.log("PASS: decide → mandatory test → 3D reveal → next decision, with no puzzle or question bypass.");
+console.log(
+  "PASS: decide → mandatory test → 3D reveal → next decision, with no puzzle or question bypass.",
+);
 
 // Phase 2: a built structure actually serves fictional community requests.
 w.document.getElementById("service-toggle").click();
@@ -212,7 +217,7 @@ w.document.getElementById("victory-continue").click();
 assert.equal(game.state.lab.faults["workshop-link"], null);
 // Returning players retain their tested work and cannot skip later questions.
 game.pauseJourney();
-assert.equal(game.state.lab.boards["workshop-link"].filter(Boolean).length,5);
+assert.equal(game.state.lab.boards["workshop-link"].filter(Boolean).length, 5);
 assert(game.state.lab.tested.includes("workshop-link"));
 
 w.document.getElementById("intro").hidden = true;
@@ -309,47 +314,80 @@ function testedRoute(missionId, routes) {
   const mission = labMission(missionId);
   let board = emptyLabBoard();
   for (const cells of routes) {
-    for (let i=1;i<cells.length-1;i++) {
-      const cell=cells[i];
-      const direction=(other)=>other===cell-5?0:other===cell+1?1:other===cell+5?2:3;
-      const openings=new Set([direction(cells[i-1]),direction(cells[i+1])]);
+    for (let i = 1; i < cells.length - 1; i++) {
+      const cell = cells[i];
+      const direction = (other) =>
+        other === cell - 5
+          ? 0
+          : other === cell + 1
+            ? 1
+            : other === cell + 5
+              ? 2
+              : 3;
+      const openings = new Set([
+        direction(cells[i - 1]),
+        direction(cells[i + 1]),
+      ]);
       if (board[cell]) {
-        const old=board[cell];
-        const base=old.kind==="straight"?[0,2]:old.kind==="bend"?[0,1]:[0,1,3];
-        for(const d of base) openings.add((d+old.turn)%4);
+        const old = board[cell];
+        const base =
+          old.kind === "straight"
+            ? [0, 2]
+            : old.kind === "bend"
+              ? [0, 1]
+              : [0, 1, 3];
+        for (const d of base) openings.add((d + old.turn) % 4);
       }
-      let piece=null;
-      for (const [kind,base] of Object.entries({
-        straight:[0,2], bend:[0,1], junction:[0,1,3],
+      let piece = null;
+      for (const [kind, base] of Object.entries({
+        straight: [0, 2],
+        bend: [0, 1],
+        junction: [0, 1, 3],
       })) {
-        for(let turn=0;turn<4;turn++) {
-          const ends=base.map(d=>(d+turn)%4);
-          if (ends.length===openings.size && ends.every(d=>openings.has(d)))
-            piece={kind,turn};
+        for (let turn = 0; turn < 4; turn++) {
+          const ends = base.map((d) => (d + turn) % 4);
+          if (
+            ends.length === openings.size &&
+            ends.every((d) => openings.has(d))
+          )
+            piece = { kind, turn };
         }
       }
-      assert(piece,"Representable connected route");
-      board=placeLabPiece(mission,board,cell,piece);
+      assert(piece, "Representable connected route");
+      board = placeLabPiece(mission, board, cell, piece);
     }
   }
-  assert(evaluateLab(mission,board).success,"Certified fixture: "+missionId);
+  assert(
+    evaluateLab(mission, board).success,
+    "Certified fixture: " + missionId,
+  );
   return board;
 }
 const certified = {
-  "workshop-link": [[10,5,6,7,8,9,14]],
-  "clinic-power": [[2,1,0,5,10,15,20,21,22]],
-  "shared-services": [[10,11,6,1,2,3,4],[10,11,16,21,22,23,24]],
-  "backup-water": [[10,5,6,7,8,9,14],[10,15,16,17,18,19,14]],
-  "shared-recovery": [[12,11,10,5,0,1,2,3,4],[12,11,10,15,20]],
+  "workshop-link": [[10, 5, 6, 7, 8, 9, 14]],
+  "clinic-power": [[2, 1, 0, 5, 10, 15, 20, 21, 22]],
+  "shared-services": [
+    [10, 11, 6, 1, 2, 3, 4],
+    [10, 11, 16, 21, 22, 23, 24],
+  ],
+  "backup-water": [
+    [10, 5, 6, 7, 8, 9, 14],
+    [10, 15, 16, 17, 18, 19, 14],
+  ],
+  "shared-recovery": [
+    [12, 11, 10, 5, 0, 1, 2, 3, 4],
+    [12, 11, 10, 15, 20],
+  ],
 };
-for (const [id,routes] of Object.entries(certified)) {
-  game.state.lab.boards[id] = testedRoute(id,routes);
+for (const [id, routes] of Object.entries(certified)) {
+  game.state.lab.boards[id] = testedRoute(id, routes);
   if (!game.state.lab.tested.includes(id)) game.state.lab.tested.push(id);
 }
 game.buildMilestoneScene.sync(game.state.lab);
 assert.equal(game.state.lab.tested.length, LAB_MISSIONS.length);
 // Demonstrate legacy story controls still work once their real builds exist.
-for (const key of Object.keys(game.state.decisions)) delete game.state.decisions[key];
+for (const key of Object.keys(game.state.decisions))
+  delete game.state.decisions[key];
 game.render();
 
 // Execute the actual answer -> reveal -> next -> chapter -> travel callbacks.
