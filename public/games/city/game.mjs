@@ -18,7 +18,6 @@ import { serviceFor } from "./city-service-system.mjs";
 import { skillRecommendation } from "./build-progression.mjs";
 import { mountCityServiceDesk } from "./city-service-ui.mjs";
 import {
-  stageThreeCase,
   beginStageThree,
   finishStageThree,
 } from "./stage-three-scenarios.mjs";
