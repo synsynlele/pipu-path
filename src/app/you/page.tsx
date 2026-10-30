@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getBuildHome } from "@/modules/real-build/infrastructure/dal";
+import { difficultyLabel } from "@/modules/real-build/domain/build";
 export const metadata: Metadata = {
   title: "My work",
   robots: { index: false, follow: false },
@@ -33,7 +34,7 @@ export default async function MyWorkPage({
               className="build-card block"
             >
               <span className="text-xs font-semibold text-[#52647c]">
-                {a.status === "active"
+                Level {a.difficulty}/5 · {difficultyLabel(a.difficulty)} · {a.status === "active"
                   ? "In progress"
                   : a.status === "recorded"
                     ? "Attempt recorded"
