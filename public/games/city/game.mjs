@@ -3800,13 +3800,12 @@ $("pilot-build").onclick = () => {
     : null;
   buildLab.open(next ?? "workshop-link");
 };
-$("pilot-story").onclick = () => {
-  // Explicit original-story route stays available for returning learners.
-  mixedJourney = false;
-  startCity("story");
-};
+$("pilot-story").onclick = () => resumeJourney();
 const buildLab = mountBuildLab({
   read: () => state.lab,
+  canSelectMission: (id) => canOpenWorksite(id, state.decisions, state.lab),
+  onLocked: () =>
+    toast("Finish the current decision to unlock its building challenge."),
   onTest: ({ missionId, success }) => {
     playtest.note(success ? "prototype_pass" : "prototype_retry");
     buildMilestoneScene.sync(state.lab);
@@ -3931,8 +3930,8 @@ $("resume-city").hidden =
   (!Object.keys(state.decisions).length && !previousPractice.journey);
 function startCity(mode = "build") {
   if (!$("intro").hidden) playtest.note("start");
-  firstBuildMode = mode === "build";
-  if (firstBuildMode) mixedJourney = true;
+  firstBuildMode = false;
+  mixedJourney = true;
   serviceDesk.close();
   $("intro").hidden = true;
   reportParentState();
@@ -3940,25 +3939,20 @@ function startCity(mode = "build") {
   mapMode = false;
   closeCasebook();
   closeCityStatus();
-  guideExpanded = !firstBuildMode;
+  guideExpanded = false;
   dockExpanded = false;
   distance = 27;
   closeDirectory();
-  $("mission").hidden = firstBuildMode;
+  $("mission").hidden = true;
   $("mobile-move").hidden = true;
-  $("pilot-mission").hidden = !firstBuildMode;
-  hideBuildVictory();
-  render();
-  if (firstBuildMode) {
-    // The main Play button opens hands-on building before any question.
-    // Returning players can explicitly resume their saved city instead.
-    cancelAutoAdvance();
-    renderPilotMission();
-    buildLab.open("workshop-link", { firstMission: true });
-    return;
-  }
   $("pilot-mission").hidden = true;
-  const nextUnsolved = firstUnanswered(state.decisions);
+  hideBuildVictory();
+  document.body.classList.add("city-integrated");
+  render();
+  // All entries recover the same question → tested build sequence.
+  const nextStep = integratedStep(state.decisions, state.lab);
+  const nextUnsolved =
+    nextStep.kind === "complete" ? null : getCase(nextStep.caseId);
   if (
     !nextUnsolved &&
     state.resilience &&
@@ -3969,7 +3963,7 @@ function startCity(mode = "build") {
     openResiliencePanel();
     return;
   }
-  if (nextUnsolved || journey.status === "paused") {
+  if (nextStep.kind !== "complete" || journey.status === "paused") {
     // Preserve the Chapter 2 reveal for older saves that completed all 16
     // foundation cases before Chapter 2 existed.
     if (
@@ -3982,8 +3976,8 @@ function startCity(mode = "build") {
     }
     toast(
       previousPractice
-        ? "Welcome back. Resuming your unfinished builder journey."
-        : "Your first problem is ready.",
+        ? "Welcome back. Your next linked challenge is ready."
+        : "First decide, then build and test your solution.",
     );
     resumeJourney();
   } else {
