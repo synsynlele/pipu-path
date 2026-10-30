@@ -5,6 +5,10 @@ const migration = readFileSync(
   "supabase/migrations/20261030080345_simple_real_world_builds.sql",
   "utf8",
 );
+const progression = readFileSync(
+  "supabase/migrations/20261030110000_real_build_progressive_difficulty.sql",
+  "utf8",
+);
 it("enforces private ownership, service-only mutations, one current attempt, honest completion constraints and leases in PostgreSQL", async () => {
   const db = new PGlite();
   try {
@@ -12,6 +16,7 @@ it("enforces private ownership, service-only mutations, one current attempt, hon
       `create schema auth; create schema storage; create role anon;create role authenticated;create role service_role bypassrls;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated;grant execute on function auth.uid() to authenticated;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table public.account_deletion_jobs(request_id uuid,state text,phase text,lease_token uuid,lease_until timestamptz,target_user_id uuid,updated_at timestamptz,completed_at timestamptz);`,
     );
     await db.exec(migration);
+    await db.exec(progression);
     const user = "10000000-0000-4000-8000-000000000001",
       other = "20000000-0000-4000-8000-000000000002",
       template = "30000000-0000-4000-8000-000000000003",
@@ -65,6 +70,10 @@ it("enforces private ownership, service-only mutations, one current attempt, hon
       `update public.real_build_attempts set status='recorded',recorded_at=now(),draft=$1 where id=$2`,
       [draft, attempt],
     );
+    const afterUnsuccessful = await db.query<{ difficulty: number }>(
+      `select public.next_real_build_difficulty('${user}','school') as difficulty`,
+    );
+    expect(afterUnsuccessful.rows[0].difficulty).toBe(1);
     await db.exec(
       `insert into public.real_build_attempts(user_id,template_id,topic,minutes,challenge)values('${user}','${template}','school',30,'{}')`,
     );
@@ -75,6 +84,26 @@ it("enforces private ownership, service-only mutations, one current attempt, hon
         )
       ).rows,
     ).toHaveLength(0);
+    // Only the matching difficulty is eligible for a learner's next Quest.
+    const secondTemplate = "50000000-0000-4000-8000-000000000005";
+    await db.exec(
+      `insert into public.real_build_templates(id,topic,minutes,challenge,difficulty)
+       values('${secondTemplate}','school',30,'{}',2)`,
+    );
+    expect(
+      (
+        await db.query(
+          `select * from public.find_unseen_real_build_template_level('${user}','school',30,1)`,
+        )
+      ).rows,
+    ).toHaveLength(0);
+    expect(
+      (
+        await db.query(
+          `select * from public.find_unseen_real_build_template_level('${user}','school',30,2)`,
+        )
+      ).rows,
+    ).toHaveLength(1);
     expect(
       (
         await db.query(
@@ -82,6 +111,19 @@ it("enforces private ownership, service-only mutations, one current attempt, hon
         )
       ).rows,
     ).toHaveLength(1);
+    // A reported successful follow-up contributes to a harder future Quest.
+    const worked = JSON.stringify({
+      ...JSON.parse(draft),
+      outcome: "worked",
+    });
+    await db.query(
+      `update public.real_build_attempts set status='recorded', recorded_at=now(), draft=$1 where user_id=$2 and status='active'`,
+      [worked, user],
+    );
+    const afterSuccessful = await db.query<{ difficulty: number }>(
+      `select public.next_real_build_difficulty('${user}','school') as difficulty`,
+    );
+    expect(afterSuccessful.rows[0].difficulty).toBe(2);
     const first = await db.query<{ claimed: boolean }>(
         "select public.claim_real_build_generation('school:30',gen_random_uuid()) claimed",
       ),
