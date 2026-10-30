@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand/brand-mark";
 
 const steps = [
   { number: 1, label: "Your account" },
@@ -32,9 +33,9 @@ export function OnboardingShell({
           --panel-raised: #fbfbfe;
           --soft-surface: #f3f4f8;
           --soft-blue-surface: #eef2fb;
-          --color-primary-100: #eff6ff;
-          --color-primary-500: #1d4ed8;
-          --color-primary-700: #1d4ed8;
+          --color-primary-100: #f4f0ff;
+          --color-primary-500: #5b3dd4;
+          --color-primary-700: #5b3dd4;
           --color-navy: #202344;
           --color-text: #171a3f;
           color: #171a3f;
@@ -51,7 +52,7 @@ export function OnboardingShell({
         }
 
         .pp-onboarding-light .bg-primary-soft {
-          background-color: #eff6ff;
+          background-color: #f4f0ff;
         }
 
         .pp-onboarding-light .text-navy,
@@ -64,7 +65,7 @@ export function OnboardingShell({
         }
 
         .pp-onboarding-light .text-primary-light {
-          color: #1d4ed8;
+          color: #5b3dd4;
         }
 
         .pp-onboarding-light .border-border {
@@ -89,24 +90,24 @@ export function OnboardingShell({
         }
 
         .pp-onboarding-light .pp-button-primary {
-          border-color: #1d4ed8;
-          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          border-color: #5b3dd4;
+          background: linear-gradient(135deg, #7958ef 0%, #5b3dd4 100%);
           color: #ffffff;
           -webkit-text-fill-color: #ffffff;
         }
 
         .pp-onboarding-light .pp-button-primary:hover {
-          border-color: #2563eb;
-          background: #2563eb;
+          border-color: #7958ef;
+          background: #7958ef;
           color: #ffffff;
           -webkit-text-fill-color: #ffffff;
         }
 
         .pp-onboarding-light .pp-button-secondary {
           border-color: #bfdbfe;
-          background: #eff6ff;
-          color: #1d4ed8;
-          -webkit-text-fill-color: #1d4ed8;
+          background: #f4f0ff;
+          color: #5b3dd4;
+          -webkit-text-fill-color: #5b3dd4;
           box-shadow: none;
         }
 
@@ -143,14 +144,12 @@ export function OnboardingShell({
         }
       `}</style>
 
-      <header className="border-b border-[#dbe7f5] bg-white px-4 py-4 sm:px-6">
+      <header className="journey-topbar border-b border-[#dbe7f5] px-4 py-4 sm:px-6">
         <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
-          <Link href="/" className="text-xl font-extrabold text-[#163b72]">
-            PipuPath
-          </Link>
+          <BrandMark inverse href="/" />
           <Link
             href="/build/play"
-            className="min-h-11 py-3 text-sm font-semibold text-[#1d4ed8]"
+            className="min-h-11 py-3 text-sm font-semibold text-white"
           >
             Back to play
           </Link>
@@ -165,7 +164,7 @@ export function OnboardingShell({
                 aria-current={step.number === activeStep ? "step" : undefined}
                 className={
                   step.number === activeStep
-                    ? "text-[#1d4ed8]"
+                    ? "text-[#5b3dd4]"
                     : "text-[#64748b]"
                 }
               >

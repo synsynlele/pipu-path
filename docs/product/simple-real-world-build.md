@@ -70,3 +70,16 @@ adds one bonus point. Levels unlock at 3, 7, 13 and 21 practice points. These
 are challenge tiers, not proof of mastery. Reworking a past Quest does not
 farm higher-level access. Templates are shared only when topic, minutes,
 difficulty and normalized goal fingerprint all match.
+
+## Smart Quest Discovery (30 October)
+
+Four short screens collect an exact problem, kind of change, setting, an adaptive
+starting obstacle, existing resources and first-session time, then review. No AI
+call is used for follow-ups. The one bounded authoring request receives only the
+disclosed goal and validated options. Different constraints cannot share a cache
+key. Discovery answers inform the saved five-stage guide; they are not extra
+private profile fields. Existing goal storage and evidence lifecycle remain.
+New generation failures retain answers and offer retry instead of automatically
+substituting a generic reviewed Quest. Existing reviewed attempts stay accessible
+with explicit AI tailoring only before evidence is added. Each Quest guides
+Understand → Prepare → Build → Test → Improve → honest evidence and next attempt.

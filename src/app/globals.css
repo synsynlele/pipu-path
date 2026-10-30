@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./stage26.css";
+@import "./journey.css";
 
 :root {
   --color-white: #ffffff;

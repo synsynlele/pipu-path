@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { discoverySchema, discoveryBrief } from "./discovery";
 import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
 
 export const buildTopics = cityInterests;
-export const REAL_BUILD_CONTENT_VERSION = "hands-on-v2";
+export const REAL_BUILD_CONTENT_VERSION = "solution-recipes-v5";
 export const focusSchema = z
   .string()
   .trim()
@@ -22,6 +23,7 @@ export const choiceSchema = z
     topic: z.string().refine((v) => buildTopics.some((t) => t.id === v)),
     minutes: z.coerce.number().refine((v) => [15, 30, 60].includes(v)),
     focus: focusSchema,
+    discovery: discoverySchema.optional(),
   })
   .strict();
 export type BuildChoice = z.infer<typeof choiceSchema>;
@@ -67,7 +69,7 @@ export const challengeSchema = z
   .object({
     title: text(5, 100),
     outcome: text(10, 300),
-    steps: z.array(text(8, 220)).length(5),
+    steps: z.array(text(8, 700)).length(5),
     materials: z.array(text(2, 80)).max(5),
     evidence: text(10, 300),
     safety: text(10, 300),
@@ -158,11 +160,14 @@ export function publicChallengeBrief(
   previousTitles: string[],
   difficulty: BuildDifficulty = 1,
 ) {
-  // Only catalogue values and previously public template titles. Never learner prose.
+  // Only the disclosed goal, validated discovery options and public catalogue data.
   const topic = buildTopics.find((t) => t.id === choice.topic)!;
   return {
     topic: topic.title,
     improvementGoal: choice.focus,
+    ...(choice.discovery
+      ? { discovery: discoveryBrief(choice.discovery) }
+      : {}),
     safeStartingIdea: topic.idea,
     minutes: choice.minutes,
     difficulty,

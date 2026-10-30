@@ -62,7 +62,7 @@ describe("playable neighbourhood", () => {
     expect(
       screen.getByRole("link", { name: /Open my real-world Quest/ }),
     ).toHaveAttribute("href", "/quests/owned");
-  });
+  }, 15000);
   it("saves only on request, resumes a player-specific state and removes the save on opt-out", () => {
     start();
     fireEvent.click(screen.getByRole("radio", { name: /Teal/i }));

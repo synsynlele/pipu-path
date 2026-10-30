@@ -24,11 +24,11 @@ const sections = [
   ],
   [
     "AI guidance",
-    "For consenting eligible adults, OpenAI may process relevant context sent when they request AI-assisted interpretation or planning. This guidance does not determine anyone's identity and is not a guarantee of earnings or employment. Under-18 accounts do not receive external AI interpretation of their private developmental information. For the new Real Quests experience, OpenAI authors reusable public challenge templates from a catalogue topic, time choice and other public template titles. No account identifiers, names, private answers, evidence, photos or reflections are included in those template requests. Templates can be reused across accounts; personal attempts remain private.",
+    "For consenting eligible adults, OpenAI may process relevant context sent when they request AI-assisted interpretation or planning. This guidance does not determine anyone's identity and is not a guarantee of earnings or employment. Under-18 accounts do not receive external AI interpretation of their private developmental information. For Real Quests, you choose to send a short improvement goal and selected discovery options (kind of change, setting, starting obstacle, available resources and first-session time) to OpenAI to create a practical guide. Do not enter names, contact details or sensitive information. This authoring request does not include your account identity, saved private learning answers, evidence, photos or reflections. Generated steps can reflect your goal and options. Validated guides may be reused only for matching goals and constraints; the template stores a goal fingerprint rather than the original goal text. Personal attempts and evidence remain private.",
   ],
   [
     "Service providers and safeguards",
-    "Supabase supports authentication, database records and file storage; Vercel hosts the application; OpenAI authors generic challenge templates and supplies eligible adult AI features. Access controls, private-by-default settings and restricted operational permissions are used to protect account data. Some operational information and provider records may remain in system logs, caches or backups for their applicable retention periods.",
+    "Supabase supports authentication, database records and file storage; Vercel hosts the application; OpenAI authors practical Quest guides and supplies eligible adult AI features. Access controls, private-by-default settings and restricted operational permissions are used to protect account data. Some operational information and provider records may remain in system logs, caches or backups for their applicable retention periods.",
   ],
   [
     "Retention and deletion",

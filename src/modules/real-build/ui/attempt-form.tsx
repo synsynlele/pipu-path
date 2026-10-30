@@ -77,7 +77,7 @@ export function BuildAttemptForm({
         <h2 id="evidence-heading" className="text-lg font-extrabold">
           2. Show what happened
         </h2>
-        <p className="text-sm leading-6 text-[#52647c]">
+        <p className="text-sm leading-6 text-[#77788e]">
           {build.challenge.evidence} An honest attempt that did not work is
           welcome.
         </p>
@@ -94,7 +94,7 @@ export function BuildAttemptForm({
           />
         </label>
         <details>
-          <summary className="cursor-pointer text-sm font-semibold text-[#1d4ed8]">
+          <summary className="cursor-pointer text-sm font-semibold text-[#6347dc]">
             Add a link or photo · optional
           </summary>
           <div className="mt-4 space-y-4">
@@ -123,12 +123,12 @@ export function BuildAttemptForm({
                 className="mt-2"
               />
             </label>
-            <p className="text-xs leading-5 text-[#52647c]">
+            <p className="text-xs leading-5 text-[#77788e]">
               JPG, PNG or WebP, up to 3 MB. Photograph the work; avoid faces,
               addresses and private information. A written account is enough.
             </p>
             {build.image_path ? (
-              <p className="text-xs text-[#52647c]">
+              <p className="text-xs text-[#77788e]">
                 A private photo is already saved. A new upload replaces the
                 displayed photo.
               </p>
@@ -186,7 +186,7 @@ export function BuildAttemptForm({
           name="intent"
           value="save"
           disabled={pending}
-          className="pp-button-ghost flex w-full items-center justify-center gap-2 border-2 border-[#b9cce5] bg-white text-[#16488f] shadow-sm sm:w-auto"
+          className="pp-button-ghost flex w-full items-center justify-center gap-2 border-2 border-[#b9cce5] bg-white text-[#5b3dd4] shadow-sm sm:w-auto"
         >
           Save for later
         </button>
@@ -212,12 +212,12 @@ export function BuildAttemptForm({
           {message}
         </p>
       ) : null}
-      <p className="text-xs leading-5 text-[#52647c]">
+      <p className="text-xs leading-5 text-[#77788e]">
         Recording an attempt saves your account of the work. It does not verify
         success, award XP or publish your evidence.
       </p>
-      <details open={retired}>
-        <summary className="cursor-pointer text-sm text-[#52647c]">
+      <details id="quest-set-aside" open={retired}>
+        <summary className="cursor-pointer text-sm text-[#77788e]">
           This Quest is not right for me
         </summary>
         <p className="mt-3 text-sm leading-6">
@@ -229,7 +229,7 @@ export function BuildAttemptForm({
           name="intent"
           value="archive"
           disabled={pending}
-          className="pp-button-ghost mt-3 w-full border-2 border-[#b9cce5] bg-white text-[#16488f] shadow-sm sm:w-auto"
+          className="pp-button-ghost mt-3 w-full border-2 border-[#b9cce5] bg-white text-[#5b3dd4] shadow-sm sm:w-auto"
         >
           Set aside and choose another
         </button>

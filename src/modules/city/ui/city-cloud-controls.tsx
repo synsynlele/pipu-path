@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 type Snapshot = {
   revision: number | null;
@@ -12,6 +12,7 @@ export function CityCloudControls({
 }: {
   frameRef: RefObject<HTMLIFrameElement | null>;
 }) {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
@@ -146,17 +147,48 @@ export function CityCloudControls({
   }
 
   return (
-    <details className="relative text-xs">
-      <summary
-        onClick={() => {
-          if (!snapshot) void read();
-        }}
-        className="flex min-h-11 cursor-pointer items-center rounded-xl border border-[#bccbe4] bg-white px-3 font-bold text-[#142a52]"
-      >
+    <details
+      ref={detailsRef}
+      className="city-cloud-controls relative text-xs"
+      onToggle={(event) => {
+        if (event.currentTarget.open && !snapshot && !busy) void read();
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          detailsRef.current?.removeAttribute("open");
+          detailsRef.current?.querySelector("summary")?.focus();
+        }
+      }}
+    >
+      <style>{`
+        .city-cloud-controls > summary {background:#fff;color:#242241;-webkit-text-fill-color:#242241;}
+        .city-cloud-controls .city-cloud-panel {background:#fff;color:#242241;-webkit-text-fill-color:#242241;max-height:min(70dvh,520px);overflow-y:auto;box-sizing:border-box;}
+        .city-cloud-controls button {min-height:44px;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;background:#fff;color:#242241;-webkit-text-fill-color:#242241;}
+        .city-cloud-controls button.city-backup-primary {background:#5b3dd4;color:#fff;-webkit-text-fill-color:#fff;}
+        .city-cloud-controls button.city-backup-delete {color:#a12540;-webkit-text-fill-color:#a12540;}
+        .city-cloud-controls button:disabled {opacity:.6;cursor:not-allowed;}
+        @media(max-width:640px) {
+          .city-cloud-controls .city-cloud-panel {position:fixed;top:calc(env(safe-area-inset-top) + 88px);left:12px;right:12px;width:auto;max-width:none;margin:0;z-index:1100;}
+        }
+      `}</style>
+      <summary className="flex min-h-11 cursor-pointer items-center rounded-xl border border-[#bccbe4] bg-white px-3 font-bold text-[#142a52]">
         ☁ Account backup
       </summary>
-      <div className="absolute top-full right-0 z-40 mt-2 w-[min(320px,85vw)] space-y-3 rounded-2xl border border-[#b7c9e2] bg-white p-4 text-[#17375f] shadow-xl">
-        <p className="font-bold">Private city backup</p>
+      <div className="city-cloud-panel absolute top-full right-0 z-40 mt-2 w-[min(320px,85vw)] space-y-3 rounded-2xl border border-[#b7c9e2] bg-white p-4 text-[#17375f] shadow-xl">
+        <div className="flex items-center justify-between gap-3">
+          <p className="font-bold">Private city backup</p>
+          <button
+            type="button"
+            aria-label="Close account backup"
+            style={{ width: "auto", minHeight: 44 }}
+            onClick={() => {
+              detailsRef.current?.removeAttribute("open");
+              detailsRef.current?.querySelector("summary")?.focus();
+            }}
+          >
+            Close
+          </button>
+        </div>
         <p className="leading-5">
           Optional on signed-in accounts. Your fictional city is not XP or real
           Quest evidence.
@@ -169,7 +201,7 @@ export function CityCloudControls({
             type="button"
             disabled={busy || !snapshot}
             onClick={backUp}
-            className="min-h-11 rounded-xl bg-[#244a8a] px-3 font-bold text-white disabled:opacity-60"
+            className="city-backup-primary min-h-11 rounded-xl bg-[#244a8a] px-3 font-bold text-white disabled:opacity-60"
           >
             Back up this city
           </button>
@@ -194,7 +226,7 @@ export function CityCloudControls({
               type="button"
               disabled={busy}
               onClick={() => void remove()}
-              className="min-h-11 px-3 text-[#a12540]"
+              className="city-backup-delete min-h-11 px-3 text-[#a12540]"
             >
               Delete account backup
             </button>

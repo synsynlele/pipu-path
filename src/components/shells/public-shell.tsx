@@ -4,14 +4,14 @@ import { ButtonLink } from "@/components/ui/button";
 
 export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen">
+    <div className="pp-app-experience min-h-screen">
       <a
         href="#main-content"
         className="bg-primary fixed top-3 left-3 z-50 -translate-y-20 rounded-xl px-4 py-2 font-semibold text-white shadow-lg focus:translate-y-0"
       >
         Skip to content
       </a>
-      <header className="border-border bg-panel/90 sticky top-0 z-40 border-b backdrop-blur-xl">
+      <header className="journey-topbar border-border sticky top-0 z-40 border-b backdrop-blur-xl">
         <style>{`
           @media (max-width: 639px) {
             .pp-public-header-inner {
@@ -35,7 +35,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
           }
         `}</style>
         <div className="pp-public-header-inner mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-8 lg:px-12">
-          <BrandMark className="pp-public-header-brand" />
+          <BrandMark inverse className="pp-public-header-brand" />
           <div className="pp-public-header-actions flex items-center gap-1.5 sm:gap-3">
             <LandingDistributionButton />
             <ButtonLink

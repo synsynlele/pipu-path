@@ -1,5 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { buildGoalKey } from "../infrastructure/goal-key";
+import { generateBuildTemplate } from "../infrastructure/provider";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createLogger } from "@/lib/observability/logger";
@@ -10,11 +12,162 @@ import {
   canRecordAttempt,
   emptyDraft,
   isRetiredPaperworkChallenge,
+  validateChallenge,
 } from "../domain/build";
 import { buildServiceClient } from "../infrastructure/client";
 import { startBuildForUser } from "./start-build";
 export type BuildFormState = { ok: boolean; message: string; version?: number };
 const logger = createLogger();
+
+export async function tailorReviewedBuild(
+  _previous: BuildFormState,
+  form: FormData,
+): Promise<BuildFormState> {
+  const { user } = await requireAuthenticatedIdentity();
+  const id = z.uuid().safeParse(form.get("id"));
+  if (!id.success)
+    return { ok: false, message: "Open your saved Quest and try again." };
+  const service = buildServiceClient();
+  const existing = await service
+    .from("real_build_attempts")
+    .select("*")
+    .eq("id", id.data)
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle();
+  if (existing.error || !existing.data)
+    return {
+      ok: false,
+      message: "This Quest is no longer active. Reload the page.",
+    };
+  const old = existing.data;
+  if (old.source !== "reviewed")
+    return { ok: false, message: "This Quest is already AI-generated." };
+  if (
+    old.draft.evidence.trim() ||
+    old.draft.reflection.trim() ||
+    old.draft.nextChange.trim() ||
+    old.draft.link.trim() ||
+    old.image_path
+  )
+    return {
+      ok: false,
+      message:
+        "You already have evidence here. Save or set aside this Quest first so your work is not replaced.",
+    };
+  const choice = choiceSchema.safeParse({
+    topic: old.topic,
+    minutes: old.minutes,
+    focus: old.focus,
+  });
+  if (!choice.success)
+    return {
+      ok: false,
+      message:
+        "This goal needs a fresh Quest. Set aside the starter and try again.",
+    };
+  const focusKey = buildGoalKey(choice.data);
+  const pool = await service
+    .from("real_build_templates")
+    .select("*")
+    .eq("topic", choice.data.topic)
+    .eq("minutes", choice.data.minutes)
+    .eq("difficulty", old.difficulty)
+    .eq("focus_key", focusKey)
+    .eq("source", "openai")
+    .order("created_at", { ascending: false })
+    .limit(10);
+  if (pool.error)
+    return {
+      ok: false,
+      message: "Could not check your tailored Quest. Please try again.",
+    };
+  let template = (pool.data ?? []).find((row) => {
+    try {
+      validateChallenge(row.challenge);
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  if (!template) {
+    const allowed = await service.rpc("begin_real_build_request", {
+      user_input: user.id,
+    });
+    if (allowed.error)
+      return {
+        ok: false,
+        message: "Could not check AI availability. Try again.",
+      };
+    if (!allowed.data)
+      return {
+        ok: false,
+        message:
+          "Your AI request limit has been reached. Your current Quest is safe; try later.",
+      };
+    let challenge;
+    try {
+      challenge = await generateBuildTemplate(choice.data, [], old.difficulty);
+    } catch (error) {
+      logger.warn("real_build_explicit_tailoring_failed", {
+        code:
+          error instanceof Error &&
+          /^(BUILD_|OPENAI_)[A-Z_0-9]+$/.test(error.message)
+            ? error.message
+            : "BUILD_INVALID_AI_OUTPUT",
+      });
+      return {
+        ok: false,
+        message:
+          "AI could not make a tailored Quest this time. Your current Quest and progress are unchanged. You can try again later.",
+      };
+    }
+    const savedTemplate = await service
+      .from("real_build_templates")
+      .insert({
+        topic: choice.data.topic,
+        minutes: choice.data.minutes,
+        difficulty: old.difficulty,
+        focus_key: focusKey,
+        challenge,
+        source: "openai",
+      })
+      .select("*")
+      .single();
+    if (savedTemplate.error || !savedTemplate.data)
+      return {
+        ok: false,
+        message:
+          "The tailored Quest was created but could not be saved. Your current Quest is safe.",
+      };
+    template = savedTemplate.data;
+  }
+  const updated = await service
+    .from("real_build_attempts")
+    .update({
+      challenge: template.challenge,
+      template_id: template.id,
+      source: "openai",
+      version: old.version + 1,
+    })
+    .eq("id", old.id)
+    .eq("user_id", user.id)
+    .eq("source", "reviewed")
+    .eq("status", "active")
+    .eq("version", old.version)
+    .select("id")
+    .maybeSingle();
+  if (updated.error || !updated.data)
+    return {
+      ok: false,
+      message:
+        "Your Quest changed in another tab. Your existing work is safe; reload to see it.",
+    };
+  revalidatePath("/real-quests");
+  revalidatePath(`/real-quests/${old.id}`);
+  redirect(`/real-quests/${old.id}`);
+}
+
 export async function startRealBuild(
   _previous: BuildFormState,
   form: FormData,
@@ -24,6 +177,16 @@ export async function startRealBuild(
     topic: form.get("topic"),
     minutes: form.get("minutes"),
     focus: form.get("focus"),
+    ...(form.has("kind")
+      ? {
+          discovery: {
+            kind: form.get("kind"),
+            setting: form.get("setting"),
+            obstacle: form.get("obstacle"),
+            resources: form.get("resources"),
+          },
+        }
+      : {}),
   });
   if (!choice.success)
     return {

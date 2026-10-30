@@ -12,17 +12,19 @@ afterEach(cleanup);
 beforeEach(() => {
   home.mockResolvedValue({ name: "Builder", current: null, history: [] });
 });
-it("offers a first challenge from topic and time without a Discovery, profile or Mission prerequisite", async () => {
+it("opens compact Quest discovery without a profile or Mission prerequisite", async () => {
   render(
     await RealQuestsPage({
       searchParams: Promise.resolve({ district: "school" }),
     }),
   );
-  expect(screen.getByRole("combobox")).toHaveValue("school");
   expect(
-    screen.getByRole("button", { name: "Get my Quest →" }),
+    screen.getByRole("combobox", { name: "Choose the closest topic" }),
+  ).toHaveValue("school");
+  expect(
+    screen.getByRole("button", { name: "Continue →" }),
   ).toBeInTheDocument();
-  expect(screen.getAllByRole("radio")).toHaveLength(3);
+  expect(screen.getByText("Step 1 of 4")).toBeInTheDocument();
   expect(
     screen.queryByRole("link", { name: /profile|Mission|Discovery/i }),
   ).not.toBeInTheDocument();
@@ -44,7 +46,7 @@ it("continues the current owned attempt instead of starting another", async () =
     screen.getByRole("link", { name: "Continue my Quest →" }),
   ).toHaveAttribute("href", "/real-quests/owned");
   expect(
-    screen.queryByRole("button", { name: "Get my Quest →" }),
+    screen.queryByRole("button", { name: "Continue →" }),
   ).not.toBeInTheDocument();
 });
 it("ignores unknown district values and requires authenticated state", async () => {
@@ -53,7 +55,9 @@ it("ignores unknown district values and requires authenticated state", async () 
       searchParams: Promise.resolve({ district: "private narrative" }),
     }),
   );
-  expect(screen.getByRole("combobox")).toHaveValue("");
+  expect(
+    screen.getByRole("combobox", { name: "Choose the closest topic" }),
+  ).toHaveValue("");
 });
 it("requires authenticated state before exposing personal work", async () => {
   home.mockRejectedValue(new Error("AUTH_REQUIRED"));
