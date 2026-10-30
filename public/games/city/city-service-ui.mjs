@@ -40,6 +40,8 @@ export function mountCityServiceDesk({
     $("service-needs").textContent =
       current.served + " / " + current.demand + " service requests met";
     $("service-meter").style.width = ((100 * current.served) / current.demand) + "%";
+    $("service-meter").setAttribute("aria-valuenow", String(current.served));
+    $("service-meter").setAttribute("aria-valuemax", String(current.demand));
     $("service-status").textContent = current.description;
     $("service-drill").hidden = !current.built || current.fault !== null;
     $("service-build").textContent =

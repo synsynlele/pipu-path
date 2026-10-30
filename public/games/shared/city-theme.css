@@ -4493,3 +4493,45 @@ html.city-embedded .welcome-signin {
     min-height: 44px;
   }
 }
+
+
+/* Phase 2: a small service desk, never another full-screen overlay. */
+#service-panel {
+  position:absolute;z-index:80;top:max(70px,calc(env(safe-area-inset-top) + 60px));
+  right:max(12px,env(safe-area-inset-right));width:min(340px,calc(100vw - 24px));
+  max-height:min(67svh,570px);overflow-y:auto;overscroll-behavior:contain;
+  padding:14px;border-radius:18px;border:1px solid #abd8bf;
+  background:#f3fbf6f5;box-shadow:0 18px 45px #0a27365a;color:#193c39;
+}
+#service-panel[hidden]{display:none!important}
+#service-panel .service-heading{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+#service-panel .eyebrow{color:#2b715f;font-size:10px;font-weight:800}
+#service-panel h2{margin:5px 0 8px;font-size:20px;line-height:1.1}
+#service-panel p{font-size:12px;line-height:1.42;margin:6px 0}
+#service-panel #service-skill{font-size:11px;background:#e1f0e8;border-radius:8px;padding:8px;font-weight:700}
+#service-panel label{display:block;font-size:12px;font-weight:800}
+#service-panel select{margin:5px 0 8px;width:100%;min-height:44px;padding:7px;border:1px solid #86ab9e;border-radius:10px;color:#193c39;font-size:16px;background:#fff}
+#service-panel .service-track{height:10px;border-radius:12px;background:#c4d4d2;overflow:hidden;margin:3px 0 10px}
+#service-panel #service-meter{height:100%;background:#1f9274;transition:width 0.35s ease}
+#service-panel #service-needs{font-weight:900}
+#service-panel #service-event{font-weight:800;color:#a45123}
+#service-panel .service-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#service-panel button{min-height:44px;border:1px solid #6ca28f;border-radius:10px;background:#fff;color:#174639;font-size:12px;font-weight:800;padding:8px}
+#service-panel .service-actions button.primary{grid-column:span 2;background:#165d49;color:#fff;-webkit-text-fill-color:#fff}
+#service-panel .service-heading button{width:42px;flex:0 0 42px;padding:0;font-size:24px}
+#service-panel details{margin-top:10px}
+#service-panel summary{min-height:36px;cursor:pointer;font-weight:700}
+#service-panel ul{padding-left:17px;margin:7px 0;font-size:11px}
+#service-panel li{margin:5px 0}
+#service-panel .service-outage{color:#a45123;font-weight:800}
+#service-panel .service-ready{color:#1d7059}
+#service-panel small{display:block;font-size:10px;margin-top:10px;line-height:1.45}
+#build-victory #victory-service{font-weight:800;color:#ffe398}
+#build-lab #lab-recommendation{margin:4px 0;padding:5px 8px;font-size:11px;border-radius:8px;color:#184d42;background:#e2f5ec}
+#build-lab .lab-cell.lab-damaged{border:3px solid #dd6326;background:#ffdbc3}
+#build-lab .lab-cell.lab-repaired{border:3px solid #1b9470;background:#bff0d6}
+@media(max-width:620px){
+  #service-panel{top:auto;bottom:max(9px,env(safe-area-inset-bottom));right:10px;left:10px;width:auto;max-height:min(49svh,475px);padding:11px}
+}
+body:has(#service-panel:not([hidden])) #pilot-mission{display:none!important}
+@media(prefers-reduced-motion:reduce){#service-panel #service-meter{transition:none}}
