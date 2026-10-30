@@ -138,7 +138,7 @@ export function BuildStageGuide({
         <p className="text-xs font-bold text-[#2059bd]">STAGE {selected + 1}</p>
         <h3 className="mt-2 text-lg font-extrabold">{current.title}</h3>
         <p className="mt-2 text-sm leading-6 text-[#536883]">{current.hint}</p>
-        <p className="mt-4 text-base leading-7 font-semibold whitespace-pre-wrap text-[#153660]">
+        <p data-testid="active-stage-instruction" className="mt-4 text-base leading-7 font-semibold whitespace-pre-wrap text-[#153660]">
           {challenge.steps[selected]}
         </p>
       </div>
