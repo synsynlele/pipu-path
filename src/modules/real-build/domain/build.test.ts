@@ -89,7 +89,7 @@ it("records a truthful unsuccessful attempt but never an empty completion", () =
 });
 
 it("assigns deeper, safe challenge designs without implying verified ability", () => {
-  expect(difficultyLabel(1)).toBe("Starter");
+  expect(difficultyLabel(1)).toBe("First Challenge");
   expect(difficultyLabel(3)).toBe("Builder");
   expect(difficultyLabel(5)).toBe("Systems Thinker");
   const brief = publicChallengeBrief({ topic: "school", minutes: 15, focus: "I want to improve homework reminders." }, [], 5);
