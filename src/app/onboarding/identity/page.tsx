@@ -18,24 +18,10 @@ export default async function IdentityCheckpointPage() {
   return (
     <OnboardingShell
       activeStep={1}
-      title="Your adventure starts here."
-      description="Choose a name and your age group so your challenges fit you."
+      title="Let’s get you ready to build."
+      description="Tell us what to call you, then choose your privacy settings."
     >
       <Surface className="p-5 sm:p-7">
-        <div className="border-border mb-6 flex items-start gap-3 border-b pb-5">
-          <span
-            aria-hidden="true"
-            className="bg-primary-soft text-primary-light grid size-10 shrink-0 place-items-center rounded-full text-sm font-bold"
-          >
-            1
-          </span>
-          <div>
-            <h2 className="text-navy font-semibold">Your private identity</h2>
-            <p className="text-muted mt-1 text-sm leading-5">
-              Your answers stay private.
-            </p>
-          </div>
-        </div>
         <CheckpointForm />
       </Surface>
     </OnboardingShell>
