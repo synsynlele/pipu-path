@@ -107,13 +107,16 @@ export function mountCityServiceDesk({
           (item) => item.id === stage.active.choiceId,
         );
         const location = serviceFor(journey.lab, story.missionId);
-        const exposure =
-          Math.max(0, location.unmet) * choice.assumedPeriods;
+        const exposure = Math.max(0, location.unmet) * choice.assumedPeriods;
         notice.textContent =
-          choice.response + " " +
-          location.unmet + " of " + location.demand +
+          choice.response +
+          " " +
+          location.unmet +
+          " of " +
+          location.demand +
           " fictional local requests are currently unmet. " +
-          "Illustrative response exposure: " + exposure +
+          "Illustrative response exposure: " +
+          exposure +
           " unmet request-periods. The orange connector must be repaired and tested.";
         repair.hidden = false;
         repair.textContent = "Repair and test this same challenge →";
@@ -132,7 +135,8 @@ export function mountCityServiceDesk({
             if (outcome.status === "repair-required") {
               selected = outcome.scenario.missionId;
               statusMessage =
-                "You chose a response. The " + outcome.scenario.title +
+                "You chose a response. The " +
+                outcome.scenario.title +
                 " disruption is now visible in your city.";
               onFocus(selected);
             } else if (outcome.status === "already-resilient") {

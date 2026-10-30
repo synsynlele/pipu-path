@@ -17,10 +17,7 @@ import { createMilestoneScene } from "./build-milestone-scene.mjs";
 import { serviceFor } from "./city-service-system.mjs";
 import { skillRecommendation } from "./build-progression.mjs";
 import { mountCityServiceDesk } from "./city-service-ui.mjs";
-import {
-  beginStageThree,
-  finishStageThree,
-} from "./stage-three-scenarios.mjs";
+import { beginStageThree, finishStageThree } from "./stage-three-scenarios.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
 import {
@@ -3852,7 +3849,8 @@ const buildLab = mountBuildLab({
         $("victory-description").textContent =
           replay.choice.response +
           " You repaired and retested the connection in your city.";
-        $("victory-continue").textContent = "See the next neighbourhood challenge →";
+        $("victory-continue").textContent =
+          "See the next neighbourhood challenge →";
       }
     }
   },

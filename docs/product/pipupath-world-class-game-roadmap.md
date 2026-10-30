@@ -139,7 +139,7 @@ nor a successful Vercel build proves performance on student Android devices.
 ## Phase 3 · continuing reviewed builder challenges (first implemented slice)
 
 The first Phase 3 preview is stacked onto the **validated Phase 2 branch**,
-not deployed to production. It introduces 12 *authored, reviewed* service
+not deployed to production. It introduces 12 _authored, reviewed_ service
 failure narratives (three per district across four districts). They rotate
 through morning, afternoon and evening shift variants to avoid consecutive
 repeats. There is **no AI free-form hidden physics** or fabricated engineering.

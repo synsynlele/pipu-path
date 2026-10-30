@@ -565,63 +565,107 @@ console.log(
 // Stage 3 reuses the same city: reviewed question → fault → actual repair →
 // one city celebration. It is locked until all 36 and all five build tests.
 w.document.getElementById("help").click();
-assert.equal(w.document.getElementById("help-dialog").open,true);
-assert.match(w.document.getElementById("help-next-step").textContent,/Main city complete/);
-assert.match(w.document.getElementById("help-dialog").textContent,/Test my network/);
-assert.match(w.document.getElementById("help-dialog").textContent,/City services/);
-assert(!w.document.getElementById("help-dialog").textContent.includes("four districts have working challenges"));
+assert.equal(w.document.getElementById("help-dialog").open, true);
+assert.match(
+  w.document.getElementById("help-next-step").textContent,
+  /Main city complete/,
+);
+assert.match(
+  w.document.getElementById("help-dialog").textContent,
+  /Test my network/,
+);
+assert.match(
+  w.document.getElementById("help-dialog").textContent,
+  /City services/,
+);
+assert(
+  !w.document
+    .getElementById("help-dialog")
+    .textContent.includes("four districts have working challenges"),
+);
 w.document.getElementById("help-done").click();
-assert.equal(w.document.getElementById("help-dialog").open,false);
-const originalDecisions=JSON.stringify(game.state.decisions);
-const originalBuild=JSON.stringify(game.state.lab.boards["workshop-link"]);
-assert.equal(game.state.stageThree.round,0);
-assert.equal(game.state.stageThree.active,null);
+assert.equal(w.document.getElementById("help-dialog").open, false);
+const originalDecisions = JSON.stringify(game.state.decisions);
+const originalBuild = JSON.stringify(game.state.lab.boards["workshop-link"]);
+assert.equal(game.state.stageThree.round, 0);
+assert.equal(game.state.stageThree.active, null);
 w.document.getElementById("service-toggle").click();
-assert.equal(w.document.getElementById("service-panel").hidden,false);
-assert.equal(w.document.getElementById("stage-three").hidden,false);
-assert.match(w.document.getElementById("stage-three-title").textContent,/pump repair cannot wait/i);
-assert.equal(w.document.querySelectorAll("#stage-three-choices button").length,2);
+assert.equal(w.document.getElementById("service-panel").hidden, false);
+assert.equal(w.document.getElementById("stage-three").hidden, false);
+assert.match(
+  w.document.getElementById("stage-three-title").textContent,
+  /pump repair cannot wait/i,
+);
+assert.equal(
+  w.document.querySelectorAll("#stage-three-choices button").length,
+  2,
+);
 w.document.querySelector("#stage-three-choices button").click();
-assert.equal(game.state.stageThree.active.id,"workshop-pump");
-assert.equal(game.state.stageThree.active.choiceId,"protect");
-assert.equal(w.document.querySelectorAll("#stage-three-choices button").length,0);
-assert.equal(w.document.getElementById("stage-three-repair").hidden,false);
-const replayFault=game.state.lab.faults["workshop-link"];
+assert.equal(game.state.stageThree.active.id, "workshop-pump");
+assert.equal(game.state.stageThree.active.choiceId, "protect");
+assert.equal(
+  w.document.querySelectorAll("#stage-three-choices button").length,
+  0,
+);
+assert.equal(w.document.getElementById("stage-three-repair").hidden, false);
+const replayFault = game.state.lab.faults["workshop-link"];
 assert(Number.isInteger(replayFault));
 assert(game.buildMilestoneScene.buildings.get("workshop-link").offline);
 // Closing a challenge and reopening must NOT create a new one or erase the fault.
 w.document.getElementById("service-close").click();
 w.document.getElementById("service-toggle").click();
-assert.equal(game.state.stageThree.round,0);
-assert.equal(game.state.stageThree.active.cell,replayFault);
+assert.equal(game.state.stageThree.round, 0);
+assert.equal(game.state.stageThree.active.cell, replayFault);
 w.document.getElementById("stage-three-repair").click();
-assert.equal(w.document.getElementById("service-panel").hidden,true);
-assert.equal(w.document.getElementById("build-lab").open,true);
-const rRow=Math.floor(replayFault/5)+1,rCol=(replayFault%5)+1;
-const brokenTile=w.document.querySelector(
-  '[aria-label^="Row '+rRow+', column '+rCol+': Broken connection."]'
+assert.equal(w.document.getElementById("service-panel").hidden, true);
+assert.equal(w.document.getElementById("build-lab").open, true);
+const rRow = Math.floor(replayFault / 5) + 1,
+  rCol = (replayFault % 5) + 1;
+const brokenTile = w.document.querySelector(
+  '[aria-label^="Row ' + rRow + ", column " + rCol + ': Broken connection."]',
 );
-assert(brokenTile,"One real broken connector must be marked for repair");
+assert(brokenTile, "One real broken connector must be marked for repair");
 brokenTile.click();
 w.document.getElementById("lab-test").click();
-assert.match(w.document.getElementById("lab-result").textContent,/It works!/);
-assert.equal(game.state.lab.faults["workshop-link"],null);
-assert.equal(game.state.stageThree.round,0,"Repair not certified until seen in the city");
+assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
+assert.equal(game.state.lab.faults["workshop-link"], null);
+assert.equal(
+  game.state.stageThree.round,
+  0,
+  "Repair not certified until seen in the city",
+);
 w.document.getElementById("lab-see-city").click();
-assert.equal(game.state.stageThree.round,1);
-assert.equal(game.state.stageThree.active,null);
-assert.match(w.document.getElementById("victory-kicker").textContent,/BUILDER CHALLENGE COMPLETE/);
-assert.match(w.document.getElementById("victory-title").textContent,/pump repair cannot wait/i);
-assert.equal(w.document.getElementById("pilot-mission").hidden,true);
-assert.equal(JSON.stringify(game.state.decisions),originalDecisions);
-assert.equal(JSON.stringify(game.state.lab.boards["workshop-link"]),originalBuild);
+assert.equal(game.state.stageThree.round, 1);
+assert.equal(game.state.stageThree.active, null);
+assert.match(
+  w.document.getElementById("victory-kicker").textContent,
+  /BUILDER CHALLENGE COMPLETE/,
+);
+assert.match(
+  w.document.getElementById("victory-title").textContent,
+  /pump repair cannot wait/i,
+);
+assert.equal(w.document.getElementById("pilot-mission").hidden, true);
+assert.equal(JSON.stringify(game.state.decisions), originalDecisions);
+assert.equal(
+  JSON.stringify(game.state.lab.boards["workshop-link"]),
+  originalBuild,
+);
 w.document.getElementById("victory-continue").click();
-assert.equal(w.document.getElementById("build-victory").hidden,true);
-assert.equal(w.document.getElementById("service-panel").hidden,false);
-assert.match(w.document.getElementById("stage-three-title").textContent,/clinic ready/i);
-assert.equal(w.document.querySelectorAll("#stage-three-choices button").length,2);
+assert.equal(w.document.getElementById("build-victory").hidden, true);
+assert.equal(w.document.getElementById("service-panel").hidden, false);
+assert.match(
+  w.document.getElementById("stage-three-title").textContent,
+  /clinic ready/i,
+);
+assert.equal(
+  w.document.querySelectorAll("#stage-three-choices button").length,
+  2,
+);
 w.document.getElementById("service-close").click();
-console.log("PASS: updated game guide and integrated Phase 3 replay: decision, true city outage, resumable repair, one reward and next approved scenario.");
+console.log(
+  "PASS: updated game guide and integrated Phase 3 replay: decision, true city outage, resumable repair, one reward and next approved scenario.",
+);
 
 game.openBuiltCityView();
 now += 100;

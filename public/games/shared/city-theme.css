@@ -4778,7 +4778,6 @@ body.city-integrated #detail[data-mode="outcome"] .case-tools button {
   }
 }
 
-
 /* The ? guide stays scrollable, friendly and usable on narrow Android screens. */
 #help-dialog {
   width: min(540px, calc(100vw - 24px));
@@ -4839,13 +4838,19 @@ body.city-integrated #detail[data-mode="outcome"] .case-tools button {
   margin-top: 10px;
 }
 @media (max-width: 620px) {
-  #help-dialog { padding: 12px; max-height: 83svh; }
-  #help-dialog .game-guide-steps li { font-size: 12px; }
+  #help-dialog {
+    padding: 12px;
+    max-height: 83svh;
+  }
+  #help-dialog .game-guide-steps li {
+    font-size: 12px;
+  }
 }
 
-
 /* Phase 3 is part of the same compact service desk, not a new game overlay. */
-#service-panel #stage-three[hidden] { display: none !important; }
+#service-panel #stage-three[hidden] {
+  display: none !important;
+}
 #service-panel #stage-three {
   margin: 12px 0 10px;
   padding: 10px;
@@ -4862,9 +4867,18 @@ body.city-integrated #detail[data-mode="outcome"] .case-tools button {
   font-size: 10px;
   font-weight: 800;
 }
-#service-panel #stage-three h3 { margin: 8px 0 6px; font-size: 16px; line-height: 1.2; }
-#service-panel #stage-three p { font-size: 12px; line-height: 1.45; }
-#service-panel #stage-three-question { font-weight: 800; }
+#service-panel #stage-three h3 {
+  margin: 8px 0 6px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+#service-panel #stage-three p {
+  font-size: 12px;
+  line-height: 1.45;
+}
+#service-panel #stage-three-question {
+  font-weight: 800;
+}
 #service-panel #stage-three-choices {
   display: grid;
   gap: 7px;
