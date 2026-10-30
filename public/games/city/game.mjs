@@ -14,7 +14,7 @@ import {
   completedMilestones,
 } from "./build-milestones.mjs";
 import { createMilestoneScene } from "./build-milestone-scene.mjs";
-import { serviceImpact, serviceFor } from "./city-service-system.mjs";
+import { serviceFor } from "./city-service-system.mjs";
 import { skillRecommendation } from "./build-progression.mjs";
 import { mountCityServiceDesk } from "./city-service-ui.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
