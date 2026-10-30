@@ -70,6 +70,7 @@ it("passes only public level instructions to AI at higher difficulty", async () 
       "challengeDesign",
       "difficulty",
       "minutes",
+      "improvementGoal",
       "safeStartingIdea",
       "topic",
     ].sort(),
