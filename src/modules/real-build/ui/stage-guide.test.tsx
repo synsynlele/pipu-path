@@ -27,14 +27,17 @@ it("shows one actionable stage at a time with accessible navigation", () => {
       status="active"
     />,
   );
-  expect(screen.getByRole("heading", { name: "Build it in five stages" })).toBeInTheDocument();
-  expect(screen.getByText(challenge.steps[0])).toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Build it in five stages" }),
+  ).toBeInTheDocument();
+  expect(screen.getByTestId("active-stage-instruction")).toHaveTextContent(challenge.steps[0]);
   fireEvent.click(screen.getByRole("button", { name: "Next stage →" }));
-  expect(screen.getByText(challenge.steps[1])).toBeInTheDocument();
+  expect(screen.getByTestId("active-stage-instruction")).toHaveTextContent(challenge.steps[1]);
   fireEvent.click(screen.getByRole("button", { name: "5. Improve" }));
-  expect(screen.getByRole("link", { name: /Record my real-world result/ })).toHaveAttribute(
-    "href",
-    "#evidence-heading",
-  );
-  expect(screen.getByText(/does not verify completed work/)).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: /Record my real-world result/ }),
+  ).toHaveAttribute("href", "#evidence-heading");
+  expect(
+    screen.getByText(/does not verify completed work/),
+  ).toBeInTheDocument();
 });

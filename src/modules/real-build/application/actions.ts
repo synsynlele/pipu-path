@@ -37,7 +37,10 @@ export async function tailorReviewedBuild(
     .eq("status", "active")
     .maybeSingle();
   if (existing.error || !existing.data)
-    return { ok: false, message: "This Quest is no longer active. Reload the page." };
+    return {
+      ok: false,
+      message: "This Quest is no longer active. Reload the page.",
+    };
   const old = existing.data;
   if (old.source !== "reviewed")
     return { ok: false, message: "This Quest is already AI-generated." };
@@ -50,7 +53,8 @@ export async function tailorReviewedBuild(
   )
     return {
       ok: false,
-      message: "You already have evidence here. Save or set aside this Quest first so your work is not replaced.",
+      message:
+        "You already have evidence here. Save or set aside this Quest first so your work is not replaced.",
     };
   const choice = choiceSchema.safeParse({
     topic: old.topic,
@@ -58,12 +62,20 @@ export async function tailorReviewedBuild(
     focus: old.focus,
   });
   if (!choice.success)
-    return { ok: false, message: "This goal needs a fresh Quest. Set aside the starter and try again." };
+    return {
+      ok: false,
+      message:
+        "This goal needs a fresh Quest. Set aside the starter and try again.",
+    };
   const focusKey = createHash("sha256")
     .update(
       REAL_BUILD_CONTENT_VERSION +
         ":" +
-        choice.data.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim(),
+        choice.data.focus
+          .normalize("NFKC")
+          .toLowerCase()
+          .replace(/\s+/g, " ")
+          .trim(),
     )
     .digest("hex");
   const pool = await service
@@ -77,7 +89,10 @@ export async function tailorReviewedBuild(
     .order("created_at", { ascending: false })
     .limit(10);
   if (pool.error)
-    return { ok: false, message: "Could not check your tailored Quest. Please try again." };
+    return {
+      ok: false,
+      message: "Could not check your tailored Quest. Please try again.",
+    };
   let template = (pool.data ?? []).find((row) => {
     try {
       validateChallenge(row.challenge);
@@ -91,23 +106,24 @@ export async function tailorReviewedBuild(
       user_input: user.id,
     });
     if (allowed.error)
-      return { ok: false, message: "Could not check AI availability. Try again." };
+      return {
+        ok: false,
+        message: "Could not check AI availability. Try again.",
+      };
     if (!allowed.data)
       return {
         ok: false,
-        message: "Your AI request limit has been reached. Your current Quest is safe; try later.",
+        message:
+          "Your AI request limit has been reached. Your current Quest is safe; try later.",
       };
     let challenge;
     try {
-      challenge = await generateBuildTemplate(
-        choice.data,
-        [],
-        old.difficulty,
-      );
+      challenge = await generateBuildTemplate(choice.data, [], old.difficulty);
     } catch (error) {
       logger.warn("real_build_explicit_tailoring_failed", {
         code:
-          error instanceof Error && /^(BUILD_|OPENAI_)[A-Z_0-9]+$/.test(error.message)
+          error instanceof Error &&
+          /^(BUILD_|OPENAI_)[A-Z_0-9]+$/.test(error.message)
             ? error.message
             : "BUILD_INVALID_AI_OUTPUT",
       });
@@ -132,7 +148,8 @@ export async function tailorReviewedBuild(
     if (savedTemplate.error || !savedTemplate.data)
       return {
         ok: false,
-        message: "The tailored Quest was created but could not be saved. Your current Quest is safe.",
+        message:
+          "The tailored Quest was created but could not be saved. Your current Quest is safe.",
       };
     template = savedTemplate.data;
   }
@@ -154,13 +171,13 @@ export async function tailorReviewedBuild(
   if (updated.error || !updated.data)
     return {
       ok: false,
-      message: "Your Quest changed in another tab. Your existing work is safe; reload to see it.",
+      message:
+        "Your Quest changed in another tab. Your existing work is safe; reload to see it.",
     };
   revalidatePath("/real-quests");
   revalidatePath(`/real-quests/${old.id}`);
   redirect(`/real-quests/${old.id}`);
 }
-
 
 export async function startRealBuild(
   _previous: BuildFormState,

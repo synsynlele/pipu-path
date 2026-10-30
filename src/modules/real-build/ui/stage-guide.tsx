@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { BuildChallenge } from "../domain/build";
 
 const stageLabels = [
@@ -50,29 +50,47 @@ export function BuildStageGuide({
   status: "active" | "recorded" | "archived";
 }) {
   const key = `pipupath:build-stage:${id}`;
-  const [selected, setSelected] = useState(0);
+  const storedStage = useSyncExternalStore(
+    (callback) => {
+      window.addEventListener("storage", callback);
+      window.addEventListener("pipupath:stage-changed", callback);
+      return () => {
+        window.removeEventListener("storage", callback);
+        window.removeEventListener("pipupath:stage-changed", callback);
+      };
+    },
+    () => readStage(key),
+    () => 0,
+  );
+  const [unpersistedStage, setUnpersistedStage] = useState<number | null>(null);
+  const selected = unpersistedStage ?? storedStage;
   const [tried, setTried] = useState<number[]>([]);
-  useEffect(() => {
-    setSelected(readStage(key));
-  }, [key]);
+
   const current = stageLabels[selected];
 
   function goTo(index: number) {
     if (index < 0 || index >= stageLabels.length) return;
-    setSelected(index);
     try {
       window.localStorage.setItem(key, String(index));
+      setUnpersistedStage(null);
+      window.dispatchEvent(new Event("pipupath:stage-changed"));
     } catch {
-      // The guide still works when a browser blocks local storage.
+      // Navigation remains available even if storage is disabled.
+      setUnpersistedStage(index);
     }
   }
   function markTried() {
-    setTried((items) => (items.includes(selected) ? items : [...items, selected]));
+    setTried((items) =>
+      items.includes(selected) ? items : [...items, selected],
+    );
     goTo(Math.min(selected + 1, stageLabels.length - 1));
   }
 
   return (
-    <section className="build-card mt-6 space-y-4" aria-labelledby="staged-quest-heading">
+    <section
+      className="build-card mt-6 space-y-4"
+      aria-labelledby="staged-quest-heading"
+    >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-xs font-bold tracking-wide text-[#2059bd] uppercase">
@@ -86,7 +104,10 @@ export function BuildStageGuide({
           Stage {selected + 1} of 5
         </span>
       </div>
-      <div className="h-2 overflow-hidden rounded-full bg-[#dbe9fa]" aria-hidden="true">
+      <div
+        className="h-2 overflow-hidden rounded-full bg-[#dbe9fa]"
+        aria-hidden="true"
+      >
         <div
           className="h-full rounded-full bg-[#2865bd] transition-[width]"
           style={{ width: `${((selected + 1) / 5) * 100}%` }}
@@ -117,7 +138,7 @@ export function BuildStageGuide({
         <p className="text-xs font-bold text-[#2059bd]">STAGE {selected + 1}</p>
         <h3 className="mt-2 text-lg font-extrabold">{current.title}</h3>
         <p className="mt-2 text-sm leading-6 text-[#536883]">{current.hint}</p>
-        <p className="mt-4 whitespace-pre-wrap text-base font-semibold leading-7 text-[#153660]">
+        <p className="mt-4 text-base leading-7 font-semibold whitespace-pre-wrap text-[#153660]">
           {challenge.steps[selected]}
         </p>
       </div>
@@ -143,7 +164,9 @@ export function BuildStageGuide({
             href="#evidence-heading"
             className="flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#2059bd] px-4 text-sm font-bold text-white"
           >
-            {status === "active" ? "Record my real-world result →" : "Review my result →"}
+            {status === "active"
+              ? "Record my real-world result →"
+              : "Review my result →"}
           </a>
         )}
         {status === "active" && selected < 4 ? (
@@ -152,7 +175,9 @@ export function BuildStageGuide({
             onClick={markTried}
             className="min-h-11 w-full rounded-xl border border-[#bed5ea] bg-[#e9f3f4] px-4 text-sm font-semibold text-[#185a61]"
           >
-            {tried.includes(selected) ? "I tried this • Continue →" : "I tried this stage ✓"}
+            {tried.includes(selected)
+              ? "I tried this • Continue →"
+              : "I tried this stage ✓"}
           </button>
         ) : null}
       </div>

@@ -24,13 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format Quest stages and run full validation
-        run: |
-          npx prettier --write "src/app/real-quests/[buildId]/page.tsx" src/modules/real-build/application/actions.test.ts src/modules/real-build/application/actions.ts src/modules/real-build/infrastructure/provider.test.ts src/modules/real-build/infrastructure/provider.ts src/modules/real-build/ui/stage-guide.test.tsx src/modules/real-build/ui/stage-guide.tsx src/modules/real-build/ui/tailor-reviewed-button.tsx
-          echo QUEST_STAGES_PATCH_BEGIN
-          git diff -- "src/app/real-quests/[buildId]/page.tsx" src/modules/real-build/application/actions.test.ts src/modules/real-build/application/actions.ts src/modules/real-build/infrastructure/provider.test.ts src/modules/real-build/infrastructure/provider.ts src/modules/real-build/ui/stage-guide.test.tsx src/modules/real-build/ui/stage-guide.tsx src/modules/real-build/ui/tailor-reviewed-button.tsx
-          echo QUEST_STAGES_PATCH_END
-          npm run validate
+      - run: npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'

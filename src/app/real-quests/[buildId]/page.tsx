@@ -45,8 +45,8 @@ export default async function RealBuildPage({
       {build.source === "reviewed" ? (
         <p className="mt-3 rounded-xl border border-[#c8dbf7] bg-[#eef5ff] p-3 text-sm leading-6 text-[#264e89]">
           Reviewed starter Quest · This practical activity was prepared by
-          PipuPath rather than generated for your exact goal by AI. It may
-          not fit your problem. You can ask AI to design a more specific Quest
+          PipuPath rather than generated for your exact goal by AI. It may not
+          fit your problem. You can ask AI to design a more specific Quest
           without losing any saved evidence.
         </p>
       ) : null}

@@ -25,7 +25,9 @@ it("authors a bounded public template without forwarding private properties", as
   expect(await generateBuildTemplate(choice, [])).toEqual(challenge);
   const input = request.mock.calls[0][0];
   expect(input.timeoutMs).toBe(35000);
-  expect(input.instructions).toContain("improvementGoal is the learner\u0027s EXACT problem");
+  expect(input.instructions).toContain(
+    "improvementGoal is the learner\u0027s EXACT problem",
+  );
   expect(input.instructions).toContain("1 DISCOVER");
   expect(input.instructions).toContain("5 IMPROVE");
   expect(input.prompt).not.toMatch(

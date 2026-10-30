@@ -27,7 +27,9 @@ export function TailorReviewedButton({ id }: { id: string }) {
               );
               setMessage(response.message);
             } catch {
-              setMessage("The connection was interrupted. Your original Quest is unchanged.");
+              setMessage(
+                "The connection was interrupted. Your original Quest is unchanged.",
+              );
             } finally {
               setWorking(false);
             }
@@ -48,8 +50,8 @@ export function TailorReviewedButton({ id }: { id: string }) {
       </button>
       <p className="text-xs leading-5 text-[#536883]">
         AI is attempted only when you choose this. If AI cannot create a safe
-        goal-specific Quest, your current starter stays unchanged. An AI
-        request counts toward your usage limit.
+        goal-specific Quest, your current starter stays unchanged. An AI request
+        counts toward your usage limit.
       </p>
       {message ? (
         <p role="alert" className="text-sm text-[#ad293e]">

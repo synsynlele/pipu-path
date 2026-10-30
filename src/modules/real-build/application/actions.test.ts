@@ -11,10 +11,17 @@ vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
 }));
 vi.mock("../infrastructure/client", () => ({ buildServiceClient: m.service }));
 vi.mock("./start-build", () => ({ startBuildForUser: m.start }));
-vi.mock("../infrastructure/provider", () => ({ generateBuildTemplate: vi.fn() }));
+vi.mock("../infrastructure/provider", () => ({
+  generateBuildTemplate: vi.fn(),
+}));
 vi.mock("next/cache", () => ({ revalidatePath: m.revalidate }));
 vi.mock("next/navigation", () => ({ redirect: m.redirect }));
-import { saveRealBuild, startRealBuild, improveRealBuild, tailorReviewedBuild } from "./actions";
+import {
+  saveRealBuild,
+  startRealBuild,
+  improveRealBuild,
+  tailorReviewedBuild,
+} from "./actions";
 const id = "10000000-0000-4000-8000-000000000001";
 let calls: unknown[][], results: unknown[];
 function form(intent = "save") {

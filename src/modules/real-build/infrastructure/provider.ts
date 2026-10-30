@@ -50,7 +50,11 @@ export async function generateBuildTemplate(
             : "BUILD_INVALID_AI_OUTPUT",
       fields:
         error instanceof ZodError
-          ? [...new Set(error.issues.map((issue) => String(issue.path[0] ?? "root")))].slice(0, 7)
+          ? [
+              ...new Set(
+                error.issues.map((issue) => String(issue.path[0] ?? "root")),
+              ),
+            ].slice(0, 7)
           : [],
     });
     throw error;
