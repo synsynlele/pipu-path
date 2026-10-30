@@ -7,7 +7,7 @@ export function BuildShell({ children }: { children: React.ReactNode }) {
     <div className="pp-simple-build min-h-svh bg-[linear-gradient(160deg,#f4f8ff_0%,#eff6ff_42%,#f7fafc_100%)] text-[#17375f]">
       <style>{`
  .pp-simple-build {color-scheme:light; --foreground:#17375f; --muted:#536883; --border:#d6e4f5; --panel:#fff; --panel-raised:#f4f8ff; --color-primary-700:#2059bd; --color-text:#17375f;}
- .pp-simple-build a:not(.pp-tab-link) {color:#2059bd; -webkit-text-fill-color:currentColor;}
+ .pp-simple-build a:not(.pp-tab-link):not(.build-primary) {color:#2059bd; -webkit-text-fill-color:currentColor;}
  .pp-simple-build input,.pp-simple-build textarea,.pp-simple-build select {background:#fff;color:#17375f;border:1px solid #b8cde6;border-radius:12px;padding:12px;min-height:48px;width:100%;font-size:16px;}
  .pp-simple-build input[type=radio] {width:20px;min-height:20px;accent-color:#2059bd;}
  .pp-simple-build input[type=file] {font-size:14px;}
@@ -19,7 +19,6 @@ export function BuildShell({ children }: { children: React.ReactNode }) {
  .pp-simple-build .build-card {border:1px solid #d8e5f5;background:white;border-radius:20px;padding:20px;box-shadow:0 7px 24px rgba(22,53,96,.04);}
  .pp-simple-build label {display:block;font-weight:600;font-size:14px;}
  .pp-simple-build p {overflow-wrap:anywhere;}
- .pp-simple-build .pp-tab-link {color:inherit;-webkit-text-fill-color:currentColor;}
  `}</style>
       <header className="sticky top-0 z-40 border-b border-[#dce7f6] bg-white/95 px-4 pt-[env(safe-area-inset-top)] shadow-[0_3px_18px_rgba(20,49,92,0.04)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 py-3">
