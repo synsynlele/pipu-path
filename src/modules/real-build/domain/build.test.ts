@@ -193,3 +193,20 @@ it("accepts phone gestures, valid setup verbs and explicit cautions without perm
     }),
   ).toThrow("BUILD_NOT_PRACTICAL");
 });
+
+it("recognises real cooking/service delivery and pilot tests beyond construction vocabulary", () => {
+  expect(
+    validateChallenge({
+      ...challenge,
+      title: "Cook a useful shared snack",
+      steps: [
+        "Ask a familiar consenting person what snack they need.",
+        "Gather existing safe ingredients with permission.",
+        "Cook a small familiar snack for the consenting person.",
+        "Evaluate the actual portion and feedback from the person.",
+        "Adjust the serving after observing the real result.",
+      ],
+      materials: ["Existing safe ingredients"],
+    }),
+  ).toBeTruthy();
+});

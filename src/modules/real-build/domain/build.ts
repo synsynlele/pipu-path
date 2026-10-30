@@ -112,7 +112,7 @@ export function canRecordAttempt(draft: BuildDraft) {
 const planOnly =
   /\b(?:worksheet|slideshow|role[- ]?play|fictional|simulation|simulate|mock[- ]?up|pretend|written plan)\b|\b(?:paper|cardboard)\s+(?:model|prototype|tracker|project|tower|bridge|plan|poster)\b|\b(?:draw|drawing|sketch|sketching)\s+(?:(?:a|an|the|your|simple|small|rough)\s+){0,3}(?:plan|diagram|poster|picture|solution|idea|design)\b|\b(?:make|create|prepare|design)\s+(?:(?:a|an|the|your|simple|small|short)\s+){0,3}(?:poster|diagram|presentation|slides|paper|cardboard)\b/i;
 const practicalAction =
-  /\b(?:build|set up|reorganis(?:e|ing)|reorganiz(?:e|ing)|organis(?:e|ing)|organiz(?:e|ing)|repair|fix|reuse|repurpose|run|deliver|plant|install|start|update|make|assemble|improve|change|label|sort|configure|create|teach|coach|launch|clean|collect|introduce|serve|put|arrange|implement|enable|activate|switch|turn on|place|position|add|move|schedule|connect|fit|secure|apply|wash|fill|remove|offer|share|invite|send)\b/i;
+  /\b(?:build|set up|reorganis(?:e|ing)|reorganiz(?:e|ing)|organis(?:e|ing)|organiz(?:e|ing)|repair|fix|reuse|repurpose|run|deliver|plant|install|start|update|make|assemble|improve|change|label|sort|configure|create|teach|coach|launch|clean|collect|introduce|serve|put|arrange|implement|enable|activate|switch|turn on|place|position|add|move|schedule|connect|fit|secure|apply|wash|fill|remove|offer|share|invite|send|prepare|cook|bake|host|pair|pack|distribute|harvest|water|sew|stitch|weave|refill|weigh|demonstrate|guide|toggle)\b/i;
 export class BuildPracticalityError extends Error {
   constructor(
     readonly rule: "PAPER_ONLY" | "NO_IMPLEMENTATION" | "NO_REAL_TEST",
@@ -121,7 +121,7 @@ export class BuildPracticalityError extends Error {
   }
 }
 const realTest =
-  /\b(?:test|try|measure|check|compare|observe|count|use|feedback|verify|trial)\b/i;
+  /\b(?:test|try|measure|check|compare|observe|count|use|feedback|verify|trial|pilot|evaluate|assess|track|monitor)\b/i;
 export function isRetiredPaperworkChallenge(input: unknown): boolean {
   const parsed = challengeSchema.safeParse(input);
   return (
