@@ -6,6 +6,7 @@ import {
   placeLabPiece,
   evaluateLab,
 } from "./build-lab.mjs";
+import { skillRecommendation } from "./build-progression.mjs";
 const names = ["north", "east", "south", "west"];
 function symbol(piece) {
   const ends = [
@@ -34,7 +35,9 @@ export function mountBuildLab({
   const dialog = $("build-lab");
   let brush = { kind: "straight", turn: 0 },
     result = null,
-    returnFocus = null;
+    returnFocus = null,
+    pendingRepair = null,
+    recoveredTest = false;
   const grid = $("lab-grid");
   const buttons = Array.from({ length: 25 }, (_, cell) => {
     const button = document.createElement("button");
@@ -42,6 +45,15 @@ export function mountBuildLab({
     button.onclick = () => {
       const state = sanitizeLab(read()),
         mission = labMission(state.active);
+      if (state.faults[mission.id] === cell) {
+        // A broken link is an explicit repair action. The network stays
+        // interrupted until the player successfully runs the Test control.
+        pendingRepair = mission.id;
+        result = null;
+        render();
+        return;
+      }
+      pendingRepair = null;
       state.boards[mission.id] = placeLabPiece(
         mission,
         state.boards[mission.id],
@@ -68,9 +80,15 @@ export function mountBuildLab({
       board = state.boards[mission.id];
     $("lab-mission").value = mission.id;
     $("lab-brief").textContent = mission.brief;
+    const guidance = skillRecommendation(state);
+    $("lab-recommendation").textContent =
+      guidance.tier + " · " + guidance.message +
+      " Suggested next: " + guidance.recommendedTitle;
     $("lab-see-city").hidden = !result?.success;
     if (result?.success) {
-      $("lab-see-city").textContent = "See what I built in my city →";
+      $("lab-see-city").textContent = recoveredTest
+        ? "See my restored city service →"
+        : "See what I built in my city →";
     }
     $("lab-budget").textContent =
       `${evaluateLab(mission, board).cost} / ${mission.budget} pieces used`;
@@ -107,11 +125,18 @@ export function mountBuildLab({
         "lab-cell" +
         (fixed ? " lab-fixed" : "") +
         (result?.reached.includes(cell) ? " lab-powered" : "") +
-        (result?.vulnerable === cell ? " lab-fault" : "");
+        (result?.vulnerable === cell ? " lab-fault" : "") +
+        (state.faults[mission.id] === cell ? " lab-damaged" : "") +
+        (pendingRepair === mission.id && state.faults[mission.id] === cell
+          ? " lab-repaired" : "");
       button.setAttribute(
         "aria-label",
         `Row ${Math.floor(cell / 5) + 1}, column ${(cell % 5) + 1}: ` +
-          (source
+          (state.faults[mission.id] === cell
+            ? pendingRepair === mission.id
+              ? "Repaired connection. Test it to restore service."
+              : "Broken connection. Tap to repair this piece."
+            : source
             ? "Supply"
             : target
               ? target.name
@@ -132,7 +157,11 @@ export function mountBuildLab({
     });
     $("lab-result").textContent =
       result?.message ??
-      "Place your pieces, then test your network. You can change any piece and try again.";
+      (state.faults[mission.id] !== null
+        ? pendingRepair === mission.id
+          ? "You repaired the damaged piece. Now press Test my network to restore service."
+          : "An outage broke the orange-marked connection. Tap the damaged piece, then Test your repair."
+        : "Place your pieces, then test your network. You can change any piece and try again.");
     $("lab-result").className = result
       ? result.success
         ? "lab-result lab-success"
@@ -146,6 +175,8 @@ export function mountBuildLab({
     state.active = id;
     write(state);
     result = null;
+    pendingRepair = null;
+    recoveredTest = false;
     $("lab-hint-copy").hidden = true;
     render();
   }
@@ -157,16 +188,27 @@ export function mountBuildLab({
     };
   });
   $("lab-hint").onclick = () => {
-    $("lab-hint-copy").hidden = !$("lab-hint-copy").hidden;
-    $("lab-hint").textContent = $("lab-hint-copy").hidden
-      ? "Need a hint? Show a first move"
-      : "Hide the hint";
+    const show = $("lab-hint-copy").hidden;
+    $("lab-hint-copy").hidden = !show;
+    if (show) {
+      const state = sanitizeLab(read());
+      state.attempts[state.active].hints = Math.min(
+        30,
+        state.attempts[state.active].hints + 1,
+      );
+      write(state);
+    }
+    $("lab-hint").textContent = show
+      ? "Hide the hint"
+      : "Need a hint? Show a first move";
+    render();
   };
   $("lab-see-city").onclick = () => {
     if (result?.success) {
       const missionId = sanitizeLab(read()).active;
+      const recovered = recoveredTest;
       dialog.close();
-      onReveal({ missionId });
+      onReveal({ missionId, recovered });
     }
   };
   $("lab-rotate").onclick = () => {
@@ -175,17 +217,45 @@ export function mountBuildLab({
   };
   $("lab-test").onclick = () => {
     const state = sanitizeLab(read());
-    result = evaluateLab(labMission(state.active), state.boards[state.active]);
-    state.tested = state.tested.filter((id) => id !== state.active);
-    if (result.success) state.tested.push(state.active);
+    const mission = labMission(state.active);
+    const fault = state.faults[state.active];
+    const repaired = fault !== null && pendingRepair === state.active;
+    // The damaged component does not transmit supply until actually repaired.
+    const trialBoard = fault !== null && !repaired
+      ? state.boards[state.active].map((piece, index) =>
+          index === fault ? null : piece,
+        )
+      : state.boards[state.active];
+    result = evaluateLab(mission, trialBoard);
+    const record = state.attempts[state.active];
+    record.tests = Math.min(30, record.tests + 1);
+    if (result.success) record.successes = Math.min(30, record.successes + 1);
+    if (result.success) {
+      state.tested = state.tested.filter((id) => id !== state.active);
+      state.tested.push(state.active);
+      if (repaired) state.faults[state.active] = null;
+    } else if (fault === null) {
+      // A broken city facility remains physically present during a
+      // repair drill; only its service is interrupted.
+      state.tested = state.tested.filter((id) => id !== state.active);
+    }
+    recoveredTest = repaired && result.success;
+    pendingRepair = null;
     write(state);
-    onTest({ missionId: state.active, success: result.success });
+    onTest({
+      missionId: state.active,
+      success: result.success,
+      recovered: recoveredTest,
+    });
     render();
   };
   $("lab-clear").onclick = () => {
     const state = sanitizeLab(read());
     state.boards[state.active] = Array(25).fill(null);
     state.tested = state.tested.filter((id) => id !== state.active);
+    state.faults[state.active] = null;
+    pendingRepair = null;
+    recoveredTest = false;
     write(state);
     result = null;
     render();
@@ -195,7 +265,8 @@ export function mountBuildLab({
       (m) => m.id === sanitizeLab(read()).active,
     );
     selectMission(
-      LAB_MISSIONS[Math.min(current + 1, LAB_MISSIONS.length - 1)].id,
+      skillRecommendation(read()).recommendedId ??
+        LAB_MISSIONS[Math.min(current + 1, LAB_MISSIONS.length - 1)].id,
     );
   };
   $("lab-close").onclick = () => dialog.close();
@@ -223,6 +294,8 @@ export function mountBuildLab({
         : "Build Lab";
       $("lab-first-brief").hidden = !firstMission;
       $("lab-hint-copy").hidden = true;
+      pendingRepair = null;
+      recoveredTest = false;
       beforeOpen();
       if (missionId && LAB_MISSIONS.some((item) => item.id === missionId)) {
         const current = sanitizeLab(read());
