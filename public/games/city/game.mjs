@@ -1344,7 +1344,9 @@ function runCaseWorldAction(caseId, choiceId) {
   }
   // One choice is the only required action: the world and practice record
   // update immediately. No second 'Keep' confirmation is needed.
-  playtest.note(getChoice(caseId, state.decisions[caseId]) ? "revision" : "decision");
+  playtest.note(
+    getChoice(caseId, state.decisions[caseId]) ? "revision" : "decision",
+  );
   state.decisions = saveDecision(state.decisions, caseId, choiceId);
   previewDecision = { caseId, choiceId };
   render();
@@ -2704,7 +2706,7 @@ function showCaseOutcome(id, choiceId) {
           : null;
   const worksitePrompt = worksiteMission
     ? '<div class="case-worksite"><strong>Want to build a solution yourself?</strong>' +
-      '<p>Place connections, test your plan, and improve it. Optional practice only; your city progress is unchanged.</p>' +
+      "<p>Place connections, test your plan, and improve it. Optional practice only; your city progress is unchanged.</p>" +
       '<button id="case-worksite" type="button">Try hands-on building →</button></div>'
     : "";
   const signals = option.impact
@@ -3623,7 +3625,8 @@ $("city-map").onclick = () => {
 };
 const buildLab = mountBuildLab({
   read: () => state.lab,
-  onTest: ({ success }) => playtest.note(success ? "prototype_pass" : "prototype_retry"),
+  onTest: ({ success }) =>
+    playtest.note(success ? "prototype_pass" : "prototype_retry"),
   write: (lab) => {
     state.lab = lab;
     persistPractice();

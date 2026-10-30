@@ -4100,8 +4100,15 @@ html.city-embedded .welcome-signin {
   background: #e8f7f0;
   color: #214b3d;
 }
-#detail .case-worksite strong { display: block; font-size: 13px; }
-#detail .case-worksite p { margin: 6px 0; font-size: 12px; line-height: 1.45; }
+#detail .case-worksite strong {
+  display: block;
+  font-size: 13px;
+}
+#detail .case-worksite p {
+  margin: 6px 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
 #detail .case-worksite button {
   min-height: 44px;
   width: 100%;
@@ -4120,7 +4127,9 @@ html.city-embedded .welcome-signin {
 }
 
 /* Privacy-first, optional in-game playtest summary under Help. */
-#help-dialog .playtest-details { margin: 14px 0; }
+#help-dialog .playtest-details {
+  margin: 14px 0;
+}
 #help-dialog .playtest-details summary {
   cursor: pointer;
   font-weight: 800;

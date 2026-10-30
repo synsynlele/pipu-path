@@ -30,4 +30,6 @@ assert(!events.report().includes("full-name"));
 assert(events.report().includes("No personal data"));
 const empty = createPlaytestObservation(() => 0);
 assert.equal(empty.snapshot().firstActionSeconds, null);
-console.log("PASS: privacy-first local game playtest counts, bounded timing and no identifiers.");
+console.log(
+  "PASS: privacy-first local game playtest counts, bounded timing and no identifiers.",
+);

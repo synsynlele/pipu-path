@@ -5,18 +5,18 @@ are scoped commitments, not released features.
 
 ## Coverage of ten improvements
 
-| Improvement | Phase | Release definition |
-| --- | --- | --- |
-| 1. Hands-on building | 1, 2 | Two new playable worksite prototypes now; city-connected build mechanics next |
-| 2. Visible consequences | 2 | Direct projects change service state and visuals using verified rules |
-| 3. Excellent first five minutes | 1 | First useful action is obvious; existing guided journey and optional hands-on invitation |
-| 4. Reliable saving | 1, 4 | Preserve safe device saves; optional authorized cross-device saves later |
-| 5. Adaptive difficulty | 2 | Difficulty changes with demonstrated tests and repairs, not taps |
-| 6. Continuing challenges | 3 | Reviewed, validated, replayable scenario catalogue |
-| 7. Meaningful progression | 2, 3 | Repairs, systems served, improvements and truthful prototype evidence |
-| 8. Real Quest handoff | 4 | Contextual in-game problem inspires practical AI Real Quest |
-| 9. Accessible performance | 1–3 | Android low-end play, readable interface, keyboard and reduced-motion/2D alternative |
-| 10. Safe team challenges | 4 | Supervised collaboration, no public stranger chat |
+| Improvement                     | Phase | Release definition                                                                       |
+| ------------------------------- | ----- | ---------------------------------------------------------------------------------------- |
+| 1. Hands-on building            | 1, 2  | Two new playable worksite prototypes now; city-connected build mechanics next            |
+| 2. Visible consequences         | 2     | Direct projects change service state and visuals using verified rules                    |
+| 3. Excellent first five minutes | 1     | First useful action is obvious; existing guided journey and optional hands-on invitation |
+| 4. Reliable saving              | 1, 4  | Preserve safe device saves; optional authorized cross-device saves later                 |
+| 5. Adaptive difficulty          | 2     | Difficulty changes with demonstrated tests and repairs, not taps                         |
+| 6. Continuing challenges        | 3     | Reviewed, validated, replayable scenario catalogue                                       |
+| 7. Meaningful progression       | 2, 3  | Repairs, systems served, improvements and truthful prototype evidence                    |
+| 8. Real Quest handoff           | 4     | Contextual in-game problem inspires practical AI Real Quest                              |
+| 9. Accessible performance       | 1–3   | Android low-end play, readable interface, keyboard and reduced-motion/2D alternative     |
+| 10. Safe team challenges        | 4     | Supervised collaboration, no public stranger chat                                        |
 
 ## Phase 1 · implemented for preview
 

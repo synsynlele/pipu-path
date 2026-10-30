@@ -22,7 +22,13 @@ function symbol(piece) {
     '"/><circle cx="20" cy="20" r="3"/></svg>'
   );
 }
-export function mountBuildLab({ read, write, beforeOpen, afterClose, onTest = () => {} }) {
+export function mountBuildLab({
+  read,
+  write,
+  beforeOpen,
+  afterClose,
+  onTest = () => {},
+}) {
   const $ = (id) => document.getElementById(id);
   const dialog = $("build-lab");
   let brush = { kind: "straight", turn: 0 },
@@ -62,8 +68,8 @@ export function mountBuildLab({ read, write, beforeOpen, afterClose, onTest = ()
     $("lab-brief").textContent = mission.brief;
     $("lab-budget").textContent =
       `${evaluateLab(mission, board).cost} / ${mission.budget} pieces used`;
-    const working = LAB_MISSIONS.filter((item) =>
-      evaluateLab(item, state.boards[item.id]).success,
+    const working = LAB_MISSIONS.filter(
+      (item) => evaluateLab(item, state.boards[item.id]).success,
     ).length;
     $("lab-progress").textContent =
       `${working}/${LAB_MISSIONS.length} working city prototypes`;
