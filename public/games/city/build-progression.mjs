@@ -39,11 +39,16 @@ export function skillRecommendation(input) {
   const comfortable = clean >= 2 && retries <= 1;
   // Successful, independent builders are invited to a harder *authored*
   // problem. Others receive the gentlest next problem and optional support.
-  const sorted = remaining.sort((a, b) =>
-    comfortable
+  const plannedOrder = [
+    "workshop-link", "clinic-power", "shared-services",
+    "shared-recovery", "backup-water",
+  ];
+  const sorted = remaining.sort((a, b) => {
+    const difficulty = comfortable
       ? challengeDifficulty(b.id) - challengeDifficulty(a.id)
-      : challengeDifficulty(a.id) - challengeDifficulty(b.id),
-  );
+      : challengeDifficulty(a.id) - challengeDifficulty(b.id);
+    return difficulty || plannedOrder.indexOf(a.id) - plannedOrder.indexOf(b.id);
+  });
   const next = sorted[0] ?? null;
   return {
     tier,
