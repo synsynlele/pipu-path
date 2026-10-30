@@ -98,6 +98,22 @@ assert(css.includes("#request-inspection"));
 assert(html.includes('id="opportunities-business"'));
 assert(html.includes('id="opportunities-actions"'));
 assert(html.includes('id="opportunities-view-business"'));
+assert(html.includes('id="resilience-mission"'));
+assert(html.includes('id="resilience-preview"'));
+assert(html.includes('id="resilience-commit"'));
+assert(html.includes('id="resilience-verdict"'));
+assert(game.includes("function renderResiliencePanel()"));
+assert(game.includes("previewResiliencePlan(state.resilience, priority.id)"));
+assert(game.includes('$("resilience-commit").onclick'));
+assert(game.includes("resilienceDraftPriority = priority.id"));
+assert(game.includes("const next = chooseResilience(state.resilience, plan)"));
+assert(game.includes("state.resilience = next;"));
+assert(css.includes("#resilience-choices .resilience-selected"));
+assert(css.includes("#resilience-preview"));
+assert(css.includes("#resilience-commit[hidden]"));
+assert(game.includes('if (resilienceDraftRound !== report.round)'));
+assert(game.includes("clearResilienceDraft();"));
+
 assert(
   game.includes("chooseOwnedEnterprise(state.economy, event.target.value)"),
 );
