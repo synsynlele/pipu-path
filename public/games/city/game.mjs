@@ -4012,11 +4012,13 @@ $("resume-city").hidden =
 function startCity() {
   if (!$("intro").hidden) playtest.note("start");
   stageThreeVictory = null;
-  // Start is a real player gesture, so the soundtrack can safely begin
-  // here. Both independent HUD switches remain available to mute at once.
-  if (!cityAudio.sound) cityAudio.toggleSound();
-  if (!cityAudio.music) cityAudio.toggleMusic();
-  syncAudioControls();
+  // Unlock Web Audio on the real Play gesture, before any async navigation.
+  // Do not falsely light the speaker buttons until Android confirms resume.
+  void cityAudio.start().then((ready) => {
+    syncAudioControls();
+    if (!ready)
+      toast(cityAudio.error || "Sound unavailable. Check device media volume.");
+  });
   firstBuildMode = false;
   serviceDesk.close();
   $("intro").hidden = true;
@@ -4087,23 +4089,27 @@ function syncAudioControls() {
   );
   $("music").setAttribute("aria-pressed", String(cityAudio.music));
 }
-$("sound").onclick = () => {
-  const enabled = cityAudio.toggleSound();
-  syncAudioControls();
-  toast(enabled ? "Sound effects on." : "Sound effects off or unavailable.");
-};
-$("music").onclick = () => {
-  const enabled = cityAudio.toggleMusic();
+$("sound").onclick = async () => {
+  const enabled = await cityAudio.toggleSound();
   syncAudioControls();
   toast(
     enabled
-      ? "Original background music on."
-      : "Background music off or unavailable.",
+      ? "Sound effects on. You should hear a test tone."
+      : cityAudio.error || "Sound effects off.",
+  );
+};
+$("music").onclick = async () => {
+  const enabled = await cityAudio.toggleMusic();
+  syncAudioControls();
+  toast(
+    enabled
+      ? "Background music on. Check your phone's media volume."
+      : cityAudio.error || "Background music off.",
   );
 };
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && cityAudio.music) {
-    cityAudio.toggleMusic();
+    cityAudio.suspend();
     syncAudioControls();
   }
 });

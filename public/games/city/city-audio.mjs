@@ -1,5 +1,5 @@
-// Original, minimal Web Audio cues and ambient motif. Nothing plays until
-// a real user tap turns sound or music on. No audio files or downloads.
+// Original Web Audio cues: no external media requests or copyrighted tracks.
+// Playback is enabled only after a real user gesture and a verified resume.
 const MELODY = Object.freeze([
   196, 246.94, 293.66, 246.94, 220, 261.63, 329.63, 261.63,
 ]);
@@ -10,6 +10,7 @@ const CUES = Object.freeze({
   revise: [330, 293.66],
   tap: [440],
 });
+
 export function createCityAudio({
   contextFactory,
   schedule = (fn, ms) => setInterval(fn, ms),
@@ -20,53 +21,95 @@ export function createCityAudio({
   let music = false;
   let tick = null;
   let position = 0;
+  let pendingResume = null;
+  let failure = "";
   const ctor =
     contextFactory ??
     (() => {
-      const Ctor = window.AudioContext || window.webkitAudioContext;
-      if (!Ctor) return null;
-      return new Ctor();
+      const Ctor = globalThis.AudioContext || globalThis.webkitAudioContext;
+      return Ctor ? new Ctor() : null;
     });
-  function ready() {
+
+  // Called synchronously within the Play or speaker button click.
+  // Await completion BEFORE claiming playback is enabled.
+  function unlock() {
+    if (!context) {
+      try {
+        context = ctor();
+      } catch {
+        failure = "Audio could not start on this device.";
+        return Promise.resolve(false);
+      }
+    }
+    if (!context) {
+      failure = "This browser does not support game audio.";
+      return Promise.resolve(false);
+    }
+    if (context.state === "closed") {
+      failure = "The audio device is unavailable. Reload the game.";
+      return Promise.resolve(false);
+    }
+    if (context.state === "running" || !context.state) {
+      failure = "";
+      return Promise.resolve(true);
+    }
+    if (pendingResume) return pendingResume;
     try {
-      context ??= ctor();
-      if (!context) return false;
-      context.resume?.().catch?.(() => {});
-      return true;
+      const result = context.resume?.();
+      pendingResume = Promise.resolve(result)
+        .then(() => {
+          const ok = context.state === "running" || !context.state;
+          failure = ok
+            ? ""
+            : "Sound is blocked. Check device media volume and browser audio settings.";
+          return ok;
+        })
+        .catch(() => {
+          failure =
+            "Sound is blocked. Check device media volume and browser audio settings.";
+          return false;
+        })
+        .finally(() => {
+          pendingResume = null;
+        });
+      return pendingResume;
     } catch {
-      return false;
+      failure = "Audio permission was denied by this browser.";
+      return Promise.resolve(false);
     }
   }
-  function note(
-    freq,
-    offset = 0,
-    duration = 0.17,
-    volume = 0.018,
-    kind = "sine",
-  ) {
-    if (!context) return;
+
+  function note(freq, offset = 0, duration = 0.2, volume = 0.09) {
+    if (!context || (context.state && context.state !== "running")) return;
     try {
       const at = context.currentTime + offset;
-      const o = context.createOscillator();
-      const envelope = context.createGain();
-      o.type = kind;
-      o.frequency.setValueAtTime(freq, at);
-      envelope.gain.setValueAtTime(0.0001, at);
-      envelope.gain.exponentialRampToValueAtTime(volume, at + 0.018);
-      envelope.gain.exponentialRampToValueAtTime(0.0001, at + duration);
-      o.connect(envelope);
-      envelope.connect(context.destination);
-      o.start(at);
-      o.stop(at + duration + 0.03);
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(freq, at);
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(volume, at + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+      oscillator.connect(gain);
+      gain.connect(context.destination);
+      oscillator.start(at);
+      oscillator.stop(at + duration + 0.03);
     } catch {
-      // No crashes on unsupported or interrupted audio hardware.
+      failure = "Your device could not play this sound.";
     }
   }
-  function cue(kind) {
-    if (!sound || !ready()) return false;
+  function playCue(kind) {
     (CUES[kind] ?? CUES.tap).forEach((freq, i) =>
-      note(freq, i * 0.095, 0.17, 0.025, "sine"),
+      note(freq, i * 0.105, 0.22, 0.095),
     );
+  }
+  function cue(kind) {
+    if (!sound || !context) return false;
+    if (context.state && context.state !== "running") {
+      // The next real user interaction can unlock audio again.
+      return false;
+    }
+    playCue(kind);
     return true;
   }
   function stopMusic() {
@@ -76,29 +119,43 @@ export function createCityAudio({
       tick = null;
     }
   }
-  function toggleMusic() {
-    if (music) {
-      stopMusic();
-      return false;
-    }
-    if (!ready()) return false;
+  function beginMusic() {
+    if (tick !== null) return;
     music = true;
-    function playBeat() {
-      if (!music) return;
-      note(MELODY[position++ % MELODY.length], 0, 0.36, 0.009);
-    }
+    const playBeat = () => {
+      if (!music || (context.state && context.state !== "running")) return;
+      note(MELODY[position++ % MELODY.length], 0, 0.48, 0.045);
+    };
     playBeat();
-    tick = schedule(playBeat, 760);
+    tick = schedule(playBeat, 600);
+  }
+  async function start() {
+    const ready = await unlock();
+    if (!ready) return false;
+    if (!sound) {
+      sound = true;
+      playCue("built"); // Clearly audible on the player's first Play gesture.
+    }
+    if (!music) beginMusic();
     return true;
   }
-  function toggleSound() {
+  async function toggleSound() {
     if (sound) {
       sound = false;
       return false;
     }
-    if (!ready()) return false;
+    if (!(await unlock())) return false;
     sound = true;
-    cue("tap");
+    playCue("tap");
+    return true;
+  }
+  async function toggleMusic() {
+    if (music) {
+      stopMusic();
+      return false;
+    }
+    if (!(await unlock())) return false;
+    beginMusic();
     return true;
   }
   function suspend() {
@@ -107,6 +164,7 @@ export function createCityAudio({
   }
   return {
     cue,
+    start,
     toggleSound,
     toggleMusic,
     suspend,
@@ -117,7 +175,10 @@ export function createCityAudio({
       return music;
     },
     get available() {
-      return Boolean(context);
+      return Boolean(context && (!context.state || context.state === "running"));
+    },
+    get error() {
+      return failure;
     },
   };
 }

@@ -211,7 +211,7 @@ export function PowerDistrictFrame({
             ? "min-h-0 w-full flex-1 border-0"
             : "h-[min(860px,85svh)] min-h-[620px] w-full border-0"
         }
-        allow="fullscreen"
+        allow="autoplay; fullscreen"
         referrerPolicy="no-referrer"
       />
       {handoff ? (
