@@ -1674,7 +1674,9 @@ function reportParentState() {
           ? stageThreeCase(state.stageThree.round).missionId
           : state.stageThree.round > 0
             ? stageThreeCase(state.stageThree.round - 1).missionId
-            : null) ?? state.lab.tested.at(-1) ?? null,
+            : null) ??
+        state.lab.tested.at(-1) ??
+        null,
     },
     window.location.origin,
   );
