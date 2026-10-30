@@ -54,8 +54,10 @@ export async function generateBuildTemplate(
               ...new Set(
                 error.issues.map((issue) => String(issue.path[0] ?? "root")),
               ),
-            ].slice(0, 7)
-          : [],
+            ]
+              .slice(0, 7)
+              .join(",")
+          : "none",
     });
     throw error;
   }
