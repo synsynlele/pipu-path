@@ -78,8 +78,17 @@ it("shows clear high-contrast Save for later and Set aside actions on narrow scr
     name: "Set aside and choose another",
   });
   const record = screen.getByRole("button", { name: "Record my attempt →" });
-  expect(save).toHaveClass("pp-button-ghost", "bg-white", "text-[#16488f]", "w-full");
-  expect(archive).toHaveClass("pp-button-ghost", "bg-white", "text-[#16488f]");
+  expect(save).toHaveClass(
+    "pp-button-ghost",
+    "bg-white",
+    "text-[#16488f]",
+    "w-full",
+  );
+  expect(archive).toHaveClass(
+    "pp-button-ghost",
+    "bg-white",
+    "text-[#16488f]",
+  );
   expect(record).toHaveClass("build-primary", "w-full");
   expect(save).toHaveAttribute("value", "save");
   expect(archive).toHaveAttribute("value", "archive");
