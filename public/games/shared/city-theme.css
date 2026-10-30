@@ -4777,3 +4777,130 @@ body.city-integrated #detail[data-mode="outcome"] .case-tools button {
     width: 28px;
   }
 }
+
+/* The ? guide stays scrollable, friendly and usable on narrow Android screens. */
+#help-dialog {
+  width: min(540px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: min(88svh, 730px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+  border-radius: 18px;
+}
+#help-dialog .guide-lead {
+  line-height: 1.45;
+  margin: 8px 0;
+}
+#help-dialog .guide-now {
+  border-inline-start: 4px solid #31846e;
+  border-radius: 8px;
+  background: #e7f5ed;
+  color: #16463b;
+  padding: 10px 12px;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1.45;
+}
+#help-dialog .game-guide-steps {
+  padding-left: 23px;
+  margin: 12px 0;
+  display: grid;
+  gap: 10px;
+}
+#help-dialog .game-guide-steps li {
+  padding-left: 3px;
+  line-height: 1.5;
+  font-size: 13px;
+}
+#help-dialog .game-guide-steps strong {
+  color: #154e43;
+}
+#help-dialog .game-guide-extra {
+  border-top: 1px solid #c8d7df;
+  padding: 5px 0;
+}
+#help-dialog .game-guide-extra summary {
+  cursor: pointer;
+  font-weight: 750;
+  min-height: 44px;
+  padding: 10px 0;
+}
+#help-dialog .game-guide-extra p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+#help-dialog #help-done {
+  position: sticky;
+  bottom: 0;
+  min-height: 44px;
+  width: 100%;
+  margin-top: 10px;
+}
+@media (max-width: 620px) {
+  #help-dialog {
+    padding: 12px;
+    max-height: 83svh;
+  }
+  #help-dialog .game-guide-steps li {
+    font-size: 12px;
+  }
+}
+
+/* Phase 3 is part of the same compact service desk, not a new game overlay. */
+#service-panel #stage-three[hidden] {
+  display: none !important;
+}
+#service-panel #stage-three {
+  margin: 12px 0 10px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #94c4b6;
+  background: #e2f4ed;
+}
+#service-panel .stage-three-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  justify-content: space-between;
+  color: #26584a;
+  font-size: 10px;
+  font-weight: 800;
+}
+#service-panel #stage-three h3 {
+  margin: 8px 0 6px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+#service-panel #stage-three p {
+  font-size: 12px;
+  line-height: 1.45;
+}
+#service-panel #stage-three-question {
+  font-weight: 800;
+}
+#service-panel #stage-three-choices {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0;
+}
+#service-panel #stage-three-choices button {
+  text-align: left;
+  min-height: 44px;
+  white-space: normal;
+  color: #164a3c;
+  background: #fff;
+}
+#service-panel #stage-three-repair {
+  width: 100%;
+  min-height: 44px;
+  background: #155c48;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+#service-panel #stage-three-status {
+  background: #f8fcf9;
+  border-radius: 8px;
+  padding: 8px;
+  font-weight: 750;
+}

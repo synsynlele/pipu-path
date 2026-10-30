@@ -135,3 +135,38 @@ phase: further district interactions, citywide resident behaviour,
 advanced challenge tiers, a device-performance pilot and accessibility
 verification remain future gates. Neither an automated integration test
 nor a successful Vercel build proves performance on student Android devices.
+
+## Phase 3 · continuing reviewed builder challenges (first implemented slice)
+
+The first Phase 3 preview is stacked onto the **validated Phase 2 branch**,
+not deployed to production. It introduces 12 _authored, reviewed_ service
+failure narratives (three per district across four districts). They rotate
+through morning, afternoon and evening shift variants to avoid consecutive
+repeats. There is **no AI free-form hidden physics** or fabricated engineering.
+
+Progression gate: all 36 decisions and the five tested construction milestones
+must be complete before continuing challenges unlock. The scenario is
+presented **inside the existing compact City Services desk**, not a new
+independent overlay. Players must choose a response before the model selects
+an actual vulnerable link from their own working prototype. Their saved
+structure remains built while a visible outage occurs. They must tap its
+broken connector and pass the same independent network test, then choose
+See my city, before their replay round advances. The sole city celebration
+now announces the result and leads to the next authored challenge.
+
+The stage's `round` and active choice/cell are small allowlisted values in
+the optional device-only practice save; a suspended repair survives reopening.
+Existing saves have a safe default. No money, verified XP, real-world
+engineering promises, personal data or backend migrations have been added.
+
+The **?** guide has been rewritten for the actual game, with a live next-step
+prompt, decide/build/test loop, rotation, blocked cells, repair,
+consequences, navigation, pause/resume, device save, sound, music and
+continuing challenges. It uses expandable optional controls so the main
+instruction is concise on phones.
+
+**Remaining Phase 3 gates:** genuinely new validated topologies and demands,
+automated content review/solvability testing beyond the first catalogue,
+student testing on low-end Android, moderation and safe AI-authored
+proposals only after human approval. A replayable finite template catalogue
+must never be described as limitless new, unique AI scenarios.
