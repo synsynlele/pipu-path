@@ -128,6 +128,42 @@ w.document.getElementById("victory-continue").click();
 assert.equal(game.mixedJourney, true);
 assert.equal(game.firstBuildMode, false);
 assert.equal(w.document.getElementById("build-victory").hidden, true);
+// Phase 2: a built structure actually serves fictional community requests.
+w.document.getElementById("service-toggle").click();
+assert.equal(w.document.getElementById("service-panel").hidden, false);
+assert.match(w.document.getElementById("service-summary").textContent, /6 of 40/);
+assert.match(w.document.getElementById("service-needs").textContent, /6 \/ 6/);
+// Break the weakest placed connector without destroying the player's layout.
+w.document.getElementById("service-drill").click();
+const brokenCell = game.state.lab.faults["workshop-link"];
+assert(Number.isInteger(brokenCell));
+assert(game.buildMilestoneScene.buildings.get("workshop-link").offline);
+assert(game.workshopBlueprint.visible, "Damaged station stays built");
+assert.match(w.document.getElementById("service-needs").textContent, /0 \/ 6/);
+const safeLayout = JSON.stringify(game.state.lab.boards["workshop-link"]);
+// Repair the marked location and test the real connection to restore service.
+w.document.getElementById("service-build").click();
+assert.equal(w.document.getElementById("service-panel").hidden, true);
+assert.equal(w.document.getElementById("build-lab").open, true);
+const brokenRow = Math.floor(brokenCell / 5) + 1;
+const brokenCol = brokenCell % 5 + 1;
+const damaged = w.document.querySelector(
+  '[aria-label^="Row ' + brokenRow + ', column ' + brokenCol +
+  ': Broken connection."]',
+);
+assert(damaged, "One damaged connection is clearly marked");
+damaged.click();
+assert.match(w.document.getElementById("lab-result").textContent, /press Test/i);
+w.document.getElementById("lab-test").click();
+assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
+assert.equal(game.state.lab.faults["workshop-link"], null);
+assert.equal(game.buildMilestoneScene.buildings.get("workshop-link").offline, false);
+assert.equal(JSON.stringify(game.state.lab.boards["workshop-link"]),safeLayout);
+w.document.getElementById("lab-see-city").click();
+assert.match(w.document.getElementById("victory-title").textContent, /working again!/);
+assert.match(w.document.getElementById("victory-service").textContent, /6\/6/);
+w.document.getElementById("victory-continue").click();
+assert.equal(game.state.lab.faults["workshop-link"], null);
 // A returning player can still select the legacy authored story.
 game.pauseJourney();
 w.document.getElementById("pilot-story").click();

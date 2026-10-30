@@ -54,6 +54,7 @@ const cyl = (r, h, c, x, y, z, parent) => {
 };
 const milestones = createMilestoneScene({ T, scene, box, cyl });
 assert.equal(scene.children.length, 5);
+assert.equal(milestones.buildings.size, 5);
 for (const { group } of milestones.buildings.values()) {
   assert(!group.visible);
   assert(group.children.length >= 7);
@@ -79,6 +80,16 @@ assert(milestones.buildings.get("workshop-link").group.scale.x < 1);
 milestones.animate(2000, false);
 assert.equal(milestones.buildings.get("workshop-link").group.scale.x, 1);
 assert.equal(completedMilestones(lab, evaluateLab, labMission).length, 1);
+const outage = sanitizeLab({...lab, faults: {"workshop-link": 7}});
+milestones.sync(outage);
+assert.equal(milestones.buildings.get("workshop-link").offline, true);
+assert.equal(milestones.buildings.get("workshop-link").group.visible, true);
+assert.equal(
+  milestones.buildings.get("workshop-link").serviceLight.material.color.getHex(),
+  0xea7840,
+);
+milestones.sync(lab);
+assert.equal(milestones.buildings.get("workshop-link").offline, false);
 const broken = lab.boards["workshop-link"].slice();
 broken[7] = null;
 milestones.sync(

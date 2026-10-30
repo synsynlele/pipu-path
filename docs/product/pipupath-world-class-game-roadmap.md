@@ -103,3 +103,36 @@ Mobile workspace: at most 60% of the viewport height, anchored at the bottom;
 5x5 board and its controls scroll internally, city remains visible above,
 backdrop is light, no artificial fullscreen cover. Low-end device and real
 mobile checks remain conditions of production approval.
+
+
+## Phase 2 · first playable service-consequence and repair slice
+
+New work is on the separate stacked `preview/game-world-class-phase2` branch,
+not on production. The production-safe architecture keeps all 36 questions,
+five built puzzle milestones, existing save versions, and all Chapter 3–4
+mechanics unchanged.
+
+1. Five real constructed districts each have a deterministic, fictional
+   per-day service request load. Only a successfully tested built solution
+   serves its endpoints. Totals describe simulation capacity, not actual
+   people served or school learner grades.
+2. A compact in-city **City services** monitor focuses each facility and
+   displays before/after requests. The player can initiate a bounded
+   single-link failure drill. A tested facility remains physically built,
+   but its status light turns amber and it serves fewer simulated requests.
+3. The same compact 5×5 Build Lab highlights the failed connector. The
+   player taps the damaged piece to repair, and then must successfully
+   retest to restore service and see the celebration in the 3D city.
+   A resilient two-route system can withstand a single break.
+4. A deterministic recommendation engine uses actual certified builds,
+   tests, retries and requested hints to recommend a gentler next challenge
+   or a harder authored mission. The player retains full choice; no
+   age restrictions, punitive scores or unverifiable XP.
+5. All saved simulation inputs are bounded and allowlisted, remain
+   optional on-device, and never call an AI model for city physics.
+
+This completes the **first vertical slice of Phase 2**, not the entire
+phase: further district interactions, citywide resident behaviour,
+advanced challenge tiers, a device-performance pilot and accessibility
+verification remain future gates. Neither an automated integration test
+nor a successful Vercel build proves performance on student Android devices.
