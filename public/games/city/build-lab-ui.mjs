@@ -194,6 +194,10 @@ export function mountBuildLab({
     ).focus();
   });
   return {
+    /**
+     * @param {string | null} [missionId]
+     * @param {{ firstMission?: boolean }} [options]
+     */
     open(missionId = null, { firstMission = false } = {}) {
       if (dialog.open) return;
       returnFocus = document.activeElement;
