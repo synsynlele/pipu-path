@@ -92,6 +92,7 @@ routes in the city, or restart Chapter 4 without losing prior chapters. The
 current device save schema is unchanged.
 
 Acceptance:
+
 - First two chapters and Chapter 3 still play exactly as before.
 - All 27 completed Chapter 4 sequences conserve resources and restore.
 - Each test equals the committed simulation without mutating progress.

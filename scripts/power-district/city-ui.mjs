@@ -111,7 +111,7 @@ assert(game.includes("state.resilience = next;"));
 assert(css.includes("#resilience-choices .resilience-selected"));
 assert(css.includes("#resilience-preview"));
 assert(css.includes("#resilience-commit[hidden]"));
-assert(game.includes('if (resilienceDraftRound !== report.round)'));
+assert(game.includes("if (resilienceDraftRound !== report.round)"));
 assert(game.includes("clearResilienceDraft();"));
 
 assert(

@@ -236,19 +236,22 @@ const RESILIENCE_MISSIONS = Object.freeze([
     headline: "Protect the people caught by the rain",
     objective:
       "Keep essential deliveries moving while rain slows the city's supply. Who will wait when water runs short?",
-    question: "Can you protect care and food without ignoring tomorrow's repairs?",
+    question:
+      "Can you protect care and food without ignoring tomorrow's repairs?",
   },
   {
     headline: "Keep a city running without dependable power",
     objective:
       "An interruption reduces fresh water. The repair team can help the next crisis, but repairs take supplies away from today's requests.",
-    question: "What can you restore for tomorrow without leaving too many people waiting today?",
+    question:
+      "What can you restore for tomorrow without leaving too many people waiting today?",
   },
   {
     headline: "Stop the heat from becoming a food crisis",
     objective:
       "Hot weather threatens stored food. Clinics, growers and market stalls need limited deliveries from the same city.",
-    question: "Which plan protects today's essential requests with the supplies you have left?",
+    question:
+      "Which plan protects today's essential requests with the supplies you have left?",
   },
 ]);
 
@@ -303,8 +306,7 @@ export function previewResiliencePlan(value, priority) {
     .filter((item) => item.additional > 0);
   const distinct = options.some((option) =>
     services.some(
-      (id) =>
-        option.last.requests[id].served !== last.requests[id].served,
+      (id) => option.last.requests[id].served !== last.requests[id].served,
     ),
   );
   return {

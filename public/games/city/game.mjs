@@ -1771,9 +1771,7 @@ function renderResiliencePanel() {
     $("resilience-preview-services").textContent =
       CITY_REQUESTS.map((request) => {
         const value = rehearsal.last.requests[request.id];
-        return (
-          request.title + " " + value.served + "/" + value.requested
-        );
+        return request.title + " " + value.served + "/" + value.requested;
       }).join(" · ") +
       " · Waiting: " +
       rehearsal.last.waiting;
