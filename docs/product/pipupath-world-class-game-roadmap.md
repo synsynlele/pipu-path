@@ -194,3 +194,20 @@ automated content review/solvability testing beyond the first catalogue,
 student testing on low-end Android, moderation and safe AI-authored
 proposals only after human approval. A replayable finite template catalogue
 must never be described as limitless new, unique AI scenarios.
+
+## Phase 4 continuation · hands-on Real Quests standard
+
+The Real Quests authoring prompt previously required paper plans and fictional
+simulations. The new `hands-on-v2` standard requires an actual useful change,
+real-world test, feedback and honest evidence. Every generated challenge is
+validated before saving, and the versioned goal cache prevents retired
+paperwork templates from being selected for new attempts. Existing user history
+is not rewritten; older active paper tasks can be set aside without deleting
+evidence. All 14 topic starting points and five city handoffs are practical.
+
+Topic and outcome dropdown menus now explicitly request white backgrounds and
+dark text in Android native menus. Provider calls are not automatically retried;
+existing per-account request limits, template reuse and generation leases remain.
+No new backend tables, services or automatic Vercel deployments are required.
+Physical Android testing and school-safe multi-user features are still release
+gates; no claim of completing the full Phase 4 platform scope.

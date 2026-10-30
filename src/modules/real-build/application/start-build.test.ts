@@ -8,11 +8,11 @@ vi.mock("server-only", () => ({}));
 import { startBuildForUser } from "./start-build";
 import { createHash } from "node:crypto";
 const challenge = {
-  title: "Make a useful paper tracker",
-  outcome: "Test a clear tracker with a familiar classmate.",
-  steps: Array(5).fill("Draw and test a simple paper tracker with permission."),
-  materials: ["Paper"],
-  evidence: "Describe the test and what you observed.",
+  title: "Introduce a working homework reminder",
+  outcome: "Make one genuine homework reminder easier to follow.",
+  steps: Array(5).fill("Set up and test a safe working reminder with permission."),
+  materials: ["Existing phone reminder"],
+  evidence: "Describe the working reminder and actual result.",
   safety: "Ask permission and keep names private.",
 };
 const choice = {
@@ -21,7 +21,7 @@ const choice = {
   focus: "I want to help students track homework more clearly.",
 };
 const focusKey = createHash("sha256")
-  .update(choice.focus.toLowerCase())
+  .update("hands-on-v2:" + choice.focus.toLowerCase())
   .digest("hex");
 const template = {
   id: "template",

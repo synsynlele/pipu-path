@@ -1,5 +1,20 @@
 # Implementation status
 
+## 30 October 2026 — Phase 4 practical Quest quality correction
+
+The game-to-Quest handoff now leads to a real-use intervention rather than a
+paper-based exercise. All 14 real-world topic hints and 5 city-linked starters
+were rewritten. New AI templates must describe a deployed improvement, real
+usage test and honest result. Unsafe tasks and paperwork-only simulations fail
+server validation. A versioned hash prevents new attempts selecting the old
+paperwork template catalogue without changing prior submissions. An active old
+paper-only challenge offers a visible set-aside option, retaining history.
+
+Both Real Quest dropdowns now enforce a light background and dark text for
+native Android options. Existing AI request caps and shared template reuse are
+retained with no automatic AI retries. No Supabase migration is required for
+this change. Full CI and mobile acceptance remain mandatory before production.
+
 ## 30 October 2026 — Game Phase 4: safe city-to-Quest handoff preview
 
 Development branch `preview/game-world-class-phase4` stacks on Phase 3's

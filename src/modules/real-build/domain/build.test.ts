@@ -9,19 +9,19 @@ import {
   validateChallenge,
 } from "./build";
 export const challenge = {
-  title: "Make a clearer homework tracker",
+  title: "Make a working homework reminder",
   outcome:
-    "Test a paper tracker that helps one familiar classmate organise a task.",
+    "Test an actual reminder that helps one familiar classmate finish a task.",
   steps: [
-    "Ask a familiar classmate which homework step they forget.",
-    "Draw three labelled boxes on a scrap sheet of paper.",
-    "Let that classmate try the tracker with a fictional task.",
-    "Improve one label based on what was confusing.",
-    "Record the change and what happened during the test.",
+    "Ask a familiar classmate which routine needs improvement.",
+    "Choose a safe reminder using a device you already have.",
+    "Set up a working reminder in a permitted setting.",
+    "Test whether it helps with a real task.",
+    "Improve the reminder and record what changed.",
   ],
-  materials: ["Scrap paper", "Pencil"],
+  materials: ["Existing phone reminder"],
   evidence:
-    "Describe the test and one observed change; a photo of the paper is optional.",
+    "Describe the real task and the result observed after using the reminder.",
   safety: "Ask permission. Keep names and private details out of your notes.",
 };
 it("allows only catalogue parameters, never arbitrary learner prose", () => {
@@ -74,6 +74,21 @@ it("allows only catalogue parameters, never arbitrary learner prose", () => {
 });
 it("validates actionable structure and rejects dangerous instructions even with a caution elsewhere", () => {
   expect(validateChallenge(challenge)).toEqual(challenge);
+  expect(() =>
+    validateChallenge({ ...challenge, title: "Draw a paper plan for a solution" }),
+  ).toThrow("BUILD_NOT_PRACTICAL");
+  expect(() =>
+    validateChallenge({
+      ...challenge,
+      steps: [
+        "Look around at a routine.",
+        "Think about a better routine.",
+        "Consider an idea.",
+        "Write some notes about an idea.",
+        "Record a reflection about the idea.",
+      ],
+    }),
+  ).toThrow("BUILD_NOT_PRACTICAL");
   expect(() =>
     validateChallenge({ ...challenge, steps: challenge.steps.slice(0, 2) }),
   ).toThrow();

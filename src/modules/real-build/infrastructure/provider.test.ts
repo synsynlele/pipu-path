@@ -7,10 +7,10 @@ vi.mock("@/lib/ai/openai-structured-output", () => ({
 import { generateBuildTemplate } from "./provider";
 it("authors a bounded public template without forwarding private properties", async () => {
   const challenge = {
-    title: "Test a paper tracker",
-    outcome: "Make homework steps clearer for one familiar classmate.",
-    steps: Array(5).fill("Draw and test a paper tracker with permission."),
-    materials: ["Paper"],
+    title: "Set up a useful homework reminder",
+    outcome: "Make a real task reminder work for one familiar classmate.",
+    steps: Array(5).fill("Set up and test a working reminder with permission."),
+    materials: ["Existing phone reminder"],
     evidence: "Describe the test and what changed.",
     safety: "Ask permission. Do not include names or private details.",
   };
@@ -48,15 +48,15 @@ it("authors a bounded public template without forwarding private properties", as
 
 it("passes only public level instructions to AI at higher difficulty", async () => {
   const challenge = {
-    title: "Compare two safe paper solutions",
+    title: "Improve an existing task reminder",
     outcome:
-      "Compare simple proposed routes on paper using a measurable fictional example.",
+      "Compare actual results from a reminder used on a real familiar task.",
     steps: Array(5).fill(
-      "Test two safe paper scenarios and compare the results.",
+      "Set up and test a working reminder, then compare actual results.",
     ),
-    materials: ["Paper"],
+    materials: ["Existing phone reminder"],
     evidence: "Write the comparison and describe a useful revision.",
-    safety: "Use fictional scenarios, no names or private details.",
+    safety: "Use a familiar task and no private details.",
   };
   request.mockResolvedValue(challenge);
   await generateBuildTemplate(
