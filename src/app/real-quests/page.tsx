@@ -43,6 +43,11 @@ export default async function RealQuestsPage({
           <p className="mt-3 text-sm font-semibold text-[#345781]">
             {home.current.focus}
           </p>
+          {home.current.source === "reviewed" ? (
+            <p className="mt-3 text-xs font-semibold text-[#225a91]">
+              Reviewed practical starter
+            </p>
+          ) : null}
           <h2 className="mt-3 text-xl font-bold">
             {home.current.challenge.title}
           </h2>

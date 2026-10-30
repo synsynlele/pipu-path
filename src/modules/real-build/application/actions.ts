@@ -50,7 +50,11 @@ export async function startRealBuild(
             ? "New AI requests are paused briefly after several attempts. Your work is safe. Retry later or choose another topic with a saved challenge."
             : code === "OPENAI_TIMEOUT"
               ? "AI took too long. Your work is safe. Try again."
-              : "We couldn’t create and save a new challenge. Your work is safe. Please try again.",
+              : code === "BUILD_SAVE_FAILED"
+                ? "Your Quest was prepared but could not be saved. Please try again. Your chosen goal is still here."
+                : code === "BUILD_LOAD_FAILED"
+                  ? "Your Quest could not connect to its saved progress. Please try again shortly."
+                  : "We couldn’t prepare a Quest right now. Your goal is still here. Please try again.",
     };
   }
   revalidatePath("/real-quests");

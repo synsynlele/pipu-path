@@ -40,6 +40,13 @@ export default async function RealBuildPage({
         </p>
         <p className="mt-1 text-sm leading-6">{build.focus}</p>
       </div>
+      {build.source === "reviewed" ? (
+        <p className="mt-3 rounded-xl border border-[#c8dbf7] bg-[#eef5ff] p-3 text-sm leading-6 text-[#264e89]">
+          Reviewed starter Quest · This practical activity was prepared by PipuPath
+          rather than generated for your exact goal by AI. Adapt the safe activity
+          to your own situation and test it in real life.
+        </p>
+      ) : null}
       <h1 className="mt-3 text-3xl font-extrabold">{build.challenge.title}</h1>
       <p className="mt-3 text-sm leading-6 text-[#52647c]">
         {build.challenge.outcome}

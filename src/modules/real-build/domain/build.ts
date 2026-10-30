@@ -180,7 +180,7 @@ export type SavedBuild = {
   difficulty: BuildDifficulty;
   focus: string;
   challenge: BuildChallenge;
-  source: "openai";
+  source: "openai" | "reviewed";
   status: "active" | "recorded" | "archived";
   draft: BuildDraft;
   image_path: string | null;

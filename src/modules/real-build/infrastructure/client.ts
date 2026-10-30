@@ -16,7 +16,7 @@ type Row = {
   difficulty: BuildDifficulty;
   focus: string;
   challenge: BuildChallenge;
-  source: "openai";
+  source: "openai" | "reviewed";
   status: "active" | "recorded" | "archived";
   draft: BuildDraft;
   image_path: string | null;
@@ -31,7 +31,7 @@ type Template = {
   difficulty: BuildDifficulty;
   focus_key: string;
   challenge: BuildChallenge;
-  source: "openai";
+  source: "openai" | "reviewed";
   created_at: string;
 };
 type Table<T> = {
