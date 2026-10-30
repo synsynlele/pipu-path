@@ -4,11 +4,13 @@ import { buildTopics } from "../domain/build";
 import { startRealBuild } from "../application/actions";
 export function BuildChoiceForm({
   initialTopic = "",
+  initialFocus = "",
 }: {
   initialTopic?: string;
+  initialFocus?: string;
 }) {
   const [topic, setTopic] = useState(initialTopic),
-    [focus, setFocus] = useState(""),
+    [focus, setFocus] = useState(initialFocus),
     [minutes, setMinutes] = useState("30"),
     [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
