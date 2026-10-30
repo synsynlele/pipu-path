@@ -69,3 +69,18 @@ it("uses separate explicit save, record and set-aside intents", async () => {
   expect((m.save.mock.calls[0][1] as FormData).get("intent")).toBe("record");
   expect(screen.getByText(/does not verify success/)).toBeInTheDocument();
 });
+
+it("shows clear high-contrast Save for later and Set aside actions on narrow screens", () => {
+  m.save.mockResolvedValue({ ok: false, message: "Could not save" });
+  render(<BuildAttemptForm build={build} />);
+  const save = screen.getByRole("button", { name: "Save for later" });
+  const archive = screen.getByRole("button", {
+    name: "Set aside and choose another",
+  });
+  const record = screen.getByRole("button", { name: "Record my attempt →" });
+  expect(save).toHaveClass("pp-button-ghost", "bg-white", "text-[#16488f]", "w-full");
+  expect(archive).toHaveClass("pp-button-ghost", "bg-white", "text-[#16488f]");
+  expect(record).toHaveClass("build-primary", "w-full");
+  expect(save).toHaveAttribute("value", "save");
+  expect(archive).toHaveAttribute("value", "archive");
+});
