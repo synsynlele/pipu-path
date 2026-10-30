@@ -1,0 +1,39 @@
+name: PipuPath format review (temporary)
+on:
+  push:
+    branches:
+      - preview/brand-nav-progressive-quests
+    paths:
+      - .github/workflows/format-preview.yml
+permissions:
+  contents: read
+jobs:
+  format-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format changed files for review
+        run: |
+          npx prettier --write 'src/app/real-quests/[buildId]/page.tsx' \
+            'src/app/real-quests/page.tsx' \
+            'src/modules/real-build/application/actions.ts' \
+            'src/modules/real-build/application/start-build.test.ts' \
+            'src/modules/real-build/application/start-build.ts' \
+            'src/modules/real-build/domain/build.test.ts' \
+            'src/modules/real-build/infrastructure/provider.test.ts' \
+            'src/modules/real-build/ui/choice-form.test.tsx' \
+            'src/modules/real-build/ui/choice-form.tsx'
+      - name: Emit formatted source for review (public repository, no secrets)
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from "node:fs";
+          const paths = ["src/app/real-quests/[buildId]/page.tsx","src/app/real-quests/page.tsx","src/modules/real-build/application/actions.ts","src/modules/real-build/application/start-build.test.ts","src/modules/real-build/application/start-build.ts","src/modules/real-build/domain/build.test.ts","src/modules/real-build/infrastructure/provider.test.ts","src/modules/real-build/ui/choice-form.test.tsx","src/modules/real-build/ui/choice-form.tsx"];
+          for (const path of paths) {
+            console.log("PIPUPATH_FORMAT:" + JSON.stringify({ path, content: readFileSync(path, "utf8") }));
+          }
+          JS
