@@ -3,6 +3,7 @@ import {
   canRecordAttempt,
   choiceSchema,
   emptyDraft,
+  difficultyLabel,
   publicChallengeBrief,
   validateChallenge,
 } from "./build";
@@ -44,6 +45,8 @@ it("allows only catalogue parameters, never arbitrary learner prose", () => {
     topic: "A fair chance to learn",
     safeStartingIdea: expect.any(String),
     minutes: 30,
+    difficulty: 1,
+    challengeDesign: expect.stringContaining("simple paper prototype"),
     avoidTitles: [challenge.title],
   });
 });
@@ -81,4 +84,16 @@ it("records a truthful unsuccessful attempt but never an empty completion", () =
       outcome: "not_yet",
     }),
   ).toBe(true);
+});
+
+it("assigns deeper, safe challenge designs without implying verified ability", () => {
+  expect(difficultyLabel(1)).toBe("Starter");
+  expect(difficultyLabel(3)).toBe("Builder");
+  expect(difficultyLabel(5)).toBe("Systems Thinker");
+  const brief = publicChallengeBrief({ topic: "school", minutes: 15 }, [], 5);
+  expect(brief).toMatchObject({
+    difficulty: 5,
+    challengeDesign: expect.stringContaining("connected system"),
+    minutes: 15,
+  });
 });
