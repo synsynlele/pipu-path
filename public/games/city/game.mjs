@@ -3646,6 +3646,11 @@ for (const point of [blueprintCurve.getPoint(0), blueprintCurve.getPoint(1)]) {
   beacon.position.copy(point);
   workshopBlueprint.add(beacon);
 }
+// The glowing blueprint is informational scenery, not a new wall or
+// collision object. Keep the original city pathfinder completely unchanged.
+workshopBlueprint.traverse((object) => {
+  object.userData.ignoreNavigation = true;
+});
 workshopBlueprint.visible = false;
 scene.add(workshopBlueprint);
 let firstBuildMode = false;
