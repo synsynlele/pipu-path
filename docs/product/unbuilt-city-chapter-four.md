@@ -67,3 +67,36 @@ control. This is one navigation grammar rather than separate mobile controls.
 This is a bounded first Chapter 4, not an unlimited urban simulation. Richer
 resident routines, spatial drainage/flood effects and collaboration remain
 future work. Expand these only after the current student journey is stable.
+
+## Chapter 4 rescue lab refinement — 30 October 2026 (preview candidate)
+
+Student feedback: the original policy buttons advanced a round immediately,
+which felt like selecting an answer rather than solving a crisis. Preserve the
+existing 36 build decisions, Chapter 3 enterprise days, 3D city, route
+animations, resource conservation and previously saved Chapter 4 plans.
+
+Each unlocked crisis now exposes its actual requests and stock pressure, plus
+a small, clear rescue objective. The player may test care, food and repair
+priorities before committing. A test is a deterministic, read-only forecast
+from the exact existing simulation; it shows delivered/required service
+requests, waiting totals, future repair-buffer implications and a trade-off
+against the other simulated policies. If all three strategies have the same
+effect, disclose the infrastructure bottleneck instead of pretending the
+choice matters. Tested options remain in transient UI memory only; closing,
+reloading and switching plans never spends supplies or advances the crisis.
+
+Only **Put this plan into action** writes an allowlisted Chapter 4 choice,
+updates saved progress, triggers the existing city scene and exposes actual
+consequences. The player can continue to the next crisis, inspect delivered
+routes in the city, or restart Chapter 4 without losing prior chapters. The
+current device save schema is unchanged.
+
+Acceptance:
+- First two chapters and Chapter 3 still play exactly as before.
+- All 27 completed Chapter 4 sequences conserve resources and restore.
+- Each test equals the committed simulation without mutating progress.
+- A no-capacity city shows honest bottleneck feedback, not invented success.
+- Tests and commit are distinct keyboard- and touch-accessible actions.
+- Mobile emergency panel stays scrollable within the existing small footprint.
+- Existing completed Chapter 4 histories remain viewable and replayable.
+- No cloud account, real wellbeing metric, XP or proof is invented.
