@@ -2692,22 +2692,13 @@ function showChapterTransition() {
 function proceedAfterCase(id) {
   cancelAutoAdvance();
   $("detail").hidden = true;
-  // Only implementation challenges become puzzles; ethical and resource
-  // decisions stay questions. Existing story-only and saved journeys do not
-  // unexpectedly change format.
-  const format = formatForCase(id);
-  if (
-    mixedJourney &&
-    format.missionId &&
-    !state.lab.tested.includes(format.missionId) &&
-    !promptedBuildCases.has(id)
-  ) {
-    promptedBuildCases.add(id);
-    pendingBuildCase = id;
-    buildLab.open(format.missionId);
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") {
+    pendingBuildCase = step.caseId;
+    buildLab.open(step.missionId);
     return;
   }
-  const next = nextPlayableAfter(id, state.decisions);
+  const next = step.kind === "question" ? getCase(step.caseId) : null;
   if (journey.status === "paused") journey.status = "running";
   if (isChapterTransition(id) && foundationComplete(state.decisions)) {
     showChapterTransition();
@@ -2751,14 +2742,9 @@ function showCaseOutcome(id, choiceId) {
   cancelAutoAdvance();
   outcomePaused = false;
   const next = nextPlayableAfter(id, state.decisions);
-  // A short, optional hands-on worksite; the established journey still
-  // advances automatically for everyone who chooses not to open it.
-  const worksiteMission = formatForCase(id).missionId;
-  const worksitePrompt = worksiteMission
-    ? '<div class="case-worksite"><strong>Want to build a solution yourself?</strong>' +
-      "<p>Place connections, test your plan, and improve it. Optional practice only; your city progress is unchanged.</p>" +
-      '<button id="case-worksite" type="button">Try hands-on building →</button></div>'
-    : "";
+  // This same question-to-build path is used in automatic and manual play.
+  const step = integratedStep(state.decisions, state.lab);
+  const requiredBuild = step.kind === "build" && step.caseId === id;
   const signals = option.impact
     .map(
       (value, i) =>
@@ -2784,26 +2770,23 @@ function showCaseOutcome(id, choiceId) {
       "</p>" +
       '<div class="case-result"><b>What changed</b><p>' +
       option.result +
-      "</p><b>The trade-off</b><p>" +
+      '</p></div><details class="case-more"><summary>Details and trade-offs</summary>' +
+      "<p><strong>The trade-off:</strong> " +
       option.tradeoff +
-      '</p></div><div class="case-impact">' +
+      '</p><div class="case-impact">' +
       signals +
-      '</div><details class="case-more"><summary>Explore the connections</summary>' +
-      "<p><strong>Related systems:</strong> " +
+      "</div><p><strong>Related systems:</strong> " +
       option.links +
-      "</p><p><strong>Safe observation:</strong> " +
+      "</p><p><strong>Reflect:</strong> " +
       scenario.bridge +
-      "</p><small>Fictional signals, not verified XP or actual city funds.</small></details>" +
-      worksitePrompt +
+      "</p><small>Fictional simulation. No XP awarded.</small></details>" +
       '<div class="auto-next"><span id="autonext-caption">✓ Your decision is kept.' +
       (next
         ? " Next: " + next.title
         : " All " + CITY_CASES.length + " problems reached.") +
-      (worksiteMission &&
-      mixedJourney &&
-      !state.lab.tested.includes(worksiteMission)
-        ? " Your next challenge is to build the solution."
-        : " The game continues automatically.") +
+      (requiredBuild
+        ? " Build and test the solution to unlock the next decision."
+        : " The next challenge follows.") +
       "</span>" +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
       '<div class="case-actions">' +
@@ -2811,12 +2794,16 @@ function showCaseOutcome(id, choiceId) {
       '<button class="secondary" id="case-replay">Replay action</button>' +
       '<button class="secondary" id="case-retry">Change decision</button>' +
       '<button class="primary" id="case-next">' +
-      (next ? "Next now →" : "Finish →") +
+      (requiredBuild
+        ? "Build this solution →"
+        : next
+          ? "Next challenge →"
+          : "Finish →") +
       "</button></div>",
     "outcome",
   );
-  if ($("case-worksite"))
-    $("case-worksite").onclick = () => buildLab.open(worksiteMission);
+  // Required puzzles are never an optional detour. The single Continue
+  // action leads into the current challenge's build and test.
   $("case-pause").onclick = () => {
     pauseJourney("Paused to read. Use Resume journey when you're ready.");
     outcomePaused = true;
