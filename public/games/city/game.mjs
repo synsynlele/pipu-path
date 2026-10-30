@@ -3667,7 +3667,7 @@ function showBuildVictory(missionId, { retry = false } = {}) {
   lastVictoryMission = missionId;
   if (!retry) {
     victoryCamera = { yaw, pitch, distance, activeFeedback };
-    activeFeedback = { x: mission.x, z: mission.z };
+    activeFeedback = { x: mission.x, z: mission.z, started: performance.now() };
     yaw = 0.46;
     pitch = 0.75;
     distance = 22;
@@ -3693,6 +3693,7 @@ function showBuildVictory(missionId, { retry = false } = {}) {
     : "Build another city improvement →";
   $("build-victory").dataset.retry = retry ? "true" : "false";
   $("build-victory").hidden = false;
+  renderPilotMission();
   if (!retry) playTone(784);
 }
 $("victory-continue").onclick = () => {
@@ -3721,7 +3722,7 @@ $("victory-build").onclick = () => {
   buildLab.open(next);
 };
 let firstBuildMode = false;
-let workshopTested = false;
+let workshopTested = state.lab.tested.includes("workshop-link");
 function renderPilotMission() {
   const panel = $("pilot-mission");
   panel.hidden = !firstBuildMode || !$("intro").hidden ||
@@ -3802,7 +3803,7 @@ const buildLab = mountBuildLab({
     keys.clear();
     refreshJourneyControls();
     renderPilotMission();
-    if (pendingBuildCase && !$("build-victory").hidden === false) {
+    if (pendingBuildCase && $("build-victory").hidden) {
       const milestone = formatForCase(pendingBuildCase);
       if (milestone.missionId && !state.lab.tested.includes(milestone.missionId)) {
         showBuildVictory(milestone.missionId, { retry: true });
@@ -4235,6 +4236,7 @@ function animateWorld(now) {
   // The same retained choices animate a living neighbourhood in both play
   // and aerial inspection. Hidden tabs avoid unnecessary simulation work.
   caseScenes.animate(now, reduceMotion.matches);
+  buildMilestoneScene.animate(now, reduceMotion.matches);
   livingScene.animate(
     now,
     reduceMotion.matches,
