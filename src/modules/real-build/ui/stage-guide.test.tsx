@@ -30,9 +30,13 @@ it("shows one actionable stage at a time with accessible navigation", () => {
   expect(
     screen.getByRole("heading", { name: "Build it in five stages" }),
   ).toBeInTheDocument();
-  expect(screen.getByTestId("active-stage-instruction")).toHaveTextContent(challenge.steps[0]);
+  expect(screen.getByTestId("active-stage-instruction")).toHaveTextContent(
+    challenge.steps[0],
+  );
   fireEvent.click(screen.getByRole("button", { name: "Next stage →" }));
-  expect(screen.getByTestId("active-stage-instruction")).toHaveTextContent(challenge.steps[1]);
+  expect(screen.getByTestId("active-stage-instruction")).toHaveTextContent(
+    challenge.steps[1],
+  );
   fireEvent.click(screen.getByRole("button", { name: "5. Improve" }));
   expect(
     screen.getByRole("link", { name: /Record my real-world result/ }),
