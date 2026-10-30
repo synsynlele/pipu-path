@@ -10,7 +10,6 @@ import {
 } from "./build-lab.mjs";
 import {
   CITY_BUILD_MILESTONES,
-  formatForCase,
   milestoneForMission,
   completedMilestones,
 } from "./build-milestones.mjs";
@@ -75,7 +74,6 @@ import {
 import { createLivingCityScene } from "./living-scene.mjs";
 import { chapterPressure } from "./chapter-two.mjs";
 import {
-  firstUnanswered,
   recoverJourney,
   foundationComplete,
   chapterForCase,
@@ -2790,16 +2788,17 @@ function showCaseOutcome(id, choiceId) {
       "</span>" +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
       '<div class="case-actions">' +
-      '<button class="secondary" id="case-pause">Pause to read</button>' +
-      '<button class="secondary" id="case-replay">Replay action</button>' +
-      '<button class="secondary" id="case-retry">Change decision</button>' +
       '<button class="primary" id="case-next">' +
       (requiredBuild
         ? "Build this solution →"
         : next
           ? "Next challenge →"
           : "Finish →") +
-      "</button></div>",
+      '</button><details class="case-tools"><summary>Other actions</summary>' +
+      '<button class="secondary" id="case-pause">Pause to read</button>' +
+      '<button class="secondary" id="case-replay">Replay action</button>' +
+      '<button class="secondary" id="case-retry">Change decision</button>' +
+      "</details></div>",
     "outcome",
   );
   // Required puzzles are never an optional detour. The single Continue
@@ -3673,7 +3672,6 @@ const buildMilestoneScene = createMilestoneScene({ T, scene, box, cyl });
 buildMilestoneScene.sync(state.lab);
 const workshopBlueprint =
   buildMilestoneScene.buildings.get("workshop-link").group;
-let mixedJourney = true;
 let pendingBuildCase = null;
 let victoryCamera = null;
 let lastVictoryMission = null;
@@ -3711,26 +3709,20 @@ function showBuildVictory(
       ? mission.title + " is working again!"
       : mission.title + " is built!";
   $("victory-description").textContent = retry
-    ? "Your design is kept. Try another layout, or return to decisions and build this later."
-    : mission.result + " Look at the new 3D station built in your city!";
+    ? "Keep improving this design to restore the neighbourhood service."
+    : recovered
+      ? "You restored a service by testing your repair."
+      : "You built a working structure. See it in your city.";
   $("victory-progress").textContent =
     completed.length +
     " / " +
     CITY_BUILD_MILESTONES.length +
     " city structures constructed by solving puzzles.";
   const service = serviceFor(state.lab, missionId);
-  const city = serviceImpact(state.lab);
   $("victory-service").textContent = retry
-    ? "Keep refining your design to restore fictional service."
-    : (recovered ? "Repair succeeded. " : "") +
-      service.served +
-      "/" +
-      service.demand +
-      " simulated requests met here; " +
-      city.served +
-      "/" +
-      city.demand +
-      " across your five city services.";
+    ? "Repair the connection to continue."
+    : service.served + "/" + service.demand +
+      " simulated local service requests now met.";
   $("victory-continue").textContent =
     integratedStep(state.decisions, state.lab).kind === "build"
       ? "Finish the required build →"
@@ -3928,10 +3920,9 @@ $("resume-city").onclick = () => startCity("story");
 $("resume-city").hidden =
   !previousPractice ||
   (!Object.keys(state.decisions).length && !previousPractice.journey);
-function startCity(mode = "build") {
+function startCity() {
   if (!$("intro").hidden) playtest.note("start");
   firstBuildMode = false;
-  mixedJourney = true;
   serviceDesk.close();
   $("intro").hidden = true;
   reportParentState();
