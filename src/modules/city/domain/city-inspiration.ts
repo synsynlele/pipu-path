@@ -22,7 +22,7 @@ const ideas = {
   ],
   water: [
     "Water people can depend on",
-    "With permission, put a real water-saving habit into use at home or school and measure a simple change. Do not test drinking-water safety or attempt plumbing work.",
+    "With permission, put a real water-saving habit into use at home or school and measure a simple change; do not test drinking-water safety or attempt plumbing work.",
   ],
   health: [
     "Access to care",
