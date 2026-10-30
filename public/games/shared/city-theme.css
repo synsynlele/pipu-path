@@ -4955,3 +4955,94 @@ body.city-integrated #detail[data-mode="outcome"] .case-tools button {
   font-size: 11px;
   line-height: 1.5;
 }
+
+/* Chapter 4 keeps the city visible while explaining the actual response. */
+#resilience-feedback[hidden],
+#resilience-complete[hidden] {
+  display: none;
+}
+#resilience-feedback {
+  position: absolute;
+  z-index: 56;
+  right: 12px;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  width: min(410px, calc(100vw - 24px));
+  max-height: 34dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fbfcfff5;
+  color: #243c68;
+  border: 1px solid #b7cce5;
+  box-shadow: 0 8px 28px #172c5438;
+}
+#resilience-feedback strong {
+  font-size: 13px;
+}
+#resilience-feedback p {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 7px 0;
+}
+#resilience-feedback-services {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+#resilience-feedback button {
+  min-height: 44px;
+  margin: 0;
+  font-size: 12px;
+  color: #243c68;
+  background: #edf3fc;
+  border: 1px solid #9eb9db;
+}
+#resilience-feedback-services button[aria-pressed="true"] {
+  background: #d7e9ff;
+  border-color: #346eb2;
+}
+#resilience-feedback #resilience-feedback-next {
+  width: 100%;
+  margin-top: 6px;
+  background: #5940cf;
+  color: #fff;
+  border-color: #5940cf;
+}
+body.resilience-revealing #city-view-info,
+body.resilience-revealing #city-view-problems,
+body.resilience-revealing .city-view-hint,
+body.resilience-revealing .city-view-controls {
+  display: none;
+}
+#resilience-complete {
+  padding: 12px;
+  background: #eaf5ff;
+  border: 1px solid #a9c9e6;
+  border-radius: 12px;
+  margin: 10px 0;
+}
+#resilience-real-quest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 9px 12px;
+  color: #fff;
+  background: #5940cf;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 13px;
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  #resilience-feedback {
+    max-height: 58dvh;
+    width: min(330px, calc(100vw - 24px));
+  }
+  body.resilience-revealing #city-view {
+    width: min(330px, calc(100vw - 24px));
+    left: 12px;
+    transform: none;
+  }
+}

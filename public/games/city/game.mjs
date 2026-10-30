@@ -1231,6 +1231,12 @@ function openBuiltCityView() {
 }
 function closeBuiltCityView({ resume = true } = {}) {
   if (!builtCityView) return;
+  $("resilience-feedback").hidden = true;
+  document.body.classList.remove("resilience-revealing");
+  resilienceHighlight = null;
+  livingScene.requestMarkers.forEach((marker) =>
+    marker.light.scale.setScalar(1),
+  );
   const { snapshot } = builtCityView;
   builtCityView = null;
   document.body.classList.remove("city-viewing");
@@ -1765,6 +1771,18 @@ function renderResiliencePanel() {
   }
   const event = RESILIENCE_EVENTS[report.round];
   const mission = resilienceMission(state.resilience);
+  $("resilience-complete").hidden = !report.completed;
+  if (report.completed) {
+    const weakest = [...CITY_REQUESTS].sort(
+      (a, b) =>
+        report.last.requests[b.id].requested -
+        report.last.requests[b.id].served -
+        (report.last.requests[a.id].requested -
+          report.last.requests[a.id].served),
+    )[0];
+    $("resilience-real-quest").href =
+      "/real-quests?district=" + encodeURIComponent(weakest.district);
+  }
   $("resilience-progress").textContent =
     "Crises resolved: " + report.round + "/" + RESILIENCE_EVENTS.length;
   $("resilience-stocks").textContent =
@@ -1827,9 +1845,11 @@ function renderResiliencePanel() {
         resilienceDraftPriority = priority.id;
         resilienceTestedPlans.add(priority.id);
         renderResiliencePanel();
-        Array.from($("resilience-choices").children)
-          .find((item) => item.dataset.priority === priority.id)
-          ?.focus();
+        $("resilience-preview").focus({ preventScroll: true });
+        $("resilience-preview").scrollIntoView?.({
+          block: "nearest",
+          behavior: reduceMotion.matches ? "instant" : "smooth",
+        });
       };
       choices.append(button);
     }
@@ -1939,7 +1959,77 @@ function renderResiliencePanel() {
   $("resilience-view").disabled = !report.last;
   panel.scrollTop = previousScroll;
 }
+let resilienceHighlight = null;
+function showResilienceResponse() {
+  const report = resilienceReport(state.resilience);
+  if (!report?.last) return;
+  closeResiliencePanel();
+  openBuiltCityView();
+  if (!builtCityView) return;
+  document.body.classList.add("resilience-revealing");
+  const last = report.last;
+  const supplied = Object.values(last.requests).reduce(
+    (sum, row) => sum + row.served,
+    0,
+  );
+  $("resilience-feedback-title").textContent =
+    "RESPONSE " +
+    report.round +
+    "/3 · " +
+    RESILIENCE_EVENTS[report.round - 1].title;
+  $("resilience-feedback-summary").textContent =
+    supplied +
+    "/" +
+    (supplied + last.waiting) +
+    " requests supplied · " +
+    last.waiting +
+    " still waiting. " +
+    last.repairs +
+    " repairs completed.";
+  const services = $("resilience-feedback-services");
+  services.replaceChildren();
+  for (const request of CITY_REQUESTS) {
+    const row = last.requests[request.id];
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = request.title + " " + row.served + "/" + row.requested;
+    button.setAttribute(
+      "aria-label",
+      "Inspect " +
+        request.title +
+        ": " +
+        row.served +
+        " of " +
+        row.requested +
+        " requests supplied",
+    );
+    button.onclick = () => {
+      resilienceHighlight = request.id;
+      focusBuiltCityDistrict(request.district);
+      services
+        .querySelectorAll("button")
+        .forEach((item) =>
+          item.setAttribute("aria-pressed", String(item === button)),
+        );
+    };
+    services.append(button);
+  }
+  $("resilience-feedback-motion").textContent = last.shipments.length
+    ? "Watch the supply vehicles on the roads. Green service lights mean requests met; amber means people are still waiting. Tap a service to look closer."
+    : "No supplies could move with this city's capacity. Amber service lights show unmet requests. Review earlier city choices before replaying this crisis.";
+  $("resilience-feedback-next").textContent = report.completed
+    ? "Chapter complete · What next? →"
+    : "Next disruption →";
+  $("city-view-return").textContent = "Back to Chapter 4 →";
+  const focus =
+    services.children[report.round === 1 ? 0 : report.round === 2 ? 2 : 3];
+  focus?.click();
+  $("resilience-feedback").hidden = false;
+  $("resilience-feedback").focus({ preventScroll: true });
+  playTone(last.waiting ? 360 : 760);
+}
 function openResiliencePanel() {
+  if (builtCityView) closeBuiltCityView({ resume: false });
   if (simulating || !$("intro").hidden) return;
   if (!canStartResilience(state.decisions, state.economy)) {
     toast("Finish Chapter 3's seven days before starting Chapter 4.");
@@ -3512,7 +3602,11 @@ $("journey-back").onclick = () => {
 };
 $("close-detail").onclick = closeDetail;
 $("view-city-toggle").onclick = openBuiltCityView;
-$("city-view-return").onclick = closeBuiltCityView;
+$("city-view-return").onclick = () => {
+  const chapterResponse = !$("resilience-feedback").hidden;
+  closeBuiltCityView();
+  if (chapterResponse) openResiliencePanel();
+};
 $("city-view-overview").onclick = () => focusBuiltCityDistrict();
 $("city-view-district").onchange = (event) => {
   focusBuiltCityDistrict(event.target.value);
@@ -3558,18 +3652,13 @@ $("resilience-commit").onclick = () => {
   state.resilience = next;
   clearResilienceDraft();
   render();
-  renderResiliencePanel();
-  $("resilience-panel").scrollTop = 0;
-  toast(
-    "Your city responded. " +
-      tested.last.waiting +
-      " requests are still waiting. Inspect your deliveries.",
-  );
+  showResilienceResponse();
 };
 $("resilience-close").onclick = closeResiliencePanel;
-$("resilience-view").onclick = () => {
-  closeResiliencePanel();
-  openBuiltCityView();
+$("resilience-view").onclick = showResilienceResponse;
+$("resilience-feedback-next").onclick = () => {
+  closeBuiltCityView({ resume: false });
+  openResiliencePanel();
 };
 $("resilience-reset").onclick = () => {
   if (
@@ -4528,6 +4617,17 @@ function animateWorld(now) {
   // and aerial inspection. Hidden tabs avoid unnecessary simulation work.
   caseScenes.animate(now, reduceMotion.matches);
   buildMilestoneScene.animate(now, reduceMotion.matches);
+  if (!$("resilience-feedback").hidden) {
+    livingScene.requestMarkers.forEach((marker, id) => {
+      marker.light.scale.setScalar(
+        id === resilienceHighlight
+          ? reduceMotion.matches
+            ? 1.6
+            : 1.5 + Math.sin(now / 350) * 0.25
+          : 1,
+      );
+    });
+  }
   livingScene.animate(
     now,
     reduceMotion.matches,
