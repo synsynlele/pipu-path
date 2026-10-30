@@ -3510,9 +3510,8 @@ const buildLab = mountBuildLab({
   },
 });
 $("build-lab-toggle").onclick = () => buildLab.open();
-$("start-lab").onclick = () => startCity("lab");
 $("start").onclick = () => startCity();
-function startCity(mode = "journey") {
+function startCity() {
   $("intro").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
@@ -3526,10 +3525,6 @@ function startCity(mode = "journey") {
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
-  if (mode === "lab") {
-    buildLab.open();
-    return;
-  }
   const nextUnsolved = firstUnanswered(state.decisions);
   if (
     !nextUnsolved &&

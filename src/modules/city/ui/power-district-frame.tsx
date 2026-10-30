@@ -182,7 +182,7 @@ export function PowerDistrictFrame({
       {welcome && !entered ? (
         <a
           href="/login?next=%2Freal-quests"
-          className="absolute top-[max(22px,env(safe-area-inset-top))] right-[7vw] z-10 inline-flex min-h-11 items-center rounded-full border border-white/40 bg-[#0b2638] px-5 text-sm font-semibold text-white"
+          className="pp-city-welcome-signin absolute top-[max(22px,env(safe-area-inset-top))] right-[7vw] z-10 inline-flex min-h-11 items-center rounded-full border border-white/40 bg-[#0b2638] px-5 text-sm font-semibold text-white"
         >
           Sign in ↗
         </a>
