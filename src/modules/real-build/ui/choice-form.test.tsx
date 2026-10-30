@@ -29,6 +29,9 @@ it("retains topic and time on a generation failure and offers a retry without fa
   await waitFor(() =>
     expect(screen.getByRole("alert")).toHaveTextContent("AI took too long"),
   );
+  expect(
+    screen.getByText(/your improvement goal is sent to AI/i),
+  ).toBeInTheDocument();
   expect(screen.getByRole("combobox")).toHaveValue("water");
   expect(
     screen.getByRole("textbox", {
