@@ -9,6 +9,8 @@ export function BuildShell({ children }: { children: React.ReactNode }) {
  .pp-simple-build {color-scheme:light; --foreground:#17375f; --muted:#536883; --border:#d6e4f5; --panel:#fff; --panel-raised:#f4f8ff; --color-primary-700:#2059bd; --color-text:#17375f;}
  .pp-simple-build a:not(.pp-tab-link):not(.build-primary) {color:#2059bd; -webkit-text-fill-color:currentColor;}
  .pp-simple-build input,.pp-simple-build textarea,.pp-simple-build select {background:#fff;color:#17375f;border:1px solid #b8cde6;border-radius:12px;padding:12px;min-height:48px;width:100%;font-size:16px;}
+ .pp-simple-build select {color-scheme:light!important;appearance:auto;background-color:#fff!important;color:#17375f!important;-webkit-text-fill-color:#17375f!important;}
+ .pp-simple-build select option,.pp-simple-build select optgroup {background-color:#fff!important;color:#17375f!important;-webkit-text-fill-color:#17375f!important;}
  .pp-simple-build input[type=radio] {width:20px;min-height:20px;accent-color:#2059bd;}
  .pp-simple-build input[type=file] {font-size:14px;}
  .pp-simple-build button,.pp-simple-build .build-primary {min-height:48px;border-radius:12px;padding:12px 18px;font-weight:700;}

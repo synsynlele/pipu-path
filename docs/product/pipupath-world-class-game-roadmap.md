@@ -165,8 +165,77 @@ consequences, navigation, pause/resume, device save, sound, music and
 continuing challenges. It uses expandable optional controls so the main
 instruction is concise on phones.
 
+## Phase 4 · context-aware real Quest handoff (first preview slice)
+
+Branch `preview/game-world-class-phase4` stacks on Phase 3 and makes the
+existing Play & build → Real Quests action genuinely contextual. The embedded
+city sends only a fixed, allowlisted service ID alongside the already-used
+non-identifying district hint. The parent validates the iframe origin/source,
+and the Real Quests route resolves one of five reviewed safe starter prompts.
+It preselects the matching topic and offers an editable focus; the Builder
+must still choose, submit and complete an actual Quest with evidence.
+No game answer, identity, evidence, AI prompt or progress is transferred;
+no server-side game completion, XP or cloud save is invented.
+
+The public game remains playable without login; the existing Real Quests
+account/privacy boundary remains authoritative. A current saved real Quest
+is never replaced by a game handoff. The invitation adds no game card,
+blocking overlay, backend migration, social contact or commercial incentive.
+
+**Not yet delivered in Phase 4:** signed-in optional cross-device city saves
+with owner-scoped RLS and conflict recovery; moderated classroom teams;
+student Android acceptance; and a production-verified AI Quest journey.
+The existing real-world candidate's database migration and environment
+must be verified independently before a production rollout. Stage 3's
+unfinished content-diversity gates still apply to this stacked preview.
+
 **Remaining Phase 3 gates:** genuinely new validated topologies and demands,
 automated content review/solvability testing beyond the first catalogue,
 student testing on low-end Android, moderation and safe AI-authored
 proposals only after human approval. A replayable finite template catalogue
 must never be described as limitless new, unique AI scenarios.
+
+## Phase 4 continuation · hands-on Real Quests standard
+
+The Real Quests authoring prompt previously required paper plans and fictional
+simulations. The new `hands-on-v2` standard requires an actual useful change,
+real-world test, feedback and honest evidence. Every generated challenge is
+validated before saving, and the versioned goal cache prevents retired
+paperwork templates from being selected for new attempts. Existing user history
+is not rewritten; older active paper tasks can be set aside without deleting
+evidence. All 14 topic starting points and five city handoffs are practical.
+
+Topic and outcome dropdown menus now explicitly request white backgrounds and
+dark text in Android native menus. Provider calls are not automatically retried;
+existing per-account request limits, template reuse and generation leases remain.
+No new backend tables, services or automatic Vercel deployments are required.
+Physical Android testing and school-safe multi-user features are still release
+gates; no claim of completing the full Phase 4 platform scope.
+
+## Phase 4 · audio, account backup and protected collaboration release
+
+The in-city original music and effects use a verified resumed AudioContext:
+Android cannot present the switches as enabled until the audio device starts.
+Cues use audible, conservative gain and the iframe explicitly permits autoplay.
+Playback begins only on Play or user interaction; it stops on page hiding.
+System media-volume and physical Android verification remain user acceptance
+items, not guarantees established by automated tests.
+
+Signed-in builders can opt into a sanitized fictional-city backup with one
+private record per account. Device/browser-only play remains available without
+login. Server verifies identity, active-account standing and guardian
+authorization before using the service client, checks old revision before an
+update, limits payloads, and never stores profile prose, uploaded evidence,
+real-world Quest state, or XP. Backup, restore and delete each require a
+user decision. An old device cannot silently overwrite a newer server copy.
+
+The existing safeguarded Project collaboration infrastructure remains the
+only cross-user collaboration service. Real Quests links to it without
+introducing a new open chat or exposing private school profiles. School group
+eligibility is enforced by the existing backend. The city itself is
+teacher-facilitated shared play, not a multiplayer backend; this distinction
+must stay clear to testers.
+
+Single fast-forward of validated stacked Phase 1–4 source to main is preferable
+to four independent Vercel builds. The public release does not certify Android
+device volume, AI provider uptime, or verified learner outcomes.

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CityCloudControls } from "./city-cloud-controls";
 
 /** One mounted 3D city. Focus mode never resets a player's open game. */
 export function PowerDistrictFrame({
@@ -9,11 +10,13 @@ export function PowerDistrictFrame({
   questLabel,
   initialFocus = true,
   welcome = false,
+  cloudEligible = false,
 }: {
   questHref: string;
   questLabel: string;
   initialFocus?: boolean;
   welcome?: boolean;
+  cloudEligible?: boolean;
 }) {
   const router = useRouter();
   const [expanded, setExpanded] = useState(initialFocus);
@@ -21,6 +24,7 @@ export function PowerDistrictFrame({
   const [handoff, setHandoff] = useState(false);
   const [saved, setSaved] = useState<boolean | null>(null);
   const [district, setDistrict] = useState<string | null>(null);
+  const [service, setService] = useState<string | null>(null);
   const [problem, setProblem] = useState("");
   const frameRef = useRef<HTMLIFrameElement>(null);
   const expandButton = useRef<HTMLButtonElement>(null);
@@ -59,6 +63,13 @@ export function PowerDistrictFrame({
           /^[a-z-]{1,32}$/.test(data.district)
         )
           setDistrict(data.district);
+        if (
+          typeof data.service === "string" &&
+          /^(workshop-link|clinic-power|shared-services|backup-water|shared-recovery)$/.test(
+            data.service,
+          )
+        )
+          setService(data.service);
       }
       if (data.type === "pipupath:city:saved" && saving.current) {
         saving.current = false;
@@ -98,9 +109,10 @@ export function PowerDistrictFrame({
   }, [expanded, entered]);
 
   function questHrefWithDistrict() {
-    if (!district || !questHref.startsWith("/real-quests")) return questHref;
+    if (!questHref.startsWith("/real-quests")) return questHref;
     const url = new URL(questHref, window.location.origin);
-    url.searchParams.set("district", district);
+    if (district) url.searchParams.set("district", district);
+    if (service) url.searchParams.set("service", service);
     return url.pathname + url.search;
   }
 
@@ -145,7 +157,8 @@ export function PowerDistrictFrame({
         }
       >
         <strong className="text-xs sm:text-sm">Play &amp; build</strong>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {cloudEligible ? <CityCloudControls frameRef={frameRef} /> : null}
           <button
             ref={handoffButton}
             type="button"
@@ -202,7 +215,7 @@ export function PowerDistrictFrame({
             ? "min-h-0 w-full flex-1 border-0"
             : "h-[min(860px,85svh)] min-h-[620px] w-full border-0"
         }
-        allow="fullscreen"
+        allow="autoplay; fullscreen"
         referrerPolicy="no-referrer"
       />
       {handoff ? (

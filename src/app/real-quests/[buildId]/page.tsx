@@ -3,7 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { getOwnedBuild } from "@/modules/real-build/infrastructure/dal";
-import { difficultyLabel } from "@/modules/real-build/domain/build";
+import {
+  difficultyLabel,
+  isRetiredPaperworkChallenge,
+} from "@/modules/real-build/domain/build";
 import { ImproveBuildForm } from "@/modules/real-build/ui/improve-form";
 import { BuildAttemptForm } from "@/modules/real-build/ui/attempt-form";
 export const metadata: Metadata = {
@@ -21,6 +24,7 @@ export default async function RealBuildPage({
   const detail = await getOwnedBuild(buildId);
   if (!detail) notFound();
   const { build, imageUrl, improvement } = detail;
+  const retired = isRetiredPaperworkChallenge(build.challenge);
   return (
     <main id="main-content">
       <Link href="/real-quests" className="inline-block py-3 text-sm font-bold">
@@ -74,8 +78,18 @@ export default async function RealBuildPage({
           <p className="mt-3 text-sm leading-6">{build.challenge.safety}</p>
         </details>
       </section>
+      {retired && build.status === "active" ? (
+        <p
+          role="status"
+          className="mt-5 rounded-xl border border-[#f4d49e] bg-[#fff8e9] p-4 text-sm leading-6 text-[#70471a]"
+        >
+          This older Quest focuses on planning instead of a real-world build. We
+          no longer offer it. Open “This Quest is not right for me” below to set
+          it aside without losing your history, then start a practical Quest.
+        </p>
+      ) : null}
       {build.status === "active" ? (
-        <BuildAttemptForm build={build} />
+        <BuildAttemptForm build={build} retired={retired} />
       ) : (
         <section className="build-card mt-5 space-y-4">
           <h2 className="text-xl font-bold">
@@ -119,7 +133,7 @@ export default async function RealBuildPage({
           <p className="text-sm leading-6 whitespace-pre-wrap">
             {build.draft.nextChange || "No next change saved."}
           </p>
-          {build.status === "recorded" ? (
+          {build.status === "recorded" && !retired ? (
             <ImproveBuildForm id={build.id} />
           ) : null}
           <Link

@@ -49,6 +49,7 @@ export default async function CityPage({
       questLabel={context?.returnLabel ?? next.actionLabel}
       questTitle={context?.questTitle}
       outcome={context?.outcome}
+      cloudEligible
     />
   );
 }

@@ -170,3 +170,33 @@ it("opens a fresh improvement attempt without copying old evidence or calling AI
   ]);
   expect(m.start).not.toHaveBeenCalled();
 });
+
+// Recorded coursework may remain in history but cannot be cloned into new Quests.
+it("blocks improvement cloning of a retired paper-only Quest", async () => {
+  results = [
+    {
+      data: {
+        id,
+        template_id: "legacy",
+        topic: "school",
+        minutes: 30,
+        difficulty: 1,
+        focus: "Help classmates with study routines",
+        challenge: {
+          title: "Draw a paper plan",
+          outcome: "Prepare a paper layout.",
+          steps: Array(5).fill("Draw a sketch on paper."),
+          materials: ["Paper"],
+          evidence: "Describe the planned layout.",
+          safety: "Keep details private.",
+        },
+      },
+    },
+  ];
+  const f = new FormData();
+  f.set("id", id);
+  const answer = await improveRealBuild({ ok: false, message: "" }, f);
+  expect(answer.ok).toBe(false);
+  expect(answer.message).toContain("retired");
+  expect(calls.some((call) => call[0] === "insert")).toBe(false);
+});

@@ -9,6 +9,7 @@ import {
   draftSchema,
   canRecordAttempt,
   emptyDraft,
+  isRetiredPaperworkChallenge,
 } from "../domain/build";
 import { buildServiceClient } from "../infrastructure/client";
 import { startBuildForUser } from "./start-build";
@@ -214,6 +215,12 @@ export async function improveRealBuild(
     .maybeSingle();
   if (old.error || !old.data)
     return { ok: false, message: "This recorded attempt could not be opened." };
+  if (isRetiredPaperworkChallenge(old.data.challenge))
+    return {
+      ok: false,
+      message:
+        "This old planning-only Quest has been retired. Choose a new practical Quest instead.",
+    };
   const current = await service
     .from("real_build_attempts")
     .select("id")

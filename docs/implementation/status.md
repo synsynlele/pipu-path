@@ -1,5 +1,39 @@
 # Implementation status
 
+## 30 October 2026 — Phase 4 practical Quest quality correction
+
+The game-to-Quest handoff now leads to a real-use intervention rather than a
+paper-based exercise. All 14 real-world topic hints and 5 city-linked starters
+were rewritten. New AI templates must describe a deployed improvement, real
+usage test and honest result. Unsafe tasks and paperwork-only simulations fail
+server validation. A versioned hash prevents new attempts selecting the old
+paperwork template catalogue without changing prior submissions. An active old
+paper-only challenge offers a visible set-aside option, retaining history.
+
+Both Real Quest dropdowns now enforce a light background and dark text for
+native Android options. Existing AI request caps and shared template reuse are
+retained with no automatic AI retries. No Supabase migration is required for
+this change. Full CI and mobile acceptance remain mandatory before production.
+
+## 30 October 2026 — Game Phase 4: safe city-to-Quest handoff preview
+
+Development branch `preview/game-world-class-phase4` stacks on Phase 3's
+draft PR; it does not alter the main branch or production. A new allowlisted
+service-to-action catalogue connects certified fictional city builds and
+continuing scenarios to the existing Real Quests creation screen. The same
+iframe-parent bridge accepts only same-origin messages from the embedded
+city, validates the service ID, and transports no free-text player data.
+Real Quests proposes a topic and editable, safe first focus; it neither
+starts a Quest without the Builder's decision nor pretends game play earned
+XP or real-life proof. If a real Quest is already active, it is preserved.
+
+The in-game guide also explains the transition. Domain tests check every
+reviewed mapping, exact value allowlisting and input-length limits. This is
+the first Phase 4 slice; account-authorized cloud city saves, supervised
+multi-school collaboration, real Android trials and full production QA
+remain unshipped. The candidate Real Quests migration/environment gate noted
+below still applies.
+
 ## 28 October 2026 — Chapter 3, City of Opportunities: operating enterprises
 
 The development branch `feat/unbuilt-city-chapter-three-enterprises` extends the

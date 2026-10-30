@@ -43,5 +43,9 @@ it("retains topic and time on a generation failure and offers a retry without fa
   expect((start.mock.calls[0][1] as FormData).get("focus")).toBe(
     "I want to reduce wasted water at school.",
   );
-  expect(screen.getByRole("button", { name: "Get my Quest →" })).toBeEnabled();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Get my Quest →" }),
+    ).toBeEnabled(),
+  );
 });
