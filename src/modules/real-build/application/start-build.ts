@@ -1,5 +1,5 @@
 import "server-only";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { buildServiceClient } from "../infrastructure/client";
 import { generateBuildTemplate } from "../infrastructure/provider";
 import {
@@ -29,12 +29,17 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
   const parsedLevel = difficultySchema.safeParse(progress.data);
   if (!parsedLevel.success) throw new Error("BUILD_LOAD_FAILED");
   const difficulty = parsedLevel.data as BuildDifficulty;
+  // Reusable challenges are indexed by a normalized goal, not a learner identity.
+  const focusKey = createHash("sha256")
+    .update(choice.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim())
+    .digest("hex");
 
-  const unseen = await service.rpc("find_unseen_real_build_template_level", {
+  const unseen = await service.rpc("find_unseen_real_build_template_for_goal", {
     user_input: userId,
     topic_input: choice.topic,
     minutes_input: choice.minutes,
     difficulty_input: difficulty,
+    focus_key_input: focusKey,
   });
   if (unseen.error) throw new Error("BUILD_LOAD_FAILED");
   let template = unseen.data?.[0];
@@ -45,11 +50,12 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
       .eq("topic", choice.topic)
       .eq("minutes", choice.minutes)
       .eq("difficulty", difficulty)
+      .eq("focus_key", focusKey)
       .order("created_at", { ascending: false })
       .limit(30);
     if (pool.error) throw new Error("BUILD_LOAD_FAILED");
     const token = randomUUID(),
-      key = `${choice.topic}:${choice.minutes}:${difficulty}`;
+      key = `${choice.topic}:${choice.minutes}:${difficulty}:${focusKey}`;
     const lease = await service.rpc("claim_real_build_generation", {
       key_input: key,
       token_input: token,
@@ -76,7 +82,14 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
         throw new Error("BUILD_REPEATED");
       const saved = await service
         .from("real_build_templates")
-        .insert({ ...choice, difficulty, challenge, source: "openai" })
+        .insert({
+          topic: choice.topic,
+          minutes: choice.minutes,
+          difficulty,
+          focus_key: focusKey,
+          challenge,
+          source: "openai",
+        })
         .select("*")
         .single();
       if (saved.error || !saved.data) throw new Error("BUILD_SAVE_FAILED");
@@ -89,7 +102,8 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
         .eq("token", token);
     }
   }
-  if (template.difficulty !== difficulty) throw new Error("BUILD_LOAD_FAILED");
+  if (template.difficulty !== difficulty || template.focus_key !== focusKey)
+    throw new Error("BUILD_LOAD_FAILED");
   const challenge = validateChallenge(template.challenge);
   const result = await service
     .from("real_build_attempts")
