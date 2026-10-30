@@ -254,7 +254,9 @@ assert(
   ),
 );
 assert(game.includes("choicesForCase(id, answerOrderSeed)"));
-assert(game.includes("const nextStep = integratedStep(state.decisions, state.lab)"));
+assert(
+  game.includes("const nextStep = integratedStep(state.decisions, state.lab)"),
+);
 assert(game.includes("resumeJourney();"));
 assert(game.includes("function goToJourneyCase(id)"));
 assert(game.includes("autoAdvanceTimer = setTimeout("));
