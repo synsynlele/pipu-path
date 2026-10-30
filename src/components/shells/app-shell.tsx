@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   PipuPath
                 </span>
                 <span className="mt-0.5 block max-w-[6.75rem] text-[0.5rem] leading-[1.12] font-medium tracking-[0.02em] text-blue-100 sm:max-w-none sm:whitespace-nowrap">
-                  University for Human Potential
+                  Build a Better World
                 </span>
               </span>
             </div>

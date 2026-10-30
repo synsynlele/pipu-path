@@ -41,9 +41,9 @@ export default function DownloadPipuPathLitePage() {
               PipuPath, now in your app launcher.
             </h1>
             <p className="text-muted mt-7 max-w-2xl text-lg leading-8 sm:text-xl">
-              PipuPath Lite gives you the same University for Human Potential in
-              a lightweight Android app. Your account, Mission, Journey, Quests,
-              Projects, Connect and Profile stay in sync with the web.
+              Build a Better World with PipuPath Lite, a lightweight Android
+              app. Your account, Mission, Journey, Quests, Projects, Connect and
+              Profile stay in sync with the web.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <ButtonLink href="/downloads/latest" className="min-w-44">

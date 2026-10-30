@@ -4,7 +4,7 @@ import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
 
 export const buildTopics = cityInterests;
-export const REAL_BUILD_CONTENT_VERSION = "solution-recipes-v5";
+export const REAL_BUILD_CONTENT_VERSION = "solution-recipes-v6";
 export const focusSchema = z
   .string()
   .trim()

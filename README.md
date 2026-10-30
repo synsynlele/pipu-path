@@ -1,6 +1,6 @@
 # PipuPath
 
-**PipuPath is the University for Human Potential.** It helps people discover who
+**PipuPath — Build a Better World.** It helps people discover who
 they are, develop what they carry and deploy it through real-world action.
 
 The MVP includes private Identity and consent, 15-question Discovery, a Human
