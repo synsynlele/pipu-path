@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { cityInspiration } from "./city-inspiration";
-import {
-  CITY_HANDOFF_SERVICES,
-  cityQuestHandoff,
-} from "./city-quest-handoff";
+import { CITY_HANDOFF_SERVICES, cityQuestHandoff } from "./city-quest-handoff";
 
 describe("game to real Quest handoff", () => {
   it("provides an editable, safe starter for every tested city service", () => {
