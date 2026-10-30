@@ -1888,3 +1888,9 @@ Regression tests exercise unnumbered arrays, redundant numbering, negative
 paper wording, discovery examples, genuine paper assignments, malformed shape,
 safety and privacy. No migration, dependency or music change in this release.
 Live signed-in AI acceptance remains distinct from deterministic CI checks.
+
+## 30 October 2026 — Complete AI prompts and shared builder slogan
+
+Quest generation now instructs the coach to supply the actual quoted prompt whenever a step requires AI, plus an action to check/adapt its output. Prompts must fit existing action bounds and omit private information; when a useful prompt cannot fit, the coach must give direct build instructions. AI drafts remain distinct from real-use evidence. The template content version advances so new requests do not reuse older templates missing these instructions; active Quests and evidence remain intact.
+
+The shared brand mark, mobile app header, metadata and Android download copy now use “Build a Better World,” matching the game. The brand subtitle is also visible on the real-Quest mobile header. No database migration or game runtime changes. Validation and production deployment follow the existing CI gate.

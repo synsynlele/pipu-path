@@ -65,7 +65,7 @@ const pwaInstallCaptureScript = `
 
 export const metadata: Metadata = {
   title: {
-    default: "PipuPath — The University for Human Potential",
+    default: "PipuPath — Build a Better World",
     template: "%s | PipuPath",
   },
   description:

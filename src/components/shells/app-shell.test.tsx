@@ -34,9 +34,7 @@ describe("AppShell", () => {
       }),
     ).toBeVisible();
     expect(mobileHeaderQueries.getByText("PipuPath")).toBeVisible();
-    expect(
-      mobileHeaderQueries.getByText("University for Human Potential"),
-    ).toBeVisible();
+    expect(mobileHeaderQueries.getByText("Build a Better World")).toBeVisible();
     expect(
       mobileHeaderQueries.queryByRole("button", {
         name: "Install PipuPath",
