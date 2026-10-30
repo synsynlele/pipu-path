@@ -289,10 +289,15 @@ for (let round = 0; round < 3; round++) {
   assert.equal(w.document.getElementById("resilience-preview").hidden, false);
   assert.equal(w.document.getElementById("resilience-commit").hidden, false);
   if (round === 0) {
-    const another = w.document.querySelectorAll("#resilience-choices button")[1];
+    const another = w.document.querySelectorAll(
+      "#resilience-choices button",
+    )[1];
     another.click();
     assert.equal(JSON.stringify(game.state.resilience), beforePlan);
-    assert.equal(w.document.querySelectorAll("[aria-pressed=true]").length >= 1, true);
+    assert.equal(
+      w.document.querySelectorAll("[aria-pressed=true]").length >= 1,
+      true,
+    );
   }
   w.document.getElementById("resilience-commit").click();
   assert.equal(game.state.resilience.choices.length, round + 1);
