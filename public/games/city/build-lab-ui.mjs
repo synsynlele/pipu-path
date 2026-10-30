@@ -30,6 +30,8 @@ export function mountBuildLab({
   afterClose,
   onTest = () => {},
   onReveal = () => {},
+  canSelectMission = () => true,
+  onLocked = () => {},
 }) {
   const $ = (id) => document.getElementById(id);
   const dialog = $("build-lab");
@@ -117,6 +119,9 @@ export function mountBuildLab({
           String(button.dataset.labTool === brush.kind),
         ),
       );
+    $("lab-mission").querySelectorAll("option").forEach((option) => {
+      option.disabled = !canSelectMission(option.value);
+    });
     buttons.forEach((button, cell) => {
       const target = mission.targets.find((t) => t.cell === cell),
         source = mission.source === cell,
@@ -172,9 +177,16 @@ export function mountBuildLab({
         : "lab-result lab-revise"
       : "lab-result";
     $("lab-next").hidden =
-      !result?.success || mission.id === LAB_MISSIONS.at(-1).id;
+      !result?.success ||
+      !LAB_MISSIONS.slice(LAB_MISSIONS.findIndex((m) => m.id === mission.id) + 1)
+        .some((item) => canSelectMission(item.id));
   }
   function selectMission(id) {
+    if (!canSelectMission(id)) {
+      onLocked();
+      render();
+      return;
+    }
     const state = sanitizeLab(read());
     state.active = id;
     write(state);
@@ -269,10 +281,11 @@ export function mountBuildLab({
     const current = LAB_MISSIONS.findIndex(
       (m) => m.id === sanitizeLab(read()).active,
     );
-    selectMission(
-      skillRecommendation(read()).recommendedId ??
-        LAB_MISSIONS[Math.min(current + 1, LAB_MISSIONS.length - 1)].id,
+    const next = LAB_MISSIONS.slice(current + 1).find((m) =>
+      canSelectMission(m.id),
     );
+    if (next) selectMission(next.id);
+    else onLocked();
   };
   $("lab-close").onclick = () => dialog.close();
   dialog.addEventListener("close", () => {
@@ -293,6 +306,17 @@ export function mountBuildLab({
      */
     open(missionId = null, { firstMission = false } = {}) {
       if (dialog.open) return;
+      const requested =
+        missionId && LAB_MISSIONS.some((m) => m.id === missionId)
+          ? missionId
+          : sanitizeLab(read()).active;
+      const chosen = canSelectMission(requested)
+        ? requested
+        : LAB_MISSIONS.find((m) => canSelectMission(m.id))?.id;
+      if (!chosen) {
+        onLocked();
+        return;
+      }
       returnFocus = document.activeElement;
       $("lab-title").textContent = firstMission
         ? "Your first build: power the workshop"
@@ -302,9 +326,9 @@ export function mountBuildLab({
       pendingRepair = null;
       recoveredTest = false;
       beforeOpen();
-      if (missionId && LAB_MISSIONS.some((item) => item.id === missionId)) {
-        const current = sanitizeLab(read());
-        current.active = missionId;
+      const current = sanitizeLab(read());
+      if (current.active !== chosen) {
+        current.active = chosen;
         write(current);
       }
       result = null;
