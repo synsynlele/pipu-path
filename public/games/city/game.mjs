@@ -3941,6 +3941,11 @@ $("resume-city").hidden =
   (!Object.keys(state.decisions).length && !previousPractice.journey);
 function startCity() {
   if (!$("intro").hidden) playtest.note("start");
+  // Start is a real player gesture, so the soundtrack can safely begin
+  // here. Both independent HUD switches remain available to mute at once.
+  if (!cityAudio.sound) cityAudio.toggleSound();
+  if (!cityAudio.music) cityAudio.toggleMusic();
+  syncAudioControls();
   firstBuildMode = false;
   serviceDesk.close();
   $("intro").hidden = true;
