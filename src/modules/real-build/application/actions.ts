@@ -218,7 +218,8 @@ export async function improveRealBuild(
   if (isRetiredPaperworkChallenge(old.data.challenge))
     return {
       ok: false,
-      message: "This old planning-only Quest has been retired. Choose a new practical Quest instead.",
+      message:
+        "This old planning-only Quest has been retired. Choose a new practical Quest instead.",
     };
   const current = await service
     .from("real_build_attempts")

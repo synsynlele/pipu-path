@@ -173,24 +173,26 @@ it("opens a fresh improvement attempt without copying old evidence or calling AI
 
 // Recorded coursework may remain in history but cannot be cloned into new Quests.
 it("blocks improvement cloning of a retired paper-only Quest", async () => {
-  results = [{
-    data: {
-      id,
-      template_id: "legacy",
-      topic: "school",
-      minutes: 30,
-      difficulty: 1,
-      focus: "Help classmates with study routines",
-      challenge: {
-        title: "Draw a paper plan",
-        outcome: "Prepare a paper layout.",
-        steps: Array(5).fill("Draw a sketch on paper."),
-        materials: ["Paper"],
-        evidence: "Describe the planned layout.",
-        safety: "Keep details private.",
+  results = [
+    {
+      data: {
+        id,
+        template_id: "legacy",
+        topic: "school",
+        minutes: 30,
+        difficulty: 1,
+        focus: "Help classmates with study routines",
+        challenge: {
+          title: "Draw a paper plan",
+          outcome: "Prepare a paper layout.",
+          steps: Array(5).fill("Draw a sketch on paper."),
+          materials: ["Paper"],
+          evidence: "Describe the planned layout.",
+          safety: "Keep details private.",
+        },
       },
     },
-  }];
+  ];
   const f = new FormData();
   f.set("id", id);
   const answer = await improveRealBuild({ ok: false, message: "" }, f);
