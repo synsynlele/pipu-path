@@ -1,10 +1,20 @@
 import assert from "node:assert/strict";
 import {
-  serviceImpact, serviceFor, weakestConnection,
-  startServiceDrill, finishServiceRepair,
+  serviceImpact,
+  serviceFor,
+  weakestConnection,
+  startServiceDrill,
+  finishServiceRepair,
 } from "../../public/games/city/city-service-system.mjs";
-import { skillRecommendation, challengeDifficulty } from "../../public/games/city/build-progression.mjs";
-import { sanitizeLab, labMission, evaluateLab } from "../../public/games/city/build-lab.mjs";
+import {
+  skillRecommendation,
+  challengeDifficulty,
+} from "../../public/games/city/build-progression.mjs";
+import {
+  sanitizeLab,
+  labMission,
+  evaluateLab,
+} from "../../public/games/city/build-lab.mjs";
 // Workshop source 10 -> target 14, with an upward bypass around tree 12.
 const workshop = Array(25).fill(null);
 workshop[5] = { kind: "bend", turn: 1 };
@@ -37,17 +47,33 @@ assert.equal(drill.after.served, 0);
 assert.equal(serviceImpact(drill.lab).unmet, 40);
 assert.equal(JSON.stringify(drill.lab.boards["workshop-link"]), initial);
 assert.equal(drill.lab.tested.includes("workshop-link"), true);
-assert.equal(startServiceDrill(drill.lab, "workshop-link").status, "already-damaged");
+assert.equal(
+  startServiceDrill(drill.lab, "workshop-link").status,
+  "already-damaged",
+);
 const repaired = finishServiceRepair(drill.lab, "workshop-link");
 assert.equal(repaired.repaired, true);
 assert.equal(serviceFor(repaired.lab, "workshop-link").served, 6);
 assert.equal(JSON.stringify(repaired.lab.boards["workshop-link"]), initial);
-assert.equal(finishServiceRepair(repaired.lab, "workshop-link").repaired, false);
+assert.equal(
+  finishServiceRepair(repaired.lab, "workshop-link").repaired,
+  false,
+);
 assert.equal(startServiceDrill(empty, "workshop-link").status, "not-ready");
-assert.deepEqual(sanitizeLab({
-  faults: { "workshop-link": "__proto__" },
-  attempts: { "workshop-link": { tests: Infinity, successes: -3, hints: 1000 } },
-}).attempts["workshop-link"], {tests:0, successes:0, hints:30});
-assert.equal(sanitizeLab({faults:{"workshop-link":13}}).faults["workshop-link"],null);
+assert.deepEqual(
+  sanitizeLab({
+    faults: { "workshop-link": "__proto__" },
+    attempts: {
+      "workshop-link": { tests: Infinity, successes: -3, hints: 1000 },
+    },
+  }).attempts["workshop-link"],
+  { tests: 0, successes: 0, hints: 30 },
+);
+assert.equal(
+  sanitizeLab({ faults: { "workshop-link": 13 } }).faults["workshop-link"],
+  null,
+);
 assert.equal(skillRecommendation(lab).recommendedId, "clinic-power");
-console.log("PASS: authored service loads, fictional shortage before/after, real broken-link repair, immutable original boards and adaptive builder recommendation.");
+console.log(
+  "PASS: authored service loads, fictional shortage before/after, real broken-link repair, immutable original boards and adaptive builder recommendation.",
+);

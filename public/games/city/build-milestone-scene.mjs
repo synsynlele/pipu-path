@@ -49,7 +49,11 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
     });
     scene.add(g);
     buildings.set(m.id, {
-      group: g, serviceLight, ready: false, offline: false, revealedAt: 0,
+      group: g,
+      serviceLight,
+      ready: false,
+      offline: false,
+      revealedAt: 0,
     });
   }
   function sync(lab, at = performance.now()) {
@@ -83,9 +87,8 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
         ? 1
         : Math.min(1, Math.max(0, (at - build.revealedAt) / 1150));
       build.group.scale.setScalar(0.2 + 0.8 * (1 - Math.pow(1 - t, 3)));
-      const pulse = build.offline && !reducedMotion
-        ? 1 + Math.sin(at / 270) * 0.14
-        : 1;
+      const pulse =
+        build.offline && !reducedMotion ? 1 + Math.sin(at / 270) * 0.14 : 1;
       build.serviceLight.scale.setScalar(pulse);
     }
   }

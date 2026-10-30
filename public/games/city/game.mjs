@@ -3710,9 +3710,14 @@ function showBuildVictory(
   $("victory-service").textContent = retry
     ? "Keep refining your design to restore fictional service."
     : (recovered ? "Repair succeeded. " : "") +
-      service.served + "/" + service.demand +
-      " simulated requests met here; " + city.served + "/" +
-      city.demand + " across your five city services.";
+      service.served +
+      "/" +
+      service.demand +
+      " simulated requests met here; " +
+      city.served +
+      "/" +
+      city.demand +
+      " across your five city services.";
   $("victory-continue").textContent = pendingBuildCase
     ? "Continue to the next decision →"
     : "Next: solve a city decision →";
@@ -3739,10 +3744,12 @@ $("victory-continue").onclick = () => {
 };
 $("victory-build").onclick = () => {
   const retry = $("build-victory").dataset.retry === "true";
-  const next = retry && lastVictoryMission
-    ? lastVictoryMission
-    : skillRecommendation(state.lab).recommendedId ??
-      lastVictoryMission ?? "workshop-link";
+  const next =
+    retry && lastVictoryMission
+      ? lastVictoryMission
+      : (skillRecommendation(state.lab).recommendedId ??
+        lastVictoryMission ??
+        "workshop-link");
   hideBuildVictory();
   buildLab.open(next);
 };

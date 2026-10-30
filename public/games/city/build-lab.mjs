@@ -106,9 +106,7 @@ export function sanitizeLab(input) {
   for (const mission of LAB_MISSIONS) {
     const raw = input?.attempts?.[mission.id];
     const safeCounter = (value) =>
-      Number.isInteger(value) && value >= 0
-        ? Math.min(30, value)
-        : 0;
+      Number.isInteger(value) && value >= 0 ? Math.min(30, value) : 0;
     attempts[mission.id] = {
       tests: safeCounter(raw?.tests),
       successes: safeCounter(raw?.successes),

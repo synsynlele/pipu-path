@@ -151,7 +151,9 @@ assert.equal(sanitizeLab(null).active, first.id);
 assert.deepEqual(sanitizeLab(null).tested, []);
 assert.equal(sanitizeLab(null).faults["workshop-link"], null);
 assert.deepEqual(sanitizeLab(null).attempts["workshop-link"], {
-  tests: 0, successes: 0, hints: 0,
+  tests: 0,
+  successes: 0,
+  hints: 0,
 });
 assert.deepEqual(
   sanitizeLab({ tested: ["workshop-link", "fake", "workshop-link"] }).tested,

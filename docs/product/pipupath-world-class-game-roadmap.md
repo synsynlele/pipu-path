@@ -104,7 +104,6 @@ Mobile workspace: at most 60% of the viewport height, anchored at the bottom;
 backdrop is light, no artificial fullscreen cover. Low-end device and real
 mobile checks remain conditions of production approval.
 
-
 ## Phase 2 · first playable service-consequence and repair slice
 
 New work is on the separate stacked `preview/game-world-class-phase2` branch,

@@ -82,8 +82,11 @@ export function mountBuildLab({
     $("lab-brief").textContent = mission.brief;
     const guidance = skillRecommendation(state);
     $("lab-recommendation").textContent =
-      guidance.tier + " · " + guidance.message +
-      " Suggested next: " + guidance.recommendedTitle;
+      guidance.tier +
+      " · " +
+      guidance.message +
+      " Suggested next: " +
+      guidance.recommendedTitle;
     $("lab-see-city").hidden = !result?.success;
     if (result?.success) {
       $("lab-see-city").textContent = recoveredTest
@@ -128,7 +131,8 @@ export function mountBuildLab({
         (result?.vulnerable === cell ? " lab-fault" : "") +
         (state.faults[mission.id] === cell ? " lab-damaged" : "") +
         (pendingRepair === mission.id && state.faults[mission.id] === cell
-          ? " lab-repaired" : "");
+          ? " lab-repaired"
+          : "");
       button.setAttribute(
         "aria-label",
         `Row ${Math.floor(cell / 5) + 1}, column ${(cell % 5) + 1}: ` +
@@ -137,16 +141,16 @@ export function mountBuildLab({
               ? "Repaired connection. Test it to restore service."
               : "Broken connection. Tap to repair this piece."
             : source
-            ? "Supply"
-            : target
-              ? target.name
-              : blocked
-                ? "Protected tree. Build around it."
-                : piece
-                  ? `${piece.kind}, ${labPorts(piece)
-                      .map((p) => names[p])
-                      .join(" and ")}`
-                  : "Empty"),
+              ? "Supply"
+              : target
+                ? target.name
+                : blocked
+                  ? "Protected tree. Build around it."
+                  : piece
+                    ? `${piece.kind}, ${labPorts(piece)
+                        .map((p) => names[p])
+                        .join(" and ")}`
+                    : "Empty"),
       );
       if (fixed)
         button.textContent = source ? "Supply" : target ? target.name : "🌳";
@@ -221,11 +225,12 @@ export function mountBuildLab({
     const fault = state.faults[state.active];
     const repaired = fault !== null && pendingRepair === state.active;
     // The damaged component does not transmit supply until actually repaired.
-    const trialBoard = fault !== null && !repaired
-      ? state.boards[state.active].map((piece, index) =>
-          index === fault ? null : piece,
-        )
-      : state.boards[state.active];
+    const trialBoard =
+      fault !== null && !repaired
+        ? state.boards[state.active].map((piece, index) =>
+            index === fault ? null : piece,
+          )
+        : state.boards[state.active];
     result = evaluateLab(mission, trialBoard);
     const record = state.attempts[state.active];
     record.tests = Math.min(30, record.tests + 1);

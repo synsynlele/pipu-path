@@ -33,13 +33,16 @@ export function mountCityServiceDesk({
     const next = skillRecommendation(read());
     selector.value = selected;
     $("service-summary").textContent =
-      report.served + " of " + report.demand +
+      report.served +
+      " of " +
+      report.demand +
       " illustrative daily service requests currently met in your city.";
     $("service-skill").textContent =
       next.tier + " · Recommended next: " + next.recommendedTitle;
     $("service-needs").textContent =
       current.served + " / " + current.demand + " service requests met";
-    $("service-meter").style.width = ((100 * current.served) / current.demand) + "%";
+    $("service-meter").style.width =
+      (100 * current.served) / current.demand + "%";
     $("service-meter").setAttribute("aria-valuenow", String(current.served));
     $("service-meter").setAttribute("aria-valuemax", String(current.demand));
     $("service-status").textContent = current.description;
@@ -57,10 +60,18 @@ export function mountCityServiceDesk({
     for (const entry of report.entries) {
       const line = document.createElement("li");
       line.className =
-        entry.fault !== null ? "service-outage" : entry.built ? "service-ready" : "";
+        entry.fault !== null
+          ? "service-outage"
+          : entry.built
+            ? "service-ready"
+            : "";
       line.textContent =
         (entry.fault !== null ? "⚠ " : entry.built ? "✓ " : "○ ") +
-        entry.title + ": " + entry.served + "/" + entry.demand;
+        entry.title +
+        ": " +
+        entry.served +
+        "/" +
+        entry.demand;
       list.append(line);
     }
   }
@@ -98,9 +109,11 @@ export function mountCityServiceDesk({
       statusMessage =
         "Excellent resilience! Your network survived a broken link. The planned services continue operating.";
     } else if (outcome.status === "already-damaged") {
-      statusMessage = "This station already has a broken connection. Repair it first.";
+      statusMessage =
+        "This station already has a broken connection. Repair it first.";
     } else {
-      statusMessage = "Build and test the station before running an outage drill.";
+      statusMessage =
+        "Build and test the station before running an outage drill.";
     }
     onFocus(selected);
     render();

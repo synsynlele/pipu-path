@@ -80,12 +80,14 @@ assert(milestones.buildings.get("workshop-link").group.scale.x < 1);
 milestones.animate(2000, false);
 assert.equal(milestones.buildings.get("workshop-link").group.scale.x, 1);
 assert.equal(completedMilestones(lab, evaluateLab, labMission).length, 1);
-const outage = sanitizeLab({...lab, faults: {"workshop-link": 7}});
+const outage = sanitizeLab({ ...lab, faults: { "workshop-link": 7 } });
 milestones.sync(outage);
 assert.equal(milestones.buildings.get("workshop-link").offline, true);
 assert.equal(milestones.buildings.get("workshop-link").group.visible, true);
 assert.equal(
-  milestones.buildings.get("workshop-link").serviceLight.material.color.getHex(),
+  milestones.buildings
+    .get("workshop-link")
+    .serviceLight.material.color.getHex(),
   0xea7840,
 );
 milestones.sync(lab);

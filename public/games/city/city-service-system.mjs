@@ -11,10 +11,15 @@ const SIMULATED_REQUESTS = Object.freeze({
   "backup-water": 9,
   "shared-recovery": 7,
 });
-const totalRequests = Object.values(SIMULATED_REQUESTS).reduce((a, b) => a + b, 0);
+const totalRequests = Object.values(SIMULATED_REQUESTS).reduce(
+  (a, b) => a + b,
+  0,
+);
 function certified(lab, id) {
-  return lab.tested.includes(id) &&
-    evaluateLab(labMission(id), lab.boards[id]).success;
+  return (
+    lab.tested.includes(id) &&
+    evaluateLab(labMission(id), lab.boards[id]).success
+  );
 }
 export function serviceImpact(labInput) {
   const lab = sanitizeLab(labInput);
@@ -24,9 +29,12 @@ export function serviceImpact(labInput) {
     const load = SIMULATED_REQUESTS[id];
     const built = certified(lab, id);
     const fault = built ? lab.faults[id] : null;
-    const damagedBoard = fault === null
-      ? lab.boards[id]
-      : lab.boards[id].map((piece, index) => index === fault ? null : piece);
+    const damagedBoard =
+      fault === null
+        ? lab.boards[id]
+        : lab.boards[id].map((piece, index) =>
+            index === fault ? null : piece,
+          );
     const flow = evaluateLab(mission, damagedBoard);
     const reached = built ? flow.served : 0;
     // Demand is distributed across service endpoints, not invented town data.

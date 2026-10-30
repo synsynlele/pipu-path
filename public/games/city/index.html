@@ -79,8 +79,12 @@
                   <button id="build-lab-toggle" type="button">
                     Build Lab · connect &amp; test
                   </button>
-                  <button id="service-toggle" type="button"
-                    aria-controls="service-panel" aria-expanded="false">
+                  <button
+                    id="service-toggle"
+                    type="button"
+                    aria-controls="service-panel"
+                    aria-expanded="false"
+                  >
                     City services · diagnose &amp; repair
                   </button>
                   <button id="city-map" type="button">City map</button>
@@ -648,38 +652,58 @@
           </nav>
         </div>
       </div>
-      <section id="service-panel" hidden role="region" aria-label="City services and repair desk">
+      <section
+        id="service-panel"
+        hidden
+        role="region"
+        aria-label="City services and repair desk"
+      >
         <div class="service-heading">
           <div>
             <span class="eyebrow">YOUR LIVING CITY</span>
             <h2>Make services work</h2>
           </div>
-          <button id="service-close" type="button" aria-label="Close city services">×</button>
+          <button
+            id="service-close"
+            type="button"
+            aria-label="Close city services"
+          >
+            ×
+          </button>
         </div>
-        <p id="service-summary">Your builds affect fictional service requests.</p>
+        <p id="service-summary">
+          Your builds affect fictional service requests.
+        </p>
         <p id="service-skill"></p>
         <label for="service-district">Choose a service to inspect</label>
         <select id="service-district"></select>
         <p id="service-needs" role="status">0 / 40 requests met</p>
         <div class="service-track">
-          <div id="service-meter" role="progressbar"
+          <div
+            id="service-meter"
+            role="progressbar"
             aria-label="Fictional district service requests met"
-            aria-valuemin="0" aria-valuenow="0" aria-valuemax="10"></div>
+            aria-valuemin="0"
+            aria-valuenow="0"
+            aria-valuemax="10"
+          ></div>
         </div>
         <p id="service-status"></p>
         <p id="service-event" role="status" aria-live="polite"></p>
         <div class="service-actions">
           <button id="service-focus" type="button">Show in my city</button>
           <button id="service-drill" type="button">Test a broken link</button>
-          <button id="service-build" class="primary" type="button">Build this service →</button>
+          <button id="service-build" class="primary" type="button">
+            Build this service →
+          </button>
         </div>
         <details>
           <summary>All five neighbourhood services</summary>
           <ul id="service-list"></ul>
         </details>
         <small>
-          Fictional service-request counts and single-link drills.
-          No actual infrastructure, real-world evidence or XP.
+          Fictional service-request counts and single-link drills. No actual
+          infrastructure, real-world evidence or XP.
         </small>
       </section>
       <section
