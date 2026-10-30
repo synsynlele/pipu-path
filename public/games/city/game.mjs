@@ -990,10 +990,13 @@ function refreshJourneyControls() {
       CITY_CASES.length +
       " decisions",
   );
-  const unlocked = foundationForOpportunities(state.decisions);
+  const step = integratedStep(state.decisions, state.lab);
+  const unlocked = foundationForOpportunities(state.decisions) &&
+    step.kind === "complete";
   $("opportunities-toggle").disabled = !unlocked || simulating;
   $("resilience-toggle").disabled =
-    !canStartResilience(state.decisions, state.economy) || simulating;
+    !canStartResilience(state.decisions, state.economy) ||
+    step.kind !== "complete" || simulating;
   $("opportunities-toggle").title = unlocked
     ? "Manage your city's production, services and opportunities"
     : "Finish all 36 city decisions to unlock Chapter 3";
@@ -1007,6 +1010,9 @@ function refreshJourneyControls() {
     : "No earlier decisions yet";
   $("decision-count").textContent =
     caseProgress(state.decisions) + "/" + CITY_CASES.length;
+  $("build-lab-toggle").textContent = step.kind === "build"
+    ? "Build required · " + labMission(step.missionId).title
+    : "Build Lab · completed builds";
   if (!visible) return;
   $("journey-toggle").textContent = running ? "Pause" : "Resume";
   $("journey-toggle").setAttribute(
@@ -1017,8 +1023,10 @@ function refreshJourneyControls() {
     ? "Pause the automatic builder journey"
     : "Resume the automatic builder journey";
   const chapter = chapterForCase(journey.caseId) ?? 1;
-  $("journey-status").textContent = running
-    ? "Chapter " +
+  $("journey-status").textContent = step.kind === "build"
+    ? "Build required · " + labMission(step.missionId).title
+    : running
+      ? "Chapter " +
       chapter +
       " · problem " +
       caseNumber(journey.caseId) +
@@ -1289,7 +1297,19 @@ function goToJourneyCase(id) {
 function resumeJourney() {
   if (!$("intro").hidden || simulating || journey.status === "running") return;
   if (reviewCaseId) finishDecisionReview({ resume: false });
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") {
+    pendingBuildCase = step.caseId;
+    buildLab.open(step.missionId);
+    return;
+  }
   const target = recoverJourney({ ...journey, decisions: state.decisions });
+  if (step.kind === "question" &&
+    (target.caseId !== step.caseId || target.stage === "complete" ||
+      ["outcome", "building"].includes(target.stage))) {
+    goToJourneyCase(step.caseId);
+    return;
+  }
   if (target.stage === "complete") {
     journey.status = "complete";
     refreshJourneyControls();
@@ -2361,7 +2381,11 @@ function renderCasebook() {
       foundationComplete(state.decisions);
     for (const scenario of casesFor(district)) {
       const button = document.createElement("button");
-      button.disabled = !unlocked;
+      const nextStep = integratedStep(state.decisions, state.lab);
+      const alreadyDecided = Boolean(getChoice(scenario.id, state.decisions[scenario.id]));
+      button.disabled = !unlocked ||
+        (!alreadyDecided &&
+          (nextStep.kind !== "question" || nextStep.caseId !== scenario.id));
       button.type = "button";
       button.className = "case-tile";
       const title = document.createElement("strong");
@@ -2370,9 +2394,11 @@ function renderCasebook() {
       const savedChoice = getChoice(scenario.id, state.decisions[scenario.id]);
       status.textContent = savedChoice
         ? "↶ Change: " + savedChoice.title
-        : unlocked
-          ? "Not solved yet · start problem"
-          : "Unlock after Chapter 1";
+        : !unlocked
+          ? "Unlock after Chapter 1"
+          : button.disabled
+            ? "🔒 Finish the current challenge first"
+            : "Next challenge · make a decision";
       if (savedChoice) button.classList.add("case-completed");
       button.append(title, status);
       button.onclick = () => startCase(scenario.id);
@@ -2427,6 +2453,13 @@ function showDistrictCases(district) {
 }
 function startCase(id) {
   if (!getCase(id)) return;
+  if (!canEnterQuestion(id, state.decisions, state.lab)) {
+    const step = integratedStep(state.decisions, state.lab);
+    toast(step.kind === "build"
+      ? "Finish your linked build before opening another question."
+      : "Complete the current challenge to unlock this problem.");
+    return;
+  }
   if (getCase(id).chapter === 2 && !foundationComplete(state.decisions)) {
     toast("Finish Chapter 1 to open the growing city.");
     return;
