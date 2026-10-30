@@ -23,7 +23,7 @@ it("rejects mismatched adaptive answers and arbitrary extra private data", () =>
     discoverySchema.safeParse({ ...discovery, userId: "private" }).success,
   ).toBe(false);
   expect(discoveryBrief(discovery)).toEqual({
-    kind: "Improve a habit",
+    kind: "Build a solution to a habit problem",
     setting: "My own routine",
     obstacle: "I do it without noticing",
     resources: "An existing phone or computer",

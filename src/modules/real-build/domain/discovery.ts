@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const questKinds = {
-  habit: "Improve a habit",
+  habit: "Build a solution to a habit problem",
   community: "Help people around me",
   make: "Build something useful",
 } as const;

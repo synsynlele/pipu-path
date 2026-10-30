@@ -79,7 +79,7 @@ it("retains all discovery answers after generation failure and retries the same 
     topic: "water",
     focus: "I want to reduce wasted water at school.",
     minutes: "15",
-    kind: "habit",
+    kind: "make",
     setting: "personal",
     obstacle: "unsure",
     resources: "none",

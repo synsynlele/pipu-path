@@ -2,21 +2,12 @@ import { afterEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { PowerDistrictFrame } from "./power-district-frame";
 
-const mocks = vi.hoisted(() => ({ home: vi.fn(), push: vi.fn() }));
+const mocks = vi.hoisted(() => ({ identity: vi.fn(), push: vi.fn() }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: mocks.push }),
 }));
-vi.mock("@/modules/identity/infrastructure/progress-dal", () => ({
-  requireAuthenticatedHomeState: mocks.home,
-}));
-vi.mock("@/modules/quest/infrastructure/quest-dal", () => ({
-  getQuestById: vi.fn().mockResolvedValue({
-    quest: {
-      id: "12345678-1234-4234-8234-123456789abc",
-      status: "evidence_submitted",
-      title: "My quest",
-    },
-  }),
+vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
+  requireAuthenticatedIdentity: mocks.identity,
 }));
 import PowerDistrictPage from "@/app/build/power-district/page";
 
@@ -48,51 +39,23 @@ it("keeps game assets on the same origin and preserves focus without a reload", 
     frame,
   );
 });
-it("requires authenticated, owned Quest context and offers explicit saving choices", async () => {
-  mocks.home.mockRejectedValueOnce(new Error("AUTH_REQUIRED"));
-  await expect(
-    PowerDistrictPage({ searchParams: Promise.resolve({}) }),
-  ).rejects.toThrow("AUTH_REQUIRED");
-  mocks.home.mockResolvedValue({
-    quest: { id: "locked", status: "locked", title: "Private" },
-  });
-  const locked = await PowerDistrictPage({ searchParams: Promise.resolve({}) });
-  expect(locked.props.questHref).toBe("/quests");
-  const view = render(
+it("requires an account and hands the city off to the current Real Quests flow", async () => {
+  mocks.identity.mockRejectedValueOnce(new Error("AUTH_REQUIRED"));
+  await expect(PowerDistrictPage()).rejects.toThrow("AUTH_REQUIRED");
+  mocks.identity.mockResolvedValue({ user: { id: "owner" } });
+  const page = await PowerDistrictPage();
+  expect(page.props.questHref).toBe("/real-quests");
+  render(
     <PowerDistrictFrame
-      questHref={locked.props.questHref}
-      questLabel={locked.props.questLabel}
+      questHref={page.props.questHref}
+      questLabel={page.props.questLabel}
     />,
   );
-  fireEvent.click(
-    screen.getByRole("button", { name: "Find my real-world Quest →" }),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Real Quests →" }));
   expect(
     screen.getByRole("dialog", { name: "Continue to a real Quest" }),
   ).toBeVisible();
   expect(mocks.push).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", { name: "Stay in my city" }));
-  view.unmount();
-  mocks.home.mockResolvedValue({
-    quest: {
-      id: "12345678-1234-4234-8234-123456789abc",
-      status: "evidence_submitted",
-      title: "My quest",
-    },
-  });
-  const owned = await PowerDistrictPage({ searchParams: Promise.resolve({}) });
-  expect(owned.props.questHref).toBe(
-    "/quests/12345678-1234-4234-8234-123456789abc",
-  );
-  render(
-    <PowerDistrictFrame
-      questHref={owned.props.questHref}
-      questLabel={owned.props.questLabel}
-    />,
-  );
-  fireEvent.click(
-    screen.getByRole("button", { name: "Reflect on my real attempt →" }),
-  );
   expect(
     screen.getByRole("button", { name: "Save my city, then continue" }),
   ).toBeVisible();

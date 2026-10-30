@@ -16,7 +16,7 @@ const titles = [
   "What can you start with?",
   "Ready for your Builder Quest?",
 ];
-const selectClass = "mt-2 bg-white text-[#17375f]";
+const selectClass = "mt-2 bg-white text-[#242241]";
 export function BuildChoiceForm({
   initialTopic = "",
   initialFocus = "",
@@ -28,7 +28,7 @@ export function BuildChoiceForm({
   const heading = useRef<HTMLHeadingElement>(null);
   const [topic, setTopic] = useState(initialTopic);
   const [focus, setFocus] = useState(initialFocus);
-  const [kind, setKind] = useState<QuestKind>("habit");
+  const [kind, setKind] = useState<QuestKind>("make");
   const [setting, setSetting] = useState("personal");
   const [obstacle, setObstacle] = useState("unsure");
   const [resources, setResources] = useState("none");
@@ -107,7 +107,7 @@ export function BuildChoiceForm({
         });
       }}
     >
-      <div className="flex items-center justify-between gap-3 text-xs font-bold text-[#2059bd]">
+      <div className="flex items-center justify-between gap-3 text-xs font-bold text-[#5b3dd4]">
         <span>QUEST DISCOVERY</span>
         <span>Step {step + 1} of 4</span>
       </div>
@@ -115,7 +115,7 @@ export function BuildChoiceForm({
         {titles.map((title, index) => (
           <span
             key={title}
-            className={`h-1.5 flex-1 rounded-full ${index <= step ? "bg-[#2059bd]" : "bg-[#dce7f6]"}`}
+            className={`h-1.5 flex-1 rounded-full ${index <= step ? "bg-[#5b3dd4]" : "bg-[#dce7f6]"}`}
           />
         ))}
       </div>
@@ -142,7 +142,7 @@ export function BuildChoiceForm({
               placeholder="For example: I want to spend less time scrolling on social media."
             />
           </label>
-          <p className="text-xs leading-5 text-[#536883]">
+          <p className="text-xs leading-5 text-[#77788e]">
             Describe the change, without names, contact details or private
             information.
           </p>
@@ -219,7 +219,7 @@ export function BuildChoiceForm({
               ))}
             </select>
           </label>
-          <p className="text-sm leading-6 text-[#536883]">
+          <p className="text-sm leading-6 text-[#77788e]">
             Start with one small change you can actually try. Your Quest will
             include a baseline and a real test.
           </p>
@@ -264,7 +264,7 @@ export function BuildChoiceForm({
               ))}
             </div>
           </fieldset>
-          <p className="text-xs leading-5 text-[#536883]">
+          <p className="text-xs leading-5 text-[#77788e]">
             Use what you have. No spending required. Testing a routine may
             continue over several days.
           </p>
@@ -274,7 +274,7 @@ export function BuildChoiceForm({
         <>
           <section
             aria-label="Your Quest brief"
-            className="rounded-2xl border border-[#c8dbf7] bg-[#f2f7ff] p-4 text-sm leading-6"
+            className="rounded-2xl border border-[#e2daf7] bg-[#f5f1ff] p-4 text-sm leading-6"
           >
             <p className="font-bold">{focus}</p>
             <dl className="mt-3 space-y-2">
@@ -301,11 +301,11 @@ export function BuildChoiceForm({
               </div>
             </dl>
           </section>
-          <p className="text-sm leading-6 text-[#536883]">
+          <p className="text-sm leading-6 text-[#77788e]">
             Your guide: Understand → Prepare → Build → Test → Improve. Save what
             actually happened, then use that lesson for your next attempt.
           </p>
-          <p className="text-xs leading-5 text-[#52647c]">
+          <p className="text-xs leading-5 text-[#77788e]">
             <strong>
               Your improvement goal and selected answers are sent to AI.
             </strong>{" "}
@@ -321,7 +321,7 @@ export function BuildChoiceForm({
           <button
             type="button"
             disabled={busy}
-            className="border border-[#b8cde6] bg-white text-[#2059bd]"
+            className="border border-[#b8cde6] bg-white text-[#5b3dd4]"
             onClick={() => navigate(step - 1)}
           >
             Back
@@ -367,7 +367,7 @@ export function BuildChoiceForm({
           {message}
         </p>
       ) : null}
-      <p className="text-xs leading-5 text-[#52647c]">
+      <p className="text-xs leading-5 text-[#77788e]">
         Discovery questions use no AI calls. If generation cannot finish, your
         answers stay here so you can retry.
       </p>

@@ -1,0 +1,188 @@
+/* One visual language for real-world work. The embedded game keeps its own theme. */
+.journey-topbar {
+  background: linear-gradient(110deg, #211c58, #332577);
+  border-color: rgb(255 255 255 / 12%);
+  color: #fff;
+}
+.journey-topbar .text-white,
+.journey-topbar .text-foreground,
+.journey-topbar a,
+.journey-topbar .pp-button-ghost {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+.journey-topbar .text-muted,
+.journey-topbar .text-blue-100 {
+  color: #ded8ff;
+}
+.journey-topbar .pp-button-ghost {
+  background: rgb(255 255 255 / 7%);
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 16px;
+}
+.journey-frame {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.journey-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 240px;
+  margin: 22px 16px;
+  padding: 28px;
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 85% 10%, #6942ac, transparent 70%),
+    linear-gradient(130deg, #2b2467, #3d2888);
+  color: #fff;
+}
+.journey-hero-art {
+  position: absolute;
+  right: -20px;
+  bottom: -15px;
+  width: 54%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom right;
+  opacity: 0.48;
+  z-index: -1;
+}
+.journey-hero-copy {
+  max-width: 76%;
+  position: relative;
+}
+.journey-hero h1 {
+  margin-top: 14px;
+  font-size: clamp(1.65rem, 5vw, 2.25rem);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+  color: #fff;
+}
+.journey-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  font-weight: 800;
+  color: #d9cef5;
+}
+.journey-hero-description {
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #e0d9ef;
+}
+.journey-body {
+  min-height: 60vh;
+  border-radius: 30px 30px 0 0;
+  padding: 24px 16px 140px;
+  background: #f8f8fc;
+  color: #242241;
+}
+.journey-body > .build-card:first-child {
+  margin-top: 0;
+}
+.pp-simple-build .journey-body .build-card {
+  border-color: #e8e5ef;
+  border-radius: 25px;
+  background: #fff;
+  box-shadow: 0 10px 30px -18px rgb(42 30 90 / 15%);
+}
+.pp-simple-build .journey-body .build-primary {
+  background: linear-gradient(125deg, #7958ef, #5834d9);
+  border: 1px solid #6845df;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  box-shadow: 0 9px 22px -12px rgb(88 52 217 / 65%);
+}
+.pp-simple-build .build-stage-tab[aria-current="step"] {
+  background-color: #5b3dd4;
+  border-color: #5b3dd4;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+.pp-simple-build .build-tab-active {
+  color: #5b3dd4;
+}
+.pp-simple-build .build-tab-build-icon {
+  color: #fff;
+  background: linear-gradient(135deg, #8062f4, #5b37df);
+  border: 5px solid #fff;
+  border-radius: 50%;
+  width: 58px;
+  height: 58px;
+  margin-top: -23px;
+  box-shadow: 0 8px 22px rgb(96 63 209 / 24%);
+}
+.pp-simple-build .build-tab-build-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.pp-simple-build .build-tab-build-icon + span {
+  color: #5b3dd4;
+}
+.pp-auth-hero {
+  background:
+    radial-gradient(ellipse at 100% 20%, #6540a7, transparent 70%),
+    linear-gradient(145deg, #211c58, #392878);
+}
+.pp-app-experience .pp-auth-hero h2,
+.pp-app-experience .pp-auth-hero .text-white {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+.pp-auth-hero {
+  background-image:
+    url("/stage26/mission-mountain.svg"),
+    linear-gradient(145deg, #211c58, #392878);
+  background-position: bottom right;
+  background-size: 75%, cover;
+  background-repeat: no-repeat;
+}
+@media (max-width: 380px) {
+  .journey-hero {
+    padding: 24px 20px;
+  }
+  .journey-hero-copy {
+    max-width: 90%;
+  }
+  .journey-hero-art {
+    opacity: 0.25;
+  }
+}
+
+.journey-topbar .pp-brand-subtitle {
+  display: block;
+  max-width: 150px;
+  white-space: normal;
+  line-height: 1.2;
+}
+.pp-simple-build .journey-topbar .pp-button-ghost {
+  background: rgb(255 255 255 / 7%);
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  border-color: rgb(255 255 255 / 18%);
+}
+
+@media (max-width: 1023px) {
+  .pp-auth-header {
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 18px 20px;
+    background: linear-gradient(110deg, #211c58, #332577);
+  }
+  .pp-auth-header .pp-auth-brand .text-foreground {
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+  }
+  .pp-auth-header .pp-brand-subtitle {
+    display: block;
+    max-width: 160px;
+    white-space: normal;
+    color: #ded8ff;
+    line-height: 1.2;
+  }
+}

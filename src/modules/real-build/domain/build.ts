@@ -4,7 +4,7 @@ import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
 
 export const buildTopics = cityInterests;
-export const REAL_BUILD_CONTENT_VERSION = "discovery-stages-v4";
+export const REAL_BUILD_CONTENT_VERSION = "solution-recipes-v5";
 export const focusSchema = z
   .string()
   .trim()
@@ -69,7 +69,7 @@ export const challengeSchema = z
   .object({
     title: text(5, 100),
     outcome: text(10, 300),
-    steps: z.array(text(8, 220)).length(5),
+    steps: z.array(text(8, 700)).length(5),
     materials: z.array(text(2, 80)).max(5),
     evidence: text(10, 300),
     safety: text(10, 300),

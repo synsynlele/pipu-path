@@ -48,7 +48,7 @@ export function TailorReviewedButton({ id }: { id: string }) {
           "Make this Quest fit my exact goal with AI →"
         )}
       </button>
-      <p className="text-xs leading-5 text-[#536883]">
+      <p className="text-xs leading-5 text-[#77788e]">
         AI is attempted only when you choose this. If AI cannot create a safe
         goal-specific Quest, your current starter stays unchanged. An AI request
         counts toward your usage limit.

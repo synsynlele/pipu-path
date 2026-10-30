@@ -45,3 +45,29 @@ it("shows one actionable stage at a time with accessible navigation", () => {
     screen.getByText(/does not verify completed work/),
   ).toBeInTheDocument();
 });
+
+it("presents concrete construction actions as an ordered checklist and isolates stage colours", () => {
+  const steps = challenge.steps.map(
+    () =>
+      "1. Open an existing calendar and create a shared focus session.\n2. Invite one familiar consenting tester and test the reminder.",
+  );
+  render(
+    <BuildStageGuide
+      id="recipe-example"
+      challenge={{ ...challenge, steps }}
+      status="active"
+    />,
+  );
+  const instruction = screen.getByTestId("active-stage-instruction");
+  expect(instruction.querySelectorAll("ol > li")).toHaveLength(2);
+  expect(screen.getByRole("button", { name: "1. Understand" })).toHaveClass(
+    "build-stage-tab",
+  );
+  expect(screen.getByRole("button", { name: "Next stage →" })).toHaveClass(
+    "build-primary",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "5. Improve" }));
+  expect(
+    screen.getByRole("link", { name: /Record my real-world result/ }),
+  ).toHaveClass("build-primary");
+});

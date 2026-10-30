@@ -55,6 +55,31 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   async redirects() {
     return [
+      // Retired landing pages lead into the current journey. Owned deep links remain intact.
+      ...[
+        ["/app", "/real-quests"],
+        ["/build", "/real-quests"],
+        ["/discover", "/real-quests"],
+        ["/mission", "/real-quests"],
+        ["/journey", "/real-quests"],
+        ["/quests", "/real-quests"],
+        ["/profile", "/you"],
+        ["/growth", "/you"],
+        ["/guide", "/you"],
+        ["/projects", "/you"],
+        ["/portfolio", "/you"],
+        ["/passport", "/you"],
+        ["/connect", "/you"],
+        ["/connect/collaborations", "/you"],
+        ["/opportunities", "/you"],
+        ["/play", "/build/play"],
+        ["/build/adventures", "/build/play"],
+        ["/build/power-district", "/build/play"],
+      ].map(([source, destination]) => ({
+        source,
+        destination,
+        permanent: false,
+      })),
       {
         source: "/downloads/PipuPath-Lite-1.0.0.apk",
         destination: "/downloads/latest",

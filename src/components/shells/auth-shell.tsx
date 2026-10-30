@@ -15,11 +15,11 @@ export function AuthShell({
       id="main-content"
       className="pp-app-experience relative min-h-screen px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[0.9fr_1.1fr] lg:items-stretch lg:p-0"
     >
-      <div className="absolute top-6 left-5 z-20 sm:left-8 lg:top-12 lg:left-12">
+      <div className="pp-auth-header absolute top-6 left-5 z-20 sm:left-8 lg:top-12 lg:left-12">
         <BrandMark className="pp-auth-brand" />
       </div>
 
-      <section className="relative hidden overflow-hidden bg-[linear-gradient(145deg,#06132f_0%,#0a2251_58%,#173c82_100%)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <section className="pp-auth-hero relative hidden overflow-hidden bg-[linear-gradient(145deg,#06132f_0%,#0a2251_58%,#173c82_100%)] p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <div className="absolute -top-28 -right-24 size-96 rounded-full border border-white/15" />
         <div className="absolute right-12 bottom-24 size-56 rounded-full bg-white/8 blur-2xl" />
         <div className="relative mt-20">
@@ -31,8 +31,8 @@ export function AuthShell({
               Discover who you are. Build what you carry.
             </h2>
             <p className="mt-5 max-w-lg text-lg leading-8 text-blue-100">
-              PipuPath turns reflection into a practical Mission, real-world
-              Quests and credible proof.
+              PipuPath helps you build practical solutions, test them in real
+              life and keep evidence of what you learn.
             </p>
           </div>
         </div>
@@ -54,8 +54,7 @@ export function AuthShell({
             <div className="mt-7">{children}</div>
           </Surface>
           <p className="text-muted mt-5 text-center text-xs leading-5">
-            Your developmental data remains private unless you deliberately
-            publish selected Project proof.
+            Your Quests and evidence stay private.
           </p>
         </div>
       </section>

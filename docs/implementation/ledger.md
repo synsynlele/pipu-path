@@ -1811,3 +1811,41 @@ failures; validation and all safety checks still apply. No new database migratio
 dependency, learner rewrite or verified achievement. Full validation and release
 results follow below; physical Android and fresh signed-in AI acceptance remain
 separate from deterministic checks.
+
+## 30 October 2026 — Construction guidance and stage contrast
+
+Owner's live test confirms AI generation works but produces personal coaching
+instead of teaching construction of socially useful solutions. Reframe authoring
+around an actual tool, working service or reusable process, a real beneficiary,
+concrete implementation and a measured test. Each of five stages now requires
+2–4 executable numbered actions (up to 700 characters per stage), rendered as
+an ordered list. Reject one-line advice-only outputs at the provider boundary.
+Legacy saved paragraphs remain readable. Discovery defaults to building a useful
+solution; habit problems become solution briefs. New versioned cache keys avoid
+reusing the previous coaching-style templates. No existing evidence is replaced.
+
+The global dark-theme bg-white and text-white overrides conflict with the light
+Quest guide. Add scoped stage-tab/secondary colours with WebView text-fill and
+use the established build-primary class for Next and the result link. Shared
+link colour rules therefore no longer turn the result link blue on blue. No
+migration or dependency changes. Full validation and live release recorded in PR.
+
+## 30 October 2026 — One clean journey and purple/white reference design
+
+Owner expands the release to remove old-page links, repair the mobile Account
+backup panel, and restore the supplied purple/white non-game visual direction.
+Keep Play / Real Quests / You as the only primary destinations. Remove the
+Previous profile, Previous Quests and old collaboration catalogue links from
+current surfaces. Account privacy returns to You. Temporary exact redirects
+retire old landing pages, while owned deep evidence/project links and all stored
+records remain. Play no longer loads the replaced Mission/Journey context.
+
+Reuse the existing mountain/lighthouse artwork, purple illustrated heroes,
+white rounded cards, violet actions and a raised central Quest control. Apply
+matching public/auth/setup treatments without adding the old five destinations,
+fake XP, completion claims or decorative activity. The game scene is unchanged.
+Account backup has explicit WebView-safe button/text colours, stacked actions,
+a viewport-contained mobile panel, close/Escape focus recovery and loading only
+when opened. No database migration or dependency change. Full checks and release
+verification belong in the release PR; no live generation quality is inferred
+from synthetic content checks.
