@@ -82,7 +82,8 @@ export function PowerDistrictFrame({
     if (!expanded) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    if (entered) closeButton.current?.focus();
+    if (entered && document.activeElement !== frameRef.current)
+      closeButton.current?.focus();
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !dialogRef.current?.open) {
         setExpanded(false);
@@ -143,7 +144,7 @@ export function PowerDistrictFrame({
             : "hidden"
         }
       >
-        <strong className="text-xs sm:text-sm">The Unbuilt City</strong>
+        <strong className="text-xs sm:text-sm">Play &amp; build</strong>
         <div className="flex items-center gap-2">
           <button
             ref={handoffButton}

@@ -1,5 +1,6 @@
 // Optional device-only save for fictional practice. Never store names,
 // reflections, evidence, photos, credentials, or real PipuPath Quest state.
+import { sanitizeLab } from "./build-lab.mjs";
 import { initialPlan } from "./model.mjs";
 import { getCase, getChoice } from "./cases.mjs";
 import { JOURNEY_STAGES } from "./journey-flow.mjs";
@@ -110,6 +111,7 @@ export function sanitizePractice(state) {
     // enterprise practice, without affecting the student's city decisions.
     economy: sanitizeOpportunityState(state.economy) ?? newOpportunityState(),
     resilience: sanitizeResilience(state.resilience),
+    lab: sanitizeLab(state.lab),
   };
 }
 function getStorage(storage) {

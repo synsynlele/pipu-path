@@ -2,6 +2,8 @@ document.documentElement.classList.toggle(
   "city-embedded",
   new URLSearchParams(window.location.search).get("embedded") === "1",
 );
+import { sanitizeLab } from "./build-lab.mjs";
+import { mountBuildLab } from "./build-lab-ui.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
 import {
   ROAD_X,
@@ -103,6 +105,7 @@ const fresh = () => ({
   journey: null,
   economy: newOpportunityState(),
   resilience: null,
+  lab: sanitizeLab(null),
 });
 const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
@@ -2720,7 +2723,7 @@ function render() {
     }),
     q = r.quote;
   $("chapter").textContent =
-    "THE UNBUILT CITY · CHAPTER " +
+    "CHAPTER " +
     (state.resilience
       ? 4
       : foundationForOpportunities(state.decisions)
@@ -3470,7 +3473,46 @@ $("city-map").onclick = () => {
   distance = mapMode ? 115 : 27;
   $("city-map").textContent = mapMode ? "Follow me" : "City map";
 };
-$("start").onclick = () => {
+const buildLab = mountBuildLab({
+  read: () => state.lab,
+  write: (lab) => {
+    state.lab = lab;
+    persistPractice();
+  },
+  beforeOpen: () => {
+    if (reviewCaseId) finishDecisionReview({ resume: false });
+    if (builtCityView) closeBuiltCityView();
+    if (journey.status === "running")
+      pauseJourney("Your journey is paused while you build a prototype.");
+    if (journey.status === "idle") {
+      const target = recoverJourney({ ...journey, decisions: state.decisions });
+      journey = {
+        ...target,
+        status: target.stage === "complete" ? "complete" : "paused",
+      };
+    }
+    cancelWalk();
+    hideRequestInspection();
+    closeDetail();
+    closeCasebook();
+    closeCityStatus();
+    closeDirectory();
+    closeOpportunityPanel();
+    closeResiliencePanel();
+    guideExpanded = false;
+    dockExpanded = false;
+    keys.clear();
+    render();
+  },
+  afterClose: () => {
+    keys.clear();
+    refreshJourneyControls();
+  },
+});
+$("build-lab-toggle").onclick = () => buildLab.open();
+$("start-lab").onclick = () => startCity("lab");
+$("start").onclick = () => startCity();
+function startCity(mode = "journey") {
   $("intro").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
@@ -3484,6 +3526,10 @@ $("start").onclick = () => {
   $("mission").hidden = false;
   $("mobile-move").hidden = true;
   render();
+  if (mode === "lab") {
+    buildLab.open();
+    return;
+  }
   const nextUnsolved = firstUnanswered(state.decisions);
   if (
     !nextUnsolved &&
@@ -3517,7 +3563,8 @@ $("start").onclick = () => {
     refreshJourneyControls();
     toast("Your city is ready. Open Opportunities to run its enterprises.");
   }
-};
+}
+
 $("sound").onclick = () => {
   sound = !sound;
   playTone();
@@ -3680,7 +3727,8 @@ window.addEventListener("keydown", (e) => {
   }
   if (
     ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName) ||
-    $("help-dialog").open
+    $("help-dialog").open ||
+    $("build-lab").open
   )
     return;
   if (

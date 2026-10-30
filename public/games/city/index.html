@@ -76,6 +76,9 @@
                   >
                     Opportunities
                   </button>
+                  <button id="build-lab-toggle" type="button">
+                    Build Lab · connect &amp; test
+                  </button>
                   <button id="city-map" type="button">City map</button>
                   <button
                     id="resilience-toggle"
@@ -593,7 +596,17 @@
           </div>
           <h1>The Unbuilt<br /><em>City.</em></h1>
           <p>Your choices. A better world.</p>
-          <button id="start" class="primary">Play free <span>▶</span></button>
+          <div class="welcome-play-actions">
+            <button id="start" class="primary">Play free <span>▶</span></button>
+            <button
+              id="start-lab"
+              class="welcome-lab"
+              type="button"
+              aria-label="Build Lab: hands-on challenges"
+            >
+              Build Lab ↗
+            </button>
+          </div>
           <a class="welcome-journey" href="/real-quests" target="_top"
             >Continue my journey <span>↗</span></a
           >
@@ -607,6 +620,55 @@
           </nav>
         </div>
       </div>
+      <dialog id="build-lab" aria-labelledby="lab-title">
+        <div class="lab-heading">
+          <div>
+            <p class="eyebrow">PLACE · ROTATE · TEST · IMPROVE</p>
+            <h2 id="lab-title">Build Lab</h2>
+          </div>
+          <button id="lab-close" type="button" aria-label="Close Build Lab">
+            ×
+          </button>
+        </div>
+        <label for="lab-mission">Choose your challenge</label>
+        <select id="lab-mission"></select>
+        <p id="lab-brief"></p>
+        <div class="lab-tools" role="group" aria-label="Building tools">
+          <button type="button" data-lab-tool="straight" aria-pressed="true">
+            Straight
+          </button>
+          <button type="button" data-lab-tool="bend" aria-pressed="false">
+            Bend
+          </button>
+          <button type="button" data-lab-tool="junction" aria-pressed="false">
+            Junction
+          </button>
+          <button type="button" data-lab-tool="remove" aria-pressed="false">
+            Remove
+          </button>
+          <button id="lab-rotate" type="button">Rotate ↻</button>
+        </div>
+        <p id="lab-brush"></p>
+        <div
+          id="lab-grid"
+          role="group"
+          aria-label="Prototype worksite, five rows and five columns"
+        ></div>
+        <p id="lab-budget"></p>
+        <p id="lab-result" role="status" aria-live="polite"></p>
+        <div class="lab-actions">
+          <button id="lab-test" class="primary" type="button">
+            Test my network</button
+          ><button id="lab-clear" type="button">Clear this layout</button
+          ><button id="lab-next" type="button" hidden>Next challenge →</button>
+        </div>
+        <small
+          >Choose a piece, rotate its openings, then tap an empty square.
+          Replace or remove pieces to revise. Fictional practice; no real-world
+          XP. Your layout uses the same optional device save as your
+          city.</small
+        >
+      </dialog>
       <dialog id="help-dialog">
         <button class="close" id="close-help" aria-label="Close help">×</button>
         <div class="eyebrow">MAKE YOURSELF AT HOME</div>

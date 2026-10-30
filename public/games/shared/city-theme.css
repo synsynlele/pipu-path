@@ -3845,3 +3845,180 @@ html.city-embedded .welcome-signin {
   visibility: hidden;
   pointer-events: none;
 }
+
+/* One in-play city title: compact HUD owns it, across every chapter. */
+#game > header {
+  display: none !important;
+}
+.city-welcome .welcome-lab {
+  display: block;
+  margin-top: 14px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #ffffff70;
+  border-radius: 14px;
+  background: #123243;
+  color: #fff9ed;
+  font-size: 14px;
+}
+#build-lab {
+  width: min(560px, calc(100vw - 24px));
+  max-height: 92svh;
+  padding: 20px;
+  overflow-y: auto;
+  border: 1px solid #bacbe0;
+  border-radius: 24px;
+  background: #f5f8ff;
+  color: #183153;
+}
+#build-lab::backdrop {
+  background: #07162cb0;
+}
+#build-lab .lab-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+#build-lab h2 {
+  margin: 4px 0 16px;
+  color: #183153;
+}
+#build-lab button,
+#build-lab select {
+  min-height: 44px;
+  border: 1px solid #bbcce0;
+  border-radius: 10px;
+  background: #fff;
+  color: #183153;
+  padding: 8px 10px;
+  font: inherit;
+}
+#build-lab select {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  font-size: 16px;
+}
+#build-lab p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+#build-lab .lab-tools,
+#build-lab .lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#build-lab .lab-tools button[aria-pressed="true"],
+#build-lab .primary {
+  background: #284d91;
+  color: #fff;
+  border-color: #284d91;
+}
+#lab-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 12px;
+}
+#build-lab .lab-cell {
+  aspect-ratio: 1;
+  min-height: 44px;
+  padding: 4px;
+  min-width: 0;
+  border-radius: 10px;
+  font-size: clamp(9px, 2.7vw, 13px);
+  font-weight: 700;
+}
+#build-lab .lab-fixed {
+  background: #e2eaf3;
+  opacity: 1;
+  color: #183153;
+}
+.lab-cell svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 60px;
+}
+.lab-cell svg path {
+  fill: none;
+  stroke: #426ca7;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.lab-cell svg circle {
+  fill: #426ca7;
+}
+#build-lab .lab-powered {
+  background: #dcf4e9;
+  border-color: #4d9b79;
+}
+.lab-powered svg path {
+  stroke: #207250;
+}
+#build-lab .lab-fault {
+  background: #ffe4de;
+  border: 2px solid #b74a3d;
+}
+#lab-result {
+  padding: 12px;
+  border-radius: 12px;
+  background: #e6edf8;
+  min-height: 64px;
+}
+#lab-result.lab-success {
+  background: #dcf4e9;
+  color: #1f6046;
+}
+#lab-result.lab-revise {
+  background: #fff0d7;
+  color: #654617;
+}
+#build-lab small {
+  display: block;
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #5b6f87;
+}
+#build-lab [hidden] {
+  display: none !important;
+}
+
+.city-welcome .welcome-play-actions {
+  display: flex;
+  gap: 10px;
+  width: min(420px, 100%);
+  align-items: stretch;
+}
+.city-welcome .welcome-play-actions > button {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  margin: 0;
+  padding: 14px 12px;
+  font-size: 16px;
+}
+
+/* Keep the worksite and its test controls together; Close stays reachable. */
+#build-lab {
+  max-width: 560px;
+}
+#build-lab .lab-heading {
+  position: sticky;
+  top: -20px;
+  z-index: 2;
+  padding: 10px 0;
+  background: #f5f8ff;
+}
+#lab-grid {
+  width: min(100%, 300px);
+  margin: 12px auto;
+}
+#build-lab .lab-cell {
+  font-size: 11px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
