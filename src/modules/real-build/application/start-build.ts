@@ -31,7 +31,9 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
   const difficulty = parsedLevel.data as BuildDifficulty;
   // Reusable challenges are indexed by a normalized goal, not a learner identity.
   const focusKey = createHash("sha256")
-    .update(choice.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim())
+    .update(
+      choice.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim(),
+    )
     .digest("hex");
 
   const unseen = await service.rpc("find_unseen_real_build_template_for_goal", {

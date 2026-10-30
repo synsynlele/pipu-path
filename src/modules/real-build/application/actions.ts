@@ -25,7 +25,11 @@ export async function startRealBuild(
     focus: form.get("focus"),
   });
   if (!choice.success)
-    return { ok: false, message: "Choose a topic, explain what you want to improve and pick a time." };
+    return {
+      ok: false,
+      message:
+        "Choose a topic, explain what you want to improve and pick a time.",
+    };
   let id: string;
   try {
     id = await startBuildForUser(user.id, choice.data);

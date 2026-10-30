@@ -38,7 +38,9 @@ export default async function RealQuestsPage({
               {difficultyLabel(home.current.difficulty)}
             </span>
           </div>
-          <p className="mt-3 text-sm font-semibold text-[#345781]">{home.current.focus}</p>
+          <p className="mt-3 text-sm font-semibold text-[#345781]">
+            {home.current.focus}
+          </p>
           <h2 className="mt-3 text-xl font-bold">
             {home.current.challenge.title}
           </h2>

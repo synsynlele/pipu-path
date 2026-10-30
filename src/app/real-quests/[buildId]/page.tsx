@@ -31,7 +31,9 @@ export default async function RealBuildPage({
         {build.minutes} minutes
       </p>
       <div className="mt-4 rounded-xl border border-[#c8dbf7] bg-[#eef5ff] px-4 py-3">
-        <p className="text-xs font-bold text-[#2059bd]">YOUR IMPROVEMENT GOAL</p>
+        <p className="text-xs font-bold text-[#2059bd]">
+          YOUR IMPROVEMENT GOAL
+        </p>
         <p className="mt-1 text-sm leading-6">{build.focus}</p>
       </div>
       <h1 className="mt-3 text-3xl font-extrabold">{build.challenge.title}</h1>

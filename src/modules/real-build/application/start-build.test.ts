@@ -74,9 +74,7 @@ beforeEach(() => {
 });
 it("returns the owned current attempt without invoking AI", async () => {
   results = [{ data: { id: "existing" } }];
-  expect(
-    await startBuildForUser("owner", choice),
-  ).toBe("existing");
+  expect(await startBuildForUser("owner", choice)).toBe("existing");
   expect(calls).toContainEqual(["eq", "user_id", "owner"]);
   expect(m.generate).not.toHaveBeenCalled();
 });
@@ -87,9 +85,7 @@ it("reuses an unseen validated public template with a new private attempt", asyn
     { data: [template] },
     { data: { id: "new" } },
   ];
-  expect(
-    await startBuildForUser("owner", choice),
-  ).toBe("new");
+  expect(await startBuildForUser("owner", choice)).toBe("new");
   expect(m.generate).not.toHaveBeenCalled();
   expect(calls).toContainEqual([
     "insert",
@@ -112,9 +108,9 @@ it("excludes previously tried templates and releases the lease if AI fails", asy
     { data: null },
   ];
   m.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
-  await expect(
-    startBuildForUser("owner", choice),
-  ).rejects.toThrow("OPENAI_TIMEOUT");
+  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
+    "OPENAI_TIMEOUT",
+  );
   expect(calls).toContainEqual(["from", "real_build_generation_leases"]);
   expect(calls.filter((c) => c[0] === "insert")).toHaveLength(0);
 });
@@ -126,9 +122,9 @@ it("avoids duplicate provider work when another request holds the authoring leas
     { data: [] },
     { data: false },
   ];
-  await expect(
-    startBuildForUser("owner", choice),
-  ).rejects.toThrow("BUILD_BUSY");
+  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
+    "BUILD_BUSY",
+  );
   expect(m.generate).not.toHaveBeenCalled();
 });
 it("resolves a concurrent active-attempt insert by returning the winning owned row", async () => {
@@ -139,9 +135,7 @@ it("resolves a concurrent active-attempt insert by returning the winning owned r
     { error: { code: "23505" } },
     { data: { id: "winner" } },
   ];
-  expect(
-    await startBuildForUser("owner", choice),
-  ).toBe("winner");
+  expect(await startBuildForUser("owner", choice)).toBe("winner");
 });
 it("never persists an unsafe cached template", async () => {
   results = [
@@ -159,9 +153,9 @@ it("never persists an unsafe cached template", async () => {
       ],
     },
   ];
-  await expect(
-    startBuildForUser("owner", choice),
-  ).rejects.toThrow("BUILD_UNSAFE");
+  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
+    "BUILD_UNSAFE",
+  );
   expect(calls.filter((c) => c[0] === "insert")).toHaveLength(0);
 });
 
@@ -172,9 +166,7 @@ it("matches cache and new attempts to a higher, server-computed level", async ()
     { data: [{ ...template, difficulty: 3 }] },
     { data: { id: "higher" } },
   ];
-  await expect(
-    startBuildForUser("owner", choice),
-  ).resolves.toBe("higher");
+  await expect(startBuildForUser("owner", choice)).resolves.toBe("higher");
   expect(calls).toContainEqual([
     "rpc",
     "next_real_build_difficulty",
@@ -202,8 +194,8 @@ it("matches cache and new attempts to a higher, server-computed level", async ()
 
 it("rejects an unexpectedly different cached difficulty before saving progress", async () => {
   results = [{ data: null }, { data: 4 }, { data: [template] }];
-  await expect(
-    startBuildForUser("owner", choice),
-  ).rejects.toThrow("BUILD_LOAD_FAILED");
+  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
+    "BUILD_LOAD_FAILED",
+  );
   expect(calls.filter((c) => c[0] === "insert")).toHaveLength(0);
 });

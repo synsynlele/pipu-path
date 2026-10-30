@@ -59,7 +59,15 @@ it("passes only public level instructions to AI at higher difficulty", async () 
     safety: "Use fictional scenarios, no names or private details.",
   };
   request.mockResolvedValue(challenge);
-  await generateBuildTemplate({ topic: "school", minutes: 15, focus: "I want to improve our homework reminders." }, [], 5);
+  await generateBuildTemplate(
+    {
+      topic: "school",
+      minutes: 15,
+      focus: "I want to improve our homework reminders.",
+    },
+    [],
+    5,
+  );
   const data = JSON.parse(request.mock.lastCall?.[0].prompt);
   expect(data.difficulty).toBe(5);
   expect(data.improvementGoal).toContain("homework reminders");

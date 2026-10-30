@@ -25,23 +25,43 @@ export const challenge = {
   safety: "Ask permission. Keep names and private details out of your notes.",
 };
 it("allows only catalogue parameters, never arbitrary learner prose", () => {
-  expect(choiceSchema.safeParse({ topic: "school", minutes: 30, focus: "I want to make homework reminders clearer." }).success).toBe(
-    true,
+  expect(
+    choiceSchema.safeParse({
+      topic: "school",
+      minutes: 30,
+      focus: "I want to make homework reminders clearer.",
+    }).success,
+  ).toBe(true);
+  expect(
+    choiceSchema.safeParse({
+      topic: "private health details",
+      minutes: 30,
+      focus: "I want to improve this at school.",
+    }).success,
+  ).toBe(false);
+  expect(
+    choiceSchema.safeParse({
+      topic: "school",
+      minutes: 30,
+      focus: "I want to improve class reminders.",
+      name: "Child",
+    }).success,
+  ).toBe(false);
+  expect(
+    choiceSchema.safeParse({
+      topic: "school",
+      minutes: 999,
+      focus: "I want to improve class reminders.",
+    }).success,
+  ).toBe(false);
+  const brief = publicChallengeBrief(
+    {
+      topic: "school",
+      minutes: 30,
+      focus: "I want to make homework reminders clearer.",
+    },
+    [challenge.title],
   );
-  expect(
-    choiceSchema.safeParse({ topic: "private health details", minutes: 30, focus: "I want to improve this at school." })
-      .success,
-  ).toBe(false);
-  expect(
-    choiceSchema.safeParse({ topic: "school", minutes: 30, focus: "I want to improve class reminders.", name: "Child" })
-      .success,
-  ).toBe(false);
-  expect(
-    choiceSchema.safeParse({ topic: "school", minutes: 999, focus: "I want to improve class reminders." }).success,
-  ).toBe(false);
-  const brief = publicChallengeBrief({ topic: "school", minutes: 30, focus: "I want to make homework reminders clearer." }, [
-    challenge.title,
-  ]);
   expect(brief).toEqual({
     topic: "A fair chance to learn",
     improvementGoal: "I want to make homework reminders clearer.",
@@ -92,7 +112,15 @@ it("assigns deeper, safe challenge designs without implying verified ability", (
   expect(difficultyLabel(1)).toBe("First Challenge");
   expect(difficultyLabel(3)).toBe("Builder");
   expect(difficultyLabel(5)).toBe("Systems Thinker");
-  const brief = publicChallengeBrief({ topic: "school", minutes: 15, focus: "I want to improve homework reminders." }, [], 5);
+  const brief = publicChallengeBrief(
+    {
+      topic: "school",
+      minutes: 15,
+      focus: "I want to improve homework reminders.",
+    },
+    [],
+    5,
+  );
   expect(brief).toMatchObject({
     difficulty: 5,
     challengeDesign: expect.stringContaining("connected system"),
@@ -101,10 +129,20 @@ it("assigns deeper, safe challenge designs without implying verified ability", (
 });
 
 it("rejects personal contact details and unsupported free-form inputs", () => {
-  expect(focusSchema.safeParse("Please email me at friend@example.com").success).toBe(false);
-  expect(focusSchema.safeParse("Call me on +234 812 123 4567").success).toBe(false);
-  expect(focusSchema.safeParse("Make our reading corner easier to use").success).toBe(true);
-  expect(choiceSchema.safeParse({
-    topic: "school", minutes: 30, focus: "Improve our classroom layout"
-  }).success).toBe(true);
+  expect(
+    focusSchema.safeParse("Please email me at friend@example.com").success,
+  ).toBe(false);
+  expect(focusSchema.safeParse("Call me on +234 812 123 4567").success).toBe(
+    false,
+  );
+  expect(
+    focusSchema.safeParse("Make our reading corner easier to use").success,
+  ).toBe(true);
+  expect(
+    choiceSchema.safeParse({
+      topic: "school",
+      minutes: 30,
+      focus: "Improve our classroom layout",
+    }).success,
+  ).toBe(true);
 });

@@ -66,9 +66,9 @@ export function BuildChoiceForm({
           className="mt-2"
           placeholder="For example: I want to reduce food waste in our school."
         />
-        <span className="mt-2 block text-xs font-normal leading-5 text-[#536883]">
-          Describe a real problem or change you care about. Leave out names, phone numbers,
-          addresses and other private details.
+        <span className="mt-2 block text-xs leading-5 font-normal text-[#536883]">
+          Describe a real problem or change you care about. Leave out names,
+          phone numbers, addresses and other private details.
         </span>
       </label>
       <fieldset>
