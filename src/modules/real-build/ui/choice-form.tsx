@@ -8,6 +8,7 @@ export function BuildChoiceForm({
   initialTopic?: string;
 }) {
   const [topic, setTopic] = useState(initialTopic),
+    [focus, setFocus] = useState(""),
     [minutes, setMinutes] = useState("30"),
     [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
@@ -51,6 +52,24 @@ export function BuildChoiceForm({
             </option>
           ))}
         </select>
+      </label>
+      <label>
+        What exactly would you like to improve?
+        <textarea
+          name="focus"
+          required
+          minLength={12}
+          maxLength={160}
+          rows={3}
+          value={focus}
+          onChange={(e) => setFocus(e.target.value)}
+          className="mt-2"
+          placeholder="For example: I want to reduce food waste in our school."
+        />
+        <span className="mt-2 block text-xs font-normal leading-5 text-[#536883]">
+          Describe a real problem or change you care about. Leave out names, phone numbers,
+          addresses and other private details.
+        </span>
       </label>
       <fieldset>
         <legend className="text-sm font-semibold">
