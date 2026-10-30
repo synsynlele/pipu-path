@@ -116,23 +116,38 @@ const practicalAction =
 export class BuildPracticalityError extends Error {
   constructor(
     readonly rule: "PAPER_ONLY" | "NO_IMPLEMENTATION" | "NO_REAL_TEST",
+    readonly field?: "title" | "steps.2",
   ) {
     super("BUILD_NOT_PRACTICAL");
   }
 }
 const realTest =
   /\b(?:test|try|measure|check|compare|observe|count|use|feedback|verify|trial|pilot|evaluate|assess|track|monitor)\b/i;
+function paperworkField(
+  value: BuildChallenge,
+): "title" | "steps.2" | undefined {
+  const fields = [
+    ["title", value.title],
+    ["steps.2", value.steps[2]],
+  ] as const;
+  for (const [field, item] of fields) {
+    if (
+      containsUnqualifiedClaim(
+        item.replace(
+          /\b(?:rather than|instead of|no need for|no)\s+/gi,
+          "without ",
+        ),
+        planOnly,
+      )
+    )
+      return field;
+  }
+  return undefined;
+}
 export function isRetiredPaperworkChallenge(input: unknown): boolean {
   const parsed = challengeSchema.safeParse(input);
-  return (
-    parsed.success &&
-    [
-      parsed.data.title,
-      parsed.data.outcome,
-      ...parsed.data.steps,
-      ...parsed.data.materials,
-    ].some((item) => containsUnqualifiedClaim(item, planOnly))
-  );
+  // Judge the assigned build, not discovery examples, materials, or later cautions.
+  return parsed.success && Boolean(paperworkField(parsed.data));
 }
 const prohibited =
   /\b(contact strangers?|meet (?:an )?unknown adult|keep (?:this )?secret|share (?:your )?(?:home )?address|post (?:it )?publicly|borrow money|weapon|gambl(?:e|ing)|fake evidence|invent (?:a )?result|guaranteed income|handle live wires?|enter (?:a )?drain|prescribe|take medication)\b/i;
@@ -154,8 +169,8 @@ export function validateChallenge(input: unknown): BuildChallenge {
     )
       throw new Error("BUILD_UNSAFE");
   }
-  if (isRetiredPaperworkChallenge(value))
-    throw new BuildPracticalityError("PAPER_ONLY");
+  const paperField = paperworkField(value);
+  if (paperField) throw new BuildPracticalityError("PAPER_ONLY", paperField);
   if (!value.steps.slice(1, 4).some((step) => practicalAction.test(step)))
     throw new BuildPracticalityError("NO_IMPLEMENTATION");
   if (!value.steps.slice(2).some((step) => realTest.test(step)))
