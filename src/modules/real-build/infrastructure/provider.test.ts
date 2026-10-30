@@ -149,3 +149,41 @@ it("rejects a general advice list that lacks executable actions within each stag
     ),
   ).rejects.toThrow("BUILD_GUIDE_INCOMPLETE");
 });
+
+it("corrects a rejected practical draft once inside one bounded generation budget", async () => {
+  request.mockReset();
+  const fixed = {
+    title: "Run a shared focus-session service",
+    outcome:
+      "Give familiar consenting users a working focus session and compare interruptions.",
+    steps: Array(5).fill(
+      "1. Enable the existing focus timer and configure a ten-minute session.\n2. Test the session with a familiar consenting user and count interruptions.",
+    ),
+    materials: ["Existing phone timer"],
+    evidence: "Record actual interruption counts and what changed.",
+    safety: "Keep each participant's personal information private.",
+  };
+  request
+    .mockResolvedValueOnce({
+      ...fixed,
+      steps: Array(5).fill(
+        "Create a paper tracker and test it with a familiar user.",
+      ),
+    })
+    .mockResolvedValueOnce(fixed);
+  expect(
+    await generateBuildTemplate(
+      {
+        topic: "technology",
+        minutes: 30,
+        focus: "Help familiar peers reduce unplanned scrolling.",
+      },
+      [],
+    ),
+  ).toEqual(fixed);
+  expect(request).toHaveBeenCalledTimes(2);
+  expect(request.mock.lastCall?.[0].timeoutMs).toBeLessThanOrEqual(45000);
+  expect(JSON.parse(request.mock.lastCall?.[0].prompt).correction).toBe(
+    "PAPER_ONLY",
+  );
+});

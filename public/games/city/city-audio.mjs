@@ -1,8 +1,13 @@
 // Original Web Audio cues: no external media requests or copyrighted tracks.
 // Playback is enabled only after a real user gesture and a verified resume.
+// Original 120 BPM construction groove: melody, bass, chords and light percussion.
 const MELODY = Object.freeze([
-  196, 246.94, 293.66, 246.94, 220, 261.63, 329.63, 261.63,
+  523.25, 0, 659.25, 783.99, 659.25, 587.33, 523.25, 0, 659.25, 783.99, 880,
+  783.99, 659.25, 0, 587.33, 659.25, 698.46, 0, 880, 783.99, 698.46, 659.25,
+  587.33, 0, 783.99, 880, 1046.5, 880, 783.99, 659.25, 587.33, 0,
 ]);
+const ROOTS = Object.freeze([130.81, 110, 174.61, 196]);
+const LEVEL_KEY = "pipupath.city.audio-levels.v1";
 const CUES = Object.freeze({
   decision: [392, 523.25],
   built: [392, 523.25, 659.25, 783.99],
@@ -23,6 +28,46 @@ export function createCityAudio({
   let position = 0;
   let pendingResume = null;
   let failure = "";
+  let output = null;
+  let musicVolume = 0.85;
+  let effectsVolume = 1;
+  try {
+    const saved = JSON.parse(
+      globalThis.localStorage?.getItem(LEVEL_KEY) ?? "null",
+    );
+    if (
+      saved &&
+      Number.isFinite(saved.music) &&
+      saved.music >= 0 &&
+      saved.music <= 1
+    )
+      musicVolume = saved.music;
+    if (
+      saved &&
+      Number.isFinite(saved.effects) &&
+      saved.effects >= 0 &&
+      saved.effects <= 1
+    )
+      effectsVolume = saved.effects;
+  } catch {
+    /* Audio still works when preference storage is blocked. */
+  }
+  function setVolume(channel, value) {
+    if (!["music", "effects"].includes(channel) || !Number.isFinite(value))
+      return false;
+    const level = Math.max(0, Math.min(1, value));
+    if (channel === "music") musicVolume = level;
+    else effectsVolume = level;
+    try {
+      globalThis.localStorage?.setItem(
+        LEVEL_KEY,
+        JSON.stringify({ music: musicVolume, effects: effectsVolume }),
+      );
+    } catch {
+      /* Keep the current session setting. */
+    }
+    return true;
+  }
   const ctor =
     contextFactory ??
     (() => {
@@ -79,19 +124,35 @@ export function createCityAudio({
     }
   }
 
-  function note(freq, offset = 0, duration = 0.2, volume = 0.09) {
+  function note(
+    freq,
+    offset = 0,
+    duration = 0.2,
+    volume = 0.25,
+    type = "sine",
+  ) {
+    if (volume <= 0 || !freq) return;
     if (!context || (context.state && context.state !== "running")) return;
     try {
       const at = context.currentTime + offset;
       const oscillator = context.createOscillator();
       const gain = context.createGain();
-      oscillator.type = "sine";
+      oscillator.type = type;
       oscillator.frequency.setValueAtTime(freq, at);
       gain.gain.setValueAtTime(0.0001, at);
       gain.gain.exponentialRampToValueAtTime(volume, at + 0.025);
       gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
       oscillator.connect(gain);
-      gain.connect(context.destination);
+      if (!output) {
+        output = context.createGain();
+        output.gain.value = 0.65; // Leave headroom for layered voices and feedback cues.
+        output.connect(context.destination);
+      }
+      gain.connect(output);
+      oscillator.onended = () => {
+        oscillator.disconnect?.();
+        gain.disconnect?.();
+      };
       oscillator.start(at);
       oscillator.stop(at + duration + 0.03);
     } catch {
@@ -100,11 +161,11 @@ export function createCityAudio({
   }
   function playCue(kind) {
     (CUES[kind] ?? CUES.tap).forEach((freq, i) =>
-      note(freq, i * 0.105, 0.22, 0.095),
+      note(freq, i * 0.105, 0.18, 0.34 * effectsVolume, "triangle"),
     );
   }
   function cue(kind) {
-    if (!sound || !context) return false;
+    if (!sound || !context || effectsVolume === 0) return false;
     if (context.state && context.state !== "running") {
       // The next real user interaction can unlock audio again.
       return false;
@@ -124,10 +185,21 @@ export function createCityAudio({
     music = true;
     const playBeat = () => {
       if (!music || (context.state && context.state !== "running")) return;
-      note(MELODY[position++ % MELODY.length], 0, 0.48, 0.045);
+      const step = position++ % MELODY.length;
+      const root = ROOTS[Math.floor(step / 8)];
+      const level = musicVolume;
+      note(MELODY[step], 0, 0.2, 0.16 * level, "triangle");
+      if (step % 2 === 0) note(root, 0, 0.36, 0.13 * level);
+      if (step % 4 === 0) {
+        note(root * 2, 0, 0.72, 0.04 * level, "triangle");
+        note(root * 3, 0, 0.72, 0.04 * level, "triangle");
+        note(85, 0, 0.11, 0.12 * level);
+      }
+      if (step % 2 === 1) note(2200, 0, 0.035, 0.04 * level);
+      if (step % 8 === 4) note(180, 0, 0.08, 0.07 * level, "triangle");
     };
     playBeat();
-    tick = schedule(playBeat, 600);
+    tick = schedule(playBeat, 250);
   }
   async function start() {
     const ready = await unlock();
@@ -168,6 +240,13 @@ export function createCityAudio({
     toggleSound,
     toggleMusic,
     suspend,
+    setVolume,
+    get musicVolume() {
+      return musicVolume;
+    },
+    get effectsVolume() {
+      return effectsVolume;
+    },
     get sound() {
       return sound;
     },

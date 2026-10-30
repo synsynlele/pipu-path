@@ -4112,6 +4112,42 @@ function syncAudioControls() {
   );
   $("music").setAttribute("aria-pressed", String(cityAudio.music));
 }
+function syncAudioLevels() {
+  for (const [id, channel, value] of [
+    ["music-volume", "music", cityAudio.musicVolume],
+    ["effects-volume", "effects", cityAudio.effectsVolume],
+  ]) {
+    const input = $(id);
+    if (!input) continue;
+    input.value = String(Math.round(value * 100));
+    const output = $(channel === "music" ? "music-level" : "effects-level");
+    if (output) output.textContent = input.value + "%";
+  }
+}
+for (const [id, channel] of [
+  ["music-volume", "music"],
+  ["effects-volume", "effects"],
+]) {
+  const input = $(id);
+  if (input)
+    input.oninput = () => {
+      cityAudio.setVolume(channel, Number(input.value) / 100);
+      syncAudioLevels();
+    };
+}
+const audioSettings = $("audio-settings");
+if (audioSettings) {
+  audioSettings.onkeydown = (event) => {
+    if (event.key !== "Escape") return;
+    event.stopPropagation();
+    audioSettings.open = false;
+    audioSettings.querySelector("summary")?.focus();
+  };
+  document.addEventListener("pointerdown", (event) => {
+    if (!audioSettings.contains(event.target)) audioSettings.open = false;
+  });
+}
+syncAudioLevels();
 $("sound").onclick = async () => {
   const enabled = await cityAudio.toggleSound();
   syncAudioControls();
@@ -4126,7 +4162,7 @@ $("music").onclick = async () => {
   syncAudioControls();
   toast(
     enabled
-      ? "Background music on. Check your phone's media volume."
+      ? "Music on. Adjust its level in City menu."
       : cityAudio.error || "Background music off.",
   );
 };

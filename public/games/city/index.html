@@ -76,6 +76,38 @@
                   >
                     Opportunities
                   </button>
+                  <details id="audio-settings" class="audio-settings">
+                    <summary
+                      aria-label="Music and sound volume"
+                      title="Music and sound volume"
+                    >
+                      Music and sound volume
+                    </summary>
+                    <div class="audio-levels">
+                      <label for="music-volume"
+                        >Music <output id="music-level">85%</output></label
+                      >
+                      <input
+                        id="music-volume"
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="85"
+                      />
+                      <label for="effects-volume"
+                        >Sound effects
+                        <output id="effects-level">100%</output></label
+                      >
+                      <input
+                        id="effects-volume"
+                        type="range"
+                        min="0"
+                        max="100"
+                        value="100"
+                      />
+                      <small>Music and effects have separate levels.</small>
+                    </div>
+                  </details>
                   <button id="build-lab-toggle" type="button">
                     Build Lab · connect &amp; test
                   </button>
@@ -929,7 +961,8 @@
           </p>
           <p>
             Tap 🔊/🔇 for sound effects or ♫ for background music. The speaker
-            previews a sound. They have separate controls. Music stops when you
+            previews a sound. They have separate controls. Open City menu →
+            Music and sound volume to adjust each level. Music stops when you
             leave the game screen. You can switch either off whenever you like.
           </p>
         </details>

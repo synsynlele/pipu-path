@@ -164,3 +164,49 @@ it("rejects personal contact details and unsupported free-form inputs", () => {
     }).success,
   ).toBe(true);
 });
+
+it("accepts phone gestures, valid setup verbs and explicit cautions without permitting paper-only work", () => {
+  expect(
+    validateChallenge({
+      ...challenge,
+      steps: [
+        challenge.steps[0],
+        "Choose an existing focus setting without drawing a diagram.",
+        "Enable a focus session and slide the duration control to ten minutes.",
+        "Compare interruptions during an actual session with a familiar tester.",
+        challenge.steps[4],
+      ],
+      materials: [
+        "Existing phone",
+        "Paper towel for cleaning the shared surface",
+      ],
+    }),
+  ).toBeTruthy();
+  expect(() =>
+    validateChallenge({
+      ...challenge,
+      steps: [
+        challenge.steps[0],
+        "Do not draw a diagram. Make a paper tracker instead.",
+        ...challenge.steps.slice(2),
+      ],
+    }),
+  ).toThrow("BUILD_NOT_PRACTICAL");
+});
+
+it("recognises real cooking/service delivery and pilot tests beyond construction vocabulary", () => {
+  expect(
+    validateChallenge({
+      ...challenge,
+      title: "Cook a useful shared snack",
+      steps: [
+        "Ask a familiar consenting person what snack they need.",
+        "Gather existing safe ingredients with permission.",
+        "Cook a small familiar snack for the consenting person.",
+        "Evaluate the actual portion and feedback from the person.",
+        "Adjust the serving after observing the real result.",
+      ],
+      materials: ["Existing safe ingredients"],
+    }),
+  ).toBeTruthy();
+});
