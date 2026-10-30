@@ -24,7 +24,13 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Format Phase 4 changes and run complete validation (diagnostic)
+        run: |
+          npx prettier --write "src/app/real-quests/[buildId]/page.tsx" src/modules/city/domain/city-inspiration.ts src/modules/real-build/application/start-build.test.ts src/modules/real-build/application/start-build.ts src/modules/real-build/domain/build.test.ts src/modules/real-build/domain/build.ts src/modules/real-build/ui/choice-form.test.tsx
+          echo PHASE4_FORMAT_BEGIN
+          git diff -- "src/app/real-quests/[buildId]/page.tsx" src/modules/city/domain/city-inspiration.ts src/modules/real-build/application/start-build.test.ts src/modules/real-build/application/start-build.ts src/modules/real-build/domain/build.test.ts src/modules/real-build/domain/build.ts src/modules/real-build/ui/choice-form.test.tsx
+          echo PHASE4_FORMAT_END
+          npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
