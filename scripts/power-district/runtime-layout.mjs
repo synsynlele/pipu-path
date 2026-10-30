@@ -13,6 +13,17 @@ const dom = new JSDOM(
   },
 );
 const w = dom.window;
+// jsdom does not implement modal dialogs. Verify the real game handlers
+// against the same open/close lifecycle used by the browser, without WebGL.
+if (!w.HTMLDialogElement.prototype.showModal) {
+  w.HTMLDialogElement.prototype.showModal = function () {
+    this.open = true;
+  };
+  w.HTMLDialogElement.prototype.close = function () {
+    this.open = false;
+    this.dispatchEvent(new w.Event("close"));
+  };
+}
 const scheduled = new Map();
 let timerId = 0;
 const schedule = (callback, delay) => {
