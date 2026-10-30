@@ -1,0 +1,40 @@
+name: Format Linked Game Preview (temporary)
+on:
+  push:
+    branches:
+      - preview/game-world-class-phase2
+    paths:
+      - .github/workflows/format-linked-game.yml
+permissions:
+  contents: read
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format linked gameplay sources
+        run: |
+          npx prettier --write \
+            public/games/city/game.mjs \
+            public/games/city/build-lab-ui.mjs \
+            public/games/city/index.html \
+            public/games/shared/city-theme.css \
+            public/games/city/integrated-journey.mjs \
+            public/games/city/city-audio.mjs \
+            scripts/power-district/runtime-layout.mjs \
+            scripts/power-district/city-ui.mjs \
+            scripts/power-district/integrated-journey.mjs \
+            scripts/power-district/city-audio.mjs \
+            package.json
+      - name: Emit formatted source
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync} from "node:fs";
+          for (const path of ["public/games/city/game.mjs","public/games/city/build-lab-ui.mjs","public/games/city/index.html","public/games/shared/city-theme.css","public/games/city/integrated-journey.mjs","public/games/city/city-audio.mjs","scripts/power-district/runtime-layout.mjs","scripts/power-district/city-ui.mjs","scripts/power-district/integrated-journey.mjs","scripts/power-district/city-audio.mjs","package.json"])
+            console.log("LINKED_FMT:" + JSON.stringify({path,content:readFileSync(path,"utf8")}));
+          JS
