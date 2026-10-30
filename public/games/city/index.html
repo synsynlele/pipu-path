@@ -624,8 +624,13 @@
             <span class="live-dot"></span> YOUR WORLD STARTS HERE
           </div>
           <h1>The Unbuilt<br /><em>City.</em></h1>
-          <p>Your choices. A better world.</p>
-          <button id="start" class="primary">Play free <span>▶</span></button>
+          <p>Build a solution. Test it. See it in your city.</p>
+          <button id="start" class="primary">
+            Start building <span>▶</span>
+          </button>
+          <button id="resume-city" type="button" hidden>
+            Resume my saved city →
+          </button>
           <a class="welcome-journey" href="/real-quests" target="_top"
             >Continue my journey <span>↗</span></a
           >
@@ -639,6 +644,19 @@
           </nav>
         </div>
       </div>
+      <section id="pilot-mission" hidden aria-label="Your first city-building challenge">
+        <span class="pilot-kicker">YOUR CITY · HANDS-ON BUILD</span>
+        <h2 id="pilot-title">Ama's workshop needs power</h2>
+        <p id="pilot-message">
+          Make a working connection. Test it, fix weak points, and watch your
+          prototype light up in the city.
+        </p>
+        <div class="pilot-actions">
+          <button id="pilot-build" type="button" class="primary">Build the connection →</button>
+          <button id="pilot-story" type="button">Explore the original city story</button>
+        </div>
+        <small>Visible connection = a tested prototype, not city service upgrades or real-world XP.</small>
+      </section>
       <dialog id="build-lab" aria-labelledby="lab-title">
         <div class="lab-heading">
           <div>
@@ -649,6 +667,10 @@
             ×
           </button>
         </div>
+        <p id="lab-first-brief" hidden>
+          The workshop has lost its supply. You are the builder: place and rotate
+          connections around the protected tree, then test your network.
+        </p>
         <label for="lab-mission">Choose your challenge</label>
         <select id="lab-mission"></select>
         <p id="lab-brief"></p>
@@ -676,11 +698,19 @@
         ></div>
         <p id="lab-budget"></p>
         <p id="lab-result" role="status" aria-live="polite"></p>
+        <button id="lab-hint" type="button">Need a hint? Show a first move</button>
+        <p id="lab-hint-copy" hidden>
+          Try going above the tree: put a bend immediately above Supply
+          (row 2, column 1) and rotate it to face down and right.
+        </p>
         <div class="lab-actions">
           <button id="lab-test" class="primary" type="button">
             Test my network</button
           ><button id="lab-clear" type="button">Clear this layout</button
           ><button id="lab-next" type="button" hidden>Next challenge →</button>
+          <button id="lab-see-city" class="primary" type="button" hidden>
+            See my prototype in the city →
+          </button>
         </div>
         <small
           >Choose a piece, rotate its openings, then tap an empty square.

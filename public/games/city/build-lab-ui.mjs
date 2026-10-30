@@ -66,6 +66,7 @@ export function mountBuildLab({
       board = state.boards[mission.id];
     $("lab-mission").value = mission.id;
     $("lab-brief").textContent = mission.brief;
+    $("lab-see-city").hidden = !result?.success;
     $("lab-budget").textContent =
       `${evaluateLab(mission, board).cost} / ${mission.budget} pieces used`;
     const working = LAB_MISSIONS.filter(
@@ -138,6 +139,7 @@ export function mountBuildLab({
     state.active = id;
     write(state);
     result = null;
+    $("lab-hint-copy").hidden = true;
     render();
   }
   $("lab-mission").onchange = (e) => selectMission(e.target.value);
@@ -147,6 +149,13 @@ export function mountBuildLab({
       render();
     };
   });
+  $("lab-hint").onclick = () => {
+    $("lab-hint-copy").hidden = !$("lab-hint-copy").hidden;
+    $("lab-hint").textContent = $("lab-hint-copy").hidden
+      ? "Need a hint? Show a first move"
+      : "Hide the hint";
+  };
+  $("lab-see-city").onclick = () => dialog.close();
   $("lab-rotate").onclick = () => {
     brush.turn = (brush.turn + 1) % 4;
     render();
@@ -185,9 +194,14 @@ export function mountBuildLab({
     ).focus();
   });
   return {
-    open(missionId = null) {
+    open(missionId = null, { firstMission = false } = {}) {
       if (dialog.open) return;
       returnFocus = document.activeElement;
+      $("lab-title").textContent = firstMission
+        ? "Your first build: power the workshop"
+        : "Build Lab";
+      $("lab-first-brief").hidden = !firstMission;
+      $("lab-hint-copy").hidden = true;
       beforeOpen();
       if (missionId && LAB_MISSIONS.some((item) => item.id === missionId)) {
         const current = sanitizeLab(read());
