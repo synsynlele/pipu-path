@@ -24,7 +24,13 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Format Phase 4, show patch, and validate
+        run: |
+          npx prettier --write public/games/city/city-audio.mjs public/games/city/game.mjs public/games/city/index.html public/games/city/practice-save.d.mts src/app/api/city-practice/route.ts src/app/real-quests/page.tsx src/modules/city/ui/city-cloud-controls.tsx
+          echo PHASE4_PATCH_BEGIN
+          git diff -- public/games/city/city-audio.mjs public/games/city/game.mjs public/games/city/index.html public/games/city/practice-save.d.mts src/app/api/city-practice/route.ts src/app/real-quests/page.tsx src/modules/city/ui/city-cloud-controls.tsx
+          echo PHASE4_PATCH_END
+          npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
