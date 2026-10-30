@@ -59,8 +59,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
     focus_key_input: focusKey,
   });
   if (unseen.error) throw new Error("BUILD_LOAD_FAILED");
-  let template: (NonNullable<typeof unseen.data>)[number] | undefined =
-    unseen.data?.[0];
+  let template = unseen.data?.[0] ?? null;
   if (template) {
     try {
       validateChallenge(template.challenge);
@@ -69,7 +68,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
       logger.warn("real_build_invalid_cached_template", {
         reason: "BUILD_INVALID_TEMPLATE",
       });
-      template = undefined;
+      template = null;
     }
   }
   if (!template) {
