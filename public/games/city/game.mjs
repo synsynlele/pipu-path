@@ -2,7 +2,7 @@ document.documentElement.classList.toggle(
   "city-embedded",
   new URLSearchParams(window.location.search).get("embedded") === "1",
 );
-import { sanitizeLab } from "./build-lab.mjs";
+import { LAB_MISSIONS, evaluateLab, sanitizeLab } from "./build-lab.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
@@ -3623,12 +3623,79 @@ $("city-map").onclick = () => {
   distance = mapMode ? 115 : 27;
   $("city-map").textContent = mapMode ? "Follow me" : "City map";
 };
+// A visual *prototype* of the supply network. This intentionally does not
+// affect the authoritative 36 choices, city services, budget or Quest evidence.
+const workshopBlueprint = new T.Group();
+const blueprintCurve = new T.CatmullRomCurve3([
+  new T.Vector3(3.4, 1.65, -5.6),
+  new T.Vector3(1.8, 1.65, -5.6),
+  new T.Vector3(0.3, 1.65, -3.7),
+  new T.Vector3(-2.6, 1.65, -2.8),
+]);
+workshopBlueprint.add(
+  new T.Mesh(
+    new T.TubeGeometry(blueprintCurve, 24, 0.085, 6, false),
+    new T.MeshBasicMaterial({ color: 0x25e8ae }),
+  ),
+);
+for (const point of [blueprintCurve.getPoint(0), blueprintCurve.getPoint(1)]) {
+  const beacon = new T.Mesh(
+    new T.SphereGeometry(0.25, 10, 8),
+    new T.MeshBasicMaterial({ color: 0xffd973 }),
+  );
+  beacon.position.copy(point);
+  workshopBlueprint.add(beacon);
+}
+workshopBlueprint.visible = false;
+scene.add(workshopBlueprint);
+let firstBuildMode = false;
+let workshopTested = false;
+function renderPilotMission() {
+  const panel = $("pilot-mission");
+  panel.hidden = !firstBuildMode || !$("intro").hidden;
+  if (panel.hidden) return;
+  const next = LAB_MISSIONS.find(
+    (mission) => !evaluateLab(mission, state.lab.boards[mission.id]).success,
+  );
+  $("pilot-title").textContent = workshopTested
+    ? "Your workshop blueprint works!"
+    : "Ama's workshop needs a working supply";
+  $("pilot-message").textContent = workshopTested
+    ? "Look at the glowing prototype connection in your 3D city. You built and tested this plan. Want a harder problem?"
+    : "Connect supply to the workshop around the tree, test the design, then improve it until the supply reaches the worksite.";
+  $("pilot-build").textContent = workshopTested
+    ? next
+      ? "Next build: " + next.title + " →"
+      : "Improve my designs →"
+    : "Build the connection →";
+}
+$("pilot-build").onclick = () => {
+  const next =
+    workshopTested &&
+    LAB_MISSIONS.find(
+      (mission) => !evaluateLab(mission, state.lab.boards[mission.id]).success,
+    );
+  buildLab.open(next?.id ?? "workshop-link");
+};
+$("pilot-story").onclick = () => startCity("story");
 const buildLab = mountBuildLab({
   read: () => state.lab,
-  onTest: ({ success }) =>
-    playtest.note(success ? "prototype_pass" : "prototype_retry"),
+  onTest: ({ missionId, success }) => {
+    playtest.note(success ? "prototype_pass" : "prototype_retry");
+    if (missionId === "workshop-link") {
+      workshopTested = success;
+      workshopBlueprint.visible = success;
+      if (success) playTone(660);
+    }
+    renderPilotMission();
+  },
   write: (lab) => {
+    const before = JSON.stringify(state.lab.boards["workshop-link"]);
     state.lab = lab;
+    if (JSON.stringify(lab.boards["workshop-link"]) !== before) {
+      workshopTested = false;
+      workshopBlueprint.visible = false;
+    }
     persistPractice();
   },
   beforeOpen: () => {
@@ -3636,7 +3703,7 @@ const buildLab = mountBuildLab({
     if (builtCityView) closeBuiltCityView();
     if (journey.status === "running")
       pauseJourney("Your journey is paused while you build a prototype.");
-    if (journey.status === "idle") {
+    if (journey.status === "idle" && !firstBuildMode) {
       const target = recoverJourney({ ...journey, decisions: state.decisions });
       journey = {
         ...target,
@@ -3659,25 +3726,41 @@ const buildLab = mountBuildLab({
   afterClose: () => {
     keys.clear();
     refreshJourneyControls();
+    renderPilotMission();
   },
 });
 $("build-lab-toggle").onclick = () => buildLab.open();
-$("start").onclick = () => startCity();
-function startCity() {
+$("start").onclick = () => startCity("build");
+$("resume-city").onclick = () => startCity("story");
+$("resume-city").hidden =
+  !previousPractice ||
+  (!Object.keys(state.decisions).length && !previousPractice.journey);
+function startCity(mode = "build") {
   if (!$("intro").hidden) playtest.note("start");
+  firstBuildMode = mode === "build";
   $("intro").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
   mapMode = false;
   closeCasebook();
   closeCityStatus();
-  guideExpanded = true;
+  guideExpanded = !firstBuildMode;
   dockExpanded = false;
   distance = 27;
   closeDirectory();
-  $("mission").hidden = false;
+  $("mission").hidden = firstBuildMode;
   $("mobile-move").hidden = true;
+  $("pilot-mission").hidden = !firstBuildMode;
   render();
+  if (firstBuildMode) {
+    // The main Play button opens hands-on building before any question.
+    // Returning players can explicitly resume their saved city instead.
+    cancelAutoAdvance();
+    renderPilotMission();
+    buildLab.open("workshop-link", { firstMission: true });
+    return;
+  }
+  $("pilot-mission").hidden = true;
   const nextUnsolved = firstUnanswered(state.decisions);
   if (
     !nextUnsolved &&
