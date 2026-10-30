@@ -201,3 +201,70 @@ it("rejects an unexpectedly different cached difficulty before saving progress",
   );
   expect(calls.filter((c) => c[0] === "insert")).toHaveLength(0);
 });
+
+it("recovers from invalid AI output with one reviewed and safe Quest, without a second AI call", async () => {
+  results = [
+    { data: null },
+    { data: 1 },
+    { data: [] },
+    { data: [] },
+    { data: true },
+    { data: "request" },
+    {
+      data: {
+        ...template,
+        id: "reviewed-template",
+        source: "reviewed",
+        challenge: {
+          ...challenge,
+          title: "Give an unused item a useful second life",
+        },
+      },
+    },
+    { data: null },
+    { data: { id: "reviewed-attempt" } },
+  ];
+  m.generate.mockRejectedValue(new Error("INVALID_MODEL_PAYLOAD"));
+  const result = await startBuildForUser("owner", {
+    ...choice,
+    topic: "workshop",
+  });
+  expect(result).toBe("reviewed-attempt");
+  expect(m.generate).toHaveBeenCalledTimes(1);
+  const inserts = calls.filter((call) => call[0] === "insert");
+  expect(inserts).toHaveLength(2);
+  expect(inserts[0]).toEqual([
+    "insert",
+    expect.objectContaining({
+      topic: "workshop",
+      source: "reviewed",
+      challenge: expect.objectContaining({ steps: expect.arrayContaining([expect.stringContaining("Test")]) }),
+    }),
+  ]);
+  expect(inserts[1]).toEqual([
+    "insert",
+    expect.objectContaining({
+      user_id: "owner",
+      source: "reviewed",
+    }),
+  ]);
+});
+it("uses reviewed content without calling AI when generation allowance is exhausted", async () => {
+  results = [
+    { data: null },
+    { data: 1 },
+    { data: [] },
+    { data: [] },
+    { data: true },
+    { data: null },
+    { data: { ...template, source: "reviewed" } },
+    { data: null },
+    { data: { id: "no-charge-starter" } },
+  ];
+  expect(await startBuildForUser("owner", choice)).toBe("no-charge-starter");
+  expect(m.generate).not.toHaveBeenCalled();
+  expect(calls).toContainEqual([
+    "insert",
+    expect.objectContaining({ source: "reviewed" }),
+  ]);
+});
