@@ -4001,3 +4001,24 @@ html.city-embedded .welcome-signin {
   padding: 14px 12px;
   font-size: 16px;
 }
+
+/* Keep the worksite and its test controls together; Close stays reachable. */
+#build-lab {
+  max-width: 560px;
+}
+#build-lab .lab-heading {
+  position: sticky;
+  top: -20px;
+  z-index: 2;
+  padding: 10px 0;
+  background: #f5f8ff;
+}
+#lab-grid {
+  width: min(100%, 300px);
+  margin: 12px auto;
+}
+#build-lab .lab-cell {
+  font-size: 11px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
