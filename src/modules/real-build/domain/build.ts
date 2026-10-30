@@ -10,6 +10,38 @@ export const choiceSchema = z
   })
   .strict();
 export type BuildChoice = z.infer<typeof choiceSchema>;
+
+export const difficultySchema = z.number().int().min(1).max(5);
+export type BuildDifficulty = 1 | 2 | 3 | 4 | 5;
+
+// Task complexity, not a score for the person. All levels remain low-cost and safe.
+export const difficultyGuides = {
+  1: {
+    label: "Starter",
+    design: "Find one need, make a simple paper prototype and test it once with a familiar trusted person.",
+  },
+  2: {
+    label: "Explorer",
+    design: "Create two possible solutions and compare them in one small test. Explain why one is better.",
+  },
+  3: {
+    label: "Builder",
+    design: "Work within two constraints such as time and materials. Try a prototype twice, measure a simple result and revise.",
+  },
+  4: {
+    label: "Problem Solver",
+    design: "Consider two different needs or stakeholders, show a trade-off, test alternatives and record a measurable comparison.",
+  },
+  5: {
+    label: "Systems Thinker",
+    design: "Model a small connected system using paper or safe digital tools. Compare scenarios, predict a trade-off, test one assumption and iterate using evidence.",
+  },
+} as const satisfies Record<BuildDifficulty, { label: string; design: string }>;
+
+export function difficultyLabel(level: number) {
+  return difficultyGuides[level as BuildDifficulty]?.label ?? "Starter";
+}
+
 const text = (min: number, max: number) => z.string().trim().min(min).max(max);
 export const challengeSchema = z
   .object({
@@ -78,6 +110,7 @@ export function validateChallenge(input: unknown): BuildChallenge {
 export function publicChallengeBrief(
   choice: BuildChoice,
   previousTitles: string[],
+  difficulty: BuildDifficulty = 1,
 ) {
   // Only catalogue values and previously public template titles. Never learner prose.
   const topic = buildTopics.find((t) => t.id === choice.topic)!;
@@ -85,6 +118,8 @@ export function publicChallengeBrief(
     topic: topic.title,
     safeStartingIdea: topic.idea,
     minutes: choice.minutes,
+    difficulty,
+    challengeDesign: difficultyGuides[difficulty].design,
     avoidTitles: previousTitles.slice(-30),
   };
 }
@@ -95,6 +130,7 @@ export type SavedBuild = {
   previous_attempt_id: string | null;
   topic: string;
   minutes: number;
+  difficulty: BuildDifficulty;
   challenge: BuildChallenge;
   source: "openai";
   status: "active" | "recorded" | "archived";
