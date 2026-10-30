@@ -1,0 +1,30 @@
+name: Format Quest form (temporary)
+on:
+  push:
+    branches:
+      - preview/real-quests-transparent-ai-goal
+    paths:
+      - .github/workflows/format-real-quests-temp.yml
+permissions:
+  contents: read
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format exact form file
+        run: npx prettier --write src/modules/real-build/ui/choice-form.tsx
+      - name: Print formatted source from public repository
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from "node:fs";
+          console.log("FORMATTED_QUEST:" + JSON.stringify({
+            path: "src/modules/real-build/ui/choice-form.tsx",
+            content: readFileSync("src/modules/real-build/ui/choice-form.tsx","utf8"),
+          }));
+          JS
