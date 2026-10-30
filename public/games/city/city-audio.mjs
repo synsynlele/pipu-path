@@ -149,6 +149,10 @@ export function createCityAudio({
         output.connect(context.destination);
       }
       gain.connect(output);
+      oscillator.onended = () => {
+        oscillator.disconnect?.();
+        gain.disconnect?.();
+      };
       oscillator.start(at);
       oscillator.stop(at + duration + 0.03);
     } catch {

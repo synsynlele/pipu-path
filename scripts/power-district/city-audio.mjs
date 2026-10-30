@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createCityAudio } from "../../public/games/city/city-audio.mjs";
 
 const events = [];
+const endedVoices = [];
 let scheduled = null;
 let pending = null;
 let resolvesResume = false;
@@ -35,7 +36,12 @@ const context = {
       start() {
         events.push(["start"]);
       },
-      stop() {},
+      stop() {
+        endedVoices.push(() => this.onended?.());
+      },
+      disconnect() {
+        events.push(["disconnect"]);
+      },
     };
   },
   createGain() {
@@ -81,6 +87,11 @@ assert.equal(audio.effectsVolume, 1);
 assert(
   events.some((e) => e[0] === "volume" && e[1] >= 0.3),
   "Effects must have the higher default amplitude",
+);
+for (const end of endedVoices.splice(0)) end();
+assert(
+  events.some((e) => e[0] === "disconnect"),
+  "Completed voices must release their graph connections",
 );
 const previous = events.length;
 scheduled();
