@@ -24,13 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Show exact Prettier fixes for Phase 4
-        run: |
-          npx prettier --write docs/implementation/status.md public/games/city/game.mjs public/games/city/index.html src/app/real-quests/page.tsx src/modules/city/domain/city-quest-handoff.test.ts
-          echo 'PHASE4_FORMAT_DIFF_BEGIN'
-          git diff -- docs/implementation/status.md public/games/city/game.mjs public/games/city/index.html src/app/real-quests/page.tsx src/modules/city/domain/city-quest-handoff.test.ts
-          echo 'PHASE4_FORMAT_DIFF_END'
-          echo 'Diagnostic only: complete validation will run after formatting is committed.'
+      - run: npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
