@@ -84,9 +84,7 @@ it("opens a hands-on first mission with accessible hint and no question selectio
   expect(screen.getByText(/going above the tree/i)).not.toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: /Need a hint/ }));
   expect(screen.getByText(/going above the tree/i)).toBeVisible();
-  expect(
-    screen.getByRole("button", { name: "See my prototype in the city →" }),
-  ).not.toBeVisible();
+  expect(document.getElementById("lab-see-city")).toHaveAttribute("hidden");
 });
 it("pauses on entry, retains layouts between challenges and restores focus on close", () => {
   open();
