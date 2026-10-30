@@ -1,0 +1,45 @@
+name: Format Mixed Gameplay Preview (temporary)
+on:
+  push:
+    branches:
+      - preview/game-world-class-phase1
+    paths:
+      - .github/workflows/format-mixed-game-preview.yml
+permissions:
+  contents: read
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format changed game files
+        run: |
+          npx prettier --write \
+            public/games/city/index.html \
+            public/games/city/build-lab.mjs \
+            public/games/city/build-lab-ui.mjs \
+            public/games/city/build-milestones.mjs \
+            public/games/city/build-milestone-scene.mjs \
+            public/games/city/game.mjs \
+            public/games/shared/city-theme.css \
+            scripts/power-district/build-lab.mjs \
+            scripts/power-district/build-milestones.mjs \
+            scripts/power-district/runtime-layout.mjs \
+            scripts/power-district/city-ui.mjs \
+            src/modules/city/ui/build-lab.test.ts \
+            docs/product/pipupath-world-class-game-roadmap.md \
+            package.json
+      - name: Emit formatted sources
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync} from "node:fs";
+          const files = ["public/games/city/index.html","public/games/city/build-lab.mjs","public/games/city/build-lab-ui.mjs","public/games/city/build-milestones.mjs","public/games/city/build-milestone-scene.mjs","public/games/city/game.mjs","public/games/shared/city-theme.css","scripts/power-district/build-lab.mjs","scripts/power-district/build-milestones.mjs","scripts/power-district/runtime-layout.mjs","scripts/power-district/city-ui.mjs","src/modules/city/ui/build-lab.test.ts","docs/product/pipupath-world-class-game-roadmap.md","package.json"];
+          for (const path of files) {
+            console.log("MIXED_FMT:" + JSON.stringify({path,content:readFileSync(path,"utf8")}));
+          }
+          JS
