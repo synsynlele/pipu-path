@@ -31,6 +31,8 @@ it("authors a bounded public template without forwarding private properties", as
     topic: "A fair chance to learn",
     minutes: 30,
     safeStartingIdea: expect.any(String),
+    difficulty: 1,
+    challengeDesign: expect.stringContaining("simple paper prototype"),
     avoidTitles: [],
   });
   request.mockResolvedValue({
@@ -39,5 +41,24 @@ it("authors a bounded public template without forwarding private properties", as
   });
   await expect(generateBuildTemplate(choice, [])).rejects.toThrow(
     "BUILD_UNSAFE",
+  );
+});
+
+it("passes only public level instructions to AI at higher difficulty", async () => {
+  const challenge = {
+    title: "Compare two safe paper solutions",
+    outcome: "Compare simple proposed routes on paper using a measurable fictional example.",
+    steps: Array(5).fill("Test two safe paper scenarios and compare the results."),
+    materials: ["Paper"],
+    evidence: "Write the comparison and describe a useful revision.",
+    safety: "Use fictional scenarios, no names or private details.",
+  };
+  request.mockResolvedValue(challenge);
+  await generateBuildTemplate({ topic: "school", minutes: 15 }, [], 5);
+  const data = JSON.parse(request.mock.lastCall?.[0].prompt);
+  expect(data.difficulty).toBe(5);
+  expect(data.challengeDesign).toContain("connected system");
+  expect(Object.keys(data).sort()).toEqual(
+    ["avoidTitles", "challengeDesign", "difficulty", "minutes", "safeStartingIdea", "topic"].sort(),
   );
 });
