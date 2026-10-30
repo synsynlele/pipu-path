@@ -3673,9 +3673,8 @@ const buildMilestoneScene = createMilestoneScene({ T, scene, box, cyl });
 buildMilestoneScene.sync(state.lab);
 const workshopBlueprint =
   buildMilestoneScene.buildings.get("workshop-link").group;
-let mixedJourney = false;
+let mixedJourney = true;
 let pendingBuildCase = null;
-const promptedBuildCases = new Set();
 let victoryCamera = null;
 let lastVictoryMission = null;
 function hideBuildVictory() {
@@ -3732,38 +3731,43 @@ function showBuildVictory(
       "/" +
       city.demand +
       " across your five city services.";
-  $("victory-continue").textContent = pendingBuildCase
-    ? "Continue to the next decision →"
-    : "Next: solve a city decision →";
-  $("victory-build").textContent = retry
-    ? "Improve this design →"
-    : "Build another city improvement →";
+  $("victory-continue").textContent =
+    integratedStep(state.decisions, state.lab).kind === "build"
+      ? "Finish the required build →"
+      : "Continue your city journey →";
+  $("victory-build").hidden = !retry;
+  $("victory-build").textContent = "Return to the required build →";
   $("build-victory").dataset.retry = retry ? "true" : "false";
+  // One reward surface: no simultaneous detail, status, prototype or pilot card.
+  $("detail").hidden = true;
+  $("world-feedback").hidden = true;
+  $("pilot-mission").hidden = true;
+  serviceDesk.close();
   $("build-victory").hidden = false;
-  renderPilotMission();
   if (!retry) playTone(784);
 }
 $("victory-continue").onclick = () => {
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") {
+    hideBuildVictory();
+    pendingBuildCase = step.caseId;
+    buildLab.open(step.missionId);
+    return;
+  }
   const completedCase = pendingBuildCase;
   pendingBuildCase = null;
   hideBuildVictory();
-  if (completedCase) {
-    proceedAfterCase(completedCase);
-  } else if (firstBuildMode) {
-    mixedJourney = true;
-    startCity("story");
-  } else {
-    resumeJourney();
-  }
+  if (completedCase) proceedAfterCase(completedCase);
+  else if (step.kind === "question") goToJourneyCase(step.caseId);
+  else resumeJourney();
 };
 $("victory-build").onclick = () => {
   const retry = $("build-victory").dataset.retry === "true";
   const next =
     retry && lastVictoryMission
       ? lastVictoryMission
-      : (skillRecommendation(state.lab).recommendedId ??
-        lastVictoryMission ??
-        "workshop-link");
+      : (integratedStep(state.decisions, state.lab).missionId ??
+        lastVictoryMission ?? "workshop-link");
   hideBuildVictory();
   buildLab.open(next);
 };
@@ -3853,15 +3857,9 @@ const buildLab = mountBuildLab({
   afterClose: () => {
     keys.clear();
     refreshJourneyControls();
-    renderPilotMission();
-    if (pendingBuildCase && $("build-victory").hidden) {
-      const milestone = formatForCase(pendingBuildCase);
-      if (
-        milestone.missionId &&
-        !state.lab.tested.includes(milestone.missionId)
-      ) {
-        showBuildVictory(milestone.missionId, { retry: true });
-      }
+    if (integratedStep(state.decisions, state.lab).kind === "build" &&
+        $("build-victory").hidden) {
+      toast("Build paused. Press Resume to finish before the next challenge.");
     }
   },
 });
@@ -3906,7 +3904,10 @@ const serviceDesk = mountCityServiceDesk({
     activeFeedback = null;
     $("service-toggle").setAttribute("aria-expanded", "false");
   },
-  onBuild: (id) => buildLab.open(id),
+  onBuild: (id) => {
+    if (canOpenWorksite(id, state.decisions, state.lab)) buildLab.open(id);
+    else toast("This build unlocks after its linked decision.");
+  },
 });
 $("service-toggle").onclick = () => {
   if (serviceDesk.isOpen) serviceDesk.close();
@@ -3915,7 +3916,14 @@ $("service-toggle").onclick = () => {
     $("service-toggle").setAttribute("aria-expanded", "true");
   }
 };
-$("build-lab-toggle").onclick = () => buildLab.open();
+$("build-lab-toggle").onclick = () => {
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") return buildLab.open(step.missionId);
+  const prior = LAB_MISSIONS.find((m) =>
+    canOpenWorksite(m.id, state.decisions, state.lab));
+  if (prior) buildLab.open(prior.id);
+  else toast("First decide how to help Ama. Your building puzzle unlocks next.");
+};
 $("start").onclick = () => startCity("build");
 $("resume-city").onclick = () => startCity("story");
 $("resume-city").hidden =
