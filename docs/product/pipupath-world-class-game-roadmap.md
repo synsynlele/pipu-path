@@ -91,7 +91,7 @@ and the original story remains fully playable without data loss.
 
 Questions teach priorities, empathy, resource trade-offs and decisions. Puzzles
 teach physical implementation, resilience and testing. The 36 authored case
-texts remain available; five *specific* decisions launch one relevant
+texts remain available; five _specific_ decisions launch one relevant
 hands-on construction if the player is on the new integrated adventure path.
 A completed puzzle now installs an identifiable piece of fictional 3D city
 infrastructure only while its network stays solvable. A short, celebratory

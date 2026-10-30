@@ -9,7 +9,8 @@ export const CITY_BUILD_MILESTONES = Object.freeze([
     x: -3.3,
     z: -2.7,
     title: "Workshop supply station",
-    result: "Your tested network now powers a new supply station beside Ama's workshop.",
+    result:
+      "Your tested network now powers a new supply station beside Ama's workshop.",
     short: "WORKSHOP",
     color: 0x55c9ad,
     type: "power",
@@ -57,7 +58,8 @@ export const CITY_BUILD_MILESTONES = Object.freeze([
     x: 19,
     z: 14.2,
     title: "Supply recovery hub",
-    result: "Your shared recovery network links essential supplies and community needs.",
+    result:
+      "Your shared recovery network links essential supplies and community needs.",
     short: "SUPPLY HUB",
     color: 0xe0bc78,
     type: "services",

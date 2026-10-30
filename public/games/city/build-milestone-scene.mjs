@@ -10,7 +10,9 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
     g.name = "Built: " + m.title;
     g.position.set(m.x, 0.08, m.z);
     g.visible = false;
-    const steel = 0x416b79, base = 0x396761, light = m.color;
+    const steel = 0x416b79,
+      base = 0x396761,
+      light = m.color;
     box(3.2, 0.25, 2.6, 0x526a72, 0, 0.22, 0, g);
     box(2.7, 0.12, 2.1, 0xe1d7b9, 0, 0.39, 0, g);
     for (const dx of [-1, 1]) {

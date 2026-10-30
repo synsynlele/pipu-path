@@ -4283,7 +4283,6 @@ html.city-embedded .welcome-signin {
   }
 }
 
-
 /* One connected world remains visible around the puzzle workspace. */
 #build-lab {
   position: fixed;
@@ -4305,13 +4304,33 @@ html.city-embedded .welcome-signin {
   top: -12px;
   padding: 5px 0 8px;
 }
-#build-lab h2 { margin: 2px 0 5px; font-size: 18px; }
-#build-lab p { font-size: 12px; line-height: 1.35; }
-#build-lab #lab-progress { margin: 2px 0 5px; font-size: 11px; }
-#build-lab #lab-brief { margin: 5px 0; }
-#build-lab #lab-first-brief { margin: 3px 0 7px; padding: 6px 8px; }
-#build-lab .lab-tools button { flex: 1 1 70px; font-size: 12px; padding: 6px 3px; }
-#build-lab #lab-brush { margin: 5px 0; }
+#build-lab h2 {
+  margin: 2px 0 5px;
+  font-size: 18px;
+}
+#build-lab p {
+  font-size: 12px;
+  line-height: 1.35;
+}
+#build-lab #lab-progress {
+  margin: 2px 0 5px;
+  font-size: 11px;
+}
+#build-lab #lab-brief {
+  margin: 5px 0;
+}
+#build-lab #lab-first-brief {
+  margin: 3px 0 7px;
+  padding: 6px 8px;
+}
+#build-lab .lab-tools button {
+  flex: 1 1 70px;
+  font-size: 12px;
+  padding: 6px 3px;
+}
+#build-lab #lab-brush {
+  margin: 5px 0;
+}
 #build-lab #lab-grid {
   width: min(100%, 246px);
   gap: 3px;
@@ -4327,10 +4346,20 @@ html.city-embedded .welcome-signin {
   padding: 8px 10px;
   margin: 6px 0;
 }
-#build-lab #lab-budget { margin: 4px 0; }
-#build-lab #lab-hint { margin: 4px 0; }
-#build-lab .lab-actions button { flex: 1 1 120px; font-size: 12px; }
-#build-lab small { margin-top: 8px; font-size: 10px; }
+#build-lab #lab-budget {
+  margin: 4px 0;
+}
+#build-lab #lab-hint {
+  margin: 4px 0;
+}
+#build-lab .lab-actions button {
+  flex: 1 1 120px;
+  font-size: 12px;
+}
+#build-lab small {
+  margin-top: 8px;
+  font-size: 10px;
+}
 @media (max-width: 620px) {
   #build-lab {
     inset: auto 10px max(10px, env(safe-area-inset-bottom)) 10px;
@@ -4339,9 +4368,15 @@ html.city-embedded .welcome-signin {
     padding: 10px;
     border-radius: 16px;
   }
-  #build-lab .lab-heading { top: -10px; }
-  #build-lab #lab-grid { width: min(100%, 235px); }
-  #build-lab .lab-cell { min-height: 44px; }
+  #build-lab .lab-heading {
+    top: -10px;
+  }
+  #build-lab #lab-grid {
+    width: min(100%, 235px);
+  }
+  #build-lab .lab-cell {
+    min-height: 44px;
+  }
 }
 /* Brief, optimistic result without obscuring the installed 3D structure. */
 #build-victory {
@@ -4359,22 +4394,75 @@ html.city-embedded .welcome-signin {
   box-shadow: 0 18px 45px #0415216b;
   color: #fff5d8;
 }
-#build-victory[hidden] { display: none !important; }
-#build-victory .build-victory-kicker { margin: 0; color: #ffd879; font-size: 12px; font-weight: 900; letter-spacing: 0.12em; }
-#build-victory h2 { margin: 8px 0; color: #fff; font-size: clamp(18px, 4vw, 24px); line-height: 1.22; }
-#build-victory p { font-size: 13px; line-height: 1.45; }
-#build-victory #victory-progress { color: #ffd879; font-weight: 800; }
-#build-victory .victory-actions { display: grid; gap: 7px; }
-#build-victory button { min-height: 44px; padding: 9px 12px; border-radius: 11px; border: 1px solid #f3dfad; background: #fff; color: #173b3d; font-weight: 800; }
-#build-victory button.primary { background: #ffe098; color: #173b3d; }
-#build-victory small { display: block; margin-top: 8px; font-size: 10px; color: #d0e4e4; }
-#build-victory .build-victory-sparks { display: flex; justify-content: space-around; color: #ffdc76; font-size: 20px; }
+#build-victory[hidden] {
+  display: none !important;
+}
+#build-victory .build-victory-kicker {
+  margin: 0;
+  color: #ffd879;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+#build-victory h2 {
+  margin: 8px 0;
+  color: #fff;
+  font-size: clamp(18px, 4vw, 24px);
+  line-height: 1.22;
+}
+#build-victory p {
+  font-size: 13px;
+  line-height: 1.45;
+}
+#build-victory #victory-progress {
+  color: #ffd879;
+  font-weight: 800;
+}
+#build-victory .victory-actions {
+  display: grid;
+  gap: 7px;
+}
+#build-victory button {
+  min-height: 44px;
+  padding: 9px 12px;
+  border-radius: 11px;
+  border: 1px solid #f3dfad;
+  background: #fff;
+  color: #173b3d;
+  font-weight: 800;
+}
+#build-victory button.primary {
+  background: #ffe098;
+  color: #173b3d;
+}
+#build-victory small {
+  display: block;
+  margin-top: 8px;
+  font-size: 10px;
+  color: #d0e4e4;
+}
+#build-victory .build-victory-sparks {
+  display: flex;
+  justify-content: space-around;
+  color: #ffdc76;
+  font-size: 20px;
+}
 @media (prefers-reduced-motion: no-preference) {
-  #build-victory:not([hidden]) .build-victory-sparks span { animation: victory-spark 1s ease-out both; }
-  #build-victory .build-victory-sparks span:nth-child(2n) { animation-delay: 0.15s; }
+  #build-victory:not([hidden]) .build-victory-sparks span {
+    animation: victory-spark 1s ease-out both;
+  }
+  #build-victory .build-victory-sparks span:nth-child(2n) {
+    animation-delay: 0.15s;
+  }
   @keyframes victory-spark {
-    from { opacity: 0; transform: translateY(16px) scale(0.3) rotate(-25deg); }
-    to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.3) rotate(-25deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotate(0);
+    }
   }
 }
 @media (max-width: 620px) {
@@ -4386,7 +4474,9 @@ html.city-embedded .welcome-signin {
     max-height: 42svh;
   }
   /* Two competing floating panels must never cover the city together. */
-  body:has(#build-victory:not([hidden])) #pilot-mission { display: none !important; }
+  body:has(#build-victory:not([hidden])) #pilot-mission {
+    display: none !important;
+  }
 }
 
 /* Keep test controls reachable inside the smaller phone dock. */
@@ -4399,5 +4489,7 @@ html.city-embedded .welcome-signin {
     padding: 7px 0;
     background: #f5f8ff;
   }
-  #build-lab .lab-actions button { min-height: 44px; }
+  #build-lab .lab-actions button {
+    min-height: 44px;
+  }
 }

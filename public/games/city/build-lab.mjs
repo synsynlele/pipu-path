@@ -106,7 +106,8 @@ export function sanitizeLab(input) {
     // explicitly TESTS it; not just after its final tile is placed.
     tested: Array.isArray(input?.tested)
       ? [...new Set(input.tested)].filter(
-          (id) => typeof id === "string" && LAB_MISSIONS.some((m) => m.id === id),
+          (id) =>
+            typeof id === "string" && LAB_MISSIONS.some((m) => m.id === id),
         )
       : [],
   };

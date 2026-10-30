@@ -2,7 +2,12 @@ document.documentElement.classList.toggle(
   "city-embedded",
   new URLSearchParams(window.location.search).get("embedded") === "1",
 );
-import { LAB_MISSIONS, labMission, evaluateLab, sanitizeLab } from "./build-lab.mjs";
+import {
+  LAB_MISSIONS,
+  labMission,
+  evaluateLab,
+  sanitizeLab,
+} from "./build-lab.mjs";
 import {
   CITY_BUILD_MILESTONES,
   formatForCase,
@@ -2764,7 +2769,9 @@ function showCaseOutcome(id, choiceId) {
       (next
         ? " Next: " + next.title
         : " All " + CITY_CASES.length + " problems reached.") +
-      (worksiteMission && mixedJourney && !state.lab.tested.includes(worksiteMission)
+      (worksiteMission &&
+      mixedJourney &&
+      !state.lab.tested.includes(worksiteMission)
         ? " Your next challenge is to build the solution."
         : " The game continues automatically.") +
       "</span>" +
@@ -3647,7 +3654,8 @@ $("city-map").onclick = () => {
 // They are visually built *in the city* without inventing simulated money or XP.
 const buildMilestoneScene = createMilestoneScene({ T, scene, box, cyl });
 buildMilestoneScene.sync(state.lab);
-const workshopBlueprint = buildMilestoneScene.buildings.get("workshop-link").group;
+const workshopBlueprint =
+  buildMilestoneScene.buildings.get("workshop-link").group;
 let mixedJourney = false;
 let pendingBuildCase = null;
 const promptedBuildCases = new Set();
@@ -3683,7 +3691,9 @@ function showBuildVictory(missionId, { retry = false } = {}) {
     ? "Your design is kept. Try another layout, or return to decisions and build this later."
     : mission.result + " Look at the new 3D station built in your city!";
   $("victory-progress").textContent =
-    completed.length + " / " + CITY_BUILD_MILESTONES.length +
+    completed.length +
+    " / " +
+    CITY_BUILD_MILESTONES.length +
     " city structures constructed by solving puzzles.";
   $("victory-continue").textContent = pendingBuildCase
     ? "Continue to the next decision →"
@@ -3714,10 +3724,14 @@ $("victory-build").onclick = () => {
   const next =
     retry && lastVictoryMission
       ? lastVictoryMission
-      : CITY_BUILD_MILESTONES.find(
-          (m) => !completedMilestones(state.lab, evaluateLab, labMission)
-            .some((item) => item.id === m.id),
-        )?.id ?? lastVictoryMission ?? "workshop-link";
+      : (CITY_BUILD_MILESTONES.find(
+          (m) =>
+            !completedMilestones(state.lab, evaluateLab, labMission).some(
+              (item) => item.id === m.id,
+            ),
+        )?.id ??
+        lastVictoryMission ??
+        "workshop-link");
   hideBuildVictory();
   buildLab.open(next);
 };
@@ -3725,8 +3739,8 @@ let firstBuildMode = false;
 let workshopTested = state.lab.tested.includes("workshop-link");
 function renderPilotMission() {
   const panel = $("pilot-mission");
-  panel.hidden = !firstBuildMode || !$("intro").hidden ||
-    !$("build-victory").hidden;
+  panel.hidden =
+    !firstBuildMode || !$("intro").hidden || !$("build-victory").hidden;
   if (panel.hidden) return;
   const next = LAB_MISSIONS.find(
     (mission) => !state.lab.tested.includes(mission.id),
@@ -3746,9 +3760,7 @@ function renderPilotMission() {
 $("pilot-build").onclick = () => {
   const next =
     workshopTested &&
-    LAB_MISSIONS.find(
-      (mission) => !state.lab.tested.includes(mission.id),
-    );
+    LAB_MISSIONS.find((mission) => !state.lab.tested.includes(mission.id));
   buildLab.open(next?.id ?? "workshop-link");
 };
 $("pilot-story").onclick = () => {
@@ -3805,7 +3817,10 @@ const buildLab = mountBuildLab({
     renderPilotMission();
     if (pendingBuildCase && $("build-victory").hidden) {
       const milestone = formatForCase(pendingBuildCase);
-      if (milestone.missionId && !state.lab.tested.includes(milestone.missionId)) {
+      if (
+        milestone.missionId &&
+        !state.lab.tested.includes(milestone.missionId)
+      ) {
         showBuildVictory(milestone.missionId, { retry: true });
       }
     }

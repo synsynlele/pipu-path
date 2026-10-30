@@ -108,13 +108,19 @@ w.document.getElementById("lab-test").click();
 assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
 assert.equal(w.document.getElementById("lab-see-city").hidden, false);
 assert.equal(game.workshopBlueprint.visible, true);
-assert(game.workshopBlueprint.children.length > 5, "A physical 3D station must be constructed");
+assert(
+  game.workshopBlueprint.children.length > 5,
+  "A physical 3D station must be constructed",
+);
 assert(game.state.lab.tested.includes("workshop-link"));
 w.document.getElementById("lab-see-city").click();
 assert.equal(w.document.getElementById("build-lab").open, false);
 assert.equal(w.document.getElementById("build-victory").hidden, false);
 assert.match(w.document.getElementById("victory-title").textContent, /built!/);
-assert.match(w.document.getElementById("victory-progress").textContent, /1 \/ 5/);
+assert.match(
+  w.document.getElementById("victory-progress").textContent,
+  /1 \/ 5/,
+);
 assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
 assert.equal(w.document.querySelectorAll("[data-case-choice]").length, 0);
 // The default completion button starts the mixed question-and-puzzle adventure.
