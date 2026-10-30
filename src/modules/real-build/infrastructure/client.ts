@@ -14,6 +14,7 @@ type Row = {
   topic: string;
   minutes: number;
   difficulty: BuildDifficulty;
+  focus: string;
   challenge: BuildChallenge;
   source: "openai";
   status: "active" | "recorded" | "archived";
@@ -28,6 +29,7 @@ type Template = {
   topic: string;
   minutes: number;
   difficulty: BuildDifficulty;
+  focus_key: string;
   challenge: BuildChallenge;
   source: "openai";
   created_at: string;
@@ -54,6 +56,16 @@ type BuildDatabase = {
       next_real_build_difficulty: {
         Args: { user_input: string; topic_input: string };
         Returns: number;
+      };
+      find_unseen_real_build_template_for_goal: {
+        Args: {
+          user_input: string;
+          topic_input: string;
+          minutes_input: number;
+          difficulty_input: number;
+          focus_key_input: string;
+        };
+        Returns: Template[];
       };
       find_unseen_real_build_template_level: {
         Args: {
