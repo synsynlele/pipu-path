@@ -3620,7 +3620,9 @@ body #city-hud #journey-bar[hidden] {
   padding: 12px 17px;
   border: 1px solid #ffffff55;
   border-radius: 30px;
-  background: #0b263850;
+  background: #ffffff;
+  color: #0b2638;
+  -webkit-text-fill-color: #0b2638;
 }
 .city-welcome .intro-card {
   margin: 0;
@@ -3850,17 +3852,6 @@ html.city-embedded .welcome-signin {
 #game > header {
   display: none !important;
 }
-.city-welcome .welcome-lab {
-  display: block;
-  margin-top: 14px;
-  min-height: 44px;
-  padding: 10px 16px;
-  border: 1px solid #ffffff70;
-  border-radius: 14px;
-  background: #123243;
-  color: #fff9ed;
-  font-size: 14px;
-}
 #build-lab {
   width: min(560px, calc(100vw - 24px));
   max-height: 92svh;
@@ -3985,21 +3976,6 @@ html.city-embedded .welcome-signin {
 }
 #build-lab [hidden] {
   display: none !important;
-}
-
-.city-welcome .welcome-play-actions {
-  display: flex;
-  gap: 10px;
-  width: min(420px, 100%);
-  align-items: stretch;
-}
-.city-welcome .welcome-play-actions > button {
-  flex: 1;
-  min-width: 0;
-  width: auto;
-  margin: 0;
-  padding: 14px 12px;
-  font-size: 16px;
 }
 
 /* Keep the worksite and its test controls together; Close stays reachable. */

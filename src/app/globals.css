@@ -229,3 +229,15 @@ select option {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Keep the game welcome sign-in readable across app themes and WebViews. */
+a.pp-city-welcome-signin {
+  background-color: #ffffff;
+  color: #0b2638;
+  -webkit-text-fill-color: #0b2638;
+  border-color: #ffffff;
+}
+a.pp-city-welcome-signin:focus-visible {
+  outline: 3px solid #ffe397;
+  outline-offset: 4px;
+}

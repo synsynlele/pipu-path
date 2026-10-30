@@ -1734,3 +1734,12 @@ cells, shared supply, weighted budget, exhaustive single-link failures and save
 round-trip/privacy. DOM tests build a working network through the real controls,
 remove a piece and observe failure, switch/restore layouts and close safely. Full
 validation, deployed browser review and production state recorded in the release PR.
+
+## 30 October 2026 — Welcome action cleanup
+
+Move Build Lab entry to City menu only at the owner’s request. Remove the
+welcome button, its handler and unused layout styles; keep the existing menu
+entry and all prototype layouts. Set explicit white surface, dark text and
+WebView text-fill colour for both app-owned and standalone welcome sign-in
+links. Preserve full-app login routing and keyboard focus visibility.
+No data, progress, authentication or game-state contracts change.
