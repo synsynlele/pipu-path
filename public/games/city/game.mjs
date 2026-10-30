@@ -1307,6 +1307,7 @@ function resumeJourney() {
   const target = recoverJourney({ ...journey, decisions: state.decisions });
   if (
     step.kind === "question" &&
+    target.stage !== "chapter" &&
     (target.caseId !== step.caseId ||
       target.stage === "complete" ||
       ["outcome", "building"].includes(target.stage))
