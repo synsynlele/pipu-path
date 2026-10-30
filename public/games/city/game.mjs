@@ -29,6 +29,8 @@ import {
   startResilience,
   resilienceReport,
   chooseResilience,
+  resilienceMission,
+  previewResiliencePlan,
   resilienceCityActivity,
 } from "./resilience.mjs";
 import { cityViewSummary, findCityViewDistrict } from "./city-view.mjs";
@@ -1665,14 +1667,30 @@ function closeResiliencePanel() {
   $("resilience-panel").hidden = true;
   $("resilience-toggle").setAttribute("aria-expanded", "false");
 }
+// Preview choices are ephemeral, never included in opt-in device saves.
+let resilienceDraftPriority = null;
+let resilienceDraftRound = -1;
+let resilienceTestedPlans = new Set();
+function clearResilienceDraft() {
+  resilienceDraftPriority = null;
+  resilienceDraftRound = -1;
+  resilienceTestedPlans = new Set();
+}
 function renderResiliencePanel() {
   const report = resilienceReport(state.resilience);
   if (!report) return;
+  const panel = $("resilience-panel");
+  const previousScroll = panel.scrollTop;
+  if (resilienceDraftRound !== report.round) {
+    clearResilienceDraft();
+    resilienceDraftRound = report.round;
+  }
   const event = RESILIENCE_EVENTS[report.round];
+  const mission = resilienceMission(state.resilience);
   $("resilience-progress").textContent =
-    "Challenges completed: " + report.round + "/" + RESILIENCE_EVENTS.length;
+    "Crises resolved: " + report.round + "/" + RESILIENCE_EVENTS.length;
   $("resilience-stocks").textContent =
-    "Stored supplies · Water " +
+    "Your supplies · Water " +
     report.stocks.water +
     " · Parts " +
     report.stocks.parts +
@@ -1683,31 +1701,122 @@ function renderResiliencePanel() {
   $("resilience-story").textContent =
     event?.detail ||
     "Review who was still waiting. Which service would you strengthen before the next disruption? You can revisit city decisions or try another plan.";
+
+  $("resilience-mission").hidden = !mission;
+  $("resilience-plan-instruction").hidden = !mission;
+  if (mission) {
+    $("resilience-mission-headline").textContent = mission.headline;
+    $("resilience-mission-objective").textContent = mission.objective;
+    $("resilience-mission-pressure").textContent = mission.pressure;
+    $("resilience-mission-question").textContent = mission.question;
+    $("resilience-plan-instruction").textContent =
+      resilienceTestedPlans.size === 0
+        ? "Choose a plan to test its effect. You can try another before sending help."
+        : "Plans tested: " +
+          resilienceTestedPlans.size +
+          "/3. Try another plan or put this one into action.";
+  }
   const choices = $("resilience-choices");
   choices.replaceChildren();
-  if (!report.completed)
+  if (mission) {
     for (const priority of RESILIENCE_PRIORITIES) {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "case-choice";
+      button.dataset.priority = priority.id;
+      button.className =
+        "case-choice resilience-test-choice" +
+        (resilienceDraftPriority === priority.id ? " resilience-selected" : "");
+      button.setAttribute(
+        "aria-pressed",
+        String(resilienceDraftPriority === priority.id),
+      );
       const title = document.createElement("strong");
       title.textContent = priority.title;
       const detail = document.createElement("small");
       detail.textContent = priority.detail;
-      button.append(title, detail);
+      const action = document.createElement("span");
+      action.className = "resilience-test-label";
+      action.textContent =
+        resilienceDraftPriority === priority.id
+          ? "Selected test · Change plan or deploy"
+          : resilienceTestedPlans.has(priority.id)
+            ? "Tested · Compare again"
+            : "Test this response →";
+      button.append(title, detail, action);
       button.onclick = () => {
         if (!canStartResilience(state.decisions, state.economy)) return;
-        const next = chooseResilience(state.resilience, priority.id);
-        if (!next) return;
-        state.resilience = next;
-        render();
+        if (!previewResiliencePlan(state.resilience, priority.id)) return;
+        resilienceDraftPriority = priority.id;
+        resilienceTestedPlans.add(priority.id);
         renderResiliencePanel();
-        toast(
-          "Challenge completed. Inspect the deliveries and needs still waiting.",
-        );
+        Array.from($("resilience-choices").children)
+          .find((item) => item.dataset.priority === priority.id)
+          ?.focus();
       };
       choices.append(button);
     }
+  }
+  const rehearsal =
+    mission && resilienceDraftPriority
+      ? previewResiliencePlan(state.resilience, resilienceDraftPriority)
+      : null;
+  $("resilience-preview").hidden = !rehearsal;
+  $("resilience-commit").hidden = !rehearsal;
+  if (rehearsal) {
+    const selected = RESILIENCE_PRIORITIES.find(
+      (policy) => policy.id === resilienceDraftPriority,
+    );
+    $("resilience-preview-title").textContent =
+      "TEST RESULT · " + selected.title;
+    $("resilience-preview-services").textContent =
+      CITY_REQUESTS.map((request) => {
+        const value = rehearsal.last.requests[request.id];
+        return (
+          request.title + " " + value.served + "/" + value.requested
+        );
+      }).join(" · ") +
+      " · Waiting: " +
+      rehearsal.last.waiting;
+    $("resilience-preview-tradeoff").textContent = !rehearsal.distinct
+      ? "Bottleneck: all three plans give the same service deliveries with your current city capacity. Earlier city choices may need improving."
+      : rehearsal.improvementOptions.length
+        ? "Trade-off: another response could serve " +
+          rehearsal.improvementOptions
+            .map((item) => {
+              const name = CITY_REQUESTS.find((r) => r.id === item.id);
+              return item.additional + " more at " + name.title;
+            })
+            .join("; ") +
+          ". Compare before choosing."
+        : "This plan matches the best available delivery for each service, but other responses may preserve different supplies.";
+    $("resilience-preview-next").textContent =
+      rehearsal.round === RESILIENCE_EVENTS.length
+        ? "This is the final crisis. Your recorded outcome will appear after deployment."
+        : rehearsal.nextRoundProtected
+          ? "Two or more repairs completed. The next disruption will be softened."
+          : "Fewer than two repairs completed; the next disruption will not receive a repair buffer.";
+  }
+  const verdict = $("resilience-verdict");
+  verdict.hidden = !report.last;
+  if (report.last) {
+    const fulfilled = Object.values(report.last.requests).reduce(
+      (sum, request) => sum + request.served,
+      0,
+    );
+    const requested = fulfilled + report.last.waiting;
+    verdict.textContent =
+      "YOUR CITY'S RESPONSE · " +
+      fulfilled +
+      "/" +
+      requested +
+      " requests supplied; " +
+      report.last.waiting +
+      " still waiting. " +
+      (report.completed
+        ? "All three disruptions faced. You can restart this chapter to test a different response without losing your city."
+        : "Use what happened to plan the next disruption.");
+  }
+
   const results = $("resilience-result");
   results.replaceChildren();
   for (const row of [...report.history].reverse()) {
@@ -1752,7 +1861,7 @@ function renderResiliencePanel() {
     results.append(details);
   }
   $("resilience-view").disabled = !report.last;
-  $("resilience-panel").scrollTop = 0;
+  panel.scrollTop = previousScroll;
 }
 function openResiliencePanel() {
   if (simulating || !$("intro").hidden) return;
@@ -1779,6 +1888,7 @@ function openResiliencePanel() {
   renderResiliencePanel();
   $("resilience-panel").hidden = false;
   $("resilience-toggle").setAttribute("aria-expanded", "true");
+  $("resilience-panel").scrollTop = 0;
   $("resilience-close").focus();
 }
 function renderOpportunityPanel() {
@@ -3326,6 +3436,23 @@ document.addEventListener("click", (event) => {
 });
 $("chapter-four-start").onclick = openResiliencePanel;
 $("resilience-toggle").onclick = openResiliencePanel;
+$("resilience-commit").onclick = () => {
+  const plan = resilienceDraftPriority;
+  const tested = previewResiliencePlan(state.resilience, plan);
+  if (!tested || !canStartResilience(state.decisions, state.economy)) return;
+  const next = chooseResilience(state.resilience, plan);
+  if (!next) return;
+  state.resilience = next;
+  clearResilienceDraft();
+  render();
+  renderResiliencePanel();
+  $("resilience-panel").scrollTop = 0;
+  toast(
+    "Your city responded. " +
+      tested.last.waiting +
+      " requests are still waiting. Inspect your deliveries.",
+  );
+};
 $("resilience-close").onclick = closeResiliencePanel;
 $("resilience-view").onclick = () => {
   closeResiliencePanel();
@@ -3339,6 +3466,7 @@ $("resilience-reset").onclick = () => {
   )
     return;
   state.resilience = startResilience(state.decisions, state.economy);
+  clearResilienceDraft();
   render();
   renderResiliencePanel();
 };
@@ -3390,6 +3518,7 @@ $("opportunities-reset").onclick = () => {
     return;
   state.economy = newOpportunityState();
   state.resilience = null;
+  clearResilienceDraft();
   closeResiliencePanel();
   hideRequestInspection();
   render();
