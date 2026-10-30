@@ -48,6 +48,7 @@ export function mountBuildLab({
         cell,
         brush.kind === "remove" ? null : brush,
       );
+      state.tested = state.tested.filter((id) => id !== mission.id);
       write(state);
       result = null;
       render();
@@ -74,7 +75,9 @@ export function mountBuildLab({
     $("lab-budget").textContent =
       `${evaluateLab(mission, board).cost} / ${mission.budget} pieces used`;
     const working = LAB_MISSIONS.filter(
-      (item) => evaluateLab(item, state.boards[item.id]).success,
+      (item) =>
+        state.tested.includes(item.id) &&
+        evaluateLab(item, state.boards[item.id]).success,
     ).length;
     $("lab-progress").textContent =
       `${working}/${LAB_MISSIONS.length} working city prototypes`;
@@ -173,12 +176,16 @@ export function mountBuildLab({
   $("lab-test").onclick = () => {
     const state = sanitizeLab(read());
     result = evaluateLab(labMission(state.active), state.boards[state.active]);
+    state.tested = state.tested.filter((id) => id !== state.active);
+    if (result.success) state.tested.push(state.active);
+    write(state);
     onTest({ missionId: state.active, success: result.success });
     render();
   };
   $("lab-clear").onclick = () => {
     const state = sanitizeLab(read());
     state.boards[state.active] = Array(25).fill(null);
+    state.tested = state.tested.filter((id) => id !== state.active);
     write(state);
     result = null;
     render();

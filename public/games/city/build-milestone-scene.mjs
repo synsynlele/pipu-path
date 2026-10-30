@@ -45,7 +45,10 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
   function sync(lab, at = performance.now()) {
     for (const m of CITY_BUILD_MILESTONES) {
       const build = buildings.get(m.id);
-      const ready = evaluateLab(labMission(m.id), lab?.boards?.[m.id]).success;
+      const ready =
+        Array.isArray(lab?.tested) &&
+        lab.tested.includes(m.id) &&
+        evaluateLab(labMission(m.id), lab?.boards?.[m.id]).success;
       if (ready && !build.ready) build.revealedAt = at;
       build.ready = ready;
       build.group.visible = ready;

@@ -78,7 +78,10 @@ export function milestoneForMission(id) {
   return byId.get(id) ?? null;
 }
 export function completedMilestones(lab, evaluateLab, labMission) {
-  return CITY_BUILD_MILESTONES.filter(({ id }) =>
-    evaluateLab(labMission(id), lab?.boards?.[id]).success,
+  return CITY_BUILD_MILESTONES.filter(
+    ({ id }) =>
+      Array.isArray(lab?.tested) &&
+      lab.tested.includes(id) &&
+      evaluateLab(labMission(id), lab?.boards?.[id]).success,
   );
 }

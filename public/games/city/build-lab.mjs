@@ -99,7 +99,17 @@ export function sanitizeLab(input) {
         : null;
     });
   }
-  return { active: labMission(input?.active).id, boards };
+  return {
+    active: labMission(input?.active).id,
+    boards,
+    // A working design only constructs a city building after the player
+    // explicitly TESTS it; not just after its final tile is placed.
+    tested: Array.isArray(input?.tested)
+      ? [...new Set(input.tested)].filter(
+          (id) => typeof id === "string" && LAB_MISSIONS.some((m) => m.id === id),
+        )
+      : [],
+  };
 }
 export function placeLabPiece(mission, board, cell, piece) {
   const next = sanitizeLab({ boards: { [mission.id]: board } }).boards[

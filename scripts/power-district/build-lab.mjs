@@ -148,6 +148,11 @@ const safe = sanitizeLab({
 assert.deepEqual(safe.boards[third.id], resilient);
 assert(!("reflection" in safe) && !("xp" in safe));
 assert.equal(sanitizeLab(null).active, first.id);
+assert.deepEqual(sanitizeLab(null).tested, []);
+assert.deepEqual(
+  sanitizeLab({ tested: ["workshop-link", "fake", "workshop-link"] }).tested,
+  ["workshop-link"],
+);
 assert(
   sanitizeLab({
     boards: { [first.id]: [{ kind: "__proto__", turn: 0 }] },
