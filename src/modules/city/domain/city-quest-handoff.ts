@@ -10,31 +10,31 @@ const reviewedHandoffs = {
     topic: "workshop",
     title: "Repair and reuse",
     focus:
-      "I want to find out why an everyday item is unused and sketch a safe repair or reuse plan.",
+      "I want to turn a clean unused everyday item into something useful and test it in real life.",
   },
   "clinic-power": {
     topic: "health",
     title: "Help people find essential services",
     focus:
-      "I want to draw a simple, approved route to a familiar local service with a trusted adult.",
+      "I want to make a familiar shared service area easier to use with a safe practical change and test it.",
   },
   "shared-services": {
     topic: "school",
     title: "Keep learning possible",
     focus:
-      "I want to help classmates continue learning when supplies are interrupted using a simple paper plan.",
+      "I want to teach someone a useful skill, test whether they can use it, and improve the method.",
   },
   "backup-water": {
     topic: "water",
     title: "Use water more wisely",
     focus:
-      "I want to observe water use at home or school with permission and test a simple reminder to reduce waste.",
+      "I want to put a real water-saving routine into use with permission and measure one result.",
   },
   "shared-recovery": {
     topic: "market",
     title: "Reduce avoidable waste",
     focus:
-      "I want to observe, with a trusted adult, where useful supplies are wasted and try a simple tracking idea.",
+      "I want to organise safe everyday supplies so fewer are wasted and test the new arrangement.",
   },
 } as const;
 

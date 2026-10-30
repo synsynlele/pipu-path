@@ -1,60 +1,19 @@
+// Real-world projects, not exercises whose only product is a document.
 const ideas = {
-  workshop: [
-    "Repair and skills",
-    "Find out why a useful item is left unused. Sketch a safe repair or reuse plan; leave electrical work to qualified adults.",
-  ],
-  power: [
-    "Dependable services",
-    "Observe when a learning space needs light. Suggest a timetable or daylight arrangement without touching electrical equipment.",
-  ],
-  market: [
-    "Food that reaches people",
-    "With a trusted adult, observe where food gets wasted. Test a simple labelling or storage reminder without handling unsafe food.",
-  ],
-  school: [
-    "A fair chance to learn",
-    "Ask a classmate you know what makes a learning task difficult. Try a clearer explanation or paper model together.",
-  ],
-  housing: [
-    "Safer shared spaces",
-    "Observe a shared space with permission. Draw a safer arrangement; do not inspect construction sites or move heavy objects.",
-  ],
-  water: [
-    "Water people can depend on",
-    "Observe water use at home or school with permission. Test a reminder that reduces waste; do not test drinking-water safety yourself.",
-  ],
-  health: [
-    "Access to care",
-    "With a trusted adult, make a clear map of an approved route to a known health service. Do not give medical advice or collect health information.",
-  ],
-  transport: [
-    "Safer everyday journeys",
-    "From a safe place with an adult, observe a familiar school route. Draw a safer route proposal without entering traffic.",
-  ],
-  technology: [
-    "Technology that helps",
-    "Ask someone you know about a repetitive task. Draw a simple tool or paper prototype and ask for feedback.",
-  ],
-  business: [
-    "Useful small enterprises",
-    "Ask a trusted adult about a customer problem. Test a paper order tracker with fictional details; no borrowing or spending is required.",
-  ],
-  environment: [
-    "Cleaner, resilient neighbourhoods",
-    "Observe a permitted area with an adult. Map where waste collects and suggest prevention; do not enter drains or handle hazardous waste.",
-  ],
-  governance: [
-    "A voice in shared decisions",
-    "Invite classmates you know to suggest one improvement. Compare their reasons and agree a small action with your teacher.",
-  ],
-  creative: [
-    "Culture and belonging",
-    "Create a short story, poster or performance about a useful local idea. Ask permission before sharing anyone's work or image.",
-  ],
-  industry: [
-    "Making useful things",
-    "Find a small everyday need. Make a paper or cardboard prototype using age-appropriate materials and adult guidance.",
-  ],
+  workshop: ["Repair and reuse", "With permission, turn a clean unused household item into a usable storage or reuse solution; let someone try it."],
+  power: ["Dependable services", "With permission, improve daylight use in a familiar room by safely arranging an existing work area, then test it during a real task. Do not touch electrical equipment."],
+  market: ["Food that reaches people", "With permission, organise packaged supplies into a usable first-in-first-out arrangement and test it with someone responsible for them."],
+  school: ["A fair chance to learn", "Help someone you know complete a difficult learning task: teach a useful method, let them try independently and improve your explanation."],
+  housing: ["Safer shared spaces", "With permission, improve a shared area using light movable everyday items and test whether people can use it more easily. Avoid construction work."],
+  water: ["Water people can depend on", "With permission, put a real water-saving habit into use at home or school and measure a simple change. Avoid plumbing and drinking-water testing."],
+  health: ["Access to care", "With permission, make a familiar public-service waiting or information area easier to use through a small practical change. Never give medical advice or collect health information."],
+  transport: ["Safer everyday journeys", "With permission, improve a familiar indoor arrival routine by organising bags or equipment to reduce congestion. Test the new routine in use; stay out of traffic."],
+  technology: ["Technology that helps", "Create a working reminder or task automation using a device you already have, then test it on a real non-sensitive task."],
+  business: ["Useful small enterprises", "Help a known seller or maker improve a permitted work routine using existing tools; test whether the improvement reduces errors or saves steps."],
+  environment: ["Cleaner, resilient neighbourhoods", "With permission, set up a working sorting point for clean reusable items and test whether people can use it. Never handle hazardous waste."],
+  governance: ["A voice in shared decisions", "With a familiar group and permission, agree on one improvement to a shared routine, put it into use and check whether it helps."],
+  creative: ["Culture and belonging", "Create and share an original short audio demonstration or performance that solves a real communication need, then test the response with permission."],
+  industry: ["Making useful things", "Make a useful object from existing safe materials, put it to work in a familiar setting and improve it after a real use test."],
 } as const;
 export type CityInterest = keyof typeof ideas;
 export const cityInterests = Object.entries(ideas).map(

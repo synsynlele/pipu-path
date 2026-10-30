@@ -3,7 +3,13 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { saveRealBuild } from "../application/actions";
 import type { BuildDraft, SavedBuild } from "../domain/build";
-export function BuildAttemptForm({ build }: { build: SavedBuild }) {
+export function BuildAttemptForm({
+  build,
+  retired = false,
+}: {
+  build: SavedBuild;
+  retired?: boolean;
+}) {
   const router = useRouter();
   const [draft, setDraft] = useState<BuildDraft>(build.draft),
     [baseline, setBaseline] = useState(JSON.stringify(build.draft)),
@@ -210,7 +216,7 @@ export function BuildAttemptForm({ build }: { build: SavedBuild }) {
         Recording an attempt saves your account of the work. It does not verify
         success, award XP or publish your evidence.
       </p>
-      <details>
+      <details open={retired}>
         <summary className="cursor-pointer text-sm text-[#52647c]">
           This Quest is not right for me
         </summary>

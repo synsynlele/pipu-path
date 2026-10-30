@@ -3,6 +3,7 @@ import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
 
 export const buildTopics = cityInterests;
+export const REAL_BUILD_CONTENT_VERSION = "hands-on-v2";
 export const focusSchema = z
   .string()
   .trim()
@@ -33,27 +34,27 @@ export const difficultyGuides = {
   1: {
     label: "First Challenge",
     design:
-      "Investigate the specific improvement goal, think of two possible solutions, make a simple version of the better idea, test it and record one measurable result.",
+      "Find a real need, put a small safe useful change into operation, test it with someone or a real routine and record an observable result.",
   },
   2: {
     label: "Explorer",
     design:
-      "Create two possible solutions and compare them in one small test. Explain why one is better.",
+      "Put a usable improvement into action, compare its result with the previous routine and adjust it.",
   },
   3: {
     label: "Builder",
     design:
-      "Work within two constraints such as time and materials. Try a prototype twice, measure a simple result and revise.",
+      "Deliver a working improvement with two constraints, test it twice, measure what changed and revise.",
   },
   4: {
     label: "Problem Solver",
     design:
-      "Consider two different needs or stakeholders, show a trade-off, test alternatives and record a measurable comparison.",
+      "Implement a useful change serving two real needs, test the trade-off and improve it after feedback.",
   },
   5: {
     label: "Systems Thinker",
     design:
-      "Model a small connected system using paper or safe digital tools. Compare scenarios, predict a trade-off, test one assumption and iterate using evidence.",
+      "Improve one working part of a small real process. Test its result, identify a bottleneck and refine it.",
   },
 } as const satisfies Record<BuildDifficulty, { label: string; design: string }>;
 
@@ -104,6 +105,19 @@ export function canRecordAttempt(draft: BuildDraft) {
     draft.outcome !== ""
   );
 }
+// New Quests must change something in real life, not merely propose it.
+const planOnly = /\b(?:paper|cardboard|worksheet|sketch|sketching|drawing|draw|diagram|poster|slides?|slideshow|role[- ]?play|fictional|simulation|simulate|mock[- ]?up|pretend|written plan)\b/i;
+const practicalAction = /\b(?:build|set up|reorganis(?:e|ing)|reorganiz(?:e|ing)|organis(?:e|ing)|organiz(?:e|ing)|repair|fix|reuse|repurpose|run|deliver|plant|install|start|update|make|assemble|improve|change|label|sort|configure|create|teach|coach|launch|clean|collect|introduce|serve|put|arrange)\b/i;
+const realTest = /\b(?:test|try|measure|check|compare|observe|count|use|feedback|verify|trial)\b/i;
+export function isRetiredPaperworkChallenge(input: unknown): boolean {
+  const parsed = challengeSchema.safeParse(input);
+  return parsed.success && [
+    parsed.data.title,
+    parsed.data.outcome,
+    ...parsed.data.steps,
+    ...parsed.data.materials,
+  ].some((item) => planOnly.test(item));
+}
 const prohibited =
   /\b(contact strangers?|meet (?:an )?unknown adult|keep (?:this )?secret|share (?:your )?(?:home )?address|post (?:it )?publicly|borrow money|weapon|gambl(?:e|ing)|fake evidence|invent (?:a )?result|guaranteed income|handle live wires?|enter (?:a )?drain|prescribe|take medication)\b/i;
 const hazardous =
@@ -124,6 +138,13 @@ export function validateChallenge(input: unknown): BuildChallenge {
     )
       throw new Error("BUILD_UNSAFE");
   }
+  if (isRetiredPaperworkChallenge(value))
+    throw new Error("BUILD_NOT_PRACTICAL");
+  if (
+    !value.steps.slice(1, 4).some((step) => practicalAction.test(step)) ||
+    !value.steps.slice(2).some((step) => realTest.test(step))
+  )
+    throw new Error("BUILD_NOT_PRACTICAL");
   return value;
 }
 export function publicChallengeBrief(

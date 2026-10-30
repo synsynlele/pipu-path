@@ -4,6 +4,7 @@ import { buildServiceClient } from "../infrastructure/client";
 import { generateBuildTemplate } from "../infrastructure/provider";
 import {
   difficultySchema,
+  REAL_BUILD_CONTENT_VERSION,
   validateChallenge,
   type BuildChoice,
   type BuildDifficulty,
@@ -32,7 +33,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
   // Reusable challenges are indexed by a normalized goal, not a learner identity.
   const focusKey = createHash("sha256")
     .update(
-      choice.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim(),
+      REAL_BUILD_CONTENT_VERSION + ":" + choice.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim(),
     )
     .digest("hex");
 
