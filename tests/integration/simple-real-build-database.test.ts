@@ -9,6 +9,10 @@ const progression = readFileSync(
   "supabase/migrations/20261030110000_real_build_progressive_difficulty.sql",
   "utf8",
 );
+const goalSpecific = readFileSync(
+  "supabase/migrations/20261030120000_real_build_goal_specific_quests.sql",
+  "utf8",
+);
 it("enforces private ownership, service-only mutations, one current attempt, honest completion constraints and leases in PostgreSQL", async () => {
   const db = new PGlite();
   try {
@@ -17,6 +21,7 @@ it("enforces private ownership, service-only mutations, one current attempt, hon
     );
     await db.exec(migration);
     await db.exec(progression);
+    await db.exec(goalSpecific);
     const user = "10000000-0000-4000-8000-000000000001",
       other = "20000000-0000-4000-8000-000000000002",
       template = "30000000-0000-4000-8000-000000000003",
@@ -52,6 +57,9 @@ it("enforces private ownership, service-only mutations, one current attempt, hon
       db.query(
         `select public.claim_real_build_generation('school:30',gen_random_uuid())`,
       ),
+    ).rejects.toThrow(/permission denied/);
+    await expect(
+      db.query("select * from public.real_build_templates"),
     ).rejects.toThrow(/permission denied/);
     await db.exec("reset role;set role service_role;");
     await expect(
@@ -124,6 +132,25 @@ it("enforces private ownership, service-only mutations, one current attempt, hon
       `select public.next_real_build_difficulty('${user}','school') as difficulty`,
     );
     expect(afterSuccessful.rows[0].difficulty).toBe(2);
+    const goalKey = "a".repeat(64);
+    await db.exec(
+      `update public.real_build_templates set focus_key='${goalKey}'
+       where id='${secondTemplate}'`,
+    );
+    expect(
+      (
+        await db.query(
+          `select * from public.find_unseen_real_build_template_for_goal('${user}','school',30,2,'general')`,
+        )
+      ).rows,
+    ).toHaveLength(0);
+    expect(
+      (
+        await db.query(
+          `select * from public.find_unseen_real_build_template_for_goal('${user}','school',30,2,'${goalKey}')`,
+        )
+      ).rows,
+    ).toHaveLength(1);
     const first = await db.query<{ claimed: boolean }>(
         "select public.claim_real_build_generation('school:30',gen_random_uuid()) claimed",
       ),
