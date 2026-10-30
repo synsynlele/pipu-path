@@ -11,9 +11,10 @@ vi.mock("@/modules/identity/infrastructure/identity-dal", () => ({
 }));
 vi.mock("../infrastructure/client", () => ({ buildServiceClient: m.service }));
 vi.mock("./start-build", () => ({ startBuildForUser: m.start }));
+vi.mock("../infrastructure/provider", () => ({ generateBuildTemplate: vi.fn() }));
 vi.mock("next/cache", () => ({ revalidatePath: m.revalidate }));
 vi.mock("next/navigation", () => ({ redirect: m.redirect }));
-import { saveRealBuild, startRealBuild, improveRealBuild } from "./actions";
+import { saveRealBuild, startRealBuild, improveRealBuild, tailorReviewedBuild } from "./actions";
 const id = "10000000-0000-4000-8000-000000000001";
 let calls: unknown[][], results: unknown[];
 function form(intent = "save") {
@@ -198,5 +199,35 @@ it("blocks improvement cloning of a retired paper-only Quest", async () => {
   const answer = await improveRealBuild({ ok: false, message: "" }, f);
   expect(answer.ok).toBe(false);
   expect(answer.message).toContain("retired");
+  expect(calls.some((call) => call[0] === "insert")).toBe(false);
+});
+
+it("protects an existing reviewed Quest with saved evidence from silent AI replacement", async () => {
+  results = [
+    {
+      data: {
+        id,
+        user_id: "owner",
+        source: "reviewed",
+        status: "active",
+        topic: "technology",
+        minutes: 30,
+        focus: "I want to reduce unplanned social-media scrolling.",
+        difficulty: 1,
+        version: 1,
+        draft: {
+          evidence: "I have already worked on this routine.",
+          reflection: "",
+          nextChange: "",
+          link: "",
+        },
+      },
+    },
+  ];
+  const request = new FormData();
+  request.set("id", id);
+  const result = await tailorReviewedBuild({ ok: false, message: "" }, request);
+  expect(result.ok).toBe(false);
+  expect(result.message).toContain("evidence");
   expect(calls.some((call) => call[0] === "insert")).toBe(false);
 });
