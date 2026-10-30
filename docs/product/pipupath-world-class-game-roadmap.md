@@ -86,3 +86,20 @@ Chapter 4 crises and saved-game structure remain unchanged.
 Regression gate: the first real Play click produces _zero answer-choice
 buttons_, successful UI-built networks illuminate the prototype layer,
 and the original story remains fully playable without data loss.
+
+## Phase 1 continuation · chosen question/puzzle formats and compact worksite
+
+Questions teach priorities, empathy, resource trade-offs and decisions. Puzzles
+teach physical implementation, resilience and testing. The 36 authored case
+texts remain available; five *specific* decisions launch one relevant
+hands-on construction if the player is on the new integrated adventure path.
+A completed puzzle now installs an identifiable piece of fictional 3D city
+infrastructure only while its network stays solvable. A short, celebratory
+city reveal happens after the worksite closes. Other city-simulation metrics,
+real-world evidence and XP remain unchanged. The story-only resume path remains
+available for older players, as does nonmandatory access to all puzzles.
+
+Mobile workspace: at most 60% of the viewport height, anchored at the bottom;
+5x5 board and its controls scroll internally, city remains visible above,
+backdrop is light, no artificial fullscreen cover. Low-end device and real
+mobile checks remain conditions of production approval.

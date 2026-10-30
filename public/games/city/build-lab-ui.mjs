@@ -28,6 +28,7 @@ export function mountBuildLab({
   beforeOpen,
   afterClose,
   onTest = () => {},
+  onReveal = () => {},
 }) {
   const $ = (id) => document.getElementById(id);
   const dialog = $("build-lab");
@@ -67,6 +68,9 @@ export function mountBuildLab({
     $("lab-mission").value = mission.id;
     $("lab-brief").textContent = mission.brief;
     $("lab-see-city").hidden = !result?.success;
+    if (result?.success) {
+      $("lab-see-city").textContent = "See what I built in my city →";
+    }
     $("lab-budget").textContent =
       `${evaluateLab(mission, board).cost} / ${mission.budget} pieces used`;
     const working = LAB_MISSIONS.filter(
@@ -155,7 +159,13 @@ export function mountBuildLab({
       ? "Need a hint? Show a first move"
       : "Hide the hint";
   };
-  $("lab-see-city").onclick = () => dialog.close();
+  $("lab-see-city").onclick = () => {
+    if (result?.success) {
+      const missionId = sanitizeLab(read()).active;
+      dialog.close();
+      onReveal({ missionId });
+    }
+  };
   $("lab-rotate").onclick = () => {
     brush.turn = (brush.turn + 1) % 4;
     render();

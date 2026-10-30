@@ -663,10 +663,28 @@
             Explore the original city story
           </button>
         </div>
-        <small
-          >Visible connection = a tested prototype, not city service upgrades or
-          real-world XP.</small
-        >
+        <small>
+          Questions help you decide. Puzzles let you build. Both change
+          what you see in your fictional city.
+        </small>
+      </section>
+      <section id="build-victory" hidden aria-label="Your city improvement">
+        <div class="build-victory-sparks" aria-hidden="true">
+          <span>✦</span><span>✧</span><span>✦</span><span>✧</span><span>✦</span>
+        </div>
+        <p class="build-victory-kicker" id="victory-kicker">YOU BUILT IT!</p>
+        <h2 id="victory-title">Your city is growing.</h2>
+        <p id="victory-description">
+          Look at the new structure in your city. Your design made it possible.
+        </p>
+        <p id="victory-progress"></p>
+        <div class="victory-actions">
+          <button id="victory-continue" class="primary" type="button">
+            Continue the city story →
+          </button>
+          <button id="victory-build" type="button">Another build challenge</button>
+        </div>
+        <small>Fictional game construction; not verified real-world XP.</small>
       </section>
       <dialog id="build-lab" aria-labelledby="lab-title">
         <div class="lab-heading">
@@ -722,15 +740,13 @@
           ><button id="lab-clear" type="button">Clear this layout</button
           ><button id="lab-next" type="button" hidden>Next challenge →</button>
           <button id="lab-see-city" class="primary" type="button" hidden>
-            See my prototype in the city →
+            See what I built in my city →
           </button>
         </div>
-        <small
-          >Choose a piece, rotate its openings, then tap an empty square.
-          Replace or remove pieces to revise. Fictional practice; no real-world
-          XP. Your layout uses the same optional device save as your
-          city.</small
-        >
+        <small>
+          Place, rotate and test connections. Every working network builds
+          something in your fictional city. No real-world XP is awarded.
+        </small>
       </dialog>
       <dialog id="help-dialog">
         <button class="close" id="close-help" aria-label="Close help">×</button>
