@@ -137,8 +137,9 @@ export function BuildChoiceForm({
         >
           <p className="font-bold">AI is preparing your real-world Quest.</p>
           <p className="mt-1">
-            Checking the steps for a useful, safe activity and saving your Quest.
-            If AI cannot finish, a reviewed hands-on starter is available.
+            Checking the steps for a useful, safe activity and saving your
+            Quest. If AI cannot finish, a reviewed hands-on starter is
+            available.
           </p>
           <p className="mt-1 text-xs">
             You can keep this page open. Please do not press Get my Quest twice.

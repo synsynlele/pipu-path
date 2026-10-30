@@ -24,13 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format reviewed Quest fix and run all checks (diagnostic)
-        run: |
-          npx prettier --write "src/app/real-quests/[buildId]/page.tsx" src/modules/real-build/application/start-build.test.ts src/modules/real-build/application/start-build.ts src/modules/real-build/domain/reviewed-starters.test.ts src/modules/real-build/domain/reviewed-starters.ts src/modules/real-build/ui/choice-form.test.tsx src/modules/real-build/ui/choice-form.tsx
-          echo QUEST_FORMAT_BEGIN
-          git diff -- "src/app/real-quests/[buildId]/page.tsx" src/modules/real-build/application/start-build.test.ts src/modules/real-build/application/start-build.ts src/modules/real-build/domain/reviewed-starters.test.ts src/modules/real-build/domain/reviewed-starters.ts src/modules/real-build/ui/choice-form.test.tsx src/modules/real-build/ui/choice-form.tsx
-          echo QUEST_FORMAT_END
-          npm run validate
+      - run: npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'

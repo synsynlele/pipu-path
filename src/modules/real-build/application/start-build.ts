@@ -43,7 +43,11 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
     .update(
       REAL_BUILD_CONTENT_VERSION +
         ":" +
-        choice.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim(),
+        choice.focus
+          .normalize("NFKC")
+          .toLowerCase()
+          .replace(/\s+/g, " ")
+          .trim(),
     )
     .digest("hex");
 
@@ -55,13 +59,16 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
     focus_key_input: focusKey,
   });
   if (unseen.error) throw new Error("BUILD_LOAD_FAILED");
-  let template = unseen.data?.[0];
+  let template: (NonNullable<typeof unseen.data>)[number] | undefined =
+    unseen.data?.[0];
   if (template) {
     try {
       validateChallenge(template.challenge);
     } catch {
       // Bad legacy content must not block creating a real Quest.
-      logger.warn("real_build_invalid_cached_template", { reason: "BUILD_INVALID_TEMPLATE" });
+      logger.warn("real_build_invalid_cached_template", {
+        reason: "BUILD_INVALID_TEMPLATE",
+      });
       template = undefined;
     }
   }
@@ -108,13 +115,16 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
             (pool.data ?? []).some(
               (v) =>
                 typeof v.challenge?.title === "string" &&
-                v.challenge.title.toLowerCase() === challenge.title.toLowerCase(),
+                v.challenge.title.toLowerCase() ===
+                  challenge.title.toLowerCase(),
             )
           )
             throw new Error("BUILD_REPEATED");
         } catch (error) {
           // Do not charge a second provider request or skip safety validation.
-          logger.warn("real_build_reviewed_fallback", { reason: reason(error) });
+          logger.warn("real_build_reviewed_fallback", {
+            reason: reason(error),
+          });
           source = "reviewed";
           challenge = reviewedStarter(choice, difficulty);
         }
@@ -123,8 +133,10 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
         // Previously approved starter for this exact goal may be reused.
         const existing = (pool.data ?? []).find((v) => {
           try {
-            return v.source === "reviewed" &&
-              validateChallenge(v.challenge).title === challenge.title;
+            return (
+              v.source === "reviewed" &&
+              validateChallenge(v.challenge).title === challenge.title
+            );
           } catch {
             return false;
           }

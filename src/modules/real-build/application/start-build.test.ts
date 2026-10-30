@@ -99,7 +99,7 @@ it("reuses an unseen validated public template with a new private attempt", asyn
     }),
   ]);
 });
-it("excludes previously tried templates and releases the lease if AI fails", async () => {
+it("recovers from a provider timeout without a second AI call and releases the lease", async () => {
   results = [
     { data: null },
     { data: 1 },
@@ -107,14 +107,18 @@ it("excludes previously tried templates and releases the lease if AI fails", asy
     { data: [template] },
     { data: true },
     { data: "request" },
+    { data: { ...template, id: "reviewed", source: "reviewed" } },
     { data: null },
+    { data: { id: "safe-starter" } },
   ];
   m.generate.mockRejectedValue(new Error("OPENAI_TIMEOUT"));
-  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
-    "OPENAI_TIMEOUT",
-  );
+  expect(await startBuildForUser("owner", choice)).toBe("safe-starter");
+  expect(m.generate).toHaveBeenCalledTimes(1);
   expect(calls).toContainEqual(["from", "real_build_generation_leases"]);
-  expect(calls.filter((c) => c[0] === "insert")).toHaveLength(0);
+  expect(calls).toContainEqual([
+    "insert",
+    expect.objectContaining({ source: "reviewed" }),
+  ]);
 });
 it("avoids duplicate provider work when another request holds the authoring lease", async () => {
   results = [
@@ -139,7 +143,7 @@ it("resolves a concurrent active-attempt insert by returning the winning owned r
   ];
   expect(await startBuildForUser("owner", choice)).toBe("winner");
 });
-it("never persists an unsafe cached template", async () => {
+it("ignores an unsafe cached template and creates a safe reviewed Quest instead", async () => {
   results = [
     { data: null },
     { data: 1 },
@@ -154,11 +158,20 @@ it("never persists an unsafe cached template", async () => {
         },
       ],
     },
+    { data: [] },
+    { data: true },
+    { data: "request" },
+    { data: { ...template, id: "safe-reviewed", source: "reviewed" } },
+    { data: null },
+    { data: { id: "safe-attempt" } },
   ];
-  await expect(startBuildForUser("owner", choice)).rejects.toThrow(
-    "BUILD_UNSAFE",
-  );
-  expect(calls.filter((c) => c[0] === "insert")).toHaveLength(0);
+  m.generate.mockRejectedValue(new Error("INVALID_MODEL_OUTPUT"));
+  expect(await startBuildForUser("owner", choice)).toBe("safe-attempt");
+  expect(calls.filter((call) => call[0] === "insert")).toHaveLength(2);
+  expect(calls).toContainEqual([
+    "insert",
+    expect.objectContaining({ source: "reviewed" }),
+  ]);
 });
 
 it("matches cache and new attempts to a higher, server-computed level", async () => {
@@ -238,7 +251,11 @@ it("recovers from invalid AI output with one reviewed and safe Quest, without a 
     expect.objectContaining({
       topic: "workshop",
       source: "reviewed",
-      challenge: expect.objectContaining({ steps: expect.arrayContaining([expect.stringContaining("Ask a familiar person")]) }),
+      challenge: expect.objectContaining({
+        steps: expect.arrayContaining([
+          expect.stringContaining("Ask a familiar person"),
+        ]),
+      }),
     }),
   ]);
   expect(inserts[1]).toEqual([

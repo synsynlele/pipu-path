@@ -9,7 +9,10 @@ import {
 const start = vi.hoisted(() => vi.fn());
 vi.mock("../application/actions", () => ({ startRealBuild: start }));
 import { BuildChoiceForm } from "./choice-form";
-afterEach(() => { cleanup(); start.mockReset(); });
+afterEach(() => {
+  cleanup();
+  start.mockReset();
+});
 it("retains topic and time on a generation failure and offers a retry without fake success", async () => {
   start.mockResolvedValue({
     ok: false,
@@ -52,19 +55,35 @@ it("retains topic and time on a generation failure and offers a retry without fa
 
 it("shows a visible spinner and blocks duplicate submissions during Quest generation", async () => {
   let resolveRequest!: (result: { ok: boolean; message: string }) => void;
-  start.mockImplementation(() => new Promise((resolve) => { resolveRequest = resolve; }));
-  render(<BuildChoiceForm initialTopic="water" initialFocus="I want to reduce wasted water at school." />);
+  start.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveRequest = resolve;
+      }),
+  );
+  render(
+    <BuildChoiceForm
+      initialTopic="water"
+      initialFocus="I want to reduce wasted water at school."
+    />,
+  );
   const button = screen.getByRole("button", { name: "Get my Quest →" });
   fireEvent.click(button);
   const progress = await screen.findByRole("status");
   expect(progress).toHaveTextContent("AI is preparing your real-world Quest");
-  expect(screen.getByRole("button", { name: /creating your quest/i })).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: /creating your quest/i }),
+  ).toBeDisabled();
   expect(screen.getByRole("combobox")).toBeDisabled();
   fireEvent.click(screen.getByRole("button", { name: /creating your quest/i }));
   expect(start).toHaveBeenCalledTimes(1);
   resolveRequest({ ok: false, message: "A checked failure message." });
-  await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("A checked failure"));
+  await waitFor(() =>
+    expect(screen.getByRole("alert")).toHaveTextContent("A checked failure"),
+  );
   expect(screen.queryByRole("status")).toBeNull();
   expect(screen.getByRole("combobox")).toBeEnabled();
-  expect(screen.getByRole("textbox", { name: /what exactly/i })).toHaveValue("I want to reduce wasted water at school.");
+  expect(screen.getByRole("textbox", { name: /what exactly/i })).toHaveValue(
+    "I want to reduce wasted water at school.",
+  );
 });
