@@ -19,7 +19,6 @@ multi-school collaboration, real Android trials and full production QA
 remain unshipped. The candidate Real Quests migration/environment gate noted
 below still applies.
 
-
 ## 28 October 2026 — Chapter 3, City of Opportunities: operating enterprises
 
 The development branch `feat/unbuilt-city-chapter-three-enterprises` extends the
