@@ -105,7 +105,7 @@ assert(html.includes('id="stage-three-choices"'));
 assert(html.includes('id="stage-three-repair"'));
 assert(html.includes("Decide what matters. Build a solution."));
 assert(html.includes("How to play and build your city"));
-assert(html.includes("Tap Rotate"));
+assert(html.includes("tap Rotate"));
 assert(game.includes("beginStageThree("));
 assert(game.includes("finishStageThree("));
 assert(game.includes("playtest.note("));
