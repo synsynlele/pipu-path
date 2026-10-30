@@ -21,6 +21,7 @@ export function PowerDistrictFrame({
   const [handoff, setHandoff] = useState(false);
   const [saved, setSaved] = useState<boolean | null>(null);
   const [district, setDistrict] = useState<string | null>(null);
+  const [service, setService] = useState<string | null>(null);
   const [problem, setProblem] = useState("");
   const frameRef = useRef<HTMLIFrameElement>(null);
   const expandButton = useRef<HTMLButtonElement>(null);
@@ -59,6 +60,13 @@ export function PowerDistrictFrame({
           /^[a-z-]{1,32}$/.test(data.district)
         )
           setDistrict(data.district);
+        if (
+          typeof data.service === "string" &&
+          /^(workshop-link|clinic-power|shared-services|backup-water|shared-recovery)$/.test(
+            data.service,
+          )
+        )
+          setService(data.service);
       }
       if (data.type === "pipupath:city:saved" && saving.current) {
         saving.current = false;
@@ -98,9 +106,10 @@ export function PowerDistrictFrame({
   }, [expanded, entered]);
 
   function questHrefWithDistrict() {
-    if (!district || !questHref.startsWith("/real-quests")) return questHref;
+    if (!questHref.startsWith("/real-quests")) return questHref;
     const url = new URL(questHref, window.location.origin);
-    url.searchParams.set("district", district);
+    if (district) url.searchParams.set("district", district);
+    if (service) url.searchParams.set("service", service);
     return url.pathname + url.search;
   }
 
