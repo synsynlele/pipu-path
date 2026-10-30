@@ -34,7 +34,7 @@ it("authors a bounded public template without forwarding private properties", as
     minutes: 30,
     safeStartingIdea: expect.any(String),
     difficulty: 1,
-    challengeDesign: expect.stringContaining("two possible solutions"),
+    challengeDesign: expect.stringContaining("small safe useful change"),
     avoidTitles: [],
   });
   request.mockResolvedValue({
@@ -71,7 +71,7 @@ it("passes only public level instructions to AI at higher difficulty", async () 
   const data = JSON.parse(request.mock.lastCall?.[0].prompt);
   expect(data.difficulty).toBe(5);
   expect(data.improvementGoal).toContain("homework reminders");
-  expect(data.challengeDesign).toContain("connected system");
+  expect(data.challengeDesign).toContain("small real process");
   expect(Object.keys(data).sort()).toEqual(
     [
       "avoidTitles",

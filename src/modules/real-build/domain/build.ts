@@ -106,17 +106,23 @@ export function canRecordAttempt(draft: BuildDraft) {
   );
 }
 // New Quests must change something in real life, not merely propose it.
-const planOnly = /\b(?:paper|cardboard|worksheet|sketch|sketching|drawing|draw|diagram|poster|slides?|slideshow|role[- ]?play|fictional|simulation|simulate|mock[- ]?up|pretend|written plan)\b/i;
-const practicalAction = /\b(?:build|set up|reorganis(?:e|ing)|reorganiz(?:e|ing)|organis(?:e|ing)|organiz(?:e|ing)|repair|fix|reuse|repurpose|run|deliver|plant|install|start|update|make|assemble|improve|change|label|sort|configure|create|teach|coach|launch|clean|collect|introduce|serve|put|arrange)\b/i;
-const realTest = /\b(?:test|try|measure|check|compare|observe|count|use|feedback|verify|trial)\b/i;
+const planOnly =
+  /\b(?:paper|cardboard|worksheet|sketch|sketching|drawing|draw|diagram|poster|slides?|slideshow|role[- ]?play|fictional|simulation|simulate|mock[- ]?up|pretend|written plan)\b/i;
+const practicalAction =
+  /\b(?:build|set up|reorganis(?:e|ing)|reorganiz(?:e|ing)|organis(?:e|ing)|organiz(?:e|ing)|repair|fix|reuse|repurpose|run|deliver|plant|install|start|update|make|assemble|improve|change|label|sort|configure|create|teach|coach|launch|clean|collect|introduce|serve|put|arrange)\b/i;
+const realTest =
+  /\b(?:test|try|measure|check|compare|observe|count|use|feedback|verify|trial)\b/i;
 export function isRetiredPaperworkChallenge(input: unknown): boolean {
   const parsed = challengeSchema.safeParse(input);
-  return parsed.success && [
-    parsed.data.title,
-    parsed.data.outcome,
-    ...parsed.data.steps,
-    ...parsed.data.materials,
-  ].some((item) => planOnly.test(item));
+  return (
+    parsed.success &&
+    [
+      parsed.data.title,
+      parsed.data.outcome,
+      ...parsed.data.steps,
+      ...parsed.data.materials,
+    ].some((item) => planOnly.test(item))
+  );
 }
 const prohibited =
   /\b(contact strangers?|meet (?:an )?unknown adult|keep (?:this )?secret|share (?:your )?(?:home )?address|post (?:it )?publicly|borrow money|weapon|gambl(?:e|ing)|fake evidence|invent (?:a )?result|guaranteed income|handle live wires?|enter (?:a )?drain|prescribe|take medication)\b/i;

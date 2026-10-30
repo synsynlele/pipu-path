@@ -68,14 +68,17 @@ it("allows only catalogue parameters, never arbitrary learner prose", () => {
     safeStartingIdea: expect.any(String),
     minutes: 30,
     difficulty: 1,
-    challengeDesign: expect.stringContaining("two possible solutions"),
+    challengeDesign: expect.stringContaining("small safe useful change"),
     avoidTitles: [challenge.title],
   });
 });
 it("validates actionable structure and rejects dangerous instructions even with a caution elsewhere", () => {
   expect(validateChallenge(challenge)).toEqual(challenge);
   expect(() =>
-    validateChallenge({ ...challenge, title: "Draw a paper plan for a solution" }),
+    validateChallenge({
+      ...challenge,
+      title: "Draw a paper plan for a solution",
+    }),
   ).toThrow("BUILD_NOT_PRACTICAL");
   expect(() =>
     validateChallenge({
@@ -138,7 +141,7 @@ it("assigns deeper, safe challenge designs without implying verified ability", (
   );
   expect(brief).toMatchObject({
     difficulty: 5,
-    challengeDesign: expect.stringContaining("connected system"),
+    challengeDesign: expect.stringContaining("small real process"),
     minutes: 15,
   });
 });

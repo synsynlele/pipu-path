@@ -44,6 +44,8 @@ it("retains topic and time on a generation failure and offers a retry without fa
     "I want to reduce wasted water at school.",
   );
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Get my Quest →" })).toBeEnabled(),
+    expect(
+      screen.getByRole("button", { name: "Get my Quest →" }),
+    ).toBeEnabled(),
   );
 });

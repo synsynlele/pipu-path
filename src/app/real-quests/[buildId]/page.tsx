@@ -79,10 +79,13 @@ export default async function RealBuildPage({
         </details>
       </section>
       {retired && build.status === "active" ? (
-        <p role="status" className="mt-5 rounded-xl border border-[#f4d49e] bg-[#fff8e9] p-4 text-sm leading-6 text-[#70471a]">
-          This older Quest focuses on planning instead of a real-world build.
-          We no longer offer it. Open “This Quest is not right for me” below
-          to set it aside without losing your history, then start a practical Quest.
+        <p
+          role="status"
+          className="mt-5 rounded-xl border border-[#f4d49e] bg-[#fff8e9] p-4 text-sm leading-6 text-[#70471a]"
+        >
+          This older Quest focuses on planning instead of a real-world build. We
+          no longer offer it. Open “This Quest is not right for me” below to set
+          it aside without losing your history, then start a practical Quest.
         </p>
       ) : null}
       {build.status === "active" ? (
@@ -130,7 +133,7 @@ export default async function RealBuildPage({
           <p className="text-sm leading-6 whitespace-pre-wrap">
             {build.draft.nextChange || "No next change saved."}
           </p>
-          {build.status === "recorded" ? (
+          {build.status === "recorded" && !retired ? (
             <ImproveBuildForm id={build.id} />
           ) : null}
           <Link

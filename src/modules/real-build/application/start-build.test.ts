@@ -10,7 +10,9 @@ import { createHash } from "node:crypto";
 const challenge = {
   title: "Introduce a working homework reminder",
   outcome: "Make one genuine homework reminder easier to follow.",
-  steps: Array(5).fill("Set up and test a safe working reminder with permission."),
+  steps: Array(5).fill(
+    "Set up and test a safe working reminder with permission.",
+  ),
   materials: ["Existing phone reminder"],
   evidence: "Describe the working reminder and actual result.",
   safety: "Ask permission and keep names private.",
