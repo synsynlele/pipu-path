@@ -15,6 +15,9 @@ import {
   completedMilestones,
 } from "./build-milestones.mjs";
 import { createMilestoneScene } from "./build-milestone-scene.mjs";
+import { serviceImpact, serviceFor } from "./city-service-system.mjs";
+import { skillRecommendation } from "./build-progression.mjs";
+import { mountCityServiceDesk } from "./city-service-ui.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
@@ -3668,7 +3671,10 @@ function hideBuildVictory() {
     victoryCamera = null;
   }
 }
-function showBuildVictory(missionId, { retry = false } = {}) {
+function showBuildVictory(
+  missionId,
+  { retry = false, recovered = false } = {},
+) {
   const mission = milestoneForMission(missionId);
   if (!mission) return;
   hideBuildVictory();
@@ -3683,10 +3689,14 @@ function showBuildVictory(missionId, { retry = false } = {}) {
   const completed = completedMilestones(state.lab, evaluateLab, labMission);
   $("victory-kicker").textContent = retry
     ? "EVERY BUILDER REVISES"
-    : "✦ YOU BUILT IT! ✦";
+    : recovered
+      ? "✦ SERVICE RESTORED! ✦"
+      : "✦ YOU BUILT IT! ✦";
   $("victory-title").textContent = retry
     ? "Your city still needs this connection"
-    : mission.title + " is built!";
+    : recovered
+      ? mission.title + " is working again!"
+      : mission.title + " is built!";
   $("victory-description").textContent = retry
     ? "Your design is kept. Try another layout, or return to decisions and build this later."
     : mission.result + " Look at the new 3D station built in your city!";
@@ -3695,6 +3705,14 @@ function showBuildVictory(missionId, { retry = false } = {}) {
     " / " +
     CITY_BUILD_MILESTONES.length +
     " city structures constructed by solving puzzles.";
+  const service = serviceFor(state.lab, missionId);
+  const city = serviceImpact(state.lab);
+  $("victory-service").textContent = retry
+    ? "Keep refining your design to restore fictional service."
+    : (recovered ? "Repair succeeded. " : "") +
+      service.served + "/" + service.demand +
+      " simulated requests met here; " + city.served + "/" +
+      city.demand + " across your five city services.";
   $("victory-continue").textContent = pendingBuildCase
     ? "Continue to the next decision →"
     : "Next: solve a city decision →";
@@ -3721,17 +3739,10 @@ $("victory-continue").onclick = () => {
 };
 $("victory-build").onclick = () => {
   const retry = $("build-victory").dataset.retry === "true";
-  const next =
-    retry && lastVictoryMission
-      ? lastVictoryMission
-      : (CITY_BUILD_MILESTONES.find(
-          (m) =>
-            !completedMilestones(state.lab, evaluateLab, labMission).some(
-              (item) => item.id === m.id,
-            ),
-        )?.id ??
-        lastVictoryMission ??
-        "workshop-link");
+  const next = retry && lastVictoryMission
+    ? lastVictoryMission
+    : skillRecommendation(state.lab).recommendedId ??
+      lastVictoryMission ?? "workshop-link";
   hideBuildVictory();
   buildLab.open(next);
 };
@@ -3742,9 +3753,10 @@ function renderPilotMission() {
   panel.hidden =
     !firstBuildMode || !$("intro").hidden || !$("build-victory").hidden;
   if (panel.hidden) return;
-  const next = LAB_MISSIONS.find(
-    (mission) => !state.lab.tested.includes(mission.id),
-  );
+  const suggested = skillRecommendation(state.lab);
+  const next = suggested.recommendedId
+    ? LAB_MISSIONS.find((mission) => mission.id === suggested.recommendedId)
+    : null;
   $("pilot-title").textContent = workshopTested
     ? "You built Ama's supply station!"
     : "Ama's workshop needs a working supply";
@@ -3758,10 +3770,10 @@ function renderPilotMission() {
     : "Build the connection →";
 }
 $("pilot-build").onclick = () => {
-  const next =
-    workshopTested &&
-    LAB_MISSIONS.find((mission) => !state.lab.tested.includes(mission.id));
-  buildLab.open(next?.id ?? "workshop-link");
+  const next = workshopTested
+    ? skillRecommendation(state.lab).recommendedId
+    : null;
+  buildLab.open(next ?? "workshop-link");
 };
 $("pilot-story").onclick = () => {
   // Explicit original-story route stays available for returning learners.
@@ -3774,12 +3786,13 @@ const buildLab = mountBuildLab({
     playtest.note(success ? "prototype_pass" : "prototype_retry");
     buildMilestoneScene.sync(state.lab);
     if (missionId === "workshop-link") workshopTested = success;
+    serviceDesk.render();
     renderPilotMission();
   },
-  onReveal: ({ missionId }) => {
+  onReveal: ({ missionId, recovered }) => {
     if (state.lab.tested.includes(missionId)) {
       buildMilestoneScene.reveal(missionId);
-      showBuildVictory(missionId);
+      showBuildVictory(missionId, { recovered });
     }
   },
   write: (lab) => {
@@ -3787,9 +3800,11 @@ const buildLab = mountBuildLab({
     buildMilestoneScene.sync(state.lab);
     workshopTested = workshopBlueprint.visible;
     persistPractice();
+    serviceDesk.render();
   },
   beforeOpen: () => {
     hideBuildVictory();
+    serviceDesk.close();
     if (reviewCaseId) finishDecisionReview({ resume: false });
     if (builtCityView) closeBuiltCityView();
     if (journey.status === "running")
@@ -3829,6 +3844,56 @@ const buildLab = mountBuildLab({
     }
   },
 });
+const serviceDesk = mountCityServiceDesk({
+  read: () => state.lab,
+  write: (lab) => {
+    state.lab = lab;
+    buildMilestoneScene.sync(state.lab);
+    persistPractice();
+  },
+  beforeOpen: () => {
+    hideBuildVictory();
+    if (builtCityView) closeBuiltCityView();
+    if (reviewCaseId) finishDecisionReview({ resume: false });
+    if (journey.status === "running")
+      pauseJourney("Your city journey is paused while you inspect services.");
+    cancelWalk();
+    closeDetail();
+    closeCasebook();
+    closeCityStatus();
+    closeDirectory();
+    closeOpportunityPanel();
+    closeResiliencePanel();
+    guideExpanded = false;
+    keys.clear();
+    $("city-menu").open = false;
+    render();
+  },
+  onFocus: (id) => {
+    const marker = milestoneForMission(id);
+    if (!marker) return;
+    activeFeedback = {
+      x: marker.x,
+      z: marker.z,
+      started: performance.now(),
+    };
+    yaw = 0.45;
+    pitch = 0.72;
+    distance = 26;
+  },
+  onClose: () => {
+    activeFeedback = null;
+    $("service-toggle").setAttribute("aria-expanded", "false");
+  },
+  onBuild: (id) => buildLab.open(id),
+});
+$("service-toggle").onclick = () => {
+  if (serviceDesk.isOpen) serviceDesk.close();
+  else {
+    serviceDesk.open();
+    $("service-toggle").setAttribute("aria-expanded", "true");
+  }
+};
 $("build-lab-toggle").onclick = () => buildLab.open();
 $("start").onclick = () => startCity("build");
 $("resume-city").onclick = () => startCity("story");
@@ -3839,6 +3904,7 @@ function startCity(mode = "build") {
   if (!$("intro").hidden) playtest.note("start");
   firstBuildMode = mode === "build";
   if (firstBuildMode) mixedJourney = true;
+  serviceDesk.close();
   $("intro").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
