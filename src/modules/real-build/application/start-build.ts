@@ -59,7 +59,8 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
     focus_key_input: focusKey,
   });
   if (unseen.error) throw new Error("BUILD_LOAD_FAILED");
-  let template = unseen.data?.[0] ?? null;
+  type TemplateRow = NonNullable<typeof unseen.data>[number];
+  let template: TemplateRow | null = unseen.data?.[0] ?? null;
   if (template) {
     try {
       validateChallenge(template.challenge);
