@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
+      "fix/structured-quest-output": false,
       "fix/quest-recovery-audio": false,
       "fix/real-quest-tailored-stages": false,
       "agent/stage-19-institution-workspace": false,

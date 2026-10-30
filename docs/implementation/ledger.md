@@ -1868,3 +1868,23 @@ Keep verified gesture unlock, independent mute and background suspension. Volume
 sliders sit inside City menu so the compact mobile HUD gains no extra button.
 No audio downloads, additional providers, migrations or dependencies. Physical
 speaker loudness and a fresh signed-in generation remain live acceptance items.
+
+## 30 October 2026 — Schema-owned Quest stages and assignment-scoped paper checks
+
+New production traces prove two failed corrections: GUIDE_ACTIONS at 20:22 UTC
+and PAPER_ONLY at 20:24 UTC. Replace free-text numbered-line instructions with
+an enforced provider JSON schema: exactly five stage arrays, each containing
+2–4 bounded action strings. Validate those arrays and format the saved numbered
+steps deterministically in the adapter. The saved challenge contract and existing
+UI remain compatible; no evidence or stored Quests are rewritten. Formatting
+is now app-owned rather than an unreliable prose requirement on the model.
+
+Judge paper-only assignments from the actual title and construction stage, not
+an example in discovery, incidental materials or later advice. Recognise explicit
+no/instead-of/rather-than cautions without weakening dangerous-instruction checks.
+Log safe field locations (title/steps.2), never generated text or learner goals.
+One schema/practicality correction still shares the 45-second total deadline.
+Regression tests exercise unnumbered arrays, redundant numbering, negative
+paper wording, discovery examples, genuine paper assignments, malformed shape,
+safety and privacy. No migration, dependency or music change in this release.
+Live signed-in AI acceptance remains distinct from deterministic CI checks.

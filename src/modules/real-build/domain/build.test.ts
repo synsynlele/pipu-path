@@ -187,8 +187,9 @@ it("accepts phone gestures, valid setup verbs and explicit cautions without perm
       ...challenge,
       steps: [
         challenge.steps[0],
+        challenge.steps[1],
         "Do not draw a diagram. Make a paper tracker instead.",
-        ...challenge.steps.slice(2),
+        ...challenge.steps.slice(3),
       ],
     }),
   ).toThrow("BUILD_NOT_PRACTICAL");
