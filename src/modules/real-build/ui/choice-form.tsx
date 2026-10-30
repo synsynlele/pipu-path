@@ -8,6 +8,7 @@ export function BuildChoiceForm({
   initialTopic?: string;
 }) {
   const [topic, setTopic] = useState(initialTopic),
+    [focus, setFocus] = useState(""),
     [minutes, setMinutes] = useState("30"),
     [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
@@ -52,6 +53,24 @@ export function BuildChoiceForm({
           ))}
         </select>
       </label>
+      <label>
+        What exactly would you like to improve?
+        <textarea
+          name="focus"
+          required
+          minLength={12}
+          maxLength={160}
+          rows={3}
+          value={focus}
+          onChange={(e) => setFocus(e.target.value)}
+          className="mt-2"
+          placeholder="For example: I want to reduce food waste in our school."
+        />
+        <span className="mt-2 block text-xs leading-5 font-normal text-[#536883]">
+          Describe a real problem or change you care about. Leave out names,
+          phone numbers, addresses and other private details.
+        </span>
+      </label>
       <fieldset>
         <legend className="text-sm font-semibold">
           How much time do you have?
@@ -60,7 +79,7 @@ export function BuildChoiceForm({
           {[15, 30, 60].map((v) => (
             <label
               key={v}
-              className="flex flex-1 items-center gap-2 rounded-xl border border-[#cddcf0] bg-[#f4f8fe] p-3"
+              className="flex flex-1 items-center gap-2 rounded-xl border border-[#c6d8f2] bg-[#f0f6ff] p-3"
             >
               <input
                 type="radio"
@@ -74,6 +93,11 @@ export function BuildChoiceForm({
           ))}
         </div>
       </fieldset>
+      <p className="rounded-xl border border-[#c4d7f5] bg-[#eef5ff] p-3 text-xs leading-5 text-[#264e89]">
+        <strong>Quests grow with you:</strong> Level 1 starts with a simple
+        test. Later levels ask you to compare ideas, measure results and solve
+        connected problems. Each new topic starts gently.
+      </p>
       <button className="build-primary w-full" disabled={pending}>
         {pending ? "Preparing your challenge…" : "Get my Quest →"}
       </button>
@@ -89,8 +113,9 @@ export function BuildChoiceForm({
         </p>
       ) : null}
       <p className="text-xs leading-5 text-[#52647c]">
-        AI writes reusable challenges from your topic and time choice. Your
-        name, private answers, evidence and reflections are not sent to it.
+        AI writes reusable challenges from your topic, time and an anonymous
+        difficulty level. Your name, answers, photos and reflections are not
+        sent to it.
       </p>
     </form>
   );

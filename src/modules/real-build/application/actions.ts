@@ -22,9 +22,14 @@ export async function startRealBuild(
   const choice = choiceSchema.safeParse({
     topic: form.get("topic"),
     minutes: form.get("minutes"),
+    focus: form.get("focus"),
   });
   if (!choice.success)
-    return { ok: false, message: "Choose a topic and how much time you have." };
+    return {
+      ok: false,
+      message:
+        "Choose a topic, explain what you want to improve and pick a time.",
+    };
   let id: string;
   try {
     id = await startBuildForUser(user.id, choice.data);
@@ -230,6 +235,8 @@ export async function improveRealBuild(
         previous_attempt_id: old.data.id,
         topic: old.data.topic,
         minutes: old.data.minutes,
+        focus: old.data.focus,
+        difficulty: old.data.difficulty,
         challenge: old.data.challenge,
         source: "openai",
         draft: emptyDraft,

@@ -3,13 +3,64 @@ import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
 
 export const buildTopics = cityInterests;
+export const focusSchema = z
+  .string()
+  .trim()
+  .min(12, "Tell us what you want to improve in at least a few words.")
+  .max(160, "Keep the improvement goal under 160 characters.")
+  .refine(
+    (value) =>
+      !/(?:https?:\/\/|www\.|[\w.+-]+@[\w.-]+\.[a-z]{2,}|\b\+?\d[\d\s-]{8,}\d\b|\b(?:password|phone number|home address|medical history|diagnosis|medication|self-harm|sexual activity)\b)/i.test(
+        value,
+      ),
+    "Keep this about a general problem. Do not enter names, contacts or private details.",
+  );
+
 export const choiceSchema = z
   .object({
     topic: z.string().refine((v) => buildTopics.some((t) => t.id === v)),
     minutes: z.coerce.number().refine((v) => [15, 30, 60].includes(v)),
+    focus: focusSchema,
   })
   .strict();
 export type BuildChoice = z.infer<typeof choiceSchema>;
+
+export const difficultySchema = z.number().int().min(1).max(5);
+export type BuildDifficulty = 1 | 2 | 3 | 4 | 5;
+
+// Task complexity, not a score for the person. All levels remain low-cost and safe.
+export const difficultyGuides = {
+  1: {
+    label: "First Challenge",
+    design:
+      "Investigate the specific improvement goal, think of two possible solutions, make a simple version of the better idea, test it and record one measurable result.",
+  },
+  2: {
+    label: "Explorer",
+    design:
+      "Create two possible solutions and compare them in one small test. Explain why one is better.",
+  },
+  3: {
+    label: "Builder",
+    design:
+      "Work within two constraints such as time and materials. Try a prototype twice, measure a simple result and revise.",
+  },
+  4: {
+    label: "Problem Solver",
+    design:
+      "Consider two different needs or stakeholders, show a trade-off, test alternatives and record a measurable comparison.",
+  },
+  5: {
+    label: "Systems Thinker",
+    design:
+      "Model a small connected system using paper or safe digital tools. Compare scenarios, predict a trade-off, test one assumption and iterate using evidence.",
+  },
+} as const satisfies Record<BuildDifficulty, { label: string; design: string }>;
+
+export function difficultyLabel(level: number) {
+  return difficultyGuides[level as BuildDifficulty]?.label ?? "Starter";
+}
+
 const text = (min: number, max: number) => z.string().trim().min(min).max(max);
 export const challengeSchema = z
   .object({
@@ -78,13 +129,17 @@ export function validateChallenge(input: unknown): BuildChallenge {
 export function publicChallengeBrief(
   choice: BuildChoice,
   previousTitles: string[],
+  difficulty: BuildDifficulty = 1,
 ) {
   // Only catalogue values and previously public template titles. Never learner prose.
   const topic = buildTopics.find((t) => t.id === choice.topic)!;
   return {
     topic: topic.title,
+    improvementGoal: choice.focus,
     safeStartingIdea: topic.idea,
     minutes: choice.minutes,
+    difficulty,
+    challengeDesign: difficultyGuides[difficulty].design,
     avoidTitles: previousTitles.slice(-30),
   };
 }
@@ -95,6 +150,8 @@ export type SavedBuild = {
   previous_attempt_id: string | null;
   topic: string;
   minutes: number;
+  difficulty: BuildDifficulty;
+  focus: string;
   challenge: BuildChallenge;
   source: "openai";
   status: "active" | "recorded" | "archived";

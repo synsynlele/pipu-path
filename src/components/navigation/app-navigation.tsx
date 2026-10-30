@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PipuNavIcon } from "./pipu-nav-icon";
 
 const items = [
   { label: "Play", href: "/build/play", icon: "play" },
-  { label: "Real Quests", href: "/real-quests", icon: "quest" },
+  { label: "Real Quests", href: "/real-quests", icon: "quests" },
   { label: "You", href: "/you", icon: "you" },
 ] as const;
 
@@ -69,19 +70,19 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
                 aria-current={active ? "page" : undefined}
                 className={
                   mobile
-                    ? `flex min-h-[4.5rem] w-full touch-manipulation flex-col items-center justify-center gap-1 rounded-xl px-1 text-xs font-semibold ${active ? "text-[#5436df]" : "text-[#747b90]"}`
-                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold ${active ? "bg-primary-soft text-primary" : "hover:bg-primary-soft/70 text-[#747b90]"}`
+                    ? `flex min-h-[4.5rem] w-full touch-manipulation flex-col items-center justify-center gap-1 rounded-xl px-1 text-xs font-semibold ${active ? "text-[#2059bd]" : "text-[#61718c]"}`
+                    : `inline-flex min-h-10 touch-manipulation items-center gap-2 rounded-xl px-3.5 text-sm font-semibold ${active ? "bg-[#e8f1ff] text-[#2059bd]" : "text-[#61718c] hover:bg-[#f0f5ff]"}`
                 }
               >
                 <span
                   aria-hidden="true"
                   className={
                     mobile
-                      ? `grid size-9 place-items-center rounded-xl ${active ? "bg-[#eeeaff]" : ""}`
+                      ? `grid size-9 place-items-center rounded-xl ${active ? "bg-[#e8f1ff] ring-1 ring-[#b9cef5]" : ""}`
                       : "grid size-6 place-items-center"
                   }
                 >
-                  <NavigationIcon name={item.icon} />
+                  <PipuNavIcon name={item.icon} />
                 </span>
                 <span>{item.label}</span>
               </Link>
@@ -90,37 +91,5 @@ export function AppNavigation({ mobile = false }: { mobile?: boolean }) {
         })}
       </ul>
     </nav>
-  );
-}
-
-function NavigationIcon({ name }: { name: (typeof items)[number]["icon"] }) {
-  const common = {
-    className: "size-5",
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 2,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true as const,
-  };
-  if (name === "play")
-    return (
-      <svg {...common}>
-        <path d="m8 5 12 7-12 7z" />
-      </svg>
-    );
-  if (name === "quest")
-    return (
-      <svg {...common}>
-        <path d="M3 20h18M5 17l6-12 4 7 4-4 2 9" />
-        <circle cx="11" cy="5" r="1" />
-      </svg>
-    );
-  return (
-    <svg {...common}>
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21a8 8 0 0 1 16 0" />
-    </svg>
   );
 }

@@ -120,6 +120,7 @@ it("does not forward extra prose to the template generator", async () => {
   const f = new FormData();
   f.set("topic", "school");
   f.set("minutes", "30");
+  f.set("focus", "I want to make homework reminders clearer.");
   f.set("private_answers", "private student text");
   await expect(startRealBuild({ ok: false, message: "" }, f)).rejects.toThrow(
     "REDIRECT",
@@ -127,6 +128,7 @@ it("does not forward extra prose to the template generator", async () => {
   expect(m.start).toHaveBeenCalledWith("owner", {
     topic: "school",
     minutes: 30,
+    focus: "I want to make homework reminders clearer.",
   });
 });
 
@@ -138,6 +140,8 @@ it("opens a fresh improvement attempt without copying old evidence or calling AI
         template_id: "template",
         topic: "school",
         minutes: 30,
+        focus: "I want to make homework reminders clearer.",
+        difficulty: 1,
         challenge: { title: "A useful tracker" },
       },
     },
@@ -154,6 +158,7 @@ it("opens a fresh improvement attempt without copying old evidence or calling AI
     expect.objectContaining({
       previous_attempt_id: id,
       user_id: "owner",
+      focus: "I want to make homework reminders clearer.",
       draft: {
         evidence: "",
         link: "",

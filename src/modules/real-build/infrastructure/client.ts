@@ -1,7 +1,11 @@
 import "server-only";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceRoleSupabaseClient } from "@/lib/supabase/service-role";
-import type { BuildChallenge, BuildDraft } from "../domain/build";
+import type {
+  BuildChallenge,
+  BuildDraft,
+  BuildDifficulty,
+} from "../domain/build";
 type Row = {
   id: string;
   user_id: string;
@@ -9,6 +13,8 @@ type Row = {
   previous_attempt_id: string | null;
   topic: string;
   minutes: number;
+  difficulty: BuildDifficulty;
+  focus: string;
   challenge: BuildChallenge;
   source: "openai";
   status: "active" | "recorded" | "archived";
@@ -22,6 +28,8 @@ type Template = {
   id: string;
   topic: string;
   minutes: number;
+  difficulty: BuildDifficulty;
+  focus_key: string;
   challenge: BuildChallenge;
   source: "openai";
   created_at: string;
@@ -45,6 +53,29 @@ type BuildDatabase = {
     };
     Views: Record<string, never>;
     Functions: {
+      next_real_build_difficulty: {
+        Args: { user_input: string; topic_input: string };
+        Returns: number;
+      };
+      find_unseen_real_build_template_for_goal: {
+        Args: {
+          user_input: string;
+          topic_input: string;
+          minutes_input: number;
+          difficulty_input: number;
+          focus_key_input: string;
+        };
+        Returns: Template[];
+      };
+      find_unseen_real_build_template_level: {
+        Args: {
+          user_input: string;
+          topic_input: string;
+          minutes_input: number;
+          difficulty_input: number;
+        };
+        Returns: Template[];
+      };
       find_unseen_real_build_template: {
         Args: {
           user_input: string;

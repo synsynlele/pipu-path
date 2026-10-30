@@ -18,6 +18,7 @@ it("authors a bounded public template without forwarding private properties", as
   const choice = {
     topic: "school",
     minutes: 30,
+    focus: "I want to make homework reminders clearer.",
     privateReflection: "private learner text",
     userId: "not-for-provider",
   };
@@ -29,8 +30,11 @@ it("authors a bounded public template without forwarding private properties", as
   );
   expect(JSON.parse(input.prompt)).toEqual({
     topic: "A fair chance to learn",
+    improvementGoal: "I want to make homework reminders clearer.",
     minutes: 30,
     safeStartingIdea: expect.any(String),
+    difficulty: 1,
+    challengeDesign: expect.stringContaining("two possible solutions"),
     avoidTitles: [],
   });
   request.mockResolvedValue({
@@ -39,5 +43,44 @@ it("authors a bounded public template without forwarding private properties", as
   });
   await expect(generateBuildTemplate(choice, [])).rejects.toThrow(
     "BUILD_UNSAFE",
+  );
+});
+
+it("passes only public level instructions to AI at higher difficulty", async () => {
+  const challenge = {
+    title: "Compare two safe paper solutions",
+    outcome:
+      "Compare simple proposed routes on paper using a measurable fictional example.",
+    steps: Array(5).fill(
+      "Test two safe paper scenarios and compare the results.",
+    ),
+    materials: ["Paper"],
+    evidence: "Write the comparison and describe a useful revision.",
+    safety: "Use fictional scenarios, no names or private details.",
+  };
+  request.mockResolvedValue(challenge);
+  await generateBuildTemplate(
+    {
+      topic: "school",
+      minutes: 15,
+      focus: "I want to improve our homework reminders.",
+    },
+    [],
+    5,
+  );
+  const data = JSON.parse(request.mock.lastCall?.[0].prompt);
+  expect(data.difficulty).toBe(5);
+  expect(data.improvementGoal).toContain("homework reminders");
+  expect(data.challengeDesign).toContain("connected system");
+  expect(Object.keys(data).sort()).toEqual(
+    [
+      "avoidTitles",
+      "challengeDesign",
+      "difficulty",
+      "minutes",
+      "improvementGoal",
+      "safeStartingIdea",
+      "topic",
+    ].sort(),
   );
 });
