@@ -87,15 +87,22 @@ assert(html.includes('id="opportunities-panel"'));
 assert(html.includes('id="lab-progress"'));
 assert(html.includes('id="pilot-mission"'));
 assert(html.includes('id="build-victory"'));
+assert(html.includes('id="service-toggle"'));
+assert(html.includes('id="service-panel"'));
+assert(html.includes('id="service-build"'));
+assert(html.includes('id="service-drill"'));
+assert(html.includes('id="lab-recommendation"'));
 assert(html.includes('id="victory-continue"'));
 assert(html.includes('id="victory-build"'));
 assert(html.includes('id="resume-city"'));
 assert(html.includes('id="lab-see-city"'));
-assert(game.includes('buildLab.open("workshop-link", { firstMission: true })'));
+assert(game.includes("integratedStep(state.decisions, state.lab)"));
 assert(html.includes('id="playtest-summary"'));
 assert(game.includes("playtest.note("));
-assert(game.includes("case-worksite"));
-assert(game.includes("buildLab.open(worksiteMission)"));
+assert(!game.includes('id="case-worksite"'));
+assert(game.includes("mountCityServiceDesk"));
+assert(game.includes("serviceFor"));
+assert(game.includes("buildLab.open(step.missionId)"));
 assert(html.includes('id="opportunities-policies"'));
 assert(html.includes('id="opportunities-run"'));
 assert(html.includes('id="opportunities-requests"'));
@@ -247,7 +254,9 @@ assert(
   ),
 );
 assert(game.includes("choicesForCase(id, answerOrderSeed)"));
-assert(game.includes("const nextUnsolved = firstUnanswered(state.decisions)"));
+assert(
+  game.includes("const nextStep = integratedStep(state.decisions, state.lab)"),
+);
 assert(game.includes("resumeJourney();"));
 assert(game.includes("function goToJourneyCase(id)"));
 assert(game.includes("autoAdvanceTimer = setTimeout("));

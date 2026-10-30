@@ -65,7 +65,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, mixedJourney, buildMilestoneScene};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -75,23 +75,59 @@ game.renderer.render = () => {};
 const { CITY_CASES } = await import(
   pathToFileURL(root + "public/games/city/cases.mjs")
 );
+const { LAB_MISSIONS, labMission, emptyLabBoard, placeLabPiece, evaluateLab } =
+  await import(pathToFileURL(root + "public/games/city/build-lab.mjs"));
+
 let now = performance.now();
-// Actual first tap: a hands-on network, never a question panel.
+// Real first click: the decision and the puzzle are one locked challenge.
 const freshDecisions = JSON.stringify(game.state.decisions);
 assert.equal(w.document.getElementById("intro").hidden, false);
+assert(w.document.getElementById("music"));
+assert(w.document.getElementById("sound"));
 w.document.getElementById("start").click();
 assert.equal(w.document.getElementById("intro").hidden, true);
+assert.equal(w.document.getElementById("build-lab").open, false);
+assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
+// Trying to open a future puzzle before its decision must not succeed.
+w.document.getElementById("build-lab-toggle").click();
+assert.equal(w.document.getElementById("build-lab").open, false);
+let firstTravel = 0;
+while (game.route.length && firstTravel++ < 1800) {
+  now += 100;
+  game.animateWorld(now);
+}
+assert.equal(game.journey.stage, "question");
+assert(w.document.querySelector("[data-case-choice]"));
+const selected = w.document.querySelector("[data-case-choice]");
+selected.click();
+assert.equal(Object.keys(game.state.decisions).length, 1);
+assert.equal(game.state.decisions["repair-queue"], selected.dataset.caseChoice);
+const feedback = scheduled.get(game.feedbackTimer);
+assert(feedback, "Decision should change the city before the puzzle");
+scheduled.delete(game.feedbackTimer);
+feedback.callback();
+assert.equal(game.journey.stage, "outcome");
+assert.equal(w.document.getElementById("case-worksite"), null);
+assert.match(
+  w.document.getElementById("case-next").textContent,
+  /Build this solution/,
+);
+// Only the required Build action can continue to the next question.
+w.document.getElementById("case-next").click();
 assert.equal(w.document.getElementById("build-lab").open, true);
 assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
-assert.match(
-  w.document.getElementById("lab-title").textContent,
-  /first build/i,
+assert.equal(
+  w.document.querySelector('#lab-mission option[value="clinic-power"]')
+    .disabled,
+  true,
 );
-assert.equal(w.document.querySelectorAll("[data-case-choice]").length, 0);
-assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
-assert.equal(game.workshopBlueprint.visible, false);
-assert.equal(game.firstBuildMode, true);
-// Solve an actual playable supply route using its touch-friendly controls.
+assert.equal(game.journey.caseId, "repair-queue");
+// Closing the build must not let the player jump to the next question.
+w.document.getElementById("lab-close").click();
+assert.equal(w.document.getElementById("build-lab").open, false);
+game.resumeJourney();
+assert.equal(w.document.getElementById("build-lab").open, true);
+// Solve an actual playable supply route using touch-equivalent controls.
 const pilotCell = (row, col) =>
   w.document.querySelector(
     '[aria-label^="Row ' + row + ", column " + col + ':"]',
@@ -108,37 +144,82 @@ w.document.getElementById("lab-test").click();
 assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
 assert.equal(w.document.getElementById("lab-see-city").hidden, false);
 assert.equal(game.workshopBlueprint.visible, true);
-assert(
-  game.workshopBlueprint.children.length > 5,
-  "A physical 3D station must be constructed",
-);
+assert(game.workshopBlueprint.children.length > 5);
 assert(game.state.lab.tested.includes("workshop-link"));
 w.document.getElementById("lab-see-city").click();
 assert.equal(w.document.getElementById("build-lab").open, false);
 assert.equal(w.document.getElementById("build-victory").hidden, false);
 assert.match(w.document.getElementById("victory-title").textContent, /built!/);
-assert.match(
-  w.document.getElementById("victory-progress").textContent,
-  /1 \/ 5/,
-);
-assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
-assert.equal(w.document.querySelectorAll("[data-case-choice]").length, 0);
-// The default completion button starts the mixed question-and-puzzle adventure.
-w.document.getElementById("victory-continue").click();
-assert.equal(game.mixedJourney, true);
-assert.equal(game.firstBuildMode, false);
-assert.equal(w.document.getElementById("build-victory").hidden, true);
-// A returning player can still select the legacy authored story.
-game.pauseJourney();
-w.document.getElementById("pilot-story").click();
-assert.equal(game.mixedJourney, false);
+assert.equal(w.document.getElementById("victory-build").hidden, true);
 assert.equal(w.document.getElementById("pilot-mission").hidden, true);
+assert.equal(w.document.getElementById("detail").hidden, true);
+// The only reward CTA progresses into the next authored decision.
+w.document.getElementById("victory-continue").click();
+assert.equal(w.document.getElementById("build-victory").hidden, true);
+assert.equal(game.journey.caseId, CITY_CASES[1].id);
+assert.equal(game.journey.stage, "travelling");
+console.log(
+  "PASS: decide → mandatory test → 3D reveal → next decision, with no puzzle or question bypass.",
+);
+
+// Phase 2: a built structure actually serves fictional community requests.
+w.document.getElementById("service-toggle").click();
+assert.equal(w.document.getElementById("service-panel").hidden, false);
+assert.match(
+  w.document.getElementById("service-summary").textContent,
+  /6 of 40/,
+);
+assert.match(w.document.getElementById("service-needs").textContent, /6 \/ 6/);
+// Break the weakest placed connector without destroying the player's layout.
+w.document.getElementById("service-drill").click();
+const brokenCell = game.state.lab.faults["workshop-link"];
+assert(Number.isInteger(brokenCell));
+assert(game.buildMilestoneScene.buildings.get("workshop-link").offline);
+assert(game.workshopBlueprint.visible, "Damaged station stays built");
+assert.match(w.document.getElementById("service-needs").textContent, /0 \/ 6/);
+const safeLayout = JSON.stringify(game.state.lab.boards["workshop-link"]);
+// Repair the marked location and test the real connection to restore service.
+w.document.getElementById("service-build").click();
+assert.equal(w.document.getElementById("service-panel").hidden, true);
+assert.equal(w.document.getElementById("build-lab").open, true);
+const brokenRow = Math.floor(brokenCell / 5) + 1;
+const brokenCol = (brokenCell % 5) + 1;
+const damaged = w.document.querySelector(
+  '[aria-label^="Row ' +
+    brokenRow +
+    ", column " +
+    brokenCol +
+    ': Broken connection."]',
+);
+assert(damaged, "One damaged connection is clearly marked");
+damaged.click();
+assert.match(
+  w.document.getElementById("lab-result").textContent,
+  /press Test/i,
+);
+w.document.getElementById("lab-test").click();
+assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
+assert.equal(game.state.lab.faults["workshop-link"], null);
+assert.equal(
+  game.buildMilestoneScene.buildings.get("workshop-link").offline,
+  false,
+);
+assert.equal(
+  JSON.stringify(game.state.lab.boards["workshop-link"]),
+  safeLayout,
+);
+w.document.getElementById("lab-see-city").click();
+assert.match(
+  w.document.getElementById("victory-title").textContent,
+  /working again!/,
+);
+assert.match(w.document.getElementById("victory-service").textContent, /6\/6/);
+w.document.getElementById("victory-continue").click();
+assert.equal(game.state.lab.faults["workshop-link"], null);
+// Returning players retain their tested work and cannot skip later questions.
+game.pauseJourney();
 assert.equal(game.state.lab.boards["workshop-link"].filter(Boolean).length, 5);
 assert(game.state.lab.tested.includes("workshop-link"));
-game.pauseJourney();
-console.log(
-  "PASS: first tap builds without questions, tested network glows, and story resumes without resetting.",
-);
 
 w.document.getElementById("intro").hidden = true;
 for (let option = 0; option < 3; option++) {
@@ -227,30 +308,85 @@ assert.equal(JSON.stringify(game.state.decisions), preservedDecisions);
 // Leave revision before exercising the independent full journey regressions.
 w.document.getElementById("review-cancel").click();
 
-// Optional city worksite: the first practice result opens the same Build Lab,
-// pauses the journey, and leaves its kept decision untouched.
-game.goToJourneyCase(CITY_CASES[0].id);
-let pilotFrames = 0;
-while (game.route.length && pilotFrames++ < 1800) {
-  now += 100;
-  game.animateWorld(now);
+// Original casebook and navigation regressions continue below. Previously
+// certified builds are seeded ONLY in the exhaustive legacy-loop fixture;
+// the live user flow above proves they cannot be skipped.
+function testedRoute(missionId, routes) {
+  const mission = labMission(missionId);
+  let board = emptyLabBoard();
+  for (const cells of routes) {
+    for (let i = 1; i < cells.length - 1; i++) {
+      const cell = cells[i];
+      const direction = (other) =>
+        other === cell - 5
+          ? 0
+          : other === cell + 1
+            ? 1
+            : other === cell + 5
+              ? 2
+              : 3;
+      const openings = new Set([
+        direction(cells[i - 1]),
+        direction(cells[i + 1]),
+      ]);
+      if (board[cell]) {
+        const old = board[cell];
+        const base =
+          old.kind === "straight"
+            ? [0, 2]
+            : old.kind === "bend"
+              ? [0, 1]
+              : [0, 1, 3];
+        for (const d of base) openings.add((d + old.turn) % 4);
+      }
+      let piece = null;
+      for (const [kind, base] of Object.entries({
+        straight: [0, 2],
+        bend: [0, 1],
+        junction: [0, 1, 3],
+      })) {
+        for (let turn = 0; turn < 4; turn++) {
+          const ends = base.map((d) => (d + turn) % 4);
+          if (
+            ends.length === openings.size &&
+            ends.every((d) => openings.has(d))
+          )
+            piece = { kind, turn };
+        }
+      }
+      assert(piece, "Representable connected route");
+      board = placeLabPiece(mission, board, cell, piece);
+    }
+  }
+  assert(
+    evaluateLab(mission, board).success,
+    "Certified fixture: " + missionId,
+  );
+  return board;
 }
-const pilotButton = w.document.querySelector("[data-case-choice]");
-assert(pilotButton);
-pilotButton.click();
-const pilotCase = JSON.stringify(game.state.decisions);
-const pilotFeedback = scheduled.get(game.feedbackTimer);
-assert(pilotFeedback, "Pilot outcome reveal is scheduled");
-scheduled.delete(game.feedbackTimer);
-pilotFeedback.callback();
-assert(w.document.getElementById("case-worksite"));
-w.document.getElementById("case-worksite").click();
-assert(w.document.getElementById("build-lab").open);
-assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
-assert.equal(JSON.stringify(game.state.decisions), pilotCase);
-w.document.getElementById("lab-close").click();
-assert.equal(JSON.stringify(game.state.decisions), pilotCase);
-game.pauseJourney();
+const certified = {
+  "workshop-link": [[10, 5, 6, 7, 8, 9, 14]],
+  "clinic-power": [[2, 1, 0, 5, 10, 15, 20, 21, 22]],
+  "shared-services": [
+    [10, 11, 6, 1, 2, 3, 4],
+    [10, 11, 16, 21, 22, 23, 24],
+  ],
+  "backup-water": [
+    [10, 5, 6, 7, 8, 9, 14],
+    [10, 15, 16, 17, 18, 19, 14],
+  ],
+  "shared-recovery": [
+    [12, 11, 10, 5, 0, 1, 2, 3, 4],
+    [12, 11, 10, 15, 20],
+  ],
+};
+for (const [id, routes] of Object.entries(certified)) {
+  game.state.lab.boards[id] = testedRoute(id, routes);
+  if (!game.state.lab.tested.includes(id)) game.state.lab.tested.push(id);
+}
+game.buildMilestoneScene.sync(game.state.lab);
+assert.equal(game.state.lab.tested.length, LAB_MISSIONS.length);
+// Demonstrate legacy story controls still work once their real builds exist.
 for (const key of Object.keys(game.state.decisions))
   delete game.state.decisions[key];
 game.render();

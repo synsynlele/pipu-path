@@ -35,14 +35,26 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
       cyl(0.26, 0.1, light, 0.9, 1.15, 0.72, g, 0.26, 12);
       box(0.45, 0.55, 0.38, 0x7fd3a9, 0.9, 0.78, 0.72, g);
     }
-    // Small, clear "built" indicator over the physical infrastructure.
-    cyl(0.19, 0.15, light, 0, 2.85, 0, g, 0.19, 10);
+    // A private signal light on this exact 3D facility turns amber when
+    // its connected fictional service is interrupted by a repair drill.
+    const serviceLight = new T.Mesh(
+      new T.SphereGeometry(0.22, 10, 8),
+      new T.MeshBasicMaterial({ color: 0x4bf2bb }),
+    );
+    serviceLight.position.set(0, 2.91, 0);
+    g.add(serviceLight);
     g.traverse((object) => {
       object.userData.ignoreNavigation = true;
       if (object.isMesh) object.castShadow = false;
     });
     scene.add(g);
-    buildings.set(m.id, { group: g, ready: false, revealedAt: 0 });
+    buildings.set(m.id, {
+      group: g,
+      serviceLight,
+      ready: false,
+      offline: false,
+      revealedAt: 0,
+    });
   }
   function sync(lab, at = performance.now()) {
     for (const m of CITY_BUILD_MILESTONES) {
@@ -53,6 +65,10 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
         evaluateLab(labMission(m.id), lab?.boards?.[m.id]).success;
       if (ready && !build.ready) build.revealedAt = at;
       build.ready = ready;
+      build.offline = ready && lab?.faults?.[m.id] != null;
+      build.serviceLight.material.color.setHex(
+        build.offline ? 0xea7840 : 0x4bf2bb,
+      );
       build.group.visible = ready;
       if (!ready) build.group.scale.setScalar(1);
     }
@@ -71,6 +87,9 @@ export function createMilestoneScene({ T, scene, box, cyl }) {
         ? 1
         : Math.min(1, Math.max(0, (at - build.revealedAt) / 1150));
       build.group.scale.setScalar(0.2 + 0.8 * (1 - Math.pow(1 - t, 3)));
+      const pulse =
+        build.offline && !reducedMotion ? 1 + Math.sin(at / 270) * 0.14 : 1;
+      build.serviceLight.scale.setScalar(pulse);
     }
   }
   return { sync, reveal, animate, buildings };

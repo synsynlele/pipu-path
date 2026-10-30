@@ -99,6 +99,28 @@ export function sanitizeLab(input) {
         : null;
     });
   }
+  // Metadata is deliberately bounded, allowlisted and anonymous. It is
+  // stored only with the existing optional same-device city practice save.
+  const attempts = {};
+  const faults = {};
+  for (const mission of LAB_MISSIONS) {
+    const raw = input?.attempts?.[mission.id];
+    const safeCounter = (value) =>
+      Number.isInteger(value) && value >= 0 ? Math.min(30, value) : 0;
+    attempts[mission.id] = {
+      tests: safeCounter(raw?.tests),
+      successes: safeCounter(raw?.successes),
+      hints: safeCounter(raw?.hints),
+    };
+    const cell = input?.faults?.[mission.id];
+    faults[mission.id] =
+      Number.isInteger(cell) &&
+      cell >= 0 &&
+      cell < 25 &&
+      Boolean(boards[mission.id][cell])
+        ? cell
+        : null;
+  }
   return {
     active: labMission(input?.active).id,
     boards,
@@ -110,6 +132,8 @@ export function sanitizeLab(input) {
             typeof id === "string" && LAB_MISSIONS.some((m) => m.id === id),
         )
       : [],
+    attempts,
+    faults,
   };
 }
 export function placeLabPiece(mission, board, cell, piece) {

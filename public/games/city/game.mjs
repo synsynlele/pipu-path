@@ -10,13 +10,21 @@ import {
 } from "./build-lab.mjs";
 import {
   CITY_BUILD_MILESTONES,
-  formatForCase,
   milestoneForMission,
   completedMilestones,
 } from "./build-milestones.mjs";
 import { createMilestoneScene } from "./build-milestone-scene.mjs";
+import { serviceFor } from "./city-service-system.mjs";
+import { skillRecommendation } from "./build-progression.mjs";
+import { mountCityServiceDesk } from "./city-service-ui.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
+import {
+  integratedStep,
+  canEnterQuestion,
+  canOpenWorksite,
+} from "./integrated-journey.mjs";
+import { createCityAudio } from "./city-audio.mjs";
 import { infrastructurePlan } from "./infrastructure.mjs";
 import {
   ROAD_X,
@@ -66,7 +74,6 @@ import {
 import { createLivingCityScene } from "./living-scene.mjs";
 import { chapterPressure } from "./chapter-two.mjs";
 import {
-  firstUnanswered,
   recoverJourney,
   foundationComplete,
   chapterForCase,
@@ -136,24 +143,12 @@ let state = previousPractice ? { ...fresh(), ...previousPractice } : fresh(),
   simulating = false,
   simPeriod = -1,
   simRows = [],
-  lastResult = null,
-  sound = false;
-let cityAudio;
+  lastResult = null;
+const cityAudio = createCityAudio();
 function playTone(frequency = 520) {
-  if (!sound) return;
-  try {
-    cityAudio ??= new (window.AudioContext || window.webkitAudioContext)();
-    cityAudio.resume();
-    const o = cityAudio.createOscillator(),
-      g = cityAudio.createGain();
-    o.frequency.value = frequency;
-    g.gain.setValueAtTime(0.025, cityAudio.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, cityAudio.currentTime + 0.2);
-    o.connect(g);
-    g.connect(cityAudio.destination);
-    o.start();
-    o.stop(cityAudio.currentTime + 0.2);
-  } catch {}
+  cityAudio.cue(
+    frequency >= 720 ? "built" : frequency < 390 ? "revise" : "decision",
+  );
 }
 let toastTimer;
 function toast(msg) {
@@ -993,10 +988,14 @@ function refreshJourneyControls() {
       CITY_CASES.length +
       " decisions",
   );
-  const unlocked = foundationForOpportunities(state.decisions);
+  const step = integratedStep(state.decisions, state.lab);
+  const unlocked =
+    foundationForOpportunities(state.decisions) && step.kind === "complete";
   $("opportunities-toggle").disabled = !unlocked || simulating;
   $("resilience-toggle").disabled =
-    !canStartResilience(state.decisions, state.economy) || simulating;
+    !canStartResilience(state.decisions, state.economy) ||
+    step.kind !== "complete" ||
+    simulating;
   $("opportunities-toggle").title = unlocked
     ? "Manage your city's production, services and opportunities"
     : "Finish all 36 city decisions to unlock Chapter 3";
@@ -1010,6 +1009,10 @@ function refreshJourneyControls() {
     : "No earlier decisions yet";
   $("decision-count").textContent =
     caseProgress(state.decisions) + "/" + CITY_CASES.length;
+  $("build-lab-toggle").textContent =
+    step.kind === "build"
+      ? "Build required · " + labMission(step.missionId).title
+      : "Build Lab · completed builds";
   if (!visible) return;
   $("journey-toggle").textContent = running ? "Pause" : "Resume";
   $("journey-toggle").setAttribute(
@@ -1020,19 +1023,22 @@ function refreshJourneyControls() {
     ? "Pause the automatic builder journey"
     : "Resume the automatic builder journey";
   const chapter = chapterForCase(journey.caseId) ?? 1;
-  $("journey-status").textContent = running
-    ? "Chapter " +
-      chapter +
-      " · problem " +
-      caseNumber(journey.caseId) +
-      "/" +
-      CITY_CASES.length
-    : "Paused · Chapter " +
-      chapter +
-      " · problem " +
-      caseNumber(journey.caseId) +
-      "/" +
-      CITY_CASES.length;
+  $("journey-status").textContent =
+    step.kind === "build"
+      ? "Build required · " + labMission(step.missionId).title
+      : running
+        ? "Chapter " +
+          chapter +
+          " · problem " +
+          caseNumber(journey.caseId) +
+          "/" +
+          CITY_CASES.length
+        : "Paused · Chapter " +
+          chapter +
+          " · problem " +
+          caseNumber(journey.caseId) +
+          "/" +
+          CITY_CASES.length;
 }
 // Read-only aerial inspection of the actual selected construction states.
 // It pauses the guided flow and keeps its original stage, including review.
@@ -1292,7 +1298,23 @@ function goToJourneyCase(id) {
 function resumeJourney() {
   if (!$("intro").hidden || simulating || journey.status === "running") return;
   if (reviewCaseId) finishDecisionReview({ resume: false });
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") {
+    pendingBuildCase = step.caseId;
+    buildLab.open(step.missionId);
+    return;
+  }
   const target = recoverJourney({ ...journey, decisions: state.decisions });
+  if (
+    step.kind === "question" &&
+    target.stage !== "chapter" &&
+    (target.caseId !== step.caseId ||
+      target.stage === "complete" ||
+      ["outcome", "building"].includes(target.stage))
+  ) {
+    goToJourneyCase(step.caseId);
+    return;
+  }
   if (target.stage === "complete") {
     journey.status = "complete";
     refreshJourneyControls();
@@ -2364,7 +2386,14 @@ function renderCasebook() {
       foundationComplete(state.decisions);
     for (const scenario of casesFor(district)) {
       const button = document.createElement("button");
-      button.disabled = !unlocked;
+      const nextStep = integratedStep(state.decisions, state.lab);
+      const alreadyDecided = Boolean(
+        getChoice(scenario.id, state.decisions[scenario.id]),
+      );
+      button.disabled =
+        !unlocked ||
+        (!alreadyDecided &&
+          (nextStep.kind !== "question" || nextStep.caseId !== scenario.id));
       button.type = "button";
       button.className = "case-tile";
       const title = document.createElement("strong");
@@ -2373,9 +2402,11 @@ function renderCasebook() {
       const savedChoice = getChoice(scenario.id, state.decisions[scenario.id]);
       status.textContent = savedChoice
         ? "↶ Change: " + savedChoice.title
-        : unlocked
-          ? "Not solved yet · start problem"
-          : "Unlock after Chapter 1";
+        : !unlocked
+          ? "Unlock after Chapter 1"
+          : button.disabled
+            ? "🔒 Finish the current challenge first"
+            : "Next challenge · make a decision";
       if (savedChoice) button.classList.add("case-completed");
       button.append(title, status);
       button.onclick = () => startCase(scenario.id);
@@ -2430,6 +2461,15 @@ function showDistrictCases(district) {
 }
 function startCase(id) {
   if (!getCase(id)) return;
+  if (!canEnterQuestion(id, state.decisions, state.lab)) {
+    const step = integratedStep(state.decisions, state.lab);
+    toast(
+      step.kind === "build"
+        ? "Finish your linked build before opening another question."
+        : "Complete the current challenge to unlock this problem.",
+    );
+    return;
+  }
   if (getCase(id).chapter === 2 && !foundationComplete(state.decisions)) {
     toast("Finish Chapter 1 to open the growing city.");
     return;
@@ -2662,22 +2702,13 @@ function showChapterTransition() {
 function proceedAfterCase(id) {
   cancelAutoAdvance();
   $("detail").hidden = true;
-  // Only implementation challenges become puzzles; ethical and resource
-  // decisions stay questions. Existing story-only and saved journeys do not
-  // unexpectedly change format.
-  const format = formatForCase(id);
-  if (
-    mixedJourney &&
-    format.missionId &&
-    !state.lab.tested.includes(format.missionId) &&
-    !promptedBuildCases.has(id)
-  ) {
-    promptedBuildCases.add(id);
-    pendingBuildCase = id;
-    buildLab.open(format.missionId);
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") {
+    pendingBuildCase = step.caseId;
+    buildLab.open(step.missionId);
     return;
   }
-  const next = nextPlayableAfter(id, state.decisions);
+  const next = step.kind === "question" ? getCase(step.caseId) : null;
   if (journey.status === "paused") journey.status = "running";
   if (isChapterTransition(id) && foundationComplete(state.decisions)) {
     showChapterTransition();
@@ -2721,14 +2752,9 @@ function showCaseOutcome(id, choiceId) {
   cancelAutoAdvance();
   outcomePaused = false;
   const next = nextPlayableAfter(id, state.decisions);
-  // A short, optional hands-on worksite; the established journey still
-  // advances automatically for everyone who chooses not to open it.
-  const worksiteMission = formatForCase(id).missionId;
-  const worksitePrompt = worksiteMission
-    ? '<div class="case-worksite"><strong>Want to build a solution yourself?</strong>' +
-      "<p>Place connections, test your plan, and improve it. Optional practice only; your city progress is unchanged.</p>" +
-      '<button id="case-worksite" type="button">Try hands-on building →</button></div>'
-    : "";
+  // This same question-to-build path is used in automatic and manual play.
+  const step = integratedStep(state.decisions, state.lab);
+  const requiredBuild = step.kind === "build" && step.caseId === id;
   const signals = option.impact
     .map(
       (value, i) =>
@@ -2754,39 +2780,41 @@ function showCaseOutcome(id, choiceId) {
       "</p>" +
       '<div class="case-result"><b>What changed</b><p>' +
       option.result +
-      "</p><b>The trade-off</b><p>" +
+      '</p></div><details class="case-more"><summary>Details and trade-offs</summary>' +
+      "<p><strong>The trade-off:</strong> " +
       option.tradeoff +
-      '</p></div><div class="case-impact">' +
+      '</p><div class="case-impact">' +
       signals +
-      '</div><details class="case-more"><summary>Explore the connections</summary>' +
-      "<p><strong>Related systems:</strong> " +
+      "</div><p><strong>Related systems:</strong> " +
       option.links +
-      "</p><p><strong>Safe observation:</strong> " +
+      "</p><p><strong>Reflect:</strong> " +
       scenario.bridge +
-      "</p><small>Fictional signals, not verified XP or actual city funds.</small></details>" +
-      worksitePrompt +
+      "</p><small>Fictional simulation. No XP awarded.</small></details>" +
       '<div class="auto-next"><span id="autonext-caption">✓ Your decision is kept.' +
       (next
         ? " Next: " + next.title
         : " All " + CITY_CASES.length + " problems reached.") +
-      (worksiteMission &&
-      mixedJourney &&
-      !state.lab.tested.includes(worksiteMission)
-        ? " Your next challenge is to build the solution."
-        : " The game continues automatically.") +
+      (requiredBuild
+        ? " Build and test the solution to unlock the next decision."
+        : " The next challenge follows.") +
       "</span>" +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
       '<div class="case-actions">' +
+      '<button class="primary" id="case-next">' +
+      (requiredBuild
+        ? "Build this solution →"
+        : next
+          ? "Next challenge →"
+          : "Finish →") +
+      '</button><details class="case-tools"><summary>Other actions</summary>' +
       '<button class="secondary" id="case-pause">Pause to read</button>' +
       '<button class="secondary" id="case-replay">Replay action</button>' +
       '<button class="secondary" id="case-retry">Change decision</button>' +
-      '<button class="primary" id="case-next">' +
-      (next ? "Next now →" : "Finish →") +
-      "</button></div>",
+      "</details></div>",
     "outcome",
   );
-  if ($("case-worksite"))
-    $("case-worksite").onclick = () => buildLab.open(worksiteMission);
+  // Required puzzles are never an optional detour. The single Continue
+  // action leads into the current challenge's build and test.
   $("case-pause").onclick = () => {
     pauseJourney("Paused to read. Use Resume journey when you're ready.");
     outcomePaused = true;
@@ -3656,9 +3684,7 @@ const buildMilestoneScene = createMilestoneScene({ T, scene, box, cyl });
 buildMilestoneScene.sync(state.lab);
 const workshopBlueprint =
   buildMilestoneScene.buildings.get("workshop-link").group;
-let mixedJourney = false;
 let pendingBuildCase = null;
-const promptedBuildCases = new Set();
 let victoryCamera = null;
 let lastVictoryMission = null;
 function hideBuildVictory() {
@@ -3668,7 +3694,10 @@ function hideBuildVictory() {
     victoryCamera = null;
   }
 }
-function showBuildVictory(missionId, { retry = false } = {}) {
+function showBuildVictory(
+  missionId,
+  { retry = false, recovered = false } = {},
+) {
   const mission = milestoneForMission(missionId);
   if (!mission) return;
   hideBuildVictory();
@@ -3683,53 +3712,67 @@ function showBuildVictory(missionId, { retry = false } = {}) {
   const completed = completedMilestones(state.lab, evaluateLab, labMission);
   $("victory-kicker").textContent = retry
     ? "EVERY BUILDER REVISES"
-    : "✦ YOU BUILT IT! ✦";
+    : recovered
+      ? "✦ SERVICE RESTORED! ✦"
+      : "✦ YOU BUILT IT! ✦";
   $("victory-title").textContent = retry
     ? "Your city still needs this connection"
-    : mission.title + " is built!";
+    : recovered
+      ? mission.title + " is working again!"
+      : mission.title + " is built!";
   $("victory-description").textContent = retry
-    ? "Your design is kept. Try another layout, or return to decisions and build this later."
-    : mission.result + " Look at the new 3D station built in your city!";
+    ? "Keep improving this design to restore the neighbourhood service."
+    : recovered
+      ? "You restored a service by testing your repair."
+      : "You built a working structure. See it in your city.";
   $("victory-progress").textContent =
     completed.length +
     " / " +
     CITY_BUILD_MILESTONES.length +
     " city structures constructed by solving puzzles.";
-  $("victory-continue").textContent = pendingBuildCase
-    ? "Continue to the next decision →"
-    : "Next: solve a city decision →";
-  $("victory-build").textContent = retry
-    ? "Improve this design →"
-    : "Build another city improvement →";
+  const service = serviceFor(state.lab, missionId);
+  $("victory-service").textContent = retry
+    ? "Repair the connection to continue."
+    : service.served +
+      "/" +
+      service.demand +
+      " simulated local service requests now met.";
+  $("victory-continue").textContent =
+    integratedStep(state.decisions, state.lab).kind === "build"
+      ? "Finish the required build →"
+      : "Continue your city journey →";
+  $("victory-build").hidden = !retry;
+  $("victory-build").textContent = "Return to the required build →";
   $("build-victory").dataset.retry = retry ? "true" : "false";
+  // One reward surface: no simultaneous detail, status, prototype or pilot card.
+  $("detail").hidden = true;
+  $("world-feedback").hidden = true;
+  $("pilot-mission").hidden = true;
+  serviceDesk.close();
   $("build-victory").hidden = false;
-  renderPilotMission();
   if (!retry) playTone(784);
 }
 $("victory-continue").onclick = () => {
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") {
+    hideBuildVictory();
+    pendingBuildCase = step.caseId;
+    buildLab.open(step.missionId);
+    return;
+  }
   const completedCase = pendingBuildCase;
   pendingBuildCase = null;
   hideBuildVictory();
-  if (completedCase) {
-    proceedAfterCase(completedCase);
-  } else if (firstBuildMode) {
-    mixedJourney = true;
-    startCity("story");
-  } else {
-    resumeJourney();
-  }
+  if (completedCase) proceedAfterCase(completedCase);
+  else if (step.kind === "question") goToJourneyCase(step.caseId);
+  else resumeJourney();
 };
 $("victory-build").onclick = () => {
   const retry = $("build-victory").dataset.retry === "true";
   const next =
     retry && lastVictoryMission
       ? lastVictoryMission
-      : (CITY_BUILD_MILESTONES.find(
-          (m) =>
-            !completedMilestones(state.lab, evaluateLab, labMission).some(
-              (item) => item.id === m.id,
-            ),
-        )?.id ??
+      : (integratedStep(state.decisions, state.lab).missionId ??
         lastVictoryMission ??
         "workshop-link");
   hideBuildVictory();
@@ -3742,9 +3785,10 @@ function renderPilotMission() {
   panel.hidden =
     !firstBuildMode || !$("intro").hidden || !$("build-victory").hidden;
   if (panel.hidden) return;
-  const next = LAB_MISSIONS.find(
-    (mission) => !state.lab.tested.includes(mission.id),
-  );
+  const suggested = skillRecommendation(state.lab);
+  const next = suggested.recommendedId
+    ? LAB_MISSIONS.find((mission) => mission.id === suggested.recommendedId)
+    : null;
   $("pilot-title").textContent = workshopTested
     ? "You built Ama's supply station!"
     : "Ama's workshop needs a working supply";
@@ -3758,28 +3802,28 @@ function renderPilotMission() {
     : "Build the connection →";
 }
 $("pilot-build").onclick = () => {
-  const next =
-    workshopTested &&
-    LAB_MISSIONS.find((mission) => !state.lab.tested.includes(mission.id));
-  buildLab.open(next?.id ?? "workshop-link");
+  const next = workshopTested
+    ? skillRecommendation(state.lab).recommendedId
+    : null;
+  buildLab.open(next ?? "workshop-link");
 };
-$("pilot-story").onclick = () => {
-  // Explicit original-story route stays available for returning learners.
-  mixedJourney = false;
-  startCity("story");
-};
+$("pilot-story").onclick = () => resumeJourney();
 const buildLab = mountBuildLab({
   read: () => state.lab,
+  canSelectMission: (id) => canOpenWorksite(id, state.decisions, state.lab),
+  onLocked: () =>
+    toast("Finish the current decision to unlock its building challenge."),
   onTest: ({ missionId, success }) => {
     playtest.note(success ? "prototype_pass" : "prototype_retry");
     buildMilestoneScene.sync(state.lab);
     if (missionId === "workshop-link") workshopTested = success;
+    serviceDesk.render();
     renderPilotMission();
   },
-  onReveal: ({ missionId }) => {
+  onReveal: ({ missionId, recovered }) => {
     if (state.lab.tested.includes(missionId)) {
       buildMilestoneScene.reveal(missionId);
-      showBuildVictory(missionId);
+      showBuildVictory(missionId, { recovered });
     }
   },
   write: (lab) => {
@@ -3787,9 +3831,11 @@ const buildLab = mountBuildLab({
     buildMilestoneScene.sync(state.lab);
     workshopTested = workshopBlueprint.visible;
     persistPractice();
+    serviceDesk.render();
   },
   beforeOpen: () => {
     hideBuildVictory();
+    serviceDesk.close();
     if (reviewCaseId) finishDecisionReview({ resume: false });
     if (builtCityView) closeBuiltCityView();
     if (journey.status === "running")
@@ -3817,53 +3863,111 @@ const buildLab = mountBuildLab({
   afterClose: () => {
     keys.clear();
     refreshJourneyControls();
-    renderPilotMission();
-    if (pendingBuildCase && $("build-victory").hidden) {
-      const milestone = formatForCase(pendingBuildCase);
-      if (
-        milestone.missionId &&
-        !state.lab.tested.includes(milestone.missionId)
-      ) {
-        showBuildVictory(milestone.missionId, { retry: true });
-      }
+    if (
+      integratedStep(state.decisions, state.lab).kind === "build" &&
+      $("build-victory").hidden
+    ) {
+      toast("Build paused. Press Resume to finish before the next challenge.");
     }
   },
 });
-$("build-lab-toggle").onclick = () => buildLab.open();
+const serviceDesk = mountCityServiceDesk({
+  read: () => state.lab,
+  write: (lab) => {
+    state.lab = lab;
+    buildMilestoneScene.sync(state.lab);
+    persistPractice();
+  },
+  beforeOpen: () => {
+    hideBuildVictory();
+    if (builtCityView) closeBuiltCityView();
+    if (reviewCaseId) finishDecisionReview({ resume: false });
+    if (journey.status === "running")
+      pauseJourney("Your city journey is paused while you inspect services.");
+    cancelWalk();
+    closeDetail();
+    closeCasebook();
+    closeCityStatus();
+    closeDirectory();
+    closeOpportunityPanel();
+    closeResiliencePanel();
+    guideExpanded = false;
+    keys.clear();
+    $("city-menu").open = false;
+    render();
+  },
+  onFocus: (id) => {
+    const marker = milestoneForMission(id);
+    if (!marker) return;
+    activeFeedback = {
+      x: marker.x,
+      z: marker.z,
+      started: performance.now(),
+    };
+    yaw = 0.45;
+    pitch = 0.72;
+    distance = 26;
+  },
+  onClose: () => {
+    activeFeedback = null;
+    $("service-toggle").setAttribute("aria-expanded", "false");
+  },
+  onBuild: (id) => {
+    if (canOpenWorksite(id, state.decisions, state.lab)) buildLab.open(id);
+    else toast("This build unlocks after its linked decision.");
+  },
+});
+$("service-toggle").onclick = () => {
+  if (serviceDesk.isOpen) serviceDesk.close();
+  else {
+    serviceDesk.open();
+    $("service-toggle").setAttribute("aria-expanded", "true");
+  }
+};
+$("build-lab-toggle").onclick = () => {
+  const step = integratedStep(state.decisions, state.lab);
+  if (step.kind === "build") return buildLab.open(step.missionId);
+  const prior = LAB_MISSIONS.find((m) =>
+    canOpenWorksite(m.id, state.decisions, state.lab),
+  );
+  if (prior) buildLab.open(prior.id);
+  else
+    toast("First decide how to help Ama. Your building puzzle unlocks next.");
+};
 $("start").onclick = () => startCity("build");
 $("resume-city").onclick = () => startCity("story");
 $("resume-city").hidden =
   !previousPractice ||
   (!Object.keys(state.decisions).length && !previousPractice.journey);
-function startCity(mode = "build") {
+function startCity() {
   if (!$("intro").hidden) playtest.note("start");
-  firstBuildMode = mode === "build";
-  if (firstBuildMode) mixedJourney = true;
+  // Start is a real player gesture, so the soundtrack can safely begin
+  // here. Both independent HUD switches remain available to mute at once.
+  if (!cityAudio.sound) cityAudio.toggleSound();
+  if (!cityAudio.music) cityAudio.toggleMusic();
+  syncAudioControls();
+  firstBuildMode = false;
+  serviceDesk.close();
   $("intro").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
   mapMode = false;
   closeCasebook();
   closeCityStatus();
-  guideExpanded = !firstBuildMode;
+  guideExpanded = false;
   dockExpanded = false;
   distance = 27;
   closeDirectory();
-  $("mission").hidden = firstBuildMode;
+  $("mission").hidden = true;
   $("mobile-move").hidden = true;
-  $("pilot-mission").hidden = !firstBuildMode;
-  hideBuildVictory();
-  render();
-  if (firstBuildMode) {
-    // The main Play button opens hands-on building before any question.
-    // Returning players can explicitly resume their saved city instead.
-    cancelAutoAdvance();
-    renderPilotMission();
-    buildLab.open("workshop-link", { firstMission: true });
-    return;
-  }
   $("pilot-mission").hidden = true;
-  const nextUnsolved = firstUnanswered(state.decisions);
+  hideBuildVictory();
+  document.body.classList.add("city-integrated");
+  render();
+  // All entries recover the same question → tested build sequence.
+  const nextStep = integratedStep(state.decisions, state.lab);
+  const nextUnsolved =
+    nextStep.kind === "complete" ? null : getCase(nextStep.caseId);
   if (
     !nextUnsolved &&
     state.resilience &&
@@ -3874,7 +3978,7 @@ function startCity(mode = "build") {
     openResiliencePanel();
     return;
   }
-  if (nextUnsolved || journey.status === "paused") {
+  if (nextStep.kind !== "complete" || journey.status === "paused") {
     // Preserve the Chapter 2 reveal for older saves that completed all 16
     // foundation cases before Chapter 2 existed.
     if (
@@ -3887,8 +3991,8 @@ function startCity(mode = "build") {
     }
     toast(
       previousPractice
-        ? "Welcome back. Resuming your unfinished builder journey."
-        : "Your first problem is ready.",
+        ? "Welcome back. Your next linked challenge is ready."
+        : "First decide, then build and test your solution.",
     );
     resumeJourney();
   } else {
@@ -3898,16 +4002,41 @@ function startCity(mode = "build") {
   }
 }
 
-$("sound").onclick = () => {
-  sound = !sound;
-  playTone();
-  $("sound").textContent = sound ? "♪" : "♫";
+function syncAudioControls() {
+  $("sound").textContent = cityAudio.sound ? "🔊" : "🔇";
   $("sound").setAttribute(
     "aria-label",
-    sound ? "Turn sound off" : "Turn sound on",
+    cityAudio.sound ? "Turn sound effects off" : "Turn sound effects on",
   );
-  toast(sound ? "City sound enabled for this session." : "City sound off.");
+  $("sound").setAttribute("aria-pressed", String(cityAudio.sound));
+  $("music").textContent = cityAudio.music ? "♫" : "♬";
+  $("music").setAttribute(
+    "aria-label",
+    cityAudio.music ? "Turn background music off" : "Turn background music on",
+  );
+  $("music").setAttribute("aria-pressed", String(cityAudio.music));
+}
+$("sound").onclick = () => {
+  const enabled = cityAudio.toggleSound();
+  syncAudioControls();
+  toast(enabled ? "Sound effects on." : "Sound effects off or unavailable.");
 };
+$("music").onclick = () => {
+  const enabled = cityAudio.toggleMusic();
+  syncAudioControls();
+  toast(
+    enabled
+      ? "Original background music on."
+      : "Background music off or unavailable.",
+  );
+};
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && cityAudio.music) {
+    cityAudio.toggleMusic();
+    syncAudioControls();
+  }
+});
+syncAudioControls();
 $("help").onclick = () => {
   $("playtest-summary").textContent = playtest.report();
   $("playtest-copy-status").textContent = "";
