@@ -17,7 +17,11 @@ import { createMilestoneScene } from "./build-milestone-scene.mjs";
 import { serviceFor } from "./city-service-system.mjs";
 import { skillRecommendation } from "./build-progression.mjs";
 import { mountCityServiceDesk } from "./city-service-ui.mjs";
-import { beginStageThree, finishStageThree } from "./stage-three-scenarios.mjs";
+import {
+  beginStageThree,
+  finishStageThree,
+  stageThreeCase,
+} from "./stage-three-scenarios.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
 import {
@@ -1663,6 +1667,14 @@ function reportParentState() {
       saved: saveEnabled,
       entered: $("intro").hidden,
       district: getCase(journey.caseId)?.district ?? null,
+      // This is a topic hint only, not proof of real-world action.
+      // Send a fixed local mission ID, never a question answer or free text.
+      service:
+        (state.stageThree.active
+          ? stageThreeCase(state.stageThree.round).missionId
+          : state.stageThree.round > 0
+            ? stageThreeCase(state.stageThree.round - 1).missionId
+            : null) ?? state.lab.tested.at(-1) ?? null,
     },
     window.location.origin,
   );
