@@ -51,3 +51,22 @@ blocks this new loop. This is explicit product authority for that separation.
 - Release via an additive migration and protected branch. Migration, API
   grants, privacy, current-attempt handling, persistence and mobile navigation
   require validation before production deployment.
+
+## Goal-specific real-life Quests (30 October refinement)
+
+The learner chooses a broad improvement area **and** writes a short practical
+goal. The app must disclose that the voluntary goal text is sent to AI to
+tailor the Quest. The app rejects obvious contact information and sensitive
+disclosures and never sends account IDs, private answers, photos or reflections.
+The goal remains private in its owner's attempt row. A reusable public-template
+row stores only a normalized goal fingerprint, not the original goal text.
+Authenticated clients cannot read template rows directly.
+
+Even the first Quest has to require observing a real problem, comparing two
+approaches, testing a safe small solution and describing an observable result.
+Difficulty rises for new Quests in that topic as actual new attempts are
+recorded. All outcomes count as honest practice (1 point); reported success
+adds one bonus point. Levels unlock at 3, 7, 13 and 21 practice points. These
+are challenge tiers, not proof of mastery. Reworking a past Quest does not
+farm higher-level access. Templates are shared only when topic, minutes,
+difficulty and normalized goal fingerprint all match.
