@@ -340,6 +340,27 @@
         </p>
       </section>
       <section
+        id="resilience-feedback"
+        hidden
+        aria-label="Your city response in action"
+        tabindex="-1"
+      >
+        <strong id="resilience-feedback-title"></strong>
+        <p
+          id="resilience-feedback-summary"
+          role="status"
+          aria-live="polite"
+        ></p>
+        <div
+          id="resilience-feedback-services"
+          aria-label="Inspect each service"
+        ></div>
+        <p id="resilience-feedback-motion"></p>
+        <button id="resilience-feedback-next" type="button" class="primary">
+          Next disruption →
+        </button>
+      </section>
+      <section
         id="opportunities-panel"
         class="panel"
         hidden
@@ -451,6 +472,26 @@
         <p id="resilience-stocks"></p>
         <h3 id="resilience-event"></h3>
         <p id="resilience-story"></p>
+        <div id="resilience-complete" hidden>
+          <h3>Chapter 4 complete. Keep building.</h3>
+          <p>
+            You tested your city through rain, a power interruption and heat.
+            Review who was still waiting, improve a city decision, or build a
+            useful solution in real life.
+          </p>
+          <a
+            id="resilience-real-quest"
+            class="primary"
+            href="/real-quests"
+            target="_top"
+            >Build a real-world solution →</a
+          >
+          <p>
+            This is the end of the current four-chapter story. Your city stays
+            available to explore and improve. Real Quests continue with
+            AI-guided builds and follow-ups.
+          </p>
+        </div>
         <div id="resilience-mission" class="resilience-mission" hidden>
           <strong id="resilience-mission-headline"></strong>
           <p id="resilience-mission-objective"></p>
@@ -470,7 +511,12 @@
           role="group"
           aria-label="Test a city rescue plan"
         ></div>
-        <div id="resilience-preview" class="resilience-preview" hidden>
+        <div
+          id="resilience-preview"
+          class="resilience-preview"
+          tabindex="-1"
+          hidden
+        >
           <strong id="resilience-preview-title"></strong>
           <p id="resilience-preview-services"></p>
           <p id="resilience-preview-tradeoff"></p>

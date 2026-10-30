@@ -5,6 +5,7 @@
       "fix/structured-quest-output": false,
       "fix/quest-prompts-brand": false,
       "feat/quest-continuation": false,
+      "fix/chapter-four-feedback": false,
       "fix/quest-recovery-audio": false,
       "fix/real-quest-tailored-stages": false,
       "agent/stage-19-institution-workspace": false,

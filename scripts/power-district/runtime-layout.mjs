@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import * as T from "../../public/games/shared/vendor/three.module.js";
 import { overlapsRoad } from "../../public/games/city/layout.mjs";
+import { resilienceReport } from "../../public/games/city/resilience.mjs";
 import { JSDOM } from "jsdom";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
@@ -540,6 +541,57 @@ for (let round = 0; round < 3; round++) {
   }
   w.document.getElementById("resilience-commit").click();
   assert.equal(game.state.resilience.choices.length, round + 1);
+  const response = resilienceReport(game.state.resilience).last;
+  assert.equal(
+    w.document.getElementById("resilience-panel").hidden,
+    true,
+    "Deploying reveals the city instead of covering it with the next brief",
+  );
+  assert.equal(w.document.getElementById("resilience-feedback").hidden, false);
+  assert.equal(game.camera.type, "OrthographicCamera");
+  assert(w.document.body.classList.contains("resilience-revealing"));
+  assert(
+    w.document
+      .getElementById("resilience-feedback-summary")
+      .textContent.includes(response.waiting + " still waiting"),
+  );
+  assert.equal(
+    w.document.querySelectorAll("#resilience-feedback-services button").length,
+    4,
+  );
+  for (const [id, values] of Object.entries(response.requests)) {
+    const marker = game.livingScene.requestMarkers.get(id);
+    assert.equal(marker.lamp.visible, values.requested > 0);
+    assert.equal(
+      marker.light.material.color.getHex(),
+      values.served < values.requested ? 0xd28a43 : 0x4aa47a,
+    );
+  }
+  const vehicle = game.livingScene.vehicles.find((item) => item.route);
+  if (response.shipments.length) {
+    assert(vehicle, "Actual supplies produce moving delivery vehicles");
+    const before = game.livingScene.vehicles.map((v) => v.travelled);
+    game.livingScene.animate(10000 + round * 2000, false, false, []);
+    game.livingScene.animate(11000 + round * 2000, false, false, []);
+
+    assert(
+      game.livingScene.vehicles.some((v, i) => v.travelled > before[i]),
+      "Chapter 4 vehicles move after deployment",
+    );
+  } else {
+    assert.equal(game.livingScene.vehicles.filter((v) => v.route).length, 0);
+    assert.match(
+      w.document.getElementById("resilience-feedback-motion").textContent,
+      /No supplies could move/,
+    );
+  }
+  w.document.getElementById("resilience-feedback-next").click();
+  assert.equal(w.document.getElementById("resilience-panel").hidden, false);
+  assert.equal(w.document.getElementById("resilience-feedback").hidden, true);
+  assert.equal(
+    w.document.getElementById("resilience-complete").hidden,
+    round !== 2,
+  );
   // A closed/reopened panel resumes; it never seeds another city or chapter.
   w.document.getElementById("resilience-close").click();
   w.document.getElementById("resilience-toggle").click();
@@ -551,6 +603,15 @@ assert.equal(
 );
 assert.equal(JSON.stringify(game.state.economy), previousEconomy);
 assert.equal(JSON.stringify(game.state.decisions), previousCity);
+assert.match(
+  w.document.getElementById("resilience-complete").textContent,
+  /end of the current four-chapter story/,
+);
+assert.match(
+  w.document.getElementById("resilience-real-quest").getAttribute("href"),
+  /^\/real-quests\?district=/,
+);
+assert.equal(w.document.getElementById("resilience-real-quest").target, "_top");
 w.document.getElementById("resilience-view").click();
 assert.equal(game.camera.type, "OrthographicCamera");
 game.closeBuiltCityView();
