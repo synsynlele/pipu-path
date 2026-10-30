@@ -4904,3 +4904,54 @@ body.city-integrated #detail[data-mode="outcome"] .case-tools button {
   padding: 8px;
   font-weight: 750;
 }
+
+/* Independent device-local audio levels live inside City menu, keeping the HUD compact. */
+.audio-settings {
+  position: relative;
+}
+.audio-settings > summary {
+  list-style: none;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #b6c8c4;
+  border-radius: 12px;
+  background: #fff;
+  color: #173b36;
+  -webkit-text-fill-color: #173b36;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.audio-settings > summary::-webkit-details-marker {
+  display: none;
+}
+.audio-levels {
+  box-sizing: border-box;
+  width: 100%;
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #b6c8c4;
+  border-radius: 14px;
+  background: #fff;
+  color: #173b36;
+  -webkit-text-fill-color: #173b36;
+}
+.audio-levels label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+}
+.audio-levels input[type="range"] {
+  width: 100%;
+  min-height: 32px;
+  accent-color: #326c64;
+  cursor: pointer;
+}
+.audio-levels small {
+  font-size: 11px;
+  line-height: 1.5;
+}

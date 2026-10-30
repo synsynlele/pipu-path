@@ -1849,3 +1849,22 @@ a viewport-contained mobile panel, close/Escape focus recovery and loading only
 when opened. No database migration or dependency change. Full checks and release
 verification belong in the release PR; no live generation quality is inferred
 from synthetic content checks.
+
+## 30 October 2026 — Practical-generation recovery and stronger city audio
+
+Live logs confirm AI returns content but the app rejects it as
+BUILD_NOT_PRACTICAL; the previous diagnostic cannot identify which of its three
+rules failed. Narrow paperwork detection to actual paper projects and drawings,
+not phone gestures or incidental materials, honour explicit cautions, and accept
+more real implementation verbs. Preserve dangerous-instruction checks and reject
+observation/notes-only Quests. Log the exact safe rule ID. A rejected practicality
+or stage-format draft gets one correction inside a shared 45-second deadline and
+the same accounted request; revalidate the full result without a fallback.
+
+Replace the quiet single-note city loop with an original 120 BPM layered melody,
+bass, chords and light percussion. Raise effect amplitude, bound summed output,
+and offer independent music/effect levels (85%/100% defaults) stored on the device.
+Keep verified gesture unlock, independent mute and background suspension. Volume
+sliders sit inside City menu so the compact mobile HUD gains no extra button.
+No audio downloads, additional providers, migrations or dependencies. Physical
+speaker loudness and a fresh signed-in generation remain live acceptance items.
