@@ -2,7 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { buildServiceClient } from "../infrastructure/client";
 import { generateBuildTemplate } from "../infrastructure/provider";
-import { validateChallenge, type BuildChoice } from "../domain/build";
+import { difficultySchema, validateChallenge, type BuildChoice, type BuildDifficulty } from "../domain/build";
 
 export async function startBuildForUser(userId: string, choice: BuildChoice) {
   const service = buildServiceClient();
@@ -14,10 +14,22 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
     .maybeSingle();
   if (current.error) throw new Error("BUILD_LOAD_FAILED");
   if (current.data) return current.data.id;
-  const unseen = await service.rpc("find_unseen_real_build_template", {
+  // Server-derived from recorded attempts in this topic. No answers, evidence,
+  // private reflections or personal identifiers are forwarded to the AI.
+  const progress = await service.rpc("next_real_build_difficulty", {
+    user_input: userId,
+    topic_input: choice.topic,
+  });
+  if (progress.error) throw new Error("BUILD_LOAD_FAILED");
+  const parsedLevel = difficultySchema.safeParse(progress.data);
+  if (!parsedLevel.success) throw new Error("BUILD_LOAD_FAILED");
+  const difficulty = parsedLevel.data as BuildDifficulty;
+
+  const unseen = await service.rpc("find_unseen_real_build_template_level", {
     user_input: userId,
     topic_input: choice.topic,
     minutes_input: choice.minutes,
+    difficulty_input: difficulty,
   });
   if (unseen.error) throw new Error("BUILD_LOAD_FAILED");
   let template = unseen.data?.[0];
@@ -27,11 +39,12 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
       .select("*")
       .eq("topic", choice.topic)
       .eq("minutes", choice.minutes)
+      .eq("difficulty", difficulty)
       .order("created_at", { ascending: false })
       .limit(30);
     if (pool.error) throw new Error("BUILD_LOAD_FAILED");
     const token = randomUUID(),
-      key = `${choice.topic}:${choice.minutes}`;
+      key = `${choice.topic}:${choice.minutes}:${difficulty}`;
     const lease = await service.rpc("claim_real_build_generation", {
       key_input: key,
       token_input: token,
@@ -47,6 +60,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
       const challenge = await generateBuildTemplate(
         choice,
         (pool.data ?? []).map((v) => v.challenge.title),
+        difficulty,
       );
       if (
         (pool.data ?? []).some(
@@ -57,7 +71,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
         throw new Error("BUILD_REPEATED");
       const saved = await service
         .from("real_build_templates")
-        .insert({ ...choice, challenge, source: "openai" })
+        .insert({ ...choice, difficulty, challenge, source: "openai" })
         .select("*")
         .single();
       if (saved.error || !saved.data) throw new Error("BUILD_SAVE_FAILED");
@@ -70,6 +84,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
         .eq("token", token);
     }
   }
+  if (template.difficulty !== difficulty) throw new Error("BUILD_LOAD_FAILED");
   const challenge = validateChallenge(template.challenge);
   const result = await service
     .from("real_build_attempts")
@@ -77,6 +92,7 @@ export async function startBuildForUser(userId: string, choice: BuildChoice) {
       user_id: userId,
       template_id: template.id,
       ...choice,
+      difficulty,
       challenge,
       source: "openai",
     })
