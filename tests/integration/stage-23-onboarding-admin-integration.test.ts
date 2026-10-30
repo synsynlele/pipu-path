@@ -32,11 +32,12 @@ describe("Stage 23 onboarding and Mission Control integration", () => {
   });
 
   it("presents Identity and Discovery as one coherent mobile-first onboarding experience", () => {
-    expect(onboardingShell).toContain("Step {activeStep} of 3");
-    expect(onboardingShell).toContain("Identity");
-    expect(onboardingShell).toContain("Discover");
-    expect(onboardingShell).toContain("Direction");
-    expect(onboardingShell).toContain("Private setup");
+    expect(onboardingShell).toContain('aria-label="Setup sections"');
+    expect(onboardingShell).toContain("Your account");
+    expect(onboardingShell).toContain("Starting point");
+    expect(onboardingShell).toContain("Your direction");
+    expect(onboardingShell).toContain("Back to play");
+    expect(onboardingShell).not.toContain("{progress}%");
     expect(identityPage).toContain("<OnboardingShell");
     expect(identityPage).toContain("activeStep={1}");
     expect(discoveryPage).toContain("<OnboardingShell");
@@ -49,7 +50,7 @@ describe("Stage 23 onboarding and Mission Control integration", () => {
     expect(discoveryPage).toContain("Your answers stay private.");
     expect(discoveryPage).toContain("Skip optional questions");
     expect(normalizedOnboardingShell).toContain(
-      "Private developmental data is not made public by default.",
+      "Your answers and evidence stay private unless you choose to share them.",
     );
     expect(discoveryQuestion).toContain("no score to chase");
   });
