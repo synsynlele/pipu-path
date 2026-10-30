@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cityInspiration } from "@/modules/city/domain/city-inspiration";
+import { cityQuestHandoff } from "@/modules/city/domain/city-quest-handoff";
 import { getBuildHome } from "@/modules/real-build/infrastructure/dal";
 import { difficultyLabel } from "@/modules/real-build/domain/build";
 import { BuildChoiceForm } from "@/modules/real-build/ui/choice-form";
@@ -13,10 +14,11 @@ export const maxDuration = 60;
 export default async function RealQuestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ district?: string }>;
+  searchParams: Promise<{ district?: string; service?: string }>;
 }) {
   const [home, params] = await Promise.all([getBuildHome(), searchParams]);
-  const idea = cityInspiration(params.district);
+  const suggestion = cityQuestHandoff(params.service);
+  const idea = cityInspiration(suggestion?.topic ?? params.district);
   return (
     <main id="main-content">
       <p className="text-xs font-bold tracking-widest text-[#1d4ed8] uppercase">
@@ -58,7 +60,26 @@ export default async function RealQuestsPage({
           </p>
         </section>
       ) : (
-        <BuildChoiceForm initialTopic={idea?.id} />
+        <>
+          {suggestion ? (
+            <section
+              aria-label="From your city to real life"
+              className="mt-6 rounded-2xl border border-[#c8dbf7] bg-[#eef5ff] p-4 text-sm leading-6 text-[#264e89]"
+            >
+              <p className="font-bold">From your city: {suggestion.title}</p>
+              <p className="mt-1">
+                You tested an idea in a fictional city. Here is a safe
+                real-life starting point. Change it to suit your own
+                surroundings before creating your Quest. Playing the game
+                does not count as real-world evidence or earn XP.
+              </p>
+            </section>
+          ) : null}
+          <BuildChoiceForm
+            initialTopic={idea?.id}
+            initialFocus={suggestion?.focus}
+          />
+        </>
       )}
       <section
         className="mt-7 grid grid-cols-3 gap-3 text-center text-xs font-semibold text-[#52647c]"
