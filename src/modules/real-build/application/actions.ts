@@ -2,7 +2,6 @@
 import { revalidatePath } from "next/cache";
 import { createHash } from "node:crypto";
 import { generateBuildTemplate } from "../infrastructure/provider";
-
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createLogger } from "@/lib/observability/logger";
@@ -14,59 +13,14 @@ import {
   emptyDraft,
   isRetiredPaperworkChallenge,
   REAL_BUILD_CONTENT_VERSION,
-  choiceSchema,
+  validateChallenge,
 } from "../domain/build";
 import { buildServiceClient } from "../infrastructure/client";
 import { startBuildForUser } from "./start-build";
 export type BuildFormState = { ok: boolean; message: string; version?: number };
 const logger = createLogger();
-export async function startRealBuild(
-  _previous: BuildFormState,
-  form: FormData,
-): Promise<BuildFormState> {
-  const { user } = await requireAuthenticatedIdentity();
-  const choice = choiceSchema.safeParse({
-    topic: form.get("topic"),
-    minutes: form.get("minutes"),
-    focus: form.get("focus"),
-  });
-  if (!choice.success)
-    return {
-      ok: false,
-      message:
-        "Choose a topic, explain what you want to improve and pick a time.",
-    };
-  let id: string;
-  try {
-    id = await startBuildForUser(user.id, choice.data);
-  } catch (error) {
-    const code = error instanceof Error ? error.message : "BUILD_UNKNOWN";
-    logger.warn("real_build_start_failed", {
-      code: /^(?:BUILD_[A-Z_]+|OPENAI_[A-Z_0-9]+)$/.test(code)
-        ? code
-        : "BUILD_UNKNOWN",
-    });
-    return {
-      ok: false,
-      message:
-        code === "BUILD_BUSY"
-          ? "A challenge for this topic is being prepared. Try again in a moment."
-          : code === "BUILD_AI_LIMIT"
-            ? "New AI requests are paused briefly after several attempts. Your work is safe. Retry later or choose another topic with a saved challenge."
-            : code === "OPENAI_TIMEOUT"
-              ? "AI took too long. Your work is safe. Try again."
-              : code === "BUILD_SAVE_FAILED"
-                ? "Your Quest was prepared but could not be saved. Please try again. Your chosen goal is still here."
-                : code === "BUILD_LOAD_FAILED"
-                  ? "Your Quest could not connect to its saved progress. Please try again shortly."
-                  : "We couldn’t prepare a Quest right now. Your goal is still here. Please try again.",
-    };
-  }
-  revalidatePath("/real-quests");
-  redirect(`/real-quests/${id}`);
-}
-const identity = z.object({
-  id:export async function tailorReviewedBuild(
+
+export async function tailorReviewedBuild(
   _previous: BuildFormState,
   form: FormData,
 ): Promise<BuildFormState> {
@@ -109,7 +63,7 @@ const identity = z.object({
     .update(
       REAL_BUILD_CONTENT_VERSION +
         ":" +
-        choice.data.focus.normalize("NFKC").toLowerCase().replace(/\\s+/g, " ").trim(),
+        choice.data.focus.normalize("NFKC").toLowerCase().replace(/\s+/g, " ").trim(),
     )
     .digest("hex");
   const pool = await service
@@ -207,7 +161,54 @@ const identity = z.object({
   redirect(`/real-quests/${old.id}`);
 }
 
- z.uuid(),
+
+export async function startRealBuild(
+  _previous: BuildFormState,
+  form: FormData,
+): Promise<BuildFormState> {
+  const { user } = await requireAuthenticatedIdentity();
+  const choice = choiceSchema.safeParse({
+    topic: form.get("topic"),
+    minutes: form.get("minutes"),
+    focus: form.get("focus"),
+  });
+  if (!choice.success)
+    return {
+      ok: false,
+      message:
+        "Choose a topic, explain what you want to improve and pick a time.",
+    };
+  let id: string;
+  try {
+    id = await startBuildForUser(user.id, choice.data);
+  } catch (error) {
+    const code = error instanceof Error ? error.message : "BUILD_UNKNOWN";
+    logger.warn("real_build_start_failed", {
+      code: /^(?:BUILD_[A-Z_]+|OPENAI_[A-Z_0-9]+)$/.test(code)
+        ? code
+        : "BUILD_UNKNOWN",
+    });
+    return {
+      ok: false,
+      message:
+        code === "BUILD_BUSY"
+          ? "A challenge for this topic is being prepared. Try again in a moment."
+          : code === "BUILD_AI_LIMIT"
+            ? "New AI requests are paused briefly after several attempts. Your work is safe. Retry later or choose another topic with a saved challenge."
+            : code === "OPENAI_TIMEOUT"
+              ? "AI took too long. Your work is safe. Try again."
+              : code === "BUILD_SAVE_FAILED"
+                ? "Your Quest was prepared but could not be saved. Please try again. Your chosen goal is still here."
+                : code === "BUILD_LOAD_FAILED"
+                  ? "Your Quest could not connect to its saved progress. Please try again shortly."
+                  : "We couldn’t prepare a Quest right now. Your goal is still here. Please try again.",
+    };
+  }
+  revalidatePath("/real-quests");
+  redirect(`/real-quests/${id}`);
+}
+const identity = z.object({
+  id: z.uuid(),
   version: z.coerce.number().int().positive(),
   intent: z.enum(["save", "record", "archive"]),
 });
