@@ -3,10 +3,24 @@ import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
 
 export const buildTopics = cityInterests;
+export const focusSchema = z
+  .string()
+  .trim()
+  .min(12, "Tell us what you want to improve in at least a few words.")
+  .max(160, "Keep the improvement goal under 160 characters.")
+  .refine(
+    (value) =>
+      !/(?:https?:\/\/|www\.|[\w.+-]+@[\w.-]+\.[a-z]{2,}|\b\+?\d[\d\s-]{8,}\d\b|\b(?:password|phone number|home address|medical history|diagnosis|medication|self-harm|sexual activity)\b)/i.test(
+        value,
+      ),
+    "Keep this about a general problem. Do not enter names, contacts or private details.",
+  );
+
 export const choiceSchema = z
   .object({
     topic: z.string().refine((v) => buildTopics.some((t) => t.id === v)),
     minutes: z.coerce.number().refine((v) => [15, 30, 60].includes(v)),
+    focus: focusSchema,
   })
   .strict();
 export type BuildChoice = z.infer<typeof choiceSchema>;
@@ -121,6 +135,7 @@ export function publicChallengeBrief(
   const topic = buildTopics.find((t) => t.id === choice.topic)!;
   return {
     topic: topic.title,
+    improvementGoal: choice.focus,
     safeStartingIdea: topic.idea,
     minutes: choice.minutes,
     difficulty,
@@ -136,6 +151,7 @@ export type SavedBuild = {
   topic: string;
   minutes: number;
   difficulty: BuildDifficulty;
+  focus: string;
   challenge: BuildChallenge;
   source: "openai";
   status: "active" | "recorded" | "archived";
