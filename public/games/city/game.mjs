@@ -17,6 +17,11 @@ import { createMilestoneScene } from "./build-milestone-scene.mjs";
 import { serviceFor } from "./city-service-system.mjs";
 import { skillRecommendation } from "./build-progression.mjs";
 import { mountCityServiceDesk } from "./city-service-ui.mjs";
+import {
+  stageThreeCase,
+  beginStageThree,
+  finishStageThree,
+} from "./stage-three-scenarios.mjs";
 import { createPlaytestObservation } from "./playtest-observation.mjs";
 import { mountBuildLab } from "./build-lab-ui.mjs";
 import {
@@ -3686,6 +3691,7 @@ buildMilestoneScene.sync(state.lab);
 const workshopBlueprint =
   buildMilestoneScene.buildings.get("workshop-link").group;
 let pendingBuildCase = null;
+let stageThreeVictory = null;
 let victoryCamera = null;
 let lastVictoryMission = null;
 function hideBuildVictory() {
@@ -3754,6 +3760,13 @@ function showBuildVictory(
   if (!retry) playTone(784);
 }
 $("victory-continue").onclick = () => {
+  if (stageThreeVictory) {
+    stageThreeVictory = null;
+    hideBuildVictory();
+    serviceDesk.open();
+    $("service-toggle").setAttribute("aria-expanded", "true");
+    return;
+  }
   const step = integratedStep(state.decisions, state.lab);
   if (step.kind === "build") {
     hideBuildVictory();
@@ -3823,8 +3836,25 @@ const buildLab = mountBuildLab({
   },
   onReveal: ({ missionId, recovered }) => {
     if (state.lab.tested.includes(missionId)) {
+      const replay = recovered
+        ? finishStageThree(state.stageThree, state.lab, missionId)
+        : { status: "not-finished" };
+      if (replay.status === "complete") {
+        state.stageThree = replay.stage;
+        persistPractice();
+      }
       buildMilestoneScene.reveal(missionId);
       showBuildVictory(missionId, { recovered });
+      if (replay.status === "complete") {
+        // Reuse the ONE built-city reward, never a second floating badge.
+        stageThreeVictory = replay;
+        $("victory-kicker").textContent = "✦ BUILDER CHALLENGE COMPLETE ✦";
+        $("victory-title").textContent = replay.scenario.title + " solved!";
+        $("victory-description").textContent =
+          replay.choice.response +
+          " You repaired and retested the connection in your city.";
+        $("victory-continue").textContent = "See the next neighbourhood challenge →";
+      }
     }
   },
   write: (lab) => {
@@ -3874,6 +3904,34 @@ const buildLab = mountBuildLab({
 });
 const serviceDesk = mountCityServiceDesk({
   read: () => state.lab,
+  readStageThree: () => ({
+    decisions: state.decisions,
+    lab: state.lab,
+    stage: state.stageThree,
+  }),
+  onStageThreeStart: (choiceId) => {
+    const outcome = beginStageThree(
+      state.stageThree,
+      state.decisions,
+      state.lab,
+      choiceId,
+    );
+    if (outcome.status === "repair-required") {
+      state.stageThree = outcome.stage;
+      state.lab = outcome.lab;
+      buildMilestoneScene.sync(state.lab);
+      persistPractice();
+    } else if (outcome.status === "already-resilient") {
+      // Verified single-link resilience is already the required physical
+      // proof; do not fake a break in a network that survives every one.
+      state.stageThree = {
+        round: (outcome.stage.round + 1) % 100_000,
+        active: null,
+      };
+      persistPractice();
+    }
+    return outcome;
+  },
   write: (lab) => {
     state.lab = lab;
     buildMilestoneScene.sync(state.lab);
@@ -3942,6 +4000,7 @@ $("resume-city").hidden =
   (!Object.keys(state.decisions).length && !previousPractice.journey);
 function startCity() {
   if (!$("intro").hidden) playtest.note("start");
+  stageThreeVictory = null;
   // Start is a real player gesture, so the soundtrack can safely begin
   // here. Both independent HUD switches remain available to mute at once.
   if (!cityAudio.sound) cityAudio.toggleSound();
