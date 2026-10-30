@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { getOwnedBuild } from "@/modules/real-build/infrastructure/dal";
+import { difficultyLabel } from "@/modules/real-build/domain/build";
 import { ImproveBuildForm } from "@/modules/real-build/ui/improve-form";
 import { BuildAttemptForm } from "@/modules/real-build/ui/attempt-form";
 export const metadata: Metadata = {
@@ -26,11 +27,14 @@ export default async function RealBuildPage({
         ← Real Quests
       </Link>
       <p className="mt-3 text-xs font-bold tracking-widest text-[#1d4ed8] uppercase">
-        {build.minutes} minute challenge · AI-authored template
+        Level {build.difficulty}/5 · {difficultyLabel(build.difficulty)} · {build.minutes} minutes
       </p>
       <h1 className="mt-3 text-3xl font-extrabold">{build.challenge.title}</h1>
       <p className="mt-3 text-sm leading-6 text-[#52647c]">
         {build.challenge.outcome}
+      </p>
+      <p className="mt-3 text-xs font-semibold text-[#536883]">
+        Higher levels add comparison, testing and problem-solving—not unsafe tools or expenses.
       </p>
       {improvement ? (
         <section className="build-card mt-5">
