@@ -10,6 +10,8 @@ import {
   startResilience,
   chooseResilience,
   resilienceReport,
+  resilienceMission,
+  previewResiliencePlan,
   sanitizeResilience,
   resilienceCityActivity,
   RESILIENCE_PRIORITIES,
@@ -31,6 +33,26 @@ assert.equal(canStartResilience({}, economy), false);
 const base = startResilience(decisions, economy);
 assert.deepEqual(base.seed.stocks, economy.stocks);
 const original = JSON.stringify({ decisions, economy, base });
+const firstMission = resilienceMission(base);
+assert.equal(firstMission.round, 1);
+assert(firstMission.headline.includes("rain"));
+assert(firstMission.pressure.includes("Clinic 4 water"));
+assert.equal(resilienceMission(null), null);
+assert.equal(previewResiliencePlan(base, "invalid"), null);
+for (const policy of RESILIENCE_PRIORITIES) {
+  const before = JSON.stringify(base);
+  const trial = previewResiliencePlan(base, policy.id);
+  assert.equal(trial.priority, policy.id);
+  assert.deepEqual(
+    trial.last,
+    resilienceReport(chooseResilience(base, policy.id)).last,
+    "A test must match the same real city physics used for deployment",
+  );
+  assert(trial.bestWaiting <= trial.last.waiting);
+  assert(trial.improvementOptions.every((row) => row.additional > 0));
+  assert.equal(JSON.stringify(base), before, "Rehearsing must not save a plan");
+}
+
 // Every three-challenge combination has finite stocks and conserved resources.
 for (const a of RESILIENCE_PRIORITIES)
   for (const b of RESILIENCE_PRIORITIES)
@@ -41,6 +63,19 @@ for (const a of RESILIENCE_PRIORITIES)
       assert(report.completed);
       assert.equal(chooseResilience(state, "care"), null);
       assert.equal(report.history.length, 3);
+      assert.equal(resilienceMission(state), null);
+      assert.equal(previewResiliencePlan(state, "care"), null);
+      const beforeLast = JSON.stringify(state);
+      assert.equal(
+        previewResiliencePlan(
+          { ...state, choices: state.choices.slice(0, 2) },
+          c.id,
+        ).last.waiting,
+        report.last.waiting,
+        "Saved last-round replay must agree with a trial",
+      );
+      assert.equal(JSON.stringify(state), beforeLast);
+
       for (const row of report.history) {
         for (const product of ["water", "parts", "food"]) {
           const from = { water: "water", parts: "industry", food: "market" }[
@@ -134,6 +169,15 @@ assert.equal(
     .length,
   0,
 );
+for (const policy of RESILIENCE_PRIORITIES) {
+  const trial = previewResiliencePlan(noServices, policy.id);
+  assert.equal(trial.distinct, false);
+  assert.equal(trial.last.shipments.length, 0);
+  assert.equal(trial.bestByService.clinic, 0);
+  assert.equal(trial.improvementOptions.length, 0);
+}
+assert.equal(resilienceMission(noServices).round, 1);
+
 assert(
   resilienceReport(chooseResilience(noServices, "repair")).last.waiting > 0,
 );
@@ -164,5 +208,5 @@ assert.equal(
   null,
 );
 console.log(
-  "PASS: Chapter 3 prerequisites, 27 resilience journeys, conserved supplies, real trade-offs, repair carryover, actual deliveries and backward-compatible saves.",
+  "PASS: Chapter 4 crisis briefs, safe reversible plan tests, 27 conserved journeys, real trade-offs, repair carryover, actual deliveries and backward-compatible saves.",
 );
