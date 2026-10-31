@@ -6,6 +6,7 @@ import {
   advancedRules,
 } from "../../public/games/city/advanced.mjs";
 import { sanitizePractice } from "../../public/games/city/practice-save.mjs";
+import { ADVANCED_SOLUTIONS, applyAdvancedPlan, readAdvancedPlan } from "./advanced-dom-helpers.mjs";
 import { resilienceReport } from "../../public/games/city/resilience.mjs";
 import { JSDOM } from "jsdom";
 import { readFileSync } from "node:fs";
@@ -771,41 +772,20 @@ w.document.getElementById("chapter-five-start").click();
 assert.equal(game.state.advanced.records.length, 0);
 for (let index = 0; index < 16; index++) {
   const m = advancedMission(game.state.advanced),
-    r = advancedRules(game.state.advanced);
+    rules = advancedRules(game.state.advanced);
   assert.equal(w.document.getElementById("advanced-panel").hidden, false);
-  const wrong = [
-    ...w.document.querySelectorAll("#advanced-diagnosis button"),
-  ].find((b) => b.textContent !== m.diagnosis);
-  wrong.click();
-  assert.equal(game.state.advanced.records.length, index);
-  [...w.document.querySelectorAll("#advanced-diagnosis button")]
-    .find((b) => b.textContent === m.diagnosis)
-    .click();
-  assert.equal(game.state.advanced.cursor.phase, "configure");
+  assert.equal(rules.kind, m.kind);
+  assert.equal(w.document.getElementById("advanced-diagnosis").hidden, true,
+    "The repetitive old diagnosis quiz is gone");
   assert.equal(w.document.getElementById("advanced-deploy").disabled, true);
-  const plan =
-    m.kind === "allocate"
-      ? r.minimum
-      : r.redundant
-        ? [1, 1, 1, 1, 0]
-        : [1, 1, 0, 0, 0];
-  const controls = [...w.document.querySelectorAll("#advanced-controls input")];
-  controls.forEach((input, i) => {
-    if (input.type === "checkbox") input.checked = Boolean(plan[i]);
-    else input.value = String(plan[i]);
-    input.dispatchEvent(new w.Event("input", { bubbles: true }));
-  });
+  const plan = ADVANCED_SOLUTIONS[index];
+  applyAdvancedPlan(w, game, m, plan);
   const beforeRecovery = JSON.stringify(game.state.advanced);
   w.document.getElementById("menu-entrance").click();
   w.document.getElementById("start").click();
   assert.equal(w.document.getElementById("advanced-panel").hidden, false);
   assert.equal(JSON.stringify(game.state.advanced), beforeRecovery);
-  assert.deepEqual(
-    [...w.document.querySelectorAll("#advanced-controls input")].map((input) =>
-      input.type === "checkbox" ? Number(input.checked) : Number(input.value),
-    ),
-    plan,
-  );
+  assert.deepEqual(readAdvancedPlan(w.document, m), plan);
   const restored = sanitizePractice(game.state);
   assert.deepEqual(restored.advanced.cursor.plan, plan);
   assert(
@@ -841,12 +821,7 @@ for (let index = 0; index < 16; index++) {
     w.document.getElementById("intro").hidden = false;
     w.document.getElementById("start").click();
     assert.equal(game.state.advanced.cursor.phase, "configure");
-    assert.deepEqual(
-      [...w.document.querySelectorAll("#advanced-controls input")].map((i) =>
-        i.type === "checkbox" ? Number(i.checked) : Number(i.value),
-      ),
-      plan,
-    );
+    assert.deepEqual(readAdvancedPlan(w.document, m), plan);
   }
   if (index === 2) {
     const preserved = JSON.stringify(game.state.advanced);
@@ -863,12 +838,7 @@ for (let index = 0; index < 16; index++) {
     );
     w.document.querySelector("#advanced-review button").click();
     assert.equal(JSON.stringify(game.state.advanced), preserved);
-    assert.deepEqual(
-      [...w.document.querySelectorAll("#advanced-controls input")].map((i) =>
-        i.type === "checkbox" ? Number(i.checked) : Number(i.value),
-      ),
-      plan,
-    );
+    assert.deepEqual(readAdvancedPlan(w.document, m), plan);
   }
   w.document.getElementById("advanced-test").click();
   assert.equal(w.document.getElementById("advanced-deploy").disabled, false);
