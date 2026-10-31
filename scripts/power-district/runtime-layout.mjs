@@ -6,7 +6,11 @@ import {
   advancedRules,
 } from "../../public/games/city/advanced.mjs";
 import { sanitizePractice } from "../../public/games/city/practice-save.mjs";
-import { ADVANCED_SOLUTIONS, applyAdvancedPlan, readAdvancedPlan } from "./advanced-dom-helpers.mjs";
+import {
+  ADVANCED_SOLUTIONS,
+  applyAdvancedPlan,
+  readAdvancedPlan,
+} from "./advanced-dom-helpers.mjs";
 import { resilienceReport } from "../../public/games/city/resilience.mjs";
 import { JSDOM } from "jsdom";
 import { readFileSync } from "node:fs";
@@ -775,8 +779,11 @@ for (let index = 0; index < 16; index++) {
     rules = advancedRules(game.state.advanced);
   assert.equal(w.document.getElementById("advanced-panel").hidden, false);
   assert.equal(rules.kind, m.kind);
-  assert.equal(w.document.getElementById("advanced-diagnosis").hidden, true,
-    "The repetitive old diagnosis quiz is gone");
+  assert.equal(
+    w.document.getElementById("advanced-diagnosis").hidden,
+    true,
+    "The repetitive old diagnosis quiz is gone",
+  );
   assert.equal(w.document.getElementById("advanced-deploy").disabled, true);
   const plan = ADVANCED_SOLUTIONS[index];
   applyAdvancedPlan(w, game, m, plan);
