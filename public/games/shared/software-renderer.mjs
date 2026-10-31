@@ -11,6 +11,7 @@ export class SoftwareRenderer {
     this.lastDraw = 0;
     this.pixelRatio = 1;
     this.normal = new T.Vector3();
+    this.vertexColor = new T.Color();
     this.normalMatrix = new T.Matrix3();
     this.light = new T.Vector3(-0.45, 0.85, 0.3).normalize();
     this.m = new T.Matrix4();
@@ -108,6 +109,10 @@ export class SoftwareRenderer {
           shade = 0.76 + 0.28 * Math.max(0, this.normal.dot(this.light));
         }
         const color = material.color?.clone() ?? new T.Color(0xffffff);
+        if (material.vertexColors && geo.attributes.color) {
+          this.vertexColor.fromBufferAttribute(geo.attributes.color, a);
+          color.multiply(this.vertexColor);
+        }
         color.multiplyScalar(shade);
         const opacity = material.opacity ?? 1;
         faces.push({

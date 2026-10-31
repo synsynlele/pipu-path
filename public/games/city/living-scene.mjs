@@ -269,9 +269,11 @@ export function createLivingCityScene({
     });
     return latest;
   }
-  function setFocus(focus, overview = false, range = 32) {
+  function setFocus(focus, overview = false, range = 32, inView = null) {
     const nearby = (p) =>
-      overview || !focus || Math.hypot(p.x - focus.x, p.z - focus.z) < range;
+      overview ||
+      !focus ||
+      (inView ? inView(p) : Math.hypot(p.x - focus.x, p.z - focus.z) < range);
     for (const district of CITY_DISTRICTS) {
       const site = plazas.get(district.id);
       site.root.visible = nearby(site.root.position);

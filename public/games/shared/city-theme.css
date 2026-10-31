@@ -5639,3 +5639,8 @@ body #city-tools #city-menu-options #resource {
     width: min(100%, 340px);
   }
 }
+
+/* Completed outcomes wait for the player, never a countdown. */
+.auto-next-track {
+  display: none !important;
+}

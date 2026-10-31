@@ -71,16 +71,18 @@ export function createCaseSceneEffects({ T, scene, box, cyl, mat }) {
     if (effects.has(id) && option)
       effects.get(id).light.material = mat(palette[visualTone(option)]);
   }
-  function setFocus(focus, overview = false, range = 30) {
+  function setFocus(focus, overview = false, range = 30, inView = null) {
     for (const effect of effects.values())
       effect.group.visible =
         Boolean(effect.plan?.assets.length) &&
         (overview ||
           !focus ||
-          Math.hypot(
-            effect.group.position.x - focus.x,
-            effect.group.position.z - focus.z,
-          ) < range);
+          (inView
+            ? inView(effect.group.position)
+            : Math.hypot(
+                effect.group.position.x - focus.x,
+                effect.group.position.z - focus.z,
+              ) < range));
   }
   function animate(now, reducedMotion) {
     for (const effect of effects.values()) {
