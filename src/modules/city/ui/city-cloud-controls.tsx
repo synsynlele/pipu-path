@@ -167,9 +167,13 @@ export function CityCloudControls({
         .city-cloud-controls button.city-backup-primary {background:#5b3dd4;color:#fff;-webkit-text-fill-color:#fff;}
         .city-cloud-controls button.city-backup-delete {color:#a12540;-webkit-text-fill-color:#a12540;}
         .city-cloud-controls button:disabled {opacity:.6;cursor:not-allowed;}
-        @media(max-width:640px) {
-          .city-cloud-controls .city-cloud-panel {position:fixed;top:calc(env(safe-area-inset-top) + 88px);left:12px;right:12px;width:auto;max-width:none;margin:0;z-index:1100;}
-        }
+        .city-cloud-controls {position:relative;font-size:12px;}
+        .city-cloud-controls>summary {display:flex;align-items:center;min-height:44px;padding:9px 10px;border:1px solid #d9e3f0;border-radius:8px;font-weight:700;cursor:pointer;}
+        .city-cloud-controls .city-cloud-panel {position:static!important;inset:auto!important;width:100%!important;max-width:100%;margin:8px 0 0;padding:12px;border:1px solid #b7c9e2;border-radius:12px;max-height:none;overflow:visible;box-shadow:none;}
+        .city-cloud-panel>div:first-child {display:flex;align-items:center;justify-content:space-between;gap:8px;}
+        .city-cloud-panel>div:last-child {display:grid;gap:8px;}
+        .city-cloud-panel p {font-size:12px;line-height:1.5;margin:8px 0;}
+        .city-cloud-controls button {padding:9px 10px;border:1px solid #bdcce2;border-radius:9px;font-size:12px;font-weight:700;}
       `}</style>
       <summary className="flex min-h-11 cursor-pointer items-center rounded-xl border border-[#bccbe4] bg-white px-3 font-bold text-[#142a52]">
         ☁ Account backup

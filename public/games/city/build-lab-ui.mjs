@@ -32,6 +32,7 @@ export function mountBuildLab({
   onReveal = () => {},
   canSelectMission = () => true,
   onLocked = () => {},
+  autoReveal = () => false,
 }) {
   const $ = (id) => document.getElementById(id);
   const dialog = $("build-lab");
@@ -222,14 +223,14 @@ export function mountBuildLab({
       : "Need a hint? Show a first move";
     render();
   };
-  $("lab-see-city").onclick = () => {
-    if (result?.success) {
-      const missionId = sanitizeLab(read()).active;
-      const recovered = recoveredTest;
-      dialog.close();
-      onReveal({ missionId, recovered });
-    }
-  };
+  function revealCity() {
+    if (!result?.success) return;
+    const missionId = sanitizeLab(read()).active,
+      recovered = recoveredTest;
+    dialog.close();
+    onReveal({ missionId, recovered });
+  }
+  $("lab-see-city").onclick = revealCity;
   $("lab-rotate").onclick = () => {
     brush.turn = (brush.turn + 1) % 4;
     render();
@@ -268,6 +269,7 @@ export function mountBuildLab({
       recovered: recoveredTest,
     });
     render();
+    if (result?.success && autoReveal()) revealCity();
   };
   $("lab-clear").onclick = () => {
     const state = sanitizeLab(read());
@@ -291,6 +293,7 @@ export function mountBuildLab({
     else onLocked();
   };
   $("lab-close").onclick = () => dialog.close();
+  $("lab-back-city").onclick = () => dialog.close();
   dialog.addEventListener("close", () => {
     result = null;
     afterClose();

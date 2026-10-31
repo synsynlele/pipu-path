@@ -1,3 +1,4 @@
+import { createScreenAwake } from "./screen-awake.mjs";
 import { chapterMenuItems } from "./chapter-menu.mjs";
 import { advancedCityActivity, canStartAdvanced } from "./advanced.mjs";
 import { createAdvancedDesk } from "./advanced-ui.mjs";
@@ -160,6 +161,31 @@ let state = previousPractice ? { ...fresh(), ...previousPractice } : fresh(),
   simRows = [],
   lastResult = null;
 const cityAudio = createCityAudio();
+const screenAwake = createScreenAwake({
+  onStatus: (status) => {
+    const button = $("screen-awake");
+    button.disabled = !status.supported;
+    button.setAttribute("aria-pressed", String(status.enabled));
+    button.textContent = status.supported
+      ? "Keep screen awake: " + (status.enabled ? "On" : "Off")
+      : "Screen awake unavailable";
+    $("screen-awake-status").textContent = !status.supported
+      ? "This device does not support keeping the screen awake."
+      : status.active
+        ? "Screen-awake protection is active."
+        : status.playing && status.enabled
+          ? "The device has not granted a screen lock. Battery settings may override it."
+          : "Used only while the visible game is open.";
+  },
+});
+$("screen-awake").onclick = () =>
+  screenAwake.setEnabled(!screenAwake.status().enabled);
+window.addEventListener("pagehide", () => {
+  screenAwake.setPlaying(false);
+});
+window.addEventListener("pageshow", () => {
+  screenAwake.setPlaying($("intro").hidden);
+});
 function playTone(frequency = 520) {
   cityAudio.cue(
     frequency >= 720 ? "built" : frequency < 390 ? "revise" : "decision",
@@ -1711,6 +1737,29 @@ function showDetail(html, mode = "other") {
   panel.scrollTop = 0;
   panel.hidden = false;
 }
+function focusedPuzzle() {
+  return (
+    $("build-lab").open ||
+    (document.body.classList.contains("advanced-configuring") &&
+      (innerWidth <= 760 || innerHeight <= 520))
+  );
+}
+let lastFocusedPuzzle = false;
+const puzzleObserver = new window.MutationObserver(() => {
+  const active = focusedPuzzle();
+  if (active !== lastFocusedPuzzle) {
+    lastFocusedPuzzle = active;
+    reportParentState();
+  }
+});
+puzzleObserver.observe($("build-lab"), {
+  attributes: true,
+  attributeFilter: ["open"],
+});
+puzzleObserver.observe(document.body, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
 function reportParentState() {
   if (window.parent === window) return;
   window.parent.postMessage(
@@ -1718,6 +1767,7 @@ function reportParentState() {
       type: "pipupath:city:state",
       saved: saveEnabled,
       entered: $("intro").hidden,
+      focusedPuzzle: focusedPuzzle(),
       district: getCase(journey.caseId)?.district ?? null,
       // This is a topic hint only, not proof of real-world action.
       // Send a fixed local mission ID, never a question answer or free text.
@@ -3693,14 +3743,32 @@ $("opportunities-toggle").onclick = () => {
   else closeOpportunityPanel();
 };
 $("opportunities-close").onclick = closeOpportunityPanel;
+function positionCityMenu() {
+  if (!$("city-menu").open) return;
+  const anchor = $("city-menu")
+    .querySelector("summary")
+    .getBoundingClientRect();
+  const width = Math.min(320, Math.max(160, innerWidth - 24));
+  const left = Math.max(8, Math.min(anchor.left, innerWidth - width - 8));
+  const top = Math.max(8, Math.min(anchor.bottom + 6, innerHeight - 100));
+  Object.assign($("city-menu-options").style, {
+    left: left + "px",
+    top: top + "px",
+    width: width + "px",
+    maxHeight: Math.max(44, innerHeight - top - 8) + "px",
+  });
+}
+window.visualViewport?.addEventListener("resize", positionCityMenu);
 $("city-menu").addEventListener("toggle", () => {
   if ($("city-menu").open) refreshJourneyControls();
   if ($("city-menu").open && journey.status === "running")
     pauseJourney("Paused while you choose a city action.");
+  positionCityMenu();
 });
 $("city-menu-options").addEventListener("click", (event) => {
   const button = event.target.closest("button");
-  if (!button || button.disabled) return;
+  if (!button || button.disabled || button.closest(".city-cloud-controls"))
+    return;
   $("city-menu").open = false;
   if (button.id !== "resilience-toggle" && button.id !== "menu-resume")
     closeResiliencePanel();
@@ -4025,6 +4093,7 @@ $("pilot-build").onclick = () => {
 };
 $("pilot-story").onclick = () => resumeJourney();
 const buildLab = mountBuildLab({
+  autoReveal: () => innerWidth <= 760 || innerHeight <= 520,
   read: () => state.lab,
   canSelectMission: (id) => canOpenWorksite(id, state.decisions, state.lab),
   onLocked: () =>
@@ -4322,6 +4391,7 @@ function returnToEntrance() {
   $("start").textContent = "Continue my city →";
   $("entrance-resume-note").hidden = false;
   cityAudio.suspend();
+  screenAwake.setPlaying(false);
   refreshJourneyControls();
   $("start").focus({ preventScroll: true });
 }
@@ -4343,6 +4413,7 @@ function startCity() {
   firstBuildMode = false;
   serviceDesk.close();
   $("intro").hidden = true;
+  screenAwake.setPlaying(true);
   $("entrance-resume-note").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
@@ -4703,6 +4774,13 @@ function animate(now) {
   }
 }
 function animateWorld(now) {
+  const coveredByPuzzle =
+    focusedPuzzle() && (innerWidth <= 760 || innerHeight <= 520);
+  if (coveredByPuzzle) {
+    frameBudget.takeFrame(now, true);
+    last = now;
+    return;
+  }
   if (!frameBudget.takeFrame(now, document.hidden)) return;
   if (graphicsInterrupted) return;
   const dt = Math.min((now - last) / 1000, 0.2);
@@ -4939,6 +5017,8 @@ function animateWorld(now) {
   }
 }
 function resize() {
+  positionCityMenu();
+  reportParentState();
   renderer.setSize(innerWidth, innerHeight);
   playCamera.aspect = innerWidth / innerHeight;
   playCamera.updateProjectionMatrix();

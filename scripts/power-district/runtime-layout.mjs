@@ -113,6 +113,38 @@ assert(
 w.document.getElementById("resource").click();
 assert.equal(w.document.getElementById("fund-dialog").open, true);
 w.document.getElementById("fund-close").click();
+const menu = w.document.getElementById("city-menu"),
+  menuBox = w.document.getElementById("city-menu-options"),
+  summary = menu.querySelector("summary");
+const originalRect = summary.getBoundingClientRect;
+for (const [width, height] of [
+  [280, 640],
+  [320, 568],
+  [390, 844],
+  [640, 360],
+]) {
+  globalThis.innerWidth = width;
+  globalThis.innerHeight = height;
+  summary.getBoundingClientRect = () => ({ left: width - 65, bottom: 120 });
+  menu.open = true;
+  menu.dispatchEvent(new w.Event("toggle"));
+  const left = parseFloat(menuBox.style.left),
+    top = parseFloat(menuBox.style.top),
+    boxWidth = parseFloat(menuBox.style.width),
+    boxHeight = parseFloat(menuBox.style.maxHeight);
+  assert(
+    left >= 0 && left + boxWidth <= width,
+    "Menu remains within narrow screen width",
+  );
+  assert(
+    top >= 0 && top + boxHeight <= height,
+    "Menu remains within short screen height",
+  );
+}
+menu.open = false;
+summary.getBoundingClientRect = originalRect;
+globalThis.innerWidth = 390;
+globalThis.innerHeight = 844;
 // Keep the real game setup, navigation, simulation and DOM; the canvas context
 // is a stub. This verifies integration, not WebGL or physical-device performance.
 game.renderer.render = () => {};
@@ -880,9 +912,11 @@ assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
 assert.equal(game.state.lab.faults["workshop-link"], null);
 assert.equal(
   game.state.stageThree.round,
-  0,
-  "Repair not certified until seen in the city",
+  1,
+  "Mobile success returns directly to the city reveal before completing the repair",
 );
+assert.equal(w.document.getElementById("build-lab").open, false);
+assert.equal(w.document.getElementById("build-victory").hidden, false);
 w.document.getElementById("lab-see-city").click();
 assert.equal(game.state.stageThree.round, 1);
 assert.equal(game.state.stageThree.active, null);
