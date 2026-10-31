@@ -3,6 +3,7 @@
 import { CITY_CASES, getChoice } from "./cases.mjs";
 import { CITY_DISTRICTS } from "./districts.mjs";
 import { resilienceReport } from "./resilience.mjs";
+import { advancedPerformance } from "./advanced.mjs";
 
 export const BUILDER_ITEMS = Object.freeze([
   {
@@ -230,9 +231,12 @@ export function chapterRating(chapter, state) {
       ? serviceQuality(rows)
       : caseQuality(state.decisions, 0);
   } else if (chapter >= 5) {
-    // Higher chapters require tested solutions; unresolved earlier district choices
-    // still matter. Successfully deploying a test is not a perfect-city claim.
-    quality = Math.min(1, 0.2 + caseQuality(state.decisions, 0) * 0.8);
+    // Reward both genuinely tested Chapter 5–12 challenges and the state of the
+    // original city. A valid challenge is not proof the whole city is thriving.
+    const measured = advancedPerformance(state.advanced, chapter);
+    quality = measured === null
+      ? caseQuality(state.decisions, 0)
+      : 0.45 * measured / 100 + 0.55 * caseQuality(state.decisions, 0);
   }
   const tier =
     quality >= 0.7 ? "thriving" : quality >= 0.35 ? "growing" : "repair";
