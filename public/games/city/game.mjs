@@ -4506,6 +4506,7 @@ const facilityDesk = mountFacilityDesk({
       pauseJourney("Inspect your city service. Your journey is kept.");
     cancelAutoAdvance();
     cancelWalk();
+    keys.clear();
     advancedDesk.close();
     closeOpportunityPanel();
     closeResiliencePanel();
@@ -5025,8 +5026,7 @@ window.addEventListener("keydown", (e) => {
   }
   if (
     ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName) ||
-    $("help-dialog").open ||
-    $("build-lab").open
+    document.querySelector("dialog[open]")
   )
     return;
   if (

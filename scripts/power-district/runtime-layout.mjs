@@ -951,6 +951,18 @@ const beforeServices = {
 };
 w.document.getElementById("menu-facilities").click();
 assert.equal(w.document.getElementById("facility-desk").open, true);
+w.document.getElementById("facility-close").focus();
+const modalArrow = new w.KeyboardEvent("keydown", {
+  key: "ArrowRight",
+  bubbles: true,
+  cancelable: true,
+});
+w.dispatchEvent(modalArrow);
+assert.equal(
+  modalArrow.defaultPrevented,
+  false,
+  "A dialog arrow key must not be consumed by city movement",
+);
 const facilityDistrict = w.document.getElementById("facility-district");
 facilityDistrict.value = "health";
 facilityDistrict.dispatchEvent(new w.Event("change"));
