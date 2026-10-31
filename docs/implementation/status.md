@@ -1,5 +1,51 @@
 # Implementation status
 
+## 31 October 2026 — Distinct Chapters 5–12 and repeatable virtual city beautification (release candidate)
+
+Branch `feat/varied-city-challenges-repeatable-decor-20261031`, PR #147, replaces
+the repeated relay/supply challenges in the existing Chapters 5–12 campaign.
+Sixteen authored scenarios use different interactions: evidence investigation,
+safe repair sequencing, flood-aware site placement, transport scheduling,
+emergency response, food allocation, inclusive design, neighbourhood zoning,
+materials recovery, peak electricity allocation, public investment portfolios,
+stakeholder negotiation, hazard planning, qualified crew assignment,
+population-demand forecasting and a whole-city resilience capstone. The
+result of each tested plan has an explainable, bounded fictional simulation
+score; two scores per chapter determine the appropriate Thriving, Growing or
+Needs Attention celebration and virtual Builder Credits. There is no claim
+that the player has solved an actual community problem without completing a
+separate, evidenced real-world Quest.
+
+Existing completed Chapter 5–12 missions migrate through the retained
+legacy validator; saved progress is not silently discarded. The updated
+interactive workspaces use real choice buttons, town-map plots, reorder
+controls, accessible native selects and labelled sliders. Existing city
+resume, pause, chapter review and result reveal continue through the same
+game UI. A replay action explicitly warns before replacing advanced
+chapter progress.
+
+The cosmetic-only Builder Shop now permits multiple city-decoration
+purchases, with immutable purchase identities and separate placements.
+Per-district limits (six items total, three of one type) and a global
+eighty-four-item cap bound 3D complexity on low-power phones. Shared
+geometry and materials reduce memory usage. Character items remain
+single-purchase, equip/unequip cosmetics. No new monetisation, currency
+ledger, AI calls, external asset requests or database migration is added.
+The save allowlist migrates old one-time purchases to the new versioned
+record and keeps virtual Builder Credits distinct from fictional city
+operating funds and verified real-world XP.
+
+**Validation:** automated domain and full-game DOM tests cover all sixteen
+activities, invalid plans, simulated consequences, completed legacy records,
+save/restore, chapter review, return to city, decoration inventory limits and
+shop migration. GitHub CI passed at commit
+`413c662acf9951d38cba45b484e58949d7247cb8`; the latest head
+`3e96bdde36a6365020f9ea94beb5ec83940baf4e` has a subsequent CI
+run pending at the time of this entry. Production must not be described
+as released until merge, deployment READY and production checks complete.
+Real-device classroom usability and long-session GPU checks remain
+post-release acceptance items.
+
 ## 31 October 2026 — Chapter celebrations and virtual Builder Credits (development candidate)
 
 Feature branch `feat/builder-chapter-celebrations-shop-20261031` adds one
@@ -1664,3 +1710,9 @@ Rotate now cycles the next connector through quarter turns every 700 ms after on
 Resume no longer trusts a stale running flag: it cancels orphaned transition/walk callbacks and restores the pending question or required build from retained progress. Recovering travel opens the question directly, independently of 3D frames. A completed foundation resumes Chapter 3 even before its first day. Resume controls route later chapters through their existing chapter-specific state machines. Background/page lifecycle pauses running foundation work and restores it on return without overriding an intentional pause, open menu, inspection or dialog.
 
 Regression coverage reproduces the missing-panel bug before the fix, then checks all 36 decisions in two playthroughs for stale running recovery, pause/entrance return, background return and interrupted travel; all seven enterprise days, all three crisis rounds and all 16 advanced configurations return without changing retained progress. Existing puzzle resume and chapter handoff checks remain. Full validate and CI gate one production release, with previews disabled.
+
+## 31 October 2026 — PR #147 release verification and blockers
+
+Continued the existing sixteen-mechanic advanced challenge implementation and repeatable decoration ledger. CI run 41209059552 failed because device-save opt-out could be followed by a stale save effect; a synchronous consent guard now prevents writes after opt-out without removing the player's open game. Shop purchase handlers now reject repeat delivery of the same button action and same-item rapid double taps while allowing intentional later repeat purchases.
+
+Added real-DOM tests for every decoration type purchased twice, stable visible district meshes, exact balance deductions, one-time wearable unlock/equip, close/reopen and storage reload, all twelve chapter celebrations without re-awarding credits, and bad-plan feedback before all sixteen successful advanced controls. Migration checks now preserve every completed legacy prefix from one through sixteen missions. Keyboard focus survives challenge control repaints. Existing foundation/puzzle/resume/review, low-power pacing and audio checks remain in full validation. Feature-branch previews explicitly disabled. Release requires final full validate/CI, production READY at the merged source, official-domain asset checks and a runtime error scan. Physical-device GPU/audio/OS behavior remains live acceptance.

@@ -90,7 +90,7 @@ const TIERS = Object.freeze({
   },
 });
 export const emptyBuilderRewards = () => ({
-  version: 1,
+  version: 2,
   awards: [],
   purchases: [],
   equipped: [],
@@ -102,52 +102,87 @@ function isRecord(v) {
 function numberIn(v, min, max) {
   return Number.isInteger(v) && v >= min && v <= max;
 }
+// Repeatable cosmetics stay bounded per built district and overall to protect
+// mobile 3D performance. Virtual credits cannot be redeemed for real rewards.
+export const MAX_DISTRICT_DECOR = 6;
+export const MAX_ITEM_PER_DISTRICT = 3;
+export const MAX_TOTAL_DECOR = 84;
+export function decorationCount(value, district, id = null) {
+  const safe = sanitizeBuilderRewards(value);
+  return safe.purchases.filter(
+    (p) =>
+      ITEMS.get(p.id)?.category === "city" &&
+      (district == null || p.district === district) &&
+      (id == null || p.id === id),
+  ).length;
+}
 export function sanitizeBuilderRewards(value) {
-  if (!isRecord(value) || value.version !== 1) return emptyBuilderRewards();
+  if (!isRecord(value) || ![1, 2].includes(value.version))
+    return emptyBuilderRewards();
   const awards = [],
     seenChapters = new Set();
-  for (const item of Array.isArray(value.awards)
+  for (const a of Array.isArray(value.awards)
     ? value.awards.slice(0, 12)
     : []) {
     if (
-      !isRecord(item) ||
-      !numberIn(item.chapter, 1, 12) ||
-      !Object.hasOwn(TIERS, item.tier) ||
-      item.credits !== TIERS[item.tier].credits ||
-      seenChapters.has(item.chapter)
+      !isRecord(a) ||
+      !numberIn(a.chapter, 1, 12) ||
+      !Object.hasOwn(TIERS, a.tier) ||
+      a.credits !== TIERS[a.tier].credits ||
+      seenChapters.has(a.chapter)
     )
       continue;
-    awards.push({
-      chapter: item.chapter,
-      tier: item.tier,
-      credits: item.credits,
-    });
-    seenChapters.add(item.chapter);
+    awards.push({ chapter: a.chapter, tier: a.tier, credits: a.credits });
+    seenChapters.add(a.chapter);
   }
+  const earned = awards.reduce((n, a) => n + a.credits, 0);
   const purchases = [],
-    seenItems = new Set();
-  for (const purchase of Array.isArray(value.purchases)
-    ? value.purchases.slice(0, BUILDER_ITEMS.length)
-    : []) {
-    const item = ITEMS.get(purchase?.id);
+    usedSerials = new Set(),
+    owned = new Set();
+  const byDistrict = new Map(),
+    byType = new Map();
+  let spent = 0,
+    decorCount = 0,
+    serialCounter = 1;
+  const raw = Array.isArray(value.purchases)
+    ? value.purchases.slice(0, MAX_TOTAL_DECOR + BUILDER_ITEMS.length)
+    : [];
+  for (const p of raw) {
+    const item = ITEMS.get(p?.id);
+    if (!item || spent + item.cost > earned) continue;
+    const city = item.category === "city";
+    if (city && !DISTRICTS.has(p.district)) continue;
+    if (!city && (p.district != null || owned.has(item.id))) continue;
+    const n = byDistrict.get(p.district) ?? 0;
+    const k = p.id + "|" + p.district,
+      perItem = byType.get(k) ?? 0;
     if (
-      !item ||
-      seenItems.has(item.id) ||
-      (item.category === "city" && !DISTRICTS.has(purchase.district)) ||
-      (item.category === "builder" && purchase.district != null)
+      city &&
+      (decorCount >= MAX_TOTAL_DECOR ||
+        n >= MAX_DISTRICT_DECOR ||
+        perItem >= MAX_ITEM_PER_DISTRICT)
     )
       continue;
-    purchases.push({
-      id: item.id,
-      district: item.category === "city" ? purchase.district : null,
-    });
-    seenItems.add(item.id);
+    const serial = value.version === 2 ? p.serial : serialCounter;
+    if (
+      !Number.isInteger(serial) ||
+      serial < 1 ||
+      serial > 10000 ||
+      usedSerials.has(serial)
+    )
+      continue;
+    // New versions keep immutable purchase identity for stable 3D placement.
+    serialCounter = Math.max(serialCounter, serial + 1);
+    usedSerials.add(serial);
+    purchases.push({ id: item.id, district: city ? p.district : null, serial });
+    spent += item.cost;
+    owned.add(item.id);
+    if (city) {
+      decorCount++;
+      byDistrict.set(p.district, n + 1);
+      byType.set(k, perItem + 1);
+    }
   }
-  const earned = awards.reduce((n, item) => n + item.credits, 0);
-  const spent = purchases.reduce((n, item) => n + ITEMS.get(item.id).cost, 0);
-  // Never accept impossible negative balances from malformed or old saves.
-  if (spent > earned) purchases.length = 0;
-  const owned = new Set(purchases.map((item) => item.id));
   const equipped = [
     ...new Set(
       (Array.isArray(value.equipped) ? value.equipped : []).filter(
@@ -165,7 +200,7 @@ export function sanitizeBuilderRewards(value) {
       ),
     ),
   ];
-  return { version: 1, awards, purchases, equipped, viewed };
+  return { version: 2, awards, purchases, equipped, viewed };
 }
 export function builderBalance(value) {
   const safe = sanitizeBuilderRewards(value);
@@ -220,12 +255,35 @@ export function chapterRating(chapter, state) {
       ? serviceQuality(rows)
       : caseQuality(state.decisions, 0);
   } else if (chapter >= 5) {
-    // Higher chapters require tested solutions; unresolved earlier district choices
-    // still matter. Successfully deploying a test is not a perfect-city claim.
-    quality = Math.min(1, 0.2 + caseQuality(state.decisions, 0) * 0.8);
+    // Each chapter's simulation score now determines its reward tier.
+    // Previous-edition completed missions retain a neutral passing score.
+    const records =
+      state.advanced?.records?.slice(
+        (chapter - 5) * 2,
+        (chapter - 5) * 2 + 2,
+      ) ?? [];
+    quality =
+      records.length === 2
+        ? records.reduce(
+            (n, rec) => n + (rec.legacy ? 75 : (rec.score ?? 0)),
+            0,
+          ) / 200
+        : 0;
   }
+  // Advanced chapters reward genuine optimisation, not simply pressing Test
+  // until a minimally acceptable plan passes.
   const tier =
-    quality >= 0.7 ? "thriving" : quality >= 0.35 ? "growing" : "repair";
+    chapter >= 5
+      ? quality >= 0.95
+        ? "thriving"
+        : quality >= 0.82
+          ? "growing"
+          : "repair"
+      : quality >= 0.7
+        ? "thriving"
+        : quality >= 0.35
+          ? "growing"
+          : "repair";
   return { tier, ...TIERS[tier], percentage: Math.round(quality * 100) };
 }
 export function awardCompletedChapters(rewards, chapters, state) {
@@ -256,26 +314,61 @@ export function purchaseBuilderItem(
     item = ITEMS.get(itemId);
   if (!item)
     return { ok: false, reason: "That item is unavailable.", rewards: safe };
-  if (safe.purchases.some((p) => p.id === itemId))
-    return { ok: false, reason: "You already own this item.", rewards: safe };
+  if (
+    item.category === "builder" &&
+    safe.purchases.some((p) => p.id === itemId)
+  )
+    return {
+      ok: false,
+      reason: "You already own this outfit or accessory.",
+      rewards: safe,
+    };
   if (builderBalance(safe) < item.cost)
     return {
       ok: false,
       reason: "Earn more Builder Credits by completing chapters.",
       rewards: safe,
     };
-  if (
-    item.category === "city" &&
-    (!DISTRICTS.has(district) || !allowedDistricts.includes(district))
-  )
-    return {
-      ok: false,
-      reason: "Choose a district you have built first.",
-      rewards: safe,
-    };
+  if (item.category === "city") {
+    if (!DISTRICTS.has(district) || !allowedDistricts.includes(district))
+      return {
+        ok: false,
+        reason: "Choose a district you have built first.",
+        rewards: safe,
+      };
+    const city = safe.purchases.filter(
+      (p) => ITEMS.get(p.id)?.category === "city",
+    );
+    if (city.length >= MAX_TOTAL_DECOR)
+      return {
+        ok: false,
+        reason: "Your city has reached its decoration limit.",
+        rewards: safe,
+      };
+    if (
+      city.filter((p) => p.district === district).length >= MAX_DISTRICT_DECOR
+    )
+      return {
+        ok: false,
+        reason: "This district is full. Decorate another neighbourhood.",
+        rewards: safe,
+      };
+    if (
+      city.filter((p) => p.district === district && p.id === itemId).length >=
+      MAX_ITEM_PER_DISTRICT
+    )
+      return {
+        ok: false,
+        reason:
+          "You have three of this item here. Try another district or decoration.",
+        rewards: safe,
+      };
+  }
+  const serial = Math.max(0, ...safe.purchases.map((p) => p.serial)) + 1;
   safe.purchases.push({
     id: itemId,
     district: item.category === "city" ? district : null,
+    serial,
   });
   if (item.category === "builder") safe.equipped.push(itemId);
   return { ok: true, rewards: safe };

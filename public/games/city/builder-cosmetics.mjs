@@ -10,8 +10,21 @@ export function createBuilderCosmetics({
 }) {
   const cityObjects = new Map();
   const wearableObjects = new Map();
-  const material = (color) =>
-    new T.MeshStandardMaterial({ color, roughness: 0.82 });
+  // Reuse material and geometry across repeat purchases to limit GPU memory.
+  const materials = new Map(),
+    geometries = new Map();
+  const material = (color) => {
+    if (!materials.has(color))
+      materials.set(
+        color,
+        new T.MeshStandardMaterial({ color, roughness: 0.82 }),
+      );
+    return materials.get(color);
+  };
+  function geometry(key, make) {
+    if (!geometries.has(key)) geometries.set(key, make());
+    return geometries.get(key);
+  }
   function group() {
     const root = new T.Group();
     root.userData.ignoreNavigation = true;
@@ -19,7 +32,13 @@ export function createBuilderCosmetics({
     return root;
   }
   function cube(parent, w, h, d, color, x, y, z) {
-    const mesh = new T.Mesh(new T.BoxGeometry(w, h, d), material(color));
+    const mesh = new T.Mesh(
+      geometry(
+        "box:" + w + ":" + h + ":" + d,
+        () => new T.BoxGeometry(w, h, d),
+      ),
+      material(color),
+    );
     mesh.position.set(x, y, z);
     mesh.userData.ignoreNavigation = true;
     parent.add(mesh);
@@ -27,7 +46,10 @@ export function createBuilderCosmetics({
   }
   function cylinder(parent, top, bottom, h, color, x, y, z, sides = 8) {
     const mesh = new T.Mesh(
-      new T.CylinderGeometry(top, bottom, h, sides),
+      geometry(
+        "cylinder:" + top + ":" + bottom + ":" + h + ":" + sides,
+        () => new T.CylinderGeometry(top, bottom, h, sides),
+      ),
       material(color),
     );
     mesh.position.set(x, y, z);
@@ -37,7 +59,10 @@ export function createBuilderCosmetics({
   }
   function sphere(parent, radius, color, x, y, z) {
     const mesh = new T.Mesh(
-      new T.IcosahedronGeometry(radius, lowPower ? 0 : 1),
+      geometry(
+        "sphere:" + radius + ":" + lowPower,
+        () => new T.IcosahedronGeometry(radius, lowPower ? 0 : 1),
+      ),
       material(color),
     );
     mesh.position.set(x, y, z);
@@ -45,16 +70,17 @@ export function createBuilderCosmetics({
     parent.add(mesh);
     return mesh;
   }
-  function makeCityItem(id) {
+  const slots = [
+    [-2.2, 1.65],
+    [2.2, 1.65],
+    [-2.2, -1.55],
+    [2.2, -1.55],
+    [0, 2.6],
+    [0, -2.55],
+  ];
+  function makeCityItem(id, slot = 0) {
     const g = group();
-    const position = {
-      flowers: [-2.25, 1.7],
-      trees: [2.5, 1.2],
-      benches: [-2.25, -1.6],
-      lights: [2.6, -1.6],
-      fountain: [0, -2.8],
-    }[id];
-    g.position.set(position[0], 0, position[1]);
+    g.position.set(...[slots[slot][0], 0, slots[slot][1]]);
     if (id === "flowers") {
       cube(g, 1.75, 0.12, 1.1, 0x876b49, 0, 0.19, 0);
       for (let i = 0; i < (lowPower ? 5 : 9); i++) {
@@ -91,8 +117,6 @@ export function createBuilderCosmetics({
     }
     return g;
   }
-  for (const item of BUILDER_ITEMS.filter((i) => i.category === "city"))
-    cityObjects.set(item.id, makeCityItem(item.id));
   function makeWearable(id) {
     const g = group();
     if (id === "helmet") {
@@ -116,10 +140,28 @@ export function createBuilderCosmetics({
     wearableObjects.set(item.id, makeWearable(item.id));
   function sync(value) {
     const rewards = sanitizeBuilderRewards(value);
-    const purchased = new Map(rewards.purchases.map((p) => [p.id, p]));
-    for (const [id, g] of cityObjects) {
-      const purchase = purchased.get(id);
-      const root = purchase && plazas.get(purchase.district)?.root;
+    const purchases = rewards.purchases.filter((p) =>
+      BUILDER_ITEMS.some((i) => i.id === p.id && i.category === "city"),
+    );
+    const active = new Set(purchases.map((p) => p.serial));
+    // Reset/replay may remove purchases. No ghost decoration may remain.
+    for (const [serial, group] of cityObjects) {
+      if (active.has(serial)) continue;
+      group.parent?.remove(group);
+      cityObjects.delete(serial);
+    }
+    const used = new Map();
+    for (const p of purchases) {
+      const slot = used.get(p.district) ?? 0;
+      used.set(p.district, slot + 1);
+      let g = cityObjects.get(p.serial);
+      if (!g) {
+        g = makeCityItem(p.id, slot);
+        cityObjects.set(p.serial, g);
+      }
+      const place = slots[slot % slots.length];
+      g.position.set(place[0], 0, place[1]);
+      const root = plazas.get(p.district)?.root;
       if (root && g.parent !== root) root.add(g);
       g.visible = Boolean(root);
     }

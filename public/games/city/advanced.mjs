@@ -1,477 +1,485 @@
-// Authored, deterministic Chapters 5–12 in the player's existing city.
-// No AI calls, real-world outcomes, grades or fabricated evidence.
+// Chapters 5–12: independent, deterministic simulation challenges.
+// Keep verified real-world evidence separate. Existing v1 players preserve
+// completed missions through the legacy validator, not fabricated new plans.
 import { resilienceReport } from "./resilience.mjs";
-const sites = [
-  "water",
-  "industry",
-  "market",
-  "health",
-  "workshop",
-  "business",
-  "transport",
-];
-export const ADVANCED_CHAPTERS = [
-  {
-    number: 5,
-    title: "Repair and Upgrade",
-    missions: [
-      [
-        "The clinic still waits",
-        "Stored water is available, but the clinic's direct delivery link is broken. A working relay can bypass it.",
-        "health",
-        "network",
-        "Repair the route",
-        [
-          "Increase clinic advertising",
-          "Repair the route",
-          "Close the water store",
-        ],
-      ],
-      [
-        "Restore the repair team",
-        "Parts are ready. Repair teams need water before they can restore services. Protect care while supplying repairs.",
-        "workshop",
-        "allocate",
-        "Water is the repair bottleneck",
-        [
-          "Water is the repair bottleneck",
-          "Parts have no value",
-          "Stop all clinic deliveries",
-        ],
-      ],
-    ],
-  },
-  {
-    number: 6,
-    title: "A Growing City",
-    missions: [
-      [
-        "More homes, same water",
-        "Demand grew, but the water budget did not. Meet essential requests before using the reserve.",
-        "water",
-        "allocate",
-        "Allocate the limited supply",
-        [
-          "Promise unlimited supply",
-          "Allocate the limited supply",
-          "Ignore new residents",
-        ],
-      ],
-      [
-        "A second delivery route",
-        "The old direct road is blocked. Connect the depot through a working relay to reach the growing neighbourhood.",
-        "transport",
-        "network",
-        "Use a working bypass",
-        [
-          "Use a working bypass",
-          "Send traffic into the blockage",
-          "Buy more signs only",
-        ],
-      ],
-    ],
-  },
-  {
-    number: 7,
-    title: "Connected Crises",
-    missions: [
-      [
-        "Water keeps food moving",
-        "Growers depend on water; shops depend on growers. Protect both care and food while retaining repair capacity.",
-        "market",
-        "allocate",
-        "Protect the connected services",
-        [
-          "Shops can sell absent food",
-          "Protect the connected services",
-          "Water only matters at clinics",
-        ],
-      ],
-      [
-        "Restore the supply chain",
-        "The direct industrial link is down. Route parts through a working relay so repairs can keep the other services running.",
-        "industry",
-        "network",
-        "Restore parts delivery",
-        [
-          "Stop all repairs",
-          "Restore parts delivery",
-          "Announce that work is finished",
-        ],
-      ],
-    ],
-  },
-  {
-    number: 8,
-    title: "Build for Everyone",
-    missions: [
-      [
-        "Who is still waiting?",
-        "The clinic and growers need water at the same time. A plan that serves only one leaves another essential need unmet.",
-        "health",
-        "allocate",
-        "Meet both essential minimums",
-        [
-          "Meet both essential minimums",
-          "Always serve the nearest first",
-          "Hide the waiting count",
-        ],
-      ],
-      [
-        "Reach the overlooked shops",
-        "A short direct connection is broken. A longer working route can serve shops that earlier plans left out.",
-        "business",
-        "network",
-        "Test access through a relay",
-        [
-          "Count the broken road as working",
-          "Close the shops",
-          "Test access through a relay",
-        ],
-      ],
-    ],
-  },
-  {
-    number: 9,
-    title: "Use Less, Serve More",
-    missions: [
-      [
-        "Protect a reserve",
-        "Tomorrow's supply is uncertain. Meet today's essential minimums and retain the stated reserve rather than spend everything.",
-        "water",
-        "allocate",
-        "Keep the reserve after meeting needs",
-        [
-          "Spend every unit today",
-          "Keep the reserve after meeting needs",
-          "Keep everything and serve nobody",
-        ],
-      ],
-      [
-        "A lean repair route",
-        "Each open connection takes maintenance. Reach the service within the connection budget; unnecessary links waste capacity.",
-        "workshop",
-        "network",
-        "Use a tested route within budget",
-        [
-          "Open every connection",
-          "Use a tested route within budget",
-          "Ignore the broken direct link",
-        ],
-      ],
-    ],
-  },
-  {
-    number: 10,
-    title: "Lead Through Pressure",
-    missions: [
-      [
-        "Balance today and tomorrow",
-        "Care, food production and repairs all have minimum needs. The supply budget cannot satisfy unlimited requests.",
-        "industry",
-        "allocate",
-        "Balance the three minimums",
-        [
-          "Balance the three minimums",
-          "Promise all requests without counting",
-          "Spend all supply on one service",
-        ],
-      ],
-      [
-        "Reconnect under constraint",
-        "The direct link has failed. You have a limited number of connections to restore a useful service.",
-        "transport",
-        "network",
-        "Test the bypass before deploying",
-        [
-          "Declare the link restored",
-          "Test the bypass before deploying",
-          "Wait without checking routes",
-        ],
-      ],
-    ],
-  },
-  {
-    number: 11,
-    title: "Design for Reliability",
-    missions: [
-      [
-        "One route is not enough",
-        "A single relay route works today but fails if one connection breaks. Provide two independent working routes.",
-        "health",
-        "network",
-        "Build independent backup routes",
-        [
-          "Build independent backup routes",
-          "Paint the same route twice",
-          "Count the broken direct link",
-        ],
-      ],
-      [
-        "Keep emergency capacity",
-        "Protect essential needs and the emergency reserve. A small repair allocation reduces the next disruption's risk.",
-        "workshop",
-        "allocate",
-        "Protect needs, repairs and reserve",
-        [
-          "Spend the reserve first",
-          "Protect needs, repairs and reserve",
-          "Ignore tomorrow's risk",
-        ],
-      ],
-    ],
-  },
-  {
-    number: 12,
-    title: "The Final Challenge",
-    missions: [
-      [
-        "Keep the whole city supplied",
-        "Combine everything learned: protect care, food and repairs, account for limited supply and keep an emergency reserve.",
-        "market",
-        "allocate",
-        "Test the full allocation against every constraint",
-        [
-          "Check only the total spent",
-          "Test the full allocation against every constraint",
-          "Serve only the biggest service",
-        ],
-      ],
-      [
-        "A city that can keep going",
-        "Your final delivery system must survive any single working connection failing. Test both routes, then deploy and inspect the city you improved.",
-        "transport",
-        "network",
-        "Verify the backup survives a failed link",
-        [
-          "Verify the backup survives a failed link",
-          "Assume extra links guarantee reliability",
-          "Declare success before testing",
-        ],
-      ],
-    ],
-  },
-];
-const count = ADVANCED_CHAPTERS.reduce((n, c) => n + c.missions.length, 0);
-export function sanitizeAdvanced(value) {
-  if (
-    !value ||
-    value.version !== 1 ||
-    !Array.isArray(value.records) ||
-    value.records.length > count
-  )
-    return null;
-  const seed =
-    Number.isInteger(value.seed) && value.seed >= 0 && value.seed <= 10
-      ? value.seed
-      : 0;
-  const records = [];
-  for (let i = 0; i < value.records.length; i++) {
-    const r = value.records[i];
-    if (!r || !Array.isArray(r.plan)) return null;
-    const m = missionAt(i);
-    if (
-      !m ||
-      r.plan.length !== (m.kind === "allocate" ? 3 : 5) ||
-      !r.plan.every((n) => Number.isInteger(n) && n >= 0 && n <= 30)
-    )
-      return null;
-    const prior = { version: 1, seed, records: [...records] };
-    if (!testAdvanced(prior, r.plan).ok) return null;
-    records.push({ plan: [...r.plan] });
-  }
-  const phase = ["diagnose", "configure", "result"].includes(
-    value.cursor?.phase,
-  )
-    ? value.cursor.phase
-    : "diagnose";
-  const plan =
-    Array.isArray(value.cursor?.plan) &&
-    value.cursor.plan.length <= 5 &&
-    value.cursor.plan.every((n) => Number.isInteger(n) && n >= 0 && n <= 30)
-      ? [...value.cursor.plan]
-      : [];
-  return { version: 1, seed, records, cursor: { phase, plan } };
-}
-export function newAdvanced(resilience) {
+import { CITY_DISTRICTS } from "./districts.mjs";
+import {
+  ADVANCED_MISSIONS,
+  challengeAt,
+  initialChallengePlan,
+} from "./advanced-missions.mjs";
+import {
+  sanitizeAdvanced as sanitizeLegacy,
+  advancedUpgrades as legacyUpgrades,
+} from "./advanced-legacy.mjs";
+
+export { ADVANCED_CHAPTERS } from "./advanced-missions.mjs";
+const MAX_PLAN = 30;
+const isInt = (n) => Number.isInteger(n) && n >= -1 && n <= MAX_PLAN;
+const sum = (numbers) => numbers.reduce((a, b) => a + b, 0);
+const fail = (message, metrics = {}) => ({
+  ok: false,
+  score: 0,
+  message,
+  metrics,
+});
+const pass = (message, score = 100, metrics = {}) => ({
+  ok: true,
+  score,
+  message,
+  metrics,
+});
+const selected = (plan) =>
+  plan.map((v, i) => (v === 1 ? i : -1)).filter((i) => i >= 0);
+const distance = (a, b) =>
+  Math.abs(Math.floor(a / 3) - Math.floor(b / 3)) + Math.abs((a % 3) - (b % 3));
+const coverage = (m, plan) => {
+  const choices = selected(plan);
+  const spent = sum(choices.map((i) => m.options[i].cost));
+  const covered = new Set(choices.flatMap((i) => m.options[i].covers));
   return {
-    version: 1,
-    seed: Math.min(10, resilience?.seed?.capacity?.water ?? 0),
-    records: [],
-    cursor: { phase: "diagnose", plan: [] },
+    choices,
+    spent,
+    covered,
+    missing: m.needs.filter((need) => !covered.has(need)),
   };
-}
-function missionAt(index) {
-  const chapter = ADVANCED_CHAPTERS[Math.floor(index / 2)];
-  const raw = chapter?.missions[index % 2];
-  if (!raw) return null;
-  const [title, brief, district, kind, diagnosis, answers] = raw;
-  return {
-    chapter: chapter.number,
-    chapterTitle: chapter.title,
-    title,
-    brief,
-    district,
-    kind,
-    diagnosis,
-    answers,
-    index,
-  };
-}
+};
 export function advancedMission(value) {
-  return missionAt(value?.records?.length ?? 0);
+  return challengeAt(value?.records?.length ?? 0);
+}
+export function initialAdvancedPlan(value) {
+  return initialChallengePlan(advancedMission(value));
 }
 export function canStartAdvanced(resilience) {
   return resilienceReport(resilience)?.completed === true;
 }
-export function advancedUpgrades(value) {
-  const result = Object.fromEntries(sites.map((id) => [id, 0]));
-  for (let i = 0; i < (value?.records?.length ?? 0); i++) {
-    const mission = missionAt(i);
-    result[mission.district]++;
-    // A tested connection repairs both ends and the transport link. A
-    // distribution test restores the depots and receiving service nodes.
-    const linked =
-      mission.kind === "network"
-        ? ["water", "transport"]
-        : ["water", "industry", "health", "market", "workshop"];
-    for (const id of linked) result[id] = Math.max(1, result[id]);
-  }
-  return result;
+export function newAdvanced(resilience) {
+  return {
+    version: 2,
+    seed: Math.min(10, Math.max(0, resilience?.seed?.capacity?.water ?? 0)),
+    records: [],
+    cursor: { phase: "configure", plan: initialChallengePlan(challengeAt(0)) },
+  };
 }
 export function advancedRules(value) {
   const m = advancedMission(value);
   if (!m) return null;
-  const tier = m.chapter - 5;
-  const minimum = [
-    3 + Math.floor(tier / 3),
-    2 + Math.floor(tier / 2),
-    1 + Math.floor(tier / 3),
-  ];
-  const reserve = m.chapter >= 9 ? 2 : 1;
-  const upgraded = advancedUpgrades(value);
-  const bonus = Math.min(3, Math.floor((value.seed ?? 0) / 3) + upgraded.water);
-  return {
-    minimum,
-    reserve,
-    budget: minimum.reduce((a, b) => a + b, 0) + reserve + 1 + bonus,
-    links: m.chapter >= 11 ? 4 : 3,
-    redundant: m.chapter >= 11,
-  };
+  return { kind: m.kind, chapter: m.chapter, prompt: m.prompt, model: m };
+}
+function evaluate(m, plan) {
+  const p = plan;
+  switch (m.kind) {
+    case "evidence": {
+      if (!p.every((v) => v === 0 || v === 1))
+        return fail("Select the evidence you want to investigate.");
+      const chosen = selected(p),
+        missed = m.causes.filter((i) => !chosen.includes(i)),
+        extra = chosen.filter((i) => !m.causes.includes(i));
+      if (missed.length)
+        return fail(
+          "You missed a real risk. Check the water storage and disinfection records.",
+          { found: m.causes.length - missed.length },
+        );
+      if (extra.length > 1)
+        return fail(
+          "Too many unrelated clues would waste the repair budget. Focus on the sources of risk.",
+        );
+      return pass(
+        extra.length
+          ? "Both causes found. One extra clue adds some investigation cost."
+          : "Both contamination risks identified. The clinic can now address the causes.",
+        extra.length ? 80 : 100,
+        { causes: 2, extra: extra.length },
+      );
+    }
+    case "sequence": {
+      const right = m.order.every((id, i) => p[i] === id);
+      if (!right)
+        return fail(
+          "The steps are unsafe or out of order. Isolate the equipment before diagnosing or reopening.",
+        );
+      return pass(
+        "Safe repair sequence completed: isolate, inspect, fix, test.",
+        100,
+        { steps: 4 },
+      );
+    }
+    case "site":
+    case "zoning": {
+      const [a, b] = p;
+      if (a === b || a < 0 || b < 0)
+        return fail("Choose two different plots for the two community uses.");
+      if (!m.safe?.[0]?.includes(a) && !m.allowed?.[0]?.includes(a))
+        return fail(
+          "The first site has a flood or access hazard. Pick safer ground.",
+        );
+      if (!m.safe?.[1]?.includes(b) && !m.allowed?.[1]?.includes(b))
+        return fail(
+          "The second site exposes residents to unnecessary hazards.",
+        );
+      if (distance(a, b) > m.maxDistance)
+        return fail(
+          "The two places are too far apart for accessible everyday journeys.",
+        );
+      return pass(
+        "Both sites are safe and close enough for a practical walking connection.",
+        distance(a, b) === 1 ? 100 : 85,
+        { walkingSteps: distance(a, b), plots: 2 },
+      );
+    }
+    case "schedule": {
+      if (p.includes(-1) || new Set(p).size !== p.length)
+        return fail("Assign each service its own loading-bay time.");
+      const late = p.findIndex((v, i) => v > m.deadlines[i]);
+      if (late >= 0)
+        return fail(
+          m.labels[late] +
+            " arrives after its required window. Protect essential early trips.",
+        );
+      return pass(
+        "School, care, market and repairs have workable arrival times without loading-bay conflict.",
+        100,
+        { scheduled: 4, conflicts: 0 },
+      );
+    }
+    case "scenario":
+    case "negotiation":
+    case "risk": {
+      if (p.some((v) => v < 0 || v > 2))
+        return fail(
+          "Respond to all three situations before testing your plan.",
+        );
+      const right = p.filter((v, i) => v === m.rounds[i].safe).length;
+      const priority =
+        m.kind === "scenario" ? 0 : m.kind === "negotiation" ? 1 : 2;
+      if (p[priority] !== m.rounds[priority].safe)
+        return fail(
+          "A critical safety or access need is still exposed. Review the most urgent situation.",
+          { protected: right },
+        );
+      if (right < 2)
+        return fail(
+          "Too many people or services remain at risk. Reconsider the trade-offs.",
+          { protected: right },
+        );
+      const words = {
+        scenario: "The immediate threats are addressed",
+        negotiation: "The agreement protects essential access",
+        risk: "The city has usable protections against the hazards",
+      };
+      return pass(
+        words[m.kind] + ". " + right + " of 3 responses protect residents.",
+        right === 3 ? 100 : 75,
+        { protected: right, total: 3 },
+      );
+    }
+    case "inventory":
+    case "energy": {
+      if (p.some((v) => v < 0)) return fail("Set all allocation controls.");
+      const left = (m.available ?? m.budget) - sum(p);
+      if (left < m.reserve)
+        return fail(
+          "Too much stock is committed. Keep at least " +
+            m.reserve +
+            " units for emergencies.",
+        );
+      const miss = m.minimum.findIndex((v, i) => p[i] < v);
+      if (miss >= 0)
+        return fail(
+          m.labels[miss] +
+            " needs at least " +
+            m.minimum[miss] +
+            " units. Adjust your plan.",
+        );
+      const excess = m.maximum.findIndex((v, i) => p[i] > v);
+      if (excess >= 0)
+        return fail(
+          m.labels[excess] +
+            " cannot handle that many units without waste or overload.",
+        );
+      return pass(
+        m.kind === "inventory"
+          ? "The harvest is sold, preserved and shared without overloading storage."
+          : "Essential power needs are supplied with an emergency reserve.",
+        left === m.reserve ? 88 : 100,
+        { used: sum(p), reserve: left, minimumsMet: m.minimum.length },
+      );
+    }
+    case "access":
+    case "portfolio":
+    case "capstone": {
+      if (p.some((v) => v !== 0 && v !== 1))
+        return fail("Choose an investment package.");
+      const c = coverage(m, p);
+      if (c.spent > m.budget)
+        return fail(
+          "Your proposals cost " +
+            c.spent +
+            " units but the budget is only " +
+            m.budget +
+            ".",
+        );
+      if (c.missing.length)
+        return fail(
+          "Unmet priorities: " +
+            c.missing.join(", ") +
+            ". Find a more balanced package.",
+          { covered: m.needs.length - c.missing.length },
+        );
+      const savings = m.budget - c.spent;
+      return pass(
+        "The plan covers " +
+          m.needs.join(", ") +
+          " and saves " +
+          savings +
+          " units for future needs.",
+        Math.min(100, 85 + savings * 3),
+        {
+          covered: m.needs.length,
+          budgetLeft: savings,
+          projects: c.choices.length,
+        },
+      );
+    }
+    case "sorting": {
+      if (p.some((v) => v < 0 || v > 2))
+        return fail(
+          "Sort all the materials before sending them to recovery centres.",
+        );
+      if (p[2] !== m.correct[2])
+        return fail(
+          "Damaged batteries require safe disposal. Do not place hazardous waste with ordinary materials.",
+        );
+      const right = p.filter((v, i) => v === m.correct[i]).length;
+      if (right < 4)
+        return fail(
+          "Several materials would be wasted or mishandled. Check what can be repaired or composted.",
+          { sorted: right },
+        );
+      return pass(
+        right + " of 5 materials will be handled appropriately.",
+        right === 5 ? 100 : 80,
+        { sorted: right, total: 5 },
+      );
+    }
+    case "crews": {
+      if (p.some((v) => v < 0 || v > 2))
+        return fail("Assign a qualified team to every job.");
+      if (new Set(p).size !== p.length)
+        return fail("A single team cannot be at two urgent jobs at once.");
+      const wrong = p.findIndex((v, i) => v !== m.correct[i]);
+      if (wrong >= 0)
+        return fail(
+          m.jobs[wrong] +
+            " needs an appropriately trained specialist, not an available but unqualified worker.",
+        );
+      return pass(
+        "All three hazards have skilled teams without double-booking.",
+        100,
+        { safeRepairs: 3 },
+      );
+    }
+    case "forecast": {
+      const errors = p.map((n, i) => Math.abs(n - m.expected[i]));
+      if (errors.some((e) => e > m.tolerance))
+        return fail(
+          "Your forecast misses a recent trend. Compare each district's last three observations.",
+          { variance: sum(errors) },
+        );
+      return pass(
+        "Services are prepared for anticipated growth. Total forecast difference: " +
+          sum(errors) +
+          " units.",
+        100 - sum(errors) * 10,
+        { variance: sum(errors), forecast: p },
+      );
+    }
+    default:
+      return fail("This challenge is not available.");
+  }
 }
 export function testAdvanced(value, plan) {
-  const m = advancedMission(value),
-    r = advancedRules(value);
-  if (!m) return { ok: false, message: "The main story is complete." };
+  const m = advancedMission(value);
+  if (!m)
+    return fail(
+      "The city story is complete. Explore your work and start a real-world Quest.",
+    );
   if (
     !Array.isArray(plan) ||
-    plan.length !== (m.kind === "allocate" ? 3 : 5) ||
-    !plan.every((n) => Number.isInteger(n) && n >= 0 && n <= 30)
+    plan.length !== initialChallengePlan(m).length ||
+    !plan.every(isInt)
   )
-    return { ok: false, message: "Check your controls and test again." };
-  if (m.kind === "allocate") {
-    const used = plan.reduce((a, b) => a + b, 0),
-      left = r.budget - used;
-    if (left < r.reserve)
-      return {
-        ok: false,
-        message: `You used ${used}/${r.budget}. Keep at least ${r.reserve} units in reserve.`,
-      };
-    const missing = r.minimum.map((n, i) => Math.max(0, n - plan[i]));
-    if (missing.some(Boolean))
-      return {
-        ok: false,
-        message: `Still needed: clinic ${missing[0]}, growers ${missing[1]}, repairs ${missing[2]}. Adjust and test again.`,
-      };
+    return fail("Check your plan. Each control needs a valid choice.");
+  return evaluate(m, plan);
+}
+export function sanitizeAdvanced(value) {
+  if (
+    !value ||
+    !Array.isArray(value.records) ||
+    value.records.length > ADVANCED_MISSIONS.length
+  )
+    return null;
+  if (value.version === 1) {
+    const legacy = sanitizeLegacy(value);
+    if (!legacy) return null;
+    const records = legacy.records.map((r) => ({
+      legacy: true,
+      plan: [...r.plan],
+    }));
     return {
-      ok: true,
-      message: `Test passed: clinic ${plan[0]}, growers ${plan[1]}, repairs ${plan[2]}; ${left} units remain.`,
+      version: 2,
+      seed: legacy.seed,
+      records,
+      cursor: {
+        phase: "configure",
+        plan: initialChallengePlan(challengeAt(records.length)),
+      },
     };
   }
-  if (!plan.every((n) => n === 0 || n === 1))
-    return { ok: false, message: "Use the connection switches." };
-  if (plan[4])
-    return {
-      ok: false,
-      message:
-        "The direct connection is broken. Switch it off and find a working bypass.",
-    };
-  if (plan.reduce((a, b) => a + b, 0) > r.links)
-    return {
-      ok: false,
-      message: `You can maintain only ${r.links} connections. Close an unnecessary link.`,
-    };
-  const paths =
-    Number(Boolean(plan[0] && plan[1])) + Number(Boolean(plan[2] && plan[3]));
-  if (paths < (r.redundant ? 2 : 1))
-    return {
-      ok: false,
-      message: r.redundant
-        ? "One route cannot survive a failed link. Connect two independent relay routes."
-        : "No complete route reaches the service. Connect depot to relay and relay to service.",
-    };
-  return {
-    ok: true,
-    message: r.redundant
-      ? "Test passed: either relay route can fail and the other still delivers."
-      : "Test passed: a working route bypasses the broken connection.",
-  };
+  if (value.version !== 2) return null;
+  const seed =
+    Number.isInteger(value.seed) && value.seed >= 0 && value.seed <= 10
+      ? value.seed
+      : 0;
+  const records = [],
+    legacy = [];
+  for (let i = 0; i < value.records.length; i++) {
+    const record = value.records[i];
+    if (!record || !Array.isArray(record.plan)) return null;
+    if (record.legacy === true) {
+      // Old records may only be a prefix, and their actual old simulations
+      // must validate. Do not award credit for a synthetic migrated marker.
+      if (records.length !== legacy.length) return null;
+      legacy.push({ plan: record.plan });
+      if (
+        !sanitizeLegacy({
+          version: 1,
+          seed,
+          records: legacy,
+          cursor: { phase: "diagnose", plan: [] },
+        })
+      )
+        return null;
+      records.push({ legacy: true, plan: [...record.plan] });
+    } else {
+      if (!testAdvanced({ version: 2, seed, records }, record.plan).ok)
+        return null;
+      const result = testAdvanced({ version: 2, seed, records }, record.plan);
+      records.push({ plan: [...record.plan], score: result.score });
+    }
+  }
+  const m = challengeAt(records.length);
+  let plan =
+    Array.isArray(value.cursor?.plan) &&
+    value.cursor.plan.length === initialChallengePlan(m).length &&
+    value.cursor.plan.every(isInt)
+      ? [...value.cursor.plan]
+      : initialChallengePlan(m);
+  const phase =
+    value.cursor?.phase === "result" && records.length ? "result" : "configure";
+  if (!m) plan = [];
+  return { version: 2, seed, records, cursor: { phase, plan } };
 }
 export function deployAdvanced(value, plan) {
   const safe = sanitizeAdvanced(value);
-  if (!safe || !testAdvanced(safe, plan).ok) return null;
+  if (!safe) return null;
+  const check = testAdvanced(safe, plan);
+  if (!check.ok) return null;
+  const records = [...safe.records, { plan: [...plan], score: check.score }];
   return {
     ...safe,
-    records: [...safe.records, { plan: [...plan] }],
-    cursor: { phase: "result", plan: [] },
+    records,
+    cursor: {
+      phase: "result",
+      plan: initialChallengePlan(challengeAt(records.length)),
+    },
   };
 }
+export function advancedUpgrades(value) {
+  const districts = Object.fromEntries(CITY_DISTRICTS.map((d) => [d.id, 0]));
+  if (value?.version === 1) value = sanitizeAdvanced(value);
+  if (!value?.records?.length) return districts;
+  const count = Math.min(ADVANCED_MISSIONS.length, value.records.length);
+  for (let i = 0; i < count; i++) {
+    const m = challengeAt(i);
+    if (m) districts[m.district] = (districts[m.district] ?? 0) + 1;
+    // Cross-system service results reflect the district, but cannot be bought.
+    if (["market", "health", "workshop", "power"].includes(m.district))
+      districts.water = Math.max(1, districts.water ?? 0);
+  }
+  // Keep legacy service upgrades for already completed v1 repairs.
+  const legacyCount = value.records.findIndex((r) => r.legacy !== true);
+  const n = legacyCount < 0 ? count : legacyCount;
+  if (n) {
+    const old = legacyUpgrades({ records: value.records.slice(0, n) });
+    for (const [id, v] of Object.entries(old))
+      districts[id] = Math.max(districts[id] ?? 0, v);
+  }
+  return districts;
+}
 export function advancedCityActivity(economy, resilience, value) {
+  if (value?.version === 1) value = sanitizeAdvanced(value);
   if (!value?.records?.length) return null;
-  const upgrades = advancedUpgrades(value),
-    index = value.records.length - 1,
-    m = missionAt(index),
-    r = advancedRules({ ...value, records: value.records.slice(0, -1) }),
-    plan = value.records[index].plan;
-  const previous = resilienceReport(resilience)?.last?.requests ?? {
+  const lastIndex = value.records.length - 1;
+  const m = challengeAt(lastIndex),
+    record = value.records[lastIndex];
+  if (!m) return null;
+  const prior = resilienceReport(resilience)?.last?.requests ?? {
     clinic: { requested: 3, served: 0 },
     farms: { requested: 2, served: 0 },
     repairs: { requested: 2, served: 0 },
     shops: { requested: 2, served: 0 },
   };
   const requests = Object.fromEntries(
-    Object.entries(previous).map(([id, row]) => [id, { ...row }]),
+    Object.entries(prior).map(([id, row]) => [id, { ...row }]),
   );
-  if (m.kind === "allocate") {
-    for (const [i, id] of ["clinic", "farms", "repairs"].entries())
-      requests[id] = {
-        requested: r.minimum[i],
-        served: Math.min(r.minimum[i], plan[i]),
-      };
-  } else {
-    const repaired = {
-      health: "clinic",
-      market: "farms",
-      workshop: "repairs",
-      industry: "repairs",
-      business: "shops",
-    }[m.district];
-    if (repaired) requests[repaired].served = requests[repaired].requested;
-  }
+  const affected =
+    {
+      health: ["clinic"],
+      workshop: ["repairs"],
+      market: ["farms", "shops"],
+      industry: ["repairs"],
+      business: ["shops"],
+      school: ["clinic"],
+      housing: ["clinic"],
+      transport: ["shops"],
+      governance: ["shops"],
+      power: ["clinic", "farms"],
+      water: ["clinic", "farms"],
+    }[m.district] ?? [];
+  // New tested plans contribute a concrete simulated improvement, never a
+  // promise that all people or all prior system failures have been fixed.
+  if (!record.legacy && Number.isFinite(record.score))
+    for (const id of affected) {
+      if (requests[id])
+        requests[id].served = Math.min(
+          requests[id].requested,
+          Math.max(
+            requests[id].served,
+            Math.floor((requests[id].requested * record.score) / 100),
+          ),
+        );
+    }
   return {
     ...economy,
-    day: Math.max(1, economy.day),
-    upgrades,
+    day: Math.max(1, economy?.day ?? 1),
+    upgrades: advancedUpgrades(value),
     last: {
-      ...economy.last,
+      ...(economy?.last ?? {}),
       requests,
       shipments: [
-        { from: "water", to: "health", units: requests.clinic.served },
-        { from: "water", to: "market", units: requests.farms.served },
-        { from: "industry", to: "workshop", units: requests.repairs.served },
-        { from: "market", to: "business", units: requests.shops.served },
+        { from: "water", to: "health", units: requests.clinic?.served ?? 0 },
+        { from: "water", to: "market", units: requests.farms?.served ?? 0 },
+        {
+          from: "industry",
+          to: "workshop",
+          units: requests.repairs?.served ?? 0,
+        },
+        { from: "market", to: "business", units: requests.shops?.served ?? 0 },
       ],
       advancedDistrict: m.district,
+      advancedProject: m.id,
+      advancedScore: record.legacy ? null : record.score,
     },
   };
 }

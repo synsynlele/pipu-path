@@ -1968,3 +1968,42 @@ Rotate now cycles the next connector through quarter turns every 700 ms after on
 Resume no longer trusts a stale running flag: it cancels orphaned transition/walk callbacks and restores the pending question or required build from retained progress. Recovering travel opens the question directly, independently of 3D frames. A completed foundation resumes Chapter 3 even before its first day. Resume controls route later chapters through their existing chapter-specific state machines. Background/page lifecycle pauses running foundation work and restores it on return without overriding an intentional pause, open menu, inspection or dialog.
 
 Regression coverage reproduces the missing-panel bug before the fix, then checks all 36 decisions in two playthroughs for stale running recovery, pause/entrance return, background return and interrupted travel; all seven enterprise days, all three crisis rounds and all 16 advanced configurations return without changing retained progress. Existing puzzle resume and chapter handoff checks remain. Full validate and CI gate one production release, with previews disabled.
+
+## 2026-10-31 — Diverse advanced city challenges and repeatable virtual decorations
+
+### Authorized scope
+
+Remove the mechanically repetitive Chapters 5–12 challenges; introduce
+different challenge types across those chapters. Allow virtual decorations
+to be purchased multiple times so earned Builder Credits retain value.
+Continue existing chapter celebrations, persistence and city visuals.
+
+### Implemented
+
+- Sixteen authored challenges spanning investigation, sequencing, map
+  placement, scheduling, crisis response, allocation, inclusion, zoning,
+  recycling, energy, public budgets, negotiation, resilience, specialist
+  dispatch, forecasting and city-wide planning.
+- Distinct mobile-friendly controls and accessible interaction labels.
+- Deterministic outcome scoring that feeds honest chapter celebrations.
+- Legacy v1 advanced mission validation and non-destructive migration.
+- Repeatable city purchases with per-district and per-item limits, stable
+  unique identifiers and bounded 3D placement; shared mesh resources.
+- One-time personalisation purchases retained with equip/unequip.
+- Updated game instructions and domain/full-game regression coverage.
+
+### Validation and release gate
+
+- Full `npm run validate` passed on feature commit
+  `413c662acf9951d38cba45b484e58949d7247cb8`.
+- Latest refinement `3e96bdde36a6365020f9ea94beb5ec83940baf4e`
+  awaits its CI completion at documentation time.
+- Release requires reviewed merge and verified production Vercel READY;
+  physical Android/mobile classroom tests remain follow-up acceptance.
+- No database migration, external payment system or real-world XP changes.
+
+## 31 October 2026 — PR #147 release verification and blockers
+
+Continued the existing sixteen-mechanic advanced challenge implementation and repeatable decoration ledger. CI run 41209059552 failed because device-save opt-out could be followed by a stale save effect; a synchronous consent guard now prevents writes after opt-out without removing the player's open game. Shop purchase handlers now reject repeat delivery of the same button action and same-item rapid double taps while allowing intentional later repeat purchases.
+
+Added real-DOM tests for every decoration type purchased twice, stable visible district meshes, exact balance deductions, one-time wearable unlock/equip, close/reopen and storage reload, all twelve chapter celebrations without re-awarding credits, and bad-plan feedback before all sixteen successful advanced controls. Migration checks now preserve every completed legacy prefix from one through sixteen missions. Keyboard focus survives challenge control repaints. Existing foundation/puzzle/resume/review, low-power pacing and audio checks remain in full validation. Feature-branch previews explicitly disabled. Release requires final full validate/CI, production READY at the merged source, official-domain asset checks and a runtime error scan. Physical-device GPU/audio/OS behavior remains live acceptance.
