@@ -1,0 +1,76 @@
+/* Clear city views around readable, solid interaction surfaces. No GPU blur. */
+body #build-lab,
+body #build-lab[open],
+body #advanced-panel:has(.challenge-workspace),
+body.advanced-configuring #advanced-panel:not([hidden]),
+body #detail[data-mode="choice"],
+body #detail[data-mode="outcome"] {
+  background: rgb(245 249 246 / 38%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body #build-lab::backdrop {
+  background: rgb(15 30 40 / 10%);
+  backdrop-filter: none;
+}
+#build-lab .lab-heading,
+#build-lab .lab-tools,
+#build-lab .lab-actions,
+#advanced-panel .district-menu-heading,
+#advanced-panel .advanced-actions {
+  background: rgb(248 251 248 / 88%);
+  border-radius: 12px;
+}
+#build-lab .lab-heading,
+#advanced-panel .district-menu-heading {
+  padding: 8px;
+}
+#build-lab #lab-brief,
+#build-lab #lab-brush,
+#build-lab #lab-budget,
+#build-lab #lab-result,
+#build-lab #lab-hint-copy,
+#build-lab .lab-instructions,
+#build-lab .lab-more,
+#build-lab > small,
+#advanced-panel #advanced-brief,
+#advanced-panel #advanced-rules,
+#advanced-panel #advanced-message,
+#advanced-panel #advanced-progress,
+#advanced-panel > small {
+  background: rgb(250 252 250 / 94%);
+  color: #263f34;
+  border-radius: 10px;
+  padding: 7px 9px;
+}
+#advanced-panel #advanced-controls .challenge-card,
+#advanced-panel #advanced-controls .challenge-hint {
+  background: rgb(255 255 255 / 93%);
+}
+body #detail[data-mode] h2,
+body #detail[data-mode] .eyebrow,
+body #detail[data-mode] p,
+body #detail[data-mode] .case-question,
+body #detail[data-mode] .case-story,
+body #detail[data-mode] .case-result,
+body #detail[data-mode] .case-more,
+body #detail[data-mode] .auto-next,
+body #detail[data-mode] .case-tools {
+  background: rgb(250 252 250 / 94%);
+  color: #263f34;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+@media (prefers-reduced-transparency: reduce) {
+  body #build-lab,
+  body #build-lab[open],
+  body #advanced-panel:has(.challenge-workspace),
+  body.advanced-configuring #advanced-panel:not([hidden]),
+  body #detail[data-mode="choice"],
+  body #detail[data-mode="outcome"] {
+    background: #f5f9f6;
+  }
+  body #build-lab::backdrop {
+    background: rgb(15 30 40 / 65%);
+  }
+}
