@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import * as T from "../../public/games/shared/vendor/three.module.js";
 import { overlapsRoad } from "../../public/games/city/layout.mjs";
+import {
+  advancedMission,
+  advancedRules,
+} from "../../public/games/city/advanced.mjs";
+import { sanitizePractice } from "../../public/games/city/practice-save.mjs";
 import { resilienceReport } from "../../public/games/city/resilience.mjs";
 import { JSDOM } from "jsdom";
 import { readFileSync } from "node:fs";
@@ -601,24 +606,104 @@ assert.equal(
   w.document.querySelectorAll("#resilience-choices button").length,
   0,
 );
-assert.equal(JSON.stringify(game.state.economy), previousEconomy);
+assert.deepEqual(game.state.economy, JSON.parse(previousEconomy));
 assert.equal(JSON.stringify(game.state.decisions), previousCity);
 assert.match(
   w.document.getElementById("resilience-complete").textContent,
-  /end of the current four-chapter story/,
+  /Chapters 5–12/,
 );
 assert.match(
   w.document.getElementById("resilience-real-quest").getAttribute("href"),
   /^\/real-quests\?district=/,
 );
 assert.equal(w.document.getElementById("resilience-real-quest").target, "_top");
+// All 16 authored advanced upgrades run through the actual mobile controller.
+w.document.getElementById("chapter-five-start").click();
+assert.equal(game.state.advanced.records.length, 0);
+for (let index = 0; index < 16; index++) {
+  const m = advancedMission(game.state.advanced),
+    r = advancedRules(game.state.advanced);
+  assert.equal(w.document.getElementById("advanced-panel").hidden, false);
+  const wrong = [
+    ...w.document.querySelectorAll("#advanced-diagnosis button"),
+  ].find((b) => b.textContent !== m.diagnosis);
+  wrong.click();
+  assert.equal(game.state.advanced.records.length, index);
+  [...w.document.querySelectorAll("#advanced-diagnosis button")]
+    .find((b) => b.textContent === m.diagnosis)
+    .click();
+  assert.equal(game.state.advanced.cursor.phase, "configure");
+  assert.equal(w.document.getElementById("advanced-deploy").disabled, true);
+  const plan =
+    m.kind === "allocate"
+      ? r.minimum
+      : r.redundant
+        ? [1, 1, 1, 1, 0]
+        : [1, 1, 0, 0, 0];
+  const controls = [...w.document.querySelectorAll("#advanced-controls input")];
+  controls.forEach((input, i) => {
+    if (input.type === "checkbox") input.checked = Boolean(plan[i]);
+    else input.value = String(plan[i]);
+    input.dispatchEvent(new w.Event("input", { bubbles: true }));
+  });
+  const restored = sanitizePractice(game.state);
+  assert.deepEqual(restored.advanced.cursor.plan, plan);
+  assert(
+    JSON.stringify(restored).length < 18000,
+    "Advanced progress stays inside existing backup limits",
+  );
+  if (index === 0) {
+    Object.assign(game.state, restored);
+    w.document.getElementById("intro").hidden = false;
+    w.document.getElementById("start").click();
+    assert.equal(game.state.advanced.cursor.phase, "configure");
+    assert.deepEqual(
+      [...w.document.querySelectorAll("#advanced-controls input")].map((i) =>
+        i.type === "checkbox" ? Number(i.checked) : Number(i.value),
+      ),
+      plan,
+    );
+  }
+  w.document.getElementById("advanced-test").click();
+  assert.equal(w.document.getElementById("advanced-deploy").disabled, false);
+  w.document.getElementById("advanced-deploy").click();
+  assert.equal(game.state.advanced.records.length, index + 1);
+  assert.equal(w.document.getElementById("resilience-feedback").hidden, false);
+  assert.equal(game.camera.type, "OrthographicCamera");
+  assert.equal(JSON.stringify(game.state.decisions), previousCity);
+  assert.deepEqual(game.state.economy, JSON.parse(previousEconomy));
+  if (index === 0) {
+    w.document.getElementById("intro").hidden = false;
+    w.document.getElementById("start").click();
+    assert.equal(game.state.advanced.records.length, 1);
+    assert.equal(
+      w.document.getElementById("resilience-feedback").hidden,
+      false,
+    );
+  }
+  w.document.getElementById("resilience-feedback-next").click();
+}
+assert.equal(w.document.getElementById("advanced-complete").hidden, false);
+assert.match(
+  w.document.getElementById("advanced-title").textContent,
+  /Chapter 12 complete/,
+);
+assert(
+  [...game.livingScene.plazas.values()].some((p) => p.upgrade?.visible),
+  "Tested upgrades appear in the original city",
+);
+w.document.getElementById("advanced-explore").click();
+game.closeBuiltCityView();
+console.log(
+  "PASS: actual controller completes Chapters 5–12, tests before deployment, restores exact configuration/result via the large Continue control, preserves foundations and shows final city upgrades.",
+);
 w.document.getElementById("resilience-view").click();
 assert.equal(game.camera.type, "OrthographicCamera");
 game.closeBuiltCityView();
 w.document.getElementById("resilience-toggle").click();
 w.document.getElementById("resilience-reset").click();
 assert.equal(game.state.resilience.choices.length, 0);
-assert.equal(JSON.stringify(game.state.economy), previousEconomy);
+assert.deepEqual(game.state.economy, JSON.parse(previousEconomy));
 w.document.getElementById("resilience-close").click();
 console.log(
   "PASS: actual dropdown, seven Chapter 3 days, Chapter 4 handoff, three challenges, reopen/resume, city inspection and isolated restart.",

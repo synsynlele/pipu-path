@@ -1,5 +1,6 @@
 // Optional device-only save for fictional practice. Never store names,
 // reflections, evidence, photos, credentials, or real PipuPath Quest state.
+import { sanitizeAdvanced, canStartAdvanced } from "./advanced.mjs";
 import { sanitizeLab } from "./build-lab.mjs";
 import { sanitizeStageThree } from "./stage-three-scenarios.mjs";
 import { initialPlan } from "./model.mjs";
@@ -112,6 +113,9 @@ export function sanitizePractice(state) {
     // enterprise practice, without affecting the student's city decisions.
     economy: sanitizeOpportunityState(state.economy) ?? newOpportunityState(),
     resilience: sanitizeResilience(state.resilience),
+    advanced: canStartAdvanced(state.resilience)
+      ? sanitizeAdvanced(state.advanced)
+      : null,
     lab: sanitizeLab(state.lab),
     stageThree: sanitizeStageThree(state.stageThree, state.lab),
   };

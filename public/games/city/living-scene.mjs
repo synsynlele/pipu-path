@@ -205,6 +205,15 @@ export function createLivingCityScene({
     for (const district of latest.districts) {
       const courtyard = plazas.get(district.id);
       courtyard.built.visible = district.residents > 0;
+      if (!courtyard.upgrade) {
+        courtyard.upgrade = new T.Group();
+        courtyard.upgrade.userData.ignoreNavigation = true;
+        B(courtyard.upgrade, 1.2, 0.18, 0.8, 0x526aa3, 0, 0.65, 0);
+        B(courtyard.upgrade, 0.18, 0.6, 0.18, 0xd6c775, 0, 0.3, 0);
+        courtyard.root.add(courtyard.upgrade);
+      }
+      courtyard.upgrade.visible = district.upgrade > 0;
+      courtyard.upgrade.scale.y = 1 + Math.min(4, district.upgrade) * 0.18;
       courtyard.lantern.material.color.setHex(
         district.activity === "thriving"
           ? 0xf5d680

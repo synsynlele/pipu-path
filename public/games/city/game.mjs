@@ -1,3 +1,9 @@
+import {
+  advancedMission,
+  advancedCityActivity,
+  canStartAdvanced,
+} from "./advanced.mjs";
+import { createAdvancedDesk } from "./advanced-ui.mjs";
 document.documentElement.classList.toggle(
   "city-embedded",
   new URLSearchParams(window.location.search).get("embedded") === "1",
@@ -137,6 +143,7 @@ const fresh = () => ({
   journey: null,
   economy: newOpportunityState(),
   resilience: null,
+  advanced: null,
   lab: sanitizeLab(null),
   stageThree: { round: 0, active: null },
 });
@@ -954,7 +961,8 @@ function syncCaseScenes() {
   consequenceScene.sync(state.decisions, previewDecision);
   livingScene.sync(
     state.decisions,
-    resilienceCityActivity(state.economy, state.resilience),
+    advancedCityActivity(state.economy, state.resilience, state.advanced) ??
+      resilienceCityActivity(state.economy, state.resilience),
   );
   if (builtCityView) updateBuiltCityView();
 }
@@ -981,13 +989,15 @@ function refreshJourneyControls() {
   // Always keep essential navigation available. Opening it pauses the journey.
   $("city-tools").hidden = !entered || simulating;
   $("city-hud").hidden = !entered || simulating;
-  const currentChapter = state.resilience
-    ? 4
-    : foundationForOpportunities(state.decisions)
-      ? 3
-      : foundationComplete(state.decisions)
-        ? 2
-        : 1;
+  const currentChapter = state.advanced
+    ? (advancedMission(state.advanced)?.chapter ?? 12)
+    : state.resilience
+      ? 4
+      : foundationForOpportunities(state.decisions)
+        ? 3
+        : foundationComplete(state.decisions)
+          ? 2
+          : 1;
   $("chapter-badge").textContent = "Chapter " + currentChapter;
   $("chapter-badge").setAttribute(
     "aria-label",
@@ -1002,6 +1012,8 @@ function refreshJourneyControls() {
   const step = integratedStep(state.decisions, state.lab);
   const unlocked =
     foundationForOpportunities(state.decisions) && step.kind === "complete";
+  $("advanced-toggle").disabled =
+    !canStartAdvanced(state.resilience) || simulating;
   $("opportunities-toggle").disabled = !unlocked || simulating;
   $("resilience-toggle").disabled =
     !canStartResilience(state.decisions, state.economy) ||
@@ -1058,7 +1070,8 @@ function updateBuiltCityView() {
   const summary = cityViewSummary(state.decisions);
   const living = deriveLivingCity(
     state.decisions,
-    resilienceCityActivity(state.economy, state.resilience),
+    advancedCityActivity(state.economy, state.resilience, state.advanced) ??
+      resilienceCityActivity(state.economy, state.resilience),
   );
   $("city-view-summary").textContent =
     summary.built +
@@ -1234,6 +1247,7 @@ function closeBuiltCityView({ resume = true } = {}) {
   $("resilience-feedback").hidden = true;
   document.body.classList.remove("resilience-revealing");
   resilienceHighlight = null;
+  advancedResponse = false;
   livingScene.requestMarkers.forEach((marker) =>
     marker.light.scale.setScalar(1),
   );
@@ -1335,7 +1349,12 @@ function resumeJourney() {
   if (target.stage === "complete") {
     journey.status = "complete";
     refreshJourneyControls();
-    if (state.resilience && canStartResilience(state.decisions, state.economy))
+    if (state.advanced && canStartAdvanced(state.resilience))
+      advancedDesk.open();
+    else if (
+      state.resilience &&
+      canStartResilience(state.decisions, state.economy)
+    )
       openResiliencePanel();
     else if (state.economy.day > 0) openOpportunityPanel();
     else
@@ -1960,6 +1979,7 @@ function renderResiliencePanel() {
   panel.scrollTop = previousScroll;
 }
 let resilienceHighlight = null;
+let advancedResponse = false;
 function showResilienceResponse() {
   const report = resilienceReport(state.resilience);
   if (!report?.last) return;
@@ -2029,6 +2049,7 @@ function showResilienceResponse() {
   playTone(last.waiting ? 360 : 760);
 }
 function openResiliencePanel() {
+  advancedDesk.close();
   if (builtCityView) closeBuiltCityView({ resume: false });
   if (simulating || !$("intro").hidden) return;
   if (!canStartResilience(state.decisions, state.economy)) {
@@ -2324,6 +2345,7 @@ function visitCityRequest(id) {
   }
 }
 function openOpportunityPanel() {
+  advancedDesk.close();
   closeResiliencePanel();
   if (simulating || !$("intro").hidden) return;
   hideRequestInspection();
@@ -3603,9 +3625,11 @@ $("journey-back").onclick = () => {
 $("close-detail").onclick = closeDetail;
 $("view-city-toggle").onclick = openBuiltCityView;
 $("city-view-return").onclick = () => {
+  const advanced = advancedResponse;
   const chapterResponse = !$("resilience-feedback").hidden;
   closeBuiltCityView();
-  if (chapterResponse) openResiliencePanel();
+  if (advanced) advancedDesk.open();
+  else if (chapterResponse) openResiliencePanel();
 };
 $("city-view-overview").onclick = () => focusBuiltCityDistrict();
 $("city-view-district").onchange = (event) => {
@@ -3657,17 +3681,22 @@ $("resilience-commit").onclick = () => {
 $("resilience-close").onclick = closeResiliencePanel;
 $("resilience-view").onclick = showResilienceResponse;
 $("resilience-feedback-next").onclick = () => {
+  const advanced = advancedResponse;
   closeBuiltCityView({ resume: false });
-  openResiliencePanel();
+  if (advanced) advancedDesk.next();
+  else openResiliencePanel();
 };
 $("resilience-reset").onclick = () => {
   if (
     !confirm(
-      "Restart only Chapter 4 with your current city and Chapter 3 supplies?",
+      state.advanced
+        ? "Restart Chapter 4 and reset Chapters 5–12 upgrades? Your foundation city and Chapter 3 supplies stay."
+        : "Restart only Chapter 4 with your current city and Chapter 3 supplies?",
     )
   )
     return;
   state.resilience = startResilience(state.decisions, state.economy);
+  state.advanced = null;
   clearResilienceDraft();
   render();
   renderResiliencePanel();
@@ -3714,12 +3743,15 @@ $("opportunities-run").onclick = () => {
 $("opportunities-reset").onclick = () => {
   if (
     !confirm(
-      "Restart only the seven-day enterprise practice? Your 36 city decisions stay.",
+      state.advanced
+        ? "Restart Chapter 3 and reset Chapters 4–12 progress? Your 36 foundation decisions stay."
+        : "Restart only the seven-day enterprise practice? Your 36 city decisions stay.",
     )
   )
     return;
   state.economy = newOpportunityState();
   state.resilience = null;
+  state.advanced = null;
   clearResilienceDraft();
   closeResiliencePanel();
   hideRequestInspection();
@@ -4116,11 +4148,57 @@ $("build-lab-toggle").onclick = () => {
   else
     toast("First decide how to help Ama. Your building puzzle unlocks next.");
 };
-$("start").onclick = () => startCity("build");
-$("resume-city").onclick = () => startCity("story");
-$("resume-city").hidden =
-  !previousPractice ||
-  (!Object.keys(state.decisions).length && !previousPractice.journey);
+const advancedDesk = createAdvancedDesk({
+  getState: () => state,
+  change: (value) => {
+    const previousCount = state.advanced?.records.length;
+    state.advanced = value;
+    // Cursor changes persist without rebuilding navigation or the 3D scene.
+    if (previousCount !== value.records.length) render();
+  },
+  save: persistPractice,
+  seed: answerOrderSeed,
+  prepare: () => {
+    if (builtCityView) closeBuiltCityView({ resume: false });
+    if (journey.status === "running") pauseJourney();
+    cancelAutoAdvance();
+    cancelWalk();
+    closeResiliencePanel();
+    closeOpportunityPanel();
+    closeCityStatus();
+    closeCasebook();
+    closeDirectory();
+    $("detail").hidden = true;
+    $("build-dock").hidden = true;
+  },
+  reveal: (result) => {
+    openBuiltCityView();
+    focusBuiltCityDistrict(result.district);
+    advancedResponse = true;
+    document.body.classList.add("resilience-revealing");
+    $("resilience-feedback-title").textContent =
+      `CHAPTER ${result.chapter} · ${result.title}`;
+    $("resilience-feedback-summary").textContent = result.summary;
+    $("resilience-feedback-services").replaceChildren();
+    $("resilience-feedback-motion").textContent =
+      "Your service upgrade is visible as a blue-and-gold installation in this district. Watch the connected supply vehicles. Your original city choices remain available to review.";
+    $("resilience-feedback-next").textContent = result.complete
+      ? "View my final city showcase →"
+      : "Continue my city →";
+    $("city-view-return").textContent = "Review this result →";
+    $("resilience-feedback").hidden = false;
+    $("resilience-feedback").focus({ preventScroll: true });
+    playTone(760);
+  },
+});
+$("advanced-explore").onclick = () => {
+  advancedDesk.close();
+  openBuiltCityView();
+};
+$("start").onclick = () => startCity();
+$("resume-city").onclick = () => startCity();
+$("resume-city").hidden = true;
+
 function startCity() {
   if (!$("intro").hidden) playtest.note("start");
   stageThreeVictory = null;
@@ -4151,6 +4229,10 @@ function startCity() {
   render();
   // All entries recover the same question → tested build sequence.
   const nextStep = integratedStep(state.decisions, state.lab);
+  if (state.advanced && canStartAdvanced(state.resilience)) {
+    advancedDesk.open();
+    return;
+  }
   const nextUnsolved =
     nextStep.kind === "complete" ? null : getCase(nextStep.caseId);
   if (
