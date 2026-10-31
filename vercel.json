@@ -12,6 +12,7 @@
       "fix/city-feedback-placement": false,
       "feat/focused-puzzles-awake": false,
       "fix/continuous-puzzle-rotation": false,
+      "fix/recover-all-city-rounds": false,
       "fix/quest-recovery-audio": false,
       "fix/real-quest-tailored-stages": false,
       "agent/stage-19-institution-workspace": false,

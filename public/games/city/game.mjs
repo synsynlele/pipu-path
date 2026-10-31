@@ -1375,8 +1375,13 @@ function goToJourneyCase(id) {
   }
 }
 function resumeJourney() {
-  if (!$("intro").hidden || simulating || journey.status === "running") return;
+  if (!$("intro").hidden || simulating) return;
   if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (builtCityView) closeBuiltCityView({ resume: false });
+  cancelAutoAdvance();
+  cancelWalk();
+  if (previewDecision) cancelCasePreview();
+  hideBuildVictory();
   const step = integratedStep(state.decisions, state.lab);
   if (step.kind === "build") {
     pendingBuildCase = step.caseId;
@@ -1391,7 +1396,13 @@ function resumeJourney() {
       target.stage === "complete" ||
       ["outcome", "building"].includes(target.stage))
   ) {
-    goToJourneyCase(step.caseId);
+    journey = {
+      status: "running",
+      caseId: step.caseId,
+      stage: "question",
+      choiceId: null,
+    };
+    showCase(step.caseId);
     return;
   }
   if (target.stage === "complete") {
@@ -1404,7 +1415,8 @@ function resumeJourney() {
       canStartResilience(state.decisions, state.economy)
     )
       openResiliencePanel();
-    else if (state.economy.day > 0) openOpportunityPanel();
+    else if (foundationForOpportunities(state.decisions))
+      openOpportunityPanel();
     else
       toast(
         "Chapters 1 and 2 complete. Open City menu → Opportunities to manage your city.",
@@ -1433,7 +1445,9 @@ function resumeJourney() {
     runCaseWorldAction(target.caseId, target.choiceId);
   else if (target.stage === "outcome")
     showCaseOutcome(target.caseId, target.choiceId);
-  else goToJourneyCase(target.caseId);
+  // Recovery restores an actionable challenge directly. It cannot depend on
+  // a transient walk callback or a suspended 3D renderer to reveal the question.
+  else showCase(target.caseId);
 }
 function cancelAutoAdvance() {
   clearTimeout(autoAdvanceTimer);
@@ -3701,7 +3715,7 @@ $("test").onclick = () => {
 };
 $("journey-toggle").onclick = () => {
   if (journey.status === "running") pauseJourney();
-  else resumeJourney();
+  else continueCurrentChapter();
 };
 $("resource").onclick = () => $("fund-dialog").showModal();
 $("fund-close").onclick = () => $("fund-dialog").close();
@@ -4468,7 +4482,7 @@ function startCity() {
   } else {
     journey.status = "complete";
     refreshJourneyControls();
-    toast("Your city is ready. Open Opportunities to run its enterprises.");
+    continueCurrentChapter();
   }
 }
 
@@ -4540,7 +4554,32 @@ $("music").onclick = async () => {
       : cityAudio.error || "Background music off.",
   );
 };
+let resumeAfterBackground = false;
+function suspendJourneyForBackground() {
+  keys.clear();
+  if ($("intro").hidden && journey.status === "running") {
+    resumeAfterBackground = true;
+    pauseJourney("Your game is paused. Continue when you return.");
+  }
+  rememberJourney();
+}
+function restoreJourneyAfterBackground() {
+  if (document.hidden || !resumeAfterBackground) return;
+  resumeAfterBackground = false;
+  if (
+    $("intro").hidden &&
+    journey.status === "paused" &&
+    !builtCityView &&
+    !$("city-menu").open &&
+    !document.querySelector("dialog[open]")
+  )
+    continueCurrentChapter();
+}
+window.addEventListener("pagehide", suspendJourneyForBackground);
+window.addEventListener("pageshow", restoreJourneyAfterBackground);
 document.addEventListener("visibilitychange", () => {
+  if (document.hidden) suspendJourneyForBackground();
+  else restoreJourneyAfterBackground();
   if (document.hidden && cityAudio.music) {
     cityAudio.suspend();
     syncAudioControls();

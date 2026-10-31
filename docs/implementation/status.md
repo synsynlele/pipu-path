@@ -1621,3 +1621,9 @@ Menu placement is clamped from its anchor into the viewport on open/resize, with
 ## 31 October 2026 — Tap-to-toggle puzzle rotation
 
 Rotate now cycles the next connector through quarter turns every 700 ms after one tap. The same button becomes Stop rotation; placing a piece also stops at the current orientation. Changing tools or missions, testing, clearing, closing or hiding the page cancels the timer. The live direction text and aria-pressed state expose the current orientation and running state. Existing placement, scoring and saves are preserved.
+
+## 31 October 2026 — Recover the playable challenge across all chapters
+
+Resume no longer trusts a stale running flag: it cancels orphaned transition/walk callbacks and restores the pending question or required build from retained progress. Recovering travel opens the question directly, independently of 3D frames. A completed foundation resumes Chapter 3 even before its first day. Resume controls route later chapters through their existing chapter-specific state machines. Background/page lifecycle pauses running foundation work and restores it on return without overriding an intentional pause, open menu, inspection or dialog.
+
+Regression coverage reproduces the missing-panel bug before the fix, then checks all 36 decisions in two playthroughs for stale running recovery, pause/entrance return, background return and interrupted travel; all seven enterprise days, all three crisis rounds and all 16 advanced configurations return without changing retained progress. Existing puzzle resume and chapter handoff checks remain. Full validate and CI gate one production release, with previews disabled.

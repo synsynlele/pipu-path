@@ -496,6 +496,51 @@ for (const optionIndex of [0, 2]) {
   for (const [index, item] of CITY_CASES.entries()) {
     assert.equal(game.journey.caseId, item.id);
     assert.equal(game.journey.stage, "question");
+    // A stale running flag must never suppress the pending question.
+    w.document.getElementById("detail").hidden = true;
+    game.resumeJourney();
+    assert.equal(
+      w.document.getElementById("detail").hidden,
+      false,
+      "Resume must restore question " +
+        (index + 1) +
+        " even when marked running",
+    );
+    game.pauseJourney();
+    Object.defineProperty(w.document, "hidden", {
+      configurable: true,
+      value: true,
+    });
+    w.document.dispatchEvent(new w.Event("visibilitychange"));
+    Object.defineProperty(w.document, "hidden", {
+      configurable: true,
+      value: false,
+    });
+    w.document.dispatchEvent(new w.Event("visibilitychange"));
+    assert.equal(
+      game.journey.status,
+      "paused",
+      "Background return must respect a manual pause",
+    );
+    game.render(); // Navigation rebuilds discard transient walking callbacks.
+    w.document.getElementById("menu-entrance").click();
+    w.document.getElementById("start").click();
+    assert.equal(game.journey.caseId, item.id);
+    assert.equal(w.document.getElementById("detail").hidden, false);
+    Object.defineProperty(w.document, "hidden", {
+      configurable: true,
+      value: true,
+    });
+    w.document.dispatchEvent(new w.Event("visibilitychange"));
+    assert.equal(game.journey.status, "paused");
+    w.document.getElementById("detail").hidden = true;
+    Object.defineProperty(w.document, "hidden", {
+      configurable: true,
+      value: false,
+    });
+    w.document.dispatchEvent(new w.Event("visibilitychange"));
+    assert.equal(game.journey.status, "running");
+    assert.equal(w.document.getElementById("detail").hidden, false);
     const choice = item.options[optionIndex];
     const button = w.document.querySelector(
       '[data-case-choice="' + choice.id + '"]',
@@ -553,6 +598,11 @@ for (const optionIndex of [0, 2]) {
       );
     }
     if (index < 35) {
+      // Pause mid-travel, discard its callback, then recover without 3D frames.
+      game.pauseJourney();
+      game.render();
+      game.resumeJourney();
+      assert.equal(w.document.getElementById("detail").hidden, false);
       arrive();
       assert.equal(game.journey.caseId, CITY_CASES[index + 1].id);
       assert.equal(game.journey.stage, "question");
@@ -580,6 +630,11 @@ const enterpriseSelect = w.document.getElementById("opportunities-business");
 enterpriseSelect.value = "water";
 enterpriseSelect.dispatchEvent(new w.Event("change", { bubbles: true }));
 for (let day = 0; day < 7; day++) {
+  const before = JSON.stringify(game.state.economy);
+  w.document.getElementById("menu-entrance").click();
+  w.document.getElementById("start").click();
+  assert.equal(w.document.getElementById("opportunities-panel").hidden, false);
+  assert.equal(JSON.stringify(game.state.economy), before);
   assert.equal(w.document.getElementById("chapter-four-start").hidden, true);
   w.document.getElementById("opportunities-run").click();
   assert.equal(game.state.economy.day, day + 1);
@@ -592,6 +647,11 @@ w.document.getElementById("chapter-four-start").click();
 assert.equal(w.document.getElementById("opportunities-panel").hidden, true);
 assert.equal(w.document.getElementById("resilience-panel").hidden, false);
 for (let round = 0; round < 3; round++) {
+  const before = JSON.stringify(game.state.resilience);
+  w.document.getElementById("menu-entrance").click();
+  w.document.getElementById("start").click();
+  assert.equal(w.document.getElementById("resilience-panel").hidden, false);
+  assert.equal(JSON.stringify(game.state.resilience), before);
   const button = w.document.querySelector("#resilience-choices button");
   assert(button);
   const beforePlan = JSON.stringify(game.state.resilience);
@@ -730,6 +790,17 @@ for (let index = 0; index < 16; index++) {
     else input.value = String(plan[i]);
     input.dispatchEvent(new w.Event("input", { bubbles: true }));
   });
+  const beforeRecovery = JSON.stringify(game.state.advanced);
+  w.document.getElementById("menu-entrance").click();
+  w.document.getElementById("start").click();
+  assert.equal(w.document.getElementById("advanced-panel").hidden, false);
+  assert.equal(JSON.stringify(game.state.advanced), beforeRecovery);
+  assert.deepEqual(
+    [...w.document.querySelectorAll("#advanced-controls input")].map((input) =>
+      input.type === "checkbox" ? Number(input.checked) : Number(input.value),
+    ),
+    plan,
+  );
   const restored = sanitizePractice(game.state);
   assert.deepEqual(restored.advanced.cursor.plan, plan);
   assert(
