@@ -24,7 +24,13 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run validate
+      - name: Format final rotation test and validate
+        run: |
+          npx prettier --write src/modules/city/ui/build-lab.test.ts
+          echo ROTATE_TEST_PATCH_BEGIN
+          git diff -- src/modules/city/ui/build-lab.test.ts
+          echo ROTATE_TEST_PATCH_END
+          npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
