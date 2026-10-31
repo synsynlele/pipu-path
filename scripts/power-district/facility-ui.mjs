@@ -21,6 +21,7 @@ const state = {
   decisions: Object.fromEntries(CITY_CASES.map((c) => [c.id, c.options[0].id])),
   operations: emptyOperations(),
 };
+let selectedDistrict = null;
 let revealed = 0,
   settings = null;
 const desk = mountFacilityDesk({
@@ -34,9 +35,11 @@ const desk = mountFacilityDesk({
   onSettings: (value) => (settings = value),
   onCue() {},
   onNote() {},
+  onDistrict: (id) => (selectedDistrict = id),
 });
 const $ = (id) => document.getElementById(id);
 desk.open("health");
+assert.equal(selectedDistrict, "health");
 assert($("facility-desk").open);
 assert.match($("facility-story").textContent, /Bisi/);
 assert.match($("facility-dependencies").textContent, /Water/);

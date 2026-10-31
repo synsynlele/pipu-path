@@ -104,6 +104,7 @@ export function PowerDistrictFrame({
           /^[a-z-]{1,32}$/.test(data.district)
         )
           setDistrict(data.district);
+        else if (data.district === null) setDistrict(null);
         if (
           typeof data.service === "string" &&
           /^(workshop-link|clinic-power|shared-services|backup-water|shared-recovery)$/.test(
@@ -111,6 +112,7 @@ export function PowerDistrictFrame({
           )
         )
           setService(data.service);
+        else if (data.service === null) setService(null);
       }
       if (data.type === "pipupath:city:saved" && saving.current) {
         saving.current = false;

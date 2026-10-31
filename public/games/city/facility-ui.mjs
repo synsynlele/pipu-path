@@ -16,6 +16,7 @@ export function mountFacilityDesk({
   onSettings,
   onCue,
   onNote,
+  onDistrict = () => {},
 }) {
   const $ = (id) => document.getElementById(id),
     dialog = $("facility-desk");
@@ -124,6 +125,7 @@ export function mountFacilityDesk({
     if (!CITY_DISTRICTS.some((d) => d.id === id)) return;
     prepare();
     active = id;
+    onDistrict(active);
     returnFocus = document.activeElement;
     const districts = $("facility-district");
     districts.replaceChildren();
@@ -142,6 +144,7 @@ export function mountFacilityDesk({
   }
   $("facility-district").onchange = (e) => {
     active = e.target.value;
+    onDistrict(active);
     restorePlan();
     render();
   };
