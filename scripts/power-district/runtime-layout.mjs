@@ -209,12 +209,17 @@ const pilotCell = (row, col) =>
     '[aria-label^="Row ' + row + ", column " + col + ':"]',
   );
 w.document.querySelector('[data-lab-tool="bend"]').click();
+pilotCell(2, 1).click();
 w.document.getElementById("lab-rotate").click();
 pilotCell(2, 1).click();
 w.document.querySelector('[data-lab-tool="straight"]').click();
 for (const col of [2, 3, 4]) pilotCell(2, col).click();
-w.document.querySelector('[data-lab-tool="bend"]').click();
 w.document.getElementById("lab-rotate").click();
+for (const col of [2, 3, 4]) pilotCell(2, col).click();
+w.document.querySelector('[data-lab-tool="bend"]').click();
+pilotCell(2, 5).click();
+w.document.getElementById("lab-rotate").click();
+pilotCell(2, 5).click();
 pilotCell(2, 5).click();
 w.document.getElementById("lab-test").click();
 assert.match(w.document.getElementById("lab-result").textContent, /It works!/);
