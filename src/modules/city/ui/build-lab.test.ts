@@ -42,21 +42,27 @@ function open() {
     afterClose,
   }).open();
 }
-it("builds and tests an actual route using place and rotate controls, then invalidates the result on revision", () => {
+it("builds a real route by rotating placed connectors, then invalidates the result on revision", () => {
   open();
+  const rotate = screen.getByRole("button", { name: "Rotate ↻" });
+  const cell = (column: number) =>
+    screen.getByRole("button", {
+      name: new RegExp(`Row 2, column ${column}:`),
+    });
   fireEvent.click(screen.getByRole("button", { name: "Bend" }));
-  fireEvent.click(screen.getByRole("button", { name: "Rotate ↻" }));
-  fireEvent.click(screen.getByRole("button", { name: /Row 2, column 1:/ }));
+  fireEvent.click(cell(1)); // Place first, then rotate the actual connector.
+  fireEvent.click(rotate);
+  fireEvent.click(cell(1)); // south + east
+  expect(rotate).toHaveAttribute("aria-pressed", "true");
   fireEvent.click(screen.getByRole("button", { name: "Straight" }));
-  for (const column of [2, 3, 4])
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: new RegExp(`Row 2, column ${column}:`),
-      }),
-    );
+  for (const column of [2, 3, 4]) fireEvent.click(cell(column));
+  fireEvent.click(rotate);
+  for (const column of [2, 3, 4]) fireEvent.click(cell(column)); // east + west
   fireEvent.click(screen.getByRole("button", { name: "Bend" }));
-  fireEvent.click(screen.getByRole("button", { name: "Rotate ↻" }));
-  fireEvent.click(screen.getByRole("button", { name: /Row 2, column 5:/ }));
+  fireEvent.click(cell(5));
+  fireEvent.click(rotate);
+  fireEvent.click(cell(5));
+  fireEvent.click(cell(5)); // south + west
   fireEvent.click(screen.getByRole("button", { name: "Test my network" }));
   expect(screen.getByRole("status")).toHaveTextContent("It works!");
   expect((state as { tested: string[] }).tested).toContain("workshop-link");
@@ -64,7 +70,7 @@ it("builds and tests an actual route using place and rotate controls, then inval
     screen.getByRole("button", { name: "Next challenge →" }),
   ).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Remove" }));
-  fireEvent.click(screen.getByRole("button", { name: /Row 2, column 3:/ }));
+  fireEvent.click(cell(3));
   expect(screen.getByRole("status")).toHaveTextContent("Place your pieces");
   fireEvent.click(screen.getByRole("button", { name: "Test my network" }));
   expect(screen.getByRole("status")).toHaveTextContent("0 of 1 places reached");
@@ -108,27 +114,67 @@ it("pauses on entry, retains layouts between challenges and restores focus on cl
   expect(document.activeElement?.textContent).toBe("City menu");
 });
 
-it("rotates continuously after one tap, stops on demand and cancels on placement or close", () => {
+it("keeps Rotate selected and advances only the tapped existing piece by 90 degrees", () => {
   vi.useFakeTimers();
   open();
-  fireEvent.click(screen.getByRole("button", { name: "Bend" }));
   const rotate = screen.getByRole("button", { name: "Rotate ↻" });
+  const firstCell = () =>
+    screen.getByRole("button", { name: /Row 2, column 1:/ });
+  const emptyCell = () =>
+    screen.getByRole("button", { name: /Row 1, column 1:/ });
+  fireEvent.click(screen.getByRole("button", { name: "Bend" }));
+  fireEvent.click(firstCell());
+  let lab = state as ReturnType<typeof sanitizeLab>;
+  const before = lab.boards["workshop-link"][5];
+  expect(before).toEqual({ kind: "bend", turn: 0 });
   fireEvent.click(rotate);
   expect(rotate).toHaveAttribute("aria-pressed", "true");
-  const direction = document.getElementById("lab-brush")!.textContent;
-  vi.advanceTimersByTime(700);
-  expect(document.getElementById("lab-brush")!.textContent).not.toBe(direction);
-  fireEvent.click(rotate);
-  const stopped = document.getElementById("lab-brush")!.textContent;
-  vi.advanceTimersByTime(2100);
-  expect(document.getElementById("lab-brush")!.textContent).toBe(stopped);
-  fireEvent.click(rotate);
-  fireEvent.click(screen.getByRole("button", { name: /Row 2, column 1:/ }));
-  expect(rotate).toHaveAttribute("aria-pressed", "false");
+  expect(document.getElementById("lab-brush")).toHaveTextContent("tap a placed piece");
+  for (let n = 1; n <= 4; n++) {
+    fireEvent.click(firstCell());
+    lab = state as ReturnType<typeof sanitizeLab>;
+    expect(lab.boards["workshop-link"][5]).toEqual({
+      kind: "bend",
+      turn: n % 4,
+    });
+    expect(rotate).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /Row 2, column 1: Tap to rotate 90 degrees/ })).toBeEnabled();
+  }
+  const stored = JSON.stringify(state);
+  fireEvent.click(emptyCell());
+  expect(JSON.stringify(state)).toBe(stored);
+  vi.advanceTimersByTime(7000);
+  expect(JSON.stringify(state)).toBe(stored);
   expect(vi.getTimerCount()).toBe(0);
   fireEvent.click(rotate);
-  const clear = vi.spyOn(globalThis, "clearInterval");
+  expect(rotate).toHaveAttribute("aria-pressed", "false");
+  fireEvent.click(screen.getByRole("button", { name: "Remove" }));
+  fireEvent.click(firstCell());
+  expect((state as ReturnType<typeof sanitizeLab>).boards["workshop-link"][5]).toBeNull();
+});
+
+it("Rotate never mutates fixed objects, switches off on tool change, and restores tested status correctly", () => {
+  open();
+  const rotate = screen.getByRole("button", { name: "Rotate ↻" });
+  const first = () => screen.getByRole("button", { name: /Row 2, column 1:/ });
+  fireEvent.click(screen.getByRole("button", { name: "Straight" }));
+  fireEvent.click(first());
+  fireEvent.click(rotate);
+  expect(screen.getByRole("button", { name: /Row 3, column 1: Supply/ })).toBeDisabled();
+  expect(screen.getByRole("button", { name: /Row 3, column 3: Protected tree/ })).toBeDisabled();
+  fireEvent.click(first());
+  expect((state as ReturnType<typeof sanitizeLab>).boards["workshop-link"][5]).toEqual({
+    kind: "straight",
+    turn: 1,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Junction" }));
+  expect(rotate).toHaveAttribute("aria-pressed", "false");
+  fireEvent.click(first());
+  expect((state as ReturnType<typeof sanitizeLab>).boards["workshop-link"][5]).toEqual({
+    kind: "junction",
+    turn: 0,
+  });
+  fireEvent.click(rotate);
   document.querySelector("dialog")!.close();
-  expect(clear).toHaveBeenCalled();
-  clear.mockRestore();
+  expect(vi.getTimerCount()).toBe(0);
 });

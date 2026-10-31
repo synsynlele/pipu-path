@@ -4005,6 +4005,11 @@ html.city-embedded .welcome-signin {
   gap: 4px;
   margin-top: 12px;
 }
+#build-lab .lab-cell.lab-rotatable {
+  outline: 2px solid #2861bd;
+  outline-offset: -3px;
+  cursor: pointer;
+}
 #build-lab .lab-cell {
   aspect-ratio: 1;
   min-height: 44px;

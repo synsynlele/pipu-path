@@ -158,6 +158,19 @@ export function placeLabPiece(mission, board, cell, piece) {
       : null;
   return next;
 }
+// Turns only a placed movable connector 90 degrees clockwise.
+// This preserves its type and cost, and can be repeated indefinitely.
+export function rotateLabPiece(mission, board, cell) {
+  const safe = sanitizeLab({ boards: { [mission.id]: board } }).boards[mission.id];
+  if (!Number.isInteger(cell) || cell < 0 || cell >= LAB_SIZE ** 2)
+    return safe;
+  const piece = safe[cell];
+  if (!piece) return safe;
+  return placeLabPiece(mission, safe, cell, {
+    kind: piece.kind,
+    turn: (piece.turn + 1) % 4,
+  });
+}
 export function evaluateLab(mission, input) {
   const board = sanitizeLab({ boards: { [mission.id]: input } }).boards[
     mission.id
