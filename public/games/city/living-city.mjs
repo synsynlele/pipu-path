@@ -72,6 +72,23 @@ export function deriveLivingCity(decisions = {}, economy = null) {
         service: Math.min(100, city.districts[id].service + level * 8),
       };
   }
+  for (const [id, operation] of Object.entries(
+    economy?.operationServices ?? {},
+  )) {
+    if (city.districts[id]?.built && operation.gain > 0) {
+      const service = Math.min(
+        100,
+        city.districts[id].service + operation.gain,
+      );
+      city.districts[id] = {
+        ...city.districts[id],
+        productive: Math.max(1, city.districts[id].productive),
+        service,
+        activity:
+          service >= 65 ? "thriving" : service >= 42 ? "active" : "struggling",
+      };
+    }
+  }
   const districts = CITY_DISTRICTS.map((site) => {
     const state = city.districts[site.id];
     return {

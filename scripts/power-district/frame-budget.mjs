@@ -19,6 +19,13 @@ assert(!software.takeFrame(50));
 assert(software.takeFrame(91));
 assert(!software.takeFrame(92, true));
 assert(software.takeFrame(200));
+const battery = createFrameBudget();
+battery.setBatterySaving(true);
+assert(battery.takeFrame(0));
+assert(!battery.takeFrame(20));
+assert(battery.takeFrame(49));
+battery.setBatterySaving(false);
+assert(battery.takeFrame(66));
 console.log(
   "PASS: mobile and software frame pacing, hidden tabs, adaptive quality.",
 );

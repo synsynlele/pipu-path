@@ -96,6 +96,13 @@ assert(
 const previous = events.length;
 scheduled();
 assert(events.length > previous, "Background beat must be audible");
+audio.setMood("calm");
+const moodBefore = events.length;
+scheduled();
+assert(
+  events.length > moodBefore,
+  "Changing atmosphere must keep the existing beat active",
+);
 const beforeMute = events.length;
 assert.equal(audio.setVolume("music", 0), true);
 scheduled();
@@ -114,6 +121,14 @@ const noteCount = events.length;
 assert(noteCount > previous, "Re-enabling sound previews a real tone");
 audio.suspend();
 assert.equal(audio.music, false);
+const silentMood = events.length;
+audio.setMood("busy");
+assert.equal(
+  audio.music,
+  false,
+  "Atmosphere changes must not bypass music mute",
+);
+assert.equal(events.length, silentMood);
 
 const blocked = createCityAudio({
   contextFactory: () => ({

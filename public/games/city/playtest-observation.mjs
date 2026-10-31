@@ -6,6 +6,8 @@ export const PLAYTEST_EVENTS = Object.freeze([
   "revision",
   "prototype_pass",
   "prototype_retry",
+  "service_test",
+  "service_apply",
 ]);
 export function createPlaytestObservation(now = () => performance.now()) {
   const counts = Object.fromEntries(PLAYTEST_EVENTS.map((id) => [id, 0]));
@@ -48,6 +50,8 @@ export function createPlaytestObservation(now = () => performance.now()) {
       "Revisions: " + data.revision,
       "Successful worksite tests: " + data.prototype_pass,
       "Unsuccessful worksite tests: " + data.prototype_retry,
+      "Service plans tested: " + data.service_test,
+      "Service plans applied: " + data.service_apply,
       "No personal data or city choices included.",
     ].join("\n");
   }

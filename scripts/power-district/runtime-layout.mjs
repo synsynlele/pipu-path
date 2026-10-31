@@ -1,3 +1,9 @@
+import { CITY_DISTRICTS } from "../../public/games/city/districts.mjs";
+import {
+  applyFacility,
+  facilityContract,
+  sanitizeOperations,
+} from "../../public/games/city/facility-operations.mjs";
 import assert from "node:assert/strict";
 import * as T from "../../public/games/shared/vendor/three.module.js";
 import { overlapsRoad } from "../../public/games/city/layout.mjs";
@@ -5,7 +11,10 @@ import {
   advancedMission,
   advancedRules,
 } from "../../public/games/city/advanced.mjs";
-import { sanitizePractice } from "../../public/games/city/practice-save.mjs";
+import {
+  sanitizePractice,
+  savePractice,
+} from "../../public/games/city/practice-save.mjs";
 import {
   ADVANCED_SOLUTIONS,
   applyAdvancedPlan,
@@ -163,6 +172,11 @@ let now = performance.now();
 // Real first click: the decision and the puzzle are one locked challenge.
 const freshDecisions = JSON.stringify(game.state.decisions);
 assert.equal(w.document.getElementById("intro").hidden, false);
+assert.equal(
+  w.document.getElementById("welcome-device-save").checked,
+  false,
+  "New players must explicitly opt into device saving",
+);
 assert(w.document.getElementById("music"));
 assert(w.document.getElementById("sound"));
 w.document.getElementById("start").click();
@@ -928,7 +942,152 @@ assert(
   [...game.livingScene.plazas.values()].some((p) => p.upgrade?.visible),
   "Tested upgrades appear in the original city",
 );
+// Service workshop integration: no campaign reset, funds or XP reward.
+const beforeServices = {
+  decisions: JSON.stringify(game.state.decisions),
+  economy: JSON.stringify(game.state.economy),
+  advanced: JSON.stringify(game.state.advanced),
+  cash: game.state.cash,
+};
+w.document.getElementById("menu-facilities").click();
+assert.equal(w.document.getElementById("facility-desk").open, true);
+w.document.getElementById("facility-close").focus();
+const modalArrow = new w.KeyboardEvent("keydown", {
+  key: "ArrowRight",
+  bubbles: true,
+  cancelable: true,
+});
+w.dispatchEvent(modalArrow);
+assert.equal(
+  modalArrow.defaultPrevented,
+  false,
+  "A dialog arrow key must not be consumed by city movement",
+);
+const facilityDistrict = w.document.getElementById("facility-district");
+facilityDistrict.value = "health";
+facilityDistrict.dispatchEvent(new w.Event("change"));
+w.document.getElementById("facility-test").click();
+assert.equal(w.document.getElementById("facility-apply").disabled, true);
+const facilityInputs = [
+  ...w.document.querySelectorAll("#facility-units input"),
+];
+facilityInputs.forEach((input, i) => {
+  input.value = String([4, 3, 1][i]);
+  input.dispatchEvent(new w.Event("input"));
+});
+w.document.getElementById("facility-test").click();
+assert.equal(w.document.getElementById("facility-apply").disabled, false);
+w.document.getElementById("facility-apply").click();
+w.document.getElementById("facility-apply").click();
+assert.equal(game.state.operations.districts.health.completed, 1);
+assert.equal(w.document.getElementById("resilience-feedback").hidden, false);
+assert.equal(game.autoAdvanceTimer, null);
+w.document.getElementById("resilience-feedback-next").click();
+assert.equal(w.document.getElementById("facility-desk").open, true);
+assert.match(
+  w.document.getElementById("facility-conditions").textContent,
+  /Rain/,
+);
+for (const [setting, value] of [
+  ["text", "large"],
+  ["contrast", "solid"],
+  ["quality", "battery"],
+]) {
+  const select = w.document.getElementById("facility-" + setting);
+  select.value = value;
+  select.dispatchEvent(new w.Event("change"));
+}
+assert.equal(w.document.body.dataset.cityText, "large");
+assert.equal(w.document.body.dataset.cityContrast, "solid");
+const operationsBeforeEntrance = JSON.stringify(game.state.operations);
+w.document.getElementById("menu-entrance").click();
+w.document.getElementById("welcome-device-save").click();
+assert.equal(w.document.getElementById("welcome-device-save").checked, true);
+assert.deepEqual(
+  JSON.parse(w.localStorage.getItem("unbuilt-city:practice:v1")).state
+    .operations,
+  game.state.operations,
+  "Entrance opt-in must save actual service progress",
+);
+w.document.getElementById("start").click();
+assert.equal(JSON.stringify(game.state.operations), operationsBeforeEntrance);
+assert.equal(JSON.stringify(game.state.decisions), beforeServices.decisions);
+assert.equal(JSON.stringify(game.state.economy), beforeServices.economy);
+assert.equal(JSON.stringify(game.state.advanced), beforeServices.advanced);
+assert.equal(game.state.cash, beforeServices.cash);
+assert.deepEqual(
+  sanitizePractice(game.state).operations,
+  game.state.operations,
+);
+assert(JSON.stringify(sanitizePractice(game.state)).length < 18000);
+const fullWorkshopSave = sanitizePractice(game.state);
+for (const district of CITY_DISTRICTS) {
+  const contract = facilityContract(fullWorkshopSave, district.id);
+  const applied = applyFacility(
+    fullWorkshopSave,
+    district.id,
+    { strategy: "balanced", units: [6, 4, 2] },
+    contract.round,
+  );
+  assert(
+    applied,
+    "Full-city backup fixture must earn each service result through its real validator",
+  );
+  fullWorkshopSave.operations = applied.operations;
+  fullWorkshopSave.operations.drafts[district.id] = {
+    round: applied.operations.districts[district.id].completed,
+    strategy: "balanced",
+    units: [5, 3, 2],
+  };
+}
+assert.deepEqual(
+  sanitizeOperations(fullWorkshopSave.operations),
+  fullWorkshopSave.operations,
+);
+const workshopStorage = {
+  value: null,
+  setItem(key, value) {
+    this.value = value;
+  },
+  getItem() {
+    return this.value;
+  },
+};
+assert(
+  savePractice(fullWorkshopSave, workshopStorage),
+  "A complete campaign with all district records and drafts must fit the real save limit",
+);
+
 w.document.getElementById("advanced-explore").click();
+// Use the actual camera and raycaster to tap a completed building.
+game.animateWorld(now + 9000);
+game.scene.updateMatrixWorld(true);
+game.camera.updateMatrixWorld(true);
+const touchBuilding = [...game.cityDevelopment.meshes.values()]
+  .filter((mesh) => mesh.visible)
+  .sort(
+    (a, b) =>
+      a.position.distanceTo(game.camera.position) -
+      b.position.distanceTo(game.camera.position),
+  )[0];
+const projected = touchBuilding.position.clone();
+projected.y = 1;
+projected.project(game.camera);
+const canvas = w.document.getElementById("world");
+canvas.setPointerCapture = () => {};
+const pointerOptions = {
+  clientX: (projected.x * 0.5 + 0.5) * innerWidth,
+  clientY: (-projected.y * 0.5 + 0.5) * innerHeight,
+  bubbles: true,
+};
+canvas.dispatchEvent(new w.MouseEvent("pointerdown", pointerOptions));
+canvas.dispatchEvent(new w.MouseEvent("pointerup", pointerOptions));
+assert.equal(
+  w.document.getElementById("facility-desk").open,
+  true,
+  "A real building raycast must open its service workshop",
+);
+w.document.getElementById("facility-close").click();
 game.closeBuiltCityView();
 console.log(
   "PASS: actual controller completes Chapters 5–12, tests before deployment, restores exact configuration/result via the large Continue control, preserves foundations and shows final city upgrades.",

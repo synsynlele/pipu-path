@@ -1,3 +1,5 @@
+import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
+import { mountFacilityDesk } from "./facility-ui.mjs";
 import { createCityDevelopmentScene } from "./city-development-scene.mjs";
 import { createScreenAwake } from "./screen-awake.mjs";
 import { chapterMenuItems } from "./chapter-menu.mjs";
@@ -149,6 +151,7 @@ const fresh = () => ({
   lab: sanitizeLab(null),
   stageThree: { round: 0, active: null },
   rewards: emptyBuilderRewards(),
+  operations: emptyOperations(),
 });
 const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
@@ -996,8 +999,11 @@ function syncCaseScenes() {
   consequenceScene.sync(state.decisions, previewDecision);
   livingScene.sync(
     state.decisions,
-    advancedCityActivity(state.economy, state.resilience, state.advanced) ??
-      resilienceCityActivity(state.economy, state.resilience),
+    operationsActivity(
+      advancedCityActivity(state.economy, state.resilience, state.advanced) ??
+        resilienceCityActivity(state.economy, state.resilience),
+      state.operations,
+    ),
   );
   builderCosmetics.sync(state.rewards);
   if (builtCityView) updateBuiltCityView();
@@ -1314,6 +1320,7 @@ function closeBuiltCityView({ resume = true } = {}) {
   resilienceHighlight = null;
   advancedResponse = false;
   opportunityResponse = false;
+  facilityResponse = null;
   livingScene.requestMarkers.forEach((marker) =>
     marker.light.scale.setScalar(1),
   );
@@ -1323,7 +1330,11 @@ function closeBuiltCityView({ resume = true } = {}) {
   $("city-view").hidden = true;
   $("view-city-toggle").setAttribute("aria-expanded", "false");
   camera = playCamera;
-  renderer.setPixelRatio(snapshot.pixelRatio);
+  renderer.setPixelRatio(
+    state.operations?.settings?.quality === "battery"
+      ? 0.65
+      : snapshot.pixelRatio,
+  );
   mapMode = snapshot.mapMode;
   yaw = snapshot.yaw;
   pitch = snapshot.pitch;
@@ -1786,6 +1797,7 @@ function showDetail(html, mode = "other") {
 function focusedPuzzle() {
   return (
     $("build-lab").open ||
+    $("facility-desk").open ||
     (document.body.classList.contains("advanced-configuring") &&
       (innerWidth <= 760 || innerHeight <= 520))
   );
@@ -1799,6 +1811,10 @@ const puzzleObserver = new window.MutationObserver(() => {
   }
 });
 puzzleObserver.observe($("build-lab"), {
+  attributes: true,
+  attributeFilter: ["open"],
+});
+puzzleObserver.observe($("facility-desk"), {
   attributes: true,
   attributeFilter: ["open"],
 });
@@ -1872,6 +1888,8 @@ window.addEventListener("message", (event) => {
   rememberJourney();
   const ok = savePractice(state);
   saveEnabled = ok;
+  deviceSaveFailed = !ok;
+  updateSaveHealth();
   window.parent.postMessage(
     { type: "pipupath:city:saved", ok },
     window.location.origin,
@@ -1879,15 +1897,30 @@ window.addEventListener("message", (event) => {
   reportParentState();
   if (ok) renderCasebook();
 });
+let deviceSaveFailed = false;
+function saveHealth() {
+  return deviceSaveFailed
+    ? "Device saving needs attention. Your current game is still open."
+    : saveEnabled
+      ? "Device saving is on. Changes are saved on this device."
+      : "Device saving is off. This game stays in this open tab.";
+}
+function updateSaveHealth() {
+  $("device-save-health").textContent = saveHealth();
+  $("welcome-device-save").checked = saveEnabled;
+}
 function persistPractice() {
   if (!saveEnabled) {
+    updateSaveHealth();
     reportParentState();
     return;
   }
   if (!savePractice(state)) {
+    deviceSaveFailed = true;
     saveEnabled = false;
     toast("Device storage is unavailable. Progress is only in this open game.");
-  }
+  } else deviceSaveFailed = false;
+  updateSaveHealth();
   reportParentState();
 }
 function closeCasebook() {
@@ -2113,6 +2146,7 @@ function renderResiliencePanel() {
 let resilienceHighlight = null;
 let advancedResponse = false;
 let opportunityResponse = false;
+let facilityResponse = null;
 function showResilienceResponse() {
   const report = resilienceReport(state.resilience);
   if (!report?.last) return;
@@ -3741,6 +3775,12 @@ $("journey-back").onclick = () => {
 $("close-detail").onclick = closeDetail;
 $("view-city-toggle").onclick = openBuiltCityView;
 $("city-view-return").onclick = () => {
+  if (facilityResponse) {
+    const district = facilityResponse;
+    closeBuiltCityView({ resume: false });
+    facilityDesk.open(district);
+    return;
+  }
   if (opportunityResponse) {
     closeBuiltCityView({ resume: false });
     openOpportunityPanel();
@@ -3828,9 +3868,11 @@ $("resilience-close").onclick = closeResiliencePanel;
 $("resilience-view").onclick = showResilienceResponse;
 $("resilience-feedback-next").onclick = () => {
   const advanced = advancedResponse,
-    opportunity = opportunityResponse;
+    opportunity = opportunityResponse,
+    facility = facilityResponse;
   closeBuiltCityView({ resume: false });
-  if (opportunity) openOpportunityPanel();
+  if (facility) facilityDesk.open(facility);
+  else if (opportunity) openOpportunityPanel();
   else if (advanced) advancedDesk.next();
   else openResiliencePanel();
 };
@@ -3933,6 +3975,11 @@ $("cases-toggle").onclick = () => {
   else closeCasebook();
 };
 $("casebook-close").onclick = closeCasebook;
+$("welcome-device-save").onchange = () => {
+  if ($("welcome-device-save").checked !== saveEnabled)
+    $("save-practice").click();
+  updateSaveHealth();
+};
 $("save-practice").onclick = () => {
   if (saveEnabled) {
     if (!clearPractice()) {
@@ -3940,13 +3987,16 @@ $("save-practice").onclick = () => {
       return;
     }
     saveEnabled = false;
+    deviceSaveFailed = false;
     toast("Device copy cleared. This open session remains playable.");
   } else if (savePractice(state)) {
     saveEnabled = true;
+    deviceSaveFailed = false;
     toast("Practice saved to this browser only, not cloud backed.");
   } else {
     toast("Device storage is unavailable. Practice stays in this open game.");
   }
+  updateSaveHealth();
   renderCasebook();
   reportParentState();
 };
@@ -4419,6 +4469,74 @@ const builderRewardsUi = mountBuilderRewards({
   },
   playSuccess: () => playTone(784),
 });
+for (const [id, effect] of caseScenes.effects)
+  effect.group.userData.facilityDistrict = CASE_BUILD_SITES[id].district;
+for (const [id, plaza] of livingScene.plazas)
+  plaza.root.userData.facilityDistrict = id;
+const facilityDesk = mountFacilityDesk({
+  read: () => state,
+  write: (value) => {
+    const serviceChanged =
+      JSON.stringify(state.operations?.districts) !==
+      JSON.stringify(value.districts);
+    state.operations = value;
+    persistPractice();
+    if (serviceChanged) render();
+  },
+  saveStatus: saveHealth,
+  onCue: (cue) => cityAudio.cue(cue),
+  onNote: (event) => playtest.note(event),
+  onSettings: (value) => {
+    document.body.dataset.cityText = value.text;
+    document.body.dataset.cityContrast = value.contrast;
+    frameBudget.setBatterySaving(value.quality === "battery");
+    renderer.setPixelRatio(
+      value.quality === "battery"
+        ? 0.65
+        : Math.min(
+            devicePixelRatio,
+            softwareMode ? 0.7 : compactDevice ? 1 : 1.5,
+          ),
+    );
+    resize();
+  },
+  prepare: () => {
+    $("city-menu").open = false;
+    if (journey.status === "running")
+      pauseJourney("Inspect your city service. Your journey is kept.");
+    cancelAutoAdvance();
+    cancelWalk();
+    keys.clear();
+    advancedDesk.close();
+    closeOpportunityPanel();
+    closeResiliencePanel();
+    $("detail").hidden = true;
+  },
+  reveal: (id, result) => {
+    openBuiltCityView();
+    focusBuiltCityDistrict(id);
+    facilityResponse = id;
+    cityAudio.setMood(
+      state.operations.districts[id].last.plan.strategy === "urgent"
+        ? "busy"
+        : "calm",
+    );
+    document.body.classList.add("resilience-revealing");
+    $("resilience-feedback-title").textContent = "YOUR SERVICE IS WORKING";
+    $("resilience-feedback-summary").textContent =
+      result.contract.speaker + ": “" + result.message + "”";
+    $("resilience-feedback-services").replaceChildren();
+    $("resilience-feedback-motion").textContent =
+      "The district's service level and connected activity now reflect your tested operating plan. Inspect the city, then continue when ready.";
+    $("resilience-feedback-next").textContent = "Continue →";
+    $("city-view-return").textContent = "Continue →";
+    $("resilience-feedback").hidden = false;
+  },
+});
+$("menu-facilities").onclick = () =>
+  facilityDesk.open(getCase(journey.caseId)?.district ?? "workshop");
+facilityDesk.settings();
+updateSaveHealth();
 function continueCurrentChapter() {
   if (state.advanced && canStartAdvanced(state.resilience))
     return advancedDesk.open();
@@ -4808,6 +4926,55 @@ canvas.addEventListener("pointerup", (e) => {
     !dragging &&
     $("intro").hidden &&
     !simulating &&
+    !document.querySelector("dialog[open]") &&
+    $("world-feedback").hidden
+  ) {
+    pointer.set(
+      (e.clientX / innerWidth) * 2 - 1,
+      (-e.clientY / innerHeight) * 2 + 1,
+    );
+    ray.setFromCamera(pointer, camera);
+    const targets = [
+      ...cityDevelopment.meshes.values(),
+      ...[...caseScenes.effects.values()].map((effect) => effect.group),
+      ...[...livingScene.plazas.values()].map((plaza) => plaza.root),
+      ...scene.children.filter(
+        (object) => object.userData.scenery === "building",
+      ),
+    ].filter((object) => object.visible);
+    const hits = ray.intersectObjects(targets, true);
+    for (const hit of hits) {
+      let object = hit.object,
+        visible = true,
+        district = null;
+      const plot = object.userData.cityDevelopment;
+      for (let parent = object; parent; parent = parent.parent) {
+        if (!parent.visible || parent.userData.character) {
+          visible = false;
+          break;
+        }
+        district ??= parent.userData.facilityDistrict;
+      }
+      if (!visible) continue;
+      if (plot) district = plot.facilityDistrict ?? plot.district;
+      if (!district && object.userData.scenery === "building")
+        district = [...CITY_DISTRICTS].sort(
+          (a, b) =>
+            Math.hypot(a.x - hit.point.x, a.z - hit.point.z) -
+            Math.hypot(b.x - hit.point.x, b.z - hit.point.z),
+        )[0].id;
+      if (district) {
+        facilityDesk.open(district);
+        down = null;
+        return;
+      }
+    }
+  }
+  if (
+    down &&
+    !dragging &&
+    $("intro").hidden &&
+    !simulating &&
     !builtCityView &&
     journey.status !== "running"
   ) {
@@ -4859,8 +5026,7 @@ window.addEventListener("keydown", (e) => {
   }
   if (
     ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName) ||
-    $("help-dialog").open ||
-    $("build-lab").open
+    document.querySelector("dialog[open]")
   )
     return;
   if (

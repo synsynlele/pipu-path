@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="builder-rewards.css" />
     <link rel="stylesheet" href="advanced-challenges.css" />
     <link rel="stylesheet" href="city-glass.css" />
+    <link rel="stylesheet" href="facility-workshop.css" />
   </head>
   <body>
     <main id="game" aria-label="The Unbuilt City interactive world">
@@ -76,6 +77,9 @@
                     🌸 Builder Shop ·
                     <strong id="builder-credit-balance">0</strong> Builder
                     Credits
+                  </button>
+                  <button id="menu-facilities" type="button">
+                    Inspect buildings · Service workshop
                   </button>
                   <button id="menu-resume" type="button" class="primary">
                     Resume current chapter →
@@ -310,6 +314,9 @@
                   </details>
                   <details class="city-menu-group">
                     <summary>Save and help</summary>
+                    <p id="device-save-health" role="status">
+                      Device saving is off. This game stays in this open tab.
+                    </p>
                     <div id="account-backup-slot"></div>
                     <button id="screen-awake" type="button" aria-pressed="true">
                       Keep screen awake: On
@@ -961,13 +968,17 @@
           </div>
           <h1>The Unbuilt<br /><em>City.</em></h1>
           <p>Decide what matters. Build a solution. Watch your city change.</p>
+          <label class="welcome-device-save"
+            ><input id="welcome-device-save" type="checkbox" /> Keep my city on
+            this device</label
+          >
           <button id="start" class="primary">
             Start my city challenge <span>▶</span>
           </button>
           <p id="entrance-resume-note" role="status" hidden>
-            Nothing has been restarted. Continue from your current challenge. To
-            keep progress after closing the app, enable device saving in City
-            menu → Save and help.
+            Nothing has been restarted. Continue from your current challenge.
+            Use “Keep my city on this device” to retain progress after closing
+            the app. Account backup is in City menu → Save and help.
           </p>
           <button id="resume-city" type="button" hidden aria-hidden="true">
             Resume my saved city →
@@ -1268,6 +1279,83 @@
           something in your fictional city. No real-world XP is awarded.
         </small>
       </dialog>
+      <dialog id="facility-desk" aria-labelledby="facility-title">
+        <header>
+          <h2 id="facility-title">Service workshop</h2>
+          <button
+            id="facility-close"
+            type="button"
+            aria-label="Close service workshop"
+          >
+            ×
+          </button>
+        </header>
+        <div class="facility-scroll">
+          <label
+            >District
+            <select id="facility-district"></select
+          ></label>
+          <p id="facility-story"></p>
+          <p id="facility-progress"></p>
+          <details>
+            <summary>Service dependencies</summary>
+            <ul id="facility-dependencies"></ul>
+          </details>
+          <details>
+            <summary>Difficulty and display</summary>
+            <label
+              >Service challenge
+              <select id="facility-difficulty">
+                <option value="guided">Guided</option>
+                <option value="standard">Standard</option>
+                <option value="expert">Expert</option>
+              </select></label
+            >
+            <label
+              >Text
+              <select id="facility-text">
+                <option value="normal">Normal</option>
+                <option value="large">Larger text</option>
+              </select></label
+            >
+            <label
+              >Panel background
+              <select id="facility-contrast">
+                <option value="glass">City visible</option>
+                <option value="solid">High contrast</option>
+              </select></label
+            >
+            <label
+              >Graphics
+              <select id="facility-quality">
+                <option value="auto">Automatic</option>
+                <option value="battery">Battery saving</option>
+              </select></label
+            >
+          </details>
+          <p id="facility-conditions"></p>
+          <p id="facility-hint" hidden></p>
+          <fieldset>
+            <legend>Choose how to operate the service</legend>
+            <div id="facility-strategies"></div>
+          </fieldset>
+          <div id="facility-units"></div>
+          <p id="facility-budget"></p>
+          <p id="facility-result" role="status" aria-live="polite"></p>
+          <small
+            >Fictional service practice. No Builder Credits, operating cash or
+            real-world XP are spent or awarded.</small
+          >
+        </div>
+        <footer>
+          <button id="facility-test" type="button">Test my plan</button
+          ><button id="facility-apply" class="primary" type="button" disabled>
+            Apply tested plan</button
+          ><button id="facility-campaign" type="button">
+            Continue city journey</button
+          ><small id="facility-save-status" role="status"></small>
+        </footer>
+      </dialog>
       <dialog id="help-dialog">
         <button class="close" id="close-help" aria-label="Close help">×</button>
         <div class="eyebrow">PIPUPATH · THE UNBUILT CITY</div>
@@ -1275,6 +1363,12 @@
         <p class="guide-lead">
           You are the builder. Solve problems that matter to people, test your
           ideas and watch your choices change one connected city.
+        </p>
+        <p>
+          Tap a completed building, or choose City menu → Inspect buildings, to
+          test and operate its district service. The workshop includes Guided,
+          Standard and Expert contracts plus larger text, high contrast and
+          battery-saving settings.
         </p>
         <p id="help-next-step" class="guide-now" role="status">
           Start your first city problem to unlock its building challenge.

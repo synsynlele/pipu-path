@@ -1,0 +1,171 @@
+#facility-desk {
+  width: min(580px, calc(100vw - 20px));
+  max-height: 92dvh;
+  padding: 12px;
+  color: #263f34;
+  background: #f5faf6eb;
+  border: 1px solid #92b4a1;
+  border-radius: 20px;
+}
+#facility-desk[open] {
+  display: flex;
+  flex-direction: column;
+}
+#facility-desk::backdrop {
+  background: #14273e25;
+}
+#facility-desk header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+#facility-desk h2 {
+  font-size: 19px;
+  color: #234e3a;
+  flex: 1;
+  margin: 4px 0 12px;
+}
+#facility-desk button,
+#facility-desk select {
+  min-height: 44px;
+  color: #214936;
+  background: #fff;
+  border: 1px solid #8caa98;
+  border-radius: 10px;
+  padding: 8px;
+  font: inherit;
+}
+#facility-desk button[aria-pressed="true"],
+#facility-desk .primary:not(:disabled) {
+  color: #fff;
+  background: #286047;
+}
+#facility-desk button:disabled {
+  opacity: 0.5;
+}
+#facility-desk button:focus-visible,
+#facility-desk select:focus-visible,
+#facility-desk input:focus-visible {
+  outline: 3px solid #bd872d;
+  outline-offset: 2px;
+}
+#facility-desk .facility-scroll {
+  overflow: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+  padding: 3px;
+}
+#facility-desk label {
+  display: block;
+  margin: 8px 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+#facility-desk select {
+  display: block;
+  width: 100%;
+}
+#facility-desk p,
+#facility-desk li {
+  font-size: 14px;
+  line-height: 1.5;
+}
+#facility-desk details {
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  margin: 8px 0;
+}
+#facility-desk summary {
+  min-height: 36px;
+  cursor: pointer;
+  font-weight: 700;
+}
+#facility-desk fieldset {
+  border: 1px solid #aac4b5;
+  border-radius: 12px;
+}
+#facility-strategies {
+  display: grid;
+  gap: 7px;
+}
+#facility-strategies button {
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.4;
+}
+#facility-units input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  accent-color: #2c7650;
+}
+#facility-budget,
+#facility-conditions,
+#facility-result {
+  background: #e7f2e9;
+  border-radius: 12px;
+  padding: 10px;
+}
+#facility-desk footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+#facility-campaign,
+#facility-save-status {
+  grid-column: 1/-1;
+}
+#facility-desk small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+}
+body[data-city-contrast="solid"] #build-lab,
+body[data-city-contrast="solid"] #advanced-panel,
+body[data-city-contrast="solid"].advanced-configuring
+  #advanced-panel:not([hidden]),
+body[data-city-contrast="solid"] #detail[data-mode],
+body[data-city-contrast="solid"] #facility-desk {
+  background: #f5faf6;
+}
+body[data-city-text="large"] #detail[data-mode] p,
+body[data-city-text="large"] #detail[data-mode] button,
+body[data-city-text="large"] #advanced-panel p,
+body[data-city-text="large"] #advanced-panel button,
+body[data-city-text="large"] #advanced-panel .challenge-card strong,
+body[data-city-text="large"] #advanced-panel .challenge-card small,
+body[data-city-text="large"] #build-lab p,
+body[data-city-text="large"] #facility-desk p,
+body[data-city-text="large"] #facility-desk button {
+  font-size: 17px !important;
+  line-height: 1.5 !important;
+}
+@media (max-width: 760px), (max-height: 520px) {
+  #facility-desk {
+    width: calc(100vw - 12px);
+    max-height: calc(100dvh - 12px);
+    padding: 10px;
+    margin: auto;
+  }
+}
+
+.welcome-device-save {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  margin: 8px 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 650;
+}
+.welcome-device-save input {
+  width: 20px;
+  height: 20px;
+  accent-color: #e7c36f;
+}

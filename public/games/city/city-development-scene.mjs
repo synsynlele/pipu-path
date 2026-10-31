@@ -1,3 +1,4 @@
+import { sanitizeOperations } from "./facility-operations.mjs";
 import { deriveCityDevelopment, CITY_PARCELS } from "./city-development.mjs";
 
 // One merged, vertex-coloured mesh per parcel; shared recipes and materials,
@@ -137,14 +138,18 @@ export function createCityDevelopmentScene({ T, scene }) {
         scene.remove(m);
         meshes.delete(id);
       }
+    const operated = sanitizeOperations(state.operations).districts;
     for (const p of current.plots) {
+      const status = operated[p.facilityDistrict ?? p.district]
+        ? "working"
+        : p.status;
       let mesh = meshes.get(p.id);
       if (!mesh) {
-        mesh = new T.Mesh(geometry(p.type, p.status), material);
+        mesh = new T.Mesh(geometry(p.type, status), material);
         meshes.set(p.id, mesh);
         scene.add(mesh);
       }
-      mesh.geometry = geometry(p.type, p.status);
+      mesh.geometry = geometry(p.type, status);
       mesh.position.set(p.x, 0, p.z);
       mesh.userData.ignoreNavigation = true;
       mesh.userData.cityDevelopment = p;

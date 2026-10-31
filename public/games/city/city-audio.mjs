@@ -23,6 +23,7 @@ export function createCityAudio({
 } = {}) {
   let context = null;
   let sound = false;
+  let mood = "building";
   let music = false;
   let tick = null;
   let position = 0;
@@ -186,9 +187,16 @@ export function createCityAudio({
     const playBeat = () => {
       if (!music || (context.state && context.state !== "running")) return;
       const step = position++ % MELODY.length;
-      const root = ROOTS[Math.floor(step / 8)];
+      const pitch = mood === "calm" ? 0.89 : mood === "busy" ? 1.12 : 1;
+      const root = ROOTS[Math.floor(step / 8)] * pitch;
       const level = musicVolume;
-      note(MELODY[step], 0, 0.2, 0.16 * level, "triangle");
+      note(
+        MELODY[step] * pitch,
+        0,
+        mood === "calm" ? 0.28 : 0.2,
+        0.16 * level,
+        "triangle",
+      );
       if (step % 2 === 0) note(root, 0, 0.36, 0.13 * level);
       if (step % 4 === 0) {
         note(root * 2, 0, 0.72, 0.04 * level, "triangle");
@@ -235,6 +243,9 @@ export function createCityAudio({
     context?.suspend?.().catch?.(() => {});
   }
   return {
+    setMood(value) {
+      if (["building", "calm", "busy"].includes(value)) mood = value;
+    },
     cue,
     start,
     toggleSound,
