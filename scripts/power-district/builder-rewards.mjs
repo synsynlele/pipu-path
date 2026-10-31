@@ -45,6 +45,9 @@ const completed = [1, 2, 3].map((chapter) => ({ chapter, completed: true }));
 const earned = awardCompletedChapters(early, completed, scene);
 assert.equal(earned.newly.length, 3);
 assert.equal(earned.rewards.awards.length, 3);
+const allChapters = Array.from({ length: 12 }, (_, i) => ({ chapter: i + 1, completed: true }));
+assert.equal(awardCompletedChapters(early, allChapters, scene).newly.length, 12,
+  "all chapters must have independent, once-only milestones");
 assert.equal(
   awardCompletedChapters(earned.rewards, completed, scene).newly.length,
   0,

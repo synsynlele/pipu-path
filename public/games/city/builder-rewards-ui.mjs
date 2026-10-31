@@ -3,7 +3,6 @@ import {
   BUILDER_ITEMS,
   awardCompletedChapters,
   builderBalance,
-  chapterRating,
   purchaseBuilderItem,
   toggleBuilderItem,
   acknowledgeChapter,
@@ -16,6 +15,8 @@ export function mountBuilderRewards({
   setRewards,
   getChapterItems,
   getBuiltDistrictIds,
+  getChapterImpact,
+  isJourneyRunning,
   isPlaying,
   isBlockingCelebration,
   pauseForReward,
@@ -26,7 +27,8 @@ export function mountBuilderRewards({
   const $ = (id) => document.getElementById(id);
   let category = "city",
     timer = null,
-    activeChapter = null;
+    activeChapter = null,
+    shopWasRunning = false;
   const shop = $("builder-shop"),
     celebration = $("chapter-celebration");
   const fmt = (value) => new Intl.NumberFormat("en").format(value);
@@ -139,6 +141,7 @@ export function mountBuilderRewards({
   }
   function openShop() {
     if (!isPlaying()) return;
+    shopWasRunning = isJourneyRunning();
     if (celebration.open) closeCelebration(false);
     pauseForReward();
     category = "city";
@@ -168,7 +171,6 @@ export function mountBuilderRewards({
     pauseForReward();
     activeChapter = pending.chapter;
     const item = getChapterItems().find((c) => c.chapter === pending.chapter);
-    const rating = chapterRating(pending.chapter, getState());
     const title =
       pending.tier === "thriving"
         ? "A city worth celebrating!"
@@ -191,8 +193,7 @@ export function mountBuilderRewards({
       repair:
         "You finished the chapter. Your city needs better solutions—and you can build them.",
     }[pending.tier];
-    $("celebration-impact").textContent =
-      "Your choices shaped a real-looking fictional city. Look at the structures, working services and remaining needs you created.";
+    $("celebration-impact").textContent = getChapterImpact(pending.chapter);
     $("celebration-credits").textContent = "+" + pending.credits;
     $("celebration-balance").textContent = fmt(
       builderBalance(getState().rewards),
@@ -239,7 +240,12 @@ export function mountBuilderRewards({
     openShop();
   };
   celebration.addEventListener("cancel", (event) => event.preventDefault());
-  shop.addEventListener("close", () => schedule());
+  shop.addEventListener("close", () => {
+    const resume = shopWasRunning;
+    shopWasRunning = false;
+    if (resume && !nextCelebration(getState().rewards)) continueBuilding();
+    else schedule();
+  });
   function sync() {
     const state = getState(),
       before = state.rewards;

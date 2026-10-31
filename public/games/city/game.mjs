@@ -2625,7 +2625,7 @@ function renderCasebook() {
     ? "Stop saving and clear device copy"
     : "Save on this device";
   $("save-note").textContent = saveEnabled
-    ? "Saving fictional decisions and city settings on this browser only. Not synced to an account or backed up."
+    ? "Saving fictional decisions, Builder Credits and cosmetics on this device. Account backup is separate."
     : "Save is off. Practice remains in the open game until you opt in. No personal reflection or Quest evidence is stored.";
   const list = $("casebook-list");
   list.replaceChildren();
@@ -4343,6 +4343,24 @@ const builderRewardsUi = mountBuilderRewards({
     if (saveEnabled) persistPractice();
   },
   getChapterItems: currentChapterItems,
+  isJourneyRunning: () => journey.status === "running",
+  getChapterImpact: (chapter) => {
+    if (chapter === 3) {
+      const days = state.economy?.history ?? [];
+      const served = days.reduce((n, day) => n + (day.meals ?? 0) + (day.patients ?? 0) + (day.repairs ?? 0), 0);
+      const missed = days.reduce((n, day) => n + (day.unserved ?? 0), 0);
+      return `${served} simulated service activities delivered · ${missed} requests unmet.`;
+    }
+    if (chapter === 4) {
+      const requests = (resilienceReport(state.resilience)?.history ?? [])
+        .flatMap((day) => Object.values(day.requests ?? {}));
+      const met = requests.reduce((n, service) => n + (service.served ?? 0), 0);
+      const needed = requests.reduce((n, service) => n + (service.requested ?? 0), 0);
+      return `${met} of ${needed} simulated service requests met during disruptions.`;
+    }
+    const city = deriveBuilderCity(state.decisions);
+    return `${city.workingSolutions} working city solutions · ${city.unresolvedNeeds} needs to revisit · ${city.activeDistricts} active districts.`;
+  },
   getBuiltDistrictIds: () => {
     const city = deriveBuilderCity(state.decisions);
     return CITY_DISTRICTS.filter(
