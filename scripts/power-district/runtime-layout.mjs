@@ -768,89 +768,123 @@ assert.equal(
 w.document.getElementById("chapter-five-start").click();
 assert.equal(game.state.advanced.records.length, 0);
 function applyVariedChallenge(m, plan) {
- const $=selector=>w.document.querySelectorAll(selector);
- if (["triage","chain"].includes(m.kind)) {
-  for(const index of plan)$(".advanced-choice-grid button")[index].click();
- } else if(m.kind==="path"){
-  for(const index of plan)$(".advanced-street-grid button")[index].click();
- } else if(["site","investigate","access","audit","backup"].includes(m.kind)){
-  const selector=m.kind==="site"?".advanced-site-grid button":".advanced-choice-grid button";
-  for(let index=0;index<plan.length;index++)if(plan[index])$(selector)[index].click();
- } else if(["sort","schedule","dispatch"].includes(m.kind)){
-  const options=$(".advanced-input-row select");
-  plan.forEach((value,index)=>{options[index].value=String(value);
-    options[index].dispatchEvent(new w.Event("change",{bubbles:true}));});
- } else if(["equity","negotiate","portfolio"].includes(m.kind)){
-  const sliders=$(".advanced-allocation-row input");
-  plan.forEach((value,index)=>{sliders[index].value=String(value);
-    sliders[index].dispatchEvent(new w.Event("input",{bubbles:true}));});
- } else if(["cascade","showcase"].includes(m.kind)){
-  for(let index=0;index<plan.length;index++)
-   $(".advanced-scenario-step")[index].querySelectorAll("button")[plan[index]].click();
- } else throw new Error("Unknown advanced challenge: "+m.kind);
+  const $ = (selector) => w.document.querySelectorAll(selector);
+  if (["triage", "chain"].includes(m.kind)) {
+    for (const index of plan) $(".advanced-choice-grid button")[index].click();
+  } else if (m.kind === "path") {
+    for (const index of plan) $(".advanced-street-grid button")[index].click();
+  } else if (
+    ["site", "investigate", "access", "audit", "backup"].includes(m.kind)
+  ) {
+    const selector =
+      m.kind === "site"
+        ? ".advanced-site-grid button"
+        : ".advanced-choice-grid button";
+    for (let index = 0; index < plan.length; index++)
+      if (plan[index]) $(selector)[index].click();
+  } else if (["sort", "schedule", "dispatch"].includes(m.kind)) {
+    const options = $(".advanced-input-row select");
+    plan.forEach((value, index) => {
+      options[index].value = String(value);
+      options[index].dispatchEvent(new w.Event("change", { bubbles: true }));
+    });
+  } else if (["equity", "negotiate", "portfolio"].includes(m.kind)) {
+    const sliders = $(".advanced-allocation-row input");
+    plan.forEach((value, index) => {
+      sliders[index].value = String(value);
+      sliders[index].dispatchEvent(new w.Event("input", { bubbles: true }));
+    });
+  } else if (["cascade", "showcase"].includes(m.kind)) {
+    for (let index = 0; index < plan.length; index++)
+      $(".advanced-scenario-step")
+        [index].querySelectorAll("button")
+        [plan[index]].click();
+  } else throw new Error("Unknown advanced challenge: " + m.kind);
 }
 for (let index = 0; index < 16; index++) {
- const m=advancedMission(game.state.advanced),plan=SAMPLE_SOLUTIONS[m.id];
- assert.equal(w.document.getElementById("advanced-panel").hidden,false);
- assert.equal(game.state.advanced.records.length,index);
- assert(w.document.querySelector("#advanced-diagnosis button"),"Starting a mission must be interactive");
- w.document.querySelector("#advanced-diagnosis button").click();
- assert.equal(game.state.advanced.cursor.phase,"configure");
- assert.equal(w.document.getElementById("advanced-deploy").disabled,true);
- applyVariedChallenge(m,plan);
- assert.deepEqual(game.state.advanced.cursor.plan,plan,
-  "Actual touch controls must save the intended plan for "+m.id);
- const beforeRecovery=JSON.stringify(game.state.advanced);
- w.document.getElementById("menu-entrance").click();
- w.document.getElementById("start").click();
- assert.equal(w.document.getElementById("advanced-panel").hidden,false);
- assert.equal(JSON.stringify(game.state.advanced),beforeRecovery);
- assert.deepEqual(game.state.advanced.cursor.plan,plan,
-  "Returning to the game restores the entire task state");
- const restored=sanitizePractice(game.state);
- assert.deepEqual(restored.advanced.cursor.plan,plan);
- assert(JSON.stringify(restored).length<18000,"Progress stays inside the backup budget");
- if(index===0){
-  const before=JSON.stringify(game.state.advanced);
-  w.document.getElementById("menu-entrance").click();
-  assert.equal(w.document.getElementById("intro").hidden,false);
-  assert.equal(w.document.getElementById("city-hud").hidden,true);
-  w.document.getElementById("start").click();
-  assert.equal(JSON.stringify(game.state.advanced),before);
-  Object.assign(game.state,restored);
-  w.document.getElementById("intro").hidden=false;
-  w.document.getElementById("start").click();
-  assert.deepEqual(game.state.advanced.cursor.plan,plan);
- }
- if(index===2){
-  const saved=JSON.stringify(game.state.advanced);
-  w.document.getElementById("menu-chapter-5").click();
-  assert.equal(w.document.getElementById("advanced-review").hidden,false);
-  assert.match(w.document.getElementById("advanced-title").textContent,/Chapter 5.*Completed/);
-  assert.equal(JSON.stringify(game.state.advanced),saved);
-  w.document.querySelector("#advanced-review button").click();
-  assert.deepEqual(game.state.advanced.cursor.plan,plan);
- }
- w.document.getElementById("advanced-test").click();
- assert.equal(w.document.getElementById("advanced-deploy").disabled,false,
-  "Test accepts a well-designed solution for "+m.id);
- w.document.getElementById("advanced-deploy").click();
- assert.equal(game.state.advanced.records.length,index+1);
- assert.equal(w.document.getElementById("resilience-feedback").hidden,false);
- assert.equal(game.camera.type,"OrthographicCamera");
- assert.equal(JSON.stringify(game.state.decisions),previousCity);
- assert.deepEqual(game.state.economy,JSON.parse(previousEconomy));
- if(index===0){
-  w.document.getElementById("intro").hidden=false;
-  w.document.getElementById("start").click();
-  const before=JSON.stringify(game.state.advanced);
+  const m = advancedMission(game.state.advanced),
+    plan = SAMPLE_SOLUTIONS[m.id];
+  assert.equal(w.document.getElementById("advanced-panel").hidden, false);
+  assert.equal(game.state.advanced.records.length, index);
+  assert(
+    w.document.querySelector("#advanced-diagnosis button"),
+    "Starting a mission must be interactive",
+  );
+  w.document.querySelector("#advanced-diagnosis button").click();
+  assert.equal(game.state.advanced.cursor.phase, "configure");
+  assert.equal(w.document.getElementById("advanced-deploy").disabled, true);
+  applyVariedChallenge(m, plan);
+  assert.deepEqual(
+    game.state.advanced.cursor.plan,
+    plan,
+    "Actual touch controls must save the intended plan for " + m.id,
+  );
+  const beforeRecovery = JSON.stringify(game.state.advanced);
   w.document.getElementById("menu-entrance").click();
   w.document.getElementById("start").click();
-  assert.equal(JSON.stringify(game.state.advanced),before);
-  assert.equal(game.state.advanced.records.length,1);
-  assert.equal(w.document.getElementById("resilience-feedback").hidden,false);
- }
- w.document.getElementById("resilience-feedback-next").click();
+  assert.equal(w.document.getElementById("advanced-panel").hidden, false);
+  assert.equal(JSON.stringify(game.state.advanced), beforeRecovery);
+  assert.deepEqual(
+    game.state.advanced.cursor.plan,
+    plan,
+    "Returning to the game restores the entire task state",
+  );
+  const restored = sanitizePractice(game.state);
+  assert.deepEqual(restored.advanced.cursor.plan, plan);
+  assert(
+    JSON.stringify(restored).length < 18000,
+    "Progress stays inside the backup budget",
+  );
+  if (index === 0) {
+    const before = JSON.stringify(game.state.advanced);
+    w.document.getElementById("menu-entrance").click();
+    assert.equal(w.document.getElementById("intro").hidden, false);
+    assert.equal(w.document.getElementById("city-hud").hidden, true);
+    w.document.getElementById("start").click();
+    assert.equal(JSON.stringify(game.state.advanced), before);
+    Object.assign(game.state, restored);
+    w.document.getElementById("intro").hidden = false;
+    w.document.getElementById("start").click();
+    assert.deepEqual(game.state.advanced.cursor.plan, plan);
+  }
+  if (index === 2) {
+    const saved = JSON.stringify(game.state.advanced);
+    w.document.getElementById("menu-chapter-5").click();
+    assert.equal(w.document.getElementById("advanced-review").hidden, false);
+    assert.match(
+      w.document.getElementById("advanced-title").textContent,
+      /Chapter 5.*Completed/,
+    );
+    assert.equal(JSON.stringify(game.state.advanced), saved);
+    w.document.querySelector("#advanced-review button").click();
+    assert.deepEqual(game.state.advanced.cursor.plan, plan);
+  }
+  w.document.getElementById("advanced-test").click();
+  assert.equal(
+    w.document.getElementById("advanced-deploy").disabled,
+    false,
+    "Test accepts a well-designed solution for " + m.id,
+  );
+  w.document.getElementById("advanced-deploy").click();
+  assert.equal(game.state.advanced.records.length, index + 1);
+  assert.equal(w.document.getElementById("resilience-feedback").hidden, false);
+  assert.equal(game.camera.type, "OrthographicCamera");
+  assert.equal(JSON.stringify(game.state.decisions), previousCity);
+  assert.deepEqual(game.state.economy, JSON.parse(previousEconomy));
+  if (index === 0) {
+    w.document.getElementById("intro").hidden = false;
+    w.document.getElementById("start").click();
+    const before = JSON.stringify(game.state.advanced);
+    w.document.getElementById("menu-entrance").click();
+    w.document.getElementById("start").click();
+    assert.equal(JSON.stringify(game.state.advanced), before);
+    assert.equal(game.state.advanced.records.length, 1);
+    assert.equal(
+      w.document.getElementById("resilience-feedback").hidden,
+      false,
+    );
+  }
+  w.document.getElementById("resilience-feedback-next").click();
 }
 assert.equal(w.document.getElementById("advanced-complete").hidden, false);
 assert.match(
