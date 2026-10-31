@@ -1,8 +1,5 @@
-import {
-  advancedMission,
-  advancedCityActivity,
-  canStartAdvanced,
-} from "./advanced.mjs";
+import { chapterMenuItems } from "./chapter-menu.mjs";
+import { advancedCityActivity, canStartAdvanced } from "./advanced.mjs";
 import { createAdvancedDesk } from "./advanced-ui.mjs";
 document.documentElement.classList.toggle(
   "city-embedded",
@@ -989,15 +986,40 @@ function refreshJourneyControls() {
   // Always keep essential navigation available. Opening it pauses the journey.
   $("city-tools").hidden = !entered || simulating;
   $("city-hud").hidden = !entered || simulating;
-  const currentChapter = state.advanced
-    ? (advancedMission(state.advanced)?.chapter ?? 12)
-    : state.resilience
-      ? 4
-      : foundationForOpportunities(state.decisions)
-        ? 3
-        : foundationComplete(state.decisions)
-          ? 2
-          : 1;
+  const chapterStep = integratedStep(state.decisions, state.lab);
+  const firstDone =
+    foundationComplete(state.decisions) &&
+    (chapterStep.kind === "complete" ||
+      chapterForCase(chapterStep.caseId) === 2);
+  const items = chapterMenuItems({
+    firstDone,
+    foundationsDone:
+      foundationForOpportunities(state.decisions) &&
+      chapterStep.kind === "complete",
+    day: state.economy.day,
+    crises: state.resilience?.choices.length ?? 0,
+    records: state.advanced?.records.length ?? 0,
+    hasAdvanced: Boolean(state.advanced),
+    result: state.advanced?.cursor.phase === "result",
+    baseChapter: chapterForCase(chapterStep.caseId) ?? 1,
+    hasResilience: Boolean(state.resilience),
+  });
+  const currentChapter = items.find((item) => item.current)?.chapter ?? 1;
+  for (const item of items) {
+    const button = document.querySelector(
+      `#city-menu-options [data-chapter="${item.chapter}"]`,
+    );
+    button.disabled = !item.unlocked || simulating;
+    button.dataset.state = item.status.toLowerCase();
+    if (item.current) button.setAttribute("aria-current", "step");
+    else button.removeAttribute("aria-current");
+    $("menu-chapter-state-" + item.chapter).textContent = item.status;
+    button.title = !item.unlocked
+      ? "Finish the previous chapter to unlock this one"
+      : item.completed
+        ? "Review this chapter without resetting your progress"
+        : "Resume this chapter";
+  }
   $("chapter-badge").textContent = "Chapter " + currentChapter;
   $("chapter-badge").setAttribute(
     "aria-label",
@@ -1714,6 +1736,20 @@ function reportParentState() {
 window.addEventListener("message", (event) => {
   if (event.source !== window.parent || event.origin !== window.location.origin)
     return;
+  if (event.data?.type === "pipupath:city:chrome") {
+    const height = event.data.height;
+    if (
+      typeof height === "number" &&
+      Number.isFinite(height) &&
+      height >= 0 &&
+      height <= 160
+    )
+      document.documentElement.style.setProperty(
+        "--app-controls-height",
+        height + "px",
+      );
+    return;
+  }
   if (event.data?.type === "pipupath:city:get-state") {
     reportParentState();
     return;
@@ -2568,6 +2604,7 @@ function renderCasebook() {
   }
 }
 function openCasebook() {
+  advancedDesk.close();
   if (reviewCaseId) finishDecisionReview({ resume: false });
   resumeFromDecisionList = journey.status === "running";
   if (journey.status === "running")
@@ -3653,6 +3690,7 @@ $("opportunities-toggle").onclick = () => {
 };
 $("opportunities-close").onclick = closeOpportunityPanel;
 $("city-menu").addEventListener("toggle", () => {
+  if ($("city-menu").open) refreshJourneyControls();
   if ($("city-menu").open && journey.status === "running")
     pauseJourney("Paused while you choose a city action.");
 });
@@ -3660,7 +3698,13 @@ $("city-menu-options").addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button || button.disabled) return;
   $("city-menu").open = false;
-  if (button.id !== "resilience-toggle") closeResiliencePanel();
+  if (button.id !== "resilience-toggle" && button.id !== "menu-resume")
+    closeResiliencePanel();
+  if (
+    !/^menu-chapter-(?:[5-9]|1[0-2])$/.test(button.id) &&
+    !["menu-resume", "advanced-toggle"].includes(button.id)
+  )
+    advancedDesk.close();
 });
 document.addEventListener("click", (event) => {
   if (!$("city-menu").contains(event.target)) $("city-menu").open = false;
@@ -4191,6 +4235,43 @@ const advancedDesk = createAdvancedDesk({
     playTone(760);
   },
 });
+function continueCurrentChapter() {
+  if (state.advanced && canStartAdvanced(state.resilience))
+    return advancedDesk.open();
+  if (state.resilience && canStartResilience(state.decisions, state.economy))
+    return openResiliencePanel();
+  if (
+    foundationForOpportunities(state.decisions) &&
+    integratedStep(state.decisions, state.lab).kind === "complete"
+  )
+    return openOpportunityPanel();
+  return resumeJourney();
+}
+$("menu-resume").onclick = continueCurrentChapter;
+$("menu-save").onclick = () => {
+  advancedDesk.close();
+  openCasebook();
+  $("save-practice").scrollIntoView?.({ block: "center" });
+  $("save-practice").focus();
+};
+for (const chapter of [1, 2])
+  $("menu-chapter-" + chapter).onclick = () => {
+    advancedDesk.close();
+    closeResiliencePanel();
+    closeOpportunityPanel();
+    const first = CITY_CASES.find((c) => chapterForCase(c.id) === chapter);
+    const pending = integratedStep(state.decisions, state.lab);
+    if (
+      pending.kind !== "complete" &&
+      chapterForCase(pending.caseId) === chapter
+    )
+      return resumeJourney();
+    if (first && state.decisions[first.id]) beginDecisionReview(first.id);
+    else continueCurrentChapter();
+  };
+for (let chapter = 5; chapter <= 12; chapter++)
+  $("menu-chapter-" + chapter).onclick = () =>
+    advancedDesk.openChapter(chapter);
 $("advanced-explore").onclick = () => {
   advancedDesk.close();
   openBuiltCityView();

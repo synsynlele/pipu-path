@@ -54,6 +54,7 @@ export function createAdvancedDesk({
   }
   function render() {
     tested = false;
+    $("advanced-review").hidden = true;
     const value = current(),
       m = advancedMission(value);
     $("advanced-title").textContent = m
@@ -227,6 +228,49 @@ export function createAdvancedDesk({
       showResult(result);
     };
   }
+  function openChapter(chapter) {
+    if (!canStartAdvanced(getState().resilience)) return;
+    const value = current(),
+      start = (chapter - 5) * 2;
+    if (chapter < 5 || chapter > 12 || value.records.length < start) return;
+    if (value.records.length < start + 2) return open();
+    prepare();
+    render();
+    if (chapter === 12 && value.records.length === 16) {
+      panel.hidden = false;
+      $("advanced-close").focus();
+      return;
+    }
+    $("advanced-mission").hidden = true;
+    $("advanced-complete").hidden = true;
+    const review = $("advanced-review");
+    review.replaceChildren();
+    review.hidden = false;
+    $("advanced-title").textContent =
+      `Chapter ${chapter} · ${ADVANCED_CHAPTERS[chapter - 5].title} · Completed`;
+    for (let index = start; index < start + 2; index++) {
+      const heading = document.createElement("h3");
+      heading.textContent =
+        ADVANCED_CHAPTERS[chapter - 5].missions[index - start][0];
+      const text = document.createElement("p");
+      text.textContent = testAdvanced(
+        { ...value, records: value.records.slice(0, index) },
+        value.records[index].plan,
+      ).message;
+      review.append(heading, text);
+    }
+    const note = document.createElement("p");
+    note.textContent =
+      "Completed results for review. Your current challenge and configuration are unchanged.";
+    const back = document.createElement("button");
+    back.type = "button";
+    back.className = "primary";
+    back.textContent = "Return to my current challenge →";
+    back.onclick = open;
+    review.append(note, back);
+    panel.hidden = false;
+    $("advanced-close").focus();
+  }
   function open() {
     if (!canStartAdvanced(getState().resilience)) return;
     prepare();
@@ -255,5 +299,5 @@ export function createAdvancedDesk({
     write(newAdvanced(getState().resilience));
     open();
   };
-  return { open, close, next };
+  return { open, close, next, openChapter };
 }

@@ -50,6 +50,33 @@ describe("City to Quest handoff", () => {
     );
     expect(push).not.toHaveBeenCalled();
   });
+  it("floats readable controls over one city without a solid header or duplicate label", () => {
+    render(
+      <PowerDistrictFrame
+        questHref="/real-quests"
+        questLabel="Start my real Quest"
+      />,
+    );
+    expect(screen.queryByText("Play & build")).not.toBeInTheDocument();
+    expect(screen.getByTestId("city-overlay-controls")).toHaveClass(
+      "absolute",
+      "bg-transparent",
+      "pointer-events-none",
+    );
+    expect(
+      screen.getByRole("button", { name: "Start my real Quest" }),
+    ).toHaveClass("bg-transparent");
+    expect(
+      screen.getByRole("button", { name: "Close focus view" }),
+    ).toHaveClass("bg-transparent");
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Close focus view" }));
+    expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
+      frame,
+    );
+  });
   it("shows an explicit save/discard choice without converting game progress to proof", () => {
     render(
       <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,

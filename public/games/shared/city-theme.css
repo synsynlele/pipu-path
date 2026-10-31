@@ -5159,3 +5159,105 @@ body.city-viewing #advanced-panel {
   width: 100%;
   height: 90px;
 }
+
+/* Ordered chapters, with tools separated from story progression. */
+#city-menu-options {
+  width: min(320px, calc(100vw - 24px));
+  max-height: min(
+    70dvh,
+    calc(100dvh - var(--app-controls-height, 0px) - 105px),
+    650px
+  );
+}
+#city-menu-options .city-menu-group {
+  border-bottom: 1px solid #dbe4f0;
+  padding: 4px 0;
+}
+#city-menu-options .city-menu-group > summary {
+  padding: 12px 8px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #243c68;
+  cursor: pointer;
+}
+#city-menu-options .city-menu-note {
+  margin: 3px 8px 9px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #526b89;
+}
+#city-menu-options .city-menu-tier {
+  margin: 12px 8px 5px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #5c4ba0;
+  text-transform: uppercase;
+}
+body #city-tools #city-menu-options .chapter-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  line-height: 1.4;
+  padding: 9px 10px;
+  font-size: 12px;
+  background: #f1f5fc;
+  color: #243c68;
+  border: 1px solid #d9e3f0;
+}
+#city-menu-options .chapter-menu-row span {
+  flex: 1;
+  min-width: 0;
+}
+#city-menu-options .chapter-menu-row small {
+  font-size: 10px;
+  border-radius: 20px;
+  padding: 3px 6px;
+  flex-shrink: 0;
+  background: #e4eaf4;
+  color: #526b89;
+}
+body #city-tools #city-menu-options .chapter-menu-row[aria-current="step"] {
+  border-color: #6650cc;
+  background: #eee9ff;
+}
+#city-menu-options .chapter-menu-row[data-state="completed"] small {
+  color: #176245;
+  background: #dcf2e9;
+}
+#city-menu-options .chapter-menu-row:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+body #city-tools #city-menu-options #menu-resume {
+  background: #5940cf;
+  color: #fff;
+  text-align: center;
+  font-weight: 800;
+}
+body #city-tools #city-menu-options button[hidden],
+#advanced-review[hidden] {
+  display: none !important;
+}
+.city-menu-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px;
+  color: #4c3ca4;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Embedded app controls float above the canvas, with room for the city HUD. */
+html.city-embedded #city-hud {
+  top: calc(var(--app-controls-height, 52px) + 6px);
+}
+html.city-embedded #city-hud .city-hud-title {
+  display: none;
+}
+html.city-embedded #city-view {
+  top: calc(var(--app-controls-height, 52px) + 6px);
+}

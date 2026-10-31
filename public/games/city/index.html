@@ -39,43 +39,190 @@
               <details id="city-menu">
                 <summary aria-controls="city-menu-options">City menu ▾</summary>
                 <div id="city-menu-options">
-                  <button id="journey-back" type="button" disabled hidden>
-                    ↶ Last decision
+                  <button id="menu-resume" type="button" class="primary">
+                    Resume current chapter →
                   </button>
-                  <button
-                    id="cases-toggle"
-                    type="button"
-                    aria-controls="casebook"
-                    aria-expanded="false"
-                  >
-                    Decisions <span id="decision-count">0/36</span>
-                  </button>
-                  <button
-                    id="city-status-toggle"
-                    type="button"
-                    aria-controls="city-status"
-                    aria-expanded="false"
-                  >
-                    My City <span id="city-health-badge">0/14</span>
-                  </button>
-                  <button
-                    id="view-city-toggle"
-                    type="button"
-                    aria-controls="city-view"
-                    aria-expanded="false"
-                  >
-                    View My City
-                  </button>
-                  <button
-                    id="opportunities-toggle"
-                    type="button"
-                    aria-controls="opportunities-panel"
-                    aria-expanded="false"
-                    title="Finish the 36 city decisions to open Chapter 3"
-                    disabled
-                  >
-                    Opportunities
-                  </button>
+                  <details class="city-menu-group" id="chapter-menu-group" open>
+                    <summary>Chapters · your city story</summary>
+                    <p class="city-menu-note">
+                      Completed chapters open for review. Your current progress
+                      stays saved.
+                    </p>
+                    <p class="city-menu-tier">Foundations · 1–4</p>
+                    <button
+                      id="menu-chapter-1"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="1"
+                    >
+                      <span>1. Foundations</span
+                      ><small id="menu-chapter-state-1">Locked</small></button
+                    ><button
+                      id="menu-chapter-2"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="2"
+                      disabled
+                    >
+                      <span>2. Connected City</span
+                      ><small id="menu-chapter-state-2">Locked</small></button
+                    ><button
+                      id="opportunities-toggle"
+                      aria-controls="opportunities-panel"
+                      aria-expanded="false"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="3"
+                      disabled
+                    >
+                      <span>3. Opportunities</span
+                      ><small id="menu-chapter-state-3">Locked</small></button
+                    ><button
+                      id="resilience-toggle"
+                      aria-controls="resilience-panel"
+                      aria-expanded="false"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="4"
+                      disabled
+                    >
+                      <span>4. Resilience</span
+                      ><small id="menu-chapter-state-4">Locked</small>
+                    </button>
+                    <p class="city-menu-tier">Problem Solver · 5–8</p>
+                    <button
+                      id="menu-chapter-5"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="5"
+                      disabled
+                    >
+                      <span>5. Repair and Upgrade</span
+                      ><small id="menu-chapter-state-5">Locked</small></button
+                    ><button
+                      id="menu-chapter-6"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="6"
+                      disabled
+                    >
+                      <span>6. A Growing City</span
+                      ><small id="menu-chapter-state-6">Locked</small></button
+                    ><button
+                      id="menu-chapter-7"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="7"
+                      disabled
+                    >
+                      <span>7. Connected Crises</span
+                      ><small id="menu-chapter-state-7">Locked</small></button
+                    ><button
+                      id="menu-chapter-8"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="8"
+                      disabled
+                    >
+                      <span>8. Build for Everyone</span
+                      ><small id="menu-chapter-state-8">Locked</small>
+                    </button>
+                    <p class="city-menu-tier">City Builder · 9–11</p>
+                    <button
+                      id="menu-chapter-9"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="9"
+                      disabled
+                    >
+                      <span>9. Use Less, Serve More</span
+                      ><small id="menu-chapter-state-9">Locked</small></button
+                    ><button
+                      id="menu-chapter-10"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="10"
+                      disabled
+                    >
+                      <span>10. Lead Through Pressure</span
+                      ><small id="menu-chapter-state-10">Locked</small></button
+                    ><button
+                      id="menu-chapter-11"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="11"
+                      disabled
+                    >
+                      <span>11. Design for Reliability</span
+                      ><small id="menu-chapter-state-11">Locked</small>
+                    </button>
+                    <p class="city-menu-tier">Final Challenge · 12</p>
+                    <button
+                      id="menu-chapter-12"
+                      type="button"
+                      class="chapter-menu-row"
+                      data-chapter="12"
+                      disabled
+                    >
+                      <span>12. The Final Challenge</span
+                      ><small id="menu-chapter-state-12">Locked</small>
+                    </button>
+                  </details>
+                  <details class="city-menu-group">
+                    <summary>My city · explore and review</summary>
+                    <button
+                      id="view-city-toggle"
+                      type="button"
+                      aria-controls="city-view"
+                      aria-expanded="false"
+                    >
+                      View My City</button
+                    ><button
+                      id="city-status-toggle"
+                      type="button"
+                      aria-controls="city-status"
+                      aria-expanded="false"
+                    >
+                      My City <span id="city-health-badge">0/14</span></button
+                    ><button
+                      id="districts-toggle"
+                      type="button"
+                      aria-controls="district-directory"
+                      aria-expanded="false"
+                    >
+                      Places (14)</button
+                    ><button id="city-map" type="button">City map</button
+                    ><button id="explore-free" type="button">Explore</button
+                    ><button id="journey-back" type="button" disabled hidden>
+                      ↶ Last decision</button
+                    ><button
+                      id="cases-toggle"
+                      type="button"
+                      aria-controls="casebook"
+                      aria-expanded="false"
+                    >
+                      Decisions <span id="decision-count">0/36</span>
+                    </button>
+                  </details>
+                  <details class="city-menu-group">
+                    <summary>Build and repair tools</summary>
+                    <button id="build-lab-toggle" type="button">
+                      Build Lab · connect &amp; test</button
+                    ><button
+                      id="service-toggle"
+                      type="button"
+                      aria-controls="service-panel"
+                      aria-expanded="false"
+                    >
+                      City services · diagnose &amp; repair</button
+                    ><button
+                      id="build-toggle"
+                      type="button"
+                      aria-controls="build-dock"
+                    >
+                      Build
+                    </button>
+                  </details>
                   <details id="audio-settings" class="audio-settings">
                     <summary
                       aria-label="Music and sound volume"
@@ -108,59 +255,28 @@
                       <small>Music and effects have separate levels.</small>
                     </div>
                   </details>
-                  <button id="build-lab-toggle" type="button">
-                    Build Lab · connect &amp; test
-                  </button>
-                  <button
-                    id="service-toggle"
-                    type="button"
-                    aria-controls="service-panel"
-                    aria-expanded="false"
-                  >
-                    City services · diagnose &amp; repair
-                  </button>
-                  <button id="city-map" type="button">City map</button>
+                  <details class="city-menu-group">
+                    <summary>Save and help</summary>
+                    <button id="menu-save" type="button">
+                      Device save settings</button
+                    ><button
+                      id="guide-toggle"
+                      type="button"
+                      aria-controls="mission"
+                      aria-expanded="false"
+                    >
+                      Guide</button
+                    ><a class="city-menu-link" href="/real-quests" target="_top"
+                      >Real-world Quests ↗</a
+                    >
+                  </details>
                   <button
                     id="advanced-toggle"
                     type="button"
-                    disabled
-                    aria-controls="advanced-panel"
-                    aria-expanded="false"
+                    hidden
+                    aria-hidden="true"
                   >
-                    Chapters 5–12 · Upgrade my city
-                  </button>
-                  <button
-                    id="resilience-toggle"
-                    type="button"
-                    disabled
-                    aria-controls="resilience-panel"
-                    aria-expanded="false"
-                  >
-                    Chapter 4 · Resilience
-                  </button>
-                  <button
-                    id="districts-toggle"
-                    type="button"
-                    aria-controls="district-directory"
-                    aria-expanded="false"
-                  >
-                    Places (14)
-                  </button>
-                  <button
-                    id="build-toggle"
-                    type="button"
-                    aria-controls="build-dock"
-                  >
-                    Build
-                  </button>
-                  <button id="explore-free" type="button">Explore</button>
-                  <button
-                    id="guide-toggle"
-                    type="button"
-                    aria-controls="mission"
-                    aria-expanded="false"
-                  >
-                    Guide
+                    Continue advanced chapter
                   </button>
                 </div>
               </details>
@@ -386,6 +502,7 @@
           </button>
         </div>
         <p id="advanced-progress"></p>
+        <div id="advanced-review" hidden></div>
         <div id="advanced-mission">
           <h3 id="advanced-brief"></h3>
           <div id="advanced-diagnosis"></div>
