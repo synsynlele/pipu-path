@@ -83,9 +83,11 @@ export function sanitizeAdvanced(value) {
     : "diagnose";
   const next = missionAt(records.length);
   const plan =
-    next && validPlanShape(next, value.cursor?.plan)
-      ? [...value.cursor.plan]
-      : newPlan(next);
+    phase === "result"
+      ? []
+      : next && validPlanShape(next, value.cursor?.plan)
+        ? [...value.cursor.plan]
+        : newPlan(next);
   return { version: 2, seed, records, cursor: { phase, plan } };
 }
 export function newAdvanced(resilience) {
