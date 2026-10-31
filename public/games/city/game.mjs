@@ -5178,6 +5178,18 @@ function resize() {
   playCamera.updateProjectionMatrix();
   if (builtCityView) fitCityCamera();
   camera.updateProjectionMatrix();
+  // Resizing clears the canvas. Transparent puzzles retain a fresh still of
+  // the city while the background simulation remains paused.
+  if (focusedPuzzle() && !document.hidden && !graphicsInterrupted) {
+    if (softwareMode) renderer.lastDraw = -Infinity;
+    try {
+      renderer.render(scene, camera);
+    } catch {
+      showGraphicsProblem(
+        "Your city view needs a graphics recovery. Your progress is unchanged.",
+      );
+    }
+  }
   if ($("intro").hidden)
     $("mobile-move").hidden = innerWidth > 650 || !freeExplore;
 }

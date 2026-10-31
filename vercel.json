@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
+      "style/transparent-city-workspaces": false,
       "feat/complete-city-manual-continue": false,
       "feat/varied-city-challenges-repeatable-decor-20261031": false,
       "fix/structured-quest-output": false,

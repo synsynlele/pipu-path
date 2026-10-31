@@ -196,6 +196,17 @@ assert.match(
 // Only the required Build action can continue to the next question.
 w.document.getElementById("case-next").click();
 assert.equal(w.document.getElementById("build-lab").open, true);
+const priorPuzzleDraw = game.renderer.render;
+let puzzleResizeDraws = 0;
+game.renderer.render = () => puzzleResizeDraws++;
+w.dispatchEvent(new w.Event("resize"));
+assert.equal(
+  puzzleResizeDraws,
+  1,
+  "Resizing a transparent puzzle must redraw its paused city background",
+);
+game.renderer.render = priorPuzzleDraw;
+
 assert.equal(w.document.getElementById("lab-mission").value, "workshop-link");
 assert.equal(
   w.document.querySelector('#lab-mission option[value="clinic-power"]')
