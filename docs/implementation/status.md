@@ -1,5 +1,52 @@
 # Implementation status
 
+## 31 October 2026 — Distinct Chapters 5–12 and repeatable virtual city beautification (release candidate)
+
+Branch `feat/varied-city-challenges-repeatable-decor-20261031`, PR #147, replaces
+the repeated relay/supply challenges in the existing Chapters 5–12 campaign.
+Sixteen authored scenarios use different interactions: evidence investigation,
+safe repair sequencing, flood-aware site placement, transport scheduling,
+emergency response, food allocation, inclusive design, neighbourhood zoning,
+materials recovery, peak electricity allocation, public investment portfolios,
+stakeholder negotiation, hazard planning, qualified crew assignment,
+population-demand forecasting and a whole-city resilience capstone. The
+result of each tested plan has an explainable, bounded fictional simulation
+score; two scores per chapter determine the appropriate Thriving, Growing or
+Needs Attention celebration and virtual Builder Credits. There is no claim
+that the player has solved an actual community problem without completing a
+separate, evidenced real-world Quest.
+
+Existing completed Chapter 5–12 missions migrate through the retained
+legacy validator; saved progress is not silently discarded. The updated
+interactive workspaces use real choice buttons, town-map plots, reorder
+controls, accessible native selects and labelled sliders. Existing city
+resume, pause, chapter review and result reveal continue through the same
+game UI. A replay action explicitly warns before replacing advanced
+chapter progress.
+
+The cosmetic-only Builder Shop now permits multiple city-decoration
+purchases, with immutable purchase identities and separate placements.
+Per-district limits (six items total, three of one type) and a global
+eighty-four-item cap bound 3D complexity on low-power phones. Shared
+geometry and materials reduce memory usage. Character items remain
+single-purchase, equip/unequip cosmetics. No new monetisation, currency
+ledger, AI calls, external asset requests or database migration is added.
+The save allowlist migrates old one-time purchases to the new versioned
+record and keeps virtual Builder Credits distinct from fictional city
+operating funds and verified real-world XP.
+
+**Validation:** automated domain and full-game DOM tests cover all sixteen
+activities, invalid plans, simulated consequences, completed legacy records,
+save/restore, chapter review, return to city, decoration inventory limits and
+shop migration. GitHub CI passed at commit
+`413c662acf9951d38cba45b484e58949d7247cb8`; the latest head
+`3e96bdde36a6365020f9ea94beb5ec83940baf4e` has a subsequent CI
+run pending at the time of this entry. Production must not be described
+as released until merge, deployment READY and production checks complete.
+Real-device classroom usability and long-session GPU checks remain
+post-release acceptance items.
+
+
 ## 31 October 2026 — Chapter celebrations and virtual Builder Credits (development candidate)
 
 Feature branch `feat/builder-chapter-celebrations-shop-20261031` adds one
