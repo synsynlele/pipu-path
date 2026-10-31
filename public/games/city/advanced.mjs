@@ -5,8 +5,6 @@ import {
 } from "./advanced-challenges.mjs";
 import {
   sanitizeAdvanced as validateOld,
-  newAdvanced as oldNew,
-  deployAdvanced as oldDeploy,
   testAdvanced as oldTest,
 } from "./advanced-legacy.mjs";
 import { resilienceReport } from "./resilience.mjs";
