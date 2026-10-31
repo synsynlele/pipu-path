@@ -5153,3 +5153,9 @@ body.resilience-revealing .city-view-controls {
 body.city-viewing #advanced-panel {
   display: none;
 }
+
+#advanced-controls svg {
+  display: block;
+  width: 100%;
+  height: 90px;
+}

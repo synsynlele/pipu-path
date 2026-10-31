@@ -4151,8 +4151,10 @@ $("build-lab-toggle").onclick = () => {
 const advancedDesk = createAdvancedDesk({
   getState: () => state,
   change: (value) => {
+    const previousCount = state.advanced?.records.length;
     state.advanced = value;
-    render();
+    // Cursor changes persist without rebuilding navigation or the 3D scene.
+    if (previousCount !== value.records.length) render();
   },
   save: persistPractice,
   seed: answerOrderSeed,
