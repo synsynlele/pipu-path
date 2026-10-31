@@ -21,9 +21,14 @@ assert.deepEqual(events.snapshot(), {
   revision: 1,
   prototype_pass: 1,
   prototype_retry: 1,
+  service_test: 0,
+  service_apply: 0,
   firstActionSeconds: 5,
 });
-assert.equal(PLAYTEST_EVENTS.length, 5);
+assert.equal(PLAYTEST_EVENTS.length, 7);
+assert(events.note("service_test"));
+assert(events.note("service_apply"));
+assert.equal(events.snapshot().service_apply, 1);
 assert(!("userId" in events.snapshot()));
 assert(!("city" in events.snapshot()));
 assert(!events.report().includes("full-name"));

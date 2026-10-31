@@ -178,6 +178,7 @@ export function deriveCityDevelopment(state, parcels = CITY_PARCELS) {
       plots.push({
         ...p,
         source: event.id,
+        facilityDistrict: event.district,
         type:
           i === 0
             ? event.type

@@ -5,6 +5,7 @@ export function createFrameBudget({ mobile = false, software = false } = {}) {
   let lastFrame = -Infinity;
   let longFrames = 0;
   let reduced = false;
+  let battery = false;
   return {
     takeFrame(now, hidden = false) {
       if (!Number.isFinite(now)) return false;
@@ -14,11 +15,14 @@ export function createFrameBudget({ mobile = false, software = false } = {}) {
       }
       if (
         now - lastFrame <
-        (reduced ? Math.max(baseInterval, 48) : baseInterval)
+        (reduced || battery ? Math.max(baseInterval, 48) : baseInterval)
       )
         return false;
       lastFrame = now;
       return true;
+    },
+    setBatterySaving(enabled) {
+      battery = Boolean(enabled);
     },
     noteRenderTime(ms) {
       if (reduced) return false;

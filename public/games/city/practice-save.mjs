@@ -1,3 +1,4 @@
+import { sanitizeOperations } from "./facility-operations.mjs";
 // Optional device-only save for fictional practice. Never store names,
 // reflections, evidence, photos, credentials, or real PipuPath Quest state.
 import { sanitizeAdvanced, canStartAdvanced } from "./advanced.mjs";
@@ -120,6 +121,7 @@ export function sanitizePractice(state) {
     lab: sanitizeLab(state.lab),
     stageThree: sanitizeStageThree(state.stageThree, state.lab),
     rewards: sanitizeBuilderRewards(state.rewards),
+    operations: sanitizeOperations(state.operations),
   };
 }
 function getStorage(storage) {
