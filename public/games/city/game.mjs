@@ -3,7 +3,11 @@ import { chapterMenuItems } from "./chapter-menu.mjs";
 import { emptyBuilderRewards } from "./builder-rewards.mjs";
 import { createBuilderCosmetics } from "./builder-cosmetics.mjs";
 import { mountBuilderRewards } from "./builder-rewards-ui.mjs";
-import { advancedCityActivity, canStartAdvanced, advancedPerformance } from "./advanced.mjs";
+import {
+  advancedCityActivity,
+  canStartAdvanced,
+  advancedPerformance,
+} from "./advanced.mjs";
 import { createAdvancedDesk } from "./advanced-ui.mjs";
 document.documentElement.classList.toggle(
   "city-embedded",
@@ -4347,7 +4351,11 @@ const builderRewardsUi = mountBuilderRewards({
   getChapterImpact: (chapter) => {
     if (chapter >= 5) {
       const score = advancedPerformance(state.advanced, chapter);
-      return score === null ? "Complete both chapter challenges to discover your simulated impact." : "Two different city challenges completed · " + score + "/100 average tested challenge score. Review your district and wider city needs.";
+      return score === null
+        ? "Complete both chapter challenges to discover your simulated impact."
+        : "Two different city challenges completed · " +
+            score +
+            "/100 average tested challenge score. Review your district and wider city needs.";
     }
     if (chapter === 3) {
       const days = state.economy?.history ?? [];

@@ -63,8 +63,16 @@ export function mountBuilderRewards({
     for (const district of districts) {
       const option = document.createElement("option");
       option.value = district.id;
-      const placed = rewards.purchases.filter((p) => p.district === district.id).length;
-      option.textContent = district.emoji + " " + district.name + " · " + (CITY_DECOR_SLOTS - placed) + " spaces free";
+      const placed = rewards.purchases.filter(
+        (p) => p.district === district.id,
+      ).length;
+      option.textContent =
+        district.emoji +
+        " " +
+        district.name +
+        " · " +
+        (CITY_DECOR_SLOTS - placed) +
+        " spaces free";
       select.append(option);
     }
     if (districts.some((district) => district.id === selected))
@@ -74,7 +82,9 @@ export function mountBuilderRewards({
     const list = $("shop-items");
     list.replaceChildren();
     const owned = new Set(rewards.purchases.map((purchase) => purchase.id));
-    const occupied = rewards.purchases.filter((p) => p.district === select.value).length;
+    const occupied = rewards.purchases.filter(
+      (p) => p.district === select.value,
+    ).length;
     const districtFull = occupied >= CITY_DECOR_SLOTS;
     for (const item of BUILDER_ITEMS.filter(
       (item) => item.category === category,
@@ -108,9 +118,10 @@ export function mountBuilderRewards({
           );
         };
       } else {
-        button.textContent = item.category === "city"
-          ? item.cost + " ✦ · " + (count ? "Place another" : "Place in city")
-          : item.cost + " ✦ · Unlock";
+        button.textContent =
+          item.category === "city"
+            ? item.cost + " ✦ · " + (count ? "Place another" : "Place in city")
+            : item.cost + " ✦ · Unlock";
         button.disabled =
           builderBalance(rewards) < item.cost ||
           (item.category === "city" && (!districts.length || districtFull));
@@ -226,7 +237,10 @@ export function mountBuilderRewards({
     notify("");
     renderShop();
   };
-  $("shop-district").onchange = () => { notify(""); renderShop(); };
+  $("shop-district").onchange = () => {
+    notify("");
+    renderShop();
+  };
   $("celebration-continue").onclick = () => {
     const chapter = activeChapter;
     closeCelebration();

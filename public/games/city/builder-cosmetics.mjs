@@ -2,7 +2,18 @@
 // no collision blockers, and no effect on simulation or city performance.
 import { BUILDER_ITEMS, sanitizeBuilderRewards } from "./builder-rewards.mjs";
 // Ten distinct decorative positions around each small district plaza.
-const DECOR_POSITIONS = [[-2.4,1.8],[2.7,1.5],[-2.6,-1.7],[2.7,-1.9],[-0.1,-2.9],[0.1,2.8],[-3.4,0],[3.4,0],[-3.1,3.1],[3.1,-3.1]];
+const DECOR_POSITIONS = [
+  [-2.4, 1.8],
+  [2.7, 1.5],
+  [-2.6, -1.7],
+  [2.7, -1.9],
+  [-0.1, -2.9],
+  [0.1, 2.8],
+  [-3.4, 0],
+  [3.4, 0],
+  [-3.1, 3.1],
+  [3.1, -3.1],
+];
 
 export function createBuilderCosmetics({
   T,
@@ -19,7 +30,11 @@ export function createBuilderCosmetics({
   };
   const wearableObjects = new Map();
   const material = (color) => {
-    if (!sharedMaterials.has(color)) sharedMaterials.set(color, new T.MeshStandardMaterial({ color, roughness: 0.82 }));
+    if (!sharedMaterials.has(color))
+      sharedMaterials.set(
+        color,
+        new T.MeshStandardMaterial({ color, roughness: 0.82 }),
+      );
     return sharedMaterials.get(color);
   };
   function group() {
@@ -29,7 +44,10 @@ export function createBuilderCosmetics({
     return root;
   }
   function cube(parent, w, h, d, color, x, y, z) {
-    const mesh = new T.Mesh(geometry(["box",w,h,d].join(":"), () => new T.BoxGeometry(w, h, d)), material(color));
+    const mesh = new T.Mesh(
+      geometry(["box", w, h, d].join(":"), () => new T.BoxGeometry(w, h, d)),
+      material(color),
+    );
     mesh.position.set(x, y, z);
     mesh.userData.ignoreNavigation = true;
     parent.add(mesh);
@@ -37,7 +55,10 @@ export function createBuilderCosmetics({
   }
   function cylinder(parent, top, bottom, h, color, x, y, z, sides = 8) {
     const mesh = new T.Mesh(
-      geometry(["cyl",top,bottom,h,sides].join(":"), () => new T.CylinderGeometry(top, bottom, h, sides)),
+      geometry(
+        ["cyl", top, bottom, h, sides].join(":"),
+        () => new T.CylinderGeometry(top, bottom, h, sides),
+      ),
       material(color),
     );
     mesh.position.set(x, y, z);
@@ -47,7 +68,10 @@ export function createBuilderCosmetics({
   }
   function sphere(parent, radius, color, x, y, z) {
     const mesh = new T.Mesh(
-      geometry(["sphere",radius,lowPower].join(":"), () => new T.IcosahedronGeometry(radius, lowPower ? 0 : 1)),
+      geometry(
+        ["sphere", radius, lowPower].join(":"),
+        () => new T.IcosahedronGeometry(radius, lowPower ? 0 : 1),
+      ),
       material(color),
     );
     mesh.position.set(x, y, z);
@@ -118,11 +142,17 @@ export function createBuilderCosmetics({
     wearableObjects.set(item.id, makeWearable(item.id));
   function sync(value) {
     const rewards = sanitizeBuilderRewards(value);
-    const purchased = new Map(rewards.purchases
-      .filter((p) => p.district !== null)
-      .map((p) => [p.district + ":" + p.slot, p]));
+    const purchased = new Map(
+      rewards.purchases
+        .filter((p) => p.district !== null)
+        .map((p) => [p.district + ":" + p.slot, p]),
+    );
     for (const [key, g] of cityObjects) {
-      if (!purchased.has(key)) { g.visible = false; g.parent?.remove(g); cityObjects.delete(key); }
+      if (!purchased.has(key)) {
+        g.visible = false;
+        g.parent?.remove(g);
+        cityObjects.delete(key);
+      }
     }
     for (const [key, purchase] of purchased) {
       const root = plazas.get(purchase.district)?.root;

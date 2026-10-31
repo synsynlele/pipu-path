@@ -146,10 +146,13 @@ export function sanitizeBuilderRewards(value) {
     } else {
       if (!DISTRICTS.has(purchase.district)) continue;
       let slot = numberIn(purchase.slot, 0, CITY_DECOR_SLOTS - 1)
-        ? purchase.slot : -1;
+        ? purchase.slot
+        : -1;
       if (slot === -1) {
-        slot = Array.from({ length: CITY_DECOR_SLOTS }, (_, i) => i)
-          .find((i) => !occupied.has(purchase.district + ":" + i)) ?? -1;
+        slot =
+          Array.from({ length: CITY_DECOR_SLOTS }, (_, i) => i).find(
+            (i) => !occupied.has(purchase.district + ":" + i),
+          ) ?? -1;
       }
       const key = purchase.district + ":" + slot;
       if (slot === -1 || occupied.has(key)) continue;
@@ -234,9 +237,10 @@ export function chapterRating(chapter, state) {
     // Reward both genuinely tested Chapter 5–12 challenges and the state of the
     // original city. A valid challenge is not proof the whole city is thriving.
     const measured = advancedPerformance(state.advanced, chapter);
-    quality = measured === null
-      ? caseQuality(state.decisions, 0)
-      : 0.45 * measured / 100 + 0.55 * caseQuality(state.decisions, 0);
+    quality =
+      measured === null
+        ? caseQuality(state.decisions, 0)
+        : (0.45 * measured) / 100 + 0.55 * caseQuality(state.decisions, 0);
   }
   const tier =
     quality >= 0.7 ? "thriving" : quality >= 0.35 ? "growing" : "repair";
@@ -270,8 +274,15 @@ export function purchaseBuilderItem(
     item = ITEMS.get(itemId);
   if (!item)
     return { ok: false, reason: "That item is unavailable.", rewards: safe };
-  if (item.category === "builder" && safe.purchases.some((p) => p.id === itemId))
-    return { ok: false, reason: "You already own this outfit or accessory.", rewards: safe };
+  if (
+    item.category === "builder" &&
+    safe.purchases.some((p) => p.id === itemId)
+  )
+    return {
+      ok: false,
+      reason: "You already own this outfit or accessory.",
+      rewards: safe,
+    };
   if (builderBalance(safe) < item.cost)
     return {
       ok: false,
@@ -288,12 +299,19 @@ export function purchaseBuilderItem(
       rewards: safe,
     };
   if (item.category === "city") {
-    const occupied = new Set(safe.purchases.filter((p) => p.district === district)
-      .map((p) => p.slot));
-    const slot = Array.from({ length: CITY_DECOR_SLOTS }, (_, i) => i)
-      .find((i) => !occupied.has(i));
+    const occupied = new Set(
+      safe.purchases.filter((p) => p.district === district).map((p) => p.slot),
+    );
+    const slot = Array.from({ length: CITY_DECOR_SLOTS }, (_, i) => i).find(
+      (i) => !occupied.has(i),
+    );
     if (slot === undefined)
-      return { ok: false, reason: "This district's garden spaces are full. Choose another district.", rewards: safe };
+      return {
+        ok: false,
+        reason:
+          "This district's garden spaces are full. Choose another district.",
+        rewards: safe,
+      };
     safe.purchases.push({ id: itemId, district, slot });
   } else {
     safe.purchases.push({ id: itemId, district: null });
