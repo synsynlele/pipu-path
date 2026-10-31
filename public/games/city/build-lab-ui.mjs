@@ -173,7 +173,9 @@ export function mountBuildLab({
                 : blocked
                   ? "Protected tree. Build around it."
                   : piece
-                    ? `${rotateMode ? "Tap to rotate 90 degrees: " : ""}${piece.kind}, ${labPorts(piece)
+                    ? `${rotateMode ? "Tap to rotate 90 degrees: " : ""}${piece.kind}, ${labPorts(
+                        piece,
+                      )
                         .map((p) => names[p])
                         .join(" and ")}`
                     : "Empty"),

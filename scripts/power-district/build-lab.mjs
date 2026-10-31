@@ -66,15 +66,26 @@ assert.deepEqual(rotateLabPiece(first, spin1, 5)[5], {
   turn: 2,
 });
 assert.deepEqual(
-  rotateLabPiece(first, rotateLabPiece(first, rotateLabPiece(first, spin1, 5), 5), 5)[5],
+  rotateLabPiece(
+    first,
+    rotateLabPiece(first, rotateLabPiece(first, spin1, 5), 5),
+    5,
+  )[5],
   { kind: "bend", turn: 0 },
   "Four taps complete one rotation and wrap to the starting orientation",
 );
 assert.deepEqual(rotateLabPiece(first, startTurn, 10), startTurn);
 assert.deepEqual(rotateLabPiece(first, startTurn, 12), startTurn);
 assert.deepEqual(rotateLabPiece(first, startTurn, 0), startTurn);
-assert.equal(evaluateLab(first, startTurn).cost, evaluateLab(first, spin1).cost);
-assert.equal(startTurn[5].turn, 0, "A tap must not mutate the previous saved board");
+assert.equal(
+  evaluateLab(first, startTurn).cost,
+  evaluateLab(first, spin1).cost,
+);
+assert.equal(
+  startTurn[5].turn,
+  0,
+  "A tap must not mutate the previous saved board",
+);
 const wrong = placeLabPiece(first, upper, 7, { kind: "straight", turn: 0 });
 assert(
   !evaluateLab(first, wrong).success,

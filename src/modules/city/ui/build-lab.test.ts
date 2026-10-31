@@ -3,6 +3,10 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/dom";
 import { mountBuildLab } from "../../../../public/games/city/build-lab-ui.mjs";
 import { sanitizeLab } from "../../../../public/games/city/build-lab.mjs";
+type LabForTest = {
+  boards: Record<string, ({ kind: string; turn: number } | null)[]>;
+  tested: string[];
+};
 let state: unknown;
 const beforeOpen = vi.fn(),
   afterClose = vi.fn();
@@ -124,21 +128,27 @@ it("keeps Rotate selected and advances only the tapped existing piece by 90 degr
     screen.getByRole("button", { name: /Row 1, column 1:/ });
   fireEvent.click(screen.getByRole("button", { name: "Bend" }));
   fireEvent.click(firstCell());
-  let lab = state as ReturnType<typeof sanitizeLab>;
+  let lab = state as LabForTest;
   const before = lab.boards["workshop-link"][5];
   expect(before).toEqual({ kind: "bend", turn: 0 });
   fireEvent.click(rotate);
   expect(rotate).toHaveAttribute("aria-pressed", "true");
-  expect(document.getElementById("lab-brush")).toHaveTextContent("tap a placed piece");
+  expect(document.getElementById("lab-brush")).toHaveTextContent(
+    "tap a placed piece",
+  );
   for (let n = 1; n <= 4; n++) {
     fireEvent.click(firstCell());
-    lab = state as ReturnType<typeof sanitizeLab>;
+    lab = state as LabForTest;
     expect(lab.boards["workshop-link"][5]).toEqual({
       kind: "bend",
       turn: n % 4,
     });
     expect(rotate).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: /Row 2, column 1: Tap to rotate 90 degrees/ })).toBeEnabled();
+    expect(
+      screen.getByRole("button", {
+        name: /Row 2, column 1: Tap to rotate 90 degrees/,
+      }),
+    ).toBeEnabled();
   }
   const stored = JSON.stringify(state);
   fireEvent.click(emptyCell());
@@ -150,7 +160,9 @@ it("keeps Rotate selected and advances only the tapped existing piece by 90 degr
   expect(rotate).toHaveAttribute("aria-pressed", "false");
   fireEvent.click(screen.getByRole("button", { name: "Remove" }));
   fireEvent.click(firstCell());
-  expect((state as ReturnType<typeof sanitizeLab>).boards["workshop-link"][5]).toBeNull();
+  expect(
+    (state as LabForTest).boards["workshop-link"][5],
+  ).toBeNull();
 });
 
 it("Rotate never mutates fixed objects, switches off on tool change, and restores tested status correctly", () => {
@@ -160,17 +172,25 @@ it("Rotate never mutates fixed objects, switches off on tool change, and restore
   fireEvent.click(screen.getByRole("button", { name: "Straight" }));
   fireEvent.click(first());
   fireEvent.click(rotate);
-  expect(screen.getByRole("button", { name: /Row 3, column 1: Supply/ })).toBeDisabled();
-  expect(screen.getByRole("button", { name: /Row 3, column 3: Protected tree/ })).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: /Row 3, column 1: Supply/ }),
+  ).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: /Row 3, column 3: Protected tree/ }),
+  ).toBeDisabled();
   fireEvent.click(first());
-  expect((state as ReturnType<typeof sanitizeLab>).boards["workshop-link"][5]).toEqual({
+  expect(
+    (state as LabForTest).boards["workshop-link"][5],
+  ).toEqual({
     kind: "straight",
     turn: 1,
   });
   fireEvent.click(screen.getByRole("button", { name: "Junction" }));
   expect(rotate).toHaveAttribute("aria-pressed", "false");
   fireEvent.click(first());
-  expect((state as ReturnType<typeof sanitizeLab>).boards["workshop-link"][5]).toEqual({
+  expect(
+    (state as LabForTest).boards["workshop-link"][5],
+  ).toEqual({
     kind: "junction",
     turn: 0,
   });

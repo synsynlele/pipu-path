@@ -24,13 +24,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format rotation fix, show patch, run validation
-        run: |
-          npx prettier --write public/games/city/build-lab-ui.mjs public/games/city/build-lab.mjs public/games/city/index.html scripts/power-district/build-lab.mjs src/modules/city/ui/build-lab.test.ts
-          echo ROTATE_PATCH_BEGIN
-          git diff -- public/games/city/build-lab-ui.mjs public/games/city/build-lab.mjs public/games/city/index.html scripts/power-district/build-lab.mjs src/modules/city/ui/build-lab.test.ts
-          echo ROTATE_PATCH_END
-          npm run validate
+      - run: npm run validate
 
   staging-e2e:
     if: github.event_name == 'workflow_dispatch'
