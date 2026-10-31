@@ -196,6 +196,21 @@
                   <details class="city-menu-group">
                     <summary>My city · explore and review</summary>
                     <button
+                      id="resource"
+                      type="button"
+                      hidden
+                      aria-haspopup="dialog"
+                      aria-controls="fund-dialog"
+                      aria-label="Shared city fund: fictional credits. Tap to understand how to use them."
+                    >
+                      <span class="coin">◈</span
+                      ><span
+                        ><b id="credits">8</b> credits<small
+                          >CITY FUND · TAP TO LEARN</small
+                        ></span
+                      >
+                    </button>
+                    <button
                       id="view-city-toggle"
                       type="button"
                       aria-controls="city-view"
@@ -858,21 +873,7 @@
         </button>
         <div id="detail-body"></div>
       </section>
-      <button
-        id="resource"
-        type="button"
-        hidden
-        aria-haspopup="dialog"
-        aria-controls="fund-dialog"
-        aria-label="Shared city fund: fictional credits. Tap to understand how to use them."
-      >
-        <span class="coin">◈</span
-        ><span
-          ><b id="credits">8</b> credits<small
-            >CITY FUND · TAP TO LEARN</small
-          ></span
-        >
-      </button>
+
       <dialog id="fund-dialog" aria-labelledby="fund-title">
         <h2 id="fund-title">Your city's shared fund</h2>
         <p>
