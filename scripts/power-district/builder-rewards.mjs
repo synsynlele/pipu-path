@@ -112,8 +112,8 @@ assert(
 const safe = sanitizeBuilderRewards({
   version: 1,
   awards: [
-    { chapter: 1, tier: "growing", credits: 30 },
-    { chapter: 1, tier: "growing", credits: 30 },
+    { chapter: 1, tier: "thriving", credits: 50 },
+    { chapter: 1, tier: "thriving", credits: 50 },
     { chapter: 2, tier: "thriving", credits: 10000 },
   ],
   purchases: [
