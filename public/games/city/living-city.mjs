@@ -50,9 +50,32 @@ export function roadDeliveryRoute(from, to) {
 
 export function deriveLivingCity(decisions = {}, economy = null) {
   const city = deriveBuilderCity(decisions);
+  // Explicit tested upgrades restore existing fictional services; foundation
+  // decisions themselves remain unchanged and can still be reviewed.
+  const upgrades = economy?.upgrades ?? {};
+  for (const id of [
+    "water",
+    "industry",
+    "market",
+    "health",
+    "workshop",
+    "business",
+    "transport",
+  ]) {
+    const level = Number.isInteger(upgrades[id])
+      ? Math.max(0, Math.min(16, upgrades[id]))
+      : 0;
+    if (level && city.districts[id])
+      city.districts[id] = {
+        ...city.districts[id],
+        productive: Math.max(1, city.districts[id].productive),
+        service: Math.min(100, city.districts[id].service + level * 8),
+      };
+  }
   const districts = CITY_DISTRICTS.map((site) => {
     const state = city.districts[site.id];
     return {
+      upgrade: Math.max(0, Math.min(16, Number(upgrades[site.id]) || 0)),
       id: site.id,
       name: site.name,
       built: state.constructed,

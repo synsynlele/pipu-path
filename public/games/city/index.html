@@ -121,6 +121,15 @@
                   </button>
                   <button id="city-map" type="button">City map</button>
                   <button
+                    id="advanced-toggle"
+                    type="button"
+                    disabled
+                    aria-controls="advanced-panel"
+                    aria-expanded="false"
+                  >
+                    Chapters 5–12 · Upgrade my city
+                  </button>
+                  <button
                     id="resilience-toggle"
                     type="button"
                     disabled
@@ -361,6 +370,63 @@
         </button>
       </section>
       <section
+        id="advanced-panel"
+        class="panel"
+        hidden
+        aria-label="Advanced city challenges"
+      >
+        <div class="district-menu-heading">
+          <h2 id="advanced-title">Upgrade my city</h2>
+          <button
+            id="advanced-close"
+            type="button"
+            aria-label="Close advanced challenges"
+          >
+            ×
+          </button>
+        </div>
+        <p id="advanced-progress"></p>
+        <div id="advanced-mission">
+          <h3 id="advanced-brief"></h3>
+          <div id="advanced-diagnosis"></div>
+          <div id="advanced-work" hidden>
+            <p id="advanced-rules"></p>
+            <div id="advanced-controls"></div>
+            <button id="advanced-test" type="button" class="secondary">
+              Test my solution</button
+            ><button
+              id="advanced-deploy"
+              type="button"
+              class="primary"
+              disabled
+            >
+              Deploy tested upgrade →
+            </button>
+          </div>
+        </div>
+        <p id="advanced-message" role="status" aria-live="polite"></p>
+        <div id="advanced-complete" hidden>
+          <h3>You completed the 12-chapter city story.</h3>
+          <p>
+            Your foundations and 16 tested upgrades remain in your city. Explore
+            what you built or turn a lesson into a useful solution for real
+            people.
+          </p>
+          <a class="primary" href="/real-quests" target="_top"
+            >Build a real-world solution →</a
+          ><button id="advanced-explore" type="button" class="secondary">
+            Explore my completed city</button
+          ><button id="advanced-replay" type="button" class="secondary">
+            Replay Chapters 5–12
+          </button>
+        </div>
+        <small
+          >Fictional city practice. Tests demonstrate this simulation's rules,
+          not real-world evidence, XP or verified expertise. Progress is saved
+          only when device saving is enabled.</small
+        >
+      </section>
+      <section
         id="opportunities-panel"
         class="panel"
         hidden
@@ -473,12 +539,15 @@
         <h3 id="resilience-event"></h3>
         <p id="resilience-story"></p>
         <div id="resilience-complete" hidden>
-          <h3>Chapter 4 complete. Keep building.</h3>
+          <h3>Chapter 4 complete. Your next challenge awaits.</h3>
           <p>
             You tested your city through rain, a power interruption and heat.
             Review who was still waiting, improve a city decision, or build a
             useful solution in real life.
           </p>
+          <button id="chapter-five-start" class="primary" type="button">
+            Continue to Chapter 5 →
+          </button>
           <a
             id="resilience-real-quest"
             class="primary"
@@ -487,9 +556,8 @@
             >Build a real-world solution →</a
           >
           <p>
-            This is the end of the current four-chapter story. Your city stays
-            available to explore and improve. Real Quests continue with
-            AI-guided builds and follow-ups.
+            Continue upgrading this same city through Chapters 5–12, or take an
+            idea into a Real Quest. Your foundations stay intact.
           </p>
         </div>
         <div id="resilience-mission" class="resilience-mission" hidden>
@@ -725,11 +793,11 @@
           <button id="start" class="primary">
             Start my city challenge <span>▶</span>
           </button>
-          <button id="resume-city" type="button" hidden>
+          <button id="resume-city" type="button" hidden aria-hidden="true">
             Resume my saved city →
           </button>
           <a class="welcome-journey" href="/real-quests" target="_top"
-            >Continue my journey <span>↗</span></a
+            >Real-world Quests <span>↗</span></a
           >
           <small>Free to play · No account needed</small>
         </section>
@@ -1013,7 +1081,16 @@
           </p>
         </details>
         <details class="game-guide-extra">
-          <summary>Continue building after the main city story</summary>
+          <summary>Chapters 5–12 and returning to my city</summary>
+          <p>
+            Finish Chapter 4 to unlock harder challenges in this same city.
+            Diagnose the problem, configure a supply plan or relay network, test
+            it, then deploy. Later chapters require reserves and independent
+            backup routes. The large Continue my city button resumes the current
+            saved challenge, configuration or result. Real-world Quests is a
+            separate link. Chapter 12 ends with your city showcase and a route
+            into real-life building.
+          </p>
           <p>
             Finish the linked city decisions and builds to unlock additional
             replayable neighbourhood challenges in City services. Each challenge
