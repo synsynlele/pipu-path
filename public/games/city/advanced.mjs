@@ -83,7 +83,7 @@ export function sanitizeAdvanced(value) {
     : "diagnose";
   const next = missionAt(records.length);
   const plan =
-    phase === "result"
+    phase !== "configure"
       ? []
       : next && validPlanShape(next, value.cursor?.plan)
         ? [...value.cursor.plan]
