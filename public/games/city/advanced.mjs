@@ -397,6 +397,7 @@ export function deployAdvanced(value, plan) {
 }
 export function advancedUpgrades(value) {
   const districts = Object.fromEntries(CITY_DISTRICTS.map((d) => [d.id, 0]));
+  if (value?.version === 1) value = sanitizeAdvanced(value);
   if (!value?.records?.length) return districts;
   const count = Math.min(ADVANCED_MISSIONS.length, value.records.length);
   for (let i = 0; i < count; i++) {
@@ -417,6 +418,7 @@ export function advancedUpgrades(value) {
   return districts;
 }
 export function advancedCityActivity(economy, resilience, value) {
+  if (value?.version === 1) value = sanitizeAdvanced(value);
   if (!value?.records?.length) return null;
   const lastIndex = value.records.length - 1;
   const m = challengeAt(lastIndex),
@@ -447,7 +449,7 @@ export function advancedCityActivity(economy, resilience, value) {
     }[m.district] ?? [];
   // New tested plans contribute a concrete simulated improvement, never a
   // promise that all people or all prior system failures have been fixed.
-  if (!record.legacy)
+  if (!record.legacy && Number.isFinite(record.score))
     for (const id of affected) {
       if (requests[id])
         requests[id].served = Math.min(
