@@ -72,6 +72,8 @@ export const BUILDER_ITEMS = Object.freeze([
 ]);
 const ITEMS = new Map(BUILDER_ITEMS.map((item) => [item.id, item]));
 const DISTRICTS = new Set(CITY_DISTRICTS.map((item) => item.id));
+// Distinct visual locations per built district; buy flowers or trees many times.
+export const CITY_DECOR_SLOTS = 10;
 const TIERS = Object.freeze({
   thriving: {
     credits: 50,
@@ -125,28 +127,36 @@ export function sanitizeBuilderRewards(value) {
     seenChapters.add(item.chapter);
   }
   const purchases = [],
-    seenItems = new Set();
+    wearableIds = new Set(),
+    occupied = new Set();
+  const earned = awards.reduce((n, item) => n + item.credits, 0);
+  let spent = 0;
+  // Old purchases had no slot: allocate their first free location in order.
+  // New records may repeat a decorative item, but never overwrite a plot.
   for (const purchase of Array.isArray(value.purchases)
-    ? value.purchases.slice(0, BUILDER_ITEMS.length)
+    ? value.purchases.slice(0, CITY_DISTRICTS.length * CITY_DECOR_SLOTS + 3)
     : []) {
     const item = ITEMS.get(purchase?.id);
-    if (
-      !item ||
-      seenItems.has(item.id) ||
-      (item.category === "city" && !DISTRICTS.has(purchase.district)) ||
-      (item.category === "builder" && purchase.district != null)
-    )
-      continue;
-    purchases.push({
-      id: item.id,
-      district: item.category === "city" ? purchase.district : null,
-    });
-    seenItems.add(item.id);
+    if (!item || spent + item.cost > earned) continue;
+    if (item.category === "builder") {
+      if (purchase.district != null || wearableIds.has(item.id)) continue;
+      wearableIds.add(item.id);
+      purchases.push({ id: item.id, district: null });
+    } else {
+      if (!DISTRICTS.has(purchase.district)) continue;
+      let slot = numberIn(purchase.slot, 0, CITY_DECOR_SLOTS - 1)
+        ? purchase.slot : -1;
+      if (slot === -1) {
+        slot = Array.from({ length: CITY_DECOR_SLOTS }, (_, i) => i)
+          .find((i) => !occupied.has(purchase.district + ":" + i)) ?? -1;
+      }
+      const key = purchase.district + ":" + slot;
+      if (slot === -1 || occupied.has(key)) continue;
+      occupied.add(key);
+      purchases.push({ id: item.id, district: purchase.district, slot });
+    }
+    spent += item.cost;
   }
-  const earned = awards.reduce((n, item) => n + item.credits, 0);
-  const spent = purchases.reduce((n, item) => n + ITEMS.get(item.id).cost, 0);
-  // Never accept impossible negative balances from malformed or old saves.
-  if (spent > earned) purchases.length = 0;
   const owned = new Set(purchases.map((item) => item.id));
   const equipped = [
     ...new Set(
@@ -256,8 +266,8 @@ export function purchaseBuilderItem(
     item = ITEMS.get(itemId);
   if (!item)
     return { ok: false, reason: "That item is unavailable.", rewards: safe };
-  if (safe.purchases.some((p) => p.id === itemId))
-    return { ok: false, reason: "You already own this item.", rewards: safe };
+  if (item.category === "builder" && safe.purchases.some((p) => p.id === itemId))
+    return { ok: false, reason: "You already own this outfit or accessory.", rewards: safe };
   if (builderBalance(safe) < item.cost)
     return {
       ok: false,
@@ -273,11 +283,18 @@ export function purchaseBuilderItem(
       reason: "Choose a district you have built first.",
       rewards: safe,
     };
-  safe.purchases.push({
-    id: itemId,
-    district: item.category === "city" ? district : null,
-  });
-  if (item.category === "builder") safe.equipped.push(itemId);
+  if (item.category === "city") {
+    const occupied = new Set(safe.purchases.filter((p) => p.district === district)
+      .map((p) => p.slot));
+    const slot = Array.from({ length: CITY_DECOR_SLOTS }, (_, i) => i)
+      .find((i) => !occupied.has(i));
+    if (slot === undefined)
+      return { ok: false, reason: "This district's garden spaces are full. Choose another district.", rewards: safe };
+    safe.purchases.push({ id: itemId, district, slot });
+  } else {
+    safe.purchases.push({ id: itemId, district: null });
+    safe.equipped.push(itemId);
+  }
   return { ok: true, rewards: safe };
 }
 export function toggleBuilderItem(value, itemId) {
