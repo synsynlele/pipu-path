@@ -3,7 +3,7 @@
 // completed missions through the legacy validator, not fabricated new plans.
 import { resilienceReport } from "./resilience.mjs";
 import { CITY_DISTRICTS } from "./districts.mjs";
-import { ADVANCED_CHAPTERS, ADVANCED_MISSIONS, challengeAt, initialChallengePlan } from "./advanced-missions.mjs";
+import { ADVANCED_MISSIONS, challengeAt, initialChallengePlan } from "./advanced-missions.mjs";
 import { sanitizeAdvanced as sanitizeLegacy, advancedUpgrades as legacyUpgrades } from "./advanced-legacy.mjs";
 
 export { ADVANCED_CHAPTERS } from "./advanced-missions.mjs";
