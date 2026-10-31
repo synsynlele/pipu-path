@@ -7,7 +7,7 @@ import {newPlan,validPlanShape} from "./advanced-challenges.mjs";
 // persisted through the existing city save; the test button is never bypassed.
 export function createAdvancedDesk({getState,change,prepare,reveal,save}){
  const $=id=>document.getElementById(id),panel=$("advanced-panel");
- let tested=false,dirty=false;
+ let tested=false;
  const current=()=>sanitizeAdvanced(getState().advanced)??newAdvanced(getState().resilience);
  function write(v){change(v);save();}
  function close(){document.body.classList.remove("advanced-configuring");panel.hidden=true;$("advanced-toggle").setAttribute("aria-expanded","false");}
@@ -22,7 +22,7 @@ export function createAdvancedDesk({getState,change,prepare,reveal,save}){
   const b=element("button",cls,label);b.type="button";b.onclick=handler;return b;
  }
  function render(){
-  tested=false;dirty=false;$("advanced-review").hidden=true;
+  tested=false;$("advanced-review").hidden=true;
   const v=current(),m=advancedMission(v);
   $("advanced-title").textContent=m?"Chapter "+m.chapter+" · "+m.chapterTitle:"Chapter 12 complete · Your city showcase";
   $("advanced-progress").textContent="City challenges "+v.records.length+"/16 · Your earlier city and credits stay intact";
@@ -51,7 +51,7 @@ export function createAdvancedDesk({getState,change,prepare,reveal,save}){
   body.dataset.challenge=k;root.append(body);
   function update(next,rerender=false){
    if(!validPlanShape(m,next))return;
-   plan=[...next];tested=false;dirty=true;$("advanced-deploy").disabled=true;
+   plan=[...next];tested=false;$("advanced-deploy").disabled=true;
    $("advanced-message").textContent="Your plan has changed. Test the result before deploying.";
    write({...current(),cursor:{phase:"configure",plan:[...plan]}});
    if(rerender)render();else{
