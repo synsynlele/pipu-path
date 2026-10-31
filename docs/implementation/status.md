@@ -37,7 +37,6 @@ behaviour, chapter 1–12 one-time claims, device save/load, optional authentica
 backup and audio/reduced-motion checks. No production promotion authorised
 by this feature implementation alone.
 
-
 ## 30 October 2026 — Phase 4 practical Quest quality correction
 
 The game-to-Quest handoff now leads to a real-use intervention rather than a

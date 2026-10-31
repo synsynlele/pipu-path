@@ -65,8 +65,15 @@
               <details id="city-menu">
                 <summary aria-controls="city-menu-options">City menu ▾</summary>
                 <div id="city-menu-options">
-                  <button id="menu-shop" type="button" aria-haspopup="dialog" aria-controls="builder-shop">
-                    🌸 Builder Shop · <strong id="builder-credit-balance">0</strong> Builder Credits
+                  <button
+                    id="menu-shop"
+                    type="button"
+                    aria-haspopup="dialog"
+                    aria-controls="builder-shop"
+                  >
+                    🌸 Builder Shop ·
+                    <strong id="builder-credit-balance">0</strong> Builder
+                    Credits
                   </button>
                   <button id="menu-resume" type="button" class="primary">
                     Resume current chapter →
@@ -1101,41 +1108,81 @@
         </div>
         <small>Fictional game construction; not verified real-world XP.</small>
       </section>
-      <dialog id="chapter-celebration" class="builder-celebration" aria-labelledby="celebration-title">
-        <div class="builder-celebration-flowers" aria-hidden="true">🌸 ✨ 🌼 ✨ 🌸</div>
-        <p class="builder-celebration-kicker" id="celebration-kicker">CHAPTER COMPLETE</p>
+      <dialog
+        id="chapter-celebration"
+        class="builder-celebration"
+        aria-labelledby="celebration-title"
+      >
+        <div class="builder-celebration-flowers" aria-hidden="true">
+          🌸 ✨ 🌼 ✨ 🌸
+        </div>
+        <p class="builder-celebration-kicker" id="celebration-kicker">
+          CHAPTER COMPLETE
+        </p>
         <h2 id="celebration-title">You have grown your city!</h2>
-        <p id="celebration-description">Your decisions have made a difference.</p>
+        <p id="celebration-description">
+          Your decisions have made a difference.
+        </p>
         <p id="celebration-impact"></p>
         <div class="builder-celebration-award" role="status">
           <span>✦ <b id="celebration-credits">+30</b> Builder Credits</span>
           <small>Balance: <b id="celebration-balance">30</b></small>
         </div>
         <div class="builder-celebration-actions">
-          <button class="primary" id="celebration-continue" type="button">Continue building →</button>
+          <button class="primary" id="celebration-continue" type="button">
+            Continue building →
+          </button>
           <button id="celebration-view" type="button">Admire my city</button>
           <button id="celebration-shop" type="button">🌸 Builder Shop</button>
         </div>
-        <small>Fictional city achievement only · not verified real-world XP.</small>
+        <small
+          >Fictional city achievement only · not verified real-world XP.</small
+        >
       </dialog>
-      <dialog id="builder-shop" class="builder-shop" aria-labelledby="builder-shop-title">
+      <dialog
+        id="builder-shop"
+        class="builder-shop"
+        aria-labelledby="builder-shop-title"
+      >
         <div class="builder-shop-heading">
           <div>
             <p class="builder-celebration-kicker">YOUR VIRTUAL REWARDS</p>
             <h2 id="builder-shop-title">Builder Shop</h2>
-            <p><strong id="shop-credit-balance">0</strong> Builder Credits available</p>
+            <p>
+              <strong id="shop-credit-balance">0</strong> Builder Credits
+              available
+            </p>
           </div>
-          <button id="shop-close" type="button" aria-label="Close Builder Shop">×</button>
+          <button id="shop-close" type="button" aria-label="Close Builder Shop">
+            ×
+          </button>
         </div>
-        <div class="builder-shop-tabs" role="group" aria-label="Choose shop category">
-          <button id="shop-city-tab" type="button" aria-pressed="true">🌸 City Beautification</button>
-          <button id="shop-builder-tab" type="button" aria-pressed="false">🎒 My Builder</button>
+        <div
+          class="builder-shop-tabs"
+          role="group"
+          aria-label="Choose shop category"
+        >
+          <button id="shop-city-tab" type="button" aria-pressed="true">
+            🌸 City Beautification
+          </button>
+          <button id="shop-builder-tab" type="button" aria-pressed="false">
+            🎒 My Builder
+          </button>
         </div>
-        <label id="shop-district-label" for="shop-district">Place decorations in a built district</label>
-        <select id="shop-district" aria-labelledby="shop-district-label"></select>
+        <label id="shop-district-label" for="shop-district"
+          >Place decorations in a built district</label
+        >
+        <select
+          id="shop-district"
+          aria-labelledby="shop-district-label"
+        ></select>
         <div id="shop-items" class="builder-shop-grid"></div>
         <p id="shop-message" role="status" aria-live="polite"></p>
-        <small>Virtual-only cosmetics. No money, XP, or gameplay advantage. Purchases stay in this session unless you choose Save on this device or account backup.</small>
+        <small
+          >Virtual-only cosmetics. No money, XP, or gameplay advantage.
+          Purchases stay in this session unless you choose Save on this device
+          or account backup.</small
+        >
       </dialog>
       <dialog id="build-lab" aria-labelledby="lab-title">
         <div class="lab-heading">

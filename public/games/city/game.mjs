@@ -1016,9 +1016,11 @@ function rememberJourney() {
 function currentChapterItems() {
   const step = integratedStep(state.decisions, state.lab);
   return chapterMenuItems({
-    firstDone: foundationComplete(state.decisions) &&
+    firstDone:
+      foundationComplete(state.decisions) &&
       (step.kind === "complete" || chapterForCase(step.caseId) === 2),
-    foundationsDone: foundationForOpportunities(state.decisions) && step.kind === "complete",
+    foundationsDone:
+      foundationForOpportunities(state.decisions) && step.kind === "complete",
     day: state.economy.day,
     crises: state.resilience?.choices.length ?? 0,
     records: state.advanced?.records.length ?? 0,
@@ -4343,16 +4345,21 @@ const builderRewardsUi = mountBuilderRewards({
   getChapterItems: currentChapterItems,
   getBuiltDistrictIds: () => {
     const city = deriveBuilderCity(state.decisions);
-    return CITY_DISTRICTS.filter((district) => city.districts[district.id]?.built)
-      .map((district) => district.id);
+    return CITY_DISTRICTS.filter(
+      (district) => city.districts[district.id]?.built,
+    ).map((district) => district.id);
   },
   isPlaying: () => $("intro").hidden,
   isBlockingCelebration: () =>
-    simulating || Boolean(builtCityView) || !$("world-feedback").hidden ||
-    !$("build-victory").hidden || $("build-lab").open ||
+    simulating ||
+    Boolean(builtCityView) ||
+    !$("world-feedback").hidden ||
+    !$("build-victory").hidden ||
+    $("build-lab").open ||
     Boolean(document.querySelector("dialog[open]")),
   pauseForReward: () => {
-    if (journey.status === "running") pauseJourney("Your city milestone is ready.");
+    if (journey.status === "running")
+      pauseJourney("Your city milestone is ready.");
     cancelAutoAdvance();
     cancelWalk();
   },

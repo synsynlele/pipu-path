@@ -2,10 +2,16 @@
 // no collision blockers, and no effect on simulation or city performance.
 import { BUILDER_ITEMS, sanitizeBuilderRewards } from "./builder-rewards.mjs";
 
-export function createBuilderCosmetics({ T, plazas, player, lowPower = false }) {
+export function createBuilderCosmetics({
+  T,
+  plazas,
+  player,
+  lowPower = false,
+}) {
   const cityObjects = new Map();
   const wearableObjects = new Map();
-  const material = (color) => new T.MeshStandardMaterial({ color, roughness: 0.82 });
+  const material = (color) =>
+    new T.MeshStandardMaterial({ color, roughness: 0.82 });
   function group() {
     const root = new T.Group();
     root.userData.ignoreNavigation = true;
@@ -20,14 +26,20 @@ export function createBuilderCosmetics({ T, plazas, player, lowPower = false }) 
     return mesh;
   }
   function cylinder(parent, top, bottom, h, color, x, y, z, sides = 8) {
-    const mesh = new T.Mesh(new T.CylinderGeometry(top, bottom, h, sides), material(color));
+    const mesh = new T.Mesh(
+      new T.CylinderGeometry(top, bottom, h, sides),
+      material(color),
+    );
     mesh.position.set(x, y, z);
     mesh.userData.ignoreNavigation = true;
     parent.add(mesh);
     return mesh;
   }
   function sphere(parent, radius, color, x, y, z) {
-    const mesh = new T.Mesh(new T.IcosahedronGeometry(radius, lowPower ? 0 : 1), material(color));
+    const mesh = new T.Mesh(
+      new T.IcosahedronGeometry(radius, lowPower ? 0 : 1),
+      material(color),
+    );
     mesh.position.set(x, y, z);
     mesh.userData.ignoreNavigation = true;
     parent.add(mesh);
@@ -36,16 +48,20 @@ export function createBuilderCosmetics({ T, plazas, player, lowPower = false }) 
   function makeCityItem(id) {
     const g = group();
     const position = {
-      flowers: [-2.25, 1.7], trees: [2.5, 1.2],
-      benches: [-2.25, -1.6], lights: [2.6, -1.6], fountain: [0, -2.8],
+      flowers: [-2.25, 1.7],
+      trees: [2.5, 1.2],
+      benches: [-2.25, -1.6],
+      lights: [2.6, -1.6],
+      fountain: [0, -2.8],
     }[id];
     g.position.set(position[0], 0, position[1]);
     if (id === "flowers") {
       cube(g, 1.75, 0.12, 1.1, 0x876b49, 0, 0.19, 0);
       for (let i = 0; i < (lowPower ? 5 : 9); i++) {
-        const x = (i % 3 - 1) * 0.48, z = (Math.floor(i / 3) - 1) * 0.3;
+        const x = ((i % 3) - 1) * 0.48,
+          z = (Math.floor(i / 3) - 1) * 0.3;
         cylinder(g, 0.035, 0.045, 0.35, 0x377d56, x, 0.4, z);
-        sphere(g, 0.14, [0xe77c9b,0xf8d269,0xd5a1ef][i % 3], x, 0.62, z);
+        sphere(g, 0.14, [0xe77c9b, 0xf8d269, 0xd5a1ef][i % 3], x, 0.62, z);
       }
     }
     if (id === "trees") {
@@ -58,7 +74,8 @@ export function createBuilderCosmetics({ T, plazas, player, lowPower = false }) 
     if (id === "benches") {
       cube(g, 1.7, 0.17, 0.58, 0xb37c53, 0, 0.53, 0);
       cube(g, 1.7, 0.55, 0.13, 0xb37c53, 0, 0.84, -0.28);
-      for (const x of [-0.66,0.66]) cube(g, 0.12, 0.5, 0.12, 0x4c5653, x, 0.27, 0);
+      for (const x of [-0.66, 0.66])
+        cube(g, 0.12, 0.5, 0.12, 0x4c5653, x, 0.27, 0);
     }
     if (id === "lights") {
       for (const x of [-0.6, 0.6]) {
@@ -74,7 +91,8 @@ export function createBuilderCosmetics({ T, plazas, player, lowPower = false }) 
     }
     return g;
   }
-  for (const item of BUILDER_ITEMS.filter((i) => i.category === "city")) cityObjects.set(item.id, makeCityItem(item.id));
+  for (const item of BUILDER_ITEMS.filter((i) => i.category === "city"))
+    cityObjects.set(item.id, makeCityItem(item.id));
   function makeWearable(id) {
     const g = group();
     if (id === "helmet") {
@@ -87,13 +105,15 @@ export function createBuilderCosmetics({ T, plazas, player, lowPower = false }) 
     }
     if (id === "jacket") {
       cylinder(g, 0.25, 0.31, 0.69, 0xaf6261, 0, 1.04, 0);
-      for (const x of [-0.3,0.3]) cylinder(g, 0.09, 0.075, 0.46, 0xaf6261, x, 1.06, 0);
+      for (const x of [-0.3, 0.3])
+        cylinder(g, 0.09, 0.075, 0.46, 0xaf6261, x, 1.06, 0);
       cube(g, 0.065, 0.52, 0.025, 0xeed0ab, 0, 1.05, 0.255);
     }
     player.g.add(g);
     return g;
   }
-  for (const item of BUILDER_ITEMS.filter((i) => i.category === "builder")) wearableObjects.set(item.id, makeWearable(item.id));
+  for (const item of BUILDER_ITEMS.filter((i) => i.category === "builder"))
+    wearableObjects.set(item.id, makeWearable(item.id));
   function sync(value) {
     const rewards = sanitizeBuilderRewards(value);
     const purchased = new Map(rewards.purchases.map((p) => [p.id, p]));
@@ -103,7 +123,8 @@ export function createBuilderCosmetics({ T, plazas, player, lowPower = false }) 
       if (root && g.parent !== root) root.add(g);
       g.visible = Boolean(root);
     }
-    for (const [id, g] of wearableObjects) g.visible = rewards.equipped.includes(id);
+    for (const [id, g] of wearableObjects)
+      g.visible = rewards.equipped.includes(id);
   }
   return { sync };
 }
