@@ -2,6 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
+      "fix/service-quest-handoff-save-status": false,
       "feat/playable-city-services": false,
       "style/transparent-city-workspaces": false,
       "feat/complete-city-manual-continue": false,

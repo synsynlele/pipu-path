@@ -931,6 +931,7 @@ let previewDecision = null;
 let journey = previousPractice?.journey
   ? { ...previousPractice.journey, status: "paused" }
   : { status: "idle", caseId: null, stage: "travelling", choiceId: null };
+let inspectedDistrict = null;
 let autoAdvanceTimer = null;
 let reviewCaseId = null;
 let autoResumeAfterReview = false;
@@ -1372,6 +1373,7 @@ function pauseJourney(
   toast(message);
 }
 function goToJourneyCase(id) {
+  inspectedDistrict = null;
   const caseFile = getCase(id);
   if (!caseFile || simulating) return;
   if (caseFile.chapter === 2 && !foundationComplete(state.decisions)) {
@@ -1822,6 +1824,20 @@ puzzleObserver.observe(document.body, {
   attributes: true,
   attributeFilter: ["class"],
 });
+function getHandoffTopic() {
+  return {
+    district: inspectedDistrict ?? getCase(journey.caseId)?.district ?? null,
+    service: inspectedDistrict
+      ? null
+      : ((state.stageThree.active
+          ? stageThreeCase(state.stageThree.round).missionId
+          : state.stageThree.round > 0
+            ? stageThreeCase(state.stageThree.round - 1).missionId
+            : null) ??
+        state.lab.tested.at(-1) ??
+        null),
+  };
+}
 function reportParentState() {
   if (window.parent === window) return;
   window.parent.postMessage(
@@ -1830,17 +1846,8 @@ function reportParentState() {
       saved: saveEnabled,
       entered: $("intro").hidden,
       focusedPuzzle: focusedPuzzle(),
-      district: getCase(journey.caseId)?.district ?? null,
-      // This is a topic hint only, not proof of real-world action.
-      // Send a fixed local mission ID, never a question answer or free text.
-      service:
-        (state.stageThree.active
-          ? stageThreeCase(state.stageThree.round).missionId
-          : state.stageThree.round > 0
-            ? stageThreeCase(state.stageThree.round - 1).missionId
-            : null) ??
-        state.lab.tested.at(-1) ??
-        null,
+      // Topic hints only: never proof, free text or question answers.
+      ...getHandoffTopic(),
     },
     window.location.origin,
   );
@@ -1908,6 +1915,8 @@ function saveHealth() {
 function updateSaveHealth() {
   $("device-save-health").textContent = saveHealth();
   $("welcome-device-save").checked = saveEnabled;
+  if ($("facility-desk").open)
+    $("facility-save-status").textContent = saveHealth();
 }
 function persistPractice() {
   if (!saveEnabled) {
@@ -2872,6 +2881,7 @@ function showDecisionReviewOutcome(id, choiceId) {
   $("review-done").onclick = () => finishDecisionReview();
 }
 function showCase(id) {
+  inspectedDistrict = null;
   if (journey.status === "running" && reviewCaseId !== id) {
     journey.caseId = id;
     journey.stage = "question";
@@ -4486,6 +4496,10 @@ const facilityDesk = mountFacilityDesk({
   saveStatus: saveHealth,
   onCue: (cue) => cityAudio.cue(cue),
   onNote: (event) => playtest.note(event),
+  onDistrict: (id) => {
+    inspectedDistrict = CITY_DISTRICTS.some((d) => d.id === id) ? id : null;
+    reportParentState();
+  },
   onSettings: (value) => {
     document.body.dataset.cityText = value.text;
     document.body.dataset.cityContrast = value.contrast;
@@ -4538,6 +4552,8 @@ $("menu-facilities").onclick = () =>
 facilityDesk.settings();
 updateSaveHealth();
 function continueCurrentChapter() {
+  inspectedDistrict = null;
+  reportParentState();
   if (state.advanced && canStartAdvanced(state.resilience))
     return advancedDesk.open();
   if (state.resilience && canStartResilience(state.decisions, state.economy))
@@ -4579,6 +4595,7 @@ $("advanced-explore").onclick = () => {
   openBuiltCityView();
 };
 function returnToEntrance() {
+  inspectedDistrict = null;
   if (simulating) {
     toast("Finish this short simulation before returning to the entrance.");
     return;

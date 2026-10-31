@@ -256,6 +256,35 @@ describe("City to Quest handoff", () => {
     );
     expect(push).not.toHaveBeenCalled();
   });
+  it("clears an older puzzle hint when the inspected service district changes", () => {
+    render(
+      <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,
+    );
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    ) as HTMLIFrameElement;
+    const signal = (district: string, service: string | null) =>
+      fireEvent(
+        window,
+        new MessageEvent("message", {
+          origin: window.location.origin,
+          source: frame.contentWindow,
+          data: {
+            type: "pipupath:city:state",
+            saved: false,
+            district,
+            service,
+          },
+        }),
+      );
+    signal("workshop", "workshop-link");
+    signal("health", null);
+    fireEvent.click(screen.getByRole("button", { name: "Real Quests" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Continue without saving" }),
+    );
+    expect(push).toHaveBeenCalledWith("/real-quests?district=health");
+  });
   it("returns to the real Quest hub with only city district context", () => {
     render(
       <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,

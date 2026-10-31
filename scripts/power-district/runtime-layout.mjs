@@ -85,7 +85,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment, getHandoffTopic};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -966,6 +966,11 @@ assert.equal(
 const facilityDistrict = w.document.getElementById("facility-district");
 facilityDistrict.value = "health";
 facilityDistrict.dispatchEvent(new w.Event("change"));
+assert.deepEqual(
+  game.getHandoffTopic(),
+  { district: "health", service: null },
+  "Service inspection must replace the older campaign/puzzle Quest topic",
+);
 w.document.getElementById("facility-test").click();
 assert.equal(w.document.getElementById("facility-apply").disabled, true);
 const facilityInputs = [
@@ -1058,6 +1063,35 @@ assert(
   "A complete campaign with all district records and drafts must fit the real save limit",
 );
 
+w.document.getElementById("menu-facilities").click();
+const storePrototype = Object.getPrototypeOf(w.localStorage),
+  originalStoreWrite = storePrototype.setItem;
+storePrototype.setItem = () => {
+  throw new Error("Storage unavailable");
+};
+const recoveryInput = w.document.querySelector("#facility-units input");
+recoveryInput.value = "1";
+recoveryInput.dispatchEvent(new w.Event("input"));
+assert.match(
+  w.document.getElementById("facility-save-status").textContent,
+  /needs attention/,
+);
+assert.match(
+  w.document.getElementById("device-save-health").textContent,
+  /needs attention/,
+);
+storePrototype.setItem = originalStoreWrite;
+w.document.getElementById("save-practice").click();
+assert.match(
+  w.document.getElementById("facility-save-status").textContent,
+  /saving is on/,
+);
+w.document.getElementById("facility-campaign").click();
+assert.equal(
+  game.getHandoffTopic().district,
+  CITY_CASES.at(-1).district,
+  "Continuing the campaign must clear the inspection-only topic",
+);
 w.document.getElementById("advanced-explore").click();
 // Use the actual camera and raycaster to tap a completed building.
 game.animateWorld(now + 9000);
