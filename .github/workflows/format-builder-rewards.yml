@@ -1,0 +1,41 @@
+name: Format Builder Rewards Candidate
+on:
+  push:
+    branches:
+      - feat/builder-chapter-celebrations-shop-20261031
+permissions:
+  contents: write
+jobs:
+  format-feature:
+    if: github.ref == 'refs/heads/feat/builder-chapter-celebrations-shop-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/builder-chapter-celebrations-shop-20261031
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format approved implementation files only
+        run: |
+          npx --no-install prettier --write \
+            docs/implementation/status.md \
+            public/games/city/builder-cosmetics.mjs \
+            public/games/city/builder-rewards-ui.mjs \
+            public/games/city/builder-rewards.css \
+            public/games/city/builder-rewards.mjs \
+            public/games/city/game.mjs \
+            public/games/city/index.html \
+            scripts/power-district/builder-rewards.mjs
+      - name: Commit formatting on this temporary feature branch only
+        run: |
+          git config user.name "PipuPath CI Formatter"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/implementation/status.md public/games/city/builder-cosmetics.mjs public/games/city/builder-rewards-ui.mjs public/games/city/builder-rewards.css public/games/city/builder-rewards.mjs public/games/city/game.mjs public/games/city/index.html scripts/power-district/builder-rewards.mjs
+          if ! git diff --cached --quiet; then
+            git commit -m "style: format chapter rewards and Builder Shop"
+            git push origin HEAD:refs/heads/feat/builder-chapter-celebrations-shop-20261031
+          fi
