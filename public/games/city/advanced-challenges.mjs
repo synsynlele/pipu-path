@@ -698,6 +698,7 @@ export function testChallenge(m, p) {
   return outcome(false, "This challenge is unavailable.", 0);
 }
 // Regression-only solved cases; these are not displayed by the game UI.
+// Real-controller tests replay these cases through distinct tap, order and slider inputs.
 export const SAMPLE_SOLUTIONS = {
   "repair-triage": [0, 1, 2, 3],
   "fault-investigation": [1, 0, 1, 1, 0],
