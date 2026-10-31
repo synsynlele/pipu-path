@@ -4347,15 +4347,23 @@ const builderRewardsUi = mountBuilderRewards({
   getChapterImpact: (chapter) => {
     if (chapter === 3) {
       const days = state.economy?.history ?? [];
-      const served = days.reduce((n, day) => n + (day.meals ?? 0) + (day.patients ?? 0) + (day.repairs ?? 0), 0);
+      const served = days.reduce(
+        (n, day) =>
+          n + (day.meals ?? 0) + (day.patients ?? 0) + (day.repairs ?? 0),
+        0,
+      );
       const missed = days.reduce((n, day) => n + (day.unserved ?? 0), 0);
       return `${served} simulated service activities delivered · ${missed} requests unmet.`;
     }
     if (chapter === 4) {
-      const requests = (resilienceReport(state.resilience)?.history ?? [])
-        .flatMap((day) => Object.values(day.requests ?? {}));
+      const requests = (
+        resilienceReport(state.resilience)?.history ?? []
+      ).flatMap((day) => Object.values(day.requests ?? {}));
       const met = requests.reduce((n, service) => n + (service.served ?? 0), 0);
-      const needed = requests.reduce((n, service) => n + (service.requested ?? 0), 0);
+      const needed = requests.reduce(
+        (n, service) => n + (service.requested ?? 0),
+        0,
+      );
       return `${met} of ${needed} simulated service requests met during disruptions.`;
     }
     const city = deriveBuilderCity(state.decisions);
