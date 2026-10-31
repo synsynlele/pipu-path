@@ -1,0 +1,44 @@
+name: Format Varied City Feature
+on:
+  push:
+    branches:
+      - feat/varied-city-challenges-repeatable-decor-20261031
+permissions:
+  contents: write
+jobs:
+  format-feature:
+    if: github.ref == 'refs/heads/feat/varied-city-challenges-repeatable-decor-20261031'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/varied-city-challenges-repeatable-decor-20261031
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Format feature files only
+        run: |
+          npx --no-install prettier --write \
+            public/games/city/advanced.mjs \
+            public/games/city/advanced-legacy.mjs \
+            public/games/city/advanced-missions.mjs \
+            public/games/city/advanced-ui.mjs \
+            public/games/city/advanced-challenges.css \
+            public/games/city/builder-rewards.mjs \
+            public/games/city/builder-rewards-ui.mjs \
+            public/games/city/builder-cosmetics.mjs \
+            public/games/city/index.html \
+            scripts/power-district/advanced.mjs \
+            scripts/power-district/builder-rewards.mjs
+      - name: Commit formatting
+        run: |
+          git config user.name "PipuPath CI Formatter"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/games/city/advanced.mjs public/games/city/advanced-legacy.mjs public/games/city/advanced-missions.mjs public/games/city/advanced-ui.mjs public/games/city/advanced-challenges.css public/games/city/builder-rewards.mjs public/games/city/builder-rewards-ui.mjs public/games/city/builder-cosmetics.mjs public/games/city/index.html scripts/power-district/advanced.mjs scripts/power-district/builder-rewards.mjs
+          if ! git diff --cached --quiet; then
+            git commit -m "style: format varied city challenges and repeatable cosmetics"
+            git push origin HEAD:refs/heads/feat/varied-city-challenges-repeatable-decor-20261031
+          fi
