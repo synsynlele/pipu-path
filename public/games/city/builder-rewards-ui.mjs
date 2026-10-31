@@ -48,77 +48,142 @@ export function mountBuilderRewards({
     return CITY_DISTRICTS.filter((district) => allowed.has(district.id));
   }
   function renderShop() {
-    const rewards=getState().rewards;
+    const rewards = getState().rewards;
     updateBalances();
-    $("shop-city-tab").setAttribute("aria-pressed",String(category==="city"));
-    $("shop-builder-tab").setAttribute("aria-pressed",String(category==="builder"));
-    const districts=availableDistricts(),select=$("shop-district"),selected=select.value;
+    $("shop-city-tab").setAttribute(
+      "aria-pressed",
+      String(category === "city"),
+    );
+    $("shop-builder-tab").setAttribute(
+      "aria-pressed",
+      String(category === "builder"),
+    );
+    const districts = availableDistricts(),
+      select = $("shop-district"),
+      selected = select.value;
     select.replaceChildren();
-    for(const d of districts){
-      const option=document.createElement("option");
-      option.value=d.id;option.textContent=d.emoji+" "+d.name;select.append(option);
+    for (const d of districts) {
+      const option = document.createElement("option");
+      option.value = d.id;
+      option.textContent = d.emoji + " " + d.name;
+      select.append(option);
     }
-    if(districts.some(d=>d.id===selected))select.value=selected;
-    select.onchange=()=>{notify("");renderShop();};
-    $("shop-district-label").hidden=category!=="city";
-    select.hidden=category!=="city";
-    const district=select.value;
-    const cityPurchases=rewards.purchases.filter(p=>BUILDER_ITEMS.find(item=>item.id===p.id)?.category==="city");
-    const districtCount=cityPurchases.filter(p=>p.district===district).length;
-    const owned=new Set(rewards.purchases.filter(p=>p.district==null).map(p=>p.id));
-    const list=$("shop-items");list.replaceChildren();
-    if(category==="city"&&districts.length){
-      const guide=document.createElement("p");
-      guide.className="shop-placed-count";
-      guide.textContent="Placed in this district: "+districtCount+"/"+MAX_DISTRICT_DECOR+
+    if (districts.some((d) => d.id === selected)) select.value = selected;
+    select.onchange = () => {
+      notify("");
+      renderShop();
+    };
+    $("shop-district-label").hidden = category !== "city";
+    select.hidden = category !== "city";
+    const district = select.value;
+    const cityPurchases = rewards.purchases.filter(
+      (p) =>
+        BUILDER_ITEMS.find((item) => item.id === p.id)?.category === "city",
+    );
+    const districtCount = cityPurchases.filter(
+      (p) => p.district === district,
+    ).length;
+    const owned = new Set(
+      rewards.purchases.filter((p) => p.district == null).map((p) => p.id),
+    );
+    const list = $("shop-items");
+    list.replaceChildren();
+    if (category === "city" && districts.length) {
+      const guide = document.createElement("p");
+      guide.className = "shop-placed-count";
+      guide.textContent =
+        "Placed in this district: " +
+        districtCount +
+        "/" +
+        MAX_DISTRICT_DECOR +
         " · You can buy more than one decoration and decorate every neighbourhood.";
       list.append(guide);
     }
-    for(const item of BUILDER_ITEMS.filter(i=>i.category===category)){
-      const card=document.createElement("article");card.className="builder-shop-product";
-      const icon=document.createElement("span");icon.className="product-icon";
-      icon.textContent=item.icon;icon.setAttribute("aria-hidden","true");
-      const title=document.createElement("strong");title.textContent=item.name;
-      const detail=document.createElement("p");detail.textContent=item.detail;
-      const button=document.createElement("button");button.type="button";
-      const equipped=rewards.equipped.includes(item.id);
-      if(item.category==="builder"&&owned.has(item.id)){
-        button.textContent=equipped?"Wearing · Take off":"Put on";
-        button.onclick=()=>{
-          setRewards(toggleBuilderItem(getState().rewards,item.id));
-          renderShop();notify(equipped?"Item removed from your Builder.":"Your Builder is wearing this item.");
+    for (const item of BUILDER_ITEMS.filter((i) => i.category === category)) {
+      const card = document.createElement("article");
+      card.className = "builder-shop-product";
+      const icon = document.createElement("span");
+      icon.className = "product-icon";
+      icon.textContent = item.icon;
+      icon.setAttribute("aria-hidden", "true");
+      const title = document.createElement("strong");
+      title.textContent = item.name;
+      const detail = document.createElement("p");
+      detail.textContent = item.detail;
+      const button = document.createElement("button");
+      button.type = "button";
+      const equipped = rewards.equipped.includes(item.id);
+      if (item.category === "builder" && owned.has(item.id)) {
+        button.textContent = equipped ? "Wearing · Take off" : "Put on";
+        button.onclick = () => {
+          setRewards(toggleBuilderItem(getState().rewards, item.id));
+          renderShop();
+          notify(
+            equipped
+              ? "Item removed from your Builder."
+              : "Your Builder is wearing this item.",
+          );
         };
       } else {
-        const count=cityPurchases.filter(p=>p.district===district&&p.id===item.id).length;
-        if(item.category==="city"){
-          const note=document.createElement("small");
-          note.textContent="Placed here: "+count+"/"+MAX_ITEM_PER_DISTRICT;
-          card.append(icon,title,detail,note);
-        } else card.append(icon,title,detail);
-        button.textContent=(item.category==="city"&&count?"Buy another · ":"Unlock · ")+item.cost+" ✦";
-        const full=item.category==="city"&&(
-          !districts.length||districtCount>=MAX_DISTRICT_DECOR||
-          count>=MAX_ITEM_PER_DISTRICT||cityPurchases.length>=MAX_TOTAL_DECOR);
-        button.disabled=builderBalance(rewards)<item.cost||full;
-        button.onclick=()=>{
-          const place=item.category==="city"?$("shop-district").value:null;
-          const result=purchaseBuilderItem(getState().rewards,item.id,place,
-            availableDistricts().map(d=>d.id));
-          if(!result.ok){notify(result.reason);return;}
+        const count = cityPurchases.filter(
+          (p) => p.district === district && p.id === item.id,
+        ).length;
+        if (item.category === "city") {
+          const note = document.createElement("small");
+          note.textContent =
+            "Placed here: " + count + "/" + MAX_ITEM_PER_DISTRICT;
+          card.append(icon, title, detail, note);
+        } else card.append(icon, title, detail);
+        button.textContent =
+          (item.category === "city" && count ? "Buy another · " : "Unlock · ") +
+          item.cost +
+          " ✦";
+        const full =
+          item.category === "city" &&
+          (!districts.length ||
+            districtCount >= MAX_DISTRICT_DECOR ||
+            count >= MAX_ITEM_PER_DISTRICT ||
+            cityPurchases.length >= MAX_TOTAL_DECOR);
+        button.disabled = builderBalance(rewards) < item.cost || full;
+        button.onclick = () => {
+          const place =
+            item.category === "city" ? $("shop-district").value : null;
+          const result = purchaseBuilderItem(
+            getState().rewards,
+            item.id,
+            place,
+            availableDistricts().map((d) => d.id),
+          );
+          if (!result.ok) {
+            notify(result.reason);
+            return;
+          }
           setRewards(result.rewards);
           renderShop();
-          notify(item.category==="city"?
-            "Another "+item.name+" now appears in "+(districts.find(d=>d.id===place)?.name??"your city")+"!":
-            item.name+" unlocked and equipped!");
+          notify(
+            item.category === "city"
+              ? "Another " +
+                  item.name +
+                  " now appears in " +
+                  (districts.find((d) => d.id === place)?.name ?? "your city") +
+                  "!"
+              : item.name + " unlocked and equipped!",
+          );
           playSuccess();
         };
-        card.append(button);list.append(card);continue;
+        card.append(button);
+        list.append(card);
+        continue;
       }
-      card.append(icon,title,detail,button);list.append(card);
+      card.append(icon, title, detail, button);
+      list.append(card);
     }
-    if(category==="city"&&!districts.length)notify("Make your first district decision before placing a decoration.");
-    if(category==="city"&&districtCount>=MAX_DISTRICT_DECOR)
-      notify("This district looks lovely. Choose another district to keep decorating.");
+    if (category === "city" && !districts.length)
+      notify("Make your first district decision before placing a decoration.");
+    if (category === "city" && districtCount >= MAX_DISTRICT_DECOR)
+      notify(
+        "This district looks lovely. Choose another district to keep decorating.",
+      );
   }
   function openShop() {
     if (!isPlaying()) return;

@@ -77,10 +77,22 @@ assert.equal(
   builderBalance(earned.rewards) - 20,
 );
 assert.equal(planted.rewards.purchases[0].district, "workshop");
-const plantedAgain=purchaseBuilderItem(planted.rewards,"flowers","workshop",["workshop"]);
-assert.equal(plantedAgain.ok,true,"repeatable city decoration should be purchasable more than once");
-assert.equal(decorationCount(plantedAgain.rewards,"workshop","flowers"),2);
-assert.notEqual(plantedAgain.rewards.purchases[0].serial,plantedAgain.rewards.purchases[1].serial);
+const plantedAgain = purchaseBuilderItem(
+  planted.rewards,
+  "flowers",
+  "workshop",
+  ["workshop"],
+);
+assert.equal(
+  plantedAgain.ok,
+  true,
+  "repeatable city decoration should be purchasable more than once",
+);
+assert.equal(decorationCount(plantedAgain.rewards, "workshop", "flowers"), 2);
+assert.notEqual(
+  plantedAgain.rewards.purchases[0].serial,
+  plantedAgain.rewards.purchases[1].serial,
+);
 
 const worn = purchaseBuilderItem(planted.rewards, "helmet", null);
 assert.equal(worn.ok, true);
@@ -127,30 +139,63 @@ assert.equal(
   2,
   "old saves must migrate to the new purchase ledger",
 );
-assert.equal(safe.version,2);
-assert.equal(safe.purchases[0].serial,1,"old single-purchase saves receive stable identities");
-const rewardBank=awardCompletedChapters(early,
-  Array.from({length:12},(_,i)=>({chapter:i+1,completed:true})),scene).rewards;
-let decorating=rewardBank;
-for(let i=0;i<MAX_ITEM_PER_DISTRICT;i++){
-  const r=purchaseBuilderItem(decorating,"flowers","workshop",["workshop"]);
-  assert(r.ok,"each district allows three matching gardens");
-  decorating=r.rewards;
+assert.equal(safe.version, 2);
+assert.equal(
+  safe.purchases[0].serial,
+  1,
+  "old single-purchase saves receive stable identities",
+);
+const rewardBank = awardCompletedChapters(
+  early,
+  Array.from({ length: 12 }, (_, i) => ({ chapter: i + 1, completed: true })),
+  scene,
+).rewards;
+let decorating = rewardBank;
+for (let i = 0; i < MAX_ITEM_PER_DISTRICT; i++) {
+  const r = purchaseBuilderItem(decorating, "flowers", "workshop", [
+    "workshop",
+  ]);
+  assert(r.ok, "each district allows three matching gardens");
+  decorating = r.rewards;
 }
-assert.equal(purchaseBuilderItem(decorating,"flowers","workshop",["workshop"]).ok,false,
-  "per-type capacity stops visual overlap");
-for(let i=3;i<MAX_DISTRICT_DECOR;i++){
-  const r=purchaseBuilderItem(decorating,"trees","workshop",["workshop"]);
+assert.equal(
+  purchaseBuilderItem(decorating, "flowers", "workshop", ["workshop"]).ok,
+  false,
+  "per-type capacity stops visual overlap",
+);
+for (let i = 3; i < MAX_DISTRICT_DECOR; i++) {
+  const r = purchaseBuilderItem(decorating, "trees", "workshop", ["workshop"]);
   assert(r.ok);
-  decorating=r.rewards;
+  decorating = r.rewards;
 }
-assert.equal(purchaseBuilderItem(decorating,"benches","workshop",["workshop"]).ok,false,
-  "district decoration cap prevents overload");
-assert.equal(purchaseBuilderItem(decorating,"flowers","market",["market"]).ok,true,
-  "new district unlocks new decoration space");
-assert.equal(sanitizeBuilderRewards(decorating).purchases.length,MAX_DISTRICT_DECOR);
-assert.equal(chapterRating(5,{...scene,advanced:{records:[{score:100},{score:90}]}}).tier,"thriving");
-assert.equal(chapterRating(5,{...scene,advanced:{records:[{score:75},{score:75}]}}).tier,"thriving");
+assert.equal(
+  purchaseBuilderItem(decorating, "benches", "workshop", ["workshop"]).ok,
+  false,
+  "district decoration cap prevents overload",
+);
+assert.equal(
+  purchaseBuilderItem(decorating, "flowers", "market", ["market"]).ok,
+  true,
+  "new district unlocks new decoration space",
+);
+assert.equal(
+  sanitizeBuilderRewards(decorating).purchases.length,
+  MAX_DISTRICT_DECOR,
+);
+assert.equal(
+  chapterRating(5, {
+    ...scene,
+    advanced: { records: [{ score: 100 }, { score: 90 }] },
+  }).tier,
+  "thriving",
+);
+assert.equal(
+  chapterRating(5, {
+    ...scene,
+    advanced: { records: [{ score: 75 }, { score: 75 }] },
+  }).tier,
+  "thriving",
+);
 
 const withRewards = sanitizePractice({ ...base, rewards: planted.rewards });
 assert.deepEqual(
