@@ -5,23 +5,20 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { CityCloudControls } from "./city-cloud-controls";
 
-/** One mounted 3D city. Focus mode never resets a player's open game. */
+/** One mounted full-viewport 3D city. The player exits through explicit navigation. */
 export function PowerDistrictFrame({
   questHref,
   questLabel,
-  initialFocus = true,
   welcome = false,
   cloudEligible = false,
 }: {
   questHref: string;
   questLabel: string;
-  initialFocus?: boolean;
   welcome?: boolean;
   cloudEligible?: boolean;
 }) {
   const router = useRouter();
-  const [expanded, setExpanded] = useState(initialFocus);
-  const [entered, setEntered] = useState(!welcome);
+   const [entered, setEntered] = useState(!welcome);
   const [handoff, setHandoff] = useState(false);
   const [saved, setSaved] = useState<boolean | null>(null);
   const [district, setDistrict] = useState<string | null>(null);
@@ -64,16 +61,14 @@ export function PowerDistrictFrame({
       observer?.disconnect();
       window.removeEventListener("resize", syncControlsHeight);
     };
-  }, [entered, expanded, cloudEligible, syncControlsHeight]);
+  }, [entered, cloudEligible, syncControlsHeight]);
   useEffect(() => {
     if (!entered)
       backupSlot
         ?.querySelectorAll("details[open]")
         .forEach((details) => details.removeAttribute("open"));
   }, [entered, backupSlot]);
-  const expandButton = useRef<HTMLButtonElement>(null);
-  const closeButton = useRef<HTMLButtonElement>(null);
-  const saving = useRef(false);
+   const saving = useRef(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const handoffButton = useRef<HTMLButtonElement>(null);
 
@@ -136,23 +131,15 @@ export function PowerDistrictFrame({
   });
 
   useEffect(() => {
-    if (!expanded) return;
+    // Keep the viewport dedicated to the game on mobile and desktop.
+    // Esc must not collapse the city or remount its iframe; navigation and
+    // the Real Quest handoff remain available explicitly.
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    if (entered && document.activeElement !== frameRef.current)
-      closeButton.current?.focus();
-    const escape = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !dialogRef.current?.open) {
-        setExpanded(false);
-        expandButton.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", escape);
     return () => {
       document.body.style.overflow = previous;
-      window.removeEventListener("keydown", escape);
     };
-  }, [expanded, entered]);
+  }, []);
 
   function questHrefWithDistrict() {
     if (!questHref.startsWith("/real-quests")) return questHref;
@@ -188,11 +175,7 @@ export function PowerDistrictFrame({
   return (
     <section
       aria-label="The Unbuilt City 3D city"
-      className={
-        expanded
-          ? "unbuilt-city-frame fixed inset-0 z-[1000] flex flex-col bg-[#f4f6fd] text-[#142a52]"
-          : "unbuilt-city-frame relative overflow-hidden rounded-2xl border border-[#d6deed] bg-[#f4f6fd] text-[#142a52]"
-      }
+      className="unbuilt-city-frame fixed inset-0 z-[1000] flex flex-col bg-[#f4f6fd] text-[#142a52]"
     >
       <style>{`
         .city-overlay-controls {background:transparent;border:0;}
@@ -219,29 +202,7 @@ export function PowerDistrictFrame({
           >
             {questLabel}
           </button>
-          {expanded ? (
-            <button
-              ref={closeButton}
-              type="button"
-              onClick={() => {
-                setExpanded(false);
-                expandButton.current?.focus();
-              }}
-              className="city-overlay-action min-h-11 rounded-xl border border-white/60 bg-transparent px-3 text-xs font-bold text-[#213449]"
-            >
-              Close focus view
-            </button>
-          ) : (
-            <button
-              ref={expandButton}
-              type="button"
-              onClick={() => setExpanded(true)}
-              aria-expanded={expanded}
-              className="city-overlay-action min-h-11 rounded-xl border border-white/60 bg-transparent px-3 text-xs font-bold text-[#213449]"
-            >
-              Focus on my city ↗
-            </button>
-          )}
+
         </div>
       </div>
       {cloudEligible && backupSlot
@@ -271,11 +232,7 @@ export function PowerDistrictFrame({
             window.location.origin,
           );
         }}
-        className={
-          expanded
-            ? "min-h-0 w-full flex-1 border-0"
-            : "h-[min(860px,85svh)] min-h-[620px] w-full border-0"
-        }
+        className="min-h-0 w-full flex-1 border-0"
         allow="autoplay; fullscreen; screen-wake-lock"
         referrerPolicy="no-referrer"
       />

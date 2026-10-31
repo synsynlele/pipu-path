@@ -27,8 +27,7 @@ export function UnbuiltCityExperience({
         <PowerDistrictFrame
           questHref="/real-quests"
           questLabel="Real Quests →"
-          initialFocus
-          cloudEligible={cloudEligible}
+           cloudEligible={cloudEligible}
         />
         {questTitle ? (
           <section

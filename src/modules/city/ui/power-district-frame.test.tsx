@@ -67,15 +67,14 @@ describe("City to Quest handoff", () => {
       screen.getByRole("button", { name: "Start my real Quest" }),
     ).toHaveClass("bg-transparent");
     expect(
-      screen.getByRole("button", { name: "Close focus view" }),
-    ).toHaveClass("bg-transparent");
-    const frame = screen.getByTitle(
-      "The Unbuilt City · 14 connected districts",
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Close focus view" }));
-    expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
-      frame,
-    );
+      screen.queryByRole("button", { name: "Close focus view" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Focus on my city ↗" }),
+    ).not.toBeInTheDocument();
+    const frame = screen.getByTitle("The Unbuilt City · 14 connected districts");
+    expect(frame).toHaveClass("min-h-0", "flex-1");
+    expect(frame.parentElement).toHaveClass("fixed", "inset-0");
   });
   it("hides play controls on an authenticated entrance signal and restores the same iframe on continue", () => {
     render(
@@ -192,20 +191,19 @@ describe("City to Quest handoff", () => {
     );
     expect(push).toHaveBeenCalledWith("/real-quests");
   });
-  it("keeps one mounted city iframe when focus view is closed", () => {
+  it("stays in focus mode after Escape without remounting the city or trapping real-world navigation", () => {
     render(
       <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,
     );
-    const iframe = screen.getByTitle(
-      "The Unbuilt City · 14 connected districts",
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Close focus view" }));
-    expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
-      iframe,
-    );
-    expect(
-      screen.getByRole("button", { name: "Focus on my city ↗" }),
-    ).toBeVisible();
+    const iframe = screen.getByTitle("The Unbuilt City · 14 connected districts");
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(iframe);
+    expect(iframe.parentElement).toHaveClass("fixed", "inset-0");
+    expect(screen.queryByRole("button", { name: /focus view|focus on my city/i })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Real Quests" }));
+    expect(screen.getByRole("dialog", { name: "Continue to a real Quest" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Stay in my city" }));
+    expect(iframe.parentElement).toHaveClass("fixed", "inset-0");
   });
   it("ignores forged state and saves only after explicit consent, retaining the city on storage failure", () => {
     render(
