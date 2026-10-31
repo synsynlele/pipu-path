@@ -1,7 +1,7 @@
 // Varied hands-on challenge workspaces. Accessible tap controls; no identical
 // wire board or supply slider repeated through every advanced chapter.
 import {
-  ADVANCED_CHAPTERS, advancedMission, advancedRules, initialAdvancedPlan,
+  ADVANCED_CHAPTERS, advancedMission, initialAdvancedPlan,
   newAdvanced, sanitizeAdvanced, testAdvanced, deployAdvanced, canStartAdvanced,
 } from "./advanced.mjs";
 export function createAdvancedDesk({ getState,change,prepare,reveal,save }) {
