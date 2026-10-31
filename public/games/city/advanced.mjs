@@ -165,8 +165,9 @@ export function deployAdvanced(value,plan) {
   if(!safe)return null;
   const check=testAdvanced(safe,plan);
   if(!check.ok)return null;
-  return {...safe,records:[...safe.records,{plan:[...plan],score:check.score}],
-    cursor:{phase:"result",plan:[]}};
+  const records=[...safe.records,{plan:[...plan],score:check.score}];
+  return {...safe,records,
+    cursor:{phase:"result",plan:initialChallengePlan(challengeAt(records.length))}};
 }
 export function advancedUpgrades(value) {
   const districts=Object.fromEntries(CITY_DISTRICTS.map(d=>[d.id,0]));
