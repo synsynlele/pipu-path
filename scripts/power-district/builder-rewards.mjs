@@ -197,7 +197,14 @@ assert.equal(
     ...scene,
     advanced: { records: [{ score: 75 }, { score: 75 }] },
   }).tier,
-  "thriving",
+  "repair",
+);
+assert.equal(
+  chapterRating(5, {
+    ...scene,
+    advanced: { records: [{ score: 85 }, { score: 100 }] },
+  }).tier,
+  "growing",
 );
 
 const withRewards = sanitizePractice({ ...base, rewards: planted.rewards });
