@@ -3,7 +3,11 @@ import { chapterMenuItems } from "./chapter-menu.mjs";
 import { emptyBuilderRewards } from "./builder-rewards.mjs";
 import { createBuilderCosmetics } from "./builder-cosmetics.mjs";
 import { mountBuilderRewards } from "./builder-rewards-ui.mjs";
-import { advancedCityActivity, canStartAdvanced } from "./advanced.mjs";
+import {
+  advancedCityActivity,
+  canStartAdvanced,
+  advancedPerformance,
+} from "./advanced.mjs";
 import { createAdvancedDesk } from "./advanced-ui.mjs";
 document.documentElement.classList.toggle(
   "city-embedded",
@@ -4325,7 +4329,7 @@ const advancedDesk = createAdvancedDesk({
     $("resilience-feedback-summary").textContent = result.summary;
     $("resilience-feedback-services").replaceChildren();
     $("resilience-feedback-motion").textContent =
-      "Your service upgrade is visible as a blue-and-gold installation in this district. Watch the connected supply vehicles. Your original city choices remain available to review.";
+      "Your tested challenge adds a new development marker in this district. Inspect what changed, then return to the next challenge. Planning, leadership and environmental puzzles remain fictional learning simulations.";
     $("resilience-feedback-next").textContent = result.complete
       ? "View my final city showcase →"
       : "Continue my city →";
@@ -4345,6 +4349,14 @@ const builderRewardsUi = mountBuilderRewards({
   getChapterItems: currentChapterItems,
   isJourneyRunning: () => journey.status === "running",
   getChapterImpact: (chapter) => {
+    if (chapter >= 5) {
+      const score = advancedPerformance(state.advanced, chapter);
+      return score === null
+        ? "Complete both chapter challenges to discover your simulated impact."
+        : "Two different city challenges completed · " +
+            score +
+            "/100 average tested challenge score. Review your district and wider city needs.";
+    }
     if (chapter === 3) {
       const days = state.economy?.history ?? [];
       const served = days.reduce(

@@ -1,5 +1,50 @@
 # Implementation status
 
+## 31 October 2026 — Differentiated Chapters 5–12 and repeatable city decoration (live-test candidate)
+
+**Problem validated:** All 16 original advanced missions in Chapters 5–12
+alternated between the same allocation sliders and five relay toggles. A fresh
+story or question did not change the interaction or learning demand.
+
+**Replacement:** Sixteen deterministic, authored challenges now cover repair
+triage, fault investigation, safe neighbourhood siting, road pathfinding,
+multi-stage emergency decisions, supply-chain sequencing, inclusive access,
+fair support allocation, material sorting, energy scheduling, stakeholder
+negotiation, specialist dispatch, fault auditing, independent backup design,
+multi-service investment planning and a culminating crisis simulation. Each
+mission has its own validation criteria, simulated feedback, clear learning goal
+and explicit test-before-deploy gate. Reusable mobile renderers draw touch-safe
+grids, ordered sequences, selectable evidence, staged decisions, schedules,
+assignments and budgets. The engine is data-driven for chapter expansion
+without introducing new screens, third-party assets, paid AI or server calls.
+
+**Existing player state:** Version-1 advanced records are validated against
+the previous deterministic evaluator and migrated to version 2, preserving
+all completed stage counts and the next unfinished index. Only future missions
+use the new activities; existing purchases, chapter credit awards and Chapters
+1–4 choices are untouched. Existing optional device/account backups continue
+to store the allowlisted state. Fully completed players may replay Chapters
+5–12 to experience the new challenges; resetting them does not reset rewards
+or Chapters 1–4.
+
+**Builder Shop:** Five virtual decorative items are repeatable. Every buy
+consumes credits and occupies the first vacant, distinct plaza slot in the
+chosen built district (ten slots each). A district at capacity must reject
+additional placements and suggest another; old single-item purchases without
+slots migrate to free plots in their existing districts. Builder outfits and
+accessories remain one-time unlocks with unlimited equip/unequip actions.
+Meshes use shared geometries/materials and lazy instantiation; city service
+scores and real-world XP are not affected. Maximum earnable spend remains
+bounded by once-only chapter awards, but the cosmetic inventory no longer
+ends after buying five decorations.
+
+**Acceptance gates:** CI checks all 16 distinct activity types, success and
+failure paths, reloads in mid-plan, version-1 progress migration,
+repeat purchases, plot occupation/limits, insufficient credits, old cosmetics,
+mobile responsive styles, and production build. Verify live on Android before
+judging engagement outcomes. No premium purchasing or account currency API
+is introduced.
+
 ## 31 October 2026 — Chapter celebrations and virtual Builder Credits (development candidate)
 
 Feature branch `feat/builder-chapter-celebrations-shop-20261031` adds one

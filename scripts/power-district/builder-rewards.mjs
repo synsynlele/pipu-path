@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { CITY_CASES } from "../../public/games/city/cases.mjs";
 import {
   BUILDER_ITEMS,
+  CITY_DECOR_SLOTS,
   emptyBuilderRewards,
   sanitizeBuilderRewards,
   builderBalance,
@@ -74,10 +75,66 @@ assert.equal(
   builderBalance(earned.rewards) - 20,
 );
 assert.equal(planted.rewards.purchases[0].district, "workshop");
+const another = purchaseBuilderItem(planted.rewards, "flowers", "workshop", [
+  "workshop",
+]);
 assert.equal(
-  purchaseBuilderItem(planted.rewards, "flowers", "workshop", ["workshop"]).ok,
-  false,
+  another.ok,
+  true,
+  "Flowers can be bought repeatedly in the same district",
 );
+assert.deepEqual(
+  another.rewards.purchases
+    .filter((p) => p.district === "workshop")
+    .map((p) => p.slot),
+  [0, 1],
+  "Each repeat must occupy a distinct location",
+);
+const moreCity = purchaseBuilderItem(another.rewards, "trees", "market", [
+  "workshop",
+  "market",
+]);
+assert.equal(
+  moreCity.ok,
+  true,
+  "Decorations may be placed in different districts",
+);
+const allCredits = awardCompletedChapters(early, allChapters, scene).rewards;
+let districtFull = allCredits;
+for (let i = 0; i < CITY_DECOR_SLOTS; i++) {
+  const next = purchaseBuilderItem(districtFull, "flowers", "workshop", [
+    "workshop",
+  ]);
+  assert.equal(next.ok, true, "Placement " + i + " must remain available");
+  districtFull = next.rewards;
+}
+assert.equal(
+  purchaseBuilderItem(districtFull, "flowers", "workshop", ["workshop"]).ok,
+  false,
+  "A full district must not let two decorations overwrite one slot",
+);
+assert.equal(
+  purchaseBuilderItem(districtFull, "flowers", "market", ["workshop", "market"])
+    .ok,
+  true,
+  "Full districts must not block buying in other built districts",
+);
+const restoredLegacy = sanitizeBuilderRewards({
+  version: 1,
+  awards: allCredits.awards,
+  purchases: [
+    { id: "flowers", district: "workshop" },
+    { id: "trees", district: "workshop" },
+  ],
+  equipped: [],
+  viewed: [],
+});
+assert.deepEqual(
+  restoredLegacy.purchases.map((p) => p.slot),
+  [0, 1],
+  "Existing decorations without slots remain visible after the upgrade",
+);
+
 const worn = purchaseBuilderItem(planted.rewards, "helmet", null);
 assert.equal(worn.ok, true);
 assert(worn.rewards.equipped.includes("helmet"));
@@ -92,8 +149,8 @@ assert(
 const safe = sanitizeBuilderRewards({
   version: 1,
   awards: [
-    { chapter: 1, tier: "growing", credits: 30 },
-    { chapter: 1, tier: "growing", credits: 30 },
+    { chapter: 1, tier: "thriving", credits: 50 },
+    { chapter: 1, tier: "thriving", credits: 50 },
     { chapter: 2, tier: "thriving", credits: 10000 },
   ],
   purchases: [
@@ -105,7 +162,12 @@ const safe = sanitizeBuilderRewards({
   viewed: [1, 1, 12],
 });
 assert.equal(safe.awards.length, 1);
-assert.equal(safe.purchases.length, 1);
+assert.equal(safe.purchases.length, 2);
+assert.deepEqual(
+  safe.purchases.map((p) => p.slot),
+  [0, 0],
+  "Existing same-item ornaments in different districts are preserved",
+);
 assert.equal(safe.equipped.length, 0);
 assert.deepEqual(safe.viewed, [1]);
 const base = {

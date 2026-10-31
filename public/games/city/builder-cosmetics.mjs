@@ -1,6 +1,19 @@
 // Decorative only: inexpensive 3D meshes, zero new network requests,
 // no collision blockers, and no effect on simulation or city performance.
 import { BUILDER_ITEMS, sanitizeBuilderRewards } from "./builder-rewards.mjs";
+// Ten distinct decorative positions around each small district plaza.
+const DECOR_POSITIONS = [
+  [-2.4, 1.8],
+  [2.7, 1.5],
+  [-2.6, -1.7],
+  [2.7, -1.9],
+  [-0.1, -2.9],
+  [0.1, 2.8],
+  [-3.4, 0],
+  [3.4, 0],
+  [-3.1, 3.1],
+  [3.1, -3.1],
+];
 
 export function createBuilderCosmetics({
   T,
@@ -9,9 +22,21 @@ export function createBuilderCosmetics({
   lowPower = false,
 }) {
   const cityObjects = new Map();
+  const sharedGeometry = new Map();
+  const sharedMaterials = new Map();
+  const geometry = (key, create) => {
+    if (!sharedGeometry.has(key)) sharedGeometry.set(key, create());
+    return sharedGeometry.get(key);
+  };
   const wearableObjects = new Map();
-  const material = (color) =>
-    new T.MeshStandardMaterial({ color, roughness: 0.82 });
+  const material = (color) => {
+    if (!sharedMaterials.has(color))
+      sharedMaterials.set(
+        color,
+        new T.MeshStandardMaterial({ color, roughness: 0.82 }),
+      );
+    return sharedMaterials.get(color);
+  };
   function group() {
     const root = new T.Group();
     root.userData.ignoreNavigation = true;
@@ -19,7 +44,10 @@ export function createBuilderCosmetics({
     return root;
   }
   function cube(parent, w, h, d, color, x, y, z) {
-    const mesh = new T.Mesh(new T.BoxGeometry(w, h, d), material(color));
+    const mesh = new T.Mesh(
+      geometry(["box", w, h, d].join(":"), () => new T.BoxGeometry(w, h, d)),
+      material(color),
+    );
     mesh.position.set(x, y, z);
     mesh.userData.ignoreNavigation = true;
     parent.add(mesh);
@@ -27,7 +55,10 @@ export function createBuilderCosmetics({
   }
   function cylinder(parent, top, bottom, h, color, x, y, z, sides = 8) {
     const mesh = new T.Mesh(
-      new T.CylinderGeometry(top, bottom, h, sides),
+      geometry(
+        ["cyl", top, bottom, h, sides].join(":"),
+        () => new T.CylinderGeometry(top, bottom, h, sides),
+      ),
       material(color),
     );
     mesh.position.set(x, y, z);
@@ -37,7 +68,10 @@ export function createBuilderCosmetics({
   }
   function sphere(parent, radius, color, x, y, z) {
     const mesh = new T.Mesh(
-      new T.IcosahedronGeometry(radius, lowPower ? 0 : 1),
+      geometry(
+        ["sphere", radius, lowPower].join(":"),
+        () => new T.IcosahedronGeometry(radius, lowPower ? 0 : 1),
+      ),
       material(color),
     );
     mesh.position.set(x, y, z);
@@ -47,14 +81,7 @@ export function createBuilderCosmetics({
   }
   function makeCityItem(id) {
     const g = group();
-    const position = {
-      flowers: [-2.25, 1.7],
-      trees: [2.5, 1.2],
-      benches: [-2.25, -1.6],
-      lights: [2.6, -1.6],
-      fountain: [0, -2.8],
-    }[id];
-    g.position.set(position[0], 0, position[1]);
+    // Placement is assigned from the purchase record, not the item type.
     if (id === "flowers") {
       cube(g, 1.75, 0.12, 1.1, 0x876b49, 0, 0.19, 0);
       for (let i = 0; i < (lowPower ? 5 : 9); i++) {
@@ -91,8 +118,7 @@ export function createBuilderCosmetics({
     }
     return g;
   }
-  for (const item of BUILDER_ITEMS.filter((i) => i.category === "city"))
-    cityObjects.set(item.id, makeCityItem(item.id));
+  // Instances are created only when purchased, never for the whole catalogue.
   function makeWearable(id) {
     const g = group();
     if (id === "helmet") {
@@ -116,12 +142,30 @@ export function createBuilderCosmetics({
     wearableObjects.set(item.id, makeWearable(item.id));
   function sync(value) {
     const rewards = sanitizeBuilderRewards(value);
-    const purchased = new Map(rewards.purchases.map((p) => [p.id, p]));
-    for (const [id, g] of cityObjects) {
-      const purchase = purchased.get(id);
-      const root = purchase && plazas.get(purchase.district)?.root;
-      if (root && g.parent !== root) root.add(g);
-      g.visible = Boolean(root);
+    const purchased = new Map(
+      rewards.purchases
+        .filter((p) => p.district !== null)
+        .map((p) => [p.district + ":" + p.slot, p]),
+    );
+    for (const [key, g] of cityObjects) {
+      if (!purchased.has(key)) {
+        g.visible = false;
+        g.parent?.remove(g);
+        cityObjects.delete(key);
+      }
+    }
+    for (const [key, purchase] of purchased) {
+      const root = plazas.get(purchase.district)?.root;
+      if (!root) continue;
+      let g = cityObjects.get(key);
+      if (!g) {
+        g = makeCityItem(purchase.id);
+        cityObjects.set(key, g);
+      }
+      if (g.parent !== root) root.add(g);
+      const [x, z] = DECOR_POSITIONS[purchase.slot] ?? DECOR_POSITIONS[0];
+      g.position.set(x, 0, z);
+      g.visible = true;
     }
     for (const [id, g] of wearableObjects)
       g.visible = rewards.equipped.includes(id);
