@@ -2,6 +2,7 @@
 // verified PipuPath XP, capability evidence, or real-world opportunities.
 import { CITY_CASES, getChoice } from "./cases.mjs";
 import { CITY_DISTRICTS } from "./districts.mjs";
+import { resilienceReport } from "./resilience.mjs";
 
 export const BUILDER_ITEMS = Object.freeze([
   { id: "flowers", name: "Flower Garden", category: "city", cost: 20, icon: "🌸", detail: "Plant a bright flower bed in a built district." },
@@ -85,7 +86,7 @@ export function chapterRating(chapter, state) {
     const missed = history.reduce((n, r) => n + (r.unserved ?? 0), 0);
     quality = served + missed ? served / (served + missed) : 0;
   } else if (chapter === 4) {
-    const results = state.resilience?.history ?? [];
+    const results = resilienceReport(state.resilience)?.history ?? [];
     const rows = results.flatMap((r) => Object.values(r.requests ?? {}))
       .filter((r) => numberIn(r?.requested, 0, 100000) && numberIn(r?.served, 0, 100000));
     // Use resolved fictional service requests; no made-up impact statistics.
