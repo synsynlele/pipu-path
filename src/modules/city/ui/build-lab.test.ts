@@ -28,6 +28,8 @@ beforeEach(() => {
   afterClose.mockClear();
 });
 afterEach(() => {
+  document.querySelector("dialog")?.close();
+  vi.useRealTimers();
   document.body.innerHTML = "";
 });
 function open() {
@@ -104,4 +106,29 @@ it("pauses on entry, retains layouts between challenges and restores focus on cl
   fireEvent.click(screen.getByRole("button", { name: "Close Build Lab" }));
   expect(afterClose).toHaveBeenCalledOnce();
   expect(document.activeElement?.textContent).toBe("City menu");
+});
+
+it("rotates continuously after one tap, stops on demand and cancels on placement or close", () => {
+  vi.useFakeTimers();
+  open();
+  fireEvent.click(screen.getByRole("button", { name: "Bend" }));
+  const rotate = screen.getByRole("button", { name: "Rotate ↻" });
+  fireEvent.click(rotate);
+  expect(rotate).toHaveAttribute("aria-pressed", "true");
+  const direction = document.getElementById("lab-brush")!.textContent;
+  vi.advanceTimersByTime(700);
+  expect(document.getElementById("lab-brush")!.textContent).not.toBe(direction);
+  fireEvent.click(rotate);
+  const stopped = document.getElementById("lab-brush")!.textContent;
+  vi.advanceTimersByTime(2100);
+  expect(document.getElementById("lab-brush")!.textContent).toBe(stopped);
+  fireEvent.click(rotate);
+  fireEvent.click(screen.getByRole("button", { name: /Row 2, column 1:/ }));
+  expect(rotate).toHaveAttribute("aria-pressed", "false");
+  expect(vi.getTimerCount()).toBe(0);
+  fireEvent.click(rotate);
+  const clear = vi.spyOn(globalThis, "clearInterval");
+  document.querySelector("dialog")!.close();
+  expect(clear).toHaveBeenCalled();
+  clear.mockRestore();
 });
