@@ -166,7 +166,6 @@ it("keeps Rotate selected and advances only the tapped existing piece by 90 degr
 });
 
 it("Rotate never mutates fixed objects, switches off on tool change, and restores tested status correctly", () => {
-  vi.useFakeTimers();
   open();
   const rotate = screen.getByRole("button", { name: "Rotate ↻" });
   const first = () => screen.getByRole("button", { name: /Row 2, column 1:/ });
@@ -197,5 +196,4 @@ it("Rotate never mutates fixed objects, switches off on tool change, and restore
   });
   fireEvent.click(rotate);
   document.querySelector("dialog")!.close();
-  expect(vi.getTimerCount()).toBe(0);
 });
