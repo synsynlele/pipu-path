@@ -60,8 +60,15 @@ assert.equal(sanitizeAdvanced({...migrated,records:[...migrated.records,{legacy:
   "new progress cannot be followed by forged legacy records");
 const base={day:1,cash:18,config:initialPlan(),owned:initialPlan(),seen:[],history:[],decisions:{}};
 assert.equal(sanitizePractice(base).advanced,null);
+const realisticResilience={
+  version:1,
+  seed:{stocks:{water:5,parts:5,food:5},capacity:{
+    water:4,industry:3,market:3,health:3,workshop:2,business:2,transport:2,
+  }},
+  choices:["care","repair","food"],
+};
 const storage={value:null,setItem(k,v){this.value=v;},getItem(){return this.value;},removeItem(){this.value=null;}};
-assert(savePractice({...base,advanced:migrated},storage));
+assert(savePractice({...base,resilience:realisticResilience,advanced:migrated},storage));
 assert.equal(loadPractice(storage).advanced.records.length,2);
 assert.deepEqual(loadPractice(storage).advanced,migrated);
 console.log("PASS: 16 varied challenges, 12+ distinct mechanics, tested consequences, v1 migration, resume and opt-in persistence.");
