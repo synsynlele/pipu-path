@@ -4276,6 +4276,52 @@ $("advanced-explore").onclick = () => {
   advancedDesk.close();
   openBuiltCityView();
 };
+function returnToEntrance() {
+  if (simulating) {
+    toast("Finish this short simulation before returning to the entrance.");
+    return;
+  }
+  if (journey.status === "running")
+    pauseJourney("Your current challenge is paused.");
+  cancelAutoAdvance();
+  cancelWalk();
+  clearTimeout(feedbackTimer);
+  feedbackTimer = null;
+  if (reviewCaseId) finishDecisionReview({ resume: false });
+  if (builtCityView) closeBuiltCityView({ resume: false });
+  if (previewDecision) cancelCasePreview();
+  advancedDesk.close();
+  serviceDesk.close();
+  closeResiliencePanel();
+  closeOpportunityPanel();
+  closeCasebook();
+  closeCityStatus();
+  closeDirectory();
+  hideRequestInspection();
+  hideBuildVictory();
+  document
+    .querySelectorAll("dialog[open]")
+    .forEach((dialog) => dialog.close?.());
+  $("detail").hidden = true;
+  $("mission").hidden = true;
+  $("build-dock").hidden = true;
+  $("travel").hidden = true;
+  $("world-feedback").hidden = true;
+  $("pilot-mission").hidden = true;
+  $("mobile-move").hidden = true;
+  $("city-menu").open = false;
+  keys.clear();
+  activeFeedback = null;
+  guideExpanded = false;
+  dockExpanded = false;
+  $("intro").hidden = false;
+  $("start").textContent = "Continue my city →";
+  $("entrance-resume-note").hidden = false;
+  cityAudio.suspend();
+  refreshJourneyControls();
+  $("start").focus({ preventScroll: true });
+}
+$("menu-entrance").onclick = returnToEntrance;
 $("start").onclick = () => startCity();
 $("resume-city").onclick = () => startCity();
 $("resume-city").hidden = true;
@@ -4293,6 +4339,7 @@ function startCity() {
   firstBuildMode = false;
   serviceDesk.close();
   $("intro").hidden = true;
+  $("entrance-resume-note").hidden = true;
   reportParentState();
   $("city-tools").hidden = false;
   mapMode = false;

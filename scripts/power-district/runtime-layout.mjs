@@ -696,6 +696,30 @@ for (let index = 0; index < 16; index++) {
     "Advanced progress stays inside existing backup limits",
   );
   if (index === 0) {
+    const beforeEntrance = JSON.stringify(game.state.advanced);
+    w.document.getElementById("menu-entrance").click();
+    assert.equal(w.document.getElementById("intro").hidden, false);
+    assert.equal(w.document.getElementById("city-hud").hidden, true);
+    assert.equal(
+      w.document.getElementById("entrance-resume-note").hidden,
+      false,
+    );
+    assert.equal(JSON.stringify(game.state.advanced), beforeEntrance);
+    assert.equal(
+      w.document.getElementById("menu-entrance").textContent.trim(),
+      "",
+      "Entrance is an icon without a visible text label",
+    );
+    assert.equal(
+      w.document.getElementById("menu-entrance").getAttribute("aria-label"),
+      "Return to game entrance",
+    );
+    w.document.getElementById("start").click();
+    assert.equal(w.document.getElementById("intro").hidden, true);
+    assert.equal(JSON.stringify(game.state.advanced), beforeEntrance);
+    assert.equal(w.document.getElementById("advanced-panel").hidden, false);
+  }
+  if (index === 0) {
     Object.assign(game.state, restored);
     w.document.getElementById("intro").hidden = false;
     w.document.getElementById("start").click();
@@ -740,6 +764,11 @@ for (let index = 0; index < 16; index++) {
   if (index === 0) {
     w.document.getElementById("intro").hidden = false;
     w.document.getElementById("start").click();
+    const resultBeforeEntrance = JSON.stringify(game.state.advanced);
+    w.document.getElementById("menu-entrance").click();
+    assert.equal(w.document.getElementById("intro").hidden, false);
+    w.document.getElementById("start").click();
+    assert.equal(JSON.stringify(game.state.advanced), resultBeforeEntrance);
     assert.equal(game.state.advanced.records.length, 1);
     assert.equal(
       w.document.getElementById("resilience-feedback").hidden,
