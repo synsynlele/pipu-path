@@ -270,8 +270,20 @@ export function chapterRating(chapter, state) {
           ) / 200
         : 0;
   }
+  // Advanced chapters reward genuine optimisation, not simply pressing Test
+  // until a minimally acceptable plan passes.
   const tier =
-    quality >= 0.7 ? "thriving" : quality >= 0.35 ? "growing" : "repair";
+    chapter >= 5
+      ? quality >= 0.95
+        ? "thriving"
+        : quality >= 0.82
+          ? "growing"
+          : "repair"
+      : quality >= 0.7
+        ? "thriving"
+        : quality >= 0.35
+          ? "growing"
+          : "repair";
   return { tier, ...TIERS[tier], percentage: Math.round(quality * 100) };
 }
 export function awardCompletedChapters(rewards, chapters, state) {
