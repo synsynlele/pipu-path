@@ -2001,4 +2001,3 @@ Continue existing chapter celebrations, persistence and city visuals.
 - Release requires reviewed merge and verified production Vercel READY;
   physical Android/mobile classroom tests remain follow-up acceptance.
 - No database migration, external payment system or real-world XP changes.
-

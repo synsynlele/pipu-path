@@ -46,7 +46,6 @@ as released until merge, deployment READY and production checks complete.
 Real-device classroom usability and long-session GPU checks remain
 post-release acceptance items.
 
-
 ## 31 October 2026 — Chapter celebrations and virtual Builder Credits (development candidate)
 
 Feature branch `feat/builder-chapter-celebrations-shop-20261031` adds one
