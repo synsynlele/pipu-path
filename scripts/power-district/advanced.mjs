@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {
   ADVANCED_CHAPTERS,newAdvanced,sanitizeAdvanced,advancedMission,
-  initialAdvancedPlan,testAdvanced,deployAdvanced,advancedUpgrades,advancedCityActivity,
+  initialAdvancedPlan,testAdvanced,deployAdvanced,advancedCityActivity,
 } from "../../public/games/city/advanced.mjs";
 import { newAdvanced as legacyNew, deployAdvanced as legacyDeploy } from "../../public/games/city/advanced-legacy.mjs";
 import { sanitizePractice,savePractice,loadPractice } from "../../public/games/city/practice-save.mjs";
