@@ -68,6 +68,8 @@
                       ><small id="menu-chapter-state-2">Locked</small></button
                     ><button
                       id="opportunities-toggle"
+                      aria-controls="opportunities-panel"
+                      aria-expanded="false"
                       type="button"
                       class="chapter-menu-row"
                       data-chapter="3"
@@ -77,6 +79,8 @@
                       ><small id="menu-chapter-state-3">Locked</small></button
                     ><button
                       id="resilience-toggle"
+                      aria-controls="resilience-panel"
+                      aria-expanded="false"
                       type="button"
                       class="chapter-menu-row"
                       data-chapter="4"
@@ -189,15 +193,15 @@
                       Places (14)</button
                     ><button id="city-map" type="button">City map</button
                     ><button id="explore-free" type="button">Explore</button
+                    ><button id="journey-back" type="button" disabled hidden>
+                      ↶ Last decision</button
                     ><button
                       id="cases-toggle"
                       type="button"
                       aria-controls="casebook"
                       aria-expanded="false"
                     >
-                      Decisions <span id="decision-count">0/36</span></button
-                    ><button id="journey-back" type="button" disabled hidden>
-                      ↶ Last decision
+                      Decisions <span id="decision-count">0/36</span>
                     </button>
                   </details>
                   <details class="city-menu-group">
