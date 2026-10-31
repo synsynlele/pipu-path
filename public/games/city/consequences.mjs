@@ -148,14 +148,16 @@ export function createConsequenceScene({ T, scene, box, cyl }) {
     return active.size;
   }
 
-  function setFocus(focus, overview = false, range = 34) {
+  function setFocus(focus, overview = false, range = 34, inView = null) {
     for (const marker of markers.values()) {
       const p = marker.root.position;
       marker.root.visible =
         Boolean(marker.current) &&
         (overview ||
           !focus ||
-          Math.hypot(p.x - focus.x, p.z - focus.z) < range);
+          (inView
+            ? inView(p)
+            : Math.hypot(p.x - focus.x, p.z - focus.z) < range));
     }
   }
 

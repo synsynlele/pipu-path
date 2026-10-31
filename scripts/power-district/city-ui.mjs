@@ -29,8 +29,10 @@ assert(game.includes("frameBudget.takeFrame(now, document.hidden)"));
 assert(game.includes("function animateWorld(now)"));
 assert(game.includes('addEventListener("webglcontextlost"'));
 assert(game.includes('addEventListener("webglcontextrestored"'));
-assert(game.includes("caseScenes.setFocus(focus, overview)"));
-assert(game.includes("livingScene.setFocus(focus, overview)"));
+assert(game.includes("caseScenes.setFocus(focus, overview, 30, siteInCamera)"));
+assert(
+  game.includes("livingScene.setFocus(focus, overview, 32, siteInCamera)"),
+);
 assert(html.includes('id="graphics-recovery"'));
 assert(html.includes('id="city-hud"'));
 assert(html.includes('id="chapter-badge"'));
@@ -168,7 +170,9 @@ assert(game.includes("createConsequenceScene({ T, scene, box, cyl })"));
 assert(
   game.includes("consequenceScene.sync(state.decisions, previewDecision)"),
 );
-assert(game.includes("consequenceScene.setFocus(focus, overview)"));
+assert(
+  game.includes("consequenceScene.setFocus(focus, overview, 34, siteInCamera)"),
+);
 assert(game.includes("function reviseCityProblem(caseId)"));
 assert(game.includes("closeBuiltCityView({ resume: false })"));
 assert(css.includes("#city-view-problems .city-view-repair"));
@@ -269,7 +273,10 @@ assert(
 );
 assert(game.includes("resumeJourney();"));
 assert(game.includes("function goToJourneyCase(id)"));
-assert(game.includes("autoAdvanceTimer = setTimeout("));
+assert(
+  !game.includes("autoAdvanceTimer = setTimeout("),
+  "Completed challenges must wait for explicit Continue",
+);
 assert(game.includes("goToJourneyCase(next.id)"));
 assert(
   !game.includes('id="case-keep"'),

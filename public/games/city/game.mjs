@@ -1,3 +1,4 @@
+import { createCityDevelopmentScene } from "./city-development-scene.mjs";
 import { createScreenAwake } from "./screen-awake.mjs";
 import { chapterMenuItems } from "./chapter-menu.mjs";
 import { emptyBuilderRewards } from "./builder-rewards.mjs";
@@ -114,7 +115,7 @@ import {
   clearPractice,
   sanitizePractice,
 } from "./practice-save.mjs";
-import { choicesForCase, caseNumber, OUTCOME_VIEW_MS } from "./case-flow.mjs";
+import { choicesForCase, caseNumber } from "./case-flow.mjs";
 import {
   CITY_DISTRICTS,
   OUTER_DISTRICTS,
@@ -889,6 +890,7 @@ const futureNeighbours = createOuterDistricts({
   person,
 });
 // Decisions construct fictional, scenario-specific objects in the 3D city.
+const cityDevelopment = createCityDevelopmentScene({ T, scene });
 const caseScenes = createCaseSceneEffects({ T, scene, box, cyl, mat });
 const consequenceScene = createConsequenceScene({ T, scene, box, cyl });
 // Small-school phones and the software canvas get a reduced ambient budget.
@@ -927,7 +929,6 @@ let journey = previousPractice?.journey
   ? { ...previousPractice.journey, status: "paused" }
   : { status: "idle", caseId: null, stage: "travelling", choiceId: null };
 let autoAdvanceTimer = null;
-let outcomePaused = false;
 let reviewCaseId = null;
 let autoResumeAfterReview = false;
 let resumeFromDecisionList = false;
@@ -990,6 +991,7 @@ $("graphics-recover").onclick = () => {
   }
 };
 function syncCaseScenes() {
+  cityDevelopment.sync(state);
   caseScenes.sync(state.decisions, previewDecision);
   consequenceScene.sync(state.decisions, previewDecision);
   livingScene.sync(
@@ -1133,6 +1135,10 @@ function updateBuiltCityView() {
       resilienceCityActivity(state.economy, state.resilience),
   );
   $("city-view-summary").textContent =
+    cityDevelopment.current.developed +
+    "/" +
+    cityDevelopment.current.total +
+    " new city parcels developed · " +
     summary.built +
     "/" +
     summary.possible +
@@ -1307,6 +1313,7 @@ function closeBuiltCityView({ resume = true } = {}) {
   document.body.classList.remove("resilience-revealing");
   resilienceHighlight = null;
   advancedResponse = false;
+  opportunityResponse = false;
   livingScene.requestMarkers.forEach((marker) =>
     marker.light.scale.setScalar(1),
   );
@@ -1388,6 +1395,7 @@ function goToJourneyCase(id) {
 }
 function resumeJourney() {
   if (!$("intro").hidden || simulating) return;
+  resumeAfterBackground = false;
   if (reviewCaseId) finishDecisionReview({ resume: false });
   if (builtCityView) closeBuiltCityView({ resume: false });
   cancelAutoAdvance();
@@ -1396,6 +1404,10 @@ function resumeJourney() {
   hideBuildVictory();
   const step = integratedStep(state.decisions, state.lab);
   if (step.kind === "build") {
+    if (journey.stage === "outcome" && journey.caseId === step.caseId) {
+      showCaseOutcome(journey.caseId, state.decisions[journey.caseId]);
+      return;
+    }
     pendingBuildCase = step.caseId;
     buildLab.open(step.missionId);
     return;
@@ -1404,6 +1416,7 @@ function resumeJourney() {
   if (
     step.kind === "question" &&
     target.stage !== "chapter" &&
+    target.stage !== "outcome" &&
     (target.caseId !== step.caseId ||
       target.stage === "complete" ||
       ["outcome", "building"].includes(target.stage))
@@ -1579,7 +1592,13 @@ let navigator,
   route = [],
   onArrival = null;
 function rebuildNavigation() {
-  const signature = JSON.stringify([state.config, state.decisions]);
+  const signature = JSON.stringify([
+    state.config,
+    state.decisions,
+    state.economy?.day,
+    state.resilience?.choices,
+    state.advanced?.records?.length,
+  ]);
   if (signature === navigationSignature) return;
   navigationSignature = signature;
   scene.updateMatrixWorld(true);
@@ -1626,6 +1645,7 @@ function rebuildNavigation() {
       maxZ: z + (outer ? 2.1 : 0.65),
     });
   }
+  obstacles.push(...cityDevelopment.obstacles());
   navigationObstacles = obstacles;
   navigator = createNavigator(obstacles, {
     minX: -57.5,
@@ -2092,6 +2112,7 @@ function renderResiliencePanel() {
 }
 let resilienceHighlight = null;
 let advancedResponse = false;
+let opportunityResponse = false;
 function showResilienceResponse() {
   const report = resilienceReport(state.resilience);
   if (!report?.last) return;
@@ -2803,7 +2824,7 @@ function showDecisionReviewOutcome(id, choiceId) {
       ": " +
       district.activity +
       ". Connected systems have been recalculated.</div>" +
-      '<div class="auto-next"><span>Your original journey is kept. Returning shortly.</span>' +
+      '<div class="auto-next"><span>Your original journey is kept. Take your time, then continue.</span>' +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
       '<div class="case-actions">' +
       '<button class="secondary" id="review-again">Change again</button>' +
@@ -2815,10 +2836,6 @@ function showDecisionReviewOutcome(id, choiceId) {
     showCase(id);
   };
   $("review-done").onclick = () => finishDecisionReview();
-  autoAdvanceTimer = setTimeout(() => {
-    if (!document.hidden) finishDecisionReview();
-    else document.querySelector(".auto-next")?.classList.add("paused");
-  }, OUTCOME_VIEW_MS);
 }
 function showCase(id) {
   if (journey.status === "running" && reviewCaseId !== id) {
@@ -2944,9 +2961,9 @@ function showChapterTransition() {
       "governance, the arts and manufacturing now need builders.</p>" +
       "<p>Your earlier choices will influence the situations you face here. " +
       "You can return and improve any decision.</p>" +
-      '<div class="auto-next"><span>Chapter 2 starts automatically.</span>' +
+      '<div class="auto-next"><span>Explore your city, then continue when you are ready.</span>' +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
-      '<button class="primary" id="chapter-start">Start the growing city now →</button>',
+      '<button class="primary" id="chapter-start">Continue to Chapter 2 →</button>',
   );
   const advance = () => {
     cancelAutoAdvance();
@@ -2955,19 +2972,13 @@ function showChapterTransition() {
     if (next) goToJourneyCase(next.id);
   };
   $("chapter-start").onclick = advance;
-  autoAdvanceTimer = setTimeout(() => {
-    if (document.hidden) {
-      pauseJourney("Chapter 2 is ready. Resume when you return.");
-      return;
-    }
-    advance();
-  }, OUTCOME_VIEW_MS);
 }
 function proceedAfterCase(id) {
   cancelAutoAdvance();
   $("detail").hidden = true;
   const step = integratedStep(state.decisions, state.lab);
   if (step.kind === "build") {
+    journey.stage = "building";
     pendingBuildCase = step.caseId;
     buildLab.open(step.missionId);
     return;
@@ -3014,7 +3025,6 @@ function showCaseOutcome(id, choiceId) {
   const option = getChoice(id, choiceId);
   if (!scenario || !option) return;
   cancelAutoAdvance();
-  outcomePaused = false;
   const next = nextPlayableAfter(id, state.decisions);
   // This same question-to-build path is used in automatic and manual play.
   const step = integratedStep(state.decisions, state.lab);
@@ -3060,7 +3070,7 @@ function showCaseOutcome(id, choiceId) {
         : " All " + CITY_CASES.length + " problems reached.") +
       (requiredBuild
         ? " Build and test the solution to unlock the next decision."
-        : " The next challenge follows.") +
+        : " Take your time to view the city, then tap Continue.") +
       "</span>" +
       '<div class="auto-next-track" aria-hidden="true"><i></i></div></div>' +
       '<div class="case-actions">' +
@@ -3068,9 +3078,10 @@ function showCaseOutcome(id, choiceId) {
       (requiredBuild
         ? "Build this solution →"
         : next
-          ? "Next challenge →"
+          ? "Continue →"
           : "Finish →") +
       '</button><details class="case-tools"><summary>Other actions</summary>' +
+      '<button class="secondary" id="case-view">View my city</button>' +
       '<button class="secondary" id="case-pause">Pause to read</button>' +
       '<button class="secondary" id="case-replay">Replay action</button>' +
       '<button class="secondary" id="case-retry">Change decision</button>' +
@@ -3081,29 +3092,16 @@ function showCaseOutcome(id, choiceId) {
   // action leads into the current challenge's build and test.
   $("case-pause").onclick = () => {
     pauseJourney("Paused to read. Use Resume journey when you're ready.");
-    outcomePaused = true;
     $("autonext-caption").textContent =
       "Paused. You can examine the result, retry, or continue when ready.";
     document.querySelector(".auto-next").classList.add("paused");
     $("case-pause").textContent = "Resume journey →";
     $("case-pause").onclick = resumeJourney;
   };
+  $("case-view").onclick = openBuiltCityView;
   $("case-replay").onclick = () => runCaseWorldAction(id, choiceId);
   $("case-retry").onclick = () => showCase(id);
   $("case-next").onclick = () => proceedAfterCase(id);
-  autoAdvanceTimer = setTimeout(() => {
-    if (!outcomePaused && !document.hidden) proceedAfterCase(id);
-    else if (!outcomePaused) {
-      outcomePaused = true;
-      $("autonext-caption").textContent =
-        "Paused while you were away. Continue when you are ready.";
-      document.querySelector(".auto-next").classList.add("paused");
-      journey.status = "paused";
-      refreshJourneyControls();
-      $("case-pause").textContent = "Resume journey →";
-      $("case-pause").onclick = resumeJourney;
-    }
-  }, OUTCOME_VIEW_MS);
 }
 function check(label, done) {
   return (
@@ -3743,6 +3741,11 @@ $("journey-back").onclick = () => {
 $("close-detail").onclick = closeDetail;
 $("view-city-toggle").onclick = openBuiltCityView;
 $("city-view-return").onclick = () => {
+  if (opportunityResponse) {
+    closeBuiltCityView({ resume: false });
+    openOpportunityPanel();
+    return;
+  }
   const advanced = advancedResponse;
   const chapterResponse = !$("resilience-feedback").hidden;
   closeBuiltCityView();
@@ -3824,9 +3827,11 @@ $("resilience-commit").onclick = () => {
 $("resilience-close").onclick = closeResiliencePanel;
 $("resilience-view").onclick = showResilienceResponse;
 $("resilience-feedback-next").onclick = () => {
-  const advanced = advancedResponse;
+  const advanced = advancedResponse,
+    opportunity = opportunityResponse;
   closeBuiltCityView({ resume: false });
-  if (advanced) advancedDesk.next();
+  if (opportunity) openOpportunityPanel();
+  else if (advanced) advancedDesk.next();
   else openResiliencePanel();
 };
 $("resilience-reset").onclick = () => {
@@ -3881,7 +3886,22 @@ $("opportunities-run").onclick = () => {
   hideRequestInspection();
   render();
   renderOpportunityPanel();
-  toast("Day " + next.day + " completed. See which needs your city met.");
+  openBuiltCityView();
+  opportunityResponse = true;
+  document.body.classList.add("resilience-revealing");
+  $("resilience-feedback-title").textContent =
+    "DAY " + next.day + " · YOUR CITY GREW";
+  $("resilience-feedback-summary").textContent =
+    "Your enterprise day added permanent city development. " +
+    (next.last?.unserved ?? 0) +
+    " service requests still need attention.";
+  $("resilience-feedback-services").replaceChildren();
+  $("resilience-feedback-motion").textContent =
+    "Explore the new buildings and moving services. They remain in your city when you return.";
+  $("resilience-feedback-next").textContent = "Continue →";
+  $("city-view-return").textContent = "Continue →";
+  $("resilience-feedback").hidden = false;
+  $("resilience-feedback").focus({ preventScroll: true });
 };
 $("opportunities-reset").onclick = () => {
   if (
@@ -4325,7 +4345,7 @@ const advancedDesk = createAdvancedDesk({
     $("resilience-feedback-summary").textContent = result.summary;
     $("resilience-feedback-services").replaceChildren();
     $("resilience-feedback-motion").textContent =
-      "Your service upgrade is visible as a blue-and-gold installation in this district. Watch the connected supply vehicles. Your original city choices remain available to review.";
+      "Your completed challenge added permanent buildings and public infrastructure to your city. Watch the connected supply vehicles. Your original city choices remain available to review.";
     $("resilience-feedback-next").textContent = result.complete
       ? "View my final city showcase →"
       : "Continue my city →";
@@ -4892,6 +4912,13 @@ function animate(now) {
     }
   }
 }
+const cityViewFrustum = new T.Frustum();
+const cityViewProjection = new T.Matrix4();
+const citySiteSphere = new T.Sphere(new T.Vector3(), 12);
+function siteInCamera(position) {
+  citySiteSphere.center.set(position.x, 5, position.z);
+  return cityViewFrustum.intersectsSphere(citySiteSphere);
+}
 function animateWorld(now) {
   const coveredByPuzzle =
     focusedPuzzle() && (innerWidth <= 760 || innerHeight <= 520);
@@ -5020,9 +5047,17 @@ function animateWorld(now) {
   // desktop still show the complete 14-district city.
   const focus = activeFeedback ?? player.g.position;
   const overview = !compactDevice || mapMode || Boolean(builtCityView);
-  caseScenes.setFocus(focus, overview);
-  consequenceScene.setFocus(focus, overview);
-  livingScene.setFocus(focus, overview);
+  camera.updateMatrixWorld(true);
+  cityViewFrustum.setFromProjectionMatrix(
+    cityViewProjection.multiplyMatrices(
+      camera.projectionMatrix,
+      camera.matrixWorldInverse,
+    ),
+  );
+  cityDevelopment.setFocus(focus, overview, siteInCamera);
+  caseScenes.setFocus(focus, overview, 30, siteInCamera);
+  consequenceScene.setFocus(focus, overview, 34, siteInCamera);
+  livingScene.setFocus(focus, overview, 32, siteInCamera);
   // City buildings and small community workers reflect each retained choice.
   // The same retained choices animate a living neighbourhood in both play
   // and aerial inspection. Hidden tabs avoid unnecessary simulation work.

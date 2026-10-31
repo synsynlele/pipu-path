@@ -76,7 +76,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -560,17 +560,13 @@ for (const optionIndex of [0, 2]) {
     assert.equal(Object.keys(game.state.decisions).length, index + 1);
     fireTimer(game.feedbackTimer);
     assert.equal(game.journey.stage, "outcome");
-    let error;
-    try {
-      fireTimer(game.autoAdvanceTimer);
-    } catch (failure) {
-      error = failure.message;
-    }
-    assert.equal(
-      error,
-      undefined,
-      "Advancing after decision " + (index + 1) + " threw",
-    );
+    assert.equal(game.autoAdvanceTimer, null, "Results must wait for Continue");
+    const heldCase = game.journey.caseId;
+    game.pauseJourney();
+    game.resumeJourney();
+    assert.equal(game.journey.stage, "outcome");
+    assert.equal(game.journey.caseId, heldCase);
+    w.document.getElementById("case-next").click();
     if (index === 15) {
       assert.equal(game.journey.stage, "chapter");
       assert(
@@ -590,7 +586,7 @@ for (const optionIndex of [0, 2]) {
           configurable: true,
           value: true,
         });
-        fireTimer(game.autoAdvanceTimer);
+        w.document.dispatchEvent(new w.Event("visibilitychange"));
         assert.equal(game.journey.status, "paused");
         assert.equal(game.journey.stage, "chapter");
         Object.defineProperty(w.document, "hidden", {
@@ -598,7 +594,8 @@ for (const optionIndex of [0, 2]) {
           value: false,
         });
         game.resumeJourney();
-        fireTimer(game.autoAdvanceTimer);
+        assert.equal(game.autoAdvanceTimer, null);
+        w.document.getElementById("chapter-start").click();
       }
       assert.equal(game.journey.caseId, CITY_CASES[16].id);
       assert.equal(
@@ -625,7 +622,7 @@ for (const optionIndex of [0, 2]) {
   );
 }
 console.log(
-  "PASS: two complete 36-answer journeys execute real callbacks through manual and automatic Chapter 2 handoff and unlock Chapter 3.",
+  "PASS: two complete 36-answer journeys execute real callbacks through manual Continue and background-safe Chapter 2 handoff and unlock Chapter 3.",
 );
 // Chapter 3 -> 4 through the actual controls, rather than a direct model jump.
 for (const c of CITY_CASES) game.state.decisions[c.id] = c.options[0].id;
@@ -648,6 +645,13 @@ for (let day = 0; day < 7; day++) {
   assert.equal(w.document.getElementById("chapter-four-start").hidden, true);
   w.document.getElementById("opportunities-run").click();
   assert.equal(game.state.economy.day, day + 1);
+  assert.equal(w.document.getElementById("resilience-feedback").hidden, false);
+  assert.equal(w.document.getElementById("opportunities-panel").hidden, true);
+  const heldDay = game.state.economy.day;
+  assert.equal(game.autoAdvanceTimer, null);
+  assert.equal(game.state.economy.day, heldDay);
+  w.document.getElementById("resilience-feedback-next").click();
+  assert.equal(w.document.getElementById("opportunities-panel").hidden, false);
 }
 assert.equal(w.document.getElementById("chapter-four-start").hidden, false);
 assert.equal(w.document.getElementById("resilience-toggle").disabled, false);
@@ -892,8 +896,18 @@ for (let index = 0; index < 16; index++) {
       false,
     );
   }
+  assert.equal(game.autoAdvanceTimer, null);
   w.document.getElementById("resilience-feedback-next").click();
 }
+assert.equal(
+  game.cityDevelopment.current.developed,
+  game.cityDevelopment.current.total,
+);
+assert(game.cityDevelopment.current.total >= 62);
+assert.equal(
+  game.cityDevelopment.meshes.size,
+  game.cityDevelopment.current.total,
+);
 assert.equal(w.document.getElementById("advanced-complete").hidden, false);
 assert.match(
   w.document.getElementById("advanced-title").textContent,
