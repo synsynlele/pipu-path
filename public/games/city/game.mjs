@@ -3655,6 +3655,10 @@ $("journey-toggle").onclick = () => {
 };
 $("resource").onclick = () => $("fund-dialog").showModal();
 $("fund-close").onclick = () => $("fund-dialog").close();
+$("fund-dialog").addEventListener("close", () => {
+  if ($("intro").hidden)
+    $("city-menu").querySelector("summary")?.focus({ preventScroll: true });
+});
 $("journey-back").onclick = () => {
   const previous = previousKeptCase(state.decisions, journey.caseId);
   if (previous) beginDecisionReview(previous.id);

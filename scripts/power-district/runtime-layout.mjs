@@ -104,6 +104,15 @@ assert.equal(
   w.document.documentElement.style.getPropertyValue("--app-controls-height"),
   "62px",
 );
+assert(
+  w.document
+    .getElementById("city-menu-options")
+    .contains(w.document.getElementById("resource")),
+  "Credits live inside the City menu, not over the sound controls",
+);
+w.document.getElementById("resource").click();
+assert.equal(w.document.getElementById("fund-dialog").open, true);
+w.document.getElementById("fund-close").click();
 // Keep the real game setup, navigation, simulation and DOM; the canvas context
 // is a stub. This verifies integration, not WebGL or physical-device performance.
 game.renderer.render = () => {};

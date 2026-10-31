@@ -5355,3 +5355,57 @@ body.city-viewing #city-view {
 #city-hud .city-hud-navigation {
   pointer-events: auto;
 }
+
+/* Feedback belongs in the open city, away from top and bottom controls. */
+#toast {
+  top: 50%;
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  z-index: 90;
+  width: min(440px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  transform: translate(-50%, calc(-50% - 8px));
+  pointer-events: none;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: 0 6px 22px #14284035;
+}
+#toast.show {
+  transform: translate(-50%, -50%);
+}
+/* Keep credits with city tools rather than floating beneath the sound buttons. */
+body #city-tools #city-menu-options #resource {
+  position: static;
+  inset: auto;
+  transform: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  margin: 4px 0;
+  padding: 9px 10px;
+  border: 1px solid #d9e3f0;
+  background: #f1f5fc;
+  color: #243c68;
+  box-shadow: none;
+  text-align: left;
+}
+#city-menu-options #resource .coin {
+  font-size: 22px;
+}
+#city-menu-options #resource b {
+  font-size: 16px;
+}
+#city-menu-options #resource small {
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  color: #526b89;
+}
+@media (prefers-reduced-motion: reduce) {
+  #toast {
+    transition: none;
+  }
+}
