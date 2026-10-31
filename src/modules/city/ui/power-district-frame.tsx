@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CityCloudControls } from "./city-cloud-controls";
 
@@ -27,6 +27,36 @@ export function PowerDistrictFrame({
   const [service, setService] = useState<string | null>(null);
   const [problem, setProblem] = useState("");
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const controlsRef = useRef<HTMLDivElement>(null);
+  const syncControlsHeight = useCallback(() => {
+    const height = entered
+      ? Math.min(
+          160,
+          Math.ceil(controlsRef.current?.getBoundingClientRect().height ?? 0),
+        )
+      : 0;
+    controlsRef.current?.style.setProperty(
+      "--overlay-controls-height",
+      height + "px",
+    );
+    frameRef.current?.contentWindow?.postMessage(
+      { type: "pipupath:city:chrome", height },
+      window.location.origin,
+    );
+  }, [entered]);
+  useEffect(() => {
+    syncControlsHeight();
+    const observer =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(syncControlsHeight)
+        : null;
+    if (controlsRef.current) observer?.observe(controlsRef.current);
+    window.addEventListener("resize", syncControlsHeight);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", syncControlsHeight);
+    };
+  }, [entered, expanded, cloudEligible, syncControlsHeight]);
   const expandButton = useRef<HTMLButtonElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const saving = useRef(false);
@@ -148,22 +178,29 @@ export function PowerDistrictFrame({
           : "unbuilt-city-frame relative overflow-hidden rounded-2xl border border-[#d6deed] bg-[#f4f6fd] text-[#142a52]"
       }
     >
+      <style>{`
+        .city-overlay-controls {background:transparent;border:0;}
+        .city-overlay-controls .city-overlay-action,.city-overlay-controls .city-cloud-controls>summary {background:transparent!important;color:#162b49!important;-webkit-text-fill-color:#162b49;text-shadow:0 0 3px #fff,0 1px 2px #fff,0 0 7px #fff;box-shadow:none;}
+        @media(max-width:640px) {.city-overlay-controls .city-cloud-controls .city-cloud-panel {top:calc(var(--overlay-controls-height,72px) + 8px);}}
+        .city-overlay-controls .city-overlay-action:focus-visible {outline:3px solid #6650cc;outline-offset:2px;}
+      `}</style>
       <div
+        ref={controlsRef}
+        data-testid="city-overlay-controls"
         hidden={!entered}
         className={
           entered
-            ? "flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#d6deed] px-3 py-2"
+            ? "city-overlay-controls pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end bg-transparent px-2 pt-[max(4px,env(safe-area-inset-top))] pb-1"
             : "hidden"
         }
       >
-        <strong className="text-xs sm:text-sm">Play &amp; build</strong>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="pointer-events-auto flex flex-wrap items-center justify-end gap-1.5">
           {cloudEligible ? <CityCloudControls frameRef={frameRef} /> : null}
           <button
             ref={handoffButton}
             type="button"
             onClick={navigate}
-            className="min-h-11 rounded-full bg-[#e6cd83] px-3 text-xs font-bold text-[#213449]"
+            className="city-overlay-action min-h-11 rounded-full border border-white/60 bg-transparent px-3 text-xs font-bold text-[#213449]"
           >
             {questLabel}
           </button>
@@ -175,7 +212,7 @@ export function PowerDistrictFrame({
                 setExpanded(false);
                 expandButton.current?.focus();
               }}
-              className="min-h-11 rounded-xl border border-[#bccbe4] px-3 text-xs font-bold"
+              className="city-overlay-action min-h-11 rounded-xl border border-white/60 bg-transparent px-3 text-xs font-bold text-[#213449]"
             >
               Close focus view
             </button>
@@ -185,7 +222,7 @@ export function PowerDistrictFrame({
               type="button"
               onClick={() => setExpanded(true)}
               aria-expanded={expanded}
-              className="min-h-11 rounded-xl bg-[#243b78] px-3 text-xs font-bold text-white"
+              className="city-overlay-action min-h-11 rounded-xl border border-white/60 bg-transparent px-3 text-xs font-bold text-[#213449]"
             >
               Focus on my city ↗
             </button>
@@ -204,12 +241,13 @@ export function PowerDistrictFrame({
         ref={frameRef}
         title="The Unbuilt City · 14 connected districts"
         src="/games/city/index.html?embedded=1"
-        onLoad={() =>
+        onLoad={() => {
+          syncControlsHeight();
           frameRef.current?.contentWindow?.postMessage(
             { type: "pipupath:city:get-state" },
             window.location.origin,
-          )
-        }
+          );
+        }}
         className={
           expanded
             ? "min-h-0 w-full flex-1 border-0"

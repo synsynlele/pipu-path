@@ -75,6 +75,35 @@ code +=
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
+w.dispatchEvent(
+  new w.MessageEvent("message", {
+    origin: w.location.origin,
+    source: w.parent,
+    data: { type: "pipupath:city:chrome", height: 62 },
+  }),
+);
+assert.equal(
+  w.document.documentElement.style.getPropertyValue("--app-controls-height"),
+  "62px",
+);
+w.dispatchEvent(
+  new w.MessageEvent("message", {
+    origin: "https://foreign.test",
+    source: w.parent,
+    data: { type: "pipupath:city:chrome", height: 120 },
+  }),
+);
+w.dispatchEvent(
+  new w.MessageEvent("message", {
+    origin: w.location.origin,
+    source: w.parent,
+    data: { type: "pipupath:city:chrome", height: "999px" },
+  }),
+);
+assert.equal(
+  w.document.documentElement.style.getPropertyValue("--app-controls-height"),
+  "62px",
+);
 // Keep the real game setup, navigation, simulation and DOM; the canvas context
 // is a stub. This verifies integration, not WebGL or physical-device performance.
 game.renderer.render = () => {};
@@ -618,6 +647,20 @@ assert.match(
 );
 assert.equal(w.document.getElementById("resilience-real-quest").target, "_top");
 // All 16 authored advanced upgrades run through the actual mobile controller.
+assert.deepEqual(
+  [...w.document.querySelectorAll("#city-menu-options [data-chapter]")].map(
+    (b) => Number(b.dataset.chapter),
+  ),
+  Array.from({ length: 12 }, (_, i) => i + 1),
+);
+assert.equal(w.document.getElementById("menu-chapter-5").disabled, false);
+assert.equal(w.document.getElementById("menu-chapter-6").disabled, true);
+w.document.getElementById("menu-resume").click();
+assert.equal(
+  w.document.getElementById("resilience-panel").hidden,
+  false,
+  "Resume opens Chapter 4 rather than immediately closing it",
+);
 w.document.getElementById("chapter-five-start").click();
 assert.equal(game.state.advanced.records.length, 0);
 for (let index = 0; index < 16; index++) {
@@ -657,6 +700,28 @@ for (let index = 0; index < 16; index++) {
     w.document.getElementById("intro").hidden = false;
     w.document.getElementById("start").click();
     assert.equal(game.state.advanced.cursor.phase, "configure");
+    assert.deepEqual(
+      [...w.document.querySelectorAll("#advanced-controls input")].map((i) =>
+        i.type === "checkbox" ? Number(i.checked) : Number(i.value),
+      ),
+      plan,
+    );
+  }
+  if (index === 2) {
+    const preserved = JSON.stringify(game.state.advanced);
+    w.document.getElementById("menu-chapter-5").click();
+    assert.equal(w.document.getElementById("advanced-review").hidden, false);
+    assert.match(
+      w.document.getElementById("advanced-title").textContent,
+      /Chapter 5.*Completed/,
+    );
+    assert.equal(
+      JSON.stringify(game.state.advanced),
+      preserved,
+      "Review must not reset current chapter or plan",
+    );
+    w.document.querySelector("#advanced-review button").click();
+    assert.equal(JSON.stringify(game.state.advanced), preserved);
     assert.deepEqual(
       [...w.document.querySelectorAll("#advanced-controls input")].map((i) =>
         i.type === "checkbox" ? Number(i.checked) : Number(i.value),
