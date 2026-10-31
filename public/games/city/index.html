@@ -32,7 +32,32 @@
       </header>
       <div id="city-hud" hidden role="region" aria-label="City controls">
         <div class="city-hud-left">
-          <strong class="city-hud-title">The Unbuilt City</strong>
+          <div class="city-title-row">
+            <button
+              id="menu-entrance"
+              class="city-entrance-icon"
+              type="button"
+              aria-label="Return to game entrance"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m3 10 9-7 9 7" />
+                <path d="M5 9v12h14V9M9 21v-7h6v7" />
+              </svg>
+            </button>
+            <strong id="city-title" class="city-hud-title"
+              ><span>The Unbuilt</span> <em>City</em></strong
+            >
+          </div>
           <div class="city-hud-navigation">
             <span id="chapter-badge">Chapter 1</span>
             <nav id="city-tools" hidden aria-label="City navigation">
@@ -910,6 +935,11 @@
           <button id="start" class="primary">
             Start my city challenge <span>▶</span>
           </button>
+          <p id="entrance-resume-note" role="status" hidden>
+            Nothing has been restarted. Continue from your current challenge. To
+            keep progress after closing the app, enable device saving in City
+            menu → Save and help.
+          </p>
           <button id="resume-city" type="button" hidden aria-hidden="true">
             Resume my saved city →
           </button>

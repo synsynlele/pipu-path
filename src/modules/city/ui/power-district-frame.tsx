@@ -45,6 +45,10 @@ export function PowerDistrictFrame({
     );
   }, [entered]);
   useEffect(() => {
+    if (!entered)
+      controlsRef.current
+        ?.querySelectorAll("details[open]")
+        .forEach((details) => details.removeAttribute("open"));
     syncControlsHeight();
     const observer =
       typeof ResizeObserver !== "undefined"
@@ -87,7 +91,7 @@ export function PowerDistrictFrame({
       if (!data || typeof data !== "object") return;
       if (data.type === "pipupath:city:state") {
         setSaved(data.saved === true);
-        if (data.entered === true) setEntered(true);
+        if (typeof data.entered === "boolean") setEntered(data.entered);
         if (
           typeof data.district === "string" &&
           /^[a-z-]{1,32}$/.test(data.district)

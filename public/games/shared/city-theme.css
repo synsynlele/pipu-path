@@ -5255,9 +5255,103 @@ body #city-tools #city-menu-options button[hidden],
 html.city-embedded #city-hud {
   top: calc(var(--app-controls-height, 52px) + 6px);
 }
-html.city-embedded #city-hud .city-hud-title {
-  display: none;
-}
+
 html.city-embedded #city-view {
   top: calc(var(--app-controls-height, 52px) + 6px);
+}
+
+/* The game name is a readable corner signature and a safe way home. */
+#city-hud .city-hud-title,
+html.city-embedded #city-hud .city-hud-title {
+  display: block;
+  width: fit-content;
+  min-height: 44px;
+  margin: 0 0 2px;
+  padding: 2px 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(21px, 2.6vw, 28px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: #213858;
+  text-shadow:
+    0 0 3px #fff,
+    0 1px 2px #fff,
+    0 0 7px #fff;
+  text-transform: none;
+  cursor: pointer;
+}
+#city-hud .city-hud-title em {
+  font-style: italic;
+  color: #9a641a;
+  -webkit-text-fill-color: #9a641a;
+}
+#city-hud .city-hud-title:focus-visible {
+  outline: 3px solid #6650cc;
+  outline-offset: 2px;
+}
+#entrance-resume-note {
+  max-width: 480px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #f5f4f0;
+}
+#entrance-resume-note[hidden] {
+  display: none;
+}
+
+.city-title-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+#city-hud .city-entrance-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #35517270;
+  border-radius: 50%;
+  background: transparent;
+  color: #213858;
+  box-shadow: none;
+}
+.city-entrance-icon svg {
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff);
+}
+#city-hud .city-entrance-icon:focus-visible {
+  outline: 3px solid #6650cc;
+  outline-offset: 2px;
+}
+
+#city-hud #city-title {
+  cursor: default;
+}
+/* Keep the corner identity and entrance control during city inspection too. */
+body.city-viewing #city-hud:not([hidden]) {
+  display: block !important;
+}
+body.city-viewing #city-hud .city-hud-navigation {
+  display: none;
+}
+body.city-viewing #city-view {
+  top: calc(var(--app-controls-height, 0px) + 58px);
+}
+#city-hud .city-hud-left {
+  pointer-events: none;
+}
+#city-hud .city-title-row {
+  width: fit-content;
+}
+#city-hud .city-entrance-icon,
+#city-hud .city-hud-navigation {
+  pointer-events: auto;
 }
