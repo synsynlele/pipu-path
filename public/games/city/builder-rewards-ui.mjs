@@ -1,6 +1,7 @@
 // One chapter celebration and one virtual shop; never stack reward cards.
 import {
   BUILDER_ITEMS,
+  CITY_DECOR_SLOTS,
   awardCompletedChapters,
   builderBalance,
   purchaseBuilderItem,
@@ -62,7 +63,8 @@ export function mountBuilderRewards({
     for (const district of districts) {
       const option = document.createElement("option");
       option.value = district.id;
-      option.textContent = district.emoji + " " + district.name;
+      const placed = rewards.purchases.filter((p) => p.district === district.id).length;
+      option.textContent = district.emoji + " " + district.name + " · " + (CITY_DECOR_SLOTS - placed) + " spaces free";
       select.append(option);
     }
     if (districts.some((district) => district.id === selected))
@@ -72,6 +74,8 @@ export function mountBuilderRewards({
     const list = $("shop-items");
     list.replaceChildren();
     const owned = new Set(rewards.purchases.map((purchase) => purchase.id));
+    const occupied = rewards.purchases.filter((p) => p.district === select.value).length;
+    const districtFull = occupied >= CITY_DECOR_SLOTS;
     for (const item of BUILDER_ITEMS.filter(
       (item) => item.category === category,
     )) {
@@ -89,6 +93,9 @@ export function mountBuilderRewards({
       button.type = "button";
       const purchased = owned.has(item.id);
       const equipped = rewards.equipped.includes(item.id);
+      const count = rewards.purchases.filter((p) => p.id === item.id).length;
+      if (item.category === "city" && count)
+        detail.textContent += " · " + count + " placed across your city.";
       if (purchased && item.category === "builder") {
         button.textContent = equipped ? "Wearing · Take off" : "Put on";
         button.onclick = () => {
@@ -100,18 +107,13 @@ export function mountBuilderRewards({
               : "Your Builder is wearing this item.",
           );
         };
-      } else if (purchased) {
-        const district = CITY_DISTRICTS.find(
-          (d) =>
-            d.id === rewards.purchases.find((p) => p.id === item.id)?.district,
-        );
-        button.textContent = "✓ Placed in " + (district?.short ?? "your city");
-        button.disabled = true;
       } else {
-        button.textContent = item.cost + " ✦ · Unlock";
+        button.textContent = item.category === "city"
+          ? item.cost + " ✦ · " + (count ? "Place another" : "Place in city")
+          : item.cost + " ✦ · Unlock";
         button.disabled =
           builderBalance(rewards) < item.cost ||
-          (item.category === "city" && !districts.length);
+          (item.category === "city" && (!districts.length || districtFull));
         button.onclick = () => {
           const result = purchaseBuilderItem(
             getState().rewards,
@@ -224,6 +226,7 @@ export function mountBuilderRewards({
     notify("");
     renderShop();
   };
+  $("shop-district").onchange = () => { notify(""); renderShop(); };
   $("celebration-continue").onclick = () => {
     const chapter = activeChapter;
     closeCelebration();
