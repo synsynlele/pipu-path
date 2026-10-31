@@ -18,7 +18,7 @@ export function PowerDistrictFrame({
   cloudEligible?: boolean;
 }) {
   const router = useRouter();
-   const [entered, setEntered] = useState(!welcome);
+  const [entered, setEntered] = useState(!welcome);
   const [handoff, setHandoff] = useState(false);
   const [saved, setSaved] = useState<boolean | null>(null);
   const [district, setDistrict] = useState<string | null>(null);
@@ -68,7 +68,7 @@ export function PowerDistrictFrame({
         ?.querySelectorAll("details[open]")
         .forEach((details) => details.removeAttribute("open"));
   }, [entered, backupSlot]);
-   const saving = useRef(false);
+  const saving = useRef(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const handoffButton = useRef<HTMLButtonElement>(null);
 
@@ -202,7 +202,6 @@ export function PowerDistrictFrame({
           >
             {questLabel}
           </button>
-
         </div>
       </div>
       {cloudEligible && backupSlot

@@ -160,9 +160,7 @@ it("keeps Rotate selected and advances only the tapped existing piece by 90 degr
   expect(rotate).toHaveAttribute("aria-pressed", "false");
   fireEvent.click(screen.getByRole("button", { name: "Remove" }));
   fireEvent.click(firstCell());
-  expect(
-    (state as LabForTest).boards["workshop-link"][5],
-  ).toBeNull();
+  expect((state as LabForTest).boards["workshop-link"][5]).toBeNull();
 });
 
 it("Rotate never mutates fixed objects, switches off on tool change, and restores tested status correctly", () => {
@@ -179,18 +177,14 @@ it("Rotate never mutates fixed objects, switches off on tool change, and restore
     screen.getByRole("button", { name: /Row 3, column 3: Protected tree/ }),
   ).toBeDisabled();
   fireEvent.click(first());
-  expect(
-    (state as LabForTest).boards["workshop-link"][5],
-  ).toEqual({
+  expect((state as LabForTest).boards["workshop-link"][5]).toEqual({
     kind: "straight",
     turn: 1,
   });
   fireEvent.click(screen.getByRole("button", { name: "Junction" }));
   expect(rotate).toHaveAttribute("aria-pressed", "false");
   fireEvent.click(first());
-  expect(
-    (state as LabForTest).boards["workshop-link"][5],
-  ).toEqual({
+  expect((state as LabForTest).boards["workshop-link"][5]).toEqual({
     kind: "junction",
     turn: 0,
   });

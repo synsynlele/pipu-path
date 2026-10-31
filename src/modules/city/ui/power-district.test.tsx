@@ -15,26 +15,22 @@ afterEach(() => {
   cleanup();
   mocks.push.mockClear();
 });
-it("keeps game assets on the same origin and preserves focus without a reload", () => {
+it("keeps the same city in permanent focus even after Escape", () => {
   render(
     <PowerDistrictFrame
       questHref="/quests/owned-quest"
       questLabel="Continue my real-world Quest →"
-      initialFocus={false}
     />,
   );
   const frame = screen.getByTitle("The Unbuilt City · 14 connected districts");
   expect(frame).toHaveAttribute("src", "/games/city/index.html?embedded=1");
-  const expand = screen.getByRole("button", { name: "Focus on my city ↗" });
-  expand.focus();
-  fireEvent.click(expand);
-  expect(
-    screen.getByRole("button", { name: "Close focus view" }),
-  ).toHaveFocus();
+  expect(frame.parentElement).toHaveClass("fixed", "inset-0");
   expect(document.body.style.overflow).toBe("hidden");
+  expect(
+    screen.queryByRole("button", { name: "Close focus view" }),
+  ).not.toBeInTheDocument();
   fireEvent.keyDown(window, { key: "Escape" });
-  expect(document.body.style.overflow).not.toBe("hidden");
-  expect(expand).toHaveFocus();
+  expect(document.body.style.overflow).toBe("hidden");
   expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
     frame,
   );

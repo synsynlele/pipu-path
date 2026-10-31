@@ -20,7 +20,6 @@ export default function PublicPlayPage() {
       <PowerDistrictFrame
         questHref="/real-quests"
         questLabel="Start my real Quest"
-        initialFocus
       />
       <p className="px-4 py-5 text-center text-xs leading-5 text-[#cfdbeb]">
         Play freely. Save fictional city choices only if you choose to. Verified

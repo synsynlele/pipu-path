@@ -72,7 +72,9 @@ describe("City to Quest handoff", () => {
     expect(
       screen.queryByRole("button", { name: "Focus on my city ↗" }),
     ).not.toBeInTheDocument();
-    const frame = screen.getByTitle("The Unbuilt City · 14 connected districts");
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    );
     expect(frame).toHaveClass("min-h-0", "flex-1");
     expect(frame.parentElement).toHaveClass("fixed", "inset-0");
   });
@@ -195,13 +197,21 @@ describe("City to Quest handoff", () => {
     render(
       <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,
     );
-    const iframe = screen.getByTitle("The Unbuilt City · 14 connected districts");
+    const iframe = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    );
     fireEvent.keyDown(window, { key: "Escape" });
-    expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(iframe);
+    expect(screen.getByTitle("The Unbuilt City · 14 connected districts")).toBe(
+      iframe,
+    );
     expect(iframe.parentElement).toHaveClass("fixed", "inset-0");
-    expect(screen.queryByRole("button", { name: /focus view|focus on my city/i })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: /focus view|focus on my city/i }),
+    ).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Real Quests" }));
-    expect(screen.getByRole("dialog", { name: "Continue to a real Quest" })).toBeVisible();
+    expect(
+      screen.getByRole("dialog", { name: "Continue to a real Quest" }),
+    ).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Stay in my city" }));
     expect(iframe.parentElement).toHaveClass("fixed", "inset-0");
   });
