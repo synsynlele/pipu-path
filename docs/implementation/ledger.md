@@ -1968,3 +1968,37 @@ Rotate now cycles the next connector through quarter turns every 700 ms after on
 Resume no longer trusts a stale running flag: it cancels orphaned transition/walk callbacks and restores the pending question or required build from retained progress. Recovering travel opens the question directly, independently of 3D frames. A completed foundation resumes Chapter 3 even before its first day. Resume controls route later chapters through their existing chapter-specific state machines. Background/page lifecycle pauses running foundation work and restores it on return without overriding an intentional pause, open menu, inspection or dialog.
 
 Regression coverage reproduces the missing-panel bug before the fix, then checks all 36 decisions in two playthroughs for stale running recovery, pause/entrance return, background return and interrupted travel; all seven enterprise days, all three crisis rounds and all 16 advanced configurations return without changing retained progress. Existing puzzle resume and chapter handoff checks remain. Full validate and CI gate one production release, with previews disabled.
+
+## 2026-10-31 — Diverse advanced city challenges and repeatable virtual decorations
+
+### Authorized scope
+
+Remove the mechanically repetitive Chapters 5–12 challenges; introduce
+different challenge types across those chapters. Allow virtual decorations
+to be purchased multiple times so earned Builder Credits retain value.
+Continue existing chapter celebrations, persistence and city visuals.
+
+### Implemented
+
+- Sixteen authored challenges spanning investigation, sequencing, map
+  placement, scheduling, crisis response, allocation, inclusion, zoning,
+  recycling, energy, public budgets, negotiation, resilience, specialist
+  dispatch, forecasting and city-wide planning.
+- Distinct mobile-friendly controls and accessible interaction labels.
+- Deterministic outcome scoring that feeds honest chapter celebrations.
+- Legacy v1 advanced mission validation and non-destructive migration.
+- Repeatable city purchases with per-district and per-item limits, stable
+  unique identifiers and bounded 3D placement; shared mesh resources.
+- One-time personalisation purchases retained with equip/unequip.
+- Updated game instructions and domain/full-game regression coverage.
+
+### Validation and release gate
+
+- Full `npm run validate` passed on feature commit
+  `413c662acf9951d38cba45b484e58949d7247cb8`.
+- Latest refinement `3e96bdde36a6365020f9ea94beb5ec83940baf4e`
+  awaits its CI completion at documentation time.
+- Release requires reviewed merge and verified production Vercel READY;
+  physical Android/mobile classroom tests remain follow-up acceptance.
+- No database migration, external payment system or real-world XP changes.
+
