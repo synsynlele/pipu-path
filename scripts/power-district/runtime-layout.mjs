@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
 import * as T from "../../public/games/shared/vendor/three.module.js";
 import { overlapsRoad } from "../../public/games/city/layout.mjs";
-import {
-  advancedMission,
-  advancedRules,
-} from "../../public/games/city/advanced.mjs";
+import { advancedMission } from "../../public/games/city/advanced.mjs";
 import { SAMPLE_SOLUTIONS } from "../../public/games/city/advanced-challenges.mjs";
 import { sanitizePractice } from "../../public/games/city/practice-save.mjs";
 import { resilienceReport } from "../../public/games/city/resilience.mjs";
