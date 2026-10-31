@@ -4774,7 +4774,9 @@ function animate(now) {
   }
 }
 function animateWorld(now) {
-  if (!frameBudget.takeFrame(now, document.hidden)) return;
+  const coveredByPuzzle =
+    focusedPuzzle() && (innerWidth <= 760 || innerHeight <= 520);
+  if (!frameBudget.takeFrame(now, document.hidden || coveredByPuzzle)) return;
   if (graphicsInterrupted) return;
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
