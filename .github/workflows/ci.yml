@@ -24,12 +24,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Format final rotation test and validate
+      - name: Format focus/rotation changes and validate
         run: |
-          npx prettier --write src/modules/city/ui/build-lab.test.ts
-          echo ROTATE_TEST_PATCH_BEGIN
-          git diff -- src/modules/city/ui/build-lab.test.ts
-          echo ROTATE_TEST_PATCH_END
+          npx prettier --write src/modules/city/ui/power-district-frame.tsx src/modules/city/ui/power-district-frame.test.tsx src/modules/city/ui/unbuilt-city-experience.tsx src/modules/city/ui/build-lab.test.ts
+          echo FOCUS_ROTATE_PATCH_BEGIN
+          git diff -- src/modules/city/ui/power-district-frame.tsx src/modules/city/ui/power-district-frame.test.tsx src/modules/city/ui/unbuilt-city-experience.tsx src/modules/city/ui/build-lab.test.ts
+          echo FOCUS_ROTATE_PATCH_END
           npm run validate
 
   staging-e2e:
