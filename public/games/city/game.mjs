@@ -4776,7 +4776,12 @@ function animate(now) {
 function animateWorld(now) {
   const coveredByPuzzle =
     focusedPuzzle() && (innerWidth <= 760 || innerHeight <= 520);
-  if (!frameBudget.takeFrame(now, document.hidden || coveredByPuzzle)) return;
+  if (coveredByPuzzle) {
+    frameBudget.takeFrame(now, true);
+    last = now;
+    return;
+  }
+  if (!frameBudget.takeFrame(now, document.hidden)) return;
   if (graphicsInterrupted) return;
   const dt = Math.min((now - last) / 1000, 0.2);
   last = now;
