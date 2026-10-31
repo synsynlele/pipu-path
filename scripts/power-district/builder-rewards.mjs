@@ -148,7 +148,10 @@ assert.equal(
 const rewardBank = awardCompletedChapters(
   early,
   Array.from({ length: 12 }, (_, i) => ({ chapter: i + 1, completed: true })),
-  scene,
+  {
+    ...scene,
+    advanced: { records: Array.from({ length: 16 }, () => ({ score: 100 })) },
+  },
 ).rewards;
 let decorating = rewardBank;
 for (let i = 0; i < MAX_ITEM_PER_DISTRICT; i++) {
