@@ -41,11 +41,23 @@ export function mountBuildLab({
     returnFocus = null,
     pendingRepair = null,
     recoveredTest = false;
+  let rotationTimer = null;
+  function stopRotation() {
+    if (rotationTimer !== null) clearInterval(rotationTimer);
+    rotationTimer = null;
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopRotation();
+      render();
+    }
+  });
   const grid = $("lab-grid");
   const buttons = Array.from({ length: 25 }, (_, cell) => {
     const button = document.createElement("button");
     button.type = "button";
     button.onclick = () => {
+      stopRotation();
       const state = sanitizeLab(read()),
         mission = labMission(state.active);
       if (state.faults[mission.id] === cell) {
@@ -112,6 +124,12 @@ export function mountBuildLab({
             .map((p) => names[p])
             .join(" and ")}.`;
     $("lab-rotate").disabled = brush.kind === "remove";
+    $("lab-rotate").textContent =
+      rotationTimer === null ? "Rotate ↻" : "Stop rotation ■";
+    $("lab-rotate").setAttribute(
+      "aria-pressed",
+      String(rotationTimer !== null),
+    );
     dialog
       .querySelectorAll("[data-lab-tool]")
       .forEach((button) =>
@@ -186,6 +204,7 @@ export function mountBuildLab({
       ).some((item) => canSelectMission(item.id));
   }
   function selectMission(id) {
+    stopRotation();
     if (!canSelectMission(id)) {
       onLocked();
       render();
@@ -203,6 +222,7 @@ export function mountBuildLab({
   $("lab-mission").onchange = (e) => selectMission(e.target.value);
   dialog.querySelectorAll("[data-lab-tool]").forEach((button) => {
     button.onclick = () => {
+      stopRotation();
       brush.kind = button.dataset.labTool;
       render();
     };
@@ -232,10 +252,19 @@ export function mountBuildLab({
   }
   $("lab-see-city").onclick = revealCity;
   $("lab-rotate").onclick = () => {
-    brush.turn = (brush.turn + 1) % 4;
+    if (rotationTimer !== null) {
+      stopRotation();
+    } else {
+      brush.turn = (brush.turn + 1) % 4;
+      rotationTimer = setInterval(() => {
+        brush.turn = (brush.turn + 1) % 4;
+        render();
+      }, 700);
+    }
     render();
   };
   $("lab-test").onclick = () => {
+    stopRotation();
     const state = sanitizeLab(read());
     const mission = labMission(state.active);
     const fault = state.faults[state.active];
@@ -272,6 +301,7 @@ export function mountBuildLab({
     if (result?.success && autoReveal()) revealCity();
   };
   $("lab-clear").onclick = () => {
+    stopRotation();
     const state = sanitizeLab(read());
     state.boards[state.active] = Array(25).fill(null);
     state.tested = state.tested.filter((id) => id !== state.active);
@@ -295,6 +325,7 @@ export function mountBuildLab({
   $("lab-close").onclick = () => dialog.close();
   $("lab-back-city").onclick = () => dialog.close();
   dialog.addEventListener("close", () => {
+    stopRotation();
     result = null;
     afterClose();
     (returnFocus?.isConnected &&
