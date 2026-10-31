@@ -26,6 +26,7 @@ export function createAdvancedDesk({
     save();
   }
   function close() {
+    document.body.classList.remove("advanced-configuring");
     panel.hidden = true;
     $("advanced-toggle").setAttribute("aria-expanded", "false");
   }
@@ -69,6 +70,7 @@ export function createAdvancedDesk({
     const diagnosis = $("advanced-diagnosis"),
       work = $("advanced-work");
     const configure = value.cursor.phase === "configure";
+    document.body.classList.toggle("advanced-configuring", configure);
     diagnosis.hidden = configure;
     work.hidden = !configure;
     diagnosis.replaceChildren();
@@ -241,6 +243,7 @@ export function createAdvancedDesk({
       $("advanced-close").focus();
       return;
     }
+    document.body.classList.remove("advanced-configuring");
     $("advanced-mission").hidden = true;
     $("advanced-complete").hidden = true;
     const review = $("advanced-review");
@@ -289,6 +292,7 @@ export function createAdvancedDesk({
   $("advanced-toggle").onclick = open;
   $("chapter-five-start").onclick = open;
   $("advanced-close").onclick = close;
+  $("advanced-back-city").onclick = close;
   $("advanced-replay").onclick = () => {
     if (
       !confirm(

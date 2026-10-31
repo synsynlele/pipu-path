@@ -297,6 +297,15 @@
                   </details>
                   <details class="city-menu-group">
                     <summary>Save and help</summary>
+                    <div id="account-backup-slot"></div>
+                    <button id="screen-awake" type="button" aria-pressed="true">
+                      Keep screen awake: On
+                    </button>
+                    <p
+                      id="screen-awake-status"
+                      class="city-menu-note"
+                      role="status"
+                    ></p>
                     <button id="menu-save" type="button">
                       Device save settings</button
                     ><button
@@ -547,18 +556,24 @@
           <h3 id="advanced-brief"></h3>
           <div id="advanced-diagnosis"></div>
           <div id="advanced-work" hidden>
-            <p id="advanced-rules"></p>
-            <div id="advanced-controls"></div>
-            <button id="advanced-test" type="button" class="secondary">
-              Test my solution</button
-            ><button
-              id="advanced-deploy"
-              type="button"
-              class="primary"
-              disabled
-            >
-              Deploy tested upgrade →
-            </button>
+            <div class="advanced-workspace">
+              <p id="advanced-rules"></p>
+              <div id="advanced-controls"></div>
+            </div>
+            <div class="advanced-actions">
+              <button id="advanced-test" type="button" class="secondary">
+                Test my solution</button
+              ><button
+                id="advanced-deploy"
+                type="button"
+                class="primary"
+                disabled
+              >
+                Deploy tested upgrade →</button
+              ><button id="advanced-back-city" type="button" class="secondary">
+                Back to city
+              </button>
+            </div>
           </div>
         </div>
         <p id="advanced-message" role="status" aria-live="polite"></p>
@@ -1092,49 +1107,60 @@
             ×
           </button>
         </div>
-        <p id="lab-first-brief" hidden>
-          The workshop has lost its supply. You are the builder: place and
-          rotate connections around the protected tree, then test your network.
-        </p>
-        <label for="lab-mission">Choose your challenge</label>
-        <select id="lab-mission"></select>
-        <p id="lab-brief"></p>
-        <p id="lab-progress" aria-live="polite"></p>
-        <p id="lab-recommendation"></p>
-        <div class="lab-tools" role="group" aria-label="Building tools">
-          <button type="button" data-lab-tool="straight" aria-pressed="true">
-            Straight
-          </button>
-          <button type="button" data-lab-tool="bend" aria-pressed="false">
-            Bend
-          </button>
-          <button type="button" data-lab-tool="junction" aria-pressed="false">
-            Junction
-          </button>
-          <button type="button" data-lab-tool="remove" aria-pressed="false">
-            Remove
-          </button>
-          <button id="lab-rotate" type="button">Rotate ↻</button>
+        <div class="lab-workspace">
+          <p id="lab-first-brief" hidden>
+            The workshop has lost its supply. You are the builder: place and
+            rotate connections around the protected tree, then test your
+            network.
+          </p>
+          <details class="lab-instructions">
+            <summary>Objective and challenge details</summary>
+            <label for="lab-mission">Choose your challenge</label>
+            <select id="lab-mission"></select>
+            <p id="lab-progress" aria-live="polite"></p>
+            <p id="lab-recommendation"></p>
+          </details>
+          <p id="lab-brief"></p>
+          <div class="lab-tools" role="group" aria-label="Building tools">
+            <button type="button" data-lab-tool="straight" aria-pressed="true">
+              Straight
+            </button>
+            <button type="button" data-lab-tool="bend" aria-pressed="false">
+              Bend
+            </button>
+            <button type="button" data-lab-tool="junction" aria-pressed="false">
+              Junction
+            </button>
+            <button type="button" data-lab-tool="remove" aria-pressed="false">
+              Remove
+            </button>
+            <button id="lab-rotate" type="button">Rotate ↻</button>
+          </div>
+          <p id="lab-brush"></p>
+          <div
+            id="lab-grid"
+            role="group"
+            aria-label="Prototype worksite, five rows and five columns"
+          ></div>
+          <p id="lab-budget"></p>
+          <p id="lab-result" role="status" aria-live="polite"></p>
+
+          <p id="lab-hint-copy" hidden>
+            Try going above the tree: put a bend immediately above Supply (row
+            2, column 1) and rotate it to face down and right.
+          </p>
+          <details class="lab-more">
+            <summary>More options</summary>
+            <button id="lab-clear" type="button">Clear this layout</button>
+          </details>
         </div>
-        <p id="lab-brush"></p>
-        <div
-          id="lab-grid"
-          role="group"
-          aria-label="Prototype worksite, five rows and five columns"
-        ></div>
-        <p id="lab-budget"></p>
-        <p id="lab-result" role="status" aria-live="polite"></p>
-        <button id="lab-hint" type="button">
-          Need a hint? Show a first move
-        </button>
-        <p id="lab-hint-copy" hidden>
-          Try going above the tree: put a bend immediately above Supply (row 2,
-          column 1) and rotate it to face down and right.
-        </p>
         <div class="lab-actions">
+          <button id="lab-hint" type="button">
+            Need a hint? Show a first move
+          </button>
+          <button id="lab-back-city" type="button">Back to city</button>
           <button id="lab-test" class="primary" type="button">
             Test my network</button
-          ><button id="lab-clear" type="button">Clear this layout</button
           ><button id="lab-next" type="button" hidden>Next challenge →</button>
           <button id="lab-see-city" class="primary" type="button" hidden>
             See what I built in my city →

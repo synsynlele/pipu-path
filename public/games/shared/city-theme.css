@@ -5409,3 +5409,228 @@ body #city-tools #city-menu-options #resource {
     transition: none;
   }
 }
+
+/* Menus use viewport coordinates and bounded height on every phone. */
+#city-menu-options {
+  position: fixed;
+  box-sizing: border-box;
+  max-width: calc(100vw - 16px);
+  overflow-x: hidden;
+}
+#account-backup-slot:empty {
+  display: none;
+}
+#city-menu-options .city-cloud-controls {
+  width: 100%;
+  min-width: 0;
+}
+/* Focused mobile puzzle workspace: fixed heading/actions, scrolling work area. */
+@media (max-width: 760px), (max-height: 520px) {
+  #build-lab[open] {
+    position: fixed;
+    inset: 0;
+    margin: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    padding: max(8px, env(safe-area-inset-top))
+      max(10px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+    border: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #build-lab::backdrop {
+    background: #142338df;
+  }
+  #build-lab .lab-heading {
+    position: static;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0 0 6px;
+  }
+  #build-lab .lab-workspace {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  #build-lab #lab-grid {
+    width: min(100%, clamp(220px, calc(100dvh - 360px), 340px));
+    gap: 4px;
+    margin: 8px auto;
+  }
+  #build-lab .lab-cell {
+    aspect-ratio: 1;
+    min-height: 44px;
+    min-width: 0;
+    font-size: 12px;
+  }
+  #build-lab .lab-tools {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px 0;
+    background: #f5f8ff;
+  }
+  #build-lab .lab-tools button {
+    min-height: 44px;
+    flex: 1 1 54px;
+    font-size: 12px;
+  }
+  #build-lab .lab-actions {
+    position: static;
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin: 4px 0 0;
+    padding: 6px 0 0;
+    background: #f5f8ff;
+  }
+  #build-lab .lab-actions button {
+    min-height: 44px;
+    min-width: 0;
+    margin: 0;
+    font-size: 12px;
+    padding: 7px;
+  }
+  #build-lab:has(#lab-see-city:not([hidden])) #lab-test {
+    display: none;
+  }
+  #build-lab > small {
+    flex: 0 0 auto;
+    font-size: 9px;
+    line-height: 1.3;
+    margin-top: 5px;
+  }
+  #build-lab .lab-instructions summary,
+  #build-lab .lab-more summary {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  body.advanced-configuring #advanced-panel:not([hidden]) {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    padding: max(8px, env(safe-area-inset-top)) 12px
+      max(8px, env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 85;
+    background: #f5f8ff;
+  }
+  body.advanced-configuring #advanced-panel .district-menu-heading {
+    flex-shrink: 0;
+  }
+  body.advanced-configuring #advanced-mission {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+  body.advanced-configuring #advanced-brief {
+    flex-shrink: 0;
+    margin: 5px 0;
+    max-height: 20dvh;
+    overflow: auto;
+    font-size: 12px;
+  }
+  body.advanced-configuring #advanced-work {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+  body.advanced-configuring .advanced-workspace {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  body.advanced-configuring .advanced-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    flex-shrink: 0;
+    padding-top: 6px;
+  }
+  body.advanced-configuring #advanced-panel .advanced-actions button {
+    min-width: 0;
+    margin: 0;
+    padding: 6px;
+  }
+  body.advanced-configuring #advanced-message {
+    flex-shrink: 0;
+    font-size: 12px;
+    margin: 6px 0;
+  }
+  body.advanced-configuring #advanced-panel > small {
+    flex-shrink: 0;
+    font-size: 9px;
+    margin: 2px 0;
+  }
+  body.advanced-configuring #city-hud {
+    display: none !important;
+  }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  #build-lab .lab-workspace {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) minmax(220px, 1fr);
+    gap: 5px 14px;
+    align-content: start;
+  }
+  #build-lab #lab-grid {
+    grid-column: 2;
+    grid-row: 1 / span 5;
+    width: min(100%, 270px);
+    margin: 0 auto;
+  }
+  #build-lab .lab-instructions,
+  #build-lab .lab-tools,
+  #build-lab #lab-brush,
+  #build-lab #lab-budget,
+  #build-lab #lab-result,
+  #build-lab #lab-hint-copy,
+  #build-lab .lab-more {
+    grid-column: 1;
+  }
+  #build-lab .lab-heading .eyebrow,
+  #build-lab > small {
+    display: none;
+  }
+  body.advanced-configuring #advanced-brief {
+    max-height: 14dvh;
+  }
+}
+
+@media (min-width: 761px) and (min-height: 521px) {
+  #build-lab {
+    width: min(600px, 65vw);
+    max-height: 85dvh;
+  }
+  #build-lab #lab-grid {
+    width: min(100%, 340px);
+  }
+}

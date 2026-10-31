@@ -111,6 +111,59 @@ describe("City to Quest handoff", () => {
     );
     expect(push).not.toHaveBeenCalled();
   });
+  it("places signed-in backup controls inside the iframe City menu, not the top overlay", () => {
+    vi.stubGlobal("fetch", vi.fn());
+    render(
+      <PowerDistrictFrame
+        questHref="/real-quests"
+        questLabel="Real Quests"
+        cloudEligible
+      />,
+    );
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    ) as HTMLIFrameElement;
+    const slot = frame.contentDocument!.createElement("div");
+    slot.id = "account-backup-slot";
+    const doc = frame.contentDocument!;
+    if (!doc.documentElement) doc.append(doc.createElement("html"));
+    if (!doc.body) doc.documentElement.append(doc.createElement("body"));
+    doc.body.append(slot);
+    fireEvent.load(frame);
+    expect(slot.querySelector(".city-cloud-controls")).not.toBeNull();
+    expect(
+      screen
+        .getByTestId("city-overlay-controls")
+        .querySelector(".city-cloud-controls"),
+    ).toBeNull();
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: frame.contentWindow,
+        data: {
+          type: "pipupath:city:state",
+          entered: true,
+          focusedPuzzle: true,
+        },
+      }),
+    );
+    expect(screen.queryByRole("button", { name: "Real Quests" })).toBeNull();
+    fireEvent(
+      window,
+      new MessageEvent("message", {
+        origin: window.location.origin,
+        source: frame.contentWindow,
+        data: {
+          type: "pipupath:city:state",
+          entered: true,
+          focusedPuzzle: false,
+        },
+      }),
+    );
+    expect(screen.getByRole("button", { name: "Real Quests" })).toBeVisible();
+    vi.unstubAllGlobals();
+  });
   it("shows an explicit save/discard choice without converting game progress to proof", () => {
     render(
       <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,

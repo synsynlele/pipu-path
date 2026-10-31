@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { CityCloudControls } from "./city-cloud-controls";
 
@@ -26,15 +27,18 @@ export function PowerDistrictFrame({
   const [district, setDistrict] = useState<string | null>(null);
   const [service, setService] = useState<string | null>(null);
   const [problem, setProblem] = useState("");
+  const [backupSlot, setBackupSlot] = useState<HTMLElement | null>(null);
+  const [puzzleFocused, setPuzzleFocused] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const controlsRef = useRef<HTMLDivElement>(null);
   const syncControlsHeight = useCallback(() => {
-    const height = entered
-      ? Math.min(
-          160,
-          Math.ceil(controlsRef.current?.getBoundingClientRect().height ?? 0),
-        )
-      : 0;
+    const height =
+      entered && !puzzleFocused
+        ? Math.min(
+            160,
+            Math.ceil(controlsRef.current?.getBoundingClientRect().height ?? 0),
+          )
+        : 0;
     controlsRef.current?.style.setProperty(
       "--overlay-controls-height",
       height + "px",
@@ -43,7 +47,7 @@ export function PowerDistrictFrame({
       { type: "pipupath:city:chrome", height },
       window.location.origin,
     );
-  }, [entered]);
+  }, [entered, puzzleFocused]);
   useEffect(() => {
     if (!entered)
       controlsRef.current
@@ -61,6 +65,12 @@ export function PowerDistrictFrame({
       window.removeEventListener("resize", syncControlsHeight);
     };
   }, [entered, expanded, cloudEligible, syncControlsHeight]);
+  useEffect(() => {
+    if (!entered)
+      backupSlot
+        ?.querySelectorAll("details[open]")
+        .forEach((details) => details.removeAttribute("open"));
+  }, [entered, backupSlot]);
   const expandButton = useRef<HTMLButtonElement>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
   const saving = useRef(false);
@@ -92,6 +102,8 @@ export function PowerDistrictFrame({
       if (data.type === "pipupath:city:state") {
         setSaved(data.saved === true);
         if (typeof data.entered === "boolean") setEntered(data.entered);
+        if (typeof data.focusedPuzzle === "boolean")
+          setPuzzleFocused(data.focusedPuzzle);
         if (
           typeof data.district === "string" &&
           /^[a-z-]{1,32}$/.test(data.district)
@@ -191,15 +203,14 @@ export function PowerDistrictFrame({
       <div
         ref={controlsRef}
         data-testid="city-overlay-controls"
-        hidden={!entered}
+        hidden={!entered || puzzleFocused}
         className={
-          entered
+          entered && !puzzleFocused
             ? "city-overlay-controls pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end bg-transparent px-2 pt-[max(4px,env(safe-area-inset-top))] pb-1"
             : "hidden"
         }
       >
         <div className="pointer-events-auto flex flex-wrap items-center justify-end gap-1.5">
-          {cloudEligible ? <CityCloudControls frameRef={frameRef} /> : null}
           <button
             ref={handoffButton}
             type="button"
@@ -233,6 +244,9 @@ export function PowerDistrictFrame({
           )}
         </div>
       </div>
+      {cloudEligible && backupSlot
+        ? createPortal(<CityCloudControls frameRef={frameRef} />, backupSlot)
+        : null}
       {welcome && !entered ? (
         <a
           href="/login?next=%2Freal-quests"
@@ -246,6 +260,11 @@ export function PowerDistrictFrame({
         title="The Unbuilt City · 14 connected districts"
         src="/games/city/index.html?embedded=1"
         onLoad={() => {
+          setBackupSlot(
+            frameRef.current?.contentDocument?.getElementById(
+              "account-backup-slot",
+            ) ?? null,
+          );
           syncControlsHeight();
           frameRef.current?.contentWindow?.postMessage(
             { type: "pipupath:city:get-state" },
@@ -257,7 +276,7 @@ export function PowerDistrictFrame({
             ? "min-h-0 w-full flex-1 border-0"
             : "h-[min(860px,85svh)] min-h-[620px] w-full border-0"
         }
-        allow="autoplay; fullscreen"
+        allow="autoplay; fullscreen; screen-wake-lock"
         referrerPolicy="no-referrer"
       />
       {handoff ? (
