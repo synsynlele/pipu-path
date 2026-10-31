@@ -1907,6 +1907,7 @@ function saveHealth() {
 }
 function updateSaveHealth() {
   $("device-save-health").textContent = saveHealth();
+  $("welcome-device-save").checked = saveEnabled;
 }
 function persistPractice() {
   if (!saveEnabled) {
@@ -3974,6 +3975,11 @@ $("cases-toggle").onclick = () => {
   else closeCasebook();
 };
 $("casebook-close").onclick = closeCasebook;
+$("welcome-device-save").onchange = () => {
+  if ($("welcome-device-save").checked !== saveEnabled)
+    $("save-practice").click();
+  updateSaveHealth();
+};
 $("save-practice").onclick = () => {
   if (saveEnabled) {
     if (!clearPractice()) {

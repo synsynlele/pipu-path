@@ -172,6 +172,11 @@ let now = performance.now();
 // Real first click: the decision and the puzzle are one locked challenge.
 const freshDecisions = JSON.stringify(game.state.decisions);
 assert.equal(w.document.getElementById("intro").hidden, false);
+assert.equal(
+  w.document.getElementById("welcome-device-save").checked,
+  false,
+  "New players must explicitly opt into device saving",
+);
 assert(w.document.getElementById("music"));
 assert(w.document.getElementById("sound"));
 w.document.getElementById("start").click();
@@ -984,6 +989,14 @@ assert.equal(w.document.body.dataset.cityText, "large");
 assert.equal(w.document.body.dataset.cityContrast, "solid");
 const operationsBeforeEntrance = JSON.stringify(game.state.operations);
 w.document.getElementById("menu-entrance").click();
+w.document.getElementById("welcome-device-save").click();
+assert.equal(w.document.getElementById("welcome-device-save").checked, true);
+assert.deepEqual(
+  JSON.parse(w.localStorage.getItem("unbuilt-city:practice:v1")).state
+    .operations,
+  game.state.operations,
+  "Entrance opt-in must save actual service progress",
+);
 w.document.getElementById("start").click();
 assert.equal(JSON.stringify(game.state.operations), operationsBeforeEntrance);
 assert.equal(JSON.stringify(game.state.decisions), beforeServices.decisions);
