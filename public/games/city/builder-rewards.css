@@ -1,0 +1,267 @@
+/* Focused, thumb-friendly celebration and virtual shop. Game remains visible. */
+#menu-shop {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-weight: 750;
+  color: #f8e8b2;
+  background: #244b42;
+  border: 1px solid #d6b971;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 45px;
+}
+#menu-shop strong {
+  font-variant-numeric: tabular-nums;
+}
+.builder-celebration,
+.builder-shop {
+  box-sizing: border-box;
+  color: #253b34;
+  background: #fff9ef;
+  border: 2px solid #dfc48a;
+  border-radius: 22px;
+  box-shadow: 0 20px 70px #1b322c66;
+  width: min(440px, calc(100vw - 24px));
+  max-height: min(82dvh, 680px);
+  overflow: auto;
+  padding: 24px;
+  text-align: center;
+}
+.builder-celebration {
+  margin: auto auto max(16px, env(safe-area-inset-bottom));
+}
+.builder-shop {
+  width: min(540px, calc(100vw - 24px));
+  margin: auto;
+}
+.builder-celebration::backdrop,
+.builder-shop::backdrop {
+  background: #101d1b85;
+  backdrop-filter: blur(1.5px);
+}
+.builder-celebration-flowers {
+  font-size: 25px;
+  letter-spacing: 8px;
+  animation: builder-bloom 1.1s ease-out both;
+  white-space: nowrap;
+}
+.builder-celebration-kicker {
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  color: #6f5d32;
+  margin: 7px 0;
+}
+.builder-celebration h2,
+.builder-shop h2 {
+  font-size: clamp(21px, 5vw, 28px);
+  line-height: 1.14;
+  margin: 8px 0;
+  color: #24473a;
+}
+.builder-celebration p,
+.builder-shop p {
+  line-height: 1.45;
+  margin: 10px 0;
+  font-size: 14px;
+}
+.builder-celebration small,
+.builder-shop small {
+  font-size: 11px;
+  color: #58685c;
+}
+.builder-celebration-award {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 12px;
+  margin: 16px 0;
+  background: #edf4e8;
+  border: 1px solid #b8d6a9;
+  border-radius: 15px;
+  font-weight: 800;
+  color: #2d5b39;
+  font-size: 15px;
+}
+.builder-celebration-award small {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.builder-celebration[data-tier="repair"] .builder-celebration-award {
+  background: #fff3e2;
+  border-color: #e6bb83;
+  color: #7d5426;
+}
+.builder-celebration[data-tier="thriving"] .builder-celebration-award {
+  background: #fbf2cc;
+  border-color: #e0c566;
+  color: #67501a;
+}
+.builder-celebration-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 11px;
+}
+.builder-celebration-actions button,
+.builder-shop button {
+  font: inherit;
+  cursor: pointer;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid #9baea0;
+  background: #f0f5ee;
+  color: #254739;
+  font-weight: 750;
+  padding: 9px;
+}
+.builder-celebration-actions .primary {
+  grid-column: 1/-1;
+  background: #275941;
+  color: white;
+  border-color: #275941;
+}
+.builder-shop-heading {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  gap: 12px;
+  align-items: flex-start;
+}
+.builder-shop-heading h2 {
+  margin: 4px 0;
+}
+.builder-shop-heading p {
+  margin: 3px 0;
+}
+#shop-close {
+  font-size: 22px;
+  min-width: 45px;
+}
+.builder-shop-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 14px 0;
+}
+.builder-shop-tabs button[aria-pressed="true"] {
+  background: #275941;
+  border-color: #275941;
+  color: white;
+}
+#shop-district-label {
+  display: block;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 750;
+  margin: 12px 0 5px;
+}
+#shop-district {
+  display: block;
+  width: 100%;
+  min-height: 43px;
+  background: #fff;
+  color: #233e32;
+  border: 1px solid #91a99b;
+  border-radius: 9px;
+  padding: 8px;
+  font: inherit;
+  font-size: 14px;
+}
+.builder-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+  max-height: 45dvh;
+  overflow: auto;
+}
+.builder-shop-product {
+  border: 1px solid #d4dacb;
+  background: white;
+  border-radius: 15px;
+  padding: 12px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.builder-shop-product .product-icon {
+  font-size: 30px;
+}
+.builder-shop-product strong {
+  font-size: 13px;
+  line-height: 1.25;
+}
+.builder-shop-product p {
+  font-size: 11px;
+  margin: 0;
+  color: #56645b;
+  flex: 1;
+}
+.builder-shop-product button {
+  width: 100%;
+  font-size: 12px;
+  min-height: 42px;
+  background: #284f3d;
+  color: #fff;
+  border-color: #284f3d;
+}
+.builder-shop-product button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background: #e8eae4;
+  color: #3c5545;
+  border-color: #cdd5c9;
+}
+#shop-message {
+  min-height: 20px;
+  font-weight: 650;
+  font-size: 13px;
+}
+@keyframes builder-bloom {
+  0% {
+    opacity: 0;
+    transform: translateY(13px) scale(0.9);
+  }
+  70% {
+    transform: translateY(-5px) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 390px) {
+  .builder-celebration,
+  .builder-shop {
+    padding: 15px;
+  }
+  .builder-shop-grid {
+    gap: 7px;
+  }
+  .builder-shop-product {
+    padding: 9px;
+  }
+  .builder-celebration-flowers {
+    letter-spacing: 3px;
+  }
+}
+@media (max-height: 540px) {
+  .builder-celebration,
+  .builder-shop {
+    max-height: 88dvh;
+    padding: 12px;
+  }
+  .builder-shop-grid {
+    max-height: 34dvh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .builder-celebration-flowers {
+    animation: none;
+  }
+}

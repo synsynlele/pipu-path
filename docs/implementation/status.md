@@ -1,5 +1,42 @@
 # Implementation status
 
+## 31 October 2026 — Chapter celebrations and virtual Builder Credits (development candidate)
+
+Feature branch `feat/builder-chapter-celebrations-shop-20261031` adds one
+chapter-level celebration overlay for the established twelve-chapter Unbuilt
+City campaign. Completing a chapter awards virtual-only Builder Credits once;
+the award uses fictional decisions, enterprise shortages or resilience
+service history rather than claiming external impact. Players see encouraging
+feedback at three outcome tiers (Thriving, Growing, Needs Attention) and can
+inspect the city before continuing. Earlier saved cities can claim existing
+completed chapters without a cascade of old celebration overlays.
+
+Builder Credits are separate from the established fictional city operating
+fund, verified XP and the PipuPath real-world Quest/evidence system. Only
+city beautification and builder personalisation are in scope: five small
+low-poly decorations attach to already built district courtyards, and three
+character cosmetics can be equipped or removed. No items change challenge
+difficulty, service delivery, outcomes or real-world opportunity eligibility.
+The sole shop entry is in the existing City menu. Rendered items use
+lightweight local geometry and the existing city scene; no AI generation,
+third-party assets, server calls or recurring builds are introduced.
+
+The allowlisted reward and purchase record is added to the existing optional
+device save and account backup snapshot. Purchases and awards are
+idempotent within that snapshot and remain in-session if saving is declined.
+There is no additional remote currency ledger, payment gateway, premium
+pricing, or database migration. The optional backup remains subject to its
+existing revision conflict protections. Resetting the entire practice also
+resets its virtual cosmetic inventory. Browser-local practice remains
+user-controlled rather than anti-tamper; Builder Credits are not financial
+value or verified achievements.
+
+**Release gates pending:** GitHub canonical validation, exact preview
+inspection, mobile landscape/portrait layout checks, announcement/recovery
+behaviour, chapter 1–12 one-time claims, device save/load, optional authenticated
+backup and audio/reduced-motion checks. No production promotion authorised
+by this feature implementation alone.
+
 ## 30 October 2026 — Phase 4 practical Quest quality correction
 
 The game-to-Quest handoff now leads to a real-use intervention rather than a

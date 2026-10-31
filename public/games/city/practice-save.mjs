@@ -7,6 +7,7 @@ import { initialPlan } from "./model.mjs";
 import { getCase, getChoice } from "./cases.mjs";
 import { JOURNEY_STAGES } from "./journey-flow.mjs";
 import { sanitizeResilience } from "./resilience.mjs";
+import { sanitizeBuilderRewards } from "./builder-rewards.mjs";
 import {
   newOpportunityState,
   sanitizeOpportunityState,
@@ -118,6 +119,7 @@ export function sanitizePractice(state) {
       : null,
     lab: sanitizeLab(state.lab),
     stageThree: sanitizeStageThree(state.stageThree, state.lab),
+    rewards: sanitizeBuilderRewards(state.rewards),
   };
 }
 function getStorage(storage) {

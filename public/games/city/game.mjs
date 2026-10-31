@@ -1,5 +1,8 @@
 import { createScreenAwake } from "./screen-awake.mjs";
 import { chapterMenuItems } from "./chapter-menu.mjs";
+import { emptyBuilderRewards } from "./builder-rewards.mjs";
+import { createBuilderCosmetics } from "./builder-cosmetics.mjs";
+import { mountBuilderRewards } from "./builder-rewards-ui.mjs";
 import { advancedCityActivity, canStartAdvanced } from "./advanced.mjs";
 import { createAdvancedDesk } from "./advanced-ui.mjs";
 document.documentElement.classList.toggle(
@@ -144,6 +147,7 @@ const fresh = () => ({
   advanced: null,
   lab: sanitizeLab(null),
   stageThree: { round: 0, active: null },
+  rewards: emptyBuilderRewards(),
 });
 const previousPractice = loadPractice();
 // Once per current play session: stable positions while retrying each case,
@@ -900,6 +904,12 @@ const livingScene = createLivingCityScene({
     (window.navigator.hardwareConcurrency ?? 8) <= 4 ||
     renderer instanceof SoftwareRenderer,
 });
+const builderCosmetics = createBuilderCosmetics({
+  T,
+  plazas: livingScene.plazas,
+  player,
+  lowPower: compactDevice || renderer instanceof SoftwareRenderer,
+});
 const decisionSparks = new T.Group();
 scene.add(decisionSparks);
 const sparkUnits = Array.from({ length: 12 }, (_, i) => {
@@ -987,6 +997,7 @@ function syncCaseScenes() {
     advancedCityActivity(state.economy, state.resilience, state.advanced) ??
       resilienceCityActivity(state.economy, state.resilience),
   );
+  builderCosmetics.sync(state.rewards);
   if (builtCityView) updateBuiltCityView();
 }
 function rememberJourney() {
@@ -1002,6 +1013,23 @@ function rememberJourney() {
   if (saveEnabled) persistPractice();
   else reportParentState();
 }
+function currentChapterItems() {
+  const step = integratedStep(state.decisions, state.lab);
+  return chapterMenuItems({
+    firstDone:
+      foundationComplete(state.decisions) &&
+      (step.kind === "complete" || chapterForCase(step.caseId) === 2),
+    foundationsDone:
+      foundationForOpportunities(state.decisions) && step.kind === "complete",
+    day: state.economy.day,
+    crises: state.resilience?.choices.length ?? 0,
+    records: state.advanced?.records.length ?? 0,
+    hasAdvanced: Boolean(state.advanced),
+    result: state.advanced?.cursor.phase === "result",
+    baseChapter: chapterForCase(step.caseId) ?? 1,
+    hasResilience: Boolean(state.resilience),
+  });
+}
 function refreshJourneyControls() {
   rememberJourney();
   const entered = $("intro").hidden;
@@ -1012,24 +1040,7 @@ function refreshJourneyControls() {
   // Always keep essential navigation available. Opening it pauses the journey.
   $("city-tools").hidden = !entered || simulating;
   $("city-hud").hidden = !entered || simulating;
-  const chapterStep = integratedStep(state.decisions, state.lab);
-  const firstDone =
-    foundationComplete(state.decisions) &&
-    (chapterStep.kind === "complete" ||
-      chapterForCase(chapterStep.caseId) === 2);
-  const items = chapterMenuItems({
-    firstDone,
-    foundationsDone:
-      foundationForOpportunities(state.decisions) &&
-      chapterStep.kind === "complete",
-    day: state.economy.day,
-    crises: state.resilience?.choices.length ?? 0,
-    records: state.advanced?.records.length ?? 0,
-    hasAdvanced: Boolean(state.advanced),
-    result: state.advanced?.cursor.phase === "result",
-    baseChapter: chapterForCase(chapterStep.caseId) ?? 1,
-    hasResilience: Boolean(state.resilience),
-  });
+  const items = currentChapterItems();
   const currentChapter = items.find((item) => item.current)?.chapter ?? 1;
   for (const item of items) {
     const button = document.querySelector(
@@ -1321,6 +1332,7 @@ function closeBuiltCityView({ resume = true } = {}) {
   if (resume && snapshot.opportunityVisible) openOpportunityPanel();
   if (resume && snapshot.wasRunning) resumeJourney();
   else refreshJourneyControls();
+  builderRewardsUi.schedule();
 }
 function pauseJourney(
   message = "Journey paused. Resume whenever you're ready.",
@@ -2613,7 +2625,7 @@ function renderCasebook() {
     ? "Stop saving and clear device copy"
     : "Save on this device";
   $("save-note").textContent = saveEnabled
-    ? "Saving fictional decisions and city settings on this browser only. Not synced to an account or backed up."
+    ? "Saving fictional decisions, Builder Credits and cosmetics on this device. Account backup is separate."
     : "Save is off. Practice remains in the open game until you opt in. No personal reflection or Quest evidence is stored.";
   const list = $("casebook-list");
   list.replaceChildren();
@@ -3278,6 +3290,7 @@ function render() {
   updateWorld();
   syncCaseScenes();
   renderCityStatus();
+  builderRewardsUi.sync();
   persistPractice();
 }
 function change(key, value) {
@@ -4322,6 +4335,70 @@ const advancedDesk = createAdvancedDesk({
     playTone(760);
   },
 });
+const builderRewardsUi = mountBuilderRewards({
+  getState: () => state,
+  setRewards: (value) => {
+    state.rewards = value;
+    builderCosmetics.sync(value);
+    if (saveEnabled) persistPractice();
+  },
+  getChapterItems: currentChapterItems,
+  isJourneyRunning: () => journey.status === "running",
+  getChapterImpact: (chapter) => {
+    if (chapter === 3) {
+      const days = state.economy?.history ?? [];
+      const served = days.reduce(
+        (n, day) =>
+          n + (day.meals ?? 0) + (day.patients ?? 0) + (day.repairs ?? 0),
+        0,
+      );
+      const missed = days.reduce((n, day) => n + (day.unserved ?? 0), 0);
+      return `${served} simulated service activities delivered · ${missed} requests unmet.`;
+    }
+    if (chapter === 4) {
+      const requests = (
+        resilienceReport(state.resilience)?.history ?? []
+      ).flatMap((day) => Object.values(day.requests ?? {}));
+      const met = requests.reduce((n, service) => n + (service.served ?? 0), 0);
+      const needed = requests.reduce(
+        (n, service) => n + (service.requested ?? 0),
+        0,
+      );
+      return `${met} of ${needed} simulated service requests met during disruptions.`;
+    }
+    const city = deriveBuilderCity(state.decisions);
+    return `${city.workingSolutions} working city solutions · ${city.unresolvedNeeds} needs to revisit · ${city.activeDistricts} active districts.`;
+  },
+  getBuiltDistrictIds: () => {
+    const city = deriveBuilderCity(state.decisions);
+    return CITY_DISTRICTS.filter(
+      (district) => city.districts[district.id]?.built,
+    ).map((district) => district.id);
+  },
+  isPlaying: () => $("intro").hidden,
+  isBlockingCelebration: () =>
+    simulating ||
+    Boolean(builtCityView) ||
+    !$("world-feedback").hidden ||
+    !$("build-victory").hidden ||
+    $("build-lab").open ||
+    Boolean(document.querySelector("dialog[open]")),
+  pauseForReward: () => {
+    if (journey.status === "running")
+      pauseJourney("Your city milestone is ready.");
+    cancelAutoAdvance();
+    cancelWalk();
+  },
+  continueBuilding: () => {
+    $("detail").hidden = true;
+    continueCurrentChapter();
+  },
+  viewCity: () => {
+    $("detail").hidden = true;
+    openBuiltCityView();
+  },
+  playSuccess: () => playTone(784),
+});
 function continueCurrentChapter() {
   if (state.advanced && canStartAdvanced(state.resilience))
     return advancedDesk.open();
@@ -4579,7 +4656,10 @@ window.addEventListener("pagehide", suspendJourneyForBackground);
 window.addEventListener("pageshow", restoreJourneyAfterBackground);
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) suspendJourneyForBackground();
-  else restoreJourneyAfterBackground();
+  else {
+    restoreJourneyAfterBackground();
+    builderRewardsUi.schedule();
+  }
   if (document.hidden && cityAudio.music) {
     cityAudio.suspend();
     syncAudioControls();
