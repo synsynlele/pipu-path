@@ -2001,3 +2001,9 @@ Continue existing chapter celebrations, persistence and city visuals.
 - Release requires reviewed merge and verified production Vercel READY;
   physical Android/mobile classroom tests remain follow-up acceptance.
 - No database migration, external payment system or real-world XP changes.
+
+## 31 October 2026 — PR #147 release verification and blockers
+
+Continued the existing sixteen-mechanic advanced challenge implementation and repeatable decoration ledger. CI run 41209059552 failed because device-save opt-out could be followed by a stale save effect; a synchronous consent guard now prevents writes after opt-out without removing the player's open game. Shop purchase handlers now reject repeat delivery of the same button action and same-item rapid double taps while allowing intentional later repeat purchases.
+
+Added real-DOM tests for every decoration type purchased twice, stable visible district meshes, exact balance deductions, one-time wearable unlock/equip, close/reopen and storage reload, all twelve chapter celebrations without re-awarding credits, and bad-plan feedback before all sixteen successful advanced controls. Migration checks now preserve every completed legacy prefix from one through sixteen missions. Keyboard focus survives challenge control repaints. Existing foundation/puzzle/resume/review, low-power pacing and audio checks remain in full validation. Feature-branch previews explicitly disabled. Release requires final full validate/CI, production READY at the merged source, official-domain asset checks and a runtime error scan. Physical-device GPU/audio/OS behavior remains live acceptance.

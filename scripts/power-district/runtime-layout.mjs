@@ -785,6 +785,29 @@ for (let index = 0; index < 16; index++) {
     "The repetitive old diagnosis quiz is gone",
   );
   assert.equal(w.document.getElementById("advanced-deploy").disabled, true);
+  if (index === 0) {
+    const clue = w.document.querySelector("#advanced-controls button");
+    clue.focus();
+    clue.click();
+    assert.equal(
+      w.document.activeElement,
+      w.document.querySelector("#advanced-controls button"),
+      "Keyboard focus must survive a plan repaint",
+    );
+    w.document.activeElement.click();
+  }
+  const beforeFailure = JSON.stringify(game.state.advanced);
+  w.document.getElementById("advanced-test").click();
+  assert.equal(w.document.getElementById("advanced-deploy").disabled, true);
+  assert.match(
+    w.document.getElementById("advanced-message").textContent,
+    /Try another approach:/,
+  );
+  assert.equal(
+    JSON.stringify(game.state.advanced),
+    beforeFailure,
+    "An unsuccessful plan must not complete or mutate the mission",
+  );
   const plan = ADVANCED_SOLUTIONS[index];
   applyAdvancedPlan(w, game, m, plan);
   const beforeRecovery = JSON.stringify(game.state.advanced);

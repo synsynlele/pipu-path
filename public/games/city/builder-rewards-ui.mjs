@@ -26,12 +26,14 @@ export function mountBuilderRewards({
   continueBuilding,
   viewCity,
   playSuccess,
+  now = () => performance.now(),
 }) {
   const $ = (id) => document.getElementById(id);
   let category = "city",
     timer = null,
     activeChapter = null,
-    shopWasRunning = false;
+    shopWasRunning = false,
+    lastPurchase = null;
   const shop = $("builder-shop"),
     celebration = $("chapter-celebration");
   const fmt = (value) => new Intl.NumberFormat("en").format(value);
@@ -145,9 +147,17 @@ export function mountBuilderRewards({
             count >= MAX_ITEM_PER_DISTRICT ||
             cityPurchases.length >= MAX_TOTAL_DECOR);
         button.disabled = builderBalance(rewards) < item.cost || full;
+        let committed = false;
         button.onclick = () => {
+          if (committed) return;
           const place =
             item.category === "city" ? $("shop-district").value : null;
+          const key = item.id + "|" + place;
+          const time = now();
+          if (lastPurchase?.key === key && time - lastPurchase.time < 600) {
+            notify("Already placed. Wait a moment before buying another.");
+            return;
+          }
           const result = purchaseBuilderItem(
             getState().rewards,
             item.id,
@@ -158,6 +168,9 @@ export function mountBuilderRewards({
             notify(result.reason);
             return;
           }
+          committed = true;
+          button.disabled = true;
+          lastPurchase = { key, time };
           setRewards(result.rewards);
           renderShop();
           notify(

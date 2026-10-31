@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { evaluateGame, type GameChapter } from "../domain/game-engine";
@@ -146,6 +146,7 @@ export function ChapterChallenge({
     useState<GardenPlotState>(emptyGardenPlot);
   const [checked, setChecked] = useState(false);
   const [keepPractice, setKeepPractice] = useState(false);
+  const deviceSaveConsent = useRef(false);
   const [checkpointReady, setCheckpointReady] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
   const [previous, setPrevious] = useState<{
@@ -190,6 +191,7 @@ export function ChapterChallenge({
           setSelected(saved.selected);
           setGardenPlot(saved.gardenPlot);
           setChecked(false);
+          deviceSaveConsent.current = true;
           setKeepPractice(true);
           setSaveMessage("Your practice has resumed on this device.");
         }
@@ -204,7 +206,13 @@ export function ChapterChallenge({
   }, [chapter, userId]);
 
   useEffect(() => {
-    if (!userId || !checkpointReady || !keepPractice) return;
+    if (
+      !userId ||
+      !checkpointReady ||
+      !keepPractice ||
+      !deviceSaveConsent.current
+    )
+      return;
     let active = true;
     try {
       const save = createPracticeCheckpoint(
@@ -221,6 +229,7 @@ export function ChapterChallenge({
     } catch {
       queueMicrotask(() => {
         if (!active) return;
+        deviceSaveConsent.current = false;
         setKeepPractice(false);
         setSaveMessage("Device saving is unavailable. You can still play.");
       });
@@ -241,6 +250,8 @@ export function ChapterChallenge({
 
   function toggleDeviceSave(checked: boolean) {
     if (!userId) return;
+    // Revoke synchronously before an earlier render can flush its save effect.
+    deviceSaveConsent.current = checked;
     setKeepPractice(checked);
     if (checked) {
       setSaveMessage("Your practice will be kept on this device only.");

@@ -12,6 +12,8 @@ import {
 import {
   newAdvanced as legacyNew,
   deployAdvanced as legacyDeploy,
+  advancedMission as legacyMission,
+  advancedRules as legacyRules,
 } from "../../public/games/city/advanced-legacy.mjs";
 import {
   sanitizePractice,
@@ -79,6 +81,28 @@ for (const capacity of [0, 5, 10]) {
   assert.equal(advancedMission(s), null);
   assert.equal(deployAdvanced(s, [1, 2, 3]), null);
   assert(sanitizeAdvanced(s));
+}
+// Preserve every completed prefix of the previous sixteen-mission edition.
+let older = legacyNew({ seed: { capacity: { water: 5 } } });
+for (let completed = 1; completed <= 16; completed++) {
+  const oldMission = legacyMission(older),
+    rules = legacyRules(older);
+  const oldPlan =
+    oldMission.kind === "allocate"
+      ? rules.minimum
+      : rules.redundant
+        ? [1, 1, 1, 1, 0]
+        : [1, 1, 0, 0, 0];
+  older = legacyDeploy(older, oldPlan);
+  assert(older);
+  const preserved = sanitizeAdvanced(older);
+  assert.equal(preserved.records.length, completed);
+  assert(preserved.records.every((record) => record.legacy));
+  assert.deepEqual(
+    preserved.records.map((record) => record.plan),
+    older.records.map((record) => record.plan),
+  );
+  assert.deepEqual(sanitizeAdvanced(preserved), preserved);
 }
 let legacy = legacyNew({ seed: { capacity: { water: 5 } } });
 legacy = legacyDeploy(legacy, [1, 1, 0, 0, 0]);

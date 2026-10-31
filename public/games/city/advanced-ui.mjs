@@ -95,6 +95,9 @@ export function createAdvancedDesk({
   }
   function render() {
     tested = false;
+    const focusIndex = [
+      ...$("advanced-controls").querySelectorAll("button, input, select"),
+    ].indexOf(document.activeElement);
     const previousScroll = panel.scrollTop,
       value = current(),
       m = advancedMission(value);
@@ -412,6 +415,16 @@ export function createAdvancedDesk({
       showResult(result);
     };
     panel.scrollTop = previousScroll;
+    if (focusIndex >= 0) {
+      const controlsAfter = [
+        ...controls.querySelectorAll("button, input, select"),
+      ];
+      const target = controlsAfter[focusIndex];
+      (target?.disabled
+        ? controlsAfter.find((control) => !control.disabled)
+        : target
+      )?.focus({ preventScroll: true });
+    }
   }
   function openChapter(chapter) {
     if (!canStartAdvanced(getState().resilience)) return;
