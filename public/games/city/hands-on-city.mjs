@@ -198,9 +198,11 @@ export function mountHandsOnCity({
       }
     }
     const timber = object("timber");
+    timber.visible = !state.opened;
     for (let n = 0; n < 5; n++)
       box(timber, 1.65, 0.15, 0.2, 0xb88c54, 0, 0.45 + n * 0.15, 0);
     const sheets = object("roofing");
+    sheets.visible = !state.opened;
     for (let n = 0; n < 4; n++)
       box(sheets, 1.7, 0.08, 1.25, 0x698f9e, 0, 0.32 + n * 0.1, 0);
     const park = object("parking");
@@ -278,7 +280,8 @@ export function mountHandsOnCity({
     return { point, approach };
   }
   function completedObject(spec) {
-    if (!spec.project) return false;
+    if (!spec.project)
+      return state.opened && ["timber", "roofing"].includes(spec.id);
     const stage = projects[spec.project].stage;
     return (
       (spec.kind === "kit" &&

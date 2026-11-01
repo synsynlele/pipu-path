@@ -6,7 +6,10 @@ export function peopleClear(from, to, people, clearance = 0.78) {
   return people.every((p) => {
     const start = Math.hypot(from.x - p.x, from.z - p.z),
       end = Math.hypot(to.x - p.x, to.z - p.z);
-    if (start < clearance - 0.001) return end > start + 0.00001;
+    if (start < clearance - 0.001)
+      return (
+        end > start + 0.00001 && (from.x - p.x) * dx + (from.z - p.z) * dz >= 0
+      );
     const t = Math.max(
       0,
       Math.min(1, ((p.x - from.x) * dx + (p.z - from.z) * dz) / (len || 1)),

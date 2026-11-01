@@ -108,3 +108,45 @@ assert(peopleClear({ x: -1, z: 0 }, safe, [{ x: 0, z: 0 }]));
 console.log(
   "PASS: six construction catalogues, carry-before-build, dependencies, tested opening, road clearance and swept personal space.",
 );
+const T = await import("../../public/games/shared/vendor/three.module.js");
+const { createConstructionScene } =
+  await import("../../public/games/city/construction-scene.mjs");
+const renderer = createConstructionScene(T),
+  root = new T.Group(),
+  groups = new Map();
+renderer.draw(root, projects, groups, (parent, w, h, d, c, x, y, z) => {
+  const m = new T.Mesh(
+    new T.BoxGeometry(w, h, d),
+    new T.MeshBasicMaterial({ color: c }),
+  );
+  m.position.set(x, y, z);
+  parent.add(m);
+  return m;
+});
+for (const project of CITY_PROJECTS) {
+  for (const kind of ["kit", "base", "structure", "services"])
+    assert.equal(
+      groups.get(project.id + ":" + kind).visible,
+      false,
+      "completed sites remove construction clutter",
+    );
+  assert.equal(groups.get(project.id + ":open").visible, true);
+  const body = root.children.find(
+      (g) => g.position.x === project.x && g.position.z === project.z,
+    ),
+    bounds = new T.Box3().setFromObject(body),
+    size = bounds.getSize(new T.Vector3()),
+    centre = bounds.getCenter(new T.Vector3());
+  assert(
+    !overlapsRoad(centre.x, centre.z, size.x, size.z, 0.25),
+    "actual finished geometry clears streets",
+  );
+}
+console.log(
+  "PASS: completed sites remove cranes/materials, retain entrances, and their actual geometry clears streets.",
+);
+
+assert(
+  !peopleClear({ x: 0, z: 0 }, { x: 0.5, z: 0 }, [{ x: 0.1, z: 0 }]),
+  "recovering an old overlap must not cross through the other person",
+);

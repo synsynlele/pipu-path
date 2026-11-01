@@ -152,6 +152,10 @@ export function createConstructionScene(T) {
           target.userData.marketTarget = spec.id;
           root.add(target);
           objectGroups.set(spec.id, target);
+          if (s.open && spec.kind !== "open") {
+            target.visible = false;
+            continue;
+          }
           if (spec.kind === "kit")
             for (let i = 0; i < 3; i++)
               box(target, 1.1, 0.25, 0.75, 0xbb9b68, 0, 0.4 + i * 0.28, 0);
