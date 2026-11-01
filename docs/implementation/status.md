@@ -1,5 +1,15 @@
 # Implementation status
 
+## 1 November 2026 — First meaningful-builder episode and crew replication (preview)
+
+The hands-on city preview now begins with three gated, physical missions: investigate a dry water point before operating its valve; organise clinic staff and supplies so four arrivals can be served; and prepare tools, demonstrate and improve a jig until an apprentice completes an independent trial. Early tests explain the observed failure. Teaching supports either repeated demonstration or a clamp improvement. These are bounded fictional simulations, not verified real-world capability or medical decision-making.
+
+Opening a construction prototype now triggers deterministic crew replication onto reserved city parcels: homes, towers, hospitals, farms and stadiums have separate caps; the airport remains a landmark. The three episode outcomes extend appropriate batches. Finished recipes, aligned placement and small variations keep results polished while preserving streets. Replaying cannot accumulate duplicate copies. This slice remains session-only and does not advance campaign saves, credits or evidence.
+
+The twelve-chapter, thirty-six-mission direction remains a blueprint in `docs/product/meaningful-builder-chapters.md`. Only the three-mission episode, market repair and six construction prototypes are playable here. The complete seventy-parcel chapter progression is still future implementation.
+
+Verification covers domain consequences, distinct successful approaches, unlocks, independent trials, bounded unique replication and actual character arrival across the episode and construction sites. Route planning includes visible episode residents; swept personal space remains enforced. Full validation and public preview verification are recorded after execution. Production remains unchanged.
+
 ## 31 October 2026 — Distinct Chapters 5–12 and repeatable virtual city beautification (release candidate)
 
 Branch `feat/varied-city-challenges-repeatable-decor-20261031`, PR #147, replaces

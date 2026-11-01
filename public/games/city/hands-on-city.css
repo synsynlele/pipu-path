@@ -141,3 +141,10 @@
   background: #176956;
   color: white;
 }
+.hands-on-panel .crew-progress {
+  font-size: 11px;
+  color: #49695e;
+}
+.hands-on-panel [data-progress] {
+  font-size: 12px;
+}

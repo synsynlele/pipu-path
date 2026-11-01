@@ -133,6 +133,17 @@ export function createConstructionScene(T) {
     return geo;
   }
   return {
+    replica(root, parcel) {
+      const p = CITY_PROJECTS.find((p) => p.id === parcel.type),
+        g = new T.Group(),
+        scale = 4 / Math.max(p.width, p.depth + 1.5);
+      g.position.set(parcel.x, 0.18, parcel.z);
+      g.scale.set(scale, scale * [0.9, 1, 1.1][parcel.variation], scale);
+      g.userData.crewReplica = parcel.id;
+      g.add(new T.Mesh(geometry(p, 3, true), material));
+      root.add(g);
+      return g;
+    },
     draw(root, progress, objectGroups, box) {
       for (const p of CITY_PROJECTS) {
         const s = progress[p.id],

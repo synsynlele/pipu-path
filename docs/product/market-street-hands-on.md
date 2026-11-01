@@ -25,3 +25,9 @@ The Worksite selector now offers six additional, real-city construction sites: s
 Finished models use curated recipes, aligned entrances and paved/landscaped edges. The airport is a small fictional representation, not a full-scale airport simulation. All six sites reserve existing road clearance. Finished project geometry is merged by worksite and cached by phase to limit draw calls. The market also gains aligned paving and planters after a successful opening. Cosmetic finishing never opens an incomplete site.
 
 Swept personal-space checks cover the player, original residents, visible background pedestrians, traders and customers. Moving customers steer or wait; the player can replan around them. Spawn slots are checked before creating customers. The pilot remains session-only and is separate from the twelve-chapter campaign and its backups. This is the first construction catalogue, not a claim that every authored chapter has been converted.
+
+## Meaningful-builder episode and crews
+
+The preview starts with investigation, care operations and teaching rather than construction. Every action requires the original avatar to reach its object. Inspecting an already working pump consumes a spare without fixing the dry tap; inspecting the supply and operating its closed valve restores flow. Clinic arrivals expose the need for both reception and support staff plus stock. Apprentice success requires accessible tools and enough teaching support; the player must stand away during the independent trial. Outcomes remain explicitly fictional and session-only.
+
+A completed prototype seeds a bounded crew batch on unique, reserved city parcels. Caps and suitable districts prevent unbounded towers or duplicated airports. Replaying re-derives the same layout rather than adding more copies. The episode extends relevant batches; the full twelve-chapter fill plan is still a design, not a completed conversion.

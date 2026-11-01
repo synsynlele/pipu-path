@@ -2080,3 +2080,13 @@ Added shared swept personal-space rules, safe spawn/steering, resident-aware rou
 ## 1 November 2026 — Broad builder campaign and replication blueprint
 
 Drafted twelve chapters/36 mission cards with action steps, outcome evidence, reflection and continuation. Specified chapter-driven city growth and build-once/crew-replication rules, with balanced land use, exactly-once deployment intent and a fully developed final city. This change is design documentation; the current construction preview and authored campaign remain unchanged.
+
+## 1 November 2026 — First meaningful-builder episode and crew replication (preview)
+
+The hands-on city preview now begins with three gated, physical missions: investigate a dry water point before operating its valve; organise clinic staff and supplies so four arrivals can be served; and prepare tools, demonstrate and improve a jig until an apprentice completes an independent trial. Early tests explain the observed failure. Teaching supports either repeated demonstration or a clamp improvement. These are bounded fictional simulations, not verified real-world capability or medical decision-making.
+
+Opening a construction prototype now triggers deterministic crew replication onto reserved city parcels: homes, towers, hospitals, farms and stadiums have separate caps; the airport remains a landmark. The three episode outcomes extend appropriate batches. Finished recipes, aligned placement and small variations keep results polished while preserving streets. Replaying cannot accumulate duplicate copies. This slice remains session-only and does not advance campaign saves, credits or evidence.
+
+The twelve-chapter, thirty-six-mission direction remains a blueprint in `docs/product/meaningful-builder-chapters.md`. Only the three-mission episode, market repair and six construction prototypes are playable here. The complete seventy-parcel chapter progression is still future implementation.
+
+Verification covers domain consequences, distinct successful approaches, unlocks, independent trials, bounded unique replication and actual character arrival across the episode and construction sites. Route planning includes visible episode residents; swept personal space remains enforced. Full validation and public preview verification are recorded after execution. Production remains unchanged.

@@ -1612,7 +1612,7 @@ let trafficWaitStarted = null;
 let navigator,
   route = [],
   onArrival = null;
-function rebuildNavigation() {
+function rebuildNavigation(pilot = false) {
   const signature = JSON.stringify([
     state.config,
     state.decisions,
@@ -1661,7 +1661,7 @@ function rebuildNavigation() {
       maxZ: p.g.position.z + 0.23,
     });
   // Choice-built plots use stable footprints, independent of construction animation.
-  for (const [id, effect] of caseScenes.effects) {
+  for (const [id, effect] of pilot ? [] : caseScenes.effects) {
     const plan = infrastructurePlan(id, state.decisions[id]);
     if (!plan?.assets.length || id === "transit-people") continue;
     const { x, z } = effect.group.position;
@@ -1676,7 +1676,7 @@ function rebuildNavigation() {
       maxZ: z + (outer ? 2.1 : 0.65),
     });
   }
-  obstacles.push(...cityDevelopment.obstacles());
+  if (!pilot) obstacles.push(...cityDevelopment.obstacles());
   navigationObstacles = obstacles;
   for (const mesh of cityDevelopment.meshes.values()) {
     const b = new T.Box3().setFromObject(mesh);
@@ -4718,7 +4718,11 @@ const handsOnCity = mountHandsOnCity({
   canvas: $("world"),
   getCamera: () => camera,
   actor: player,
-  marketAssets,
+  marketAssets: () => [
+    ...marketAssets,
+    ...cityDevelopment.meshes.values(),
+    ...[...caseScenes.effects.values()].map((effect) => effect.group),
+  ],
   getResidents: cityPeople,
   walkClear: (from, to) =>
     (worksiteNavigator ?? navigator).segmentFree(from, to),
@@ -4739,7 +4743,7 @@ const handsOnCity = mountHandsOnCity({
   },
   refreshNavigation: () => {
     navigationSignature = null;
-    rebuildNavigation();
+    rebuildNavigation(handsOnCity.active);
     worksiteNavigator = createNavigator(
       [
         ...navigationObstacles,
@@ -4771,7 +4775,7 @@ const handsOnCity = mountHandsOnCity({
 const handsOnStart = document.createElement("button");
 handsOnStart.id = "hands-on-start";
 handsOnStart.className = "primary";
-handsOnStart.textContent = "Build my city · hands-on preview →";
+handsOnStart.textContent = "Play the builder journey · preview →";
 $("start").before(handsOnStart);
 handsOnStart.onclick = () => handsOnCity.open();
 

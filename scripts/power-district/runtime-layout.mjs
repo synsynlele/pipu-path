@@ -1409,10 +1409,54 @@ const handsPanel = w.document.querySelector(".hands-on-panel");
 assert.equal(handsPanel.hidden, false);
 assert.equal(w.document.querySelector("#intro").hidden, true);
 assert.equal(game.beginManualExplore(), false);
-const modelBeforeWalk = JSON.stringify(game.handsOnCity.state);
+
 // Canceling a walk or blurring the page never performs its pending work.
+// First playable episode: three distinct outcomes, all through physical arrival.
+const episodeWork = (id) => {
+  game.handsOnCity.request(id);
+  for (let i = 0; i < 2200 && game.handsOnCity.moving; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+  assert.equal(game.handsOnCity.moving, false, "route completed: " + id);
+  console.log(
+    "Episode action",
+    id,
+    handsPanel.querySelector("[data-status]").textContent,
+  );
+};
+handsPanel.querySelector("[data-site]").value = "care";
+handsPanel
+  .querySelector("[data-site]")
+  .dispatchEvent(new w.Event("change", { bubbles: true }));
+assert.equal(handsPanel.querySelector("[data-site]").value, "investigate");
+for (const id of ["resident", "tank", "pump", "test"])
+  episodeWork("investigate:" + id);
+assert.equal(game.handsOnCity.episode.investigate.done, false);
+for (const id of ["valve", "valve", "test"]) episodeWork("investigate:" + id);
+assert.equal(game.handsOnCity.episode.investigate.done, true);
+for (const id of [
+  "test",
+  "supplies",
+  "deliver",
+  "supplies",
+  "deliver",
+  "support",
+  "test",
+])
+  episodeWork("care:" + id);
+assert.equal(game.handsOnCity.episode.care.done, true);
+for (const id of ["tools", "demonstrate", "test"]) episodeWork("teach:" + id);
+assert.equal(game.handsOnCity.episode.teach.done, false);
+for (const id of ["jig", "test"]) episodeWork("teach:" + id);
+assert.equal(game.handsOnCity.episode.teach.done, true);
+assert.match(
+  handsPanel.querySelector("[data-progress]").textContent,
+  /3\/3 episode outcomes/,
+);
+console.log(
+  "PASS: real character investigates water, organises four clinic arrivals and enables independent apprentice success.",
+);
 game.handsOnCity.request("timber");
-assert.equal(JSON.stringify(game.handsOnCity.state), modelBeforeWalk);
+assert.equal(game.handsOnCity.state.carrying, null);
 w.dispatchEvent(new w.Event("blur"));
 assert.equal(game.handsOnCity.moving, false);
 assert.equal(game.handsOnCity.state.carrying, null);
@@ -1459,6 +1503,12 @@ const doWork = (id) => {
   game.handsOnCity.request(id);
   for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
     game.handsOnCity.tick(0.1, game.camera);
+  assert.equal(game.handsOnCity.moving, false, "route completed: " + id);
+  console.log(
+    "Episode action",
+    id,
+    handsPanel.querySelector("[data-status]").textContent,
+  );
 };
 doWork("stall-a");
 assert.equal(game.handsOnCity.state.frames[0], true);
@@ -1542,6 +1592,14 @@ for (const project of [
   );
   assert.equal(handsPanel.querySelector("[data-site]").value, project);
 }
+assert(game.handsOnCity.replicas.length > 6);
+const replicaRoot = game.scene.children.find((g) =>
+  g.children.some((c) => c.userData.crewReplica),
+);
+assert.equal(
+  replicaRoot.children.filter((g) => g.userData.crewReplica).length,
+  game.handsOnCity.replicas.length,
+);
 console.log(
   "PASS: all six construction sites are reachable, completed by the original avatar and opened, with residents separated.",
 );

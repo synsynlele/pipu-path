@@ -150,3 +150,94 @@ assert(
   !peopleClear({ x: 0, z: 0 }, { x: 0.5, z: 0 }, [{ x: 0.1, z: 0 }]),
   "recovering an old overlap must not cross through the other person",
 );
+
+const { newEpisode, episodeAction, advanceApprentice, missionUnlocked } =
+  await import("../../public/games/city/builder-episode.mjs");
+const { crewReplicas } =
+  await import("../../public/games/city/crew-replication.mjs");
+let episode = newEpisode(),
+  held = null;
+const task = (id) => {
+  const before = JSON.stringify(episode),
+    r = episodeAction(episode, held, id);
+  assert.equal(JSON.stringify(episode), before);
+  episode = r.state;
+  held = r.carrying;
+  return r;
+};
+assert.equal(task("care:test").changed, false);
+for (const id of ["resident", "tank", "pump", "test"])
+  task("investigate:" + id);
+assert.equal(episode.investigate.done, false);
+assert.equal(episode.investigate.partsSpent, 1);
+task("investigate:valve");
+task("investigate:valve");
+task("investigate:test");
+assert.equal(episode.investigate.done, true);
+assert(missionUnlocked(episode, "care"));
+task("care:test");
+assert.equal(episode.care.served, 0);
+for (let i = 0; i < 2; i++) {
+  task("care:supplies");
+  task("care:deliver");
+}
+task("care:test");
+assert.equal(episode.care.done, false, "supplies cannot replace support staff");
+task("care:support");
+task("care:test");
+assert.equal(episode.care.done, true);
+task("care:support");
+task("care:test");
+assert.equal(
+  episode.care.done,
+  true,
+  "two different staffing allocations succeed",
+);
+task("teach:test");
+let trial = advanceApprentice(episode, 2, false);
+assert.equal(trial.state.teach.trial, 0);
+trial = advanceApprentice(episode, 2, true);
+episode = trial.state;
+assert.equal(episode.teach.done, false);
+task("teach:tools");
+task("teach:demonstrate");
+task("teach:test");
+episode = advanceApprentice(episode, 2, true).state;
+assert.equal(episode.teach.done, false);
+task("teach:jig");
+task("teach:test");
+episode = advanceApprentice(episode, 2, true).state;
+assert.equal(episode.teach.done, true);
+task("teach:jig");
+task("teach:demonstrate");
+task("teach:test");
+episode = advanceApprentice(episode, 2, true).state;
+assert.equal(
+  episode.teach.done,
+  true,
+  "clearer teaching offers another successful strategy",
+);
+const noCrews = crewReplicas(newConstruction(), episode);
+assert.equal(noCrews.length, 0);
+const towerOnly = {
+  ...newConstruction(),
+  tower: { stage: 3, open: true, tests: 1 },
+};
+const batch = crewReplicas(towerOnly, episode);
+assert(batch.length > 1);
+assert(batch.every((p) => p.type === "tower"));
+assert.deepEqual(
+  batch,
+  crewReplicas(towerOnly, episode),
+  "reopening does not duplicate a crew batch",
+);
+const allBatches = crewReplicas(projects, episode);
+assert.equal(new Set(allBatches.map((p) => p.id)).size, allBatches.length);
+assert(
+  allBatches.every(
+    (p) => p.type !== "airport" && !overlapsRoad(p.x, p.z, 4.5, 4.5, 0.25),
+  ),
+);
+console.log(
+  "PASS: evidence-led investigation, two clinic strategies, independent apprentice trials, staged mission gates and deterministic road-safe crew replication.",
+);
