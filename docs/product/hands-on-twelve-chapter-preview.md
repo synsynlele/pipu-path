@@ -36,3 +36,5 @@ The orientation behavior follows the platform APIs documented by MDN: https://de
 ## Expansion rule
 
 Developers add a chapter's independent domain rules, physical objects, observable result, recovery feedback, alternative strategies where feasible, reflection and actual-controller test. Do not equate a new label or a repeated button sequence with a new useful outcome. Player testing must establish difficulty and enjoyment before claiming the game is perfected or replacing production.
+
+Preview verification: Vercel staging deployment `dpl_G1C5En9yRVTHxmN4PaHxG4GD1meS` reached READY at game source `64b73c5b990dea9bcde18a15865da9a0991be714`. The public game opened without authentication, displayed all twelve chapters and the bold construction action, and remained interactive. Review URL: https://pipu-path-5i6q5x8ly-copyartint-2860s-projects.vercel.app/games/city/index.html. Production was not promoted.
