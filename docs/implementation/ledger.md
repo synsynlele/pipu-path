@@ -2052,3 +2052,7 @@ Save-health changes now update an open service workshop immediately as well as t
 - Regression checks cover narrow entrances, stationary traffic, route rebuilds, exactly-once arrival, permanent obstruction fallback, manual input, modal/pinch/lost-capture behavior, camera recovery and the existing full twelve-chapter journey. Full validate/CI and one main production deployment gate release. Physical-phone GPU/touch/cinematic acceptance remains outstanding.
 
 The broader validation exposed a pre-existing asynchronous retry-form assertion: its alert can render before React clears the transition pending state. The test now awaits the button becoming enabled, retaining the same required retry assertion; no form behavior or checks were removed.
+
+## 1 November 2026 — Game entrance brand logo
+
+The entrance now places the exact PNG logo used by the Real Quest BrandMark beside PipuPath and its existing Build a Better World slogan. Explicit 48px dimensions, non-shrinking image and flex alignment keep the mark stable beside the name. The image is decorative within the existing labelled home link. No game logic, progression or save change. Full validation/CI gate one automatic production build; branch previews disabled.
