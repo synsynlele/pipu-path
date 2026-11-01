@@ -8,7 +8,7 @@ Opening a construction prototype now triggers deterministic crew replication ont
 
 The twelve-chapter, thirty-six-mission direction remains a blueprint in `docs/product/meaningful-builder-chapters.md`. Only the three-mission episode, market repair and six construction prototypes are playable here. The complete seventy-parcel chapter progression is still future implementation.
 
-Verification covers domain consequences, distinct successful approaches, unlocks, independent trials, bounded unique replication and actual character arrival across the episode and construction sites. Route planning includes visible episode residents; swept personal space remains enforced. Full validation and public preview verification are recorded after execution. Production remains unchanged.
+Verification covers domain consequences, distinct successful approaches, unlocks, independent trials, bounded unique replication and actual character arrival across the episode and construction sites. Route planning includes visible episode residents; swept personal space remains enforced. `npm run validate` passed: formatting, zero-warning lint, typecheck, full game regression, 656 coverage tests, 252 integration tests and Next.js production build. The public staging preview reached READY at source commit `ecc0823943eaf1ff0f8da082988ff26490ad09a9`; browser verification opened the game without a sign-in wall and exercised the new investigation flow. Production remains unchanged.
 
 ## 31 October 2026 — Distinct Chapters 5–12 and repeatable virtual city beautification (release candidate)
 
