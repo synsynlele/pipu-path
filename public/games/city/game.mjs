@@ -1,4 +1,3 @@
-import { createLandscapePlay } from "./landscape-play.mjs";
 import { mountHandsOnCity } from "./hands-on-city.mjs";
 import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
@@ -4753,6 +4752,9 @@ const handsOnCity = mountHandsOnCity({
       { minX: -57.5, maxX: 57.5, minZ: -49.5, maxZ: 49.5, step: 0.5 },
     );
   },
+  classic: () => startCity(),
+  toggleSound: () => cityAudio.toggleSound(),
+  toggleMusic: () => cityAudio.toggleMusic(),
   cue: (kind) => cityAudio.cue(kind),
   enter() {
     pauseJourney("Hands-on city experiment");
@@ -4770,19 +4772,11 @@ const handsOnCity = mountHandsOnCity({
   leave() {
     $("intro").hidden = false;
     screenAwake.setPlaying(false);
-    $("hands-on-start").focus();
+    $("start").focus();
   },
 });
-createLandscapePlay();
-const handsOnStart = document.createElement("button");
-handsOnStart.id = "hands-on-start";
-handsOnStart.className = "primary";
-handsOnStart.textContent = "Play the builder journey · preview →";
-$("start").before(handsOnStart);
-handsOnStart.onclick = () => handsOnCity.open();
-
-$("start").onclick = () => startCity();
-$("resume-city").onclick = () => startCity();
+$("start").onclick = () => handsOnCity.open();
+$("resume-city").onclick = () => handsOnCity.open();
 $("resume-city").hidden = true;
 
 function startCity() {

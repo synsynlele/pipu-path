@@ -50,6 +50,9 @@ export function mountHandsOnCity({
   refreshNavigation,
   enter,
   leave,
+  classic = () => {},
+  toggleSound = async () => false,
+  toggleMusic = async () => false,
   cue = () => {},
 }) {
   let active = false,
@@ -59,7 +62,10 @@ export function mountHandsOnCity({
     work = null,
     walking = false,
     elapsed = 0,
-    snapshot = null;
+    snapshot = null,
+    cityView = false,
+    unlockedThrough = 1;
+  const celebrated = new Set();
   const objects = [
     ...MARKET_OBJECTS,
     ...CONSTRUCTION_OBJECTS,
@@ -108,6 +114,90 @@ export function mountHandsOnCity({
   panel
     .querySelector(".next-instruction")
     .append(panel.querySelector("[data-next]"));
+  const toolbar = document.createElement("nav");
+  toolbar.className = "hands-on-toolbar";
+  toolbar.setAttribute("aria-label", "City controls");
+  toolbar.innerHTML =
+    '<button data-menu aria-expanded="false">☰ City menu</button><button data-city-view>View my city</button>';
+  const menu = document.createElement("div");
+  menu.className = "hands-on-menu";
+  menu.hidden = true;
+  menu.setAttribute("aria-label", "City menu");
+  menu.append(
+    panel.querySelector(".worksite-picker"),
+    panel.querySelector("[data-progress]"),
+    panel.querySelector("[data-crew]"),
+    panel.querySelector("details"),
+    panel.querySelector("[data-quest]"),
+    panel.querySelector("[data-exit]"),
+  );
+  menu.querySelector("[data-exit]").textContent = "Return to entrance";
+  const extras = document.createElement("div");
+  extras.className = "menu-extras";
+  extras.innerHTML =
+    "<button data-sound>Toggle sound effects</button><button data-music>Toggle music</button><button data-classic>Earlier city story</button><p>Hands-on progress stays in this page session.</p>";
+  menu.append(extras);
+  panel.prepend(toolbar, menu);
+  const celebration = document.createElement("section");
+  celebration.className = "hands-on-celebration";
+  celebration.hidden = true;
+  celebration.setAttribute("aria-label", "Chapter celebration");
+  celebration.setAttribute("role", "region");
+  celebration.innerHTML =
+    '<div class="celebration-flowers" aria-hidden="true">✿ ✦ ❀ ✧ ✿ ❀ ✦</div><strong data-celebration-title></strong><p data-celebration-message></p><button data-celebration-view>View my city</button><button data-celebration-next>Continue building →</button><button data-celebration-close>Keep exploring</button>';
+  panel.append(celebration);
+  const setMenu = (open) => {
+    menu.hidden = !open;
+    toolbar
+      .querySelector("[data-menu]")
+      .setAttribute("aria-expanded", String(open));
+  };
+  function setCityView(value) {
+    stop();
+    cityView = value;
+    celebration.hidden = true;
+    setMenu(false);
+    panel.classList.toggle("city-overview", cityView);
+    toolbar.querySelector("[data-city-view]").textContent = cityView
+      ? "Return to mission"
+      : "View my city";
+    if (!cityView) focus.copy(actor.g.position);
+    tick(0, getCamera());
+  }
+  toolbar.querySelector("[data-menu]").onclick = () => {
+    const opening = menu.hidden;
+    if (opening) stop();
+    setMenu(opening);
+  };
+  toolbar.querySelector("[data-city-view]").onclick = () =>
+    setCityView(!cityView);
+  celebration.querySelector("[data-celebration-view]").onclick = () =>
+    setCityView(true);
+  celebration.querySelector("[data-celebration-next]").onclick = () => {
+    celebration.hidden = true;
+    panel.querySelector("[data-chapter-next]").click();
+  };
+  celebration.querySelector("[data-celebration-close]").onclick = () => {
+    celebration.hidden = true;
+  };
+  extras.querySelector("[data-classic]").onclick = () => {
+    if (active) close();
+    classic();
+  };
+  extras.querySelector("[data-sound]").onclick = async (e) => {
+    const on = await toggleSound();
+    e.target.textContent = on ? "Sound effects on" : "Sound effects off";
+  };
+  extras.querySelector("[data-music]").onclick = async (e) => {
+    const on = await toggleMusic();
+    e.target.textContent = on ? "Music on" : "Music off";
+  };
+  document.addEventListener("keydown", (e) => {
+    if (!active || e.key !== "Escape") return;
+    if (cityView) setCityView(false);
+    else if (!celebration.hidden) celebration.hidden = true;
+    else setMenu(false);
+  });
   function replicas() {
     return crewReplicas(
       projects,
@@ -394,6 +484,13 @@ export function mountHandsOnCity({
     const chapter = BUILDER_CHAPTERS.find((c) => c.id === activeSite);
     const done =
       chapter && chapterComplete(chapter.id, episode, state, systems);
+    if (done && chapter.number === unlockedThrough)
+      unlockedThrough = Math.min(12, unlockedThrough + 1);
+    for (const c of BUILDER_CHAPTERS) {
+      const option = [...picker.options].find((o) => o.value === c.id);
+      option.disabled = c.number > unlockedThrough;
+      option.textContent = `${option.disabled ? "Locked · " : chapterComplete(c.id, episode, state, systems) ? "✓ " : ""}Chapter ${c.number} · ${c.name}`;
+    }
     const heading = chapter
       ? `Chapter ${chapter.number}/12 · ${chapter.name}`
       : mission
@@ -408,6 +505,23 @@ export function mountHandsOnCity({
     panel.querySelector("[data-reflection]").textContent = done
       ? "Think back: " + CHAPTER_REFLECTIONS[chapter.id]
       : "";
+    const completed = done || (project && projects[project.id].open);
+    const completionKey = chapter?.id ?? project?.id;
+    if (!completed) celebrated.delete(completionKey);
+    if (active && completed && !celebrated.has(completionKey)) {
+      celebrated.add(completionKey);
+      celebration.hidden = false;
+      setMenu(false);
+      celebration.querySelector("[data-celebration-title]").textContent =
+        chapter
+          ? `Chapter ${chapter.number} complete!`
+          : `${project.name} is open!`;
+      celebration.querySelector("[data-celebration-message]").textContent =
+        chapter
+          ? `${chapter.name}. Your tested work made a difference. Look around and see what changed.`
+          : `${project.benefit} Crews can now use your tested design across the city.`;
+      celebration.querySelector("[data-celebration-next]").hidden = !chapter;
+    }
     panel.querySelector("[data-chapter-next]").hidden = !done;
     panel.querySelector("[data-chapter-next]").textContent =
       completedChapters(episode, state, systems) === 12
@@ -573,8 +687,22 @@ export function mountHandsOnCity({
   }
   function request(id) {
     if (!active) return;
+    celebration.hidden = true;
+    setMenu(false);
+    if (cityView) setCityView(false);
     const selected = objects.find((o) => o.id === id);
     if (!selected) return;
+    const requestedChapter = BUILDER_CHAPTERS.find(
+      (c) =>
+        c.id ===
+        (selected.system ??
+          selected.mission ??
+          (!selected.project ? "market" : null)),
+    );
+    if (requestedChapter && requestedChapter.number > unlockedThrough) {
+      updateUI(`Finish Chapter ${unlockedThrough} to unlock the next chapter.`);
+      return;
+    }
     if (selected.mission && !missionUnlocked(episode, selected.mission)) {
       updateUI("Complete the previous episode mission first.");
       return;
@@ -668,7 +796,17 @@ export function mountHandsOnCity({
     request(panel.querySelector("[data-next]").dataset.action);
   panel.querySelector("[data-site]").onchange = (event) => {
     const nextSite = event.target.value;
+    celebration.hidden = true;
+    cityView = false;
+    panel.classList.remove("city-overview");
+    toolbar.querySelector("[data-city-view]").textContent = "View my city";
+    setMenu(false);
     stop();
+    const chosenChapter = BUILDER_CHAPTERS.find((c) => c.id === nextSite);
+    if (chosenChapter && chosenChapter.number > unlockedThrough) {
+      updateUI(`Finish Chapter ${unlockedThrough} to unlock the next chapter.`);
+      return;
+    }
     if (
       BUILDER_MISSIONS.some((m) => m.id === nextSite) &&
       !missionUnlocked(episode, nextSite)
@@ -706,9 +844,10 @@ export function mountHandsOnCity({
     );
   };
   panel.querySelector("[data-chapter-next]").onclick = () => {
-    const next = BUILDER_CHAPTERS.find(
-      (c) => !chapterComplete(c.id, episode, state, systems),
-    );
+    const next =
+      completedChapters(episode, state, systems) === 12
+        ? null
+        : BUILDER_CHAPTERS[unlockedThrough - 1];
     if (!next) {
       updateUI(
         "All 12 chapter outcomes are tested. Your city is ready to explore; take a real-world Quest when ready.",
@@ -756,6 +895,9 @@ export function mountHandsOnCity({
   function close() {
     stop();
     active = false;
+    cityView = false;
+    celebration.hidden = true;
+    setMenu(false);
     root.visible = false;
     carry.visible = false;
     panel.hidden = true;
@@ -1058,10 +1200,13 @@ export function mountHandsOnCity({
       ),
       Math.min(1, dt * 4),
     );
-    const span = Math.max(
-      selectedProject?.id === "tower" ? 36 : 26,
-      17 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
-    );
+    if (cityView) focus.set(0, 0, 0);
+    const span = cityView
+      ? Math.max(135, 120 / camera.aspect)
+      : Math.max(
+          selectedProject?.id === "tower" ? 36 : 26,
+          17 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
+        );
     camera.position.set(
       focus.x + Math.sin(cameraYaw) * span * 0.55,
       span * 0.75,
@@ -1091,6 +1236,8 @@ export function mountHandsOnCity({
           actor.g.position.z - g.position.z,
         ) < 13;
       tag.hidden =
+        cityView ||
+        !celebration.hidden ||
         (spec.system ?? spec.mission ?? spec.project ?? "market") !==
           activeSite ||
         completedObject(spec) ||
@@ -1153,6 +1300,9 @@ export function mountHandsOnCity({
       };
       enter();
       active = true;
+      cityView = false;
+      panel.classList.remove("city-overview");
+      toolbar.querySelector("[data-city-view]").textContent = "View my city";
       root.visible = true;
       carry.visible = true;
       for (const [mesh] of snapshot.assets) mesh.visible = false;
@@ -1176,7 +1326,7 @@ export function mountHandsOnCity({
       );
       if (plan) waypoints = [...plan.points];
       tick(0, getCamera());
-      panel.querySelector("[data-exit]").focus();
+      toolbar.querySelector("[data-menu]").focus();
     },
     tick,
     close,

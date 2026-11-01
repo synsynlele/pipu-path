@@ -17,7 +17,7 @@ This release supplies one primary useful outcome in each chapter. It does not im
 | 11. Protect tomorrow           | Environment, resilience         | Separate materials, clear drainage and create a rain garden; test storm runoff and compost contamination.                                 |
 | 12. Leave something that lasts | Stewardship, city systems       | Complete eleven earlier outcomes and six prototypes; give residents a maintenance team, repair reserve and operating guide.               |
 
-The recurring five-step mission structure is: inspect the need and initial conditions; change the first physical lever; change or deliberately retain the second; change or deliberately retain the third; operate a trial and inspect its consequences. Chapter 1, market repair, clinic work and teaching retain their more specific existing physical sequences. Every trial records its tested fictional outcome. Changing a lever invalidates the result. Failed trials explain the causal problem; passing outcomes expose a reflection and a clear next chapter. Chapters can be explored through the worksite selector; exploration alone does not earn completion, and handover checks every required outcome.
+The recurring five-step mission structure is: inspect the need and initial conditions; change the first physical lever; change or deliberately retain the second; change or deliberately retain the third; operate a trial and inspect its consequences. Chapter 1, market repair, clinic work and teaching retain their more specific existing physical sequences. Every trial records its tested fictional outcome. Changing a lever invalidates the result. Failed trials explain the causal problem; passing outcomes expose a reflection and a clear next chapter. Chapters unlock sequentially after a tested useful outcome. Only the current chapter is shown during play; completed chapters can be reviewed in the City menu. Future chapters are disabled, and direct city-object requests cannot bypass the gate. Handover checks every required outcome.
 
 ## Growth without repetitive construction
 
@@ -25,13 +25,17 @@ Six reusable prototypes remain separate worksites. A successful construction ena
 
 Activity yards use the relevant existing district. Selecting a system chapter temporarily hides that construction prototype; selecting construction restores its actual saved-in-session stage. Other campaign geometry and campaign state are restored when leaving the preview. Cached construction recipes and simple bounded chapter geometry avoid a separate 3D engine or new external assets.
 
-## Guidance and orientation
+## Guidance, celebration and city view
 
-The current construction instruction is large and bold. Its action button appears before progress counters and optional controls. Instructions are not an answer key for the new system trials: players see initial conditions, adjust city objects and test consequences.
+Instructions are written directly over the city, with transparent containers and outlined readable text. City menu and View my city remain visible during play. The menu contains chapter review, future locked chapters, construction worksites, controls, sound/music and entrance recovery. The next action is prominent, while optional detail stays in the menu.
 
-On a portrait touch device, a real Start or Continue gesture attempts fullscreen and landscape orientation where supported. A visible Allow rotation button releases orientation and respects that choice for the rest of the session. Browsers that reject or lack locking show a dismissible sideways-play reminder. Playing in portrait always remains possible. Browser capability mocks verify success, failure and recovery; physical-phone testing remains necessary.
+Completing a tested chapter or opening a prototype triggers a flower celebration. Players can inspect the whole city, return to the mission, continue to the unlocked chapter or keep exploring. Viewing the city changes the camera, not the character position or campaign state. Reduced-motion settings disable the decorative flower animation.
 
-The orientation behavior follows the platform APIs documented by MDN: https://developer.mozilla.org/en-US/docs/Web/API/ScreenOrientation/lock and https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen.
+The landscape experiment has been removed. There are no orientation-lock or automatic fullscreen requests, rotation banners or forced device changes. The existing Start action opens the hands-on journey, without a separate preview button. The older saved story is retained in the menu; this hands-on journey remains session-only.
+
+## Thirty-six-mission delivery truth
+
+Twelve primary missions are implemented; twenty-four remain. The linked thirty-six-mission blueprint is the curriculum specification, not a claim of completed content. The next content build should add Chapters 1–4's eight remaining missions first (accessibility, food-loss investigation, supervised tool repair, material reuse, food sharing, storage, care access and service recovery), then Chapters 5–8 and 9–12. Each needs its own city interaction, tested useful outcome, causal failure and recovery, reflection, sequential gate and actual-character test. A repeated parameter preset is insufficient to call a mission new. Delivery dates require implementation and playtest evidence; none is promised here.
 
 ## Expansion rule
 

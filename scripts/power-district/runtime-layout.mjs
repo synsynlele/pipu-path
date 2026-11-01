@@ -179,7 +179,7 @@ assert.equal(
 );
 assert(w.document.getElementById("music"));
 assert(w.document.getElementById("sound"));
-w.document.getElementById("start").click();
+w.document.querySelector("[data-classic]").click();
 assert.equal(w.document.getElementById("intro").hidden, true);
 assert.equal(w.document.getElementById("build-lab").open, false);
 assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
@@ -559,7 +559,7 @@ for (const optionIndex of [0, 2]) {
     );
     game.render(); // Navigation rebuilds discard transient walking callbacks.
     w.document.getElementById("menu-entrance").click();
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(game.journey.caseId, item.id);
     assert.equal(w.document.getElementById("detail").hidden, false);
     Object.defineProperty(w.document, "hidden", {
@@ -664,7 +664,7 @@ enterpriseSelect.dispatchEvent(new w.Event("change", { bubbles: true }));
 for (let day = 0; day < 7; day++) {
   const before = JSON.stringify(game.state.economy);
   w.document.getElementById("menu-entrance").click();
-  w.document.getElementById("start").click();
+  w.document.querySelector("[data-classic]").click();
   assert.equal(w.document.getElementById("opportunities-panel").hidden, false);
   assert.equal(JSON.stringify(game.state.economy), before);
   assert.equal(w.document.getElementById("chapter-four-start").hidden, true);
@@ -688,7 +688,7 @@ assert.equal(w.document.getElementById("resilience-panel").hidden, false);
 for (let round = 0; round < 3; round++) {
   const before = JSON.stringify(game.state.resilience);
   w.document.getElementById("menu-entrance").click();
-  w.document.getElementById("start").click();
+  w.document.querySelector("[data-classic]").click();
   assert.equal(w.document.getElementById("resilience-panel").hidden, false);
   assert.equal(JSON.stringify(game.state.resilience), before);
   const button = w.document.querySelector("#resilience-choices button");
@@ -848,7 +848,7 @@ for (let index = 0; index < 16; index++) {
   applyAdvancedPlan(w, game, m, plan);
   const beforeRecovery = JSON.stringify(game.state.advanced);
   w.document.getElementById("menu-entrance").click();
-  w.document.getElementById("start").click();
+  w.document.querySelector("[data-classic]").click();
   assert.equal(w.document.getElementById("advanced-panel").hidden, false);
   assert.equal(JSON.stringify(game.state.advanced), beforeRecovery);
   assert.deepEqual(readAdvancedPlan(w.document, m), plan);
@@ -877,7 +877,7 @@ for (let index = 0; index < 16; index++) {
       w.document.getElementById("menu-entrance").getAttribute("aria-label"),
       "Return to game entrance",
     );
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(w.document.getElementById("intro").hidden, true);
     assert.equal(JSON.stringify(game.state.advanced), beforeEntrance);
     assert.equal(w.document.getElementById("advanced-panel").hidden, false);
@@ -885,7 +885,7 @@ for (let index = 0; index < 16; index++) {
   if (index === 0) {
     Object.assign(game.state, restored);
     w.document.getElementById("intro").hidden = false;
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(game.state.advanced.cursor.phase, "configure");
     assert.deepEqual(readAdvancedPlan(w.document, m), plan);
   }
@@ -916,11 +916,11 @@ for (let index = 0; index < 16; index++) {
   assert.deepEqual(game.state.economy, JSON.parse(previousEconomy));
   if (index === 0) {
     w.document.getElementById("intro").hidden = false;
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     const resultBeforeEntrance = JSON.stringify(game.state.advanced);
     w.document.getElementById("menu-entrance").click();
     assert.equal(w.document.getElementById("intro").hidden, false);
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(JSON.stringify(game.state.advanced), resultBeforeEntrance);
     assert.equal(game.state.advanced.records.length, 1);
     assert.equal(
@@ -1032,7 +1032,7 @@ assert.deepEqual(
   game.state.operations,
   "Entrance opt-in must save actual service progress",
 );
-w.document.getElementById("start").click();
+w.document.querySelector("[data-classic]").click();
 assert.equal(JSON.stringify(game.state.operations), operationsBeforeEntrance);
 assert.equal(JSON.stringify(game.state.decisions), beforeServices.decisions);
 assert.equal(JSON.stringify(game.state.economy), beforeServices.economy);
@@ -1404,8 +1404,32 @@ console.log(
 // Actual worksite controller: character walks, carries, repairs and tests the city.
 const campaignBeforeHandsOn = JSON.stringify(game.state);
 const beforeMarketPosition = game.player.g.position.clone();
-w.document.querySelector("#hands-on-start").click();
+w.document.querySelector("#start").click();
 const handsPanel = w.document.querySelector(".hands-on-panel");
+assert.equal(
+  w.document.querySelector("#hands-on-start"),
+  null,
+  "no separate preview entrance",
+);
+assert.equal(
+  w.document.querySelector(".landscape-play"),
+  null,
+  "no landscape prompt",
+);
+handsPanel.querySelector("[data-menu]").click();
+assert.equal(
+  handsPanel.querySelector(".hands-on-menu").hidden,
+  false,
+  "visible usable city menu",
+);
+handsPanel.querySelector("[data-menu]").click();
+const beforeOverview = game.player.g.position.clone();
+handsPanel.querySelector("[data-city-view]").click();
+assert(handsPanel.classList.contains("city-overview"));
+assert(game.camera.position.y >= 100, "full-city overview");
+assert(game.player.g.position.distanceTo(beforeOverview) < 0.001);
+handsPanel.querySelector("[data-city-view]").click();
+assert(!handsPanel.classList.contains("city-overview"));
 assert.equal(handsPanel.hidden, false);
 assert.equal(w.document.querySelector("#intro").hidden, true);
 assert.equal(game.beginManualExplore(), false);
@@ -1423,6 +1447,17 @@ const episodeWork = (id) => {
     handsPanel.querySelector("[data-status]").textContent,
   );
 };
+assert(
+  handsPanel.querySelector('option[value="food"]').disabled,
+  "future chapter is locked",
+);
+const lockedBefore = JSON.stringify(game.handsOnCity.systems);
+game.handsOnCity.request("food:a");
+assert.equal(
+  JSON.stringify(game.handsOnCity.systems),
+  lockedBefore,
+  "direct request cannot bypass the chapter gate",
+);
 handsPanel.querySelector("[data-site]").value = "care";
 handsPanel
   .querySelector("[data-site]")
@@ -1433,28 +1468,18 @@ for (const id of ["resident", "tank", "pump", "test"])
 assert.equal(game.handsOnCity.episode.investigate.done, false);
 for (const id of ["valve", "valve", "test"]) episodeWork("investigate:" + id);
 assert.equal(game.handsOnCity.episode.investigate.done, true);
-for (const id of [
-  "test",
-  "supplies",
-  "deliver",
-  "supplies",
-  "deliver",
-  "support",
-  "test",
-])
-  episodeWork("care:" + id);
-assert.equal(game.handsOnCity.episode.care.done, true);
-for (const id of ["tools", "demonstrate", "test"]) episodeWork("teach:" + id);
-assert.equal(game.handsOnCity.episode.teach.done, false);
-for (const id of ["jig", "test"]) episodeWork("teach:" + id);
-assert.equal(game.handsOnCity.episode.teach.done, true);
+assert.equal(
+  handsPanel.querySelector(".hands-on-celebration").hidden,
+  false,
+  "successful chapter celebrates",
+);
 assert.match(
-  handsPanel.querySelector("[data-progress]").textContent,
-  /3\/12 chapter outcomes/,
+  handsPanel.querySelector("[data-celebration-title]").textContent,
+  /Chapter 1 complete/,
 );
-console.log(
-  "PASS: real character investigates water, organises four clinic arrivals and enables independent apprentice success.",
-);
+handsPanel.querySelector("[data-celebration-view]").click();
+assert(handsPanel.classList.contains("city-overview"));
+handsPanel.querySelector("[data-city-view]").click();
 handsPanel.querySelector("[data-chapter-next]").click();
 assert.equal(
   handsPanel.querySelector("[data-site]").value,
@@ -1544,6 +1569,30 @@ assert.match(
   /reopened the market/,
 );
 assert.equal(handsPanel.querySelector("[data-quest]").hidden, false);
+for (const action of ["a", "b", "c", "test"]) episodeWork("food:" + action);
+assert.equal(game.handsOnCity.systems.food.done, true);
+for (const id of [
+  "test",
+  "supplies",
+  "deliver",
+  "supplies",
+  "deliver",
+  "support",
+  "test",
+])
+  episodeWork("care:" + id);
+assert.equal(game.handsOnCity.episode.care.done, true);
+for (const id of ["tools", "demonstrate", "test"]) episodeWork("teach:" + id);
+assert.equal(game.handsOnCity.episode.teach.done, false);
+for (const id of ["jig", "test"]) episodeWork("teach:" + id);
+assert.equal(game.handsOnCity.episode.teach.done, true);
+assert.match(
+  handsPanel.querySelector("[data-progress]").textContent,
+  /5\/12 chapter outcomes/,
+);
+console.log(
+  "PASS: real character investigates water, organises four clinic arrivals and enables independent apprentice success.",
+);
 // Residents spawn clear of the player and keep personal space while moving.
 for (let frame = 0; frame < 180; frame++) {
   game.handsOnCity.tick(0.1, game.camera);
@@ -1611,7 +1660,6 @@ console.log(
 );
 // Every added chapter must be reachable and solved through the real actor, not model setters.
 const systemSolutions = {
-  food: [1, 1, 1],
   invent: [1, 1, 2],
   culture: [1, 1, 0],
   enterprise: [1, 1, 1],
@@ -1667,7 +1715,7 @@ assert(
 handsPanel.querySelector("[data-exit]").click();
 assert.equal(handsPanel.hidden, true);
 assert.equal(w.document.querySelector("#intro").hidden, false);
-assert.equal(w.document.activeElement.id, "hands-on-start");
+assert.equal(w.document.activeElement.id, "start");
 assert(game.player.g.position.distanceTo(beforeMarketPosition) < 0.001);
 assert.equal(JSON.stringify(game.state), campaignBeforeHandsOn);
 console.log(
