@@ -64,7 +64,8 @@ export function mountHandsOnCity({
     elapsed = 0,
     snapshot = null,
     cityView = false,
-    unlockedThrough = 1;
+    unlockedThrough = 1,
+    overviewFar = null;
   const celebrated = new Set();
   const objects = [
     ...MARKET_OBJECTS,
@@ -154,6 +155,13 @@ export function mountHandsOnCity({
   };
   function setCityView(value) {
     stop();
+    const camera = getCamera();
+    if (value && !cityView) overviewFar = camera.far;
+    if (!value && overviewFar !== null) {
+      camera.far = overviewFar;
+      camera.updateProjectionMatrix();
+      overviewFar = null;
+    }
     cityView = value;
     celebration.hidden = true;
     setMenu(false);
@@ -796,8 +804,8 @@ export function mountHandsOnCity({
     request(panel.querySelector("[data-next]").dataset.action);
   panel.querySelector("[data-site]").onchange = (event) => {
     const nextSite = event.target.value;
+    if (cityView) setCityView(false);
     celebration.hidden = true;
-    cityView = false;
     panel.classList.remove("city-overview");
     toolbar.querySelector("[data-city-view]").textContent = "View my city";
     setMenu(false);
@@ -895,6 +903,12 @@ export function mountHandsOnCity({
   function close() {
     stop();
     active = false;
+    if (overviewFar !== null) {
+      const camera = getCamera();
+      camera.far = overviewFar;
+      camera.updateProjectionMatrix();
+      overviewFar = null;
+    }
     cityView = false;
     celebration.hidden = true;
     setMenu(false);
@@ -1202,11 +1216,15 @@ export function mountHandsOnCity({
     );
     if (cityView) focus.set(0, 0, 0);
     const span = cityView
-      ? Math.max(135, 120 / camera.aspect)
+      ? Math.max(270, 320 / camera.aspect)
       : Math.max(
           selectedProject?.id === "tower" ? 36 : 26,
           17 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
         );
+    if (cityView && camera.far < span * 2 + 100) {
+      camera.far = span * 2 + 100;
+      camera.updateProjectionMatrix();
+    }
     camera.position.set(
       focus.x + Math.sin(cameraYaw) * span * 0.55,
       span * 0.75,

@@ -1424,12 +1424,37 @@ assert.equal(
 );
 handsPanel.querySelector("[data-menu]").click();
 const beforeOverview = game.player.g.position.clone();
+const beforeOverviewFar = game.camera.far;
 handsPanel.querySelector("[data-city-view]").click();
 assert(handsPanel.classList.contains("city-overview"));
 assert(game.camera.position.y >= 100, "full-city overview");
+const originalAspect = game.camera.aspect;
+for (const aspect of [0.46, 1, 1.456, 2.2]) {
+  game.camera.aspect = aspect;
+  game.camera.updateProjectionMatrix();
+  game.handsOnCity.tick(0, game.camera);
+  for (const x of [-58, 58])
+    for (const z of [-50, 50])
+      for (const y of [0, 30]) {
+        const corner = new T.Vector3(x, y, z).project(game.camera);
+        assert(
+          Math.abs(corner.x) < 0.95 &&
+            Math.abs(corner.y) < 0.95 &&
+            corner.z < 1,
+          "entire city and skyline fit portrait and wide views",
+        );
+      }
+}
+game.camera.aspect = originalAspect;
+game.camera.updateProjectionMatrix();
 assert(game.player.g.position.distanceTo(beforeOverview) < 0.001);
 handsPanel.querySelector("[data-city-view]").click();
 assert(!handsPanel.classList.contains("city-overview"));
+assert.equal(
+  game.camera.far,
+  beforeOverviewFar,
+  "return restores the original camera clipping",
+);
 assert.equal(handsPanel.hidden, false);
 assert.equal(w.document.querySelector("#intro").hidden, true);
 assert.equal(game.beginManualExplore(), false);
