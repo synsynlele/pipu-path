@@ -2076,3 +2076,7 @@ Retired the tile/drainage pilot. Added deterministic collect/carry/repair/push/s
 ## 1 November 2026 — Construction catalogue and resident clearance
 
 Added shared swept personal-space rules, safe spawn/steering, resident-aware route replanning, six kit/base/structure/services/test worksite contracts, and distinct merged/cached final building recipes. Added automated tests for all six model/controller build flows, road clearance, invalid order and human separation. Final cosmetic alignment is conditional on successful work and does not fabricate campaign or real-world progress.
+
+## 1 November 2026 — Broad builder campaign and replication blueprint
+
+Drafted twelve chapters/36 mission cards with action steps, outcome evidence, reflection and continuation. Specified chapter-driven city growth and build-once/crew-replication rules, with balanced land use, exactly-once deployment intent and a fully developed final city. This change is design documentation; the current construction preview and authored campaign remain unchanged.
