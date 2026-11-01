@@ -853,7 +853,8 @@ for (const c of crates) {
   const p = c.g.position;
   box(0.57, 0.08, 0.55, 0xc2cfe3, p.x, 0.89, p.z, crateCover);
 }
-for (const object of scene.children.slice(marketStart)) {
+const marketAssets = scene.children.slice(marketStart);
+for (const object of marketAssets) {
   object.position.x += 11;
   object.position.z += 15;
 }
@@ -4698,6 +4699,14 @@ const handsOnCity = mountHandsOnCity({
   scene,
   canvas: $("world"),
   getCamera: () => camera,
+  actor: player,
+  marketAssets,
+  planRoute: (point) => navigator.route(player.g.position, point),
+  refreshNavigation: () => {
+    navigationSignature = null;
+    rebuildNavigation();
+  },
+  cue: (kind) => cityAudio.cue(kind),
   enter() {
     pauseJourney("Hands-on city experiment");
     cancelWalk();
@@ -4720,7 +4729,7 @@ const handsOnCity = mountHandsOnCity({
 const handsOnStart = document.createElement("button");
 handsOnStart.id = "hands-on-start";
 handsOnStart.className = "primary";
-handsOnStart.textContent = "Build directly in the city →";
+handsOnStart.textContent = "Repair the market · hands-on preview →";
 $("start").before(handsOnStart);
 handsOnStart.onclick = () => handsOnCity.open();
 
@@ -5279,10 +5288,15 @@ function siteInCamera(position) {
 }
 function animateWorld(now) {
   if (handsOnCity.active) {
-    last = now;
-    if (!frameBudget.takeFrame(now, document.hidden) || graphicsInterrupted)
+    if (document.hidden) {
+      last = now;
+      frameBudget.takeFrame(now, true);
       return;
-    handsOnCity.camera(camera);
+    }
+    if (!frameBudget.takeFrame(now, false) || graphicsInterrupted) return;
+    const missionDt = Math.min(Math.max(0, (now - last) / 1000), 0.5);
+    last = now;
+    handsOnCity.tick(missionDt, camera);
     renderer.render(scene, camera);
     return;
   }

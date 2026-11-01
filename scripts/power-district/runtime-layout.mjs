@@ -85,7 +85,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment, getHandoffTopic, goTo, cancelWalk, beginManualExplore, keys, target, distance, yaw, pitch};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment, getHandoffTopic, goTo, cancelWalk, beginManualExplore, keys, target, distance, yaw, pitch, handsOnCity};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -1401,15 +1401,35 @@ assert(!game.keys.has("w"));
 console.log(
   "PASS: actual movement takeover, route preservation on city changes, stationary-traffic escape, exactly-once arrival, modal movement freeze and perspective/overview camera recovery.",
 );
-// The in-city experiment preserves campaign state and supports a full keyboard build.
+// Actual worksite controller: character walks, carries, repairs and tests the city.
 const campaignBeforeHandsOn = JSON.stringify(game.state);
+const beforeMarketPosition = game.player.g.position.clone();
 w.document.querySelector("#hands-on-start").click();
 const handsPanel = w.document.querySelector(".hands-on-panel");
 assert.equal(handsPanel.hidden, false);
 assert.equal(w.document.querySelector("#intro").hidden, true);
 assert.equal(game.beginManualExplore(), false);
-const tileButtons = () => handsPanel.querySelectorAll(".hands-on-grid button");
-// Project an actual 3D ground tile to a touch coordinate and exercise raycasting.
+const modelBeforeWalk = JSON.stringify(game.handsOnCity.state);
+// Canceling a walk or blurring the page never performs its pending work.
+game.handsOnCity.request("timber");
+assert.equal(JSON.stringify(game.handsOnCity.state), modelBeforeWalk);
+w.dispatchEvent(new w.Event("blur"));
+assert.equal(game.handsOnCity.moving, false);
+assert.equal(game.handsOnCity.state.carrying, null);
+game.handsOnCity.request("timber");
+const moveStart = game.player.g.position.clone();
+for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+  game.handsOnCity.tick(0.1, game.camera);
+assert(game.player.g.position.distanceTo(moveStart) > 1);
+assert.equal(game.handsOnCity.state.carrying, "timber");
+handsPanel.querySelector("[data-drop]").click();
+// Select the real timber geometry through the camera, not a remote action hook.
+const missionRoot = game.scene.children.find((g) =>
+  g.children.some((o) => o.userData.marketTarget === "timber"),
+);
+const timberGroup = missionRoot.children.find(
+  (o) => o.userData.marketTarget === "timber",
+);
 const worldCanvas = w.document.querySelector("#world");
 worldCanvas.setPointerCapture = () => {};
 worldCanvas.getBoundingClientRect = () => ({
@@ -1418,42 +1438,70 @@ worldCanvas.getBoundingClientRect = () => ({
   width: 390,
   height: 844,
 });
-game.animateWorld(performance.now() + 1000000);
+game.scene.updateMatrixWorld(true);
 game.camera.updateMatrixWorld();
-const groundPoint = new T.Vector3(81.6, 0.39, -2.2).project(game.camera);
+const materialPoint = new T.Vector3().copy(timberGroup.position);
+materialPoint.y = 0.8;
+materialPoint.project(game.camera);
 for (const type of ["pointerdown", "pointerup"]) {
   const event = new w.MouseEvent(type, {
     bubbles: true,
-    clientX: (groundPoint.x + 1) * 195,
-    clientY: (1 - groundPoint.y) * 422,
+    clientX: (materialPoint.x + 1) * 195,
+    clientY: (1 - materialPoint.y) * 422,
   });
-  Object.defineProperty(event, "pointerId", { value: 80 });
+  Object.defineProperty(event, "pointerId", { value: 81 });
   worldCanvas.dispatchEvent(event);
 }
-assert.equal(tileButtons()[8].textContent, "drain");
-handsPanel.querySelector("[data-undo]").click();
-assert.equal(tileButtons()[8].textContent, "Ground");
-
-for (const id of [8, 9, 10, 11, 12, 16, 23, 30]) tileButtons()[id].click();
-handsPanel.querySelector("[data-test]").click();
-assert.match(handsPanel.querySelector("[data-status]").textContent, /1\/3/);
-handsPanel.querySelector('[data-tool="basin"]').click();
-tileButtons()[30].click();
-handsPanel.querySelector("[data-test]").click();
+for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+  game.handsOnCity.tick(0.1, game.camera);
+assert.equal(game.handsOnCity.state.carrying, "timber");
+const doWork = (id) => {
+  game.handsOnCity.request(id);
+  for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+};
+doWork("stall-a");
+assert.equal(game.handsOnCity.state.frames[0], true);
+assert.equal(game.handsOnCity.state.carrying, null);
+for (const id of [
+  "timber",
+  "stall-b",
+  "roofing",
+  "stall-a",
+  "roofing",
+  "stall-b",
+  "bell",
+])
+  doWork(id);
+assert.equal(game.handsOnCity.state.opened, false);
 assert.match(
   handsPanel.querySelector("[data-status]").textContent,
-  /All three homes/,
+  /Market test/,
 );
-handsPanel.querySelector("[data-undo]").click();
-handsPanel.querySelector("[data-test]").click();
-assert.match(handsPanel.querySelector("[data-status]").textContent, /1\/3/);
+for (const id of ["cart", "loading", "produce", "shelf"]) doWork(id);
+assert.equal(game.handsOnCity.state.produce, "street");
+handsPanel.querySelector("[data-drop]").click();
+for (const id of ["cart", "parking", "produce", "shelf", "bell"]) doWork(id);
+assert.equal(game.handsOnCity.state.opened, true);
+assert.match(
+  handsPanel.querySelector("[data-status]").textContent,
+  /reopened the market/,
+);
+assert.equal(handsPanel.querySelector("[data-quest]").hidden, false);
+const originalMarketMeshes = game.scene.children.filter(
+  (o) => o.userData.marketTarget,
+);
+assert(
+  originalMarketMeshes.length === 0,
+  "mission work objects live under their own bounded group",
+);
 handsPanel.querySelector("[data-exit]").click();
 assert.equal(handsPanel.hidden, true);
 assert.equal(w.document.querySelector("#intro").hidden, false);
 assert.equal(w.document.activeElement.id, "hands-on-start");
+assert(game.player.g.position.distanceTo(beforeMarketPosition) < 0.001);
 assert.equal(JSON.stringify(game.state), campaignBeforeHandsOn);
 console.log(
-  "PASS: hands-on city entrance, keyboard construction, rain failure/success, undo and campaign-preserving exit.",
+  "PASS: real avatar walking, carried materials, repaired frames/roofs, cart-doorway consequences, protected stock, opened market and campaign-preserving recovery.",
 );
-
 process.exit(0);

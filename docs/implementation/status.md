@@ -1774,3 +1774,9 @@ This is a session-only gameplay pilot, not a replacement of all twelve authored 
 ## 1 November 2026 — Browser-tested hands-on preview
 
 Started a game-only static preview through the managed preview service, using the exact public game assets without Next.js or production changes. Actual canvas taps built eight drain tiles; rainfall first protected one of three homes, then a connected basin protected all three. Browser inspection revealed inherited global header styles overlapping mission controls; the worksite heading now uses a scoped container and explicit readable paragraph colours. The preview has no authenticated/backend routes. The pilot remains a construction board and requires richer city integration before it represents the intended building experience.
+
+## 1 November 2026 — Character-driven market street pilot
+
+Replaced the rejected drainage board with a worksite in the existing Harvest Exchange district. The original character walks to objects, visibly carries timber/roof sheets/produce, repairs two frames and roofs, pushes an abandoned cart, protects stock and rings a bell to test the market. Parking in the storage doorway has a recoverable consequence. Work executes only after route arrival and a brief working animation. A complete site opens with traders and moving customers. Direct mesh raycasts and projected object labels share the same action path; accessible object controls, stop, reset, exit, blur and hidden-tab recovery are provided.
+
+The original market scenery is hidden only during the pilot and restored on exit alongside campaign character position. Worksite progress is session-only and does not change campaign saves, credits or real-world evidence. See docs/product/market-street-hands-on.md. Model/controller tests, full validate and browser checks gate one phone-accessible preview; production remains unchanged.

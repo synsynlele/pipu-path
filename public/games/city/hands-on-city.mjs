@@ -1,193 +1,420 @@
 import {
-  WIDTH,
-  HEIGHT,
-  HOMES,
-  OUTLET,
-  BLOCKED,
-  BUDGET,
-  newSite,
-  spent,
-  editSite,
-  testRain,
-} from "./hands-on-model.mjs";
+  MARKET_OBJECTS,
+  newMarket,
+  marketAction,
+  marketHint,
+  marketReport,
+} from "./market-actions.mjs";
 export function mountHandsOnCity({
   T,
   scene,
   canvas,
   getCamera,
+  actor,
+  marketAssets,
+  planRoute,
+  refreshNavigation,
   enter,
   leave,
+  cue = () => {},
 }) {
   let active = false,
-    site = newSite(),
-    history = [],
-    tool = "drain",
-    result = null;
+    state = newMarket(),
+    waypoints = [],
+    pending = null,
+    work = null,
+    walking = false,
+    elapsed = 0,
+    snapshot = null;
   const root = new T.Group();
-  root.position.set(86, 0, 0);
   root.visible = false;
   scene.add(root);
-  const meshes = [],
-    materials = [],
-    geometries = [],
-    drops = [];
-  let rainUntil = 0;
+  const geometry = new Map(),
+    materials = new Map(),
+    targets = new Map(),
+    objectGroups = new Map();
+  const carry = new T.Group();
+  carry.userData.character = true;
+  actor.g.add(carry);
+  const customers = [],
+    celebrants = [];
+  let cartMesh,
+    navigationDirty = false;
   const panel = document.createElement("section");
-  panel.className = "hands-on-panel";
+  panel.className = "hands-on-panel market-worksite";
   panel.hidden = true;
-  panel.setAttribute("aria-label", "Hands-on city building");
-  panel.innerHTML = `<div class="hands-on-heading"><strong>Protect the homes</strong><button data-exit aria-label="Return to game entrance">✕</button></div><p>Rain enters three homes. Build drains to the blue outlet. Basins hold extra water.</p><div class="hands-on-tools" role="group" aria-label="Building tools"><button data-tool="drain">Drain · 1</button><button data-tool="basin">Basin · 3</button><button data-tool="clear">Clear · 1</button><button data-tool="remove">Remove</button></div><div class="hands-on-tools"><button data-test>Test with rain</button><button data-undo>Undo</button><button data-reset>Start again</button></div><p data-status role="status" aria-live="polite"></p><details><summary>Keyboard controls and building map</summary><p>Select a tool, then select a ground tile. Brown tiles are blockages. The blue outlet is at row 5, column 4. Practice stays in this session.</p><div class="hands-on-grid" role="group" aria-label="City ground tiles"></div></details><a href="/real-quests" target="_top">Try a real-world Quest →</a>`;
-  document.body.append(panel);
-  const grid = panel.querySelector(".hands-on-grid");
-  function cube(w, h, d, color, x, y, z) {
-    const geometry = new T.BoxGeometry(w, h, d),
-      material = new T.MeshStandardMaterial({ color, roughness: 0.85 });
-    geometries.push(geometry);
-    materials.push(material);
-    const mesh = new T.Mesh(geometry, material);
-    mesh.position.set(x, y, z);
-    root.add(mesh);
-    return mesh;
-  }
-  function draw(
-    message = "Tap the ground to build. Materials: " + (BUDGET - spent(site)),
-  ) {
-    root.clear();
-    meshes.length = 0;
-    drops.length = 0;
-    geometries.splice(0).forEach((g) => g.dispose());
-    materials.splice(0).forEach((m) => m.dispose());
-    grid.replaceChildren();
-    for (let id = 0; id < WIDTH * HEIGHT; id++) {
-      const x = ((id % WIDTH) - 3) * 2.2,
-        z = (Math.floor(id / WIDTH) - 2) * 2.2;
-      const blocked = BLOCKED.includes(id) && !site.cleared.includes(id),
-        home = HOMES.includes(id),
-        kind = site.tiles[id];
-      const flooded = result?.flooded.includes(id);
-      const color = flooded
-        ? 0x409bd1
-        : home
-          ? result
-            ? 0x78bf85
-            : 0xe3c598
-          : id === OUTLET
-            ? 0x176cba
-            : blocked
-              ? 0x7a533c
-              : kind === "basin"
-                ? 0x30c6b4
-                : kind === "drain"
-                  ? 0x438ba0
-                  : 0xb6c799;
-      const tile = cube(2, 0.18, 2, color, x, 0.3, z);
-      tile.userData.handsOnTile = id;
-      meshes.push(tile);
-      if (home) {
-        const house = cube(1.4, 1.3, 1.3, 0xf4d7b0, x, 1, z);
-        house.userData.handsOnTile = id;
-        meshes.push(house);
-        cube(1.65, 0.3, 1.6, flooded ? 0x426d91 : 0xb85d48, x, 1.8, z);
-      }
-      if (blocked) cube(1.1, 0.6, 1.1, 0x73503a, x, 0.7, z);
-      if (kind === "basin") cube(1.6, 0.25, 1.6, 0x215a79, x, 0.55, z);
-      const b = document.createElement("button");
-      b.textContent = home
-        ? "Home"
-        : id === OUTLET
-          ? "Outlet"
-          : blocked
-            ? "Blocked"
-            : kind || "Ground";
-      b.setAttribute(
-        "aria-label",
-        `Row ${Math.floor(id / WIDTH) + 1}, column ${(id % WIDTH) + 1}: ${b.textContent}`,
+  panel.setAttribute("aria-label", "Repair the market");
+  panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><p data-goal></p><div class="market-progress" data-progress></div><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Market objects"></div><button data-reset>Restart this market</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
+  const tags = document.createElement("div");
+  tags.className = "market-tags";
+  tags.hidden = true;
+  document.body.append(panel, tags);
+  function box(parent, w, h, d, color, x, y, z) {
+    const key = [w, h, d].join(":");
+    if (!geometry.has(key)) geometry.set(key, new T.BoxGeometry(w, h, d));
+    if (!materials.has(color))
+      materials.set(
+        color,
+        new T.MeshStandardMaterial({ color, roughness: 0.86 }),
       );
-      b.onclick = () => edit(id);
-      grid.append(b);
-    }
-    if (result)
-      for (let i = 0; i < 24; i++) {
-        const drop = cube(
-          0.035,
-          0.45,
-          0.035,
-          0x7acbed,
-          ((i % 8) - 3.5) * 1.8,
-          2 + (i % 4),
-          (Math.floor(i / 8) - 1) * 3,
-        );
-        drops.push(drop);
-      }
-    panel.querySelector("[data-status]").textContent = message;
-    panel.querySelector("[data-undo]").disabled = !history.length;
-    panel
-      .querySelectorAll("[data-tool]")
-      .forEach((b) =>
-        b.setAttribute("aria-pressed", String(b.dataset.tool === tool)),
-      );
+    const m = new T.Mesh(geometry.get(key), materials.get(color));
+    m.position.set(x, y, z);
+    parent.add(m);
+    return m;
   }
-  function edit(id) {
-    const next = editSite(site, id, tool);
-    if (next.site !== site) {
-      history.push(site);
-      site = next.site;
-      result = null;
-    }
-    draw(next.message + ` Materials left: ${BUDGET - spent(site)}.`);
+  function object(id) {
+    const spec = MARKET_OBJECTS.find((o) => o.id === id),
+      g = new T.Group();
+    g.position.set(spec.x, 0, spec.z);
+    g.userData.marketTarget = id;
+    root.add(g);
+    objectGroups.set(id, g);
+    return g;
   }
-  panel.querySelectorAll("[data-tool]").forEach(
-    (b) =>
-      (b.onclick = () => {
-        tool = b.dataset.tool;
-        draw(
-          `Selected ${tool}. Tap a ground tile. Materials left: ${BUDGET - spent(site)}.`,
-        );
-      }),
-  );
-  panel.querySelector("[data-test]").onclick = () => {
-    result = testRain(site);
-    rainUntil = performance.now() + 2600;
-    draw(
-      result.success
-        ? "All three homes stayed dry! You built a working drainage system. Improve your design or take a real-world Quest."
-        : `${result.safe.length}/3 homes protected. ${result.capacity < 3 ? "Add a connected basin for extra capacity. " : ""}Connect drains beside each home all the way to the blue outlet, then test again.`,
+  function person(parent, x, z, color) {
+    const g = new T.Group();
+    g.userData.character = true;
+    g.position.set(x, 0.3, z);
+    parent.add(g);
+    box(g, 0.48, 0.68, 0.32, color, 0, 1, 0);
+    box(g, 0.34, 0.38, 0.34, 0xb7815a, 0, 1.55, 0);
+    const legs = [-1, 1].map((side) =>
+      box(g, 0.15, 0.65, 0.18, 0x344b57, side * 0.13, 0.37, 0),
     );
-  };
-  panel.querySelector("[data-undo]").onclick = () => {
-    if (history.length) {
-      site = history.pop();
-      result = null;
-      draw();
+    const arms = [-1, 1].map((side) =>
+      box(g, 0.12, 0.57, 0.15, color, side * 0.32, 1, 0),
+    );
+    return { g, legs, arms };
+  }
+  function cartPosition() {
+    const spec = MARKET_OBJECTS.find(
+      (o) => o.id === (state.cart === "entrance" ? "cart" : state.cart),
+    );
+    return { x: spec.x, z: spec.z };
+  }
+  function drawWorld() {
+    root.clear();
+    carry.clear();
+    objectGroups.clear();
+    customers.length = 0;
+    celebrants.length = 0;
+    for (const id of ["stall-a", "stall-b"]) {
+      const i = id === "stall-a" ? 0 : 1,
+        g = object(id);
+      box(g, 2.8, 0.12, 2.5, 0xb7a084, 0, 0.25, 0);
+      for (const x of [-1.15, 1.15])
+        for (const z of [-0.9, 0.9]) {
+          const post = box(
+            g,
+            0.12,
+            state.frames[i] ? 2.4 : 1.0,
+            0.12,
+            0x8c6846,
+            x,
+            state.frames[i] ? 1.5 : 0.8,
+            z,
+          );
+          if (!state.frames[i]) post.rotation.z = x < 0 ? 0.23 : -0.23;
+        }
+      if (state.frames[i]) {
+        box(g, 2.5, 0.14, 0.14, 0xa37950, 0, 2.65, -0.9);
+        box(g, 2.5, 0.14, 0.14, 0xa37950, 0, 2.65, 0.9);
+      }
+      if (state.roofs[i]) {
+        box(g, 3, 0.12, 2.8, i ? 0x417a72 : 0xb76943, 0, 2.85, 0);
+        for (let n = 0; n < 7; n++)
+          box(g, 0.04, 0.025, 2.8, 0xe2c08f, -1.35 + n * 0.45, 2.93, 0);
+      }
+      box(
+        g,
+        2.4,
+        0.17,
+        0.65,
+        state.frames[i] ? 0xae8358 : 0x766552,
+        0,
+        1.0,
+        0.8,
+      );
+      if (state.opened) {
+        for (let n = 0; n < 5; n++)
+          box(
+            g,
+            0.29,
+            0.22,
+            0.3,
+            n % 2 ? 0xdaab4c : 0x799950,
+            -0.9 + n * 0.42,
+            1.2,
+            0.8,
+          );
+        celebrants.push(
+          person(
+            root,
+            MARKET_OBJECTS.find((o) => o.id === id).x,
+            12.8,
+            i ? 0xd6a64d : 0x618d8d,
+          ),
+        );
+      }
     }
+    const timber = object("timber");
+    for (let n = 0; n < 5; n++)
+      box(timber, 1.65, 0.15, 0.2, 0xb88c54, 0, 0.45 + n * 0.15, 0);
+    const sheets = object("roofing");
+    for (let n = 0; n < 4; n++)
+      box(sheets, 1.7, 0.08, 1.25, 0x698f9e, 0, 0.32 + n * 0.1, 0);
+    const park = object("parking");
+    box(park, 2.3, 0.025, 2.1, 0xd1c498, 0, 0.19, 0);
+    for (const x of [-1.1, 1.1])
+      box(park, 0.06, 0.03, 2.1, 0xffe08b, x, 0.23, 0);
+    const loading = object("loading");
+    box(loading, 2.1, 0.025, 1.6, 0xb9c4b0, 0, 0.2, 0);
+    const shelf = object("shelf");
+    box(shelf, 2.2, 0.15, 1.3, 0x8a6c50, 0, 0.7, 0);
+    for (const x of [-1, 1]) {
+      box(shelf, 0.1, 2.8, 0.1, 0x79684d, x, 1.6, -0.5);
+      box(shelf, 0.1, 2.8, 0.1, 0x79684d, x, 1.6, 0.5);
+    }
+    box(shelf, 2.6, 0.15, 2.2, 0x4e776e, 0, 3.05, 0.5);
+    const cart = object("cart");
+    const at = cartPosition();
+    cart.position.set(at.x, 0, at.z);
+    cartMesh = cart;
+    box(cart, 1.25, 0.65, 0.85, 0x967352, 0, 0.85, 0);
+    for (const x of [-0.65, 0.65])
+      box(cart, 0.13, 0.4, 0.4, 0x354341, x, 0.4, 0);
+    const crate = object("produce");
+    if (state.produce === "shelf") crate.position.set(23.5, 0.55, 9);
+    box(crate, 0.75, 0.6, 0.65, 0xc18c4a, 0, 0.55, 0);
+    for (let n = 0; n < 4; n++)
+      box(crate, 0.23, 0.18, 0.2, 0x779344, -0.22 + n * 0.15, 0.92, 0);
+    if (state.carrying === "produce") crate.visible = false;
+    const bell = object("bell");
+    box(bell, 0.12, 2.4, 0.12, 0x7c6951, 0, 1.4, 0);
+    box(bell, 0.65, 0.45, 0.45, 0xe5bd5a, 0, 2.5, 0);
+    if (state.carrying && state.carrying !== "cart") {
+      const color =
+        state.carrying === "timber"
+          ? 0xb88c54
+          : state.carrying === "roofing"
+            ? 0x698f9e
+            : 0xc18c4a;
+      box(
+        carry,
+        state.carrying === "timber" ? 1.25 : 0.8,
+        state.carrying === "roofing" ? 0.12 : 0.4,
+        0.5,
+        color,
+        0,
+        1,
+        0.6,
+      );
+    }
+    if (state.opened)
+      for (let i = 0; i < 4; i++)
+        customers.push(
+          person(
+            root,
+            17 + i * 0.8,
+            20 + i * 0.25,
+            [0x789a69, 0xc97f5e, 0x6e8ca9, 0xb7a16a][i],
+          ),
+        );
+    root.updateMatrixWorld(true);
+    navigationDirty = true;
+  }
+  function positionFor(id) {
+    const spec = MARKET_OBJECTS.find((o) => o.id === id);
+    let approach = { ...spec.approach },
+      point = { x: spec.x, z: spec.z };
+    if (id === "cart") {
+      point = cartPosition();
+      approach = { x: point.x - 1.2, z: point.z };
+    }
+    return { point, approach };
+  }
+  function updateUI(message) {
+    panel.querySelector("[data-goal]").textContent = marketHint(state);
+    panel.querySelector("[data-progress]").textContent =
+      `${state.roofs.filter(Boolean).length}/2 stalls sheltered · Entrance ${state.cart === "parking" ? "clear" : "blocked"} · Stock ${state.produce === "shelf" ? "safe" : "exposed"}`;
+    if (message !== undefined) {
+      panel.querySelector("[data-status]").textContent = message;
+    }
+    panel.querySelector("[data-carry]").textContent =
+      state.carrying === "cart"
+        ? "Pushing the cart"
+        : state.carrying
+          ? `Carrying: ${state.carrying === "roofing" ? "roof sheets" : state.carrying}`
+          : "Hands free";
+    panel.querySelector("[data-drop]").hidden =
+      !state.carrying || state.carrying === "cart";
+    panel.querySelector("[data-stop]").hidden = !waypoints.length;
+    panel.querySelector("[data-quest]").hidden = !state.opened;
+    for (const [id, { tag, accessible }] of targets) {
+      const spec = MARKET_OBJECTS.find((o) => o.id === id);
+      const i = id === "stall-a" ? 0 : 1;
+      let label = spec.name;
+      if (id.startsWith("stall-"))
+        label = state.roofs[i]
+          ? "Sheltered stall"
+          : state.frames[i]
+            ? "Fit roof"
+            : "Repair frame";
+      if (id === "cart")
+        label = state.carrying === "cart" ? "Pushing cart" : "Push cart";
+      if (id === "produce" && state.produce === "shelf")
+        label = "Produce stored";
+      if (id === "bell")
+        label = state.opened ? "Market open" : "Ring bell · test";
+      tag.textContent = label;
+      accessible.textContent = spec.name;
+      tag.disabled = state.carrying === "cart" && id === "cart";
+    }
+  }
+  function stop() {
+    waypoints = [];
+    pending = null;
+    work = null;
+    walking = false;
+    actor.legs.forEach((l) => (l.rotation.x = 0));
+    actor.arms.forEach((a) => (a.rotation.x = 0));
+    updateUI();
+  }
+  function apply(id) {
+    const next = marketAction(state, id);
+    state = next.state;
+    if (next.changed) {
+      drawWorld();
+      cue(next.report?.success ? "built" : "tap");
+    }
+    updateUI(next.message);
+  }
+  function request(id) {
+    if (!active) return;
+    if (navigationDirty) {
+      refreshNavigation();
+      navigationDirty = false;
+    }
+    if (id === "produce" && state.produce === "shelf") {
+      updateUI("The produce is already stored safely.");
+      return;
+    }
+    const { approach } = positionFor(id);
+    const planned = planRoute(approach);
+    if (!planned) {
+      updateUI(
+        "That approach is blocked. Tap nearby open ground, then try the object again.",
+      );
+      return;
+    }
+    if (
+      Math.hypot(
+        planned.destination.x - approach.x,
+        planned.destination.z - approach.z,
+      ) > 1.1
+    ) {
+      updateUI(
+        "Move closer along the open path before working on that object.",
+      );
+      return;
+    }
+    stop();
+    pending = id;
+    waypoints = [...planned.points];
+    if (!waypoints.length) arrive();
+    else
+      updateUI(
+        `Walking to ${MARKET_OBJECTS.find((o) => o.id === id).name.toLowerCase()}…`,
+      );
+  }
+  function arrive() {
+    if (!pending) return;
+    const id = pending;
+    pending = null;
+    const { approach } = positionFor(id);
+    if (
+      Math.hypot(
+        actor.g.position.x - approach.x,
+        actor.g.position.z - approach.z,
+      ) > 1.4
+    ) {
+      updateUI("Walk closer before working here.");
+      return;
+    }
+    work = { id, remaining: 0.6 };
+    updateUI(
+      id.startsWith("stall-")
+        ? "Working on the stall…"
+        : id === "cart"
+          ? "Taking hold of the cart…"
+          : "Working…",
+    );
+  }
+  for (const spec of MARKET_OBJECTS) {
+    const tag = document.createElement("button");
+    tag.className = "market-object-tag";
+    tag.setAttribute("aria-label", spec.name);
+    tag.onclick = () => request(spec.id);
+    tags.append(tag);
+    const accessible = document.createElement("button");
+    accessible.textContent = spec.name;
+    accessible.onclick = () => request(spec.id);
+    panel.querySelector(".market-access").append(accessible);
+    targets.set(spec.id, { tag, accessible });
+  }
+  panel.querySelector("[data-stop]").onclick = () => {
+    stop();
+    updateUI("Stopped. Tap another object or open ground.");
+  };
+  panel.querySelector("[data-drop]").onclick = () => {
+    stop();
+    apply("put-down");
   };
   panel.querySelector("[data-reset]").onclick = () => {
-    history.push(site);
-    site = newSite();
-    result = null;
-    draw();
+    stop();
+    state = newMarket();
+    drawWorld();
+    updateUI("Market reset. Collect timber to begin.");
   };
   function close() {
+    stop();
     active = false;
     root.visible = false;
+    carry.visible = false;
     panel.hidden = true;
+    tags.hidden = true;
+    for (const [mesh, visible] of snapshot.assets) mesh.visible = visible;
+    actor.g.position.copy(snapshot.position);
+    actor.g.rotation.y = snapshot.rotation;
+    actor.legs.forEach((l) => (l.rotation.x = 0));
+    actor.arms.forEach((a) => (a.rotation.x = 0));
     document.body.classList.remove("hands-on-active");
+    refreshNavigation();
     leave();
   }
   panel.querySelector("[data-exit]").onclick = close;
   const ray = new T.Raycaster(),
     pointer = new T.Vector2();
-  let down = null;
-  const held = new Set();
-  let multiple = false;
+  let down = null,
+    multiple = false;
+  const pointers = new Set();
   canvas.addEventListener(
     "pointerdown",
     (e) => {
-      if (active) {
-        held.add(e.pointerId);
-        if (held.size > 1) multiple = true;
-        down = { x: e.clientX, y: e.clientY, id: e.pointerId };
-      }
+      if (!active) return;
+      pointers.add(e.pointerId);
+      if (pointers.size > 1) multiple = true;
+      down = { id: e.pointerId, x: e.clientX, y: e.clientY, lastX: e.clientX };
+    },
+    true,
+  );
+  canvas.addEventListener(
+    "pointermove",
+    (e) => {
+      if (!active || !down || pointers.size !== 1) return;
+      if (Math.abs(e.clientX - down.x) > 7)
+        cameraYaw += (e.clientX - down.lastX) * 0.006;
+      down.lastX = e.clientX;
     },
     true,
   );
@@ -195,7 +422,7 @@ export function mountHandsOnCity({
     "pointercancel",
     () => {
       down = null;
-      held.clear();
+      pointers.clear();
       multiple = false;
     },
     true,
@@ -204,16 +431,16 @@ export function mountHandsOnCity({
     "pointerup",
     (e) => {
       if (!active) return;
-      held.delete(e.pointerId);
+      pointers.delete(e.pointerId);
       if (multiple) {
-        if (!held.size) multiple = false;
+        if (!pointers.size) multiple = false;
         down = null;
         return;
       }
       if (
         !down ||
-        down.id !== e.pointerId ||
-        Math.hypot(e.clientX - down.x, e.clientY - down.y) > 10
+        e.pointerId !== down.id ||
+        Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8
       ) {
         down = null;
         return;
@@ -224,18 +451,44 @@ export function mountHandsOnCity({
         ((e.clientX - rect.left) / rect.width) * 2 - 1,
         (-(e.clientY - rect.top) / rect.height) * 2 + 1,
       );
-      root.updateMatrixWorld(true);
-      getCamera().updateMatrixWorld();
-      ray.setFromCamera(pointer, getCamera());
-      const hit = ray.intersectObjects(meshes)[0];
-      if (hit) edit(hit.object.userData.handsOnTile);
+      scene.updateMatrixWorld(true);
+      const camera = getCamera();
+      camera.updateMatrixWorld();
+      ray.setFromCamera(pointer, camera);
+      const hits = ray.intersectObjects(root.children, true);
+      let id = null;
+      for (const hit of hits) {
+        for (let o = hit.object; o && o !== root; o = o.parent)
+          if (o.userData.marketTarget) {
+            id = o.userData.marketTarget;
+            break;
+          }
+        if (id) break;
+      }
+      if (id) {
+        request(id);
+        return;
+      }
+      const point = ray.ray.intersectPlane(
+        new T.Plane(new T.Vector3(0, 1, 0), -0.3),
+        new T.Vector3(),
+      );
+      if (point) {
+        const planned = planRoute(point);
+        stop();
+        if (planned) {
+          waypoints = [...planned.points];
+          updateUI("Walking. Tap a worksite object when you are ready.");
+        } else updateUI("Choose clear ground along the street.");
+      }
     },
     true,
   );
   document.addEventListener(
     "keydown",
     (e) => {
-      if (active && e.key === "Escape") {
+      if (!active) return;
+      if (e.key === "Escape") {
         e.preventDefault();
         e.stopImmediatePropagation();
         close();
@@ -243,35 +496,176 @@ export function mountHandsOnCity({
     },
     true,
   );
-  function positionCamera(camera) {
-    const now = performance.now();
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    for (let i = 0; i < drops.length; i++) {
-      drops[i].visible = now < rainUntil && !reduced;
-      drops[i].position.y = 1 + ((i * 0.47 + now / 400) % 4);
+  const pause = () => {
+    if (active) {
+      stop();
+      down = null;
+      pointers.clear();
+      multiple = false;
+      updateUI("Paused. Tap an object to continue.");
     }
-    const span = Math.max(
-      26,
-      18 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
+  };
+  window.addEventListener("blur", pause);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pause();
+  });
+  let cameraYaw = 0.35;
+  const focus = new T.Vector3();
+  function tick(dt, camera) {
+    if (navigationDirty) {
+      refreshNavigation();
+      navigationDirty = false;
+    }
+    if (document.hidden) return;
+    elapsed += dt;
+    walking = false;
+    if (waypoints.length) {
+      const p = waypoints[0],
+        dx = p.x - actor.g.position.x,
+        dz = p.z - actor.g.position.z,
+        length = Math.hypot(dx, dz),
+        step = Math.min(length, dt * (state.carrying === "cart" ? 3.4 : 5));
+      if (length > 0.015) {
+        actor.g.position.x += (dx / length) * step;
+        actor.g.position.z += (dz / length) * step;
+        actor.g.rotation.y = Math.atan2(dx, dz);
+        walking = true;
+      } else {
+        waypoints.shift();
+        if (!waypoints.length) arrive();
+      }
+    }
+    if (work) {
+      work.remaining -= dt;
+      if (work.remaining <= 0) {
+        const id = work.id;
+        work = null;
+        apply(id);
+      }
+    }
+    actor.legs.forEach(
+      (l, i) =>
+        (l.rotation.x = walking
+          ? Math.sin(elapsed * 12 + i * Math.PI) * 0.45
+          : 0),
     );
-    const centreX = 86 + (innerHeight <= 520 ? 7 : 0);
-    camera.position.set(centreX, span * 0.86, 4 + span * 0.51);
-    camera.lookAt(centreX, 0, 4);
+    actor.arms.forEach(
+      (a, i) =>
+        (a.rotation.x = work
+          ? Math.sin(elapsed * 19 + i) * 0.65
+          : state.carrying
+            ? -1.0
+            : walking
+              ? Math.sin(elapsed * 12 + (i + 1) * Math.PI) * 0.3
+              : 0),
+    );
+    if (state.carrying === "cart") {
+      cartMesh.position.set(
+        actor.g.position.x + Math.sin(actor.g.rotation.y) * 1.2,
+        0,
+        actor.g.position.z + Math.cos(actor.g.rotation.y) * 1.2,
+      );
+      cartMesh.rotation.y = actor.g.rotation.y;
+    }
+    for (let i = 0; i < customers.length; i++) {
+      const c = customers[i],
+        phase = (elapsed * 0.6 + i * 1.5) % (Math.PI * 2);
+      c.g.position.set(
+        19.2 + Math.sin(phase) * 1.1,
+        0.3,
+        17.7 + Math.cos(phase) * 1.8,
+      );
+      c.legs.forEach(
+        (l, j) => (l.rotation.x = Math.sin(elapsed * 8 + j * Math.PI) * 0.3),
+      );
+    }
+    for (const c of celebrants)
+      c.arms.forEach(
+        (a, i) => (a.rotation.z = (i ? 1 : -1) * (state.opened ? 0.7 : 0.1)),
+      );
+    const inMarket =
+      Math.hypot(actor.g.position.x - 19.5, actor.g.position.z - 15) < 12;
+    focus.lerp(
+      new T.Vector3(
+        inMarket ? actor.g.position.x * 0.4 + 19.5 * 0.6 : actor.g.position.x,
+        0,
+        inMarket ? actor.g.position.z * 0.4 + 15 * 0.6 : actor.g.position.z,
+      ),
+      Math.min(1, dt * 4),
+    );
+    const span = Math.max(
+      24,
+      15 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
+    );
+    camera.position.set(
+      focus.x + Math.sin(cameraYaw) * span * 0.55,
+      span * 0.75,
+      focus.z + Math.cos(cameraYaw) * span * 0.55,
+    );
+    camera.lookAt(focus.x, 0.5, focus.z - 1.2);
+    camera.updateMatrixWorld();
+    for (const spec of MARKET_OBJECTS) {
+      const { tag } = targets.get(spec.id),
+        g = objectGroups.get(spec.id),
+        v = new T.Vector3(g.position.x, 3.5, g.position.z).project(camera);
+      const near =
+        Math.hypot(
+          actor.g.position.x - g.position.x,
+          actor.g.position.z - g.position.z,
+        ) < 13;
+      tag.hidden =
+        !near ||
+        v.z > 1 ||
+        v.x < -0.93 ||
+        v.x > 0.93 ||
+        v.y < -0.45 ||
+        v.y > 0.9 ||
+        (spec.id === "produce" && state.carrying === "produce");
+      tag.style.left = `${(v.x * 0.5 + 0.5) * innerWidth}px`;
+      tag.style.top = `${(-v.y * 0.5 + 0.5) * innerHeight}px`;
+    }
+    panel.querySelector("[data-stop]").hidden = !waypoints.length;
   }
   return {
     get active() {
       return active;
     },
+    get state() {
+      return state;
+    },
+    get moving() {
+      return !!(waypoints.length || work);
+    },
     open() {
+      if (active) return;
+      snapshot = {
+        position: actor.g.position.clone(),
+        rotation: actor.g.rotation.y,
+        assets: marketAssets.map((mesh) => [mesh, mesh.visible]),
+      };
       enter();
       active = true;
       root.visible = true;
+      carry.visible = true;
+      for (const [mesh] of snapshot.assets) mesh.visible = false;
       panel.hidden = false;
+      tags.hidden = false;
       document.body.classList.add("hands-on-active");
-      draw();
-      positionCamera(getCamera());
-      panel.querySelector("[data-tool]").focus();
+      drawWorld();
+      refreshNavigation();
+      navigationDirty = false;
+      focus.copy(actor.g.position);
+      updateUI(
+        "Tunde: “Rain ruined our stalls. Help us reopen this street.” Tap timber to start.",
+      );
+      const plan = planRoute({ x: 16.5, z: 18 });
+      if (plan) waypoints = [...plan.points];
+      tick(0, getCamera());
+      panel.querySelector("[data-exit]").focus();
     },
-    camera: positionCamera,
+    tick,
+    close,
+    request,
+    report: () => marketReport(state),
   };
 }

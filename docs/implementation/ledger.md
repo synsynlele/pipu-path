@@ -2068,3 +2068,7 @@ The entrance now places the exact PNG logo used by the Real Quest BrandMark besi
 ## 1 November 2026 — Hands-on preview visual correction
 
 Browser-tested real canvas construction and rainfall failure-to-success. Replaced the worksite header element to avoid global game-header positioning and restored readable instruction colour. Game-only static preview works; phone testing and complete city integration remain outstanding.
+
+## 1 November 2026 — Character-driven market worksite
+
+Retired the tile/drainage pilot. Added deterministic collect/carry/repair/push/store/test rules, original-avatar route execution, carried props, two visibly repaired stalls, cart parking consequences, dry storage and market opening with residents. Added model and full-controller mission regressions. Scoped scenery/character restoration isolates the existing campaign. Publication target is a phone-accessible preview only.
