@@ -1401,4 +1401,59 @@ assert(!game.keys.has("w"));
 console.log(
   "PASS: actual movement takeover, route preservation on city changes, stationary-traffic escape, exactly-once arrival, modal movement freeze and perspective/overview camera recovery.",
 );
+// The in-city experiment preserves campaign state and supports a full keyboard build.
+const campaignBeforeHandsOn = JSON.stringify(game.state);
+w.document.querySelector("#hands-on-start").click();
+const handsPanel = w.document.querySelector(".hands-on-panel");
+assert.equal(handsPanel.hidden, false);
+assert.equal(w.document.querySelector("#intro").hidden, true);
+assert.equal(game.beginManualExplore(), false);
+const tileButtons = () => handsPanel.querySelectorAll(".hands-on-grid button");
+// Project an actual 3D ground tile to a touch coordinate and exercise raycasting.
+const worldCanvas = w.document.querySelector("#world");
+worldCanvas.setPointerCapture = () => {};
+worldCanvas.getBoundingClientRect = () => ({
+  left: 0,
+  top: 0,
+  width: 390,
+  height: 844,
+});
+game.animateWorld(performance.now() + 1000000);
+game.camera.updateMatrixWorld();
+const groundPoint = new T.Vector3(81.6, 0.39, -2.2).project(game.camera);
+for (const type of ["pointerdown", "pointerup"]) {
+  const event = new w.MouseEvent(type, {
+    bubbles: true,
+    clientX: (groundPoint.x + 1) * 195,
+    clientY: (1 - groundPoint.y) * 422,
+  });
+  Object.defineProperty(event, "pointerId", { value: 80 });
+  worldCanvas.dispatchEvent(event);
+}
+assert.equal(tileButtons()[8].textContent, "drain");
+handsPanel.querySelector("[data-undo]").click();
+assert.equal(tileButtons()[8].textContent, "Ground");
+
+for (const id of [8, 9, 10, 11, 12, 16, 23, 30]) tileButtons()[id].click();
+handsPanel.querySelector("[data-test]").click();
+assert.match(handsPanel.querySelector("[data-status]").textContent, /1\/3/);
+handsPanel.querySelector('[data-tool="basin"]').click();
+tileButtons()[30].click();
+handsPanel.querySelector("[data-test]").click();
+assert.match(
+  handsPanel.querySelector("[data-status]").textContent,
+  /All three homes/,
+);
+handsPanel.querySelector("[data-undo]").click();
+handsPanel.querySelector("[data-test]").click();
+assert.match(handsPanel.querySelector("[data-status]").textContent, /1\/3/);
+handsPanel.querySelector("[data-exit]").click();
+assert.equal(handsPanel.hidden, true);
+assert.equal(w.document.querySelector("#intro").hidden, false);
+assert.equal(w.document.activeElement.id, "hands-on-start");
+assert.equal(JSON.stringify(game.state), campaignBeforeHandsOn);
+console.log(
+  "PASS: hands-on city entrance, keyboard construction, rain failure/success, undo and campaign-preserving exit.",
+);
+
 process.exit(0);

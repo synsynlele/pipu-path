@@ -2056,3 +2056,11 @@ The broader validation exposed a pre-existing asynchronous retry-form assertion:
 ## 1 November 2026 — Game entrance brand logo
 
 The entrance now places the exact PNG logo used by the Real Quest BrandMark beside PipuPath and its existing Build a Better World slogan. Explicit 48px dimensions, non-shrinking image and flex alignment keep the mark stable beside the name. The image is decorative within the existing labelled home link. No game logic, progression or save change. Full validation/CI gate one automatic production build; branch previews disabled.
+
+## 1 November 2026 — Direct city building pilot
+
+- Added deterministic drainage reachability, connected storage capacity, materials, blockage clearing and immutable edit history.
+- Added in-scene selection, construction, rain/result feedback, accessible tile controls, undo/reset and campaign-preserving exit.
+- Exposed the pilot at the entrance while keeping existing saved chapters recoverable.
+- Added model regressions and real-controller coverage including projected 3D touch selection, failed/successful rain tests and undo.
+- Managed browser preview could not start because its launcher supplies unsupported Next.js flags. Visual/device acceptance remains unverified; no production rollout is claimed.

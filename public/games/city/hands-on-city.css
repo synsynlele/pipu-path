@@ -1,0 +1,93 @@
+.hands-on-panel {
+  position: fixed;
+  z-index: 100;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(620px, calc(100% - 20px));
+  max-height: 40vh;
+  overflow: auto;
+  background: rgba(248, 252, 249, 0.94);
+  color: #14332d;
+  border: 1px solid #789d91;
+  border-radius: 16px;
+  padding: 12px;
+  font: 14px/1.35 system-ui;
+  box-sizing: border-box;
+}
+.hands-on-panel[hidden] {
+  display: none;
+}
+.hands-on-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.hands-on-panel p {
+  margin: 6px 0;
+}
+.hands-on-tools {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 7px 0;
+}
+.hands-on-panel button {
+  min-height: 44px;
+  border: 1px solid #718f88;
+  border-radius: 9px;
+  padding: 7px 12px;
+  background: #fff;
+  color: #173e32;
+  cursor: pointer;
+}
+.hands-on-panel button[aria-pressed="true"],
+.hands-on-panel [data-test] {
+  background: #176956;
+  color: white;
+}
+.hands-on-panel button:focus-visible {
+  outline: 3px solid #e49d20;
+  outline-offset: 2px;
+}
+.hands-on-panel button:disabled {
+  opacity: 0.45;
+}
+.hands-on-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  margin: 8px 0;
+}
+.hands-on-grid button {
+  padding: 2px;
+  font-size: 10px;
+}
+.hands-on-panel a {
+  color: #145c77;
+}
+.hands-on-active #city-tools,
+.hands-on-active #mobile-move,
+.hands-on-active #detail,
+.hands-on-active .station {
+  visibility: hidden !important;
+}
+@media (max-height: 520px) {
+  .hands-on-panel {
+    left: auto;
+    right: 8px;
+    transform: none;
+    width: 300px;
+    max-height: 94vh;
+    font-size: 12px;
+  }
+}
+
+.hands-on-active #city-hud,
+.hands-on-active #journey-bar,
+.hands-on-active #scene-labels,
+.hands-on-active #controls,
+.hands-on-active #travel,
+.hands-on-active #weather {
+  visibility: hidden !important;
+}

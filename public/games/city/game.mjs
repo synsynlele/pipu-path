@@ -1,3 +1,4 @@
+import { mountHandsOnCity } from "./hands-on-city.mjs";
 import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
 import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
@@ -4692,6 +4693,37 @@ function returnToEntrance() {
   $("start").focus({ preventScroll: true });
 }
 $("menu-entrance").onclick = returnToEntrance;
+const handsOnCity = mountHandsOnCity({
+  T,
+  scene,
+  canvas: $("world"),
+  getCamera: () => camera,
+  enter() {
+    pauseJourney("Hands-on city experiment");
+    cancelWalk();
+    keys.clear();
+    closeDetail();
+    closeDirectory();
+    closeCasebook();
+    closeCityStatus();
+    $("intro").hidden = true;
+    camera = playCamera;
+    void cityAudio.start();
+    screenAwake.setPlaying(true);
+  },
+  leave() {
+    $("intro").hidden = false;
+    screenAwake.setPlaying(false);
+    $("hands-on-start").focus();
+  },
+});
+const handsOnStart = document.createElement("button");
+handsOnStart.id = "hands-on-start";
+handsOnStart.className = "primary";
+handsOnStart.textContent = "Build directly in the city →";
+$("start").before(handsOnStart);
+handsOnStart.onclick = () => handsOnCity.open();
+
 $("start").onclick = () => startCity();
 $("resume-city").onclick = () => startCity();
 $("resume-city").hidden = true;
@@ -4958,7 +4990,11 @@ canvas.addEventListener("pointerdown", (e) => {
   dragging = false;
 });
 canvas.addEventListener("pointermove", (e) => {
-  if (!pointers.has(e.pointerId) || document.querySelector("dialog[open]"))
+  if (
+    handsOnCity.active ||
+    !pointers.has(e.pointerId) ||
+    document.querySelector("dialog[open]")
+  )
     return;
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pointers.size === 2) {
@@ -4991,6 +5027,11 @@ canvas.addEventListener("pointermove", (e) => {
 canvas.addEventListener("pointerup", (e) => {
   pointers.delete(e.pointerId);
   pinchDistance = null;
+  if (handsOnCity.active) {
+    down = null;
+    multiTouch = false;
+    return;
+  }
   if (
     down &&
     !dragging &&
@@ -5130,6 +5171,7 @@ $("camera-home").onclick = () => {
   toast("Camera centred.");
 };
 function beginManualExplore() {
+  if (handsOnCity.active) return false;
   if (
     simulating ||
     builtCityView ||
@@ -5236,6 +5278,14 @@ function siteInCamera(position) {
   return cityViewFrustum.intersectsSphere(citySiteSphere);
 }
 function animateWorld(now) {
+  if (handsOnCity.active) {
+    last = now;
+    if (!frameBudget.takeFrame(now, document.hidden) || graphicsInterrupted)
+      return;
+    handsOnCity.camera(camera);
+    renderer.render(scene, camera);
+    return;
+  }
   const coveredByPuzzle =
     focusedPuzzle() && (innerWidth <= 760 || innerHeight <= 520);
   if (document.querySelector("dialog[open]")) keys.clear();

@@ -1764,3 +1764,9 @@ A shared camera rig uses frame-rate-independent follow, reduced-motion handling 
 ## 1 November 2026 — Game entrance brand logo
 
 The entrance now places the exact PNG logo used by the Real Quest BrandMark beside PipuPath and its existing Build a Better World slogan. Explicit 48px dimensions, non-shrinking image and flex alignment keep the mark stable beside the name. The image is decorative within the existing labelled home link. No game logic, progression or save change. Full validation/CI gate one automatic production build; branch previews disabled.
+
+## 1 November 2026 — Hands-on city mission pilot
+
+Added a first direct-manipulation drainage mission, entered through “Build directly in the city” at the existing game entrance. Players place drains and basins, clear blockages or route around them, test rain, inspect protected/flooded homes and revise within a materials budget. Connected storage and outlet reachability determine results. The experiment uses the existing Three.js scene and renderer, touch raycasts and an equivalent keyboard tile map. Undo, reset, reduced-motion rain and entrance recovery are included.
+
+This is a session-only gameplay pilot, not a replacement of all twelve authored chapters. Existing campaign progress, credits, cloud saves and real-world evidence remain unchanged. The reusable model is separate from rendering so later sectors can use the interaction framework. No deployment or new platform migration is implied by implementation. Browser preview is unavailable in this environment: the managed preview launcher appends unsupported Vite flags to Next.js. Automated model/controller checks and the full validation command are recorded in the PR; physical-phone touch and visual acceptance remain required.
