@@ -2037,3 +2037,9 @@ Verification covers all district/difficulty combinations with several replay rou
 Post-release verification found that Real Quest topic hints could retain the campaign district and an older puzzle after a player inspected another service. Service selection now sets an allowlisted, session-only district hint and clears the puzzle hint; the authenticated parent frame accepts explicit nulls to remove stale hints. Returning to the campaign/entrance clears inspection context. This changes topic suggestions only and never transmits answers, plans, completion or verified capability.
 
 Save-health changes now update an open service workshop immediately as well as the menu and entrance opt-in. Regression coverage switches from a workshop puzzle to healthcare and checks the real Quest destination, plus forced storage failure/recovery during a service draft with unchanged campaign progress. Full validation/CI gate one production release; previews disabled.
+
+## 1 November 2026 — City play cleanup
+
+- Consolidated story continuation, exploration, chapter review and optional tools with progressive disclosure; protected restart is no longer a routine HUD icon.
+- Added reusable chapter-aware help and exclusive/keyboard-accessible menu behavior; shortened mandatory guide reading and fixed keep-awake settings closing the menu.
+- Preserved progression, difficulty, retained city/economy, rewards and saving contracts. Added all-twelve-chapter guidance, actual advanced-loop help and menu-control regression checks. Full validate/CI and one automatic production deployment gate release. Audit and physical-device limitations: docs/product/city-play-cleanup.md.

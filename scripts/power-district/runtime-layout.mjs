@@ -804,6 +804,13 @@ assert.equal(
 w.document.getElementById("chapter-five-start").click();
 assert.equal(game.state.advanced.records.length, 0);
 for (let index = 0; index < 16; index++) {
+  w.document.getElementById("help").click();
+  assert.match(
+    w.document.getElementById("help-next-step").textContent,
+    new RegExp("CHAPTER " + (5 + Math.floor(index / 2))),
+  );
+  w.document.getElementById("help-done").click();
+
   const m = advancedMission(game.state.advanced),
     rules = advancedRules(game.state.advanced);
   assert.equal(w.document.getElementById("advanced-panel").hidden, false);
@@ -942,6 +949,17 @@ assert(
   [...game.livingScene.plazas.values()].some((p) => p.upgrade?.visible),
   "Tested upgrades appear in the original city",
 );
+w.document.getElementById("help").click();
+assert.match(
+  w.document.getElementById("help-next-step").textContent,
+  /^STORY COMPLETE/,
+);
+w.document.getElementById("help-done").click();
+// Changing a setting must not close its menu or lose the player's place.
+w.document.getElementById("city-menu").open = true;
+w.document.getElementById("screen-awake").click();
+assert.equal(w.document.getElementById("city-menu").open, true);
+w.document.getElementById("city-menu").open = false;
 // Service workshop integration: no campaign reset, funds or XP reward.
 const beforeServices = {
   decisions: JSON.stringify(game.state.decisions),
@@ -1143,7 +1161,7 @@ w.document.getElementById("help").click();
 assert.equal(w.document.getElementById("help-dialog").open, true);
 assert.match(
   w.document.getElementById("help-next-step").textContent,
-  /Main city complete/,
+  /CHAPTER 4/,
 );
 assert.match(
   w.document.getElementById("help-dialog").textContent,
@@ -1151,7 +1169,7 @@ assert.match(
 );
 assert.match(
   w.document.getElementById("help-dialog").textContent,
-  /City services/,
+  /optional service practice/,
 );
 assert(
   !w.document

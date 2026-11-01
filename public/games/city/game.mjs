@@ -1,3 +1,4 @@
+import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
 import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
 import { mountFacilityDesk } from "./facility-ui.mjs";
 import { createCityDevelopmentScene } from "./city-development-scene.mjs";
@@ -1067,6 +1068,9 @@ function refreshJourneyControls() {
         : "Resume this chapter";
   }
   $("chapter-badge").textContent = "Chapter " + currentChapter;
+  $("menu-resume").textContent = items.every((item) => item.completed)
+    ? "View my completed city →"
+    : "Continue Chapter " + currentChapter + " →";
   $("chapter-badge").setAttribute(
     "aria-label",
     "Chapter " +
@@ -3191,7 +3195,9 @@ function updateGuideVisibility() {
     entered && guideExpanded && !simulating && journey.status !== "running";
   $("mission").hidden = !visible;
   $("guide-toggle").hidden = !entered || simulating;
-  $("guide-toggle").textContent = visible ? "Hide guide" : "Next step";
+  $("guide-toggle").textContent = visible
+    ? "Hide planning guide"
+    : "Planning guide";
   $("guide-toggle").setAttribute("aria-expanded", String(visible));
   document.body.classList.toggle("guide-open", visible);
   document.body.classList.toggle("city-testing", simulating);
@@ -3258,7 +3264,9 @@ function render() {
   $("build-dock").hidden =
     !$("intro").hidden || Boolean(guided) || !dockExpanded || simulating;
   $("build-toggle").hidden = Boolean(guided) || simulating;
-  $("build-toggle").textContent = dockExpanded ? "Close Build" : "Build";
+  $("build-toggle").textContent = dockExpanded
+    ? "Close sandbox"
+    : "Prototype sandbox";
   $("build-dock").classList.add("city-dock");
   $("mission").classList.add("city-board");
   document.body.classList.toggle("city-guided", Boolean(guided));
@@ -3823,6 +3831,7 @@ $("opportunities-toggle").onclick = () => {
   else closeOpportunityPanel();
 };
 $("opportunities-close").onclick = closeOpportunityPanel;
+mountPlayNavigation($("city-menu"));
 function positionCityMenu() {
   if (!$("city-menu").open) return;
   const anchor = $("city-menu")
@@ -3847,7 +3856,12 @@ $("city-menu").addEventListener("toggle", () => {
 });
 $("city-menu-options").addEventListener("click", (event) => {
   const button = event.target.closest("button");
-  if (!button || button.disabled || button.closest(".city-cloud-controls"))
+  if (
+    !button ||
+    button.disabled ||
+    button.closest(".city-cloud-controls") ||
+    button.id === "screen-awake"
+  )
     return;
   $("city-menu").open = false;
   if (button.id !== "resilience-toggle" && button.id !== "menu-resume")
@@ -4824,12 +4838,12 @@ syncAudioControls();
 $("help").onclick = () => {
   const step = integratedStep(state.decisions, state.lab);
   const current = $("help-next-step");
-  current.textContent =
-    step.kind === "question"
-      ? "YOUR NEXT STEP · Decide: " + getCase(step.caseId).title
-      : step.kind === "build"
-        ? "YOUR NEXT STEP · Build and test: " + labMission(step.missionId).title
-        : "YOUR NEXT STEP · Main city complete. Inspect services or try the next Builder Challenge.";
+  current.textContent = chapterHelp(
+    currentChapterItems(),
+    step.kind,
+    step.kind === "question" ? getCase(step.caseId).title : "",
+    step.kind === "build" ? labMission(step.missionId).title : "",
+  );
   $("playtest-summary").textContent = playtest.report();
   $("playtest-copy-status").textContent = "";
   $("help-dialog").showModal();
