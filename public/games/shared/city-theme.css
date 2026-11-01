@@ -3696,16 +3696,43 @@ body #city-hud #journey-bar[hidden] {
   outline-offset: 6px;
 }
 .city-welcome .welcome-brand {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 25px;
   font-weight: 800;
   letter-spacing: -1px;
 }
-.city-welcome .welcome-brand span {
+.city-welcome .welcome-brand img {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+.city-welcome .welcome-brand-copy {
+  min-width: 0;
+}
+.city-welcome .welcome-brand small {
   display: block;
   margin-top: 5px;
   font-size: 8px;
   letter-spacing: 2px;
   font-weight: 600;
+}
+@media (max-width: 360px) {
+  .city-welcome .welcome-brand {
+    font-size: 20px;
+    gap: 8px;
+  }
+  .city-welcome .welcome-brand img {
+    width: 40px;
+    height: 40px;
+  }
+  .city-welcome .welcome-brand small {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
 }
 .city-welcome .welcome-signin {
   font-size: 13px;
