@@ -14,7 +14,28 @@ const families = {
   environment: "farm",
 };
 const limits = { homes: 6, tower: 4, hospital: 3, farm: 5, stadium: 2 };
-export function crewReplicas(projects, episode, parcels = CITY_PARCELS) {
+export function crewReplicas(
+  projects,
+  episode,
+  parcels = CITY_PARCELS,
+  chapterCount = null,
+) {
+  if (chapterCount !== null) {
+    const targets = [0, 0, 4, 10, 15, 20, 27, 34, 41, 48, 55, 63, 70];
+    const eligible = Object.keys(limits).filter((t) => projects[t]?.open);
+    if (!eligible.length) return [];
+    return parcels
+      .slice(0, Math.max(4, targets[Math.min(12, Math.max(0, chapterCount))]))
+      .map((p, i) => ({
+        ...p,
+        type: eligible.includes(families[p.district])
+          ? families[p.district]
+          : eligible[i % eligible.length],
+        standard: families[p.district],
+        variation: i % 3,
+        crewLevel: chapterCount,
+      }));
+  }
   const completed = Object.values(episode).filter((m) => m.done).length,
     used = new Set(),
     plan = [];

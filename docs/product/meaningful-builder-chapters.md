@@ -1,6 +1,7 @@
 # Meaningful Builder Campaign — hands-on chapter blueprint
 
-**Status:** authored design draft; not implemented chapters.  
+**Status:** thirty-six-mission design blueprint. The preview now implements one primary outcome in each of twelve chapters; the full three-mission chapters below remain an expansion specification.
+
 **Date:** 1 November 2026.  
 **Direction:** PipuPath develops people who discover needs and create useful change. Construction is one medium among tools, services, learning, art, enterprise, coordination and stewardship.
 
@@ -18,7 +19,7 @@
 
 ## Mission design cards
 
-Each numbered action is a quest step. The final column supplies a short reflection and a clear next action. These are design specifications; each outcome needs an actual simulation/interaction implementation before it can be called playable.
+Each numbered action is a quest step. The final column supplies a short reflection and a clear next action. These are design specifications; each outcome needs an actual simulation/interaction implementation before it can be called playable. The current twelve-outcome implementation map is in `hands-on-twelve-chapter-preview.md`.
 
 ## Chapter 1 — Notice What Matters
 

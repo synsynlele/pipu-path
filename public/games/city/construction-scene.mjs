@@ -144,8 +144,9 @@ export function createConstructionScene(T) {
       root.add(g);
       return g;
     },
-    draw(root, progress, objectGroups, box) {
+    draw(root, progress, objectGroups, box, hiddenSite = null) {
       for (const p of CITY_PROJECTS) {
+        if (p.id === hiddenSite) continue;
         const s = progress[p.id],
           g = new T.Group();
         g.position.set(p.x, 0, p.z);

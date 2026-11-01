@@ -1,3 +1,4 @@
+import { createLandscapePlay } from "./landscape-play.mjs";
 import { mountHandsOnCity } from "./hands-on-city.mjs";
 import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
@@ -4772,6 +4773,7 @@ const handsOnCity = mountHandsOnCity({
     $("hands-on-start").focus();
   },
 });
+createLandscapePlay();
 const handsOnStart = document.createElement("button");
 handsOnStart.id = "hands-on-start";
 handsOnStart.className = "primary";

@@ -241,3 +241,104 @@ assert(
 console.log(
   "PASS: evidence-led investigation, two clinic strategies, independent apprentice trials, staged mission gates and deterministic road-safe crew replication.",
 );
+
+const {
+  BUILDER_CHAPTERS,
+  SYSTEM_CHAPTERS,
+  newChapterSystems,
+  evaluateChapter,
+  systemAction,
+  completedChapters,
+} = await import("../../public/games/city/builder-chapters.mjs");
+assert.equal(BUILDER_CHAPTERS.length, 12);
+assert.equal(new Set(BUILDER_CHAPTERS.map((c) => c.field)).size, 12);
+const solutions = {
+  food: [1, 1, 1],
+  invent: [1, 1, 2],
+  culture: [1, 1, 0],
+  enterprise: [1, 1, 1],
+  connect: [1, 1, 1],
+  trust: [1, 1, 1],
+  environment: [1, 1, 1],
+  legacy: [1, 1, 1],
+};
+const systems = newChapterSystems();
+const context = {
+  episode: {
+    investigate: { done: true },
+    care: { done: true },
+    teach: { done: true },
+  },
+  market: { opened: true },
+  systems: Object.fromEntries(
+    SYSTEM_CHAPTERS.map((c) => [c.id, { done: true }]),
+  ),
+  projects: Object.fromEntries(
+    CITY_PROJECTS.map((p) => [p.id, { open: true }]),
+  ),
+};
+for (const chapter of SYSTEM_CHAPTERS) {
+  assert.equal(
+    evaluateChapter(chapter.id, systems[chapter.id], context).success,
+    false,
+    chapter.id + " has a real failure",
+  );
+  let next = systems;
+  for (const [i, action] of ["a", "b", "c"].entries())
+    for (let j = 0; j < solutions[chapter.id][i]; j++)
+      next = systemAction(next, chapter.id, action, context).state;
+  const tested = systemAction(next, chapter.id, "test", context);
+  assert.equal(
+    tested.state[chapter.id].done,
+    true,
+    chapter.id + " useful outcome",
+  );
+  assert.equal(systems[chapter.id].tests, 0, "immutable starting state");
+  assert.equal(
+    systemAction(tested.state, chapter.id, "a", context).state[chapter.id].done,
+    false,
+    "changes invalidate a previous test",
+  );
+}
+for (const [id, alt] of Object.entries({
+  food: [2, 1, 0],
+  invent: [2, 0, 2],
+  culture: [2, 2, 1],
+  enterprise: [2, 1, 2],
+  connect: [2, 0, 1],
+}))
+  assert(
+    evaluateChapter(id, { a: alt[0], b: alt[1], c: alt[2] }, context).success,
+    id + " alternate strategy",
+  );
+assert(
+  !evaluateChapter("legacy", { a: 1, b: 1, c: 1 }, { ...context, projects: {} })
+    .success,
+  "handover cannot bypass prototypes",
+);
+assert(
+  !evaluateChapter(
+    "legacy",
+    { a: 1, b: 1, c: 1 },
+    { ...context, systems: newChapterSystems() },
+  ).success,
+  "handover cannot bypass other fields",
+);
+assert.equal(
+  completedChapters(context.episode, context.market, context.systems),
+  12,
+);
+const finalCity = crewReplicas(
+  context.projects,
+  context.episode,
+  undefined,
+  12,
+);
+assert.equal(finalCity.length, 70);
+assert.equal(new Set(finalCity.map((p) => p.id)).size, 70);
+assert(!finalCity.some((p) => p.type === "airport"));
+for (const p of finalCity)
+  assert(!overlapsRoad(p.x, p.z, p.width, p.depth, 0.25));
+console.log(
+  "PASS: all twelve chapter outcomes, eight distinct system trials, five alternate strategies, honest handover dependencies and a unique seventy-parcel final city.",
+);

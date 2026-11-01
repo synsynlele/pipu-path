@@ -1,4 +1,16 @@
 import {
+  BUILDER_CHAPTERS,
+  CHAPTER_REFLECTIONS,
+  SYSTEM_CHAPTERS,
+  newChapterSystems,
+  chapterComplete,
+  completedChapters,
+  chapterReadout,
+  systemAction,
+  evaluateChapter,
+} from "./builder-chapters.mjs";
+import { CHAPTER_OBJECTS, drawChapter } from "./chapter-scene.mjs";
+import {
   BUILDER_MISSIONS,
   EPISODE_OBJECTS,
   newEpisode,
@@ -52,10 +64,12 @@ export function mountHandsOnCity({
     ...MARKET_OBJECTS,
     ...CONSTRUCTION_OBJECTS,
     ...EPISODE_OBJECTS,
+    ...CHAPTER_OBJECTS,
   ];
   let projects = newConstruction(),
     activeSite = "investigate",
     episode = newEpisode(),
+    systems = newChapterSystems(),
     blockedFor = 0;
   const constructionScene = createConstructionScene(T);
   const root = new T.Group();
@@ -77,7 +91,31 @@ export function mountHandsOnCity({
   panel.className = "hands-on-panel market-worksite";
   panel.hidden = true;
   panel.setAttribute("aria-label", "Repair the market");
-  panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><label class="worksite-picker">Worksite <select data-site aria-label="Choose a hands-on worksite"><option value="investigate">Mission · Find the missing water</option><option value="care">Mission · Help the clinic receive people</option><option value="teach">Mission · Help an apprentice succeed</option><option value="market">Repair the market</option><option value="homes">Build homes</option><option value="tower">Build a skyline tower</option><option value="hospital">Build a hospital</option><option value="farm">Grow a community farm</option><option value="stadium">Build a stadium</option><option value="airport">Build an airport</option></select></label><p data-goal></p><div class="market-progress" data-progress></div><p class="crew-progress" data-crew></p><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-next hidden></button><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Worksite objects"></div><button data-reset>Restart this worksite</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
+  panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><label class="worksite-picker">Worksite <select data-site aria-label="Choose a hands-on worksite"><option value="investigate">Mission · Find the missing water</option><option value="care">Mission · Help the clinic receive people</option><option value="teach">Mission · Help an apprentice succeed</option><option value="market">Repair the market</option><option value="homes">Build homes</option><option value="tower">Build a skyline tower</option><option value="hospital">Build a hospital</option><option value="farm">Grow a community farm</option><option value="stadium">Build a stadium</option><option value="airport">Build an airport</option></select></label><div class="next-instruction"><span>YOUR NEXT MOVE</span><p data-goal></p></div><p data-reflection hidden></p><button data-chapter-next hidden>Continue to next chapter →</button><div class="market-progress" data-progress></div><p class="crew-progress" data-crew></p><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-next hidden></button><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Worksite objects"></div><button data-reset>Restart this worksite</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
+  const picker = panel.querySelector("[data-site]");
+  for (const chapter of BUILDER_CHAPTERS) {
+    let option = [...picker.options].find((o) => o.value === chapter.id);
+    if (!option) {
+      option = document.createElement("option");
+      option.value = chapter.id;
+    }
+    option.textContent = `Chapter ${chapter.number} · ${chapter.name}`;
+    picker.append(option);
+  }
+  // Chapters first; construction stays available as a separate set of worksites.
+  for (const project of CITY_PROJECTS)
+    picker.append([...picker.options].find((o) => o.value === project.id));
+  panel
+    .querySelector(".next-instruction")
+    .append(panel.querySelector("[data-next]"));
+  function replicas() {
+    return crewReplicas(
+      projects,
+      episode,
+      undefined,
+      completedChapters(episode, state, systems),
+    );
+  }
   const tags = document.createElement("div");
   tags.className = "market-tags";
   tags.hidden = true;
@@ -152,6 +190,19 @@ export function mountHandsOnCity({
     return null;
   }
   function drawWorld() {
+    if (
+      systems.legacy.done &&
+      !evaluateChapter("legacy", systems.legacy, {
+        episode,
+        market: state,
+        systems,
+        projects,
+      }).success
+    )
+      systems = {
+        ...systems,
+        legacy: { ...systems.legacy, done: false, result: null },
+      };
     root.clear();
     carry.clear();
     objectGroups.clear();
@@ -283,7 +334,23 @@ export function mountHandsOnCity({
         if (customer) customers.push(customer);
       }
     }
-    constructionScene.draw(root, projects, objectGroups, box);
+    const systemChapter = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
+    constructionScene.draw(
+      root,
+      projects,
+      objectGroups,
+      box,
+      systemChapter?.site,
+    );
+    drawChapter({
+      root,
+      active: activeSite,
+      systems,
+      objects: objectGroups,
+      box,
+      spawn: spawnPerson,
+      people: episodeResidents,
+    });
     drawEpisode({
       root,
       state: episode,
@@ -292,8 +359,7 @@ export function mountHandsOnCity({
       spawn: spawnPerson,
       people: episodeResidents,
     });
-    for (const parcel of crewReplicas(projects, episode))
-      constructionScene.replica(root, parcel);
+    for (const parcel of replicas()) constructionScene.replica(root, parcel);
     root.updateMatrixWorld(true);
     navigationDirty = true;
   }
@@ -308,7 +374,7 @@ export function mountHandsOnCity({
     return { point, approach };
   }
   function completedObject(spec) {
-    if (spec.mission) return false;
+    if (spec.mission || spec.system) return false;
     if (!spec.project)
       return state.opened && ["timber", "roofing"].includes(spec.id);
     const stage = projects[spec.project].stage;
@@ -324,31 +390,50 @@ export function mountHandsOnCity({
   function updateUI(message) {
     const project = CITY_PROJECTS.find((p) => p.id === activeSite);
     const mission = BUILDER_MISSIONS.find((m) => m.id === activeSite);
-    const heading = mission
-      ? mission.name
-      : project
-        ? project.name
-        : "Reopen the neighbourhood market";
-    panel.querySelector(".hands-on-heading strong").textContent = mission
-      ? mission.name
-      : project
-        ? project.name
-        : "Reopen the neighbourhood market";
+    const system = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
+    const chapter = BUILDER_CHAPTERS.find((c) => c.id === activeSite);
+    const done =
+      chapter && chapterComplete(chapter.id, episode, state, systems);
+    const heading = chapter
+      ? `Chapter ${chapter.number}/12 · ${chapter.name}`
+      : mission
+        ? mission.name
+        : project
+          ? project.name
+          : "Reopen the neighbourhood market";
+    panel.querySelector(".hands-on-heading strong").textContent = heading;
     panel.setAttribute("aria-label", heading);
-    panel.querySelector("[data-reset]").textContent = mission
-      ? "Restart all three episode missions"
-      : "Restart this worksite";
     panel.querySelector("[data-site]").value = activeSite;
-    panel.querySelector("[data-goal]").textContent = mission
-      ? episodeHint(episode, activeSite)
-      : project
-        ? constructionHint(projects, activeSite, state.carrying)
-        : marketHint(state);
-    panel.querySelector("[data-progress]").textContent = mission
-      ? `${Object.values(episode).filter((m) => m.done).length}/3 episode outcomes · ${episode[activeSite].done ? "Mission complete" : activeSite === "care" ? `Reception ${episode.care.reception} · Support ${episode.care.support} · Stock ${episode.care.stock}/2 · Reached staff ${episode.care.served}/4` : activeSite === "teach" ? `Demonstrations ${episode.teach.demonstrations} · Practice ${episode.teach.tools ? "ready" : "not ready"} · Clamp ${episode.teach.jig ? "fitted" : "not fitted"}` : "Find the cause and test the supply"}`
-      : project
-        ? `${projects[activeSite].stage}/3 build phases · ${projects[activeSite].open ? "Open · finished landscape" : "Test before opening"}`
-        : `${state.roofs.filter(Boolean).length}/2 stalls sheltered · Entrance ${state.cart === "parking" ? "clear" : "blocked"} · Stock ${state.produce === "shelf" ? "safe" : "exposed"}`;
+    panel.querySelector("[data-reflection]").hidden = !done;
+    panel.querySelector("[data-reflection]").textContent = done
+      ? "Think back: " + CHAPTER_REFLECTIONS[chapter.id]
+      : "";
+    panel.querySelector("[data-chapter-next]").hidden = !done;
+    panel.querySelector("[data-chapter-next]").textContent =
+      completedChapters(episode, state, systems) === 12
+        ? "All 12 complete · explore your city"
+        : "Continue to next chapter →";
+    panel.querySelector("[data-reset]").textContent = system
+      ? "Restart this chapter"
+      : mission
+        ? "Restart the three episode missions"
+        : "Restart this worksite";
+    panel.querySelector("[data-goal]").textContent = system
+      ? systems[activeSite].done
+        ? "Outcome tested. Continue to the next chapter or improve your design."
+        : system.brief
+      : mission
+        ? episodeHint(episode, activeSite)
+        : project
+          ? constructionHint(projects, activeSite, state.carrying)
+          : marketHint(state);
+    panel.querySelector("[data-progress]").textContent = system
+      ? `${completedChapters(episode, state, systems)}/12 chapter outcomes · ${chapterReadout(activeSite, systems[activeSite]).join(" · ")}`
+      : mission
+        ? `${completedChapters(episode, state, systems)}/12 chapter outcomes · ${episode[activeSite].done ? "Mission complete" : activeSite === "care" ? `Reception ${episode.care.reception} · Support ${episode.care.support} · Stock ${episode.care.stock}/2 · Reached staff ${episode.care.served}/4` : activeSite === "teach" ? `Demonstrations ${episode.teach.demonstrations} · Practice ${episode.teach.tools ? "ready" : "not ready"} · Clamp ${episode.teach.jig ? "fitted" : "not fitted"}` : "Find the cause and test the supply"}`
+        : project
+          ? `${projects[activeSite].stage}/3 build phases · ${projects[activeSite].open ? "Open · finished landscape" : "Test before opening"}`
+          : `${state.roofs.filter(Boolean).length}/2 stalls sheltered · Entrance ${state.cart === "parking" ? "clear" : "blocked"} · Stock ${state.produce === "shelf" ? "safe" : "exposed"}`;
     if (message !== undefined) {
       panel.querySelector("[data-status]").textContent = message;
     }
@@ -361,36 +446,42 @@ export function mountHandsOnCity({
     panel.querySelector("[data-drop]").hidden =
       !state.carrying || state.carrying === "cart";
     panel.querySelector("[data-stop]").hidden = !waypoints.length;
-    const nextWork = mission
+    const nextWork = system
       ? activeSite + ":test"
-      : project
-        ? project.id +
-          ":" +
-          (projects[project.id].stage === 0
-            ? state.carrying === "kit:" + project.id
-              ? "base"
-              : "kit"
-            : ["base", "structure", "services", "open"][
-                projects[project.id].stage
-              ])
-        : null;
+      : mission
+        ? activeSite + ":test"
+        : project
+          ? project.id +
+            ":" +
+            (projects[project.id].stage === 0
+              ? state.carrying === "kit:" + project.id
+                ? "base"
+                : "kit"
+              : ["base", "structure", "services", "open"][
+                  projects[project.id].stage
+                ])
+          : null;
     const nextButton = panel.querySelector("[data-next]");
-    nextButton.hidden = mission
-      ? episode[activeSite].done ||
-        (activeSite === "teach" && episode.teach.running)
-      : !project || projects[project.id].open;
+    nextButton.hidden = system
+      ? systems[activeSite].done
+      : mission
+        ? episode[activeSite].done ||
+          (activeSite === "teach" && episode.teach.running)
+        : !project || projects[project.id].open;
     if (nextWork) {
       nextButton.textContent = objects.find((o) => o.id === nextWork).name;
       nextButton.dataset.action = nextWork;
     }
     nextButton.disabled = !!work || waypoints.length > 0;
     panel.querySelector("[data-crew]").textContent =
-      `${crewReplicas(projects, episode).length} crew-built parcels · Complete a prototype once to unlock a planned batch. Episode outcomes improve the crew's reach.`;
-    panel.querySelector("[data-quest]").hidden = mission
-      ? !episode[activeSite].done
-      : project
-        ? !projects[activeSite].open
-        : !state.opened;
+      `${replicas().length} crew-built parcels · Complete a prototype once to unlock a planned batch. Chapter outcomes grow the crew's reach to 70 planned parcels.`;
+    panel.querySelector("[data-quest]").hidden = system
+      ? !systems[activeSite].done
+      : mission
+        ? !episode[activeSite].done
+        : project
+          ? !projects[activeSite].open
+          : !state.opened;
     for (const [id, { tag, accessible }] of targets) {
       const spec = objects.find((o) => o.id === id);
       const i = id === "stall-a" ? 0 : 1;
@@ -413,8 +504,8 @@ export function mountHandsOnCity({
             ? "Site open"
             : spec.name;
       accessible.hidden =
-        (spec.mission ?? spec.project ?? "market") !== activeSite ||
-        completedObject(spec);
+        (spec.system ?? spec.mission ?? spec.project ?? "market") !==
+          activeSite || completedObject(spec);
       if (id === "investigate:valve" && episode.investigate.valveKnown)
         label = episode.investigate.valveOpen
           ? "Close the supply valve"
@@ -435,6 +526,21 @@ export function mountHandsOnCity({
   }
   function apply(id) {
     const spec = objects.find((o) => o.id === id);
+    if (spec?.system) {
+      const next = systemAction(systems, spec.system, spec.action, {
+        episode,
+        market: state,
+        systems,
+        projects,
+      });
+      systems = next.state;
+      if (next.changed) {
+        drawWorld();
+        cue(systems[spec.system].done ? "built" : "tap");
+      }
+      updateUI(next.message);
+      return;
+    }
     if (spec?.mission) {
       const next = episodeAction(episode, state.carrying, id);
       episode = next.state;
@@ -473,7 +579,12 @@ export function mountHandsOnCity({
       updateUI("Complete the previous episode mission first.");
       return;
     }
-    activeSite = selected.mission ?? selected.project ?? "market";
+    const nextSite =
+      selected.system ?? selected.mission ?? selected.project ?? "market";
+    if (nextSite !== activeSite) {
+      activeSite = nextSite;
+      drawWorld();
+    }
     if (navigationDirty) {
       refreshNavigation();
       navigationDirty = false;
@@ -516,7 +627,10 @@ export function mountHandsOnCity({
       );
   }
   function arrive() {
-    if (!pending) return;
+    if (!pending) {
+      updateUI("Ready. Tap a labelled city object or use the main action.");
+      return;
+    }
     const id = pending;
     pending = null;
     const { approach } = positionFor(id);
@@ -563,13 +677,21 @@ export function mountHandsOnCity({
       return;
     }
     activeSite = nextSite;
+    drawWorld();
+    if (navigationDirty) {
+      refreshNavigation();
+      navigationDirty = false;
+    }
+    const system = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
     const mission = BUILDER_MISSIONS.find((m) => m.id === activeSite);
     const project = CITY_PROJECTS.find((p) => p.id === activeSite);
-    const point = mission
-      ? EPISODE_OBJECTS.find((o) => o.mission === activeSite).approach
-      : project
-        ? { x: project.x - 4.8, z: project.z + 5.9 }
-        : { x: 16.5, z: 18 };
+    const point = system
+      ? CHAPTER_OBJECTS.find((o) => o.system === activeSite).approach
+      : mission
+        ? EPISODE_OBJECTS.find((o) => o.mission === activeSite).approach
+        : project
+          ? { x: project.x - 4.8, z: project.z + 5.9 }
+          : { x: 16.5, z: 18 };
     const plan = planRoute(
       point,
       [...customers, ...celebrants, ...episodeResidents].map(
@@ -583,6 +705,21 @@ export function mountHandsOnCity({
         : "That route is blocked. Choose another approach.",
     );
   };
+  panel.querySelector("[data-chapter-next]").onclick = () => {
+    const current = BUILDER_CHAPTERS.findIndex((c) => c.id === activeSite);
+    const next = [
+      ...BUILDER_CHAPTERS.slice(current + 1),
+      ...BUILDER_CHAPTERS.slice(0, current + 1),
+    ].find((c) => !chapterComplete(c.id, episode, state, systems));
+    if (!next) {
+      updateUI(
+        "All 12 chapter outcomes are tested. Your city is ready to explore; take a real-world Quest when ready.",
+      );
+      return;
+    }
+    picker.value = next.id;
+    picker.dispatchEvent(new Event("change"));
+  };
   panel.querySelector("[data-stop]").onclick = () => {
     stop();
     updateUI("Stopped. Tap another object or open ground.");
@@ -593,7 +730,9 @@ export function mountHandsOnCity({
   };
   panel.querySelector("[data-reset]").onclick = () => {
     stop();
-    if (BUILDER_MISSIONS.some((m) => m.id === activeSite)) {
+    if (systems[activeSite]) {
+      systems = { ...systems, [activeSite]: newChapterSystems()[activeSite] };
+    } else if (BUILDER_MISSIONS.some((m) => m.id === activeSite)) {
       episode = newEpisode();
       state = { ...state, carrying: null };
       activeSite = "investigate";
@@ -611,7 +750,9 @@ export function mountHandsOnCity({
         ? "Episode reset. Listen to the waiting residents to begin."
         : activeSite === "market"
           ? "Market reset. Collect timber to begin."
-          : "Worksite reset. Collect its construction kit to begin.",
+          : systems[activeSite]
+            ? "Chapter reset. Adjust the city objects and test a useful outcome."
+            : "Worksite reset. Collect its construction kit to begin.",
     );
   };
   function close() {
@@ -899,7 +1040,10 @@ export function mountHandsOnCity({
         (a, i) => (a.rotation.z = (i ? 1 : -1) * (state.opened ? 0.7 : 0.1)),
       );
     const selectedProject = CITY_PROJECTS.find((p) => p.id === activeSite);
-    const centre = selectedProject ??
+    const selectedSystem = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
+    const centre = (selectedSystem &&
+      CITY_PROJECTS.find((p) => p.id === selectedSystem.site)) ??
+      selectedProject ??
       BUILDER_MISSIONS.find((m) => m.id === activeSite) ?? { x: 19.5, z: 15 };
     const nearSite =
       Math.hypot(actor.g.position.x - centre.x, actor.g.position.z - centre.z) <
@@ -933,19 +1077,24 @@ export function mountHandsOnCity({
     camera.updateMatrixWorld();
     for (const spec of objects) {
       const { tag } = targets.get(spec.id),
-        g = objectGroups.get(spec.id),
-        v = new T.Vector3(
-          g.position.x,
-          spec.id.startsWith("stall-") || spec.id === "shelf" ? 3.2 : 1.5,
-          g.position.z,
-        ).project(camera);
+        g = objectGroups.get(spec.id);
+      if (!g) {
+        tag.hidden = true;
+        continue;
+      }
+      const v = new T.Vector3(
+        g.position.x,
+        spec.id.startsWith("stall-") || spec.id === "shelf" ? 3.2 : 1.5,
+        g.position.z,
+      ).project(camera);
       const near =
         Math.hypot(
           actor.g.position.x - g.position.x,
           actor.g.position.z - g.position.z,
         ) < 13;
       tag.hidden =
-        (spec.mission ?? spec.project ?? "market") !== activeSite ||
+        (spec.system ?? spec.mission ?? spec.project ?? "market") !==
+          activeSite ||
         completedObject(spec) ||
         !near ||
         v.z > 1 ||
@@ -968,11 +1117,17 @@ export function mountHandsOnCity({
     get state() {
       return state;
     },
+    get systems() {
+      return systems;
+    },
+    get chaptersCompleted() {
+      return completedChapters(episode, state, systems);
+    },
     get episode() {
       return episode;
     },
     get replicas() {
-      return crewReplicas(projects, episode);
+      return replicas();
     },
     get projects() {
       return projects;
@@ -1015,10 +1170,11 @@ export function mountHandsOnCity({
           "Choose a meaningful task or a construction worksite.",
       );
       const plan = planRoute(
-        EPISODE_OBJECTS.find((o) => o.mission === activeSite)?.approach ?? {
-          x: 16.5,
-          z: 18,
-        },
+        CHAPTER_OBJECTS.find((o) => o.system === activeSite)?.approach ??
+          EPISODE_OBJECTS.find((o) => o.mission === activeSite)?.approach ?? {
+            x: 16.5,
+            z: 18,
+          },
       );
       if (plan) waypoints = [...plan.points];
       tick(0, getCamera());

@@ -1450,7 +1450,7 @@ for (const id of ["jig", "test"]) episodeWork("teach:" + id);
 assert.equal(game.handsOnCity.episode.teach.done, true);
 assert.match(
   handsPanel.querySelector("[data-progress]").textContent,
-  /3\/3 episode outcomes/,
+  /3\/12 chapter outcomes/,
 );
 console.log(
   "PASS: real character investigates water, organises four clinic arrivals and enables independent apprentice success.",
@@ -1603,6 +1603,54 @@ assert.equal(
 console.log(
   "PASS: all six construction sites are reachable, completed by the original avatar and opened, with residents separated.",
 );
+// Every added chapter must be reachable and solved through the real actor, not model setters.
+const systemSolutions = {
+  food: [1, 1, 1],
+  invent: [1, 1, 2],
+  culture: [1, 1, 0],
+  enterprise: [1, 1, 1],
+  connect: [1, 1, 1],
+  trust: [1, 1, 1],
+  environment: [1, 1, 1],
+  legacy: [1, 1, 1],
+};
+for (const [chapter, values] of Object.entries(systemSolutions)) {
+  episodeWork(chapter + ":test");
+  assert.equal(
+    game.handsOnCity.systems[chapter].done,
+    false,
+    chapter + " early test fails",
+  );
+  for (const [i, action] of ["a", "b", "c"].entries())
+    for (let j = 0; j < values[i]; j++) episodeWork(chapter + ":" + action);
+  episodeWork(chapter + ":test");
+  assert.equal(
+    game.handsOnCity.systems[chapter].done,
+    true,
+    chapter + " actor-tested outcome",
+  );
+}
+assert.equal(game.handsOnCity.chaptersCompleted, 12);
+assert.equal(game.handsOnCity.replicas.length, 70);
+assert.equal(handsPanel.querySelector("[data-chapter-next]").hidden, false);
+handsPanel.querySelector("[data-chapter-next]").click();
+assert.match(
+  handsPanel.querySelector("[data-status]").textContent,
+  /All 12 chapter outcomes/,
+);
+console.log(
+  "PASS: twelve distinct chapter outcomes completed in the actual city, honest finale, next-chapter recovery and seventy crew-built parcels.",
+);
+episodeWork("food:a");
+assert.equal(
+  game.handsOnCity.systems.legacy.done,
+  false,
+  "changing an earlier outcome invalidates the handover",
+);
+assert(game.handsOnCity.replicas.length < 70);
+episodeWork("food:test");
+episodeWork("legacy:test");
+assert.equal(game.handsOnCity.chaptersCompleted, 12);
 const originalMarketMeshes = game.scene.children.filter(
   (o) => o.userData.marketTarget,
 );
