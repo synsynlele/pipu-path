@@ -60,7 +60,7 @@ export function mountHandsOnCity({
   panel.className = "hands-on-panel market-worksite";
   panel.hidden = true;
   panel.setAttribute("aria-label", "Repair the market");
-  panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><label class="worksite-picker">Worksite <select data-site aria-label="Choose a hands-on worksite"><option value="market">Repair the market</option><option value="homes">Build homes</option><option value="tower">Build a skyline tower</option><option value="hospital">Build a hospital</option><option value="farm">Grow a community farm</option><option value="stadium">Build a stadium</option><option value="airport">Build an airport</option></select></label><p data-goal></p><div class="market-progress" data-progress></div><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Market objects"></div><button data-reset>Restart this market</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
+  panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><label class="worksite-picker">Worksite <select data-site aria-label="Choose a hands-on worksite"><option value="market">Repair the market</option><option value="homes">Build homes</option><option value="tower">Build a skyline tower</option><option value="hospital">Build a hospital</option><option value="farm">Grow a community farm</option><option value="stadium">Build a stadium</option><option value="airport">Build an airport</option></select></label><p data-goal></p><div class="market-progress" data-progress></div><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-next hidden></button><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Market objects"></div><button data-reset>Restart this market</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
   const tags = document.createElement("div");
   tags.className = "market-tags";
   tags.hidden = true;
@@ -317,6 +317,24 @@ export function mountHandsOnCity({
     panel.querySelector("[data-drop]").hidden =
       !state.carrying || state.carrying === "cart";
     panel.querySelector("[data-stop]").hidden = !waypoints.length;
+    const nextWork = project
+      ? project.id +
+        ":" +
+        (projects[project.id].stage === 0
+          ? state.carrying === "kit:" + project.id
+            ? "base"
+            : "kit"
+          : ["base", "structure", "services", "open"][
+              projects[project.id].stage
+            ])
+      : null;
+    const nextButton = panel.querySelector("[data-next]");
+    nextButton.hidden = !project || projects[project.id].open;
+    if (nextWork) {
+      nextButton.textContent = objects.find((o) => o.id === nextWork).name;
+      nextButton.dataset.action = nextWork;
+    }
+    nextButton.disabled = !!work || waypoints.length > 0;
     panel.querySelector("[data-quest]").hidden = project
       ? !projects[activeSite].open
       : !state.opened;
@@ -454,6 +472,8 @@ export function mountHandsOnCity({
     panel.querySelector(".market-access").append(accessible);
     targets.set(spec.id, { tag, accessible });
   }
+  panel.querySelector("[data-next]").onclick = () =>
+    request(panel.querySelector("[data-next]").dataset.action);
   panel.querySelector("[data-site]").onchange = (event) => {
     const nextSite = event.target.value;
     stop();
@@ -795,6 +815,8 @@ export function mountHandsOnCity({
       tag.style.top = `${(-v.y * 0.5 + 0.5) * innerHeight}px`;
     }
     panel.querySelector("[data-stop]").hidden = !waypoints.length;
+    panel.querySelector("[data-next]").disabled =
+      !!work || waypoints.length > 0;
   }
   return {
     get active() {

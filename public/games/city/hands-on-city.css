@@ -137,3 +137,7 @@
   border-radius: 8px;
   padding: 5px;
 }
+.hands-on-panel [data-next] {
+  background: #176956;
+  color: white;
+}

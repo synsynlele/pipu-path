@@ -1524,8 +1524,17 @@ for (const project of [
     project,
     "site selection survives stopping the previous route",
   );
-  for (const action of ["kit", "base", "structure", "services", "open"])
-    doWork(project + ":" + action);
+  for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+  for (const action of ["kit", "base", "structure", "services", "open"]) {
+    const button = handsPanel.querySelector("[data-next]");
+    assert.equal(button.dataset.action, project + ":" + action);
+    assert.equal(button.hidden, false);
+    assert.equal(button.disabled, false);
+    button.click();
+    for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+      game.handsOnCity.tick(0.1, game.camera);
+  }
   assert.equal(
     game.handsOnCity.projects[project].open,
     true,
