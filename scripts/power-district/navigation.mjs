@@ -80,3 +80,26 @@ assert(
   performance.now() - startTime < 4000,
   "Navigation through a grown city must not stall the main UI thread",
 );
+
+const gate = createNavigator(
+  [
+    { minX: -1, maxX: 1, minZ: -5, maxZ: 0.1 },
+    { minX: -1, maxX: 1, minZ: 1.2, maxZ: 5 },
+  ],
+  { minX: -5, maxX: 5, minZ: -5, maxZ: 5, step: 1, radius: 0.3 },
+);
+const throughGate = gate.route({ x: -4, z: -2 }, { x: 4, z: -2 });
+assert(
+  throughGate,
+  "A traversable narrow entrance must refine the coarse city grid",
+);
+let lastGate = { x: -4, z: -2 };
+for (const point of throughGate.points) {
+  assert(gate.segmentFree(lastGate, point));
+  lastGate = point;
+}
+const rescue = gate.nearestFree({ x: 0, z: 0 });
+assert(
+  rescue && gate.free(rescue),
+  "New construction cannot leave the character trapped inside its footprint",
+);

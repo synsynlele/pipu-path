@@ -120,7 +120,7 @@ export function createNavigator(
     }
     return -1;
   }
-  function route(start, requested) {
+  function routeGrid(start, requested) {
     if (!free(start)) return null;
     const target = {
       x: Math.max(minX, Math.min(maxX, requested.x)),
@@ -257,5 +257,24 @@ export function createNavigator(
     if (segmentFree(start, z)) return z;
     return { x: start.x, z: start.z };
   }
-  return { free, segmentFree, route, manual, obstacles: blocks };
+  function route(start, requested) {
+    const coarse = routeGrid(start, requested);
+    if (coarse || step < 1 || !free(start)) return coarse;
+    // Narrow entrances may fall between the full-city one-metre grid cells.
+    // Refine only a failed request, never every frame.
+    return createNavigator(obstacles, {
+      minX,
+      maxX,
+      minZ,
+      maxZ,
+      step: step / 2,
+      radius,
+    }).route(start, requested);
+  }
+  function nearestFree(position) {
+    if (free(position)) return { x: position.x, z: position.z };
+    const id = nearest(position);
+    return id < 0 ? null : point(id);
+  }
+  return { free, segmentFree, route, manual, nearestFree, obstacles: blocks };
 }

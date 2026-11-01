@@ -80,7 +80,8 @@ assert(
 );
 assert(game.includes("const success = goTo(point, () => showCase(id)"));
 assert(game.includes("if (!planned.points.length)"));
-assert(game.includes('pauseJourney("The route is blocked.'));
+assert(game.includes("function recoverBlockedWalk()"));
+assert(game.includes("recoverBlockedWalk();"));
 assert(html.includes('id="journey-bar"'));
 assert(html.includes('id="view-city-toggle"'));
 assert(html.includes('id="city-view"'));
