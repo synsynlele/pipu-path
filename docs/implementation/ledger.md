@@ -2064,3 +2064,7 @@ The entrance now places the exact PNG logo used by the Real Quest BrandMark besi
 - Exposed the pilot at the entrance while keeping existing saved chapters recoverable.
 - Added model regressions and real-controller coverage including projected 3D touch selection, failed/successful rain tests and undo.
 - Managed browser preview could not start because its launcher supplies unsupported Next.js flags. Visual/device acceptance remains unverified; no production rollout is claimed.
+
+## 1 November 2026 — Hands-on preview visual correction
+
+Browser-tested real canvas construction and rainfall failure-to-success. Replaced the worksite header element to avoid global game-header positioning and restored readable instruction colour. Game-only static preview works; phone testing and complete city integration remain outstanding.

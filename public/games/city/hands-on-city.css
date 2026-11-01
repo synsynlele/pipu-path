@@ -18,13 +18,15 @@
 .hands-on-panel[hidden] {
   display: none;
 }
-.hands-on-panel header {
+.hands-on-panel .hands-on-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .hands-on-panel p {
   margin: 6px 0;
+  color: #14332d;
+  opacity: 1;
 }
 .hands-on-tools {
   display: flex;
