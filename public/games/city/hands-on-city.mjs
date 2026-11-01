@@ -706,11 +706,9 @@ export function mountHandsOnCity({
     );
   };
   panel.querySelector("[data-chapter-next]").onclick = () => {
-    const current = BUILDER_CHAPTERS.findIndex((c) => c.id === activeSite);
-    const next = [
-      ...BUILDER_CHAPTERS.slice(current + 1),
-      ...BUILDER_CHAPTERS.slice(0, current + 1),
-    ].find((c) => !chapterComplete(c.id, episode, state, systems));
+    const next = BUILDER_CHAPTERS.find(
+      (c) => !chapterComplete(c.id, episode, state, systems),
+    );
     if (!next) {
       updateUI(
         "All 12 chapter outcomes are tested. Your city is ready to explore; take a real-world Quest when ready.",

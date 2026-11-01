@@ -1455,6 +1455,12 @@ assert.match(
 console.log(
   "PASS: real character investigates water, organises four clinic arrivals and enables independent apprentice success.",
 );
+handsPanel.querySelector("[data-chapter-next]").click();
+assert.equal(
+  handsPanel.querySelector("[data-site]").value,
+  "market",
+  "Continue recovers the earliest unfinished chapter",
+);
 game.handsOnCity.request("timber");
 assert.equal(game.handsOnCity.state.carrying, null);
 w.dispatchEvent(new w.Event("blur"));
