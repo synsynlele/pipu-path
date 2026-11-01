@@ -41,5 +41,5 @@ it("discloses the written context, sends consent, shows progress and preserves r
   await waitFor(() =>
     expect(screen.getByRole("alert")).toHaveTextContent("notes are safe"),
   );
-  expect(screen.getByRole("button")).toBeEnabled();
+  await waitFor(() => expect(screen.getByRole("button")).toBeEnabled());
 });
