@@ -1,4 +1,13 @@
 import {
+  CITY_PROJECTS,
+  CONSTRUCTION_OBJECTS,
+  newConstruction,
+  constructionAction,
+  constructionHint,
+} from "./city-construction.mjs";
+import { createConstructionScene } from "./construction-scene.mjs";
+import { peopleClear, safePersonStep } from "./personal-space.mjs";
+import {
   MARKET_OBJECTS,
   newMarket,
   marketAction,
@@ -12,6 +21,8 @@ export function mountHandsOnCity({
   getCamera,
   actor,
   marketAssets,
+  getResidents = () => [],
+  walkClear = () => true,
   planRoute,
   refreshNavigation,
   enter,
@@ -26,6 +37,11 @@ export function mountHandsOnCity({
     walking = false,
     elapsed = 0,
     snapshot = null;
+  const objects = [...MARKET_OBJECTS, ...CONSTRUCTION_OBJECTS];
+  let projects = newConstruction(),
+    activeSite = "market",
+    blockedFor = 0;
+  const constructionScene = createConstructionScene(T);
   const root = new T.Group();
   root.visible = false;
   scene.add(root);
@@ -44,7 +60,7 @@ export function mountHandsOnCity({
   panel.className = "hands-on-panel market-worksite";
   panel.hidden = true;
   panel.setAttribute("aria-label", "Repair the market");
-  panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><p data-goal></p><div class="market-progress" data-progress></div><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Market objects"></div><button data-reset>Restart this market</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
+  panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><label class="worksite-picker">Worksite <select data-site aria-label="Choose a hands-on worksite"><option value="market">Repair the market</option><option value="homes">Build homes</option><option value="tower">Build a skyline tower</option><option value="hospital">Build a hospital</option><option value="farm">Grow a community farm</option><option value="stadium">Build a stadium</option><option value="airport">Build an airport</option></select></label><p data-goal></p><div class="market-progress" data-progress></div><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Market objects"></div><button data-reset>Restart this market</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
   const tags = document.createElement("div");
   tags.className = "market-tags";
   tags.hidden = true;
@@ -63,7 +79,7 @@ export function mountHandsOnCity({
     return m;
   }
   function object(id) {
-    const spec = MARKET_OBJECTS.find((o) => o.id === id),
+    const spec = objects.find((o) => o.id === id),
       g = new T.Group();
     g.position.set(spec.x, 0, spec.z);
     g.userData.marketTarget = id;
@@ -87,10 +103,36 @@ export function mountHandsOnCity({
     return { g, legs, arms };
   }
   function cartPosition() {
-    const spec = MARKET_OBJECTS.find(
+    const spec = objects.find(
       (o) => o.id === (state.cart === "entrance" ? "cart" : state.cart),
     );
     return { x: spec.x, z: spec.z };
+  }
+  function residents(except = null) {
+    return [...getResidents(), ...customers, ...celebrants]
+      .filter((p) => p !== except && p.g.visible)
+      .map((p) => p.g.position);
+  }
+  function spawnPerson(x, z, color) {
+    const occupied = [actor.g.position, ...residents()];
+    for (const [dx, dz] of [
+      [0, 0],
+      [1.3, 0],
+      [-1.3, 0],
+      [0, 1.3],
+      [0, -1.3],
+      [2.6, 0],
+      [-2.6, 0],
+      [0, 2.6],
+    ]) {
+      const point = { x: x + dx, z: z + dz };
+      if (
+        walkClear(point, point) &&
+        occupied.every((p) => Math.hypot(point.x - p.x, point.z - p.z) >= 0.95)
+      )
+        return person(root, point.x, point.z, color);
+    }
+    return null;
   }
   function drawWorld() {
     root.clear();
@@ -147,14 +189,12 @@ export function mountHandsOnCity({
             1.2,
             0.8,
           );
-        celebrants.push(
-          person(
-            root,
-            MARKET_OBJECTS.find((o) => o.id === id).x,
-            12.8,
-            i ? 0xd6a64d : 0x618d8d,
-          ),
+        const merchant = spawnPerson(
+          objects.find((o) => o.id === id).x,
+          12.8,
+          i ? 0xd6a64d : 0x618d8d,
         );
+        if (merchant) celebrants.push(merchant);
       }
     }
     const timber = object("timber");
@@ -210,21 +250,25 @@ export function mountHandsOnCity({
         0.6,
       );
     }
-    if (state.opened)
-      for (let i = 0; i < 4; i++)
-        customers.push(
-          person(
-            root,
-            17 + i * 0.8,
-            20 + i * 0.25,
-            [0x789a69, 0xc97f5e, 0x6e8ca9, 0xb7a16a][i],
-          ),
+    if (state.opened) {
+      box(root, 7.9, 0.05, 0.7, 0xe4d6b9, 19.2, 0.28, 16.1);
+      for (const x of [15.6, 22.8])
+        box(root, 0.6, 0.3, 0.6, 0x739d75, x, 0.43, 15.6);
+      for (let i = 0; i < 4; i++) {
+        const customer = spawnPerson(
+          17 + i * 0.8,
+          20 + i * 0.25,
+          [0x789a69, 0xc97f5e, 0x6e8ca9, 0xb7a16a][i],
         );
+        if (customer) customers.push(customer);
+      }
+    }
+    constructionScene.draw(root, projects, objectGroups, box);
     root.updateMatrixWorld(true);
     navigationDirty = true;
   }
   function positionFor(id) {
-    const spec = MARKET_OBJECTS.find((o) => o.id === id);
+    const spec = objects.find((o) => o.id === id);
     let approach = { ...spec.approach },
       point = { x: spec.x, z: spec.z };
     if (id === "cart") {
@@ -233,10 +277,34 @@ export function mountHandsOnCity({
     }
     return { point, approach };
   }
+  function completedObject(spec) {
+    if (!spec.project) return false;
+    const stage = projects[spec.project].stage;
+    return (
+      (spec.kind === "kit" &&
+        (stage > 0 || state.carrying === "kit:" + spec.project)) ||
+      (spec.kind === "base" &&
+        (stage !== 0 || state.carrying !== "kit:" + spec.project)) ||
+      (spec.kind === "structure" && stage !== 1) ||
+      (spec.kind === "services" && stage !== 2)
+    );
+  }
   function updateUI(message) {
-    panel.querySelector("[data-goal]").textContent = marketHint(state);
-    panel.querySelector("[data-progress]").textContent =
-      `${state.roofs.filter(Boolean).length}/2 stalls sheltered · Entrance ${state.cart === "parking" ? "clear" : "blocked"} · Stock ${state.produce === "shelf" ? "safe" : "exposed"}`;
+    const project = CITY_PROJECTS.find((p) => p.id === activeSite);
+    panel.querySelector(".hands-on-heading strong").textContent = project
+      ? project.name
+      : "Reopen the neighbourhood market";
+    panel.setAttribute(
+      "aria-label",
+      project ? project.name : "Repair the market",
+    );
+    panel.querySelector("[data-site]").value = activeSite;
+    panel.querySelector("[data-goal]").textContent = project
+      ? constructionHint(projects, activeSite, state.carrying)
+      : marketHint(state);
+    panel.querySelector("[data-progress]").textContent = project
+      ? `${projects[activeSite].stage}/3 build phases · ${projects[activeSite].open ? "Open · finished landscape" : "Test before opening"}`
+      : `${state.roofs.filter(Boolean).length}/2 stalls sheltered · Entrance ${state.cart === "parking" ? "clear" : "blocked"} · Stock ${state.produce === "shelf" ? "safe" : "exposed"}`;
     if (message !== undefined) {
       panel.querySelector("[data-status]").textContent = message;
     }
@@ -244,14 +312,16 @@ export function mountHandsOnCity({
       state.carrying === "cart"
         ? "Pushing the cart"
         : state.carrying
-          ? `Carrying: ${state.carrying === "roofing" ? "roof sheets" : state.carrying}`
+          ? `Carrying: ${state.carrying.startsWith("kit:") ? CITY_PROJECTS.find((p) => p.id === state.carrying.slice(4))?.kit : state.carrying === "roofing" ? "roof sheets" : state.carrying}`
           : "Hands free";
     panel.querySelector("[data-drop]").hidden =
       !state.carrying || state.carrying === "cart";
     panel.querySelector("[data-stop]").hidden = !waypoints.length;
-    panel.querySelector("[data-quest]").hidden = !state.opened;
+    panel.querySelector("[data-quest]").hidden = project
+      ? !projects[activeSite].open
+      : !state.opened;
     for (const [id, { tag, accessible }] of targets) {
-      const spec = MARKET_OBJECTS.find((o) => o.id === id);
+      const spec = objects.find((o) => o.id === id);
       const i = id === "stall-a" ? 0 : 1;
       let label = spec.name;
       if (id.startsWith("stall-"))
@@ -266,6 +336,13 @@ export function mountHandsOnCity({
         label = "Produce stored";
       if (id === "bell")
         label = state.opened ? "Market open" : "Ring bell · test";
+      if (spec.project)
+        label =
+          spec.kind === "open" && projects[spec.project].open
+            ? "Site open"
+            : spec.name;
+      accessible.hidden =
+        (spec.project ?? "market") !== activeSite || completedObject(spec);
       tag.textContent = label;
       accessible.textContent = spec.name;
       tag.disabled = state.carrying === "cart" && id === "cart";
@@ -281,6 +358,18 @@ export function mountHandsOnCity({
     updateUI();
   }
   function apply(id) {
+    const spec = objects.find((o) => o.id === id);
+    if (spec?.project) {
+      const next = constructionAction(projects, state.carrying, id);
+      projects = next.progress;
+      state = { ...state, carrying: next.carrying };
+      if (next.changed) {
+        drawWorld();
+        cue(next.opened ? "built" : "tap");
+      }
+      updateUI(next.message);
+      return;
+    }
     const next = marketAction(state, id);
     state = next.state;
     if (next.changed) {
@@ -291,6 +380,9 @@ export function mountHandsOnCity({
   }
   function request(id) {
     if (!active) return;
+    const selected = objects.find((o) => o.id === id);
+    if (!selected) return;
+    activeSite = selected.project ?? "market";
     if (navigationDirty) {
       refreshNavigation();
       navigationDirty = false;
@@ -324,7 +416,7 @@ export function mountHandsOnCity({
     if (!waypoints.length) arrive();
     else
       updateUI(
-        `Walking to ${MARKET_OBJECTS.find((o) => o.id === id).name.toLowerCase()}…`,
+        `Walking to ${objects.find((o) => o.id === id).name.toLowerCase()}…`,
       );
   }
   function arrive() {
@@ -350,7 +442,7 @@ export function mountHandsOnCity({
           : "Working…",
     );
   }
-  for (const spec of MARKET_OBJECTS) {
+  for (const spec of objects) {
     const tag = document.createElement("button");
     tag.className = "market-object-tag";
     tag.setAttribute("aria-label", spec.name);
@@ -362,6 +454,22 @@ export function mountHandsOnCity({
     panel.querySelector(".market-access").append(accessible);
     targets.set(spec.id, { tag, accessible });
   }
+  panel.querySelector("[data-site]").onchange = (event) => {
+    const nextSite = event.target.value;
+    stop();
+    activeSite = nextSite;
+    const project = CITY_PROJECTS.find((p) => p.id === activeSite);
+    const point = project
+      ? { x: project.x - 4.8, z: project.z + 5.9 }
+      : { x: 16.5, z: 18 };
+    const plan = planRoute(point);
+    if (plan) waypoints = [...plan.points];
+    updateUI(
+      plan
+        ? "Walking to your chosen worksite. Tap a labelled object to begin."
+        : "That route is blocked. Choose another approach.",
+    );
+  };
   panel.querySelector("[data-stop]").onclick = () => {
     stop();
     updateUI("Stopped. Tap another object or open ground.");
@@ -372,9 +480,20 @@ export function mountHandsOnCity({
   };
   panel.querySelector("[data-reset]").onclick = () => {
     stop();
-    state = newMarket();
+    if (activeSite === "market") state = newMarket();
+    else {
+      projects = {
+        ...projects,
+        [activeSite]: { stage: 0, open: false, tests: 0 },
+      };
+      state = { ...state, carrying: null };
+    }
     drawWorld();
-    updateUI("Market reset. Collect timber to begin.");
+    updateUI(
+      activeSite === "market"
+        ? "Market reset. Collect timber to begin."
+        : "Worksite reset. Collect its construction kit to begin.",
+    );
   };
   function close() {
     stop();
@@ -526,10 +645,31 @@ export function mountHandsOnCity({
         length = Math.hypot(dx, dz),
         step = Math.min(length, dt * (state.carrying === "cart" ? 3.4 : 5));
       if (length > 0.015) {
-        actor.g.position.x += (dx / length) * step;
-        actor.g.position.z += (dz / length) * step;
-        actor.g.rotation.y = Math.atan2(dx, dz);
-        walking = true;
+        const candidate = {
+          x: actor.g.position.x + (dx / length) * step,
+          z: actor.g.position.z + (dz / length) * step,
+        };
+        if (
+          peopleClear(actor.g.position, candidate, residents()) &&
+          walkClear(actor.g.position, candidate)
+        ) {
+          actor.g.position.x = candidate.x;
+          actor.g.position.z = candidate.z;
+          actor.g.rotation.y = Math.atan2(dx, dz);
+          walking = true;
+          blockedFor = 0;
+        } else {
+          blockedFor += dt;
+          if (blockedFor > 0.5) {
+            const goal = waypoints.at(-1),
+              detour = planRoute(
+                goal,
+                [...customers, ...celebrants].map((p) => p.g.position),
+              );
+            if (detour?.points.length) waypoints = [...detour.points];
+            blockedFor = 0;
+          }
+        }
       } else {
         waypoints.shift();
         if (!waypoints.length) arrive();
@@ -569,51 +709,81 @@ export function mountHandsOnCity({
     }
     for (let i = 0; i < customers.length; i++) {
       const c = customers[i],
-        phase = (elapsed * 0.6 + i * 1.5) % (Math.PI * 2);
-      c.g.position.set(
-        19.2 + Math.sin(phase) * 1.1,
-        0.3,
-        17.7 + Math.cos(phase) * 1.8,
+        phase = (elapsed * 0.45 + i * 1.5) % (Math.PI * 2);
+      const desired = {
+        x: 19.2 + Math.sin(phase) * 1.4,
+        z: 18.5 + Math.cos(phase) * 1.7,
+      };
+      const next = safePersonStep(
+        c.g.position,
+        desired,
+        [actor.g.position, ...residents(c)],
+        walkClear,
+        dt * 1.2,
       );
+      const moved =
+        Math.hypot(next.x - c.g.position.x, next.z - c.g.position.z) > 0.001;
+      c.g.position.x = next.x;
+      c.g.position.z = next.z;
       c.legs.forEach(
-        (l, j) => (l.rotation.x = Math.sin(elapsed * 8 + j * Math.PI) * 0.3),
+        (l, j) =>
+          (l.rotation.x = moved
+            ? Math.sin(elapsed * 8 + j * Math.PI) * 0.3
+            : 0),
       );
     }
     for (const c of celebrants)
       c.arms.forEach(
         (a, i) => (a.rotation.z = (i ? 1 : -1) * (state.opened ? 0.7 : 0.1)),
       );
-    const inMarket =
-      Math.hypot(actor.g.position.x - 19.5, actor.g.position.z - 15) < 12;
+    const selectedProject = CITY_PROJECTS.find((p) => p.id === activeSite);
+    const centre = selectedProject ?? { x: 19.5, z: 15 };
+    const nearSite =
+      Math.hypot(actor.g.position.x - centre.x, actor.g.position.z - centre.z) <
+      12;
     focus.lerp(
       new T.Vector3(
-        inMarket ? actor.g.position.x * 0.4 + 19.5 * 0.6 : actor.g.position.x,
+        nearSite
+          ? actor.g.position.x * 0.4 + centre.x * 0.6
+          : actor.g.position.x,
         0,
-        inMarket ? actor.g.position.z * 0.4 + 15 * 0.6 : actor.g.position.z,
+        nearSite
+          ? actor.g.position.z * 0.4 + centre.z * 0.6
+          : actor.g.position.z,
       ),
       Math.min(1, dt * 4),
     );
     const span = Math.max(
-      24,
-      15 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
+      selectedProject?.id === "tower" ? 36 : 26,
+      17 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
     );
     camera.position.set(
       focus.x + Math.sin(cameraYaw) * span * 0.55,
       span * 0.75,
       focus.z + Math.cos(cameraYaw) * span * 0.55,
     );
-    camera.lookAt(focus.x, 0.5, focus.z - 1.2);
+    camera.lookAt(
+      focus.x,
+      selectedProject?.id === "tower" ? 3 : 0.5,
+      focus.z - 1.2,
+    );
     camera.updateMatrixWorld();
-    for (const spec of MARKET_OBJECTS) {
+    for (const spec of objects) {
       const { tag } = targets.get(spec.id),
         g = objectGroups.get(spec.id),
-        v = new T.Vector3(g.position.x, 3.5, g.position.z).project(camera);
+        v = new T.Vector3(
+          g.position.x,
+          spec.id.startsWith("stall-") || spec.id === "shelf" ? 3.2 : 1.5,
+          g.position.z,
+        ).project(camera);
       const near =
         Math.hypot(
           actor.g.position.x - g.position.x,
           actor.g.position.z - g.position.z,
         ) < 13;
       tag.hidden =
+        (spec.project ?? "market") !== activeSite ||
+        completedObject(spec) ||
         !near ||
         v.z > 1 ||
         v.x < -0.93 ||
@@ -632,6 +802,12 @@ export function mountHandsOnCity({
     },
     get state() {
       return state;
+    },
+    get projects() {
+      return projects;
+    },
+    get residents() {
+      return [...getResidents(), ...customers, ...celebrants];
     },
     get moving() {
       return !!(waypoints.length || work);

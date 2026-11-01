@@ -4694,6 +4694,24 @@ function returnToEntrance() {
   $("start").focus({ preventScroll: true });
 }
 $("menu-entrance").onclick = returnToEntrance;
+let worksiteNavigator;
+const cityPeople = () => [
+  ama,
+  bisi,
+  tunde,
+  ...futureNeighbours,
+  ...[...livingScene.pedestrians.values()]
+    .flat()
+    .filter((g) => g.visible)
+    .map((g) => ({ g })),
+];
+const personalBlocks = (people) =>
+  people.map((p) => ({
+    minX: p.x - 0.5,
+    maxX: p.x + 0.5,
+    minZ: p.z - 0.5,
+    maxZ: p.z + 0.5,
+  }));
 const handsOnCity = mountHandsOnCity({
   T,
   scene,
@@ -4701,10 +4719,34 @@ const handsOnCity = mountHandsOnCity({
   getCamera: () => camera,
   actor: player,
   marketAssets,
-  planRoute: (point) => navigator.route(player.g.position, point),
+  getResidents: cityPeople,
+  walkClear: (from, to) =>
+    (worksiteNavigator ?? navigator).segmentFree(from, to),
+  planRoute: (point, blockers = []) => {
+    const nav = blockers.length
+      ? createNavigator(
+          [
+            ...navigationObstacles,
+            ...personalBlocks([
+              ...cityPeople().map((p) => p.g.position),
+              ...blockers,
+            ]),
+          ],
+          { minX: -57.5, maxX: 57.5, minZ: -49.5, maxZ: 49.5, step: 0.5 },
+        )
+      : (worksiteNavigator ?? navigator);
+    return nav.route(player.g.position, point);
+  },
   refreshNavigation: () => {
     navigationSignature = null;
     rebuildNavigation();
+    worksiteNavigator = createNavigator(
+      [
+        ...navigationObstacles,
+        ...personalBlocks(cityPeople().map((p) => p.g.position)),
+      ],
+      { minX: -57.5, maxX: 57.5, minZ: -49.5, maxZ: 49.5, step: 0.5 },
+    );
   },
   cue: (kind) => cityAudio.cue(kind),
   enter() {
@@ -4729,7 +4771,7 @@ const handsOnCity = mountHandsOnCity({
 const handsOnStart = document.createElement("button");
 handsOnStart.id = "hands-on-start";
 handsOnStart.className = "primary";
-handsOnStart.textContent = "Repair the market · hands-on preview →";
+handsOnStart.textContent = "Build my city · hands-on preview →";
 $("start").before(handsOnStart);
 handsOnStart.onclick = () => handsOnCity.open();
 

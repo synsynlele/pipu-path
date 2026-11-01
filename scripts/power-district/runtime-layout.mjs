@@ -1488,6 +1488,54 @@ assert.match(
   /reopened the market/,
 );
 assert.equal(handsPanel.querySelector("[data-quest]").hidden, false);
+// Residents spawn clear of the player and keep personal space while moving.
+for (let frame = 0; frame < 180; frame++) {
+  game.handsOnCity.tick(0.1, game.camera);
+  const humans = [game.player, ...game.handsOnCity.residents].filter(
+    (p) => p.g.visible,
+  );
+  for (let i = 0; i < humans.length; i++)
+    for (let j = i + 1; j < humans.length; j++)
+      assert(
+        Math.hypot(
+          humans[i].g.position.x - humans[j].g.position.x,
+          humans[i].g.position.z - humans[j].g.position.z,
+        ) >=
+          (humans[i].g.userData.ignoreNavigation ? 0.2 : 0.39) +
+            (humans[j].g.userData.ignoreNavigation ? 0.2 : 0.39) -
+            0.01,
+        "characters must not enter one another",
+      );
+}
+for (const project of [
+  "homes",
+  "tower",
+  "hospital",
+  "farm",
+  "stadium",
+  "airport",
+]) {
+  handsPanel.querySelector("[data-site]").value = project;
+  handsPanel
+    .querySelector("[data-site]")
+    .dispatchEvent(new w.Event("change", { bubbles: true }));
+  assert.equal(
+    handsPanel.querySelector("[data-site]").value,
+    project,
+    "site selection survives stopping the previous route",
+  );
+  for (const action of ["kit", "base", "structure", "services", "open"])
+    doWork(project + ":" + action);
+  assert.equal(
+    game.handsOnCity.projects[project].open,
+    true,
+    "actual character completes " + project,
+  );
+  assert.equal(handsPanel.querySelector("[data-site]").value, project);
+}
+console.log(
+  "PASS: all six construction sites are reachable, completed by the original avatar and opened, with residents separated.",
+);
 const originalMarketMeshes = game.scene.children.filter(
   (o) => o.userData.marketTarget,
 );

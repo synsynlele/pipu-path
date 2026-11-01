@@ -2072,3 +2072,7 @@ Browser-tested real canvas construction and rainfall failure-to-success. Replace
 ## 1 November 2026 — Character-driven market worksite
 
 Retired the tile/drainage pilot. Added deterministic collect/carry/repair/push/store/test rules, original-avatar route execution, carried props, two visibly repaired stalls, cart parking consequences, dry storage and market opening with residents. Added model and full-controller mission regressions. Scoped scenery/character restoration isolates the existing campaign. Publication target is a phone-accessible preview only.
+
+## 1 November 2026 — Construction catalogue and resident clearance
+
+Added shared swept personal-space rules, safe spawn/steering, resident-aware route replanning, six kit/base/structure/services/test worksite contracts, and distinct merged/cached final building recipes. Added automated tests for all six model/controller build flows, road clearance, invalid order and human separation. Final cosmetic alignment is conditional on successful work and does not fabricate campaign or real-world progress.

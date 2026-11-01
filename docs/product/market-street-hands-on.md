@@ -17,3 +17,11 @@ The pilot is session-only and does not replace or advance the authored campaign,
 ## Verification
 
 Model tests cover dependency order, carrying limits, early tests, doorway obstruction and recovery. The actual game controller walks the original avatar through the whole mission, opens the market and restores campaign state on exit. Browser and phone-accessible preview verification follow implementation; physical-phone comfort and enjoyment still require player feedback.
+
+## City construction extension
+
+The Worksite selector now offers six additional, real-city construction sites: skyline tower, homes, hospital, community farm, stadium and regional airport. The character collects a site kit, carries it to the base, operates the structure control, connects services and tests the site before opening. Actions require arrival; early opening tests report missing work. Farm irrigation visibly grows crop rows; tower work uses a crane; the other sites use their own named construction controls and distinct geometry.
+
+Finished models use curated recipes, aligned entrances and paved/landscaped edges. The airport is a small fictional representation, not a full-scale airport simulation. All six sites reserve existing road clearance. Finished project geometry is merged by worksite and cached by phase to limit draw calls. The market also gains aligned paving and planters after a successful opening. Cosmetic finishing never opens an incomplete site.
+
+Swept personal-space checks cover the player, original residents, visible background pedestrians, traders and customers. Moving customers steer or wait; the player can replan around them. Spawn slots are checked before creating customers. The pilot remains session-only and is separate from the twelve-chapter campaign and its backups. This is the first construction catalogue, not a claim that every authored chapter has been converted.
