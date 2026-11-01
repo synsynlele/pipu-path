@@ -1,3 +1,4 @@
+import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
 import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
 import { mountFacilityDesk } from "./facility-ui.mjs";
@@ -1604,6 +1605,7 @@ for (const s of stations) {
 }
 let navigationSignature = null;
 let navigationObstacles = [];
+let cameraObstacles = [];
 let trafficWaitStarted = null;
 let navigator,
   route = [],
@@ -1620,6 +1622,7 @@ function rebuildNavigation() {
   navigationSignature = signature;
   scene.updateMatrixWorld(true);
   const obstacles = [];
+  const cameraBoxes = [];
   scene.traverseVisible((o) => {
     if (
       !o.isMesh ||
@@ -1631,6 +1634,15 @@ function rebuildNavigation() {
       return;
     for (let a = o; a; a = a.parent) if (a.userData.character) return;
     const b = new T.Box3().setFromObject(o);
+    if (b.max.y >= 2 && b.max.x - b.min.x > 0.65 && b.max.z - b.min.z > 0.65)
+      cameraBoxes.push({
+        minX: b.min.x,
+        maxX: b.max.x,
+        minY: b.min.y,
+        maxY: b.max.y,
+        minZ: b.min.z,
+        maxZ: b.max.z,
+      });
     if (b.max.y < 0.52 || b.min.y > 1.7) return;
     obstacles.push({
       minX: b.min.x,
@@ -1664,6 +1676,18 @@ function rebuildNavigation() {
   }
   obstacles.push(...cityDevelopment.obstacles());
   navigationObstacles = obstacles;
+  for (const mesh of cityDevelopment.meshes.values()) {
+    const b = new T.Box3().setFromObject(mesh);
+    cameraBoxes.push({
+      minX: b.min.x,
+      maxX: b.max.x,
+      minY: b.min.y,
+      maxY: b.max.y,
+      minZ: b.min.z,
+      maxZ: b.max.z,
+    });
+  }
+  cameraObstacles = cameraBoxes;
   navigator = createNavigator(obstacles, {
     minX: -57.5,
     maxX: 57.5,
@@ -1672,22 +1696,44 @@ function rebuildNavigation() {
     step: 1,
   });
   if (!navigator.free(player.g.position)) {
-    const rescue = navigator.route(
-      { x: 4, z: 4 },
-      { x: player.g.position.x, z: player.g.position.z },
-    );
+    const rescue = navigator.nearestFree(player.g.position);
     if (rescue) {
-      player.g.position.set(rescue.destination.x, 0.3, rescue.destination.z);
+      player.g.position.set(rescue.x, 0.3, rescue.z);
       walkTarget.copy(player.g.position);
     }
   }
-  if (route.length) cancelWalk();
+  if (route.length) {
+    const planned = navigator.route(player.g.position, route.at(-1));
+    if (planned) route = planned.points;
+    else recoverBlockedWalk();
+  }
+}
+let blockedWalkRetries = 0;
+function recoverBlockedWalk() {
+  if (!route.length) return false;
+  const goal = route.at(-1);
+  const planned = navigator.route(player.g.position, goal);
+  if (planned && ++blockedWalkRetries <= 2) {
+    route = planned.points;
+    return true;
+  }
+  const callback = onArrival;
+  cancelWalk();
+  toast(
+    callback
+      ? "This approach is blocked. Opening the challenge here."
+      : "That path is closed. Choose another open spot.",
+  );
+  callback?.();
+  return false;
 }
 function cancelWalk() {
   clearTimeout(journeyTravelTimer);
   journeyTravelTimer = null;
   route = [];
   onArrival = null;
+  blockedWalkRetries = 0;
+  trafficWaitStarted = null;
 
   walkTarget.copy(player.g.position);
   $("travel").hidden = true;
@@ -3270,9 +3316,7 @@ function render() {
   $("build-dock").classList.add("city-dock");
   $("mission").classList.add("city-board");
   document.body.classList.toggle("city-guided", Boolean(guided));
-  $("explore-free").textContent = freeExplore
-    ? "Show my next step"
-    : "Explore freely";
+  $("explore-free").textContent = "Walk around my city";
   document.body.classList.add("city-playing");
   const options = [
     ["storage", "▥", "Storage", 5],
@@ -4029,16 +4073,7 @@ $("districts-toggle").onclick = () => {
   else closeDirectory();
 };
 $("district-close").onclick = closeDirectory;
-$("explore-free").onclick = () => {
-  if (reviewCaseId) finishDecisionReview({ resume: false });
-  if (journey.status === "running")
-    pauseJourney("Your journey is paused while you explore.");
-  freeExplore = !freeExplore;
-  guideExpanded = !freeExplore;
-  dockExpanded = false;
-  closeDetail();
-  render();
-};
+$("explore-free").onclick = () => beginManualExplore();
 $("guide-toggle").onclick = () => {
   if (simulating) return;
   if (reviewCaseId) finishDecisionReview({ resume: false });
@@ -4566,6 +4601,7 @@ $("menu-facilities").onclick = () =>
 facilityDesk.settings();
 updateSaveHealth();
 function continueCurrentChapter() {
+  freeExplore = false;
   inspectedDistrict = null;
   reportParentState();
   if (state.advanced && canStartAdvanced(state.resilience))
@@ -4908,6 +4944,7 @@ document.querySelector(".brand").onclick = (e) => {
 // Orbit and ground movement; raycast only the observed floor geometry.
 const ray = new T.Raycaster(),
   pointer = new T.Vector2();
+let multiTouch = false;
 let down = null,
   dragging = false,
   pinchDistance = null;
@@ -4916,11 +4953,13 @@ const canvas = $("world");
 canvas.addEventListener("pointerdown", (e) => {
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   canvas.setPointerCapture(e.pointerId);
+  if (pointers.size > 1) multiTouch = true;
   down = { x: e.clientX, y: e.clientY, lastX: e.clientX, lastY: e.clientY };
   dragging = false;
 });
 canvas.addEventListener("pointermove", (e) => {
-  if (!pointers.has(e.pointerId)) return;
+  if (!pointers.has(e.pointerId) || document.querySelector("dialog[open]"))
+    return;
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pointers.size === 2) {
     const a = [...pointers.values()],
@@ -4955,6 +4994,7 @@ canvas.addEventListener("pointerup", (e) => {
   if (
     down &&
     !dragging &&
+    !multiTouch &&
     $("intro").hidden &&
     !simulating &&
     !document.querySelector("dialog[open]") &&
@@ -5004,11 +5044,17 @@ canvas.addEventListener("pointerup", (e) => {
   if (
     down &&
     !dragging &&
+    !multiTouch &&
     $("intro").hidden &&
     !simulating &&
     !builtCityView &&
-    journey.status !== "running"
+    !document.querySelector("dialog[open]") &&
+    $("world-feedback").hidden
   ) {
+    if (!beginManualExplore()) {
+      down = null;
+      return;
+    }
     pointer.set(
       (e.clientX / innerWidth) * 2 - 1,
       (-e.clientY / innerHeight) * 2 + 1,
@@ -5021,16 +5067,27 @@ canvas.addEventListener("pointerup", (e) => {
     }
   }
   down = null;
+  if (!pointers.size) multiTouch = false;
 });
 canvas.addEventListener("pointercancel", (e) => {
   pointers.delete(e.pointerId);
   down = null;
   pinchDistance = null;
+  if (!pointers.size) multiTouch = false;
+});
+canvas.addEventListener("lostpointercapture", (e) => {
+  pointers.delete(e.pointerId);
+  down = null;
+  if (!pointers.size) {
+    pinchDistance = null;
+    multiTouch = false;
+  }
 });
 canvas.addEventListener(
   "wheel",
   (e) => {
     e.preventDefault();
+    if (document.querySelector("dialog[open]")) return;
     if (builtCityView) {
       cityCamera.zoom = clamp(
         cityCamera.zoom * Math.exp(-e.deltaY * 0.001),
@@ -5048,6 +5105,49 @@ canvas.addEventListener(
   },
   { passive: false },
 );
+$("camera-home").onclick = () => {
+  keys.clear();
+  pointers.clear();
+  down = null;
+  multiTouch = false;
+  pinchDistance = null;
+  if (builtCityView) {
+    yaw = 0.55;
+    pitch = 0.95;
+    distance = 160;
+    cityCamera.zoom = 1;
+    fitCityCamera();
+  } else {
+    yaw = 0.8;
+    pitch = 0.72;
+    distance = 27;
+    if (mapMode) {
+      mapMode = false;
+      $("city-map").textContent = "City map";
+    }
+    target.copy(player.g.position);
+  }
+  toast("Camera centred.");
+};
+function beginManualExplore() {
+  if (
+    simulating ||
+    builtCityView ||
+    document.querySelector("dialog[open]") ||
+    !$("world-feedback").hidden
+  )
+    return false;
+  if (!freeExplore || journey.status === "running") {
+    if (journey.status === "running")
+      pauseJourney("You are exploring. Continue your chapter when ready.");
+    freeExplore = true;
+    guideExpanded = false;
+    dockExpanded = false;
+    closeDetail();
+    render();
+  }
+  return true;
+}
 const keys = new Set();
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && $("city-menu").open) {
@@ -5073,20 +5173,39 @@ window.addEventListener("keydown", (e) => {
     ].includes(e.key)
   ) {
     e.preventDefault();
-    keys.add(e.key);
+    if (beginManualExplore()) keys.add(e.key);
   }
 });
 window.addEventListener("keyup", (e) => keys.delete(e.key));
-window.addEventListener("blur", () => keys.clear());
+window.addEventListener("blur", () => {
+  keys.clear();
+  pointers.clear();
+  down = null;
+  pinchDistance = null;
+  multiTouch = false;
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    keys.clear();
+    pointers.clear();
+    down = null;
+    pinchDistance = null;
+    multiTouch = false;
+  }
+});
 document.querySelectorAll("[data-move]").forEach((b) => {
   const key = { up: "w", down: "s", left: "a", right: "d" }[b.dataset.move];
   b.onpointerdown = (e) => {
     e.preventDefault();
     b.setPointerCapture(e.pointerId);
-    keys.add(key);
+    if (beginManualExplore()) keys.add(key);
   };
-  b.onpointerup = b.onpointercancel = () => keys.delete(key);
+  b.onpointerup =
+    b.onpointercancel =
+    b.onlostpointercapture =
+      () => keys.delete(key);
 });
+let easedBoom = distance;
 let last = performance.now(),
   time = 0;
 const v = new T.Vector3();
@@ -5119,6 +5238,7 @@ function siteInCamera(position) {
 function animateWorld(now) {
   const coveredByPuzzle =
     focusedPuzzle() && (innerWidth <= 760 || innerHeight <= 520);
+  if (document.querySelector("dialog[open]")) keys.clear();
   if (coveredByPuzzle) {
     frameBudget.takeFrame(now, true);
     last = now;
@@ -5137,13 +5257,24 @@ function animateWorld(now) {
   else if ($("intro").hidden && !mapMode)
     desiredTarget.set(player.g.position.x, 0, player.g.position.z);
   else desiredTarget.set(0, 0, 0);
-  target.lerp(desiredTarget, 0.055);
+  target.lerp(desiredTarget, followBlend(dt, reduceMotion.matches));
   const aspect = innerWidth / innerHeight;
-  camera.position.set(
-    target.x + Math.sin(yaw) * Math.cos(pitch) * distance,
-    target.y + Math.sin(pitch) * distance,
-    target.z + Math.cos(yaw) * Math.cos(pitch) * distance,
+  const boomDirection = new T.Vector3(
+    Math.sin(yaw) * Math.cos(pitch),
+    Math.sin(pitch),
+    Math.cos(yaw) * Math.cos(pitch),
   );
+  const boomOrigin = new T.Vector3(target.x, target.y + 0.5, target.z);
+  const boom =
+    camera === playCamera && $("intro").hidden && !mapMode
+      ? clearBoomDistance(boomOrigin, boomDirection, distance, cameraObstacles)
+      : distance;
+  easedBoom =
+    boom < easedBoom || reduceMotion.matches
+      ? boom
+      : easedBoom + (boom - easedBoom) * followBlend(dt);
+  if (camera !== playCamera || mapMode || !$("intro").hidden) easedBoom = boom;
+  camera.position.copy(boomOrigin).addScaledVector(boomDirection, easedBoom);
   camera.lookAt(target.x + (aspect > 1.3 ? -1.2 : 0), target.y + 0.5, target.z);
   if (!$("intro").hidden) {
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
@@ -5159,8 +5290,11 @@ function animateWorld(now) {
       (dx || dz) &&
       !simulating &&
       !builtCityView &&
-      journey.status !== "running"
+      !document.querySelector("dialog[open]") &&
+      $("world-feedback").hidden
     ) {
+      if (journey.status === "running")
+        pauseJourney("You are exploring. Continue your chapter when ready.");
       cancelWalk();
       const mx = dx * Math.cos(yaw) + dz * Math.sin(yaw),
         mz = -dx * Math.sin(yaw) + dz * Math.cos(yaw),
@@ -5172,26 +5306,59 @@ function animateWorld(now) {
       walkTarget.set(next.x, 0.3, next.z);
     }
   }
-  if (route.length) {
+  if (route.length && !document.querySelector("dialog[open]")) {
     const next = route[0];
     walkTarget.set(next.x, 0.3, next.z);
   }
   const diff = walkTarget.clone().sub(player.g.position);
-  if (diff.length() > 0.035) {
+  if (document.querySelector("dialog[open]"))
+    walkTarget.copy(player.g.position);
+  if (diff.length() > 0.001 && !document.querySelector("dialog[open]")) {
     const step = Math.min(diff.length(), dt * (route.length ? 8 : 3)),
       next = player.g.position
         .clone()
         .add(diff.clone().normalize().multiplyScalar(step));
-    const trafficClear = livingScene.vehicles.every(
-      ({ g }) =>
-        !g.visible ||
-        Math.hypot(g.position.x - next.x, g.position.z - next.z) > 1.25,
-    );
-    if (!trafficClear) {
+    const trafficClearAt = (next) =>
+      livingScene.vehicles.every(
+        ({ g }) =>
+          !g.visible ||
+          Math.hypot(g.position.x - next.x, g.position.z - next.z) > 1.25 ||
+          (Math.hypot(
+            g.position.x - player.g.position.x,
+            g.position.z - player.g.position.z,
+          ) <= 1.25 &&
+            Math.hypot(g.position.x - next.x, g.position.z - next.z) >
+              Math.hypot(
+                g.position.x - player.g.position.x,
+                g.position.z - player.g.position.z,
+              ) +
+                0.0001),
+      );
+    if (!trafficClearAt(next) && !route.length) {
+      // A held direction can slide past a waiting vehicle instead of deadlocking.
+      const sideways = [1, -1].map(
+        (sign) =>
+          new T.Vector3(
+            player.g.position.x - ((sign * diff.z) / diff.length()) * step,
+            player.g.position.y,
+            player.g.position.z + ((sign * diff.x) / diff.length()) * step,
+          ),
+      );
+      const clear = sideways.find(
+        (p) => navigator.segmentFree(player.g.position, p) && trafficClearAt(p),
+      );
+      if (clear) next.copy(clear);
+    }
+    if (!trafficClearAt(next)) {
       trafficWaitStarted ??= now;
       if (route.length && now - trafficWaitStarted > 700) {
         const temporary = livingScene.vehicles
-          .filter(({ g }) => g.visible)
+          .filter(
+            ({ g }) =>
+              g.visible &&
+              (Math.abs(g.position.x - player.g.position.x) > 1.31 ||
+                Math.abs(g.position.z - player.g.position.z) > 1.31),
+          )
           .map(({ g }) => ({
             minX: g.position.x - 1,
             maxX: g.position.x + 1,
@@ -5205,15 +5372,51 @@ function animateWorld(now) {
           maxZ: 49.5,
           step: 1,
         });
-        const planned = detour.route(
-          player.g.position,
-          route[route.length - 1],
+        const goal = route.at(-1);
+        const closeVehicle = livingScene.vehicles.find(
+          ({ g }) =>
+            g.visible &&
+            Math.hypot(
+              g.position.x - player.g.position.x,
+              g.position.z - player.g.position.z,
+            ) < 1.5,
         );
-        if (planned) route = planned.points;
+        let planned = null;
+        if (closeVehicle) {
+          for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+            const escape = {
+              x: player.g.position.x + Math.cos(angle) * 2,
+              z: player.g.position.z + Math.sin(angle) * 2,
+            };
+            const away =
+              (escape.x - player.g.position.x) *
+                (player.g.position.x - closeVehicle.g.position.x) +
+              (escape.z - player.g.position.z) *
+                (player.g.position.z - closeVehicle.g.position.z);
+            if (
+              away < -0.001 ||
+              !navigator.segmentFree(player.g.position, escape) ||
+              !trafficClearAt(escape)
+            )
+              continue;
+            const onward = detour.route(escape, goal);
+            if (onward) {
+              planned = { ...onward, points: [escape, ...onward.points] };
+              break;
+            }
+          }
+        }
+        planned ??= detour.route(player.g.position, goal);
+        if (planned && planned.points.length) {
+          route = planned.points;
+          blockedWalkRetries++;
+          if (blockedWalkRetries > 4) recoverBlockedWalk();
+        } else recoverBlockedWalk();
         trafficWaitStarted = now;
       }
     } else if (navigator.segmentFree(player.g.position, next)) {
       trafficWaitStarted = null;
+      blockedWalkRetries = 0;
       player.g.position.copy(next);
       player.g.rotation.y = Math.atan2(diff.x, diff.z);
       player.legs.forEach(
@@ -5224,12 +5427,13 @@ function animateWorld(now) {
           (a.rotation.x = Math.sin(time * 10 + (i + 1) * Math.PI) * 0.28),
       );
     } else if (journey.status === "running" && journey.stage === "travelling") {
-      pauseJourney("The route is blocked. Tap Resume journey to retry.");
-    } else cancelWalk();
+      recoverBlockedWalk();
+    } else if (route.length) recoverBlockedWalk();
+    else cancelWalk();
   } else {
     player.legs.forEach((l) => (l.rotation.x *= 0.85));
     player.arms.forEach((a) => (a.rotation.x *= 0.85));
-    if (route.length) {
+    if (route.length && !document.querySelector("dialog[open]")) {
       route.shift();
       if (!route.length) {
         const callback = onArrival;

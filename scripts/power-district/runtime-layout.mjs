@@ -85,7 +85,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment, getHandoffTopic};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment, getHandoffTopic, goTo, cancelWalk, beginManualExplore, keys, target, distance, yaw, pitch};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -1273,5 +1273,132 @@ game.closeBuiltCityView();
 assert.equal(game.camera.type, "PerspectiveCamera");
 console.log(
   "PASS: actual mobile game runtime, all 108 journeys without teleportation, road-free trees/houses, overview zoom and camera restoration. Canvas/GPU not tested.",
+);
+// Real controller recovery: explicit exploration, route rebuild, blocked traffic and modals.
+for (const vehicle of game.livingScene.vehicles) {
+  vehicle.route = null;
+  vehicle.g.visible = false;
+}
+const start = game.navigator.nearestFree({ x: 4, z: 4 });
+game.player.g.position.set(start.x, 0.3, start.z);
+const goal = [
+  { x: 10, z: 4 },
+  { x: -10, z: 4 },
+  { x: 4, z: 15 },
+].find((p) => game.navigator.free(p) && game.navigator.route(start, p));
+assert(goal);
+let arrivalCount = 0;
+assert(game.goTo(goal, () => arrivalCount++));
+const routeBeforeRebuild = game.route.length;
+game.state.config.care = !game.state.config.care;
+game.render();
+assert(
+  game.route.length > 0 && routeBeforeRebuild > 0,
+  "City changes preserve the destination",
+);
+const waiting = game.livingScene.vehicles[0];
+waiting.g.position.copy(game.player.g.position);
+waiting.g.visible = true;
+const beforeEscape = game.player.g.position.clone();
+for (let i = 0; i < 150 && game.route.length; i++) {
+  now += 100;
+  game.animateWorld(now);
+}
+assert(
+  game.player.g.position.distanceTo(beforeEscape) > 0.5,
+  "Overlapping stationary traffic must allow walking away",
+);
+assert.equal(
+  arrivalCount,
+  1,
+  "A retained destination callback fires exactly once",
+);
+// A permanently blocked approach opens the destination action without teleporting.
+waiting.g.visible = false;
+assert(game.goTo(start, () => arrivalCount++));
+const freeSegment = game.navigator.segmentFree;
+const beforeBlocked = game.player.g.position.clone();
+game.navigator.segmentFree = () => false;
+for (let i = 0; i < 8 && game.route.length; i++) {
+  now += 100;
+  game.animateWorld(now);
+}
+game.navigator.segmentFree = freeSegment;
+assert.equal(game.route.length, 0);
+assert.equal(arrivalCount, 2);
+assert.equal(game.player.g.position.distanceTo(beforeBlocked), 0);
+game.journey.status = "running";
+game.journey.stage = "question";
+w.document.body.tabIndex = -1;
+w.document.body.focus();
+w.dispatchEvent(new w.KeyboardEvent("keydown", { key: "w", cancelable: true }));
+assert.equal(
+  game.journey.status,
+  "paused",
+  "Manual input takes over from guidance",
+);
+const beforeManual = game.player.g.position.clone();
+for (let i = 0; i < 6; i++) {
+  now += 100;
+  game.animateWorld(now);
+}
+w.dispatchEvent(new w.KeyboardEvent("keyup", { key: "w" }));
+assert(
+  game.player.g.position.distanceTo(beforeManual) > 0.01,
+  "Actual held controls move the player",
+);
+// Modals never consume a pending route or fire an arrival in the background.
+assert(game.goTo(start, () => arrivalCount++));
+w.document.getElementById("help").click();
+const coveredPosition = game.player.g.position.clone(),
+  pendingPoints = game.route.length;
+for (let i = 0; i < 4; i++) {
+  now += 100;
+  game.animateWorld(now);
+}
+assert.equal(game.player.g.position.distanceTo(coveredPosition), 0);
+assert.equal(game.route.length, pendingPoints);
+w.document.getElementById("help-done").click();
+game.cancelWalk();
+w.document.getElementById("camera-home").click();
+assert.equal(game.distance, 27);
+assert.equal(game.yaw, 0.8);
+assert.equal(game.pitch, 0.72);
+assert(game.target.distanceTo(game.player.g.position) < 0.001);
+game.openBuiltCityView();
+w.document.getElementById("city-view-zoom-in").click();
+w.document.getElementById("camera-home").click();
+assert.equal(game.camera.zoom, 1);
+game.closeBuiltCityView();
+// Lifting either finger after a pinch is never a tap-to-walk/building action.
+const touch = (type, id, x, y) => {
+  const event = new w.MouseEvent(type, {
+    clientX: x,
+    clientY: y,
+    bubbles: true,
+    cancelable: true,
+  });
+  Object.defineProperty(event, "pointerId", { value: id });
+  canvas.dispatchEvent(event);
+};
+touch("pointerdown", 1, 180, 350);
+touch("pointerdown", 2, 220, 350);
+touch("pointerup", 2, 220, 350);
+touch("pointerup", 1, 180, 350);
+assert.equal(game.route.length, 0);
+assert.equal(w.document.getElementById("facility-desk").open, false);
+const moveButton = w.document.querySelector("[data-move=up]");
+moveButton.setPointerCapture = () => {};
+const pressed = new w.MouseEvent("pointerdown", {
+  bubbles: true,
+  cancelable: true,
+});
+Object.defineProperty(pressed, "pointerId", { value: 3 });
+moveButton.dispatchEvent(pressed);
+assert(game.keys.has("w"));
+moveButton.dispatchEvent(new w.Event("lostpointercapture"));
+assert(!game.keys.has("w"));
+console.log(
+  "PASS: actual movement takeover, route preservation on city changes, stationary-traffic escape, exactly-once arrival, modal movement freeze and perspective/overview camera recovery.",
 );
 process.exit(0);

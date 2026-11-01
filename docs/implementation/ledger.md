@@ -2043,3 +2043,12 @@ Save-health changes now update an open service workshop immediately as well as t
 - Consolidated story continuation, exploration, chapter review and optional tools with progressive disclosure; protected restart is no longer a routine HUD icon.
 - Added reusable chapter-aware help and exclusive/keyboard-accessible menu behavior; shortened mandatory guide reading and fixed keep-awake settings closing the menu.
 - Preserved progression, difficulty, retained city/economy, rewards and saving contracts. Added all-twelve-chapter guidance, actual advanced-loop help and menu-control regression checks. Full validate/CI and one automatic production deployment gate release. Audit and physical-device limitations: docs/product/city-play-cleanup.md.
+
+## 1 November 2026 — Reliable movement and camera rig
+
+- Replaced route cancellation on city rebuild with destination-preserving replanning; added narrow-grid fallback, nearby-clear recovery and bounded blocked-approach challenge recovery without passing through walls.
+- Added traffic escape/detours, manual guide takeover, modal movement freeze, multi-touch and lost-capture recovery, and a direct walking action.
+- Added reusable perspective obstruction checks, frame-rate-independent/reduced-motion camera follow and visible recentering for walking/overview modes.
+- Regression checks cover narrow entrances, stationary traffic, route rebuilds, exactly-once arrival, permanent obstruction fallback, manual input, modal/pinch/lost-capture behavior, camera recovery and the existing full twelve-chapter journey. Full validate/CI and one main production deployment gate release. Physical-phone GPU/touch/cinematic acceptance remains outstanding.
+
+The broader validation exposed a pre-existing asynchronous retry-form assertion: its alert can render before React clears the transition pending state. The test now awaits the button becoming enabled, retaining the same required retry assertion; no form behavior or checks were removed.
