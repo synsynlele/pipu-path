@@ -28,3 +28,29 @@ assert.equal(followBlend(0), 0);
 console.log(
   "PASS: frame-rate independent camera follow, reduced motion and perspective obstruction clearance without clipping overview/reveal subjects.",
 );
+const { safeCityCamera, safeCityCameraBlend } =
+  await import("../../public/games/city/camera-rig.mjs");
+for (const yaw of [0, 0.7, 1.5, Math.PI])
+  for (const pitch of [0.35, 0.75, 1.1]) {
+    const p = safeCityCamera(origin, yaw, pitch, 27, [wall]);
+    const d = { x: p.x - origin.x, y: p.y - origin.y, z: p.z - origin.z },
+      length = Math.hypot(d.x, d.y, d.z);
+    assert(length >= 26.99, "automatic collision recovery never zooms in");
+    assert(
+      clearBoomDistance(
+        origin,
+        { x: d.x / length, y: d.y / length, z: d.z / length },
+        length,
+        [wall],
+      ) >=
+        length - 0.02,
+    );
+    const b = safeCityCameraBlend(origin, { x: 0, y: 1, z: 6 }, p, 0.2, [wall]);
+    assert(
+      Math.hypot(b.x - origin.x, b.y - origin.y, b.z - origin.z) >= 16,
+      "unsafe blend never dives toward the subject",
+    );
+  }
+console.log(
+  "PASS: safe full-distance camera angles and transition clearance without obstruction-driven close-ups.",
+);

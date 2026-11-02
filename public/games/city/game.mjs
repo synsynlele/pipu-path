@@ -1,4 +1,8 @@
-import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
+import {
+  followBlend,
+  safeCityCamera,
+  safeCityCameraBlend,
+} from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
 import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
 import { mountFacilityDesk } from "./facility-ui.mjs";
@@ -1556,7 +1560,7 @@ function runCaseWorldAction(caseId, choiceId) {
   closeCityStatus();
   document.body.classList.add("city-impact-view");
   const priorDistance = distance;
-  distance = Math.min(distance, 15);
+  distance = Math.max(27, Math.min(distance, 34));
   activeFeedback = {
     x: spec.x,
     z: spec.z,
@@ -4140,7 +4144,7 @@ function showBuildVictory(
     activeFeedback = { x: mission.x, z: mission.z, started: performance.now() };
     yaw = 0.46;
     pitch = 0.75;
-    distance = 22;
+    distance = 27;
   }
   const completed = completedMilestones(state.lab, evaluateLab, labMission);
   $("victory-kicker").textContent = retry
@@ -5205,7 +5209,6 @@ document.querySelectorAll("[data-move]").forEach((b) => {
     b.onlostpointercapture =
       () => keys.delete(key);
 });
-let easedBoom = distance;
 let last = performance.now(),
   time = 0;
 const v = new T.Vector3();
@@ -5265,16 +5268,26 @@ function animateWorld(now) {
     Math.cos(yaw) * Math.cos(pitch),
   );
   const boomOrigin = new T.Vector3(target.x, target.y + 0.5, target.z);
-  const boom =
-    camera === playCamera && $("intro").hidden && !mapMode
-      ? clearBoomDistance(boomOrigin, boomDirection, distance, cameraObstacles)
-      : distance;
-  easedBoom =
-    boom < easedBoom || reduceMotion.matches
-      ? boom
-      : easedBoom + (boom - easedBoom) * followBlend(dt);
-  if (camera !== playCamera || mapMode || !$("intro").hidden) easedBoom = boom;
-  camera.position.copy(boomOrigin).addScaledVector(boomDirection, easedBoom);
+  const protectedView = camera === playCamera && $("intro").hidden && !mapMode;
+  if (protectedView) {
+    const plan = safeCityCamera(
+      boomOrigin,
+      yaw,
+      pitch,
+      distance,
+      cameraObstacles,
+    );
+    const pose = safeCityCameraBlend(
+      boomOrigin,
+      camera.position,
+      plan,
+      reduceMotion.matches ? 1 : followBlend(dt),
+      cameraObstacles,
+    );
+    camera.position.set(pose.x, pose.y, pose.z);
+  } else {
+    camera.position.copy(boomOrigin).addScaledVector(boomDirection, distance);
+  }
   camera.lookAt(target.x + (aspect > 1.3 ? -1.2 : 0), target.y + 0.5, target.z);
   if (!$("intro").hidden) {
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches)

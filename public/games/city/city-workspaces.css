@@ -1,0 +1,207 @@
+/* Task surfaces share the city view. Keep the existing puzzle layout and rules. */
+body.city-integrated
+  :is(
+    .panel,
+    dialog,
+    .builder-shop,
+    .builder-celebration,
+    #build-victory,
+    #build-dock,
+    #pilot-mission,
+    #resilience-feedback,
+    #city-view
+  ) {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-color: transparent;
+  color: #17334e;
+  text-shadow:
+    0 1px 2px white,
+    0 -1px 2px white,
+    1px 0 2px white,
+    -1px 0 2px white,
+    0 0 6px white;
+}
+body.city-integrated dialog::backdrop {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.city-integrated
+  :is(
+    .panel,
+    dialog,
+    #build-victory,
+    #build-dock,
+    #pilot-mission,
+    #resilience-feedback,
+    #city-view
+  )
+  :is(
+    div,
+    section,
+    article,
+    fieldset,
+    details,
+    summary,
+    p,
+    h1,
+    h2,
+    h3,
+    label,
+    small,
+    strong,
+    table,
+    thead,
+    tbody,
+    tr,
+    th,
+    td,
+    li
+  ) {
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  color: #17334e;
+  font-weight: 750;
+}
+body.city-integrated
+  :is(
+    .panel,
+    dialog,
+    #build-victory,
+    #build-dock,
+    #pilot-mission,
+    #resilience-feedback,
+    #city-view
+  )
+  :is(button, select, input:not([type="range"]), textarea) {
+  background: transparent !important;
+  color: #17334e !important;
+  border-color: #294b6e;
+  text-shadow:
+    0 1px 2px white,
+    0 -1px 2px white,
+    1px 0 2px white,
+    -1px 0 2px white,
+    0 0 5px white;
+  font-weight: 800;
+}
+body.city-integrated
+  :is(.panel, dialog)
+  :is(button, summary, select, input, textarea):focus-visible {
+  outline: 3px solid #17334e;
+  outline-offset: 2px;
+}
+body.city-integrated
+  :is(.panel, dialog)
+  :is(button[aria-pressed="true"], .selected, .primary) {
+  border: 2px solid #997012;
+}
+body.city-integrated :is(.panel, dialog) button[aria-pressed="true"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+body.city-integrated :is(.panel, dialog) select option {
+  background: #fffdf4;
+  color: #17334e;
+  text-shadow: none;
+}
+body.city-integrated #build-lab .lab-cell {
+  border: 1px solid #294b6e;
+  opacity: 1;
+}
+body.city-integrated #build-lab .lab-powered,
+body.city-integrated #build-lab .lab-repaired {
+  border: 3px solid #236a44;
+}
+body.city-integrated #build-lab .lab-damaged,
+body.city-integrated #advanced-panel #advanced-controls .plot-risk {
+  border: 2px dashed #9d372d;
+}
+body.city-integrated #build-lab .lab-cell svg {
+  filter: drop-shadow(0 0 1px white) drop-shadow(0 0 1px white);
+}
+body.city-integrated #advanced-controls .challenge-budget {
+  position: static;
+}
+body.city-integrated #advanced-panel #advanced-message[data-success="true"] {
+  color: #185c33;
+}
+body.city-integrated #advanced-panel #advanced-message[data-success="false"] {
+  color: #8f3029;
+}
+@media (prefers-reduced-transparency: reduce) {
+  body.city-integrated
+    :is(
+      .panel,
+      dialog,
+      .builder-shop,
+      .builder-celebration,
+      #build-victory,
+      #build-dock,
+      #pilot-mission,
+      #resilience-feedback,
+      #city-view
+    ) {
+    background: #f5f9f6 !important;
+    text-shadow: none;
+  }
+  body.city-integrated dialog::backdrop {
+    background: #17334e55 !important;
+  }
+  body.city-integrated
+    :is(.panel, dialog)
+    :is(button, select, input, textarea) {
+    background: #f5f9f6 !important;
+    text-shadow: none;
+  }
+}
+@media (forced-colors: active) {
+  body.city-integrated :is(.panel, dialog) {
+    background: Canvas !important;
+    color: CanvasText !important;
+    text-shadow: none;
+  }
+  body.city-integrated
+    :is(.panel, dialog)
+    :is(button, select, input, textarea) {
+    background: ButtonFace !important;
+    color: ButtonText !important;
+    text-shadow: none;
+  }
+}
+/* Modal task controls own the screen; unrelated labels must not compete. */
+body.city-integrated:has(dialog[open])
+  :is(#city-hud, #weather, #scene-labels, #travel),
+body.city-integrated.advanced-configuring
+  :is(#city-hud, #weather, #scene-labels, #travel) {
+  display: none !important;
+}
+body.city-integrated:has(#build-lab[open]) #toast,
+body.city-integrated.advanced-configuring #toast {
+  display: none;
+}
+body.city-integrated :is(#toast, #travel) {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  color: #17334e;
+  text-shadow:
+    0 1px 2px white,
+    0 -1px 2px white,
+    1px 0 2px white,
+    -1px 0 2px white,
+    0 0 6px white;
+  font-weight: 800;
+}
+@media (prefers-reduced-transparency: reduce) {
+  body.city-integrated :is(#toast, #travel) {
+    background: #f5f9f6;
+    text-shadow: none;
+  }
+}
