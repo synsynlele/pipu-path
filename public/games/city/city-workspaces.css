@@ -127,7 +127,7 @@ body.city-integrated #build-lab .lab-cell svg {
   filter: drop-shadow(0 0 1px white) drop-shadow(0 0 1px white);
 }
 body.city-integrated #advanced-controls .challenge-budget {
-  position: static;
+  position: static !important;
 }
 body.city-integrated #advanced-panel #advanced-message[data-success="true"] {
   color: #185c33;
@@ -209,7 +209,7 @@ body.city-integrated :is(#toast, #travel) {
 body.city-integrated
   :is(.panel, dialog)
   :is(.lab-heading, .district-menu-heading, .lab-actions, .advanced-actions) {
-  position: static;
+  position: static !important;
 }
 body.city-integrated
   :is(
