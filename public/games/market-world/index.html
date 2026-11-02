@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#173d49" />
+    <title>The Unbuilt City · A living market</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas
+      id="world"
+      aria-label="A living Nigerian-inspired neighbourhood. Tap the ground to walk, tap a place to inspect it, drag to rotate and pinch to zoom."
+    ></canvas>
+    <header>
+      <a class="identity" href="/" aria-label="PipuPath home"
+        ><img src="/brand/pipupath-icon-192.png" alt="" /><span
+          >The Unbuilt <em>City</em><small>BUILD A BETTER WORLD</small></span
+        ></a
+      >
+      <nav aria-label="Game controls">
+        <button
+          id="view"
+          title="Whole neighbourhood"
+          aria-label="View whole neighbourhood"
+        >
+          ⌖</button
+        ><button id="sound" aria-pressed="false" aria-label="Turn sound on">
+          ♫</button
+        ><button id="menu" aria-label="Open game menu">☰</button>
+      </nav>
+    </header>
+    <section class="pulse" aria-label="Market activity">
+      <div class="episode">
+        <span class="dot"></span
+        ><span id="phase-name">BRING THE MARKET BACK</span>
+      </div>
+      <div class="pulse-row">
+        <div>
+          <b id="served">0<span>/12</span></b
+          ><small>households reached</small>
+        </div>
+        <div><b id="losses">0</b><small>crates lost</small></div>
+      </div>
+      <p id="weather">Dry-day pilot · plan your first experiment</p>
+      <p class="reserve">
+        <span id="cash">90</span> reserve ·
+        <span id="materials">40</span> materials
+      </p>
+    </section>
+    <div id="pins" aria-label="Places in the neighbourhood"></div>
+    <div class="camera-tools" aria-label="Camera">
+      <button id="zoom-in" aria-label="Zoom in">+</button
+      ><button id="zoom-out" aria-label="Zoom out">−</button
+      ><button id="centre" aria-label="Follow my character">◎</button>
+    </div>
+    <nav class="walk" aria-label="Walking controls">
+      <button data-move="up" aria-label="Walk forward">↑</button
+      ><button data-move="left" aria-label="Walk left">←</button
+      ><span>WALK</span
+      ><button data-move="right" aria-label="Walk right">→</button
+      ><button data-move="down" aria-label="Walk backward">↓</button>
+    </nav>
+    <section id="context" class="context" hidden aria-label="Selected place">
+      <button id="close-context" class="close" aria-label="Close place details">
+        ×</button
+      ><span id="context-kicker" class="eyebrow"></span>
+      <h2 id="context-title"></h2>
+      <p id="context-copy"></p>
+      <button id="context-action" class="primary" hidden></button>
+    </section>
+    <section id="guidance" aria-label="Your next move">
+      <span class="eyebrow" id="guidance-label"
+        >YOUR NEIGHBOURHOOD. YOUR APPROACH.</span
+      >
+      <h1 id="goal">Food is growing. Help it reach people.</h1>
+      <p id="message" role="status" aria-live="polite">
+        Inspect the farm, watch a delivery, then change what is getting in the
+        way.
+      </p>
+    </section>
+    <footer>
+      <button id="build" class="build-button"><span>＋</span> Build</button
+      ><button id="run" class="primary">Run market day <span>▶</span></button
+      ><button id="speed" aria-label="Set simulation speed">1×</button
+      ><span id="save-status" role="status">Local checkpoint</span>
+    </footer>
+    <section
+      id="catalogue"
+      class="catalogue"
+      hidden
+      aria-label="Build useful things"
+    >
+      <div class="drawer-heading">
+        <div>
+          <span class="eyebrow">SMALL TOOLS. REAL POSSIBILITIES.</span>
+          <h2>What will you change?</h2>
+        </div>
+        <button id="close-build" class="close" aria-label="Close build tools">
+          ×
+        </button>
+      </div>
+      <div id="tools" class="tools"></div>
+      <p id="placement-help">
+        Select a tool, then choose its place in the world. Your builder will
+        walk there to help establish it.
+      </p>
+    </section>
+    <dialog id="welcome">
+      <span class="eyebrow">A NEW KIND OF BUILDER ADVENTURE</span>
+      <h1>A market is more<br />than its buildings.</h1>
+      <p class="lead">It is growers, traders and families—connected.</p>
+      <blockquote>
+        “We have food. But too much is damaged or delayed before it reaches
+        these stalls.”<cite>Ama · market organiser</cite>
+      </blockquote>
+      <p>
+        Explore. Try a design. Watch it work. When the rain comes, see what
+        holds up.
+      </p>
+      <button id="begin" class="primary">Step into the neighbourhood →</button
+      ><small
+        >First playable episode · fictional systems inspired by Nigerian
+        life</small
+      >
+    </dialog>
+    <dialog id="settings">
+      <button class="close" data-close="settings" aria-label="Close game menu">
+        ×</button
+      ><span class="eyebrow">YOUR WORLD</span>
+      <h2>A living market</h2>
+      <p id="checkpoint-info"></p>
+      <button id="help">How to play</button
+      ><button id="retry">Restart this delivery trial</button
+      ><button id="restart">Start a new neighbourhood</button
+      ><a href="/real-quests">Take an idea into the real world ↗</a>
+      <p class="fine">
+        Game costs, food condition and power values are simplified fictional
+        parameters. This game does not provide professional instructions or
+        award verified real-world XP.
+      </p>
+    </dialog>
+    <dialog id="help-dialog">
+      <button class="close" data-close="help-dialog" aria-label="Close guide">
+        ×</button
+      ><span class="eyebrow">MAKE SOMETHING USEFUL</span>
+      <h2>Your design. Their daily life.</h2>
+      <ol>
+        <li>Tap a place to inspect it. Tap open ground to walk.</li>
+        <li>
+          Open Build, choose a tool and place it. A green preview marks a
+          possible position.
+        </li>
+        <li>
+          Run a market day. Follow the real delivery cart and inspect stock,
+          losses and power.
+        </li>
+        <li>
+          Pause, change your design, then try again. The clock waits while you
+          plan.
+        </li>
+        <li>
+          Reach twelve households with limited losses, a resident delivery team
+          and a maintenance reserve. Then test your design in rain.
+        </li>
+      </ol>
+      <p>
+        Drag to rotate; pinch or +/− to zoom. Use the walking arrows or WASD to
+        move. Q/E turn the view and R/F tilt. Drag with two fingers to pan. The
+        centre button returns to your character.
+      </p>
+      <p>
+        Unused structures can be reclaimed for their fictional purchase cost.
+        Their effects stop immediately. A failed delivery trial can restart
+        without changing your builds; trial earnings only become reserve after a
+        successful day.
+      </p>
+      <button class="primary" data-close="help-dialog">
+        Back to my neighbourhood
+      </button>
+    </dialog>
+    <dialog id="result">
+      <span class="eyebrow" id="result-kicker"></span>
+      <h1 id="result-title"></h1>
+      <p id="result-copy"></p>
+      <div id="result-metrics" class="result-metrics"></div>
+      <label id="reflection-label" hidden
+        >What observation changed your design?<textarea
+          id="reflection"
+          maxlength="600"
+          placeholder="A short thought, if you want to keep one…"
+        ></textarea></label
+      ><button id="result-next" class="primary"></button
+      ><button id="result-explore">Look around my neighbourhood</button
+      ><a id="real-quest" href="/real-quests" hidden
+        >Try building something useful in real life ↗</a
+      >
+    </dialog>
+    <div id="graphics-error" hidden role="alert">
+      The 3D view could not start. Reload this page or try a browser with WebGL
+      enabled.
+    </div>
+    <script type="module" src="game.mjs"></script>
+  </body>
+</html>
