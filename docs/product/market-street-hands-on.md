@@ -31,3 +31,11 @@ Swept personal-space checks cover the player, original residents, visible backgr
 The preview starts with investigation, care operations and teaching rather than construction. Every action requires the original avatar to reach its object. Inspecting an already working pump consumes a spare without fixing the dry tap; inspecting the supply and operating its closed valve restores flow. Clinic arrivals expose the need for both reception and support staff plus stock. Apprentice success requires accessible tools and enough teaching support; the player must stand away during the independent trial. Outcomes remain explicitly fictional and session-only.
 
 A completed prototype seeds a bounded crew batch on unique, reserved city parcels. Caps and suitable districts prevent unbounded towers or duplicated airports. Replaying re-derives the same layout rather than adding more copies. The episode extends relevant batches; the full twelve-chapter fill plan is still a design, not a completed conversion.
+
+## Bottom guidance, worksite framing and the existing shop
+
+Mission guidance sits directly over the bottom of the city, with a transparent background. The production toolbar stays at the top, including the original Builder Shop button and live Builder Credit balance. The worksite camera fits the character and the useful work area in portrait and wide screens, reserving room below. Build actions retain a bounded closer framing; obstructions cause an orbit or higher view rather than a camera pressed against a building.
+
+Tested chapter completion awards 30 fictional Builder Credits through the existing shop ledger, once per chapter across both game modes. Replaying or restarting cannot farm credits. The hands-on celebration displays new credits; the production reward popup does not stack on it. Completed water, market, clinic and learning outcomes unlock the matching decoration districts. Existing items, prices, character cosmetics and purchase rendering are reused. Shopping pauses physical work. Hands-on progress remains session-only; no new save support is claimed.
+
+The current scope remains 12 playable primary challenges. The other 24 distinct missions needed for the 36-challenge journey are unimplemented. Reusing the production catalogue is the content source for that expansion, not a completion claim or a dated delivery commitment.

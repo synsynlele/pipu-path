@@ -490,3 +490,42 @@
     padding: 7px 9px;
   }
 }
+
+/* Keep controls in the production HUD and mission guidance at the bottom. */
+#city-hud .hands-on-instructions {
+  position: fixed;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  left: 12px;
+  width: min(580px, calc(100% - 24px));
+  max-height: 42dvh;
+  overflow: auto;
+  box-sizing: border-box;
+  pointer-events: auto;
+  padding: 2px 2px 4px;
+  background: transparent;
+  border: 0;
+}
+#city-hud .hands-on-instructions .hands-on-heading {
+  font-size: 14px;
+}
+#city-hud .hands-on-instructions .next-instruction [data-goal] {
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.25;
+  margin: 4px 0 8px;
+}
+#city-hud .hands-on-instructions [data-status] {
+  font-size: 13px;
+}
+@media (max-height: 520px) {
+  #city-hud .hands-on-instructions {
+    width: min(470px, 60vw);
+    max-height: 43dvh;
+  }
+}
+
+#city-hud .hands-on-toolbar #menu-shop {
+  width: auto;
+  flex: 0 1 auto;
+  font-size: 13px;
+  padding: 10px 12px;
+}

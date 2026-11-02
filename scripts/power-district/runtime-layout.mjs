@@ -1402,11 +1402,27 @@ console.log(
   "PASS: actual movement takeover, route preservation on city changes, stationary-traffic escape, exactly-once arrival, modal movement freeze and perspective/overview camera recovery.",
 );
 // Actual worksite controller: character walks, carries, repairs and tests the city.
-const campaignBeforeHandsOn = JSON.stringify(game.state);
+const campaignBeforeHandsOn = JSON.stringify({ ...game.state, rewards: null });
+const rewardsBeforeHandsOn = game.state.rewards;
+game.state.rewards = {
+  version: 2,
+  awards: [],
+  purchases: [],
+  equipped: [],
+  viewed: [],
+};
 const beforeMarketPosition = game.player.g.position.clone();
 const retainedProductionPlots = game.cityDevelopment.current.plots.length;
 w.document.querySelector("#start").click();
 const handsPanel = w.document.querySelector(".hands-on-panel");
+assert(
+  handsPanel.querySelector(".hands-on-toolbar #menu-shop"),
+  "production shop and credit balance remain visible",
+);
+assert(
+  handsPanel.querySelector(".hands-on-instructions [data-goal]"),
+  "mission guidance is in bottom region",
+);
 assert.equal(
   w.document.querySelector("#hands-on-start"),
   null,
@@ -1496,6 +1512,30 @@ for (const id of ["resident", "tank", "pump", "test"])
 assert.equal(game.handsOnCity.episode.investigate.done, false);
 for (const id of ["valve", "valve", "test"]) episodeWork("investigate:" + id);
 assert.equal(game.handsOnCity.episode.investigate.done, true);
+assert.equal(
+  w.document.querySelector("#builder-credit-balance").textContent,
+  "30",
+);
+w.document.querySelector("#menu-shop").click();
+assert.equal(w.document.querySelector("#builder-shop").open, true);
+assert.equal(
+  w.document.querySelector("#shop-credit-balance").textContent,
+  "30",
+);
+const flower = [...w.document.querySelectorAll("#shop-items button")].find(
+  (b) => b.textContent.includes("20"),
+);
+assert(
+  flower && !flower.disabled,
+  "completed water service unlocks decoration purchases",
+);
+flower.click();
+assert.equal(
+  w.document.querySelector("#shop-credit-balance").textContent,
+  "10",
+);
+assert.equal(game.state.rewards.purchases[0].id, "flowers");
+w.document.querySelector("#shop-close").click();
 assert.equal(
   handsPanel.querySelector(".hands-on-celebration").hidden,
   false,
@@ -1752,7 +1792,21 @@ assert.equal(handsPanel.hidden, true);
 assert.equal(w.document.querySelector("#intro").hidden, false);
 assert.equal(w.document.activeElement.id, "start");
 assert(game.player.g.position.distanceTo(beforeMarketPosition) < 0.001);
-assert.equal(JSON.stringify(game.state), campaignBeforeHandsOn);
+assert.equal(
+  JSON.stringify({ ...game.state, rewards: null }),
+  campaignBeforeHandsOn,
+);
+assert.equal(
+  game.state.rewards.awards.length,
+  12,
+  "each successful chapter awards once",
+);
+assert.equal(
+  w.document.querySelector("#city-explore-group #menu-shop")?.id,
+  "menu-shop",
+  "shop returns to production menu on exit",
+);
+game.state.rewards = rewardsBeforeHandsOn;
 console.log(
   "PASS: real avatar walking, carried materials, repaired frames/roofs, cart-doorway consequences, protected stock, opened market and campaign-preserving recovery.",
 );

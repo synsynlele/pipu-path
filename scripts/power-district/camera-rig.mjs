@@ -28,3 +28,47 @@ assert.equal(followBlend(0), 0);
 console.log(
   "PASS: frame-rate independent camera follow, reduced motion and perspective obstruction clearance without clipping overview/reveal subjects.",
 );
+
+const { planWorksiteCamera, safeCameraBlend } =
+  await import("../../public/games/city/worksite-camera.mjs");
+const T = await import("../../public/games/shared/vendor/three.module.js");
+const tank = { minX: -4, maxX: 4, minY: 0, maxY: 9, minZ: -4, maxZ: 4 };
+for (const aspect of [0.46, 1.45])
+  for (const working of [false, true]) {
+    const plan = planWorksiteCamera({
+      focus: { x: 1, z: 2 },
+      actor: { x: 5, z: 5 },
+      site: { x: 0, z: 0, width: 14, depth: 14, height: 9 },
+      aspect,
+      boxes: [
+        tank,
+        { minX: 10, maxX: 18, minY: 0, maxY: 24, minZ: 2, maxZ: 12 },
+      ],
+      working,
+    });
+    assert(plan.distance >= 22);
+    const c = new T.PerspectiveCamera(39, aspect, 0.1, 600);
+    c.position.set(plan.position.x, plan.position.y, plan.position.z);
+    c.lookAt(plan.target.x, plan.target.y, plan.target.z);
+    c.setViewOffset(1000 * aspect, 1000, 0, 130, 1000 * aspect, 1000);
+    c.updateMatrixWorld(true);
+    for (const point of plan.points) {
+      const p = new T.Vector3(point.x, point.y, point.z).project(c);
+      assert(Math.abs(p.x) < 0.9, "project fits horizontally");
+      assert(
+        p.y > -0.72 && p.y < 0.72,
+        "project fits above bottom instructions",
+      );
+    }
+  }
+const blockedBlend = safeCameraBlend(
+  { x: 0, y: 2, z: 0 },
+  { x: 0, y: 2, z: 20 },
+  { x: 0, y: 2, z: 20 },
+  [wall],
+  0.3,
+);
+assert.equal(blockedBlend.z, 20, "never ease through a building");
+console.log(
+  "PASS: portrait/wide worksite framing, safe cinematic zoom and collision-free transition.",
+);

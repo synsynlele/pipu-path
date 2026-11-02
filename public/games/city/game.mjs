@@ -1,3 +1,4 @@
+import { planWorksiteCamera, safeCameraBlend } from "./worksite-camera.mjs";
 import { CITY_PROJECTS } from "./city-construction.mjs";
 import { mountHandsOnCity } from "./hands-on-city.mjs";
 import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
@@ -7,7 +8,10 @@ import { mountFacilityDesk } from "./facility-ui.mjs";
 import { createCityDevelopmentScene } from "./city-development-scene.mjs";
 import { createScreenAwake } from "./screen-awake.mjs";
 import { chapterMenuItems } from "./chapter-menu.mjs";
-import { emptyBuilderRewards } from "./builder-rewards.mjs";
+import {
+  emptyBuilderRewards,
+  awardHandsOnChapter,
+} from "./builder-rewards.mjs";
 import { createBuilderCosmetics } from "./builder-cosmetics.mjs";
 import { mountBuilderRewards } from "./builder-rewards-ui.mjs";
 import { advancedCityActivity, canStartAdvanced } from "./advanced.mjs";
@@ -4514,7 +4518,13 @@ const builderRewardsUi = mountBuilderRewards({
   getBuiltDistrictIds: () => {
     const city = deriveBuilderCity(state.decisions);
     return CITY_DISTRICTS.filter(
-      (district) => city.districts[district.id]?.built,
+      (district) =>
+        city.districts[district.id]?.built ||
+        (handsOnCity?.active &&
+          ((district.id === "water" && handsOnCity.episode.investigate.done) ||
+            (district.id === "market" && handsOnCity.state.opened) ||
+            (district.id === "health" && handsOnCity.episode.care.done) ||
+            (district.id === "learning" && handsOnCity.episode.teach.done))),
     ).map((district) => district.id);
   },
   isPlaying: () => $("intro").hidden,
@@ -4757,7 +4767,14 @@ const handsOnCity = mountHandsOnCity({
       Math.abs(mesh.position.z - centre.z) < 7
     );
   },
-  frameCamera: ({ view, focus, yaw: heading }) => {
+  frameCamera: ({
+    view,
+    focus,
+    yaw: heading,
+    site,
+    working = false,
+    dt = 0,
+  }) => {
     if (view) {
       camera = cityCamera;
       fitCityCamera();
@@ -4773,16 +4790,41 @@ const handsOnCity = mountHandsOnCity({
       camera = playCamera;
       scene.fog.near = 115;
       scene.fog.far = 225;
-      const span = compactDevice ? 34 : 27;
-      const direction = new T.Vector3(
-        Math.sin(heading) * Math.cos(0.72),
-        Math.sin(0.72),
-        Math.cos(heading) * Math.cos(0.72),
+      const plan = planWorksiteCamera({
+        focus,
+        actor: player.g.position,
+        site: site ?? {
+          x: focus.x,
+          z: focus.z,
+          width: 12,
+          depth: 12,
+          height: 4,
+        },
+        aspect: camera.aspect,
+        fov: camera.fov,
+        heading,
+        boxes: cameraObstacles,
+        working,
+      });
+      const next = safeCameraBlend(
+        camera.position,
+        plan.position,
+        plan.target,
+        cameraObstacles,
+        dt > 0 ? 1 - Math.exp(-dt * 6) : 1,
       );
-      const origin = new T.Vector3(focus.x, 0.5, focus.z);
-      const boom = clearBoomDistance(origin, direction, span, cameraObstacles);
-      camera.position.copy(origin).addScaledVector(direction, boom);
-      camera.lookAt(focus.x, 0.5, focus.z);
+      camera.position.set(next.x, next.y, next.z);
+      camera.lookAt(plan.target.x, plan.target.y, plan.target.z);
+      const w = innerWidth,
+        h = innerHeight;
+      if (
+        !camera.view?.enabled ||
+        camera.view.fullWidth !== w ||
+        camera.view.fullHeight !== h
+      )
+        camera.setViewOffset(w, h, 0, h * 0.13, w, h);
+      scene.fog.near = Math.max(115, plan.distance + 25);
+      scene.fog.far = Math.max(225, plan.distance + 150);
     }
     camera.updateMatrixWorld(true);
     return camera;
@@ -4815,6 +4857,12 @@ const handsOnCity = mountHandsOnCity({
       { minX: -57.5, maxX: 57.5, minZ: -49.5, maxZ: 49.5, step: 0.5 },
     );
   },
+  onChapterComplete: (chapter) => {
+    const result = awardHandsOnChapter(state.rewards, chapter);
+    state.rewards = result.rewards;
+    builderRewardsUi.updateBalances();
+    return result.credits;
+  },
   classic: () => startCity(),
   toggleSound: () => cityAudio.toggleSound(),
   toggleMusic: () => cityAudio.toggleMusic(),
@@ -4838,6 +4886,9 @@ const handsOnCity = mountHandsOnCity({
   leave() {
     $("intro").hidden = false;
     $("city-hud").hidden = true;
+    playCamera.clearViewOffset();
+    scene.fog.near = 115;
+    scene.fog.far = 225;
     screenAwake.setPlaying(false);
     $("start").focus();
   },

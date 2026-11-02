@@ -221,3 +221,15 @@ assert.deepEqual(
 console.log(
   "PASS: chapters award once, challenge-based tiers, repeatable district decor and 3D identities, character equip, safe restores, v1 migration.",
 );
+
+const { awardHandsOnChapter } =
+  await import("../../public/games/city/builder-rewards.mjs");
+const firstHandsOn = awardHandsOnChapter(emptyBuilderRewards(), 1);
+assert.equal(firstHandsOn.credits, 30);
+assert.equal(builderBalance(firstHandsOn.rewards), 30);
+assert.equal(awardHandsOnChapter(firstHandsOn.rewards, 1).credits, 0);
+assert.equal(awardHandsOnChapter(firstHandsOn.rewards, 13).credits, 0);
+assert.equal(nextCelebration(firstHandsOn.rewards), null);
+console.log(
+  "PASS: hands-on chapter credits share the production shop, cap repeats and avoid duplicate celebrations.",
+);

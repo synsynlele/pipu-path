@@ -1,5 +1,13 @@
 # Implementation status
 
+## 2 November 2026 — Bottom missions, safe worksite camera and restored shop (preview)
+
+Moved the transparent mission instruction region to the bottom while retaining production controls at the top. Worksite camera framing now fits the full task area and character for portrait and wide aspect ratios, reserves lower-screen instruction space and retains a bounded closer build view. Obstructions trigger an alternate orbit or higher view instead of shortening the camera boom against building geometry. Unsafe eased transitions snap to a clear pose. City inspection retains the original orthographic view; exit clears the mission projection offset.
+
+The original Builder Shop and its live credit balance are now visible in hands-on play. Successful tested chapters award 30 fictional credits once through the existing shared reward ledger; repeats and invalid chapter numbers cannot duplicate awards. The hands-on celebration reports earned credits without stacking the production reward popup. Water, market, clinic and learning outcomes unlock their corresponding decoration districts. The existing purchase flow and cosmetics rendering are reused, and physical work pauses while a modal is open. No new persistence or real-world XP is claimed.
+
+Content status: 12 primary hands-on challenges are playable; 24 additional distinct challenges remain to reach 36. The production briefs are reusable source material, not completed converted missions. No unverified completion date is asserted. `npm run validate` passed: formatting, zero-warning lint, typecheck, full game regression including actual shop access, earned credit balance, flower purchase, twelve once-only rewards and production-menu recovery, 656 coverage tests, 252 integration tests and production build. Portrait/wide framing and collision-transition tests passed. Browser inspection confirmed bottom guidance, retained production city and the restored shop. Preview receipt follows deployment.
+
 ## 2 November 2026 — Production city is the visual foundation (preview)
 
 Verified the current READY production deployment is based on `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`. The hands-on layer now extends that city's original title/HUD, blue-and-white controls, gold primary actions, lighting, ground/road palette and saved development. It no longer hides all production buildings. Only the immediate active work area is temporarily clear for physical tasks; inspection restores retained buildings. Inactive unfinished construction and unrelated episode props stay out of the skyline. Crew structures now use the production city's shared building recipes and material, and skip parcels already developed by production progress.

@@ -58,6 +58,7 @@ export function mountHandsOnCity({
   toggleSound = async () => false,
   toggleMusic = async () => false,
   cue = () => {},
+  onChapterComplete = () => 0,
 }) {
   let active = false,
     state = newMarket(),
@@ -106,6 +107,9 @@ export function mountHandsOnCity({
   const productionActions = document.querySelector(
     "#city-hud .city-hud-navigation .top-actions",
   );
+  const productionShop = document.getElementById("menu-shop");
+  const productionShopParent = productionShop?.parentNode;
+  const productionShopNext = productionShop?.nextSibling;
   const productionActionsParent = productionActions?.parentNode;
   const productionActionsNext = productionActions?.nextSibling;
   const picker = panel.querySelector("[data-site]");
@@ -156,6 +160,21 @@ export function mountHandsOnCity({
   celebration.innerHTML =
     '<div class="celebration-flowers" aria-hidden="true">✿ ✦ ❀ ✧ ✿ ❀ ✦</div><strong data-celebration-title></strong><p data-celebration-message></p><button data-celebration-view>View my city</button><button data-celebration-next>Continue building →</button><button data-celebration-close>Keep exploring</button>';
   panel.append(celebration);
+  const instructions = document.createElement("div");
+  instructions.className = "hands-on-instructions";
+  instructions.setAttribute("role", "region");
+  instructions.setAttribute("aria-label", "Current mission instructions");
+  for (const selector of [
+    ".hands-on-heading",
+    ".next-instruction",
+    "[data-reflection]",
+    "[data-chapter-next]",
+    "[data-status]",
+    ".market-carry",
+  ])
+    instructions.append(panel.querySelector(selector));
+  panel.insertBefore(instructions, celebration);
+
   const setMenu = (open) => {
     menu.hidden = !open;
     toolbar
@@ -599,6 +618,7 @@ export function mountHandsOnCity({
     if (!completed) celebrated.delete(completionKey);
     if (active && completed && !celebrated.has(completionKey)) {
       celebrated.add(completionKey);
+      const earned = chapter ? onChapterComplete(chapter.number) : 0;
       celebration.hidden = false;
       setMenu(false);
       celebration.querySelector("[data-celebration-title]").textContent =
@@ -607,7 +627,7 @@ export function mountHandsOnCity({
           : `${project.name} is open!`;
       celebration.querySelector("[data-celebration-message]").textContent =
         chapter
-          ? `${chapter.name}. Your tested work made a difference. Look around and see what changed.`
+          ? `${chapter.name}. Your tested work made a difference. ${earned ? `+${earned} Builder Credits. ` : ""}Look around and see what changed.`
           : `${project.benefit} Crews can now use your tested design across the city.`;
       celebration.querySelector("[data-celebration-next]").hidden = !chapter;
     }
@@ -1009,6 +1029,13 @@ export function mountHandsOnCity({
           ? productionActionsNext
           : null,
       );
+    if (productionShopParent && productionShop)
+      productionShopParent.insertBefore(
+        productionShop,
+        productionShopNext?.parentNode === productionShopParent
+          ? productionShopNext
+          : null,
+      );
     panel.hidden = true;
     tags.hidden = true;
     for (const [mesh, visible] of snapshot.assets) mesh.visible = visible;
@@ -1021,6 +1048,12 @@ export function mountHandsOnCity({
     leave();
   }
   panel.querySelector("[data-exit]").onclick = close;
+  productionShop?.addEventListener("click", () => {
+    if (active) {
+      stop();
+      setMenu(false);
+    }
+  });
   const ray = new T.Raycaster(),
     pointer = new T.Vector2();
   let down = null,
@@ -1145,6 +1178,7 @@ export function mountHandsOnCity({
   let cameraYaw = 0.8;
   const focus = new T.Vector3();
   function tick(dt, camera) {
+    if (document.querySelector("dialog[open]")) return;
     if (navigationDirty) {
       refreshNavigation();
       navigationDirty = false;
@@ -1316,6 +1350,14 @@ export function mountHandsOnCity({
           view: cityView,
           focus: focus.clone(),
           yaw: cameraYaw,
+          site: {
+            x: centre.x,
+            z: centre.z,
+            width: selectedProject ? selectedProject.width + 6 : 14,
+            depth: selectedProject ? selectedProject.depth + 6 : 14,
+            height: selectedProject?.id === "tower" ? 18 : 5,
+          },
+          working: !!work,
           dt,
         }) ?? camera;
     else {
@@ -1440,6 +1482,7 @@ export function mountHandsOnCity({
       root.visible = true;
       carry.visible = true;
       productionVisibility();
+      if (productionShop) toolbar.append(productionShop);
       if (productionActions) toolbar.append(productionActions);
       panel.hidden = false;
       tags.hidden = false;
