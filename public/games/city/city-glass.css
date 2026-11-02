@@ -2,9 +2,7 @@
 body #build-lab,
 body #build-lab[open],
 body #advanced-panel:has(.challenge-workspace),
-body.advanced-configuring #advanced-panel:not([hidden]),
-body #detail[data-mode="choice"],
-body #detail[data-mode="outcome"] {
+body.advanced-configuring #advanced-panel:not([hidden]) {
   background: rgb(245 249 246 / 38%);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -47,19 +45,163 @@ body #build-lab::backdrop {
 #advanced-panel #advanced-controls .challenge-hint {
   background: rgb(255 255 255 / 93%);
 }
-body #detail[data-mode] h2,
-body #detail[data-mode] .eyebrow,
-body #detail[data-mode] p,
-body #detail[data-mode] .case-question,
-body #detail[data-mode] .case-story,
-body #detail[data-mode] .case-result,
-body #detail[data-mode] .case-more,
-body #detail[data-mode] .auto-next,
-body #detail[data-mode] .case-tools {
-  background: rgb(250 252 250 / 94%);
-  color: #263f34;
+/* Production decisions remain familiar; let the city show through the text. */
+body #detail:is([data-mode="choice"], [data-mode="outcome"]) {
+  top: auto;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: 16px;
+  right: auto;
+  width: min(520px, calc(100vw - 32px));
+  max-height: min(52dvh, 490px);
+  padding: 4px 2px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: #17334e;
+  text-shadow:
+    0 1px 2px #fff,
+    0 -1px 2px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff,
+    0 0 6px #fff;
+}
+body
+  #detail:is([data-mode="choice"], [data-mode="outcome"])
+  :is(
+    h2,
+    .eyebrow,
+    p,
+    .case-question,
+    .case-story,
+    .case-result,
+    .case-more,
+    .auto-next,
+    .case-tools,
+    .evidence
+  ) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: #17334e;
+  padding: 0;
+  font-weight: 650;
+}
+body #detail[data-mode] h2 {
+  font-size: clamp(21px, 2.3vw, 27px);
+  font-weight: 850;
+  line-height: 1.15;
+  margin: 5px 40px 8px 0;
+}
+body #detail[data-mode] .eyebrow {
+  font-size: 10px;
+  font-weight: 850;
+}
+body #detail[data-mode] :is(p, .case-story summary, .case-result, .evidence) {
+  font-size: 14px;
+  line-height: 1.4;
+}
+body #detail[data-mode="choice"] .case-question {
+  font-size: 17px;
+  font-weight: 850;
+  margin: 8px 0;
+}
+body #detail[data-mode="choice"] .case-question strong {
+  font-size: 10px;
+}
+body #detail[data-mode] .case-small {
+  font-size: 11px;
+}
+body #detail[data-mode="choice"] .case-choice {
+  min-height: 46px;
+  padding: 10px 12px;
+  margin: 6px 0;
+  background: rgb(250 252 250 / 35%);
+  border: 1px solid rgb(23 51 78 / 45%);
   border-radius: 10px;
-  padding: 8px 10px;
+  color: #17334e;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-shadow: inherit;
+  box-shadow: none;
+}
+body
+  #detail[data-mode="choice"]
+  .case-choice:is(:hover, :focus-visible, .selected) {
+  background: rgb(246 220 133 / 92%);
+  border-color: #274e72;
+}
+body #detail[data-mode] :is(button, summary):focus-visible {
+  outline: 3px solid #17334e;
+  outline-offset: 2px;
+}
+body #detail[data-mode] .close {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  background: rgb(250 252 250 / 65%);
+  text-shadow: none;
+}
+body #world-feedback {
+  animation: city-copy-enter 180ms ease-out both;
+  top: auto;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: 16px;
+  transform: none;
+  width: min(520px, calc(100vw - 32px));
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: left;
+  color: #17334e;
+  text-shadow:
+    0 1px 2px #fff,
+    0 -1px 2px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff,
+    0 0 6px #fff;
+}
+body #world-feedback :is(.build-activity, p, small) {
+  color: #17334e;
+  font-weight: 750;
+}
+body #world-feedback p {
+  font-size: 14px;
+}
+body #world-feedback strong {
+  font-size: 21px;
+  font-weight: 850;
+}
+@media (max-width: 650px) {
+  body #detail:is([data-mode="choice"], [data-mode="outcome"]) {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    max-height: 46dvh;
+    padding: 2px;
+  }
+  body #detail[data-mode] h2 {
+    font-size: 22px;
+  }
+  body #detail[data-mode="choice"] .case-choice {
+    font-size: 14px;
+  }
+  body #world-feedback {
+    left: 14px;
+    width: calc(100vw - 28px);
+  }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  body #detail:is([data-mode="choice"], [data-mode="outcome"]) {
+    max-height: 62dvh;
+    width: min(430px, calc(100vw - 32px));
+  }
 }
 @media (prefers-reduced-transparency: reduce) {
   body #build-lab,
@@ -69,8 +211,56 @@ body #detail[data-mode] .case-tools {
   body #detail[data-mode="choice"],
   body #detail[data-mode="outcome"] {
     background: #f5f9f6;
+    text-shadow: none;
   }
   body #build-lab::backdrop {
     background: rgb(15 30 40 / 65%);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  body #detail:is([data-mode="choice"], [data-mode="outcome"]) {
+    padding: 12px;
+    border-radius: 12px;
+  }
+  body #detail[data-mode="choice"] .case-choice {
+    background: #f5f9f6;
+    text-shadow: none;
+  }
+  body #world-feedback {
+    background: #f5f9f6;
+    padding: 12px;
+    border-radius: 12px;
+    text-shadow: none;
+  }
+}
+@media (forced-colors: active) {
+  body #detail:is([data-mode="choice"], [data-mode="outcome"]),
+  body #world-feedback {
+    background: Canvas;
+    color: CanvasText;
+    text-shadow: none;
+  }
+  body #detail[data-mode="choice"] .case-choice {
+    background: ButtonFace;
+    color: ButtonText;
+    border: 1px solid ButtonText;
+    text-shadow: none;
+  }
+}
+
+@keyframes city-copy-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body #world-feedback {
+    animation: none;
   }
 }

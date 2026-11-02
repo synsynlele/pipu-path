@@ -2056,3 +2056,17 @@ The broader validation exposed a pre-existing asynchronous retry-form assertion:
 ## 1 November 2026 — Game entrance brand logo
 
 The entrance now places the exact PNG logo used by the Real Quest BrandMark beside PipuPath and its existing Build a Better World slogan. Explicit 48px dimensions, non-shrinking image and flex alignment keep the mark stable beside the name. The image is decorative within the existing labelled home link. No game logic, progression or save change. Full validation/CI gate one automatic production build; branch previews disabled.
+
+## 2026-11-02 — Production choices on the city, without a gameplay replacement
+
+### Authorized scope
+
+User asked to keep the production game available for more testing and make instructions/cards appear on the city like the new options while retaining the familiar best-choice interaction. Do not release the workshop or market gameplay experiments.
+
+### Implemented
+
+CSS-only presentation change from production SHA `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`: transparent bottom decision/outcome containers and text surfaces, larger bold outlined text, lightly tinted answer buttons, clear focus targets and bottom city-response instructions. Responsive height bounds retain the city view and scrolling. Reduced-transparency and forced-colour preferences preserve readable solid surfaces. No game logic, content, rewards, persistence, chapter, question or puzzle changes.
+
+### Verification
+
+Browser inspection confirms the existing opening repair question renders over the original city, all three original choice buttons remain and the outer background is transparent. `npm run validate` passed formatting, zero-warning lint, typecheck, full game regressions, 656 coverage tests and 252 integration tests, then its build step hit stale generated output (`ENOTEMPTY` removing build chunks). The generated output was preserved outside the checkout; a clean `npm run build` passed. A focused CSS formatting check also passed after the feedback entrance-animation correction. Browser checks at 390 × 844 show all three original answers with 46px touch targets and 14px text; at 844 × 390 the bounded overlay scrolls and the last answer remains selectable. Both existing success-oriented and poor choices triggered their original city consequences. No physical-device performance claim is made. The production receipt follows.
