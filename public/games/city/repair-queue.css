@@ -1,0 +1,181 @@
+body.repair-pilot #journey-bar,
+body.repair-pilot #scene-labels,
+body.repair-pilot #mission,
+body.repair-pilot #pilot-mission,
+body.repair-pilot #build-toggle,
+body.repair-pilot #mobile-move {
+  display: none !important;
+}
+#repair-hud {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 65;
+  pointer-events: none;
+  color: #17334e;
+  text-shadow:
+    0 1px 3px #fff,
+    0 0 5px #fff;
+  max-width: 680px;
+}
+#repair-hud h2 {
+  font-size: clamp(20px, 3vw, 29px);
+  margin: 4px 0;
+  font-weight: 850;
+}
+#repair-hud p {
+  margin: 4px 0;
+  font-weight: 650;
+}
+#repair-hud button {
+  pointer-events: auto;
+  min-height: 44px;
+  border-radius: 12px;
+  padding: 9px 13px;
+  border: 1px solid #b4c5cd;
+  background: #f6faf5ed;
+  color: #17334e;
+  font: inherit;
+  font-weight: 750;
+  text-shadow: none;
+  cursor: pointer;
+}
+#repair-hud button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+#repair-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+#repair-actions .primary {
+  background: #efcf68;
+}
+#repair-status {
+  font-size: 13px;
+}
+#repair-message {
+  font-size: 14px;
+  max-width: 580px;
+}
+#repair-pins {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+.repair-pin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  pointer-events: auto;
+  background: transparent;
+  border: 0;
+  min-height: 44px;
+  max-width: 150px;
+  color: #17334e;
+  font-weight: 850;
+  font-size: 13px;
+  text-shadow:
+    0 1px 3px white,
+    0 0 5px white;
+  cursor: pointer;
+}
+.repair-pin:before {
+  content: "● ";
+  color: #aa792b;
+}
+.repair-pin:focus-visible {
+  outline: 3px solid #264f80;
+  background: #fff9;
+}
+#repair-welcome {
+  max-width: 480px;
+  border: 1px solid #c8c6b0;
+  border-radius: 22px;
+  padding: 24px;
+  background: #fffdf4;
+  color: #17334e;
+}
+#repair-welcome::backdrop {
+  background: #102c3d66;
+}
+#repair-welcome button {
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #efcf68;
+  border: 1px solid #aa9647;
+  font-weight: 800;
+}
+@media (max-width: 600px) {
+  #repair-hud {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+  }
+  #repair-hud h2 {
+    font-size: 21px;
+  }
+  #repair-message {
+    font-size: 13px;
+  }
+  #repair-actions {
+    gap: 5px;
+  }
+  #repair-actions button {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .repair-pin {
+    font-size: 12px;
+  }
+  #repair-hud p {
+    max-width: 95%;
+  }
+}
+#repair-hud select {
+  pointer-events: auto;
+  min-height: 44px;
+  max-width: 100%;
+  border: 1px solid #bac9d1;
+  background: #f7faf6ed;
+  color: #17334e;
+  border-radius: 10px;
+  padding: 8px;
+  font: inherit;
+}
+#repair-hud small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+#repair-hud.repair-success h2 {
+  color: #23613c;
+}
+#repair-hud.repair-success h2:before {
+  content: "✦ ";
+  color: #a77d19;
+}
+#repair-hud select {
+  max-width: 420px;
+}
+@media (max-width: 600px) {
+  #repair-hud {
+    max-height: 40vh;
+    overflow-y: auto;
+    pointer-events: auto;
+  }
+  #repair-status {
+    font-size: 11px;
+  }
+  #repair-queue {
+    font-size: 12px;
+  }
+  #repair-hud select {
+    width: 100%;
+  }
+}

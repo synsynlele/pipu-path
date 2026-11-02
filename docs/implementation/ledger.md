@@ -2056,3 +2056,20 @@ The broader validation exposed a pre-existing asynchronous retry-form assertion:
 ## 1 November 2026 — Game entrance brand logo
 
 The entrance now places the exact PNG logo used by the Real Quest BrandMark beside PipuPath and its existing Build a Better World slogan. Explicit 48px dimensions, non-shrinking image and flex alignment keep the mark stable beside the name. The image is decorative within the existing labelled home link. No game logic, progression or save change. Full validation/CI gate one automatic production build; branch previews disabled.
+
+## 2026-11-02 — Direct workshop interaction in the production city
+
+### Authorized scope
+
+After comparing production with replacement proposals, user chose to retain production and approved one hands-on conversion: The long repair queue. Use this slice to establish reusable interactions before converting more chapters.
+
+### Implemented
+
+- Branch from exact production `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`, with a query-gated workshop preview and unchanged normal campaign entry.
+- Independent six-job model: inspections, one carried item, ordered work, finite token budget, timed workloads/deadlines, workflow efficiency, skilled labour and bench capacity; two materially different solutions and causal failure/retry.
+- Direct physical-arrival actions in the existing city, distinct device models, moving work/finished jobs and service indicators, transparent bottom instructions, accessible job/worksite controls, intro/help, pause and retained graphics fallback/camera/audio.
+- Separate opt-in local checkpoint and validation, with no automatic migration or fabricated legacy decisions, network completion, credits or real-world awards. This is one converted challenge, not all chapters.
+
+### Verification
+
+Domain regression verifies both successful approaches, hardware without labour failure, ordering consequences, item conservation, pause/retry and valid/invalid saves. Actual production-controller regression reaches all six devices, carries each to the queue, organises tools, completes a shift and returns to the entrance without altering production campaign decisions. Browser review confirmed the original city renders through its graphics fallback and the preview welcome/bottom controls work. Full validation and exact deployment receipt follow.
