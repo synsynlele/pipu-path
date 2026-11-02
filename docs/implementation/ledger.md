@@ -2162,3 +2162,29 @@ The user rejected the checklist-like game experience and asked to discuss and ag
 `docs/product/grounded-builder-world-design.md` now specifies a fictional initial region, human-scale visual realism, independent resource/service/economic/environmental processes, alternative working solutions, resident handover and a first complete Bring the Market Back slice. It also specifies safe failure recovery, versioned local checkpoints, phone performance measurement, accessibility, playtesting and a separate real-world evidence boundary. Research sources ground the themes without treating fictional game parameters as real statistics or technical guidance. The long-term asset is a validated simulation and scenario authoring workflow.
 
 This is a proposal for agreement. No replacement gameplay, save migration, image asset pipeline, engine change or deployment was implemented. Existing production and the 36-challenge preview are unchanged. Documentation formatting is checked; no executable source changed, and no implementation stage is claimed complete.
+
+## 2026-11-02 — First living-market world prototype
+
+### Authorized scope
+
+User approved implementing a realistic Nigerian/African-inspired living-world builder, beginning with Bring the Market Back. Build a separate review preview; preserve production.
+
+### Implemented
+
+- Independent bounded resource/service simulation with eight useful tools, farm-to-market deliveries, handling losses, spoilage, household consumption, route/weather changes, connected power/storage and resident operation.
+- Two successful strategies across dry and rain trials, reversible resource recovery and once-only trial earnings; ongoing operation after handover.
+- Human-scale procedural neighbourhood, textured materials, instanced static geometry, animated avatar/cart/residents, state-linked stock and household bags; direct walking and physical work arrival, transparent site pins, bottom guidance and cinematic work focus.
+- Touch/keyboard movement, orbit/tilt/pan/zoom, whole-neighbourhood view, accessible suggested placements, introduction, pause/menu/help, reduced motion and optional sound.
+- Separate versioned device checkpoint with bounded restore validation and optional reflection/real-quest continuation. No production route/save migration, cloud save or real-world capability award.
+
+### Verification and limits
+
+The domain regression passes two materially different solutions and meaningful counterexamples, dry/rain failures, conservation, power connectivity and depletion, autonomous operation, no duplicate trial payouts and valid/invalid checkpoints. The actual scene/controller regression uses a no-draw renderer to test all eight physically reached build sites, reclaim/refunds, both complete trials, ongoing operation, local save and whole-city camera zoom. This does not verify GPU output. The browser reports `GL_RENDERER = Disabled` and cannot create a WebGL context, including after one reload. Visual fidelity, measured phone FPS, device baseline and independent player testing remain open; this is a review prototype rather than completion of the design's release gates. `npm run validate` passed formatting, zero-warning lint, typecheck, full game regressions, 656 coverage tests, 252 integration tests and production build. Focused lint and runtime checks also passed after the camera/control checks.
+
+### Preview receipt
+
+- Branch: `feat/living-market-world`; draft review PR: https://github.com/synsynlele/pipu-path/pull/156 (base is the agreed design checkpoint).
+- Exact deployed source: `7f161fd7ee05e8cf3981616d38b9ecd2ed7617b2`; source tree `8970ef1910fa62ea299d0a0067f719d998533f9e`, matched to the local index before commit.
+- Vercel staging deployment: `dpl_8M5JttFv3zFmV93tKTzGq52XXPDN`, READY. Public direct game route: https://pipu-path-i97eo8gzt-copyartint-2860s-projects.vercel.app/games/market-world/index.html.
+- Browser opened the exact public route without a sign-in wall and showed the correct game shell plus its explicit graphics-unavailable message. The same browser's disabled WebGL prevents visual interaction testing. No claim of GPU fidelity, phone FPS or successful visual playthrough is made.
+- One preview deployment was created. No production promotion or merge. This follow-up records validation and deployment evidence only and requires no additional deployment.
