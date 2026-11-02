@@ -1,5 +1,11 @@
 # Implementation status
 
+## 2 November 2026 — Keep production gameplay; show readable choices over the city
+
+User rejected the added workshop complexity and asked to retain production for wider player testing, with instructions and choices readable directly over the city. This change starts from current production `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06` and changes presentation only. It does not merge the workshop or market experiments, remove questions, replace puzzles, change rewards, migrate saves or alter campaign progression.
+
+Decision and outcome overlays sit at the bottom with transparent outer and text backgrounds, larger bold navy text with a light outline, clear lightly tinted answer buttons and visible keyboard focus. Live city-response instructions use the same bottom presentation. Portrait/short landscape height bounds retain scrolling rather than cover the city. Reduced-transparency and forced-colour preferences retain solid readable surfaces. Existing question text, choices, correct/incorrect consequences, menus, audio, chapters, credits, saves and graphics fallback remain the production implementation. Formatting, zero-warning lint, typecheck, full game regression, 656 coverage tests and 252 integration tests passed. The final build initially encountered a stale generated-output `ENOTEMPTY` error; preserving that output outside the checkout and running a clean `npm run build` passed. Browser QA checked the opening question and unchanged consequence flow, a 390 × 844 portrait viewport with three 46px-high answer targets and 14px text, and an 844 × 390 viewport with scroll access to all choices. These are browser viewport checks, not a physical-device FPS claim. Production deployment receipt follows.
+
 ## 31 October 2026 — Distinct Chapters 5–12 and repeatable virtual city beautification (release candidate)
 
 Branch `feat/varied-city-challenges-repeatable-decor-20261031`, PR #147, replaces
