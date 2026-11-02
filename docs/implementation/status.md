@@ -1,5 +1,15 @@
 # Implementation status
 
+## 2 November 2026 — Production city is the visual foundation (preview)
+
+Verified the current READY production deployment is based on `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`. The hands-on layer now extends that city's original title/HUD, blue-and-white controls, gold primary actions, lighting, ground/road palette and saved development. It no longer hides all production buildings. Only the immediate active work area is temporarily clear for physical tasks; inspection restores retained buildings. Inactive unfinished construction and unrelated episode props stay out of the skyline. Crew structures now use the production city's shared building recipes and material, and skip parcels already developed by production progress.
+
+City inspection now uses the production orthographic camera, framing and fog policy. The previous distant perspective view could put buildings beyond the fog range and wash the scene out. Returning restores the production play camera and fog; the home action closes the hands-on layer safely. The production environment continues its existing worker and traffic animation while hands-on actions run. Existing campaign state is retained separately from the current experimental hands-on session.
+
+The production challenge catalogue now reuses all thirty-six authored briefs, sites, approaches, consequences, trade-offs and construction contracts from their original source modules. Live hands-on teaching, drainage and repair-coordination briefs already reference suitable production cases. This is a reuse foundation and three live adaptations, not a claim that all thirty-six cases have been converted into distinct new hands-on missions. The current twelve playable outcomes remain. Future content work should adapt the existing cases and consequence rules rather than write a duplicate curriculum.
+
+`npm run validate` passed: formatting, zero-warning lint, typecheck, full actual-game regression including retained production development and camera/fog restoration, 656 coverage tests, 252 integration tests and production build. Browser inspection confirmed the original production title/palette and controls, usable mission overlay and visible orthographic city inspection. Public preview verification follows deployment. Production remains unchanged.
+
 ## 1 November 2026 — Transparent city instructions, visible controls and sequential chapters (preview)
 
 Removed the orientation controller, automatic fullscreen/landscape requests, rotation reminder and associated obsolete tests. Device orientation is entirely player-controlled. The existing Start button now enters the hands-on journey; the separate preview entrance is removed. The earlier saved city story remains reachable from the hands-on City menu. The introductory save checkbox is hidden because this hands-on journey remains session-only.

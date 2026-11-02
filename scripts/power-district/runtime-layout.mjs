@@ -1404,6 +1404,7 @@ console.log(
 // Actual worksite controller: character walks, carries, repairs and tests the city.
 const campaignBeforeHandsOn = JSON.stringify(game.state);
 const beforeMarketPosition = game.player.g.position.clone();
+const retainedProductionPlots = game.cityDevelopment.current.plots.length;
 w.document.querySelector("#start").click();
 const handsPanel = w.document.querySelector(".hands-on-panel");
 assert.equal(
@@ -1423,30 +1424,32 @@ assert.equal(
   "visible usable city menu",
 );
 handsPanel.querySelector("[data-menu]").click();
+if (retainedProductionPlots > 10)
+  assert(
+    [...game.cityDevelopment.meshes.values()].filter((m) => m.visible).length >
+      retainedProductionPlots / 2,
+    "the hands-on layer preserves the production city outside its active work area",
+  );
 const beforeOverview = game.player.g.position.clone();
 const beforeOverviewFar = game.camera.far;
 handsPanel.querySelector("[data-city-view]").click();
 assert(handsPanel.classList.contains("city-overview"));
 assert(game.camera.position.y >= 100, "full-city overview");
-const originalAspect = game.camera.aspect;
-for (const aspect of [0.46, 1, 1.456, 2.2]) {
-  game.camera.aspect = aspect;
-  game.camera.updateProjectionMatrix();
-  game.handsOnCity.tick(0, game.camera);
-  for (const x of [-58, 58])
-    for (const z of [-50, 50])
-      for (const y of [0, 30]) {
-        const corner = new T.Vector3(x, y, z).project(game.camera);
-        assert(
-          Math.abs(corner.x) < 0.95 &&
-            Math.abs(corner.y) < 0.95 &&
-            corner.z < 1,
-          "entire city and skyline fit portrait and wide views",
-        );
-      }
-}
-game.camera.aspect = originalAspect;
-game.camera.updateProjectionMatrix();
+assert(
+  game.camera.isOrthographicCamera,
+  "uses production city-inspection camera",
+);
+assert.equal(
+  game.scene.fog.near,
+  500,
+  "inspection lifts production fog instead of fading buildings away",
+);
+assert.equal(game.scene.fog.far, 600);
+assert.equal(
+  [...game.cityDevelopment.meshes.values()].filter((m) => m.visible).length,
+  retainedProductionPlots,
+  "city view retains every production-developed parcel",
+);
 assert(game.player.g.position.distanceTo(beforeOverview) < 0.001);
 handsPanel.querySelector("[data-city-view]").click();
 assert(!handsPanel.classList.contains("city-overview"));
@@ -1511,6 +1514,7 @@ assert.equal(
   "market",
   "Continue recovers the earliest unfinished chapter",
 );
+assert.match(handsPanel.getAttribute("aria-label"), /Chapter 2/);
 game.handsOnCity.request("timber");
 assert.equal(game.handsOnCity.state.carrying, null);
 w.dispatchEvent(new w.Event("blur"));
@@ -1672,7 +1676,10 @@ for (const project of [
   );
   assert.equal(handsPanel.querySelector("[data-site]").value, project);
 }
-assert(game.handsOnCity.replicas.length > 6);
+assert(
+  game.handsOnCity.replicas.length + game.cityDevelopment.current.plots.length >
+    6,
+);
 const replicaRoot = game.scene.children.find((g) =>
   g.children.some((c) => c.userData.crewReplica),
 );
@@ -1710,7 +1717,10 @@ for (const [chapter, values] of Object.entries(systemSolutions)) {
   );
 }
 assert.equal(game.handsOnCity.chaptersCompleted, 12);
-assert.equal(game.handsOnCity.replicas.length, 70);
+assert.equal(
+  game.handsOnCity.replicas.length + game.cityDevelopment.current.plots.length,
+  70,
+);
 assert.equal(handsPanel.querySelector("[data-chapter-next]").hidden, false);
 handsPanel.querySelector("[data-chapter-next]").click();
 assert.match(
@@ -1726,7 +1736,7 @@ assert.equal(
   false,
   "changing an earlier outcome invalidates the handover",
 );
-assert(game.handsOnCity.replicas.length < 70);
+assert(game.handsOnCity.chaptersCompleted < 12);
 episodeWork("food:test");
 episodeWork("legacy:test");
 assert.equal(game.handsOnCity.chaptersCompleted, 12);

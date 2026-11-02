@@ -342,3 +342,20 @@ for (const p of finalCity)
 console.log(
   "PASS: all twelve chapter outcomes, eight distinct system trials, five alternate strategies, honest handover dependencies and a unique seventy-parcel final city.",
 );
+
+const { PRODUCTION_CHALLENGE_LIBRARY, HANDS_ON_SOURCE_CASES, productionBrief } =
+  await import("../../public/games/city/production-challenge-library.mjs");
+assert.equal(PRODUCTION_CHALLENGE_LIBRARY.length, 36);
+assert.equal(new Set(PRODUCTION_CHALLENGE_LIBRARY.map((c) => c.id)).size, 36);
+for (const c of PRODUCTION_CHALLENGE_LIBRARY) {
+  assert(c.site);
+  assert.equal(c.approaches.length, 3);
+  assert(c.approaches.every((a) => a.plan && a.consequence));
+}
+for (const [mission, id] of Object.entries(HANDS_ON_SOURCE_CASES)) {
+  const c = PRODUCTION_CHALLENGE_LIBRARY.find((c) => c.id === id);
+  assert(productionBrief(mission, "Try it.").includes(c.situation));
+}
+console.log(
+  "PASS: all 36 production briefs and consequence contracts are reused from their original source, with three live hands-on adaptations.",
+);

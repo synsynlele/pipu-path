@@ -23,7 +23,7 @@ The recurring five-step mission structure is: inspect the need and initial condi
 
 Six reusable prototypes remain separate worksites. A successful construction enables its family of crew-built models. Outcome-count targets grow from a small batch to seventy reserved parcels by the finale, with no duplicated parcel IDs, unlimited tower generation or airport replication. The final handover requires all six prototypes to be tested; most chapter challenges are about useful services and people. The visible city is fictional and does not assert verified real-world impact or operating capacity.
 
-Activity yards use the relevant existing district. Selecting a system chapter temporarily hides that construction prototype; selecting construction restores its actual saved-in-session stage. Other campaign geometry and campaign state are restored when leaving the preview. Cached construction recipes and simple bounded chapter geometry avoid a separate 3D engine or new external assets.
+The production city is the visual foundation. Its retained buildings, title, palette and shared building recipes remain in use. The layer temporarily clears only its active work area; city inspection restores existing development and uses production’s orthographic camera and fog policy. New crews skip existing developed parcels. Production campaign state remains separate from experimental mission progress.
 
 ## Guidance, celebration and city view
 
@@ -42,3 +42,7 @@ Twelve primary missions are implemented; twenty-four remain. The linked thirty-s
 Developers add a chapter's independent domain rules, physical objects, observable result, recovery feedback, alternative strategies where feasible, reflection and actual-controller test. Do not equate a new label or a repeated button sequence with a new useful outcome. Player testing must establish difficulty and enjoyment before claiming the game is perfected or replacing production.
 
 Preview verification: staging deployment `dpl_C4D3kX7L1vQG6KD5tFRNu3wm5Q6X` reached READY at game source `d2183cffc1207b6d6822afbe65a85421ca1c23da`. Browser checks verified the single Start action, transparent instructions, visible menu, Chapter 1 completion celebration, Chapter 2 unlock with later chapters disabled, and a complete city overview with return to mission. Review URL: https://pipu-path-3kjyekawi-copyartint-2860s-projects.vercel.app/games/city/index.html. Production was not promoted.
+
+## Production challenge reuse
+
+`production-challenge-library.mjs` reads all thirty-six original cases and their existing consequence/build contracts. Teaching uses `repair-training`, storm/drainage uses `green-drainage`, and repair ownership uses `civic-repairs`. These are live content bindings to already implemented physical mechanics. The catalogue is the source for further conversions; it does not itself make every case a new playable hands-on mission.

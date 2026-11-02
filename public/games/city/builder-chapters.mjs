@@ -1,3 +1,4 @@
+import { productionBrief } from "./production-challenge-library.mjs";
 export const CHAPTER_REFLECTIONS = {
   investigate: "What observation changed your first explanation?",
   market: "Which repair made the biggest difference to the traders?",
@@ -101,8 +102,10 @@ export const BUILDER_CHAPTERS = [
       "Agree the handover order",
       "Reserve a shared inspection slot",
     ],
-    brief:
-      "Coordinate an electrician and a carpenter. Keep a shared promise that both teams can actually complete and inspect.",
+    brief: productionBrief(
+      "trust",
+      "Coordinate qualified crews, agree the handover order and inspect the completed repair together.",
+    ),
   },
   {
     id: "environment",
@@ -114,8 +117,10 @@ export const BUILDER_CHAPTERS = [
       "Open or close the drain",
       "Replace paving with a rain garden",
     ],
-    brief:
-      "Keep plastic out of compost and protect the yard during a storm. Observe both runoff and recovered materials.",
+    brief: productionBrief(
+      "environment",
+      "Clear the drain, recover materials and test a rain garden under a simulated storm.",
+    ),
   },
   {
     id: "legacy",

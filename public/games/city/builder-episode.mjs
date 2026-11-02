@@ -1,3 +1,4 @@
+import { productionBrief } from "./production-challenge-library.mjs";
 // Fictional resident outcomes; never real-world evidence or learner assessment.
 export const BUILDER_MISSIONS = [
   {
@@ -23,8 +24,10 @@ export const BUILDER_MISSIONS = [
     name: "Help an apprentice succeed",
     x: -15,
     z: 12,
-    brief:
-      "An apprentice needs to make a stable crate. Prepare practice, demonstrate, then let the learner work independently.",
+    brief: productionBrief(
+      "teach",
+      "Prepare a crate-making practice task, demonstrate, then let the apprentice work independently.",
+    ),
     lesson: "Helping someone learn is a meaningful thing to build.",
   },
 ];

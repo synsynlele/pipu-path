@@ -1,3 +1,4 @@
+import { CITY_PROJECTS } from "./city-construction.mjs";
 import { mountHandsOnCity } from "./hands-on-city.mjs";
 import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
@@ -1661,7 +1662,8 @@ function rebuildNavigation(pilot = false) {
       maxZ: p.g.position.z + 0.23,
     });
   // Choice-built plots use stable footprints, independent of construction animation.
-  for (const [id, effect] of pilot ? [] : caseScenes.effects) {
+  for (const [id, effect] of caseScenes.effects) {
+    if (pilot && !effect.group.visible) continue;
     const plan = infrastructurePlan(id, state.decisions[id]);
     if (!plan?.assets.length || id === "transit-people") continue;
     const { x, z } = effect.group.position;
@@ -1676,7 +1678,16 @@ function rebuildNavigation(pilot = false) {
       maxZ: z + (outer ? 2.1 : 0.65),
     });
   }
-  if (!pilot) obstacles.push(...cityDevelopment.obstacles());
+  obstacles.push(
+    ...cityDevelopment
+      .obstacles()
+      .filter(
+        (_, i) =>
+          !pilot ||
+          cityDevelopment.meshes.get(cityDevelopment.current.plots[i]?.id)
+            ?.visible,
+      ),
+  );
   navigationObstacles = obstacles;
   for (const mesh of cityDevelopment.meshes.values()) {
     const b = new T.Box3().setFromObject(mesh);
@@ -4718,12 +4729,64 @@ const handsOnCity = mountHandsOnCity({
   canvas: $("world"),
   getCamera: () => camera,
   actor: player,
-  marketAssets: () => [
-    ...marketAssets,
-    ...cityDevelopment.meshes.values(),
-    ...[...caseScenes.effects.values()].map((effect) => effect.group),
-  ],
+  marketAssets: () => {
+    cityDevelopment.setFocus(null, true);
+    caseScenes.setFocus(null, true);
+    return [
+      ...marketAssets,
+      ...cityDevelopment.meshes.values(),
+      ...[...caseScenes.effects.values()].map((effect) => effect.group),
+    ];
+  },
   getResidents: cityPeople,
+  occupiedParcels: () => cityDevelopment.current.plots.map((p) => p.id),
+  productionReplica: (root, parcel) => cityDevelopment.replica(root, parcel),
+  coverAsset: (mesh, { centre, view, projects }) => {
+    const completed = CITY_PROJECTS.filter((p) => projects[p.id].open);
+    if (
+      completed.some(
+        (p) =>
+          Math.abs(mesh.position.x - p.x) < p.width / 2 + 1 &&
+          Math.abs(mesh.position.z - p.z) < p.depth / 2 + 1,
+      )
+    )
+      return true;
+    return (
+      !view &&
+      Math.abs(mesh.position.x - centre.x) < 7 &&
+      Math.abs(mesh.position.z - centre.z) < 7
+    );
+  },
+  frameCamera: ({ view, focus, yaw: heading }) => {
+    if (view) {
+      camera = cityCamera;
+      fitCityCamera();
+      scene.fog.near = 500;
+      scene.fog.far = 600;
+      camera.position.set(
+        Math.sin(0.55) * Math.cos(0.95) * 160,
+        Math.sin(0.95) * 160,
+        Math.cos(0.55) * Math.cos(0.95) * 160,
+      );
+      camera.lookAt(0, 0.5, 0);
+    } else {
+      camera = playCamera;
+      scene.fog.near = 115;
+      scene.fog.far = 225;
+      const span = compactDevice ? 34 : 27;
+      const direction = new T.Vector3(
+        Math.sin(heading) * Math.cos(0.72),
+        Math.sin(0.72),
+        Math.cos(heading) * Math.cos(0.72),
+      );
+      const origin = new T.Vector3(focus.x, 0.5, focus.z);
+      const boom = clearBoomDistance(origin, direction, span, cameraObstacles);
+      camera.position.copy(origin).addScaledVector(direction, boom);
+      camera.lookAt(focus.x, 0.5, focus.z);
+    }
+    camera.updateMatrixWorld(true);
+    return camera;
+  },
   walkClear: (from, to) =>
     (worksiteNavigator ?? navigator).segmentFree(from, to),
   planRoute: (point, blockers = []) => {
@@ -4765,16 +4828,22 @@ const handsOnCity = mountHandsOnCity({
     closeCasebook();
     closeCityStatus();
     $("intro").hidden = true;
+    $("city-hud").hidden = false;
+    cityDevelopment.setFocus(null, true);
+    caseScenes.setFocus(null, true);
     camera = playCamera;
     void cityAudio.start();
     screenAwake.setPlaying(true);
   },
   leave() {
     $("intro").hidden = false;
+    $("city-hud").hidden = true;
     screenAwake.setPlaying(false);
     $("start").focus();
   },
 });
+$("menu-entrance").onclick = () =>
+  handsOnCity.active ? handsOnCity.close() : returnToEntrance();
 $("start").onclick = () => handsOnCity.open();
 $("resume-city").onclick = () => handsOnCity.open();
 $("resume-city").hidden = true;
@@ -4955,6 +5024,10 @@ document.addEventListener("visibilitychange", () => {
 });
 syncAudioControls();
 $("help").onclick = () => {
+  if (handsOnCity.active) {
+    handsOnCity.openMenu();
+    return;
+  }
   const step = integratedStep(state.decisions, state.lab);
   const current = $("help-next-step");
   current.textContent = chapterHelp(
@@ -5198,6 +5271,10 @@ canvas.addEventListener(
   { passive: false },
 );
 $("camera-home").onclick = () => {
+  if (handsOnCity.active) {
+    handsOnCity.resetCamera();
+    return;
+  }
   keys.clear();
   pointers.clear();
   down = null;
@@ -5339,6 +5416,13 @@ function animateWorld(now) {
     const missionDt = Math.min(Math.max(0, (now - last) / 1000), 0.5);
     last = now;
     handsOnCity.tick(missionDt, camera);
+    caseScenes.animate(now, reduceMotion.matches);
+    livingScene.animate(
+      now,
+      reduceMotion.matches,
+      false,
+      [player, ...handsOnCity.residents].map((p) => p.g.position),
+    );
     renderer.render(scene, camera);
     return;
   }

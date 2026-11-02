@@ -178,6 +178,20 @@ export function createCityDevelopmentScene({ T, scene }) {
   }
   return {
     sync,
+    replica(root, parcel) {
+      const type = {
+        tower: "skyscraper",
+        homes: "homes",
+        farm: "farm",
+        hospital: "hospital",
+        stadium: "stadium",
+      }[parcel.type];
+      const mesh = new T.Mesh(geometry(type, "working"), material);
+      mesh.position.set(parcel.x, 0, parcel.z);
+      mesh.userData.crewReplica = parcel.id;
+      root.add(mesh);
+      return mesh;
+    },
     setFocus,
     obstacles,
     meshes,

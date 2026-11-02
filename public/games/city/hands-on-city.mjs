@@ -45,6 +45,10 @@ export function mountHandsOnCity({
   actor,
   marketAssets,
   getResidents = () => [],
+  frameCamera = null,
+  coverAsset = () => true,
+  productionReplica = null,
+  occupiedParcels = () => [],
   walkClear = () => true,
   planRoute,
   refreshNavigation,
@@ -99,6 +103,11 @@ export function mountHandsOnCity({
   panel.hidden = true;
   panel.setAttribute("aria-label", "Repair the market");
   panel.innerHTML = `<div class="hands-on-heading"><strong>Reopen the neighbourhood market</strong><button data-exit aria-label="Return to game entrance">✕</button></div><label class="worksite-picker">Worksite <select data-site aria-label="Choose a hands-on worksite"><option value="investigate">Mission · Find the missing water</option><option value="care">Mission · Help the clinic receive people</option><option value="teach">Mission · Help an apprentice succeed</option><option value="market">Repair the market</option><option value="homes">Build homes</option><option value="tower">Build a skyline tower</option><option value="hospital">Build a hospital</option><option value="farm">Grow a community farm</option><option value="stadium">Build a stadium</option><option value="airport">Build an airport</option></select></label><div class="next-instruction"><span>YOUR NEXT MOVE</span><p data-goal></p></div><p data-reflection hidden></p><button data-chapter-next hidden>Continue to next chapter →</button><div class="market-progress" data-progress></div><p class="crew-progress" data-crew></p><p data-status role="status" aria-live="polite"></p><div class="market-carry"><span data-carry></span><button data-next hidden></button><button data-drop hidden>Return item</button><button data-stop hidden>Stop walking</button></div><details><summary>Find an object · controls</summary><p>Tap an object or its name: your character walks there and does the work. Tap open ground to walk. Drag to turn the camera. Work stays in this page session.</p><div class="market-access" role="group" aria-label="Worksite objects"></div><button data-reset>Restart this worksite</button></details><a data-quest href="/real-quests" target="_top" hidden>Build something in real life →</a>`;
+  const productionActions = document.querySelector(
+    "#city-hud .city-hud-navigation .top-actions",
+  );
+  const productionActionsParent = productionActions?.parentNode;
+  const productionActionsNext = productionActions?.nextSibling;
   const picker = panel.querySelector("[data-site]");
   for (const chapter of BUILDER_CHAPTERS) {
     let option = [...picker.options].find((o) => o.value === chapter.id);
@@ -136,7 +145,7 @@ export function mountHandsOnCity({
   const extras = document.createElement("div");
   extras.className = "menu-extras";
   extras.innerHTML =
-    "<button data-sound>Toggle sound effects</button><button data-music>Toggle music</button><button data-classic>Earlier city story</button><p>Hands-on progress stays in this page session.</p>";
+    "<button data-sound>Toggle sound effects</button><button data-music>Toggle music</button><button data-classic>Production city challenges</button><p>Hands-on progress stays in this page session.</p>";
   menu.append(extras);
   panel.prepend(toolbar, menu);
   const celebration = document.createElement("section");
@@ -156,7 +165,7 @@ export function mountHandsOnCity({
   function setCityView(value) {
     stop();
     const camera = getCamera();
-    if (value && !cityView) overviewFar = camera.far;
+    if (!frameCamera && value && !cityView) overviewFar = camera.far;
     if (!value && overviewFar !== null) {
       camera.far = overviewFar;
       camera.updateProjectionMatrix();
@@ -170,6 +179,18 @@ export function mountHandsOnCity({
       ? "Return to mission"
       : "View my city";
     if (!cityView) focus.copy(actor.g.position);
+    productionVisibility();
+    for (const child of root.children) {
+      if (cityView) {
+        child.userData.beforeCityView = child.visible;
+        const project = child.userData.marketTarget?.split(":")[0];
+        child.visible =
+          !!child.userData.crewReplica || !!projects[project]?.open;
+      } else if (child.userData.beforeCityView !== undefined) {
+        child.visible = child.userData.beforeCityView;
+        delete child.userData.beforeCityView;
+      }
+    }
     tick(0, getCamera());
   }
   toolbar.querySelector("[data-menu]").onclick = () => {
@@ -207,17 +228,19 @@ export function mountHandsOnCity({
     else setMenu(false);
   });
   function replicas() {
+    const occupied = new Set(occupiedParcels());
     return crewReplicas(
       projects,
       episode,
       undefined,
       completedChapters(episode, state, systems),
-    );
+    ).filter((p) => !occupied.has(p.id));
   }
   const tags = document.createElement("div");
   tags.className = "market-tags";
   tags.hidden = true;
-  document.body.append(panel, tags);
+  (document.getElementById("city-hud") ?? document.body).append(panel);
+  document.body.append(tags);
   function box(parent, w, h, d, color, x, y, z) {
     const key = [w, h, d].join(":");
     if (!geometry.has(key)) geometry.set(key, new T.BoxGeometry(w, h, d));
@@ -307,131 +330,135 @@ export function mountHandsOnCity({
     customers.length = 0;
     celebrants.length = 0;
     episodeResidents.length = 0;
-    for (const id of ["stall-a", "stall-b"]) {
-      const i = id === "stall-a" ? 0 : 1,
-        g = object(id);
-      box(g, 2.8, 0.12, 2.5, 0xb7a084, 0, 0.25, 0);
-      for (const x of [-1.15, 1.15])
-        for (const z of [-0.9, 0.9]) {
-          const post = box(
-            g,
-            0.12,
-            state.frames[i] ? 2.4 : 1.0,
-            0.12,
-            0x8c6846,
-            x,
-            state.frames[i] ? 1.5 : 0.8,
-            z,
-          );
-          if (!state.frames[i]) post.rotation.z = x < 0 ? 0.23 : -0.23;
+    if (activeSite === "market" || state.opened) {
+      for (const id of ["stall-a", "stall-b"]) {
+        const i = id === "stall-a" ? 0 : 1,
+          g = object(id);
+        box(g, 2.8, 0.12, 2.5, 0xb7a084, 0, 0.25, 0);
+        for (const x of [-1.15, 1.15])
+          for (const z of [-0.9, 0.9]) {
+            const post = box(
+              g,
+              0.12,
+              state.frames[i] ? 2.4 : 1.0,
+              0.12,
+              0x8c6846,
+              x,
+              state.frames[i] ? 1.5 : 0.8,
+              z,
+            );
+            if (!state.frames[i]) post.rotation.z = x < 0 ? 0.23 : -0.23;
+          }
+        if (state.frames[i]) {
+          box(g, 2.5, 0.14, 0.14, 0xa37950, 0, 2.65, -0.9);
+          box(g, 2.5, 0.14, 0.14, 0xa37950, 0, 2.65, 0.9);
         }
-      if (state.frames[i]) {
-        box(g, 2.5, 0.14, 0.14, 0xa37950, 0, 2.65, -0.9);
-        box(g, 2.5, 0.14, 0.14, 0xa37950, 0, 2.65, 0.9);
-      }
-      if (state.roofs[i]) {
-        box(g, 3, 0.12, 2.8, i ? 0x417a72 : 0xb76943, 0, 2.85, 0);
-        for (let n = 0; n < 7; n++)
-          box(g, 0.04, 0.025, 2.8, 0xe2c08f, -1.35 + n * 0.45, 2.93, 0);
-      }
-      box(
-        g,
-        2.4,
-        0.17,
-        0.65,
-        state.frames[i] ? 0xae8358 : 0x766552,
-        0,
-        1.0,
-        0.8,
-      );
-      if (state.opened) {
-        for (let n = 0; n < 5; n++)
-          box(
-            g,
-            0.29,
-            0.22,
-            0.3,
-            n % 2 ? 0xdaab4c : 0x799950,
-            -0.9 + n * 0.42,
-            1.2,
-            0.8,
+        if (state.roofs[i]) {
+          box(g, 3, 0.12, 2.8, i ? 0x417a72 : 0xb76943, 0, 2.85, 0);
+          for (let n = 0; n < 7; n++)
+            box(g, 0.04, 0.025, 2.8, 0xe2c08f, -1.35 + n * 0.45, 2.93, 0);
+        }
+        box(
+          g,
+          2.4,
+          0.17,
+          0.65,
+          state.frames[i] ? 0xae8358 : 0x766552,
+          0,
+          1.0,
+          0.8,
+        );
+        if (state.opened) {
+          for (let n = 0; n < 5; n++)
+            box(
+              g,
+              0.29,
+              0.22,
+              0.3,
+              n % 2 ? 0xdaab4c : 0x799950,
+              -0.9 + n * 0.42,
+              1.2,
+              0.8,
+            );
+          const merchant = spawnPerson(
+            objects.find((o) => o.id === id).x,
+            12.8,
+            i ? 0xd6a64d : 0x618d8d,
           );
-        const merchant = spawnPerson(
-          objects.find((o) => o.id === id).x,
-          12.8,
-          i ? 0xd6a64d : 0x618d8d,
+          if (merchant) celebrants.push(merchant);
+        }
+      }
+      const timber = object("timber");
+      timber.visible = !state.opened;
+      for (let n = 0; n < 5; n++)
+        box(timber, 1.65, 0.15, 0.2, 0xb88c54, 0, 0.45 + n * 0.15, 0);
+      const sheets = object("roofing");
+      sheets.visible = !state.opened;
+      for (let n = 0; n < 4; n++)
+        box(sheets, 1.7, 0.08, 1.25, 0x698f9e, 0, 0.32 + n * 0.1, 0);
+      const park = object("parking");
+      box(park, 2.3, 0.025, 2.1, 0xd1c498, 0, 0.19, 0);
+      for (const x of [-1.1, 1.1])
+        box(park, 0.06, 0.03, 2.1, 0xffe08b, x, 0.23, 0);
+      const loading = object("loading");
+      box(loading, 2.1, 0.025, 1.6, 0xb9c4b0, 0, 0.2, 0);
+      const shelf = object("shelf");
+      box(shelf, 2.2, 0.15, 1.3, 0x8a6c50, 0, 0.7, 0);
+      for (const x of [-1, 1]) {
+        box(shelf, 0.1, 2.8, 0.1, 0x79684d, x, 1.6, -0.5);
+        box(shelf, 0.1, 2.8, 0.1, 0x79684d, x, 1.6, 0.5);
+      }
+      box(shelf, 2.6, 0.15, 2.2, 0x4e776e, 0, 3.05, 0.5);
+      const cart = object("cart");
+      const at = cartPosition();
+      cart.position.set(at.x, 0, at.z);
+      cartMesh = cart;
+      box(cart, 1.25, 0.65, 0.85, 0x967352, 0, 0.85, 0);
+      for (const x of [-0.65, 0.65])
+        box(cart, 0.13, 0.4, 0.4, 0x354341, x, 0.4, 0);
+      const crate = object("produce");
+      if (state.produce === "shelf") crate.position.set(23.5, 0.55, 9);
+      box(crate, 0.75, 0.6, 0.65, 0xc18c4a, 0, 0.55, 0);
+      for (let n = 0; n < 4; n++)
+        box(crate, 0.23, 0.18, 0.2, 0x779344, -0.22 + n * 0.15, 0.92, 0);
+      if (state.carrying === "produce") crate.visible = false;
+      const bell = object("bell");
+      box(bell, 0.12, 2.4, 0.12, 0x7c6951, 0, 1.4, 0);
+      box(bell, 0.65, 0.45, 0.45, 0xe5bd5a, 0, 2.5, 0);
+      if (state.carrying && state.carrying !== "cart") {
+        const color =
+          state.carrying === "timber"
+            ? 0xb88c54
+            : state.carrying === "roofing"
+              ? 0x698f9e
+              : 0xc18c4a;
+        box(
+          carry,
+          state.carrying === "timber" ? 1.25 : 0.8,
+          state.carrying === "roofing" ? 0.12 : 0.4,
+          0.5,
+          color,
+          0,
+          1,
+          0.6,
         );
-        if (merchant) celebrants.push(merchant);
+      }
+      if (state.opened) {
+        box(root, 7.9, 0.05, 0.7, 0xe4d6b9, 19.2, 0.28, 16.1);
+        for (const x of [15.6, 22.8])
+          box(root, 0.6, 0.3, 0.6, 0x739d75, x, 0.43, 15.6);
+        for (let i = 0; i < 4; i++) {
+          const customer = spawnPerson(
+            17 + i * 0.8,
+            20 + i * 0.25,
+            [0x789a69, 0xc97f5e, 0x6e8ca9, 0xb7a16a][i],
+          );
+          if (customer) customers.push(customer);
+        }
       }
     }
-    const timber = object("timber");
-    timber.visible = !state.opened;
-    for (let n = 0; n < 5; n++)
-      box(timber, 1.65, 0.15, 0.2, 0xb88c54, 0, 0.45 + n * 0.15, 0);
-    const sheets = object("roofing");
-    sheets.visible = !state.opened;
-    for (let n = 0; n < 4; n++)
-      box(sheets, 1.7, 0.08, 1.25, 0x698f9e, 0, 0.32 + n * 0.1, 0);
-    const park = object("parking");
-    box(park, 2.3, 0.025, 2.1, 0xd1c498, 0, 0.19, 0);
-    for (const x of [-1.1, 1.1])
-      box(park, 0.06, 0.03, 2.1, 0xffe08b, x, 0.23, 0);
-    const loading = object("loading");
-    box(loading, 2.1, 0.025, 1.6, 0xb9c4b0, 0, 0.2, 0);
-    const shelf = object("shelf");
-    box(shelf, 2.2, 0.15, 1.3, 0x8a6c50, 0, 0.7, 0);
-    for (const x of [-1, 1]) {
-      box(shelf, 0.1, 2.8, 0.1, 0x79684d, x, 1.6, -0.5);
-      box(shelf, 0.1, 2.8, 0.1, 0x79684d, x, 1.6, 0.5);
-    }
-    box(shelf, 2.6, 0.15, 2.2, 0x4e776e, 0, 3.05, 0.5);
-    const cart = object("cart");
-    const at = cartPosition();
-    cart.position.set(at.x, 0, at.z);
-    cartMesh = cart;
-    box(cart, 1.25, 0.65, 0.85, 0x967352, 0, 0.85, 0);
-    for (const x of [-0.65, 0.65])
-      box(cart, 0.13, 0.4, 0.4, 0x354341, x, 0.4, 0);
-    const crate = object("produce");
-    if (state.produce === "shelf") crate.position.set(23.5, 0.55, 9);
-    box(crate, 0.75, 0.6, 0.65, 0xc18c4a, 0, 0.55, 0);
-    for (let n = 0; n < 4; n++)
-      box(crate, 0.23, 0.18, 0.2, 0x779344, -0.22 + n * 0.15, 0.92, 0);
-    if (state.carrying === "produce") crate.visible = false;
-    const bell = object("bell");
-    box(bell, 0.12, 2.4, 0.12, 0x7c6951, 0, 1.4, 0);
-    box(bell, 0.65, 0.45, 0.45, 0xe5bd5a, 0, 2.5, 0);
-    if (state.carrying && state.carrying !== "cart") {
-      const color =
-        state.carrying === "timber"
-          ? 0xb88c54
-          : state.carrying === "roofing"
-            ? 0x698f9e
-            : 0xc18c4a;
-      box(
-        carry,
-        state.carrying === "timber" ? 1.25 : 0.8,
-        state.carrying === "roofing" ? 0.12 : 0.4,
-        0.5,
-        color,
-        0,
-        1,
-        0.6,
-      );
-    }
-    if (state.opened) {
-      box(root, 7.9, 0.05, 0.7, 0xe4d6b9, 19.2, 0.28, 16.1);
-      for (const x of [15.6, 22.8])
-        box(root, 0.6, 0.3, 0.6, 0x739d75, x, 0.43, 15.6);
-      for (let i = 0; i < 4; i++) {
-        const customer = spawnPerson(
-          17 + i * 0.8,
-          20 + i * 0.25,
-          [0x789a69, 0xc97f5e, 0x6e8ca9, 0xb7a16a][i],
-        );
-        if (customer) customers.push(customer);
-      }
-    }
+    if (activeSite !== "market" && state.carrying && state.carrying !== "cart")
+      box(carry, 0.8, 0.4, 0.5, 0xb49762, 0, 1, 0.6);
     const systemChapter = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
     constructionScene.draw(
       root,
@@ -452,14 +479,68 @@ export function mountHandsOnCity({
     drawEpisode({
       root,
       state: episode,
+      active: activeSite,
       objects: objectGroups,
       box,
       spawn: spawnPerson,
       people: episodeResidents,
     });
-    for (const parcel of replicas()) constructionScene.replica(root, parcel);
+    for (const parcel of replicas()) {
+      if (productionReplica) productionReplica(root, parcel);
+      else constructionScene.replica(root, parcel);
+    }
+    if (productionReplica)
+      for (const child of root.children) {
+        const project = CITY_PROJECTS.find(
+          (p) => p.id === child.userData.marketTarget?.split(":")[0],
+        );
+        if (
+          project &&
+          projects[project.id].open &&
+          project.id !== "airport" &&
+          child.children[0]?.isMesh &&
+          child.position.x === project.x &&
+          child.position.z === project.z
+        ) {
+          child.clear();
+          const mesh = productionReplica(child, {
+            x: 0,
+            z: 0,
+            type: project.id,
+            id: "prototype-" + project.id,
+          });
+          mesh.scale.set(
+            project.width / 4.8,
+            project.width / 4.8,
+            project.depth / 4.8,
+          );
+        }
+      }
+    // Keep unfinished worksites out of the production skyline until selected.
+    for (const child of root.children) {
+      const id = child.userData.marketTarget?.split(":")[0];
+      if (
+        CITY_PROJECTS.some((p) => p.id === id) &&
+        id !== activeSite &&
+        !projects[id].open
+      )
+        child.visible = false;
+    }
+    productionVisibility();
     root.updateMatrixWorld(true);
     navigationDirty = true;
+  }
+  function productionVisibility() {
+    if (!snapshot) return;
+    const chapter = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
+    const centre = CITY_PROJECTS.find(
+      (p) => p.id === (chapter?.site ?? activeSite),
+    ) ??
+      BUILDER_MISSIONS.find((m) => m.id === activeSite) ?? { x: 19.5, z: 15 };
+    for (const [mesh, visible] of snapshot.assets)
+      mesh.visible =
+        visible &&
+        !coverAsset(mesh, { activeSite, centre, view: cityView, projects });
   }
   function positionFor(id) {
     const spec = objects.find((o) => o.id === id);
@@ -863,7 +944,7 @@ export function mountHandsOnCity({
       return;
     }
     picker.value = next.id;
-    picker.dispatchEvent(new Event("change"));
+    picker.dispatchEvent(new document.defaultView.Event("change"));
   };
   panel.querySelector("[data-stop]").onclick = () => {
     stop();
@@ -902,6 +983,13 @@ export function mountHandsOnCity({
   };
   function close() {
     stop();
+    if (frameCamera)
+      frameCamera({
+        view: false,
+        focus: actor.g.position.clone(),
+        yaw: cameraYaw,
+        dt: 0,
+      });
     active = false;
     if (overviewFar !== null) {
       const camera = getCamera();
@@ -914,6 +1002,13 @@ export function mountHandsOnCity({
     setMenu(false);
     root.visible = false;
     carry.visible = false;
+    if (productionActionsParent && productionActions)
+      productionActionsParent.insertBefore(
+        productionActions,
+        productionActionsNext?.parentNode === productionActionsParent
+          ? productionActionsNext
+          : null,
+      );
     panel.hidden = true;
     tags.hidden = true;
     for (const [mesh, visible] of snapshot.assets) mesh.visible = visible;
@@ -1047,7 +1142,7 @@ export function mountHandsOnCity({
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) pause();
   });
-  let cameraYaw = 0.35;
+  let cameraYaw = 0.8;
   const focus = new T.Vector3();
   function tick(dt, camera) {
     if (navigationDirty) {
@@ -1215,26 +1310,36 @@ export function mountHandsOnCity({
       Math.min(1, dt * 4),
     );
     if (cityView) focus.set(0, 0, 0);
-    const span = cityView
-      ? Math.max(270, 320 / camera.aspect)
-      : Math.max(
-          selectedProject?.id === "tower" ? 36 : 26,
-          17 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
-        );
-    if (cityView && camera.far < span * 2 + 100) {
-      camera.far = span * 2 + 100;
-      camera.updateProjectionMatrix();
+    if (frameCamera)
+      camera =
+        frameCamera({
+          view: cityView,
+          focus: focus.clone(),
+          yaw: cameraYaw,
+          dt,
+        }) ?? camera;
+    else {
+      const span = cityView
+        ? Math.max(270, 320 / camera.aspect)
+        : Math.max(
+            selectedProject?.id === "tower" ? 36 : 26,
+            17 / (2 * Math.tan((camera.fov * Math.PI) / 360) * camera.aspect),
+          );
+      if (cityView && camera.far < span * 2 + 100) {
+        camera.far = span * 2 + 100;
+        camera.updateProjectionMatrix();
+      }
+      camera.position.set(
+        focus.x + Math.sin(cameraYaw) * span * 0.55,
+        span * 0.75,
+        focus.z + Math.cos(cameraYaw) * span * 0.55,
+      );
+      camera.lookAt(
+        focus.x,
+        selectedProject?.id === "tower" ? 3 : 0.5,
+        focus.z - 1.2,
+      );
     }
-    camera.position.set(
-      focus.x + Math.sin(cameraYaw) * span * 0.55,
-      span * 0.75,
-      focus.z + Math.cos(cameraYaw) * span * 0.55,
-    );
-    camera.lookAt(
-      focus.x,
-      selectedProject?.id === "tower" ? 3 : 0.5,
-      focus.z - 1.2,
-    );
     camera.updateMatrixWorld();
     for (const spec of objects) {
       const { tag } = targets.get(spec.id),
@@ -1274,6 +1379,17 @@ export function mountHandsOnCity({
       !!work || waypoints.length > 0;
   }
   return {
+    openMenu() {
+      stop();
+      setMenu(true);
+      const controls = menu.querySelector("details");
+      if (controls) controls.open = true;
+    },
+    resetCamera() {
+      cameraYaw = 0.8;
+      focus.copy(actor.g.position);
+      tick(0, getCamera());
+    },
     get active() {
       return active;
     },
@@ -1323,7 +1439,8 @@ export function mountHandsOnCity({
       toolbar.querySelector("[data-city-view]").textContent = "View my city";
       root.visible = true;
       carry.visible = true;
-      for (const [mesh] of snapshot.assets) mesh.visible = false;
+      productionVisibility();
+      if (productionActions) toolbar.append(productionActions);
       panel.hidden = false;
       tags.hidden = false;
       document.body.classList.add("hands-on-active");

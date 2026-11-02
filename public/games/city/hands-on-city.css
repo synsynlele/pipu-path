@@ -389,3 +389,104 @@
   > :not(.hands-on-toolbar):not(.hands-on-menu):not(.hands-on-celebration) {
   visibility: hidden;
 }
+/* Extend the production HUD and palette; do not replace the city presentation. */
+.hands-on-active #city-hud {
+  display: block !important;
+  visibility: visible !important;
+  z-index: 110;
+}
+.hands-on-active #city-hud .city-hud-navigation {
+  display: none;
+}
+#city-hud > .hands-on-panel {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: min(580px, 100%);
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: calc(100dvh - 100px);
+  color: #173257;
+}
+#city-hud .hands-on-toolbar {
+  position: static;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+#city-hud .hands-on-panel button {
+  background: #f9fbffed;
+  border: 1px solid #c8d9df;
+  border-radius: 17px;
+  color: #173257;
+  box-shadow: 0 2px 8px #172c5418;
+}
+#city-hud .hands-on-panel [data-next],
+#city-hud .hands-on-panel [data-chapter-next],
+#city-hud .hands-on-celebration [data-celebration-next] {
+  background: #e9ce73;
+  color: #173257;
+  border-color: #c5b76c;
+}
+#city-hud .hands-on-panel p,
+#city-hud .hands-on-panel .next-instruction > span {
+  color: #173257;
+  text-shadow:
+    0 1px 3px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+}
+#city-hud .hands-on-menu {
+  top: 110px;
+  background: #f8fbfff5;
+  border-color: #c6d5dd;
+  color: #173257;
+}
+#city-hud .hands-on-menu label,
+#city-hud .hands-on-menu .market-progress,
+#city-hud .hands-on-menu p {
+  color: #173257;
+  text-shadow: none;
+}
+#city-hud .hands-on-celebration {
+  color: #173257;
+  text-shadow:
+    0 1px 4px #fff,
+    1px 0 3px #fff;
+}
+.market-object-tag {
+  border: 1px solid #cedee5;
+  background: #f8fbfff2;
+  color: #173257;
+  border-radius: 22px;
+  box-shadow: 0 2px 8px #172c5418;
+}
+@media (max-width: 600px) {
+  #city-hud > .hands-on-panel {
+    width: 100%;
+  }
+  #city-hud .hands-on-menu {
+    top: 110px;
+  }
+}
+
+#city-hud > .hands-on-panel {
+  text-shadow:
+    0 1px 3px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+}
+#city-hud .hands-on-toolbar .top-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  position: static;
+}
+@media (max-width: 600px) {
+  #city-hud .hands-on-toolbar > button {
+    font-size: 12px;
+    padding: 7px 9px;
+  }
+}
