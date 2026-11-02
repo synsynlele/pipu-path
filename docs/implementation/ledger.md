@@ -2072,4 +2072,12 @@ After comparing production with replacement proposals, user chose to retain prod
 
 ### Verification
 
-Domain regression verifies both successful approaches, hardware without labour failure, ordering consequences, item conservation, pause/retry and valid/invalid saves. Actual production-controller regression reaches all six devices, carries each to the queue, organises tools, completes a shift and returns to the entrance without altering production campaign decisions. Browser review confirmed the original city renders through its graphics fallback and the preview welcome/bottom controls work. Full validation and exact deployment receipt follow.
+Domain regression verifies both successful approaches, hardware without labour failure, ordering consequences, item conservation, pause/retry and valid/invalid saves. Actual production-controller regression reaches all six devices, carries each to the queue, organises tools, completes a shift and returns to the entrance without altering production campaign decisions. Browser review confirmed the original city renders through its graphics fallback and the preview welcome/bottom controls work. `npm run validate` passed formatting, zero-warning lint, types, all game regressions, 656 coverage tests, 252 integration tests and production build.
+
+### Preview receipt
+
+- Draft PR: https://github.com/synsynlele/pipu-path/pull/157, branch `feat/workshop-hands-on`, base `main` at production SHA `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`.
+- Deployed source: `680298fdf8121b13ad763b99f7fcfcef372f6e0d`; tree `544b2defe3523dd477211a4c6498acf07d4b536c`, matched to the local index before committing.
+- One Vercel staging deployment `dpl_8ARieSecxuqcAnECbpm6nqCcneHY`, READY. Exact public route: https://pipu-path-77w91bzf1-copyartint-2860s-projects.vercel.app/games/city/index.html?workshop=hands-on.
+- Browser opened the public route without sign-in, entered the introduction and rendered the retained production city through the established graphics fallback. Local browser QA also physically inspected all six jobs, organised the workflow, picked up the community pump and dispatched the carry-to-queue walk. Full successful shift completion is verified by the actual controller regression; a complete browser shift and measured phone performance remain further QA.
+- No production promotion or merge. This evidence-only follow-up requires no further deployment.
