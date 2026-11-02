@@ -1,5 +1,13 @@
 # Implementation status
 
+## 2 November 2026 — Proposed grounded world-builder redesign (design only)
+
+The user rejected the checklist-like game experience and asked to discuss and agree on a replacement before implementation. Research into Dragon Quest Builders 2, Eco, Terra Nil and other builders informed a character-led living-world proposal. The user endorsed a more realistic direction grounded primarily in Nigerian and African problems. A generated Nigerian market environment is concept art, not a playable rendering or performance commitment.
+
+`docs/product/grounded-builder-world-design.md` now specifies a fictional initial region, human-scale visual realism, independent resource/service/economic/environmental processes, alternative working solutions, resident handover and a first complete Bring the Market Back slice. It also specifies safe failure recovery, versioned local checkpoints, phone performance measurement, accessibility, playtesting and a separate real-world evidence boundary. Research sources ground the themes without treating fictional game parameters as real statistics or technical guidance. The long-term asset is a validated simulation and scenario authoring workflow.
+
+This is a proposal for agreement. No replacement gameplay, save migration, image asset pipeline, engine change or deployment was implemented. Existing production and the 36-challenge preview are unchanged. Documentation formatting is checked; no executable source changed, and no implementation stage is claimed complete.
+
 ## 2 November 2026 — Free city orbit, tilt, panning and walking (preview)
 
 Removed the fixed overview camera angle. Both mission and city inspection now accept full horizontal orbit and bounded vertical tilt. Dragging sideways rotates and dragging vertically changes elevation; Q/E and R/F provide keyboard equivalents. The safe worksite camera starts from the player’s requested pitch and heading, raising or orbiting only when clearance requires it. Two-finger translation pans the overview while pinch retains zoom. Recentring restores a useful default pose.
