@@ -1,3 +1,9 @@
+/* Keep canvas and overlay colours in one deliberate palette on dark-mode phones.
+   User high-contrast/forced-colour preferences still retain their own overrides. */
+:root {
+  color-scheme: only light;
+}
+
 /* Task surfaces share the city view. Keep the existing puzzle layout and rules. */
 body.city-integrated
   :is(
@@ -223,4 +229,55 @@ body.city-integrated
   )
   :is(button, select, input, textarea) {
   -webkit-text-fill-color: currentColor !important;
+}
+
+/* Transparent rewards must reveal the city, never another task underneath. */
+body.city-reward-presenting
+  :is(
+    #detail,
+    #mission,
+    #pilot-mission,
+    #world-feedback,
+    #build-victory,
+    #opportunities-panel,
+    #resilience-panel,
+    #advanced-panel,
+    #service-panel,
+    #build-dock,
+    #casebook,
+    #city-status,
+    #district-directory,
+    #resilience-feedback
+  ),
+body:has(#chapter-celebration[open])
+  :is(
+    #detail,
+    #mission,
+    #pilot-mission,
+    #world-feedback,
+    #build-victory,
+    #opportunities-panel,
+    #resilience-panel,
+    #advanced-panel,
+    #service-panel,
+    #build-dock,
+    #casebook,
+    #city-status,
+    #district-directory,
+    #resilience-feedback
+  ),
+body:has(#build-victory:not([hidden]))
+  :is(
+    #detail,
+    #mission,
+    #pilot-mission,
+    #world-feedback,
+    #opportunities-panel,
+    #resilience-panel,
+    #advanced-panel,
+    #service-panel,
+    #build-dock
+  ) {
+  display: none !important;
+  pointer-events: none !important;
 }

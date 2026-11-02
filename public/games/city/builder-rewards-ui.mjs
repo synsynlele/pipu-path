@@ -36,6 +36,48 @@ export function mountBuilderRewards({
     lastPurchase = null;
   const shop = $("builder-shop"),
     celebration = $("chapter-celebration");
+  let heldSurfaces = null;
+  function holdTaskSurfaces() {
+    if (heldSurfaces) return;
+    heldSurfaces = [
+      "detail",
+      "mission",
+      "pilot-mission",
+      "world-feedback",
+      "build-victory",
+      "opportunities-panel",
+      "resilience-panel",
+      "advanced-panel",
+      "service-panel",
+      "build-dock",
+      "casebook",
+      "city-status",
+      "district-directory",
+      "resilience-feedback",
+    ]
+      .map((id) => $(id))
+      .filter(Boolean)
+      .map((el) => ({
+        el,
+        hidden: el.hidden,
+        inert: el.hasAttribute("inert"),
+      }));
+    document.body.classList.add("city-reward-presenting");
+    for (const { el } of heldSurfaces) {
+      el.hidden = true;
+      el.setAttribute("inert", "");
+    }
+  }
+  function releaseTaskSurfaces() {
+    if (shop.open || celebration.open || !heldSurfaces) return;
+    for (const { el, hidden, inert } of heldSurfaces) {
+      if (!el.isConnected) continue;
+      el.hidden = hidden;
+      if (!inert) el.removeAttribute("inert");
+    }
+    heldSurfaces = null;
+    document.body.classList.remove("city-reward-presenting");
+  }
   const fmt = (value) => new Intl.NumberFormat("en").format(value);
   function updateBalances() {
     const credits = fmt(builderBalance(getState().rewards));
@@ -203,6 +245,7 @@ export function mountBuilderRewards({
     shopWasRunning = isJourneyRunning();
     if (celebration.open) closeCelebration(false);
     pauseForReward();
+    holdTaskSurfaces();
     category = "city";
     $("city-menu").open = false;
     notify("");
@@ -214,6 +257,7 @@ export function mountBuilderRewards({
     const chapter = activeChapter;
     activeChapter = null;
     celebration.close();
+    releaseTaskSurfaces();
     if (mark && chapter) {
       setRewards(acknowledgeChapter(getState().rewards, chapter));
       updateBalances();
@@ -228,6 +272,7 @@ export function mountBuilderRewards({
       return;
     }
     pauseForReward();
+    holdTaskSurfaces();
     activeChapter = pending.chapter;
     const item = getChapterItems().find((c) => c.chapter === pending.chapter);
     const title =
@@ -299,7 +344,9 @@ export function mountBuilderRewards({
     openShop();
   };
   celebration.addEventListener("cancel", (event) => event.preventDefault());
+  celebration.addEventListener("close", releaseTaskSurfaces);
   shop.addEventListener("close", () => {
+    releaseTaskSurfaces();
     const resume = shopWasRunning;
     shopWasRunning = false;
     if (resume && !nextCelebration(getState().rewards)) continueBuilding();

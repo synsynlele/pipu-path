@@ -55,7 +55,8 @@ const plazas = new Map(
 const player = { g: new T.Group() };
 const cosmetics = createBuilderCosmetics({ T, plazas, player, lowPower: true });
 let time = 0,
-  tones = 0;
+  tones = 0,
+  continuations = 0;
 const shop = mountBuilderRewards({
   getState: () => state,
   setRewards: (rewards) => {
@@ -69,7 +70,9 @@ const shop = mountBuilderRewards({
   isPlaying: () => true,
   isBlockingCelebration: () => false,
   pauseForReward() {},
-  continueBuilding() {},
+  continueBuilding() {
+    continuations++;
+  },
   viewCity() {},
   playSuccess: () => tones++,
   now: () => time,
@@ -180,20 +183,51 @@ globalThis.setTimeout = (callback) => {
 };
 state.rewards.viewed = [];
 shop.schedule();
+const task = $("detail"),
+  mission = $("mission");
+task.hidden = false;
+task.dataset.question = "kept-question";
+mission.hidden = true;
+const decisionsBeforeRewards = JSON.stringify(state.decisions);
 for (let chapter = 1; chapter <= 12; chapter++) {
   assert(scheduledCelebration, "Every earned chapter needs a celebration");
   const reveal = scheduledCelebration;
   scheduledCelebration = null;
   reveal();
   assert.equal($("chapter-celebration").open, true);
+  assert(task.hidden, "question leaves the screen for the celebration");
+  assert(task.hasAttribute("inert"), "hidden question cannot take input");
+  assert(document.body.classList.contains("city-reward-presenting"));
+  assert.equal(task.dataset.question, "kept-question");
   assert.match(
     $("celebration-kicker").textContent,
     new RegExp("CHAPTER " + chapter + " COMPLETE"),
   );
   $("celebration-continue").click();
   assert.equal($("chapter-celebration").open, false);
+  assert.equal(
+    task.hidden,
+    false,
+    "question state is restored before journey continuation",
+  );
+  assert.equal(task.hasAttribute("inert"), false);
+  assert(mission.hidden, "already hidden panels stay hidden");
+  assert.equal(
+    document.body.classList.contains("city-reward-presenting"),
+    false,
+  );
 }
 assert.equal(scheduledCelebration, null);
+assert.equal(continuations, 11, "each non-final chapter continues once");
+assert.equal(JSON.stringify(state.decisions), decisionsBeforeRewards);
+$("menu-shop").click();
+assert(task.hidden, "shop also owns its presentation surface");
+assert(task.hasAttribute("inert"));
+$("shop-close").click();
+assert.equal(task.hidden, false, "paused shop returns to the same question");
+assert.equal(task.dataset.question, "kept-question");
+assert.equal(task.hasAttribute("inert"), false);
+assert.equal(document.body.classList.contains("city-reward-presenting"), false);
 assert.equal(
   builderBalance(state.rewards),
   unlocked,
@@ -201,6 +235,6 @@ assert.equal(
 );
 globalThis.setTimeout = originalTimeout;
 console.log(
-  "PASS: actual shop repeat purchases, double-tap protection, exact costs, selected-district 3D decor, one-time accessories and close/reload persistence.",
+  "PASS: actual shop repeat purchases, double-tap protection, exact costs, selected-district 3D decor, one-time accessories, celebration/question exclusivity, exact task restoration and close/reload persistence.",
 );
 dom.window.close();
