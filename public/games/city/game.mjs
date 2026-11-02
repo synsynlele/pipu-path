@@ -1,3 +1,6 @@
+import { planWorksiteCamera, safeCameraBlend } from "./worksite-camera.mjs";
+import { CITY_PROJECTS } from "./city-construction.mjs";
+import { mountHandsOnCity } from "./hands-on-city.mjs";
 import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
 import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
@@ -5,7 +8,10 @@ import { mountFacilityDesk } from "./facility-ui.mjs";
 import { createCityDevelopmentScene } from "./city-development-scene.mjs";
 import { createScreenAwake } from "./screen-awake.mjs";
 import { chapterMenuItems } from "./chapter-menu.mjs";
-import { emptyBuilderRewards } from "./builder-rewards.mjs";
+import {
+  emptyBuilderRewards,
+  awardHandsOnChapter,
+} from "./builder-rewards.mjs";
 import { createBuilderCosmetics } from "./builder-cosmetics.mjs";
 import { mountBuilderRewards } from "./builder-rewards-ui.mjs";
 import { advancedCityActivity, canStartAdvanced } from "./advanced.mjs";
@@ -852,7 +858,8 @@ for (const c of crates) {
   const p = c.g.position;
   box(0.57, 0.08, 0.55, 0xc2cfe3, p.x, 0.89, p.z, crateCover);
 }
-for (const object of scene.children.slice(marketStart)) {
+const marketAssets = scene.children.slice(marketStart);
+for (const object of marketAssets) {
   object.position.x += 11;
   object.position.z += 15;
 }
@@ -1610,7 +1617,7 @@ let trafficWaitStarted = null;
 let navigator,
   route = [],
   onArrival = null;
-function rebuildNavigation() {
+function rebuildNavigation(pilot = false) {
   const signature = JSON.stringify([
     state.config,
     state.decisions,
@@ -1660,6 +1667,7 @@ function rebuildNavigation() {
     });
   // Choice-built plots use stable footprints, independent of construction animation.
   for (const [id, effect] of caseScenes.effects) {
+    if (pilot && !effect.group.visible) continue;
     const plan = infrastructurePlan(id, state.decisions[id]);
     if (!plan?.assets.length || id === "transit-people") continue;
     const { x, z } = effect.group.position;
@@ -1674,7 +1682,16 @@ function rebuildNavigation() {
       maxZ: z + (outer ? 2.1 : 0.65),
     });
   }
-  obstacles.push(...cityDevelopment.obstacles());
+  obstacles.push(
+    ...cityDevelopment
+      .obstacles()
+      .filter(
+        (_, i) =>
+          !pilot ||
+          cityDevelopment.meshes.get(cityDevelopment.current.plots[i]?.id)
+            ?.visible,
+      ),
+  );
   navigationObstacles = obstacles;
   for (const mesh of cityDevelopment.meshes.values()) {
     const b = new T.Box3().setFromObject(mesh);
@@ -4501,7 +4518,13 @@ const builderRewardsUi = mountBuilderRewards({
   getBuiltDistrictIds: () => {
     const city = deriveBuilderCity(state.decisions);
     return CITY_DISTRICTS.filter(
-      (district) => city.districts[district.id]?.built,
+      (district) =>
+        city.districts[district.id]?.built ||
+        (handsOnCity?.active &&
+          ((district.id === "water" && handsOnCity.episode.investigate.done) ||
+            (district.id === "market" && handsOnCity.state.opened) ||
+            (district.id === "health" && handsOnCity.episode.care.done) ||
+            (district.id === "learning" && handsOnCity.episode.teach.done))),
     ).map((district) => district.id);
   },
   isPlaying: () => $("intro").hidden,
@@ -4692,8 +4715,196 @@ function returnToEntrance() {
   $("start").focus({ preventScroll: true });
 }
 $("menu-entrance").onclick = returnToEntrance;
-$("start").onclick = () => startCity();
-$("resume-city").onclick = () => startCity();
+let worksiteNavigator;
+const cityPeople = () => [
+  ama,
+  bisi,
+  tunde,
+  ...futureNeighbours,
+  ...[...livingScene.pedestrians.values()]
+    .flat()
+    .filter((g) => g.visible)
+    .map((g) => ({ g })),
+];
+const personalBlocks = (people) =>
+  people.map((p) => ({
+    minX: p.x - 0.5,
+    maxX: p.x + 0.5,
+    minZ: p.z - 0.5,
+    maxZ: p.z + 0.5,
+  }));
+const handsOnCity = mountHandsOnCity({
+  T,
+  scene,
+  canvas: $("world"),
+  getCamera: () => camera,
+  actor: player,
+  marketAssets: () => {
+    cityDevelopment.setFocus(null, true);
+    caseScenes.setFocus(null, true);
+    return [
+      ...marketAssets,
+      ...cityDevelopment.meshes.values(),
+      ...[...caseScenes.effects.values()].map((effect) => effect.group),
+    ];
+  },
+  getResidents: cityPeople,
+  occupiedParcels: () => cityDevelopment.current.plots.map((p) => p.id),
+  productionReplica: (root, parcel) => cityDevelopment.replica(root, parcel),
+  coverAsset: (mesh, { centre, view, projects }) => {
+    const completed = CITY_PROJECTS.filter((p) => projects[p.id].open);
+    if (
+      completed.some(
+        (p) =>
+          Math.abs(mesh.position.x - p.x) < p.width / 2 + 1 &&
+          Math.abs(mesh.position.z - p.z) < p.depth / 2 + 1,
+      )
+    )
+      return true;
+    return (
+      !view &&
+      Math.abs(mesh.position.x - centre.x) < 7 &&
+      Math.abs(mesh.position.z - centre.z) < 7
+    );
+  },
+  frameCamera: ({
+    view,
+    focus,
+    yaw: heading,
+    pitch: viewPitch = 0.76,
+    site,
+    working = false,
+    zoom = 1,
+    dt = 0,
+  }) => {
+    if (view) {
+      camera = cityCamera;
+      fitCityCamera();
+      cityCamera.zoom = 1 / zoom;
+      cityCamera.updateProjectionMatrix();
+      scene.fog.near = 500;
+      scene.fog.far = 600;
+      camera.position.set(
+        focus.x + Math.sin(heading) * Math.cos(viewPitch) * 160,
+        Math.sin(viewPitch) * 160,
+        focus.z + Math.cos(heading) * Math.cos(viewPitch) * 160,
+      );
+      camera.lookAt(focus.x, 0.5, focus.z);
+    } else {
+      camera = playCamera;
+      scene.fog.near = 115;
+      scene.fog.far = 225;
+      const plan = planWorksiteCamera({
+        focus,
+        actor: player.g.position,
+        site: site ?? {
+          x: focus.x,
+          z: focus.z,
+          width: 12,
+          depth: 12,
+          height: 4,
+        },
+        aspect: camera.aspect,
+        fov: camera.fov,
+        heading,
+        pitch: viewPitch,
+        boxes: cameraObstacles,
+        working,
+        zoom,
+      });
+      const next = safeCameraBlend(
+        camera.position,
+        plan.position,
+        plan.target,
+        cameraObstacles,
+        dt > 0 ? 1 - Math.exp(-dt * 6) : 1,
+      );
+      camera.position.set(next.x, next.y, next.z);
+      camera.lookAt(plan.target.x, plan.target.y, plan.target.z);
+      const w = innerWidth,
+        h = innerHeight;
+      if (
+        !camera.view?.enabled ||
+        camera.view.fullWidth !== w ||
+        camera.view.fullHeight !== h
+      )
+        camera.setViewOffset(w, h, 0, h * 0.13, w, h);
+      scene.fog.near = Math.max(115, plan.distance + 25);
+      scene.fog.far = Math.max(225, plan.distance + 150);
+    }
+    camera.updateMatrixWorld(true);
+    return camera;
+  },
+  walkClear: (from, to) =>
+    (worksiteNavigator ?? navigator).segmentFree(from, to),
+  planRoute: (point, blockers = []) => {
+    const nav = blockers.length
+      ? createNavigator(
+          [
+            ...navigationObstacles,
+            ...personalBlocks([
+              ...cityPeople().map((p) => p.g.position),
+              ...blockers,
+            ]),
+          ],
+          { minX: -57.5, maxX: 57.5, minZ: -49.5, maxZ: 49.5, step: 0.5 },
+        )
+      : (worksiteNavigator ?? navigator);
+    return nav.route(player.g.position, point);
+  },
+  refreshNavigation: () => {
+    navigationSignature = null;
+    rebuildNavigation(handsOnCity.active);
+    worksiteNavigator = createNavigator(
+      [
+        ...navigationObstacles,
+        ...personalBlocks(cityPeople().map((p) => p.g.position)),
+      ],
+      { minX: -57.5, maxX: 57.5, minZ: -49.5, maxZ: 49.5, step: 0.5 },
+    );
+  },
+  onChapterComplete: (chapter) => {
+    const result = awardHandsOnChapter(state.rewards, chapter);
+    state.rewards = result.rewards;
+    builderRewardsUi.updateBalances();
+    return result.credits;
+  },
+  classic: () => startCity(),
+  toggleSound: () => cityAudio.toggleSound(),
+  toggleMusic: () => cityAudio.toggleMusic(),
+  cue: (kind) => cityAudio.cue(kind),
+  enter() {
+    pauseJourney("Hands-on city experiment");
+    cancelWalk();
+    keys.clear();
+    closeDetail();
+    closeDirectory();
+    closeCasebook();
+    closeCityStatus();
+    $("intro").hidden = true;
+    $("city-hud").hidden = false;
+    cityDevelopment.setFocus(null, true);
+    caseScenes.setFocus(null, true);
+    camera = playCamera;
+    void cityAudio.start();
+    screenAwake.setPlaying(true);
+  },
+  leave() {
+    $("intro").hidden = false;
+    $("city-hud").hidden = true;
+    playCamera.clearViewOffset();
+    cityCamera.zoom = 1;
+    cityCamera.updateProjectionMatrix();
+    scene.fog.near = 115;
+    scene.fog.far = 225;
+    screenAwake.setPlaying(false);
+    $("start").focus();
+  },
+});
+$("menu-entrance").onclick = () =>
+  handsOnCity.active ? handsOnCity.close() : returnToEntrance();
+$("start").onclick = () => handsOnCity.open();
+$("resume-city").onclick = () => handsOnCity.open();
 $("resume-city").hidden = true;
 
 function startCity() {
@@ -4872,6 +5083,10 @@ document.addEventListener("visibilitychange", () => {
 });
 syncAudioControls();
 $("help").onclick = () => {
+  if (handsOnCity.active) {
+    handsOnCity.openMenu();
+    return;
+  }
   const step = integratedStep(state.decisions, state.lab);
   const current = $("help-next-step");
   current.textContent = chapterHelp(
@@ -4958,7 +5173,11 @@ canvas.addEventListener("pointerdown", (e) => {
   dragging = false;
 });
 canvas.addEventListener("pointermove", (e) => {
-  if (!pointers.has(e.pointerId) || document.querySelector("dialog[open]"))
+  if (
+    handsOnCity.active ||
+    !pointers.has(e.pointerId) ||
+    document.querySelector("dialog[open]")
+  )
     return;
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pointers.size === 2) {
@@ -4991,6 +5210,11 @@ canvas.addEventListener("pointermove", (e) => {
 canvas.addEventListener("pointerup", (e) => {
   pointers.delete(e.pointerId);
   pinchDistance = null;
+  if (handsOnCity.active) {
+    down = null;
+    multiTouch = false;
+    return;
+  }
   if (
     down &&
     !dragging &&
@@ -5106,6 +5330,10 @@ canvas.addEventListener(
   { passive: false },
 );
 $("camera-home").onclick = () => {
+  if (handsOnCity.active) {
+    handsOnCity.resetCamera();
+    return;
+  }
   keys.clear();
   pointers.clear();
   down = null;
@@ -5130,6 +5358,7 @@ $("camera-home").onclick = () => {
   toast("Camera centred.");
 };
 function beginManualExplore() {
+  if (handsOnCity.active) return false;
   if (
     simulating ||
     builtCityView ||
@@ -5236,6 +5465,26 @@ function siteInCamera(position) {
   return cityViewFrustum.intersectsSphere(citySiteSphere);
 }
 function animateWorld(now) {
+  if (handsOnCity.active) {
+    if (document.hidden) {
+      last = now;
+      frameBudget.takeFrame(now, true);
+      return;
+    }
+    if (!frameBudget.takeFrame(now, false) || graphicsInterrupted) return;
+    const missionDt = Math.min(Math.max(0, (now - last) / 1000), 0.5);
+    last = now;
+    handsOnCity.tick(missionDt, camera);
+    caseScenes.animate(now, reduceMotion.matches);
+    livingScene.animate(
+      now,
+      reduceMotion.matches,
+      false,
+      [player, ...handsOnCity.residents].map((p) => p.g.position),
+    );
+    renderer.render(scene, camera);
+    return;
+  }
   const coveredByPuzzle =
     focusedPuzzle() && (innerWidth <= 760 || innerHeight <= 520);
   if (document.querySelector("dialog[open]")) keys.clear();

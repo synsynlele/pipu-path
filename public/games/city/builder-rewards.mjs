@@ -400,3 +400,19 @@ export function nextCelebration(value) {
     safe.awards.find((item) => !safe.viewed.includes(item.chapter)) ?? null
   );
 }
+
+// Tested hands-on outcomes share the existing per-chapter reward cap.
+export function awardHandsOnChapter(value, chapter) {
+  const rewards = sanitizeBuilderRewards(value);
+  if (
+    !Number.isInteger(chapter) ||
+    chapter < 1 ||
+    chapter > 12 ||
+    rewards.awards.some((a) => a.chapter === chapter)
+  )
+    return { rewards, credits: 0 };
+  const credits = TIERS.growing.credits;
+  rewards.awards.push({ chapter, tier: "growing", credits });
+  rewards.viewed.push(chapter); // The hands-on controller already celebrates this outcome.
+  return { rewards, credits };
+}

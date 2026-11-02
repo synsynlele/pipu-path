@@ -1,0 +1,714 @@
+.hands-on-panel {
+  position: fixed;
+  z-index: 100;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(580px, calc(100% - 20px));
+  max-height: 32vh;
+  overflow: auto;
+  background: rgba(248, 252, 249, 0.94);
+  color: #14332d;
+  border: 1px solid #789d91;
+  border-radius: 16px;
+  padding: 12px;
+  font: 14px/1.35 system-ui;
+  box-sizing: border-box;
+}
+.hands-on-panel[hidden],
+.market-tags[hidden] {
+  display: none;
+}
+.hands-on-panel .hands-on-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.hands-on-panel p {
+  margin: 6px 0;
+  color: #14332d;
+  opacity: 1;
+}
+.hands-on-panel button {
+  min-height: 44px;
+  border: 1px solid #718f88;
+  border-radius: 9px;
+  padding: 7px 12px;
+  background: #fff;
+  color: #173e32;
+  cursor: pointer;
+}
+.hands-on-panel button:focus-visible,
+.market-object-tag:focus-visible {
+  outline: 3px solid #e49d20;
+  outline-offset: 2px;
+}
+.hands-on-panel button:disabled {
+  opacity: 0.45;
+}
+.hands-on-panel a {
+  color: #145c77;
+}
+.market-progress {
+  font-size: 12px;
+  color: #385f52;
+}
+.market-carry {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.market-access {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.market-object-tag {
+  position: fixed;
+  z-index: 85;
+  transform: translate(-50%, -100%);
+  border: 1px solid #8e6f37;
+  border-radius: 20px;
+  background: rgba(255, 242, 196, 0.94);
+  color: #293d32;
+  font: 600 12px/1.2 system-ui;
+  padding: 10px 12px;
+  min-height: 40px;
+  max-width: 140px;
+  cursor: pointer;
+  box-shadow: 0 3px 12px #18382c28;
+}
+.market-object-tag[hidden] {
+  display: none;
+}
+.hands-on-active #city-hud,
+.hands-on-active #journey-bar,
+.hands-on-active #scene-labels,
+.hands-on-active #controls,
+.hands-on-active #mobile-move,
+.hands-on-active #detail,
+.hands-on-active #travel,
+.hands-on-active #weather,
+.hands-on-active .station {
+  visibility: hidden !important;
+}
+@media (max-width: 600px) {
+  .hands-on-panel {
+    font-size: 12px;
+    padding: 9px;
+    max-height: 34vh;
+  }
+  .market-object-tag {
+    font-size: 10px;
+    max-width: 100px;
+    padding: 8px;
+    min-height: 36px;
+  }
+  .hands-on-panel [data-status]:empty {
+    display: none;
+  }
+}
+@media (max-height: 520px) {
+  .hands-on-panel {
+    left: auto;
+    right: 8px;
+    transform: none;
+    width: 290px;
+    max-height: 90vh;
+    font-size: 12px;
+  }
+}
+.worksite-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin: 6px 0;
+}
+.worksite-picker select {
+  min-height: 40px;
+  max-width: 100%;
+  flex: 1;
+  background: #fff;
+  color: #173e32;
+  border: 1px solid #8ba59a;
+  border-radius: 8px;
+  padding: 5px;
+}
+.hands-on-panel [data-next] {
+  background: #176956;
+  color: white;
+}
+.hands-on-panel .crew-progress {
+  font-size: 11px;
+  color: #49695e;
+}
+.hands-on-panel [data-progress] {
+  font-size: 12px;
+}
+
+/* Keep the current instruction ahead of progress details and optional controls. */
+.next-instruction {
+  border-left: 4px solid #d79d32;
+  padding: 6px 10px;
+  margin: 8px 0;
+  background: #fff9e9;
+  border-radius: 8px;
+}
+.next-instruction > span {
+  color: #70521a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.hands-on-panel .next-instruction [data-goal] {
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.25;
+  font-weight: 800;
+  margin: 6px 0 10px;
+}
+.hands-on-panel [data-next] {
+  width: 100%;
+  min-height: 54px;
+  font-size: 18px;
+  font-weight: 800;
+  color: white;
+  background: #175c48;
+  border: 2px solid #114936;
+}
+.hands-on-panel [data-next][hidden],
+.hands-on-panel [data-chapter-next][hidden] {
+  display: none;
+}
+.hands-on-panel [data-chapter-next] {
+  width: 100%;
+  background: #e6f3e9;
+  font-weight: 750;
+  margin: 6px 0;
+}
+.hands-on-panel {
+  max-height: 44vh;
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .hands-on-panel {
+    left: auto;
+    right: 8px;
+    transform: none;
+    width: min(340px, 42vw);
+    max-height: calc(100dvh - 20px);
+  }
+  .hands-on-panel .next-instruction [data-goal] {
+    font-size: 18px;
+  }
+  .hands-on-panel [data-next] {
+    font-size: 16px;
+    min-height: 48px;
+  }
+}
+
+/* Instructions belong to the city, without a card or backdrop. */
+.hands-on-panel {
+  top: 80px;
+  bottom: auto;
+  left: 12px;
+  transform: none;
+  width: min(560px, calc(100% - 24px));
+  max-height: calc(100dvh - 100px);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  overflow: visible;
+  pointer-events: none;
+  color: #fff;
+  text-shadow:
+    0 1px 3px #10231e,
+    1px 0 2px #10231e,
+    -1px 0 2px #10231e;
+}
+.hands-on-panel p,
+.hands-on-panel .next-instruction > span {
+  color: #fff;
+}
+.hands-on-panel .hands-on-heading {
+  font-size: 17px;
+}
+.next-instruction {
+  border: 0;
+  padding: 0;
+  margin: 6px 0;
+  background: transparent;
+}
+.hands-on-panel .next-instruction [data-goal] {
+  font-size: clamp(19px, 2.4vw, 25px);
+  font-weight: 800;
+}
+.hands-on-panel button,
+.hands-on-panel select,
+.hands-on-panel summary,
+.hands-on-panel a {
+  pointer-events: auto;
+  text-shadow: none;
+}
+.hands-on-panel [data-next] {
+  width: auto;
+  min-width: min(100%, 260px);
+  max-width: 100%;
+}
+.hands-on-toolbar {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+.hands-on-toolbar button {
+  background: #164e40;
+  color: #fff;
+  border: 1px solid #bed3c7;
+  font-weight: 750;
+  box-shadow: 0 2px 8px #15382933;
+}
+.hands-on-menu {
+  position: fixed;
+  z-index: 130;
+  left: 12px;
+  top: 64px;
+  width: min(350px, calc(100% - 24px));
+  max-height: calc(100dvh - 80px);
+  overflow: auto;
+  padding: 12px;
+  box-sizing: border-box;
+  background: rgba(18, 43, 34, 0.96);
+  border: 1px solid #b3cbbd;
+  border-radius: 12px;
+  pointer-events: auto;
+  text-shadow: none;
+}
+.hands-on-menu[hidden],
+.hands-on-celebration[hidden] {
+  display: none;
+}
+.hands-on-menu label {
+  display: block;
+  color: #fff;
+}
+.hands-on-menu select {
+  max-width: 100%;
+  width: 100%;
+  color: #173e32;
+  background: #fff;
+  min-height: 44px;
+}
+.hands-on-menu p,
+.hands-on-menu .market-progress {
+  color: #f4fff7;
+}
+.menu-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.hands-on-panel.city-overview > :not(.hands-on-toolbar):not(.hands-on-menu) {
+  display: none;
+}
+.hands-on-celebration {
+  position: fixed;
+  z-index: 125;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, calc(100% - 30px));
+  text-align: center;
+  pointer-events: auto;
+  color: #fff;
+  text-shadow:
+    0 2px 4px #112d23,
+    1px 0 3px #112d23;
+}
+.hands-on-celebration strong {
+  display: block;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+}
+.hands-on-celebration p {
+  font-size: 18px;
+  font-weight: 700;
+}
+.hands-on-celebration button {
+  margin: 4px;
+  background: #145d44;
+  color: #fff;
+  border-color: #cbe5a3;
+  font-weight: 750;
+}
+.celebration-flowers {
+  font-size: 40px;
+  color: #ffd677;
+  letter-spacing: 0.15em;
+  animation: flowers-arrive 0.8s ease-out both;
+}
+@keyframes flowers-arrive {
+  from {
+    transform: translateY(25px) scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .celebration-flowers {
+    animation: none;
+  }
+}
+@media (max-height: 520px) {
+  .hands-on-panel {
+    top: 65px;
+    width: min(440px, 55vw);
+  }
+  .hands-on-celebration {
+    top: 18%;
+  }
+  .hands-on-celebration p {
+    font-size: 15px;
+  }
+}
+#intro .welcome-device-save {
+  display: none;
+}
+
+.hands-on-panel:has(.hands-on-celebration:not([hidden]))
+  > :not(.hands-on-toolbar):not(.hands-on-menu):not(.hands-on-celebration) {
+  visibility: hidden;
+}
+/* Extend the production HUD and palette; do not replace the city presentation. */
+.hands-on-active #city-hud {
+  display: block !important;
+  visibility: visible !important;
+  z-index: 110;
+}
+.hands-on-active #city-hud .city-hud-navigation {
+  display: none;
+}
+#city-hud > .hands-on-panel {
+  position: relative;
+  inset: auto;
+  transform: none;
+  width: min(580px, 100%);
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: calc(100dvh - 100px);
+  color: #173257;
+}
+#city-hud .hands-on-toolbar {
+  position: static;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+#city-hud .hands-on-panel button {
+  background: #f9fbffed;
+  border: 1px solid #c8d9df;
+  border-radius: 17px;
+  color: #173257;
+  box-shadow: 0 2px 8px #172c5418;
+}
+#city-hud .hands-on-panel [data-next],
+#city-hud .hands-on-panel [data-chapter-next],
+#city-hud .hands-on-celebration [data-celebration-next] {
+  background: #e9ce73;
+  color: #173257;
+  border-color: #c5b76c;
+}
+#city-hud .hands-on-panel p,
+#city-hud .hands-on-panel .next-instruction > span {
+  color: #173257;
+  text-shadow:
+    0 1px 3px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+}
+#city-hud .hands-on-menu {
+  top: 110px;
+  background: #f8fbfff5;
+  border-color: #c6d5dd;
+  color: #173257;
+}
+#city-hud .hands-on-menu label,
+#city-hud .hands-on-menu .market-progress,
+#city-hud .hands-on-menu p {
+  color: #173257;
+  text-shadow: none;
+}
+#city-hud .hands-on-celebration {
+  color: #173257;
+  text-shadow:
+    0 1px 4px #fff,
+    1px 0 3px #fff;
+}
+.market-object-tag {
+  border: 1px solid #cedee5;
+  background: #f8fbfff2;
+  color: #173257;
+  border-radius: 22px;
+  box-shadow: 0 2px 8px #172c5418;
+}
+@media (max-width: 600px) {
+  #city-hud > .hands-on-panel {
+    width: 100%;
+  }
+  #city-hud .hands-on-menu {
+    top: 110px;
+  }
+}
+
+#city-hud > .hands-on-panel {
+  text-shadow:
+    0 1px 3px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+}
+#city-hud .hands-on-toolbar .top-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  position: static;
+}
+@media (max-width: 600px) {
+  #city-hud .hands-on-toolbar > button {
+    font-size: 12px;
+    padding: 7px 9px;
+  }
+}
+
+/* Keep controls in the production HUD and mission guidance at the bottom. */
+#city-hud .hands-on-instructions {
+  position: fixed;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  left: 12px;
+  width: min(580px, calc(100% - 24px));
+  max-height: 42dvh;
+  overflow: auto;
+  box-sizing: border-box;
+  pointer-events: auto;
+  padding: 2px 2px 4px;
+  background: transparent;
+  border: 0;
+}
+#city-hud .hands-on-instructions .hands-on-heading {
+  font-size: 14px;
+}
+#city-hud .hands-on-instructions .next-instruction [data-goal] {
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.25;
+  margin: 4px 0 8px;
+}
+#city-hud .hands-on-instructions [data-status] {
+  font-size: 13px;
+}
+@media (max-height: 520px) {
+  #city-hud .hands-on-instructions {
+    width: min(470px, 60vw);
+    max-height: 43dvh;
+  }
+}
+
+#city-hud .hands-on-toolbar #menu-shop {
+  width: auto;
+  flex: 0 1 auto;
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
+/* Read the city through its labels, with the same treatment as mission text. */
+.market-object-tag {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #173257;
+  font-weight: 750;
+  padding: 4px 7px;
+  width: min(146px, 34vw);
+  min-height: 44px;
+  text-shadow:
+    0 1px 3px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+}
+.market-object-tag::after {
+  content: "";
+  position: absolute;
+  left: calc(50% + var(--target-dx, 0px));
+  top: var(--target-dy, 100%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #173257;
+  box-shadow: 0 0 0 2px #fff9;
+  pointer-events: none;
+}
+.market-object-tag:hover,
+.market-object-tag:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hands-on-zoom {
+  display: flex;
+  gap: 4px;
+}
+#city-hud .hands-on-zoom button {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 22px;
+  padding: 2px 10px;
+}
+.mission-parts {
+  display: grid;
+  gap: 6px;
+}
+.mission-parts button[aria-current="true"] {
+  border: 2px solid #b89c4f;
+}
+.mission-parts ol {
+  padding-left: 22px;
+  font-size: 13px;
+}
+.hands-on-welcome {
+  width: min(460px, calc(100% - 44px));
+  box-sizing: border-box;
+  border: 1px solid #c6d5dd;
+  border-radius: 24px;
+  background: #f8fbfff2;
+  color: #173257;
+  padding: clamp(20px, 4vw, 32px);
+  max-height: 88dvh;
+  overflow: auto;
+  font: 15px/1.55 system-ui;
+  box-shadow: 0 16px 70px #17325725;
+}
+.hands-on-welcome::backdrop {
+  background: #17325728;
+}
+.hands-on-welcome h2 {
+  font-size: clamp(25px, 4vw, 34px);
+  line-height: 1.1;
+  margin: 12px 0;
+}
+.hands-on-welcome .welcome-kicker {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+}
+.hands-on-welcome button {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #c8d9df;
+  border-radius: 14px;
+  font: 700 15px system-ui;
+  color: #173257;
+  background: #fff;
+  cursor: pointer;
+}
+.hands-on-welcome [data-begin] {
+  background: #e9ce73;
+  border-color: #c5b76c;
+}
+@media (max-height: 520px) {
+  .hands-on-welcome {
+    width: min(640px, calc(100% - 32px));
+    padding: 16px 24px;
+  }
+  .hands-on-welcome h2 {
+    font-size: 24px;
+  }
+  .hands-on-welcome p {
+    margin: 8px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .market-object-tag {
+    transition: none;
+  }
+}
+.hands-on-help {
+  display: none;
+}
+body.hands-on-active
+  #help-dialog
+  > :not(.hands-on-help):not(#close-help):not(#help-done) {
+  display: none;
+}
+body.hands-on-active .hands-on-help {
+  display: block;
+}
+body.hands-on-active .hands-on-help li {
+  margin: 12px 0;
+}
+.hands-on-walk-pad {
+  position: fixed;
+  right: 12px;
+  bottom: max(44dvh, 170px);
+  display: grid;
+  grid-template-columns: 44px 44px 44px;
+  grid-template-rows: 44px 44px 44px;
+  gap: 2px;
+  pointer-events: auto;
+  touch-action: none;
+}
+.hands-on-walk-pad span {
+  grid-row: 2;
+  grid-column: 2;
+  align-self: center;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: #173257;
+  text-shadow: 0 1px 2px white;
+}
+#city-hud .hands-on-walk-pad button {
+  padding: 0;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 22px;
+  background: #f9fbff99;
+  touch-action: none;
+  user-select: none;
+}
+.hands-on-walk-pad [data-walk="up"] {
+  grid-column: 2;
+  grid-row: 1;
+}
+.hands-on-walk-pad [data-walk="left"] {
+  grid-column: 1;
+  grid-row: 2;
+}
+.hands-on-walk-pad [data-walk="right"] {
+  grid-column: 3;
+  grid-row: 2;
+}
+.hands-on-walk-pad [data-walk="down"] {
+  grid-column: 2;
+  grid-row: 3;
+}
+.hands-on-panel.city-overview > .hands-on-walk-pad {
+  display: none;
+}
+@media (max-height: 520px) {
+  .hands-on-walk-pad {
+    bottom: 12px;
+  }
+}

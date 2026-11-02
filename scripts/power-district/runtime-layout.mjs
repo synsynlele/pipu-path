@@ -85,7 +85,7 @@ let code = readFileSync(root + "public/games/city/game.mjs", "utf8").replace(
     ),
 );
 code +=
-  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment, getHandoffTopic, goTo, cancelWalk, beginManualExplore, keys, target, distance, yaw, pitch};";
+  "\nexport {autoAdvanceTimer, feedbackTimer, proceedAfterCase, showCaseOutcome, pauseJourney, resumeJourney, navigationObstacles, scene, state, player, navigator, approaches, animateWorld, runCaseWorldAction, openBuiltCityView, closeBuiltCityView, renderer, goToJourneyCase, caseScenes, livingScene, rebuildNavigation, render, camera, route, journey, workshopBlueprint, firstBuildMode, buildMilestoneScene, cityDevelopment, getHandoffTopic, goTo, cancelWalk, beginManualExplore, keys, target, distance, yaw, pitch, handsOnCity};";
 const game = await import(
   "data:text/javascript;base64," + Buffer.from(code).toString("base64")
 );
@@ -179,7 +179,7 @@ assert.equal(
 );
 assert(w.document.getElementById("music"));
 assert(w.document.getElementById("sound"));
-w.document.getElementById("start").click();
+w.document.querySelector("[data-classic]").click();
 assert.equal(w.document.getElementById("intro").hidden, true);
 assert.equal(w.document.getElementById("build-lab").open, false);
 assert.equal(JSON.stringify(game.state.decisions), freshDecisions);
@@ -559,7 +559,7 @@ for (const optionIndex of [0, 2]) {
     );
     game.render(); // Navigation rebuilds discard transient walking callbacks.
     w.document.getElementById("menu-entrance").click();
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(game.journey.caseId, item.id);
     assert.equal(w.document.getElementById("detail").hidden, false);
     Object.defineProperty(w.document, "hidden", {
@@ -664,7 +664,7 @@ enterpriseSelect.dispatchEvent(new w.Event("change", { bubbles: true }));
 for (let day = 0; day < 7; day++) {
   const before = JSON.stringify(game.state.economy);
   w.document.getElementById("menu-entrance").click();
-  w.document.getElementById("start").click();
+  w.document.querySelector("[data-classic]").click();
   assert.equal(w.document.getElementById("opportunities-panel").hidden, false);
   assert.equal(JSON.stringify(game.state.economy), before);
   assert.equal(w.document.getElementById("chapter-four-start").hidden, true);
@@ -688,7 +688,7 @@ assert.equal(w.document.getElementById("resilience-panel").hidden, false);
 for (let round = 0; round < 3; round++) {
   const before = JSON.stringify(game.state.resilience);
   w.document.getElementById("menu-entrance").click();
-  w.document.getElementById("start").click();
+  w.document.querySelector("[data-classic]").click();
   assert.equal(w.document.getElementById("resilience-panel").hidden, false);
   assert.equal(JSON.stringify(game.state.resilience), before);
   const button = w.document.querySelector("#resilience-choices button");
@@ -848,7 +848,7 @@ for (let index = 0; index < 16; index++) {
   applyAdvancedPlan(w, game, m, plan);
   const beforeRecovery = JSON.stringify(game.state.advanced);
   w.document.getElementById("menu-entrance").click();
-  w.document.getElementById("start").click();
+  w.document.querySelector("[data-classic]").click();
   assert.equal(w.document.getElementById("advanced-panel").hidden, false);
   assert.equal(JSON.stringify(game.state.advanced), beforeRecovery);
   assert.deepEqual(readAdvancedPlan(w.document, m), plan);
@@ -877,7 +877,7 @@ for (let index = 0; index < 16; index++) {
       w.document.getElementById("menu-entrance").getAttribute("aria-label"),
       "Return to game entrance",
     );
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(w.document.getElementById("intro").hidden, true);
     assert.equal(JSON.stringify(game.state.advanced), beforeEntrance);
     assert.equal(w.document.getElementById("advanced-panel").hidden, false);
@@ -885,7 +885,7 @@ for (let index = 0; index < 16; index++) {
   if (index === 0) {
     Object.assign(game.state, restored);
     w.document.getElementById("intro").hidden = false;
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(game.state.advanced.cursor.phase, "configure");
     assert.deepEqual(readAdvancedPlan(w.document, m), plan);
   }
@@ -916,11 +916,11 @@ for (let index = 0; index < 16; index++) {
   assert.deepEqual(game.state.economy, JSON.parse(previousEconomy));
   if (index === 0) {
     w.document.getElementById("intro").hidden = false;
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     const resultBeforeEntrance = JSON.stringify(game.state.advanced);
     w.document.getElementById("menu-entrance").click();
     assert.equal(w.document.getElementById("intro").hidden, false);
-    w.document.getElementById("start").click();
+    w.document.querySelector("[data-classic]").click();
     assert.equal(JSON.stringify(game.state.advanced), resultBeforeEntrance);
     assert.equal(game.state.advanced.records.length, 1);
     assert.equal(
@@ -1032,7 +1032,7 @@ assert.deepEqual(
   game.state.operations,
   "Entrance opt-in must save actual service progress",
 );
-w.document.getElementById("start").click();
+w.document.querySelector("[data-classic]").click();
 assert.equal(JSON.stringify(game.state.operations), operationsBeforeEntrance);
 assert.equal(JSON.stringify(game.state.decisions), beforeServices.decisions);
 assert.equal(JSON.stringify(game.state.economy), beforeServices.economy);
@@ -1400,5 +1400,625 @@ moveButton.dispatchEvent(new w.Event("lostpointercapture"));
 assert(!game.keys.has("w"));
 console.log(
   "PASS: actual movement takeover, route preservation on city changes, stationary-traffic escape, exactly-once arrival, modal movement freeze and perspective/overview camera recovery.",
+);
+// Actual worksite controller: character walks, carries, repairs and tests the city.
+const campaignBeforeHandsOn = JSON.stringify({ ...game.state, rewards: null });
+const rewardsBeforeHandsOn = game.state.rewards;
+game.state.rewards = {
+  version: 2,
+  awards: [],
+  purchases: [],
+  equipped: [],
+  viewed: [],
+};
+const beforeMarketPosition = game.player.g.position.clone();
+const retainedProductionPlots = game.cityDevelopment.current.plots.length;
+w.document.querySelector("#start").click();
+const handsPanel = w.document.querySelector(".hands-on-panel");
+const welcome = w.document.querySelector(".hands-on-welcome");
+assert(welcome.open, "a first-visit welcome precedes any challenge");
+assert.equal(game.handsOnCity.moving, false, "no work starts behind welcome");
+assert(game.camera.isOrthographicCamera, "welcome shows the city first");
+welcome.querySelector("[data-begin]").click();
+assert.equal(welcome.open, false);
+assert(game.camera.isPerspectiveCamera);
+const zoomBefore = game.handsOnCity.cameraState.zoom;
+handsPanel.querySelector("[data-zoom-in]").click();
+assert(game.handsOnCity.cameraState.zoom < zoomBefore, "button zoom works");
+handsPanel.querySelector("[data-zoom-out]").click();
+assert(Math.abs(game.handsOnCity.cameraState.zoom - zoomBefore) < 0.001);
+const { practicalForChapter } =
+  await import("../../public/games/city/practical-missions.mjs");
+assert(
+  handsPanel.querySelector(".hands-on-toolbar #menu-shop"),
+  "production shop and credit balance remain visible",
+);
+assert(
+  handsPanel.querySelector(".hands-on-instructions [data-goal]"),
+  "mission guidance is in bottom region",
+);
+assert.equal(
+  w.document.querySelector("#hands-on-start"),
+  null,
+  "no separate preview entrance",
+);
+assert.equal(
+  w.document.querySelector(".landscape-play"),
+  null,
+  "no landscape prompt",
+);
+handsPanel.querySelector("[data-menu]").click();
+assert.equal(
+  handsPanel.querySelector(".hands-on-menu").hidden,
+  false,
+  "visible usable city menu",
+);
+handsPanel.querySelector("[data-menu]").click();
+if (retainedProductionPlots > 10)
+  assert(
+    [...game.cityDevelopment.meshes.values()].filter((m) => m.visible).length >
+      retainedProductionPlots / 2,
+    "the hands-on layer preserves the production city outside its active work area",
+  );
+const beforeOverview = game.player.g.position.clone();
+const beforeOverviewFar = game.camera.far;
+handsPanel.querySelector("[data-city-view]").click();
+assert(handsPanel.classList.contains("city-overview"));
+assert(game.camera.position.y >= 100, "full-city overview");
+assert(
+  game.camera.isOrthographicCamera,
+  "uses production city-inspection camera",
+);
+assert.equal(
+  game.scene.fog.near,
+  500,
+  "inspection lifts production fog instead of fading buildings away",
+);
+assert.equal(game.scene.fog.far, 600);
+assert.equal(
+  [...game.cityDevelopment.meshes.values()].filter((m) => m.visible).length,
+  retainedProductionPlots,
+  "city view retains every production-developed parcel",
+);
+assert(game.player.g.position.distanceTo(beforeOverview) < 0.001);
+handsPanel.querySelector("[data-city-view]").click();
+assert(!handsPanel.classList.contains("city-overview"));
+assert.equal(
+  game.camera.far,
+  beforeOverviewFar,
+  "return restores the original camera clipping",
+);
+assert.equal(handsPanel.hidden, false);
+assert.equal(w.document.querySelector("#intro").hidden, true);
+assert.equal(game.beginManualExplore(), false);
+
+// Canceling a walk or blurring the page never performs its pending work.
+// First playable episode: three distinct outcomes, all through physical arrival.
+const episodeWork = (id) => {
+  game.handsOnCity.request(id);
+  for (let i = 0; i < 2200 && game.handsOnCity.moving; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+  assert.equal(game.handsOnCity.moving, false, "route completed: " + id);
+  for (let i = 0; i < 35 && game.handsOnCity.cameraState.revealing; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+  console.log(
+    "Episode action",
+    id,
+    handsPanel.querySelector("[data-status]").textContent,
+  );
+};
+assert(
+  handsPanel.querySelector('option[value="food"]').disabled,
+  "future chapter is locked",
+);
+const lockedBefore = JSON.stringify(game.handsOnCity.systems);
+game.handsOnCity.request("food:a");
+assert.equal(
+  JSON.stringify(game.handsOnCity.systems),
+  lockedBefore,
+  "direct request cannot bypass the chapter gate",
+);
+handsPanel.querySelector("[data-site]").value = "care";
+handsPanel
+  .querySelector("[data-site]")
+  .dispatchEvent(new w.Event("change", { bubbles: true }));
+assert.equal(handsPanel.querySelector("[data-site]").value, "investigate");
+for (const id of ["resident", "tank", "pump", "test"])
+  episodeWork("investigate:" + id);
+assert.equal(game.handsOnCity.episode.investigate.done, false);
+for (const id of ["valve", "valve", "test"]) episodeWork("investigate:" + id);
+assert.equal(game.handsOnCity.episode.investigate.done, true);
+assert.equal(game.handsOnCity.challengesCompleted, 1);
+assert.equal(
+  game.handsOnCity.cameraState.revealing,
+  false,
+  "bounded cinematic finishes and returns control",
+);
+assert.equal(
+  game.state.rewards.awards.length,
+  0,
+  "one of three does not reward or unlock a chapter",
+);
+assert(handsPanel.querySelector('option[value="market"]').disabled);
+const thirdBefore = JSON.stringify(
+  game.handsOnCity.practical["service-tickets"],
+);
+episodeWork("service-tickets:water-request");
+assert.equal(
+  JSON.stringify(game.handsOnCity.practical["service-tickets"]),
+  thirdBefore,
+  "challenge 3 cannot skip challenge 2",
+);
+const finishExtras = (chapter) => {
+  for (const mission of practicalForChapter(chapter)) {
+    handsPanel.querySelector("[data-chapter-next]").click();
+    assert.equal(
+      game.handsOnCity.currentChallenge,
+      mission.id,
+      "Continue selects the next practical challenge",
+    );
+    episodeWork(mission.id + ":test");
+    assert.equal(
+      game.handsOnCity.practical[mission.id].done,
+      false,
+      "opening a practical test cannot pass",
+    );
+    for (const action of mission.solution)
+      episodeWork(mission.id + ":" + action);
+    assert.equal(
+      game.handsOnCity.practical[mission.id].done,
+      true,
+      mission.id + " physical outcome works",
+    );
+  }
+};
+finishExtras("investigate");
+assert.equal(
+  w.document.querySelector("#builder-credit-balance").textContent,
+  "30",
+);
+w.document.querySelector("#menu-shop").click();
+assert.equal(w.document.querySelector("#builder-shop").open, true);
+assert.equal(
+  w.document.querySelector("#shop-credit-balance").textContent,
+  "30",
+);
+const flower = [...w.document.querySelectorAll("#shop-items button")].find(
+  (b) => b.textContent.includes("20"),
+);
+assert(
+  flower && !flower.disabled,
+  "completed water service unlocks decoration purchases",
+);
+flower.click();
+assert.equal(
+  w.document.querySelector("#shop-credit-balance").textContent,
+  "10",
+);
+assert.equal(game.state.rewards.purchases[0].id, "flowers");
+w.document.querySelector("#shop-close").click();
+assert.equal(
+  handsPanel.querySelector(".hands-on-celebration").hidden,
+  false,
+  "successful chapter celebrates",
+);
+assert.match(
+  handsPanel.querySelector("[data-celebration-title]").textContent,
+  /Chapter 1 complete/,
+);
+handsPanel.querySelector("[data-celebration-view]").click();
+assert(handsPanel.classList.contains("city-overview"));
+handsPanel.querySelector("[data-city-view]").click();
+handsPanel.querySelector("[data-chapter-next]").click();
+assert.equal(
+  handsPanel.querySelector("[data-site]").value,
+  "market",
+  "Continue recovers the earliest unfinished chapter",
+);
+assert.match(handsPanel.getAttribute("aria-label"), /Chapter 2/);
+game.handsOnCity.request("timber");
+assert.equal(game.handsOnCity.state.carrying, null);
+w.dispatchEvent(new w.Event("blur"));
+assert.equal(game.handsOnCity.moving, false);
+assert.equal(game.handsOnCity.state.carrying, null);
+game.handsOnCity.request("timber");
+const moveStart = game.player.g.position.clone();
+for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+  game.handsOnCity.tick(0.1, game.camera);
+assert(game.player.g.position.distanceTo(moveStart) > 1);
+assert.equal(game.handsOnCity.state.carrying, "timber");
+handsPanel.querySelector("[data-drop]").click();
+// Select the real timber geometry through the camera, not a remote action hook.
+const missionRoot = game.scene.children.find((g) =>
+  g.children.some((o) => o.userData.marketTarget === "timber"),
+);
+const timberGroup = missionRoot.children.find(
+  (o) => o.userData.marketTarget === "timber",
+);
+const worldCanvas = w.document.querySelector("#world");
+worldCanvas.setPointerCapture = () => {};
+const sendPointer = (type, id, x, y) => {
+  const e = new w.MouseEvent(type, { bubbles: true, clientX: x, clientY: y });
+  Object.defineProperty(e, "pointerId", { value: id });
+  worldCanvas.dispatchEvent(e);
+};
+const orbitBefore = game.handsOnCity.cameraState;
+sendPointer("pointerdown", 88, 150, 300);
+sendPointer("pointermove", 88, 250, 380);
+sendPointer("pointerup", 88, 250, 380);
+assert.notEqual(
+  game.handsOnCity.cameraState.yaw,
+  orbitBefore.yaw,
+  "horizontal drag turns worksite camera",
+);
+assert.notEqual(
+  game.handsOnCity.cameraState.pitch,
+  orbitBefore.pitch,
+  "vertical drag tilts worksite camera",
+);
+handsPanel.querySelector("[data-city-view]").click();
+const cityPose = game.camera.position.clone(),
+  cityOrbit = game.handsOnCity.cameraState;
+sendPointer("pointerdown", 89, 150, 300);
+sendPointer("pointermove", 89, 350, 360);
+sendPointer("pointerup", 89, 350, 360);
+game.handsOnCity.tick(0.1, game.camera);
+assert.notEqual(
+  game.handsOnCity.cameraState.yaw,
+  cityOrbit.yaw,
+  "overview is no longer fixed",
+);
+assert(
+  game.camera.position.distanceTo(cityPose) > 5,
+  "overview camera actually orbits",
+);
+sendPointer("pointerdown", 91, 100, 300);
+sendPointer("pointerdown", 92, 200, 300);
+sendPointer("pointermove", 91, 120, 320);
+sendPointer("pointermove", 92, 220, 320);
+assert(
+  Math.hypot(
+    game.handsOnCity.cameraState.pan.x,
+    game.handsOnCity.cameraState.pan.z,
+  ) > 0,
+  "two-finger overview pan works",
+);
+sendPointer("pointerup", 91, 120, 320);
+sendPointer("pointerup", 92, 220, 320);
+handsPanel.querySelector("[data-city-view]").click();
+game.handsOnCity.resetCamera();
+const walkingStart = game.player.g.position.clone(),
+  walkingState = JSON.stringify(game.handsOnCity.state);
+let travelled = 0;
+for (const key of ["w", "a", "s", "d"]) {
+  w.document.dispatchEvent(
+    new w.KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }),
+  );
+  for (let i = 0; i < 8; i++) game.handsOnCity.tick(0.1, game.camera);
+  w.document.dispatchEvent(
+    new w.KeyboardEvent("keyup", { key, bubbles: true }),
+  );
+  travelled = Math.max(
+    travelled,
+    game.player.g.position.distanceTo(walkingStart),
+  );
+}
+assert(travelled > 0.5, "WASD walks independently of a mission");
+assert.equal(
+  JSON.stringify(game.handsOnCity.state),
+  walkingState,
+  "free walking performs no pending work",
+);
+const stoppedPosition = game.player.g.position.clone();
+for (let i = 0; i < 5; i++) game.handsOnCity.tick(0.1, game.camera);
+assert(
+  game.player.g.position.distanceTo(stoppedPosition) < 0.001,
+  "key release stops movement",
+);
+const pad = handsPanel.querySelector('[data-walk="up"]');
+const padEvent = new w.MouseEvent("pointerdown", {
+  bubbles: true,
+  cancelable: true,
+});
+Object.defineProperty(padEvent, "pointerId", { value: 190 });
+pad.dispatchEvent(padEvent);
+assert(game.handsOnCity.moving, "touch walking pad engages movement");
+pad.dispatchEvent(new w.MouseEvent("lostpointercapture", { bubbles: true }));
+w.dispatchEvent(new w.Event("blur"));
+assert(!game.handsOnCity.moving, "blur clears held movement");
+game.player.g.position.copy(walkingStart);
+game.handsOnCity.resetCamera();
+const wheelBefore = game.handsOnCity.cameraState.zoom;
+worldCanvas.dispatchEvent(
+  new w.WheelEvent("wheel", { deltaY: -100, bubbles: true, cancelable: true }),
+);
+assert(
+  game.handsOnCity.cameraState.zoom < wheelBefore,
+  "wheel zoom works in hands-on mode",
+);
+game.handsOnCity.resetCamera();
+const gestureZoom = game.handsOnCity.cameraState.zoom;
+sendPointer("pointerdown", 91, 100, 300);
+sendPointer("pointerdown", 92, 200, 300);
+sendPointer("pointermove", 92, 260, 300);
+assert(
+  game.handsOnCity.cameraState.zoom < gestureZoom,
+  "pinch out moves closer",
+);
+sendPointer("pointerup", 92, 260, 300);
+sendPointer("pointerup", 91, 100, 300);
+assert.equal(
+  game.handsOnCity.state.carrying,
+  null,
+  "pinch does not trigger a work-object tap",
+);
+game.handsOnCity.resetCamera();
+worldCanvas.getBoundingClientRect = () => ({
+  left: 0,
+  top: 0,
+  width: 390,
+  height: 844,
+});
+game.handsOnCity.resetCamera();
+game.scene.updateMatrixWorld(true);
+game.camera.updateMatrixWorld();
+const materialPoint = new T.Vector3().copy(timberGroup.position);
+materialPoint.y = 0.8;
+materialPoint.project(game.camera);
+for (const type of ["pointerdown", "pointerup"]) {
+  const event = new w.MouseEvent(type, {
+    bubbles: true,
+    clientX: (materialPoint.x + 1) * 195,
+    clientY: (1 - materialPoint.y) * 422,
+  });
+  Object.defineProperty(event, "pointerId", { value: 81 });
+  worldCanvas.dispatchEvent(event);
+}
+for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+  game.handsOnCity.tick(0.1, game.camera);
+assert.equal(game.handsOnCity.state.carrying, "timber");
+const doWork = (id) => {
+  game.handsOnCity.request(id);
+  for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+  assert.equal(game.handsOnCity.moving, false, "route completed: " + id);
+  for (let i = 0; i < 35 && game.handsOnCity.cameraState.revealing; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+  console.log(
+    "Episode action",
+    id,
+    handsPanel.querySelector("[data-status]").textContent,
+  );
+};
+doWork("stall-a");
+assert.equal(game.handsOnCity.state.frames[0], true);
+assert.equal(game.handsOnCity.state.carrying, null);
+for (const id of [
+  "timber",
+  "stall-b",
+  "roofing",
+  "stall-a",
+  "roofing",
+  "stall-b",
+  "bell",
+])
+  doWork(id);
+assert.equal(game.handsOnCity.state.opened, false);
+assert.match(
+  handsPanel.querySelector("[data-status]").textContent,
+  /Market test/,
+);
+for (const id of ["cart", "loading", "produce", "shelf"]) doWork(id);
+assert.equal(game.handsOnCity.state.produce, "street");
+handsPanel.querySelector("[data-drop]").click();
+for (const id of ["cart", "parking", "produce", "shelf", "bell"]) doWork(id);
+assert.equal(game.handsOnCity.state.opened, true);
+finishExtras("market");
+assert.equal(game.handsOnCity.chaptersCompleted, 2);
+assert.equal(handsPanel.querySelector("[data-quest]").hidden, false);
+for (const action of ["a", "b", "c", "test"]) episodeWork("food:" + action);
+assert.equal(game.handsOnCity.systems.food.done, true);
+finishExtras("food");
+for (const id of [
+  "test",
+  "supplies",
+  "deliver",
+  "supplies",
+  "deliver",
+  "support",
+  "test",
+])
+  episodeWork("care:" + id);
+assert.equal(game.handsOnCity.episode.care.done, true);
+finishExtras("care");
+for (const id of ["tools", "demonstrate", "test"]) episodeWork("teach:" + id);
+assert.equal(game.handsOnCity.episode.teach.done, false);
+for (const id of ["jig", "test"]) episodeWork("teach:" + id);
+assert.equal(game.handsOnCity.episode.teach.done, true);
+finishExtras("teach");
+assert.match(
+  handsPanel.querySelector("[data-progress]").textContent,
+  /15\/36 challenges/,
+);
+console.log(
+  "PASS: real character investigates water, organises four clinic arrivals and enables independent apprentice success.",
+);
+// Residents spawn clear of the player and keep personal space while moving.
+for (let frame = 0; frame < 180; frame++) {
+  game.handsOnCity.tick(0.1, game.camera);
+  const humans = [game.player, ...game.handsOnCity.residents].filter(
+    (p) => p.g.visible,
+  );
+  for (let i = 0; i < humans.length; i++)
+    for (let j = i + 1; j < humans.length; j++)
+      assert(
+        Math.hypot(
+          humans[i].g.position.x - humans[j].g.position.x,
+          humans[i].g.position.z - humans[j].g.position.z,
+        ) >=
+          (humans[i].g.userData.ignoreNavigation ? 0.2 : 0.39) +
+            (humans[j].g.userData.ignoreNavigation ? 0.2 : 0.39) -
+            0.01,
+        "characters must not enter one another",
+      );
+}
+for (const project of [
+  "homes",
+  "tower",
+  "hospital",
+  "farm",
+  "stadium",
+  "airport",
+]) {
+  handsPanel.querySelector("[data-site]").value = project;
+  handsPanel
+    .querySelector("[data-site]")
+    .dispatchEvent(new w.Event("change", { bubbles: true }));
+  assert.equal(
+    handsPanel.querySelector("[data-site]").value,
+    project,
+    "site selection survives stopping the previous route",
+  );
+  for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+    game.handsOnCity.tick(0.1, game.camera);
+  for (const action of ["kit", "base", "structure", "services", "open"]) {
+    const button = handsPanel.querySelector("[data-next]");
+    assert.equal(button.dataset.action, project + ":" + action);
+    assert.equal(button.hidden, false);
+    assert.equal(button.disabled, false);
+    button.click();
+    for (let i = 0; i < 1800 && game.handsOnCity.moving; i++)
+      game.handsOnCity.tick(0.1, game.camera);
+  }
+  assert.equal(
+    game.handsOnCity.projects[project].open,
+    true,
+    "actual character completes " + project,
+  );
+  assert.equal(handsPanel.querySelector("[data-site]").value, project);
+}
+assert(
+  game.handsOnCity.replicas.length + game.cityDevelopment.current.plots.length >
+    6,
+);
+const replicaRoot = game.scene.children.find((g) =>
+  g.children.some((c) => c.userData.crewReplica),
+);
+assert.equal(
+  replicaRoot.children.filter((g) => g.userData.crewReplica).length,
+  game.handsOnCity.replicas.length,
+);
+console.log(
+  "PASS: all six construction sites are reachable, completed by the original avatar and opened, with residents separated.",
+);
+// Every added chapter must be reachable and solved through the real actor, not model setters.
+const systemSolutions = {
+  invent: [1, 1, 2],
+  culture: [1, 1, 0],
+  enterprise: [1, 1, 1],
+  connect: [1, 1, 1],
+  trust: [1, 1, 1],
+  environment: [1, 1, 1],
+  legacy: [1, 1, 1],
+};
+for (const [chapter, values] of Object.entries(systemSolutions)) {
+  episodeWork(chapter + ":test");
+  assert.equal(
+    game.handsOnCity.systems[chapter].done,
+    false,
+    chapter + " early test fails",
+  );
+  for (const [i, action] of ["a", "b", "c"].entries())
+    for (let j = 0; j < values[i]; j++) episodeWork(chapter + ":" + action);
+  episodeWork(chapter + ":test");
+  assert.equal(
+    game.handsOnCity.systems[chapter].done,
+    true,
+    chapter + " actor-tested outcome",
+  );
+  finishExtras(chapter);
+}
+assert.equal(game.handsOnCity.chaptersCompleted, 12);
+assert.equal(game.handsOnCity.challengesCompleted, 36);
+assert.equal(
+  game.handsOnCity.replicas.length + game.cityDevelopment.current.plots.length,
+  70,
+);
+assert.equal(handsPanel.querySelector("[data-chapter-next]").hidden, false);
+handsPanel.querySelector("[data-chapter-next]").click();
+assert(
+  handsPanel.classList.contains("city-overview"),
+  "final action opens the completed city",
+);
+console.log(
+  "PASS: twelve distinct chapter outcomes completed in the actual city, honest finale, next-chapter recovery and seventy crew-built parcels.",
+);
+episodeWork("food:a");
+assert.equal(
+  game.handsOnCity.systems.legacy.done,
+  false,
+  "changing an earlier outcome invalidates the handover",
+);
+assert(game.handsOnCity.chaptersCompleted < 12);
+episodeWork("food:test");
+episodeWork("legacy:test");
+episodeWork("next-generation:test");
+assert.equal(game.handsOnCity.chaptersCompleted, 12);
+// Motion preferences and manual input retain control after outcome reveals.
+w.matchMedia = () => ({ matches: true });
+episodeWork("runoff:test");
+assert.equal(
+  game.handsOnCity.cameraState.revealing,
+  false,
+  "reduced motion skips cinematic movement",
+);
+w.matchMedia = () => ({ matches: false });
+game.handsOnCity.request("runoff:test");
+for (let i = 0; i < 2200 && game.handsOnCity.moving; i++)
+  game.handsOnCity.tick(0.1, game.camera);
+assert.equal(
+  game.handsOnCity.cameraState.revealing,
+  true,
+  "a completed check starts an outcome reveal",
+);
+handsPanel.querySelector("[data-zoom-in]").click();
+assert.equal(
+  game.handsOnCity.cameraState.revealing,
+  false,
+  "manual zoom cancels the cinematic immediately",
+);
+game.handsOnCity.resetCamera();
+const originalMarketMeshes = game.scene.children.filter(
+  (o) => o.userData.marketTarget,
+);
+assert(
+  originalMarketMeshes.length === 0,
+  "mission work objects live under their own bounded group",
+);
+handsPanel.querySelector("[data-exit]").click();
+assert.equal(handsPanel.hidden, true);
+assert.equal(w.document.querySelector("#intro").hidden, false);
+assert.equal(w.document.activeElement.id, "start");
+assert(game.player.g.position.distanceTo(beforeMarketPosition) < 0.001);
+assert.equal(
+  JSON.stringify({ ...game.state, rewards: null }),
+  campaignBeforeHandsOn,
+);
+assert.equal(
+  game.state.rewards.awards.length,
+  12,
+  "each successful chapter awards once",
+);
+assert.equal(
+  w.document.querySelector("#city-explore-group #menu-shop")?.id,
+  "menu-shop",
+  "shop returns to production menu on exit",
+);
+game.state.rewards = rewardsBeforeHandsOn;
+w.document.querySelector("#start").click();
+assert(!welcome.open, "Continue does not repeat the first-visit welcome");
+game.handsOnCity.close();
+console.log(
+  "PASS: real avatar walking, carried materials, repaired frames/roofs, cart-doorway consequences, protected stock, opened market and campaign-preserving recovery.",
 );
 process.exit(0);
