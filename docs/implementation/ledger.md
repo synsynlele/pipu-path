@@ -2105,3 +2105,11 @@ The final screenshot revealed a legacy `-webkit-text-fill-color: white` on the c
 ### Final header-flow regression check
 
 PR #160 merged as `8ef346261bd9c3e551db9716c4f64dbb4d4a2013`; automatic production deployment `dpl_8qh7rsUJuhiUwATG63CkM6rktKqT` reached READY. The live five-connector puzzle passed again and computed completion text fill is navy (`rgb(23, 51, 78)`). The header still computed as sticky because the old ID selector had higher precedence. The normal-flow rule is now authoritative. A focused browser fixture loaded the production theme plus the final stylesheet and verified `position: static`, navy completion text fill and transparent panel background before release. CSS formatting passed; game/camera runtime is unchanged from the validated #159 source. Final automatic deployment receipt follows.
+
+### Final production receipt
+
+- PR #161: https://github.com/synsynlele/pipu-path/pull/161, merged source `93f78b1b508fbf0c8eb35947e10c7224d53cce50`; tested header-fix head `2385cd627d205487592302980047ec603fbe2133`, tree `82e8480b9d71180e0097d0b611031a111b4ea12b`, matched to the local index.
+- Automatic production deployment `dpl_8Fag3odhaMj5n4eHSdpJ6PEZx3FT`, READY. Exact verified route: https://pipu-path-pn7plmovg-copyartint-2860s-projects.vercel.app/games/city/index.html. Production aliases remain assigned.
+- Final browser opened the game, chose the original repair response and entered Build Lab. Computed styles confirm transparent panel/backdrop and static heading, and the screenshot shows separated readable heading/instructions. The original five-connector puzzle passed in the preceding #160 live verification with navy completion text. The final change adjusts CSS precedence only.
+- Full runtime validation for #159 passed formatting, lint, types, game/camera regressions, 656 coverage tests, 252 integration tests and build. The subsequent CSS-only corrections received focused formatting, browser fixture checks and live visual verification. Physical-device FPS remains unmeasured.
+- Quota: three automatic production builds for #159, #160 and #161; the two follow-ups corrected issues found in final visual QA. No manual duplicate build. This evidence-only feature-branch receipt should not trigger another production release.
