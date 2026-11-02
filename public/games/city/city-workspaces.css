@@ -205,3 +205,22 @@ body.city-integrated :is(#toast, #travel) {
     text-shadow: none;
   }
 }
+/* Solid headers used to mask scrolling text. Transparent ones must not overlap. */
+body.city-integrated
+  :is(.panel, dialog)
+  :is(.lab-heading, .district-menu-heading, .lab-actions, .advanced-actions) {
+  position: static;
+}
+body.city-integrated
+  :is(
+    .panel,
+    dialog,
+    #build-victory,
+    #build-dock,
+    #pilot-mission,
+    #resilience-feedback,
+    #city-view
+  )
+  :is(button, select, input, textarea) {
+  -webkit-text-fill-color: currentColor !important;
+}
