@@ -41,7 +41,7 @@ Twelve primary missions are implemented; twenty-four remain. The linked thirty-s
 
 Developers add a chapter's independent domain rules, physical objects, observable result, recovery feedback, alternative strategies where feasible, reflection and actual-controller test. Do not equate a new label or a repeated button sequence with a new useful outcome. Player testing must establish difficulty and enjoyment before claiming the game is perfected or replacing production.
 
-Preview verification: staging deployment `dpl_C4D3kX7L1vQG6KD5tFRNu3wm5Q6X` reached READY at game source `d2183cffc1207b6d6822afbe65a85421ca1c23da`. Browser checks verified the single Start action, transparent instructions, visible menu, Chapter 1 completion celebration, Chapter 2 unlock with later chapters disabled, and a complete city overview with return to mission. Review URL: https://pipu-path-3kjyekawi-copyartint-2860s-projects.vercel.app/games/city/index.html. Production was not promoted.
+Preview verification: staging deployment `dpl_72jq6jq9mKocCi9GEri5uCCrcKVQ` reached READY at game source `11843bdc111a852a5437d4ba93228eb25eea130b`. Browser checks verified the production title and blue/white/gold controls, original camera/sound/music/help actions alongside hands-on guidance, visible orthographic city inspection and return to mission. A populated production-state regression test verifies retained developed parcels. Preview origins have their own fresh session; they do not automatically import a player's installed production save. Review URL: https://pipu-path-7njnxklbr-copyartint-2860s-projects.vercel.app/games/city/index.html. Production was not promoted.
 
 ## Production challenge reuse
 
