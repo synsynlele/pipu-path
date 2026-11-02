@@ -2105,3 +2105,28 @@ The final screenshot revealed a legacy `-webkit-text-fill-color: white` on the c
 ### Final header-flow regression check
 
 PR #160 merged as `8ef346261bd9c3e551db9716c4f64dbb4d4a2013`; automatic production deployment `dpl_8qh7rsUJuhiUwATG63CkM6rktKqT` reached READY. The live five-connector puzzle passed again and computed completion text fill is navy (`rgb(23, 51, 78)`). The header still computed as sticky because the old ID selector had higher precedence. The normal-flow rule is now authoritative. A focused browser fixture loaded the production theme plus the final stylesheet and verified `position: static`, navy completion text fill and transparent panel background before release. CSS formatting passed; game/camera runtime is unchanged from the validated #159 source. Final automatic deployment receipt follows.
+
+### Final production receipt
+
+- PR #161: https://github.com/synsynlele/pipu-path/pull/161, merged source `93f78b1b508fbf0c8eb35947e10c7224d53cce50`; tested header-fix head `2385cd627d205487592302980047ec603fbe2133`, tree `82e8480b9d71180e0097d0b611031a111b4ea12b`, matched to the local index.
+- Automatic production deployment `dpl_8Fag3odhaMj5n4eHSdpJ6PEZx3FT`, READY. Exact verified route: https://pipu-path-pn7plmovg-copyartint-2860s-projects.vercel.app/games/city/index.html. Production aliases remain assigned.
+- Final browser opened the game, chose the original repair response and entered Build Lab. Computed styles confirm transparent panel/backdrop and static heading, and the screenshot shows separated readable heading/instructions. The original five-connector puzzle passed in the preceding #160 live verification with navy completion text. The final change adjusts CSS precedence only.
+- Full runtime validation for #159 passed formatting, lint, types, game/camera regressions, 656 coverage tests, 252 integration tests and build. The subsequent CSS-only corrections received focused formatting, browser fixture checks and live visual verification. Physical-device FPS remains unmeasured.
+- Quota: three automatic production builds for #159, #160 and #161; the two follow-ups corrected issues found in final visual QA. No manual duplicate build. This evidence-only feature-branch receipt should not trigger another production release.
+
+## 2026-11-02 — Readable dark-phone colours and one celebration surface
+
+### Authorized scope
+
+User reported dark-mode question readability and overlapping celebration/question cards. Retain production gameplay, correct the palette handling and give celebrations exclusive presentation before restoring the current task.
+
+### Implemented
+
+- Early HTML metadata and root CSS declare `only light` for the game's deliberate canvas/overlay palette. This uses the documented automatic-darkening opt-out: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/color-scheme. Forced-colour accessibility overrides remain.
+- Shared reward UI snapshots non-modal task-panel visibility/inert state, hides/disables those tasks while celebration/shop owns the screen, then restores state on close. Existing callbacks continue the actual campaign; no fabricated question completion or duplicate reward.
+- Reward pause clears automatic progression, walking and held movement input. A CSS guard prevents underlying task cards resurfacing under transparent chapter/build celebrations.
+- No reward accounting, save schema, question content or campaign rule changes.
+
+### Verification
+
+The existing actual reward/shop regression now checks all twelve celebrations, hidden/inert questions, exact visible/hidden state restoration, eleven non-final continuation callbacks, preserved campaign decisions and return from a paused shop to the same task. Focused regression and full `npm run validate` passed: formatting, zero-warning lint, types, game regressions, 656 coverage tests, 252 integration tests and production build. Browser QA checked the actual opening question in a 390 × 844 dark-preference iframe: the preference was dark, the game computed `light only`, and questions/choices remained readable. A temporary labelled UI fixture using the real reward module confirmed hidden/inert questions while the celebration owned the screen, then the same question and a single continuation after Continue. No test campaign progress was represented as real play. Physical-phone overrides remain unverified.

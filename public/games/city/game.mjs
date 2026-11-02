@@ -4521,6 +4521,7 @@ const builderRewardsUi = mountBuilderRewards({
       pauseJourney("Your city milestone is ready.");
     cancelAutoAdvance();
     cancelWalk();
+    keys.clear();
   },
   continueBuilding: () => {
     $("detail").hidden = true;
