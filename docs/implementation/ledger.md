@@ -2095,3 +2095,9 @@ User requested preventing excessively close camera views and presenting all puzz
 ### Verification
 
 Camera regression checks full-distance clear poses across headings/elevations and rejects unsafe close transitions. `npm run validate` passed formatting, zero-warning lint, typecheck, camera/game regressions, 656 coverage tests, 252 integration tests and production build. Focused formatting checks passed after the final workspace-label cleanup. Browser QA completed the opening question, placed/rotated the five-connector workshop solution, passed its test and returned to the city reveal. The 390 × 844 viewport check confirmed transparent panel/backdrop/grid surfaces, a visible test button and correct empty-network failure feedback. Modal tasks hide competing HUD/labels. A physical-device FPS claim is not made. The automatic production receipt follows.
+
+### Automatic release and final contrast correction
+
+PR #159 merged as `f643d8a5d1fa77359f4545d2018420e1b9d2968e`; tested source head `a2b4798f000289b7a05c8a1517a874ed88ec7332`, tree `ec4572fc1e5ffee7c52b4e2183be48dff122eb6d`, matched to the local index. One automatic production build `dpl_FeFZyzQKm7cLoopih7WgZhsDnR7K` reached READY. Exact live route https://pipu-path-icl8p8dga-copyartint-2860s-projects.vercel.app/games/city/index.html opened and completed the original five-connector workshop puzzle. Computed styles confirmed transparent panel/backdrop and hidden city labels.
+
+The final screenshot revealed a legacy `-webkit-text-fill-color: white` on the completion button despite its corrected foreground colour, plus a sticky heading overlapping scrolled text once its background became transparent. A focused CSS-only correction resets text fill to currentColor for workspace controls and makes task headers/actions participate in normal layout. Runtime/camera rules are unchanged; final browser verification follows its automatic release.
