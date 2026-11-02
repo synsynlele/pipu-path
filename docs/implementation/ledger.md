@@ -2070,3 +2070,28 @@ CSS-only presentation change from production SHA `9f6ef4e7032fa2d7ec6efae7afb173
 ### Verification
 
 Browser inspection confirms the existing opening repair question renders over the original city, all three original choice buttons remain and the outer background is transparent. `npm run validate` passed formatting, zero-warning lint, typecheck, full game regressions, 656 coverage tests and 252 integration tests, then its build step hit stale generated output (`ENOTEMPTY` removing build chunks). The generated output was preserved outside the checkout; a clean `npm run build` passed. A focused CSS formatting check also passed after the feedback entrance-animation correction. Browser checks at 390 × 844 show all three original answers with 46px touch targets and 14px text; at 844 × 390 the bounded overlay scrolls and the last answer remains selectable. Both existing success-oriented and poor choices triggered their original city consequences. No physical-device performance claim is made. The production receipt follows.
+
+### Production release receipt
+
+- Merged PR #158: https://github.com/synsynlele/pipu-path/pull/158. Deployed merge SHA `5a0ce95b917dc1a3c3fba584235e5ef8dfb9a5e0`; tested head `21217a10c36177e5066693e4298bdcfeda06f786`, source tree `7221769bb7097608f6c398f1c0e084a0e03638eb` matched to the local index. The merged commit contains only the CSS and two documentation changes.
+- Production deployment `dpl_27EEksmhvJJsL2xYU6yquBbFL8yk`, READY, with project production aliases including `www.pipupath.name.ng` and `pipupath.name.ng`. Direct verified route: https://pipu-path-l9ilk8qno-copyartint-2860s-projects.vercel.app/games/city/index.html.
+- Browser started the production game and visually confirmed original city plus transparent bottom question text and three original answer buttons. The custom domain returns Site Unavailable in this browser, so direct deployment verification was used; no claim that the custom domain was browser-verified is made.
+- Quota accounting: merging main also automatically created READY production deployment `dpl_ADFZn9Jg7SoT93JwEU4WHBhNowa3` with the same source. The manual deployment duplicated that build. Two production builds were used. Use automatic deployment after future main merges; do not create a second manual build.
+- This follow-up records delivery evidence on the feature branch only and should not cause another production deployment. Experimental workshop and market changes remain outside main.
+
+## 2026-11-02 — Safe camera framing and transparent city workspaces
+
+### Authorized scope
+
+User requested preventing excessively close camera views and presenting all puzzles and task surfaces directly over the city with readable controls, while retaining the current production game.
+
+### Implemented
+
+- Automatic decision/build reveal distances stay at least 27 units rather than the earlier 15/22-unit framing.
+- Pure camera planner tries clear elevations/headings at the requested distance instead of collision-driven boom shortening. A transition guard rejects obstructed or too-close interpolated poses; player-directed zoom remains.
+- Shared city-workspace presentation clears task panels, nested cards and modal backdrops. Bold outlined text, grid strokes, pressed/focus borders and semantic risk/repair indicators preserve working controls. Native select menus and accessibility preferences retain readable surfaces.
+- No puzzle, question, scoring, chapter, reward, save or experimental-game migration changes.
+
+### Verification
+
+Camera regression checks full-distance clear poses across headings/elevations and rejects unsafe close transitions. `npm run validate` passed formatting, zero-warning lint, typecheck, camera/game regressions, 656 coverage tests, 252 integration tests and production build. Focused formatting checks passed after the final workspace-label cleanup. Browser QA completed the opening question, placed/rotated the five-connector workshop solution, passed its test and returned to the city reveal. The 390 × 844 viewport check confirmed transparent panel/backdrop/grid surfaces, a visible test button and correct empty-network failure feedback. Modal tasks hide competing HUD/labels. A physical-device FPS claim is not made. The automatic production receipt follows.
