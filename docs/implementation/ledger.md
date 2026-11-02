@@ -2130,3 +2130,9 @@ User reported dark-mode question readability and overlapping celebration/questio
 ### Verification
 
 The existing actual reward/shop regression now checks all twelve celebrations, hidden/inert questions, exact visible/hidden state restoration, eleven non-final continuation callbacks, preserved campaign decisions and return from a paused shop to the same task. Focused regression and full `npm run validate` passed: formatting, zero-warning lint, types, game regressions, 656 coverage tests, 252 integration tests and production build. Browser QA checked the actual opening question in a 390 × 844 dark-preference iframe: the preference was dark, the game computed `light only`, and questions/choices remained readable. A temporary labelled UI fixture using the real reward module confirmed hidden/inert questions while the celebration owned the screen, then the same question and a single continuation after Continue. No test campaign progress was represented as real play. Physical-phone overrides remain unverified.
+
+### Production receipt
+
+PR #162 merged as `bd0107fdc42309d4f276b3533e84e223d2b2da83`. Automatic production deployment `dpl_HyEovgWNNrKvjd1EiicpFFgmc64t` reached READY; no manual duplicate build. Live browser verification opened the original question and confirmed early `only light` metadata and computed `light only` palette. Verified route: https://pipu-path-6z5bo1lxm-copyartint-2860s-projects.vercel.app/games/city/index.html. Screenshot: `/workspace/scratch/pipupath-readable-questions-20261102.jpg`. Celebration exclusivity/restoration was checked in the real reward-module regression and the labelled browser UI fixture, not by fabricating live campaign completion.
+
+Tested source head `ed7254b7ce8d0f340524fb1a439adfe4987f0098`, tree `a3c17b5c46547a44df0d15a36af08ccb260c0141`, matched the local index. This evidence-only branch receipt is not another production release.
