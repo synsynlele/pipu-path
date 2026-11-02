@@ -39,6 +39,7 @@ export function planWorksiteCamera({
   heading = 0.8,
   boxes = [],
   working = false,
+  zoom = 1,
 }) {
   const near = Math.hypot(actor.x - site.x, actor.z - site.z) < 16;
   const height = near ? (site.height ?? 4) : 4;
@@ -79,6 +80,7 @@ export function planWorksiteCamera({
           depth + Math.abs(dot(delta, up)) / (tangent * vertical),
         );
       }
+      distance = Math.max(12, distance * Math.max(0.48, Math.min(1.8, zoom)));
       const position = point(target, dir, distance);
       const result = { position, target, distance, pitch, yaw, points };
       if (!fallback || pitch > fallback.pitch) fallback = result;

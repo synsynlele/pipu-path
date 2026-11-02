@@ -529,3 +529,132 @@
   font-size: 13px;
   padding: 10px 12px;
 }
+
+/* Read the city through its labels, with the same treatment as mission text. */
+.market-object-tag {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #173257;
+  font-weight: 750;
+  padding: 4px 7px;
+  width: min(146px, 34vw);
+  min-height: 44px;
+  text-shadow:
+    0 1px 3px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+}
+.market-object-tag::after {
+  content: "";
+  position: absolute;
+  left: calc(50% + var(--target-dx, 0px));
+  top: var(--target-dy, 100%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #173257;
+  box-shadow: 0 0 0 2px #fff9;
+  pointer-events: none;
+}
+.market-object-tag:hover,
+.market-object-tag:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hands-on-zoom {
+  display: flex;
+  gap: 4px;
+}
+#city-hud .hands-on-zoom button {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 22px;
+  padding: 2px 10px;
+}
+.mission-parts {
+  display: grid;
+  gap: 6px;
+}
+.mission-parts button[aria-current="true"] {
+  border: 2px solid #b89c4f;
+}
+.mission-parts ol {
+  padding-left: 22px;
+  font-size: 13px;
+}
+.hands-on-welcome {
+  width: min(460px, calc(100% - 44px));
+  box-sizing: border-box;
+  border: 1px solid #c6d5dd;
+  border-radius: 24px;
+  background: #f8fbfff2;
+  color: #173257;
+  padding: clamp(20px, 4vw, 32px);
+  max-height: 88dvh;
+  overflow: auto;
+  font: 15px/1.55 system-ui;
+  box-shadow: 0 16px 70px #17325725;
+}
+.hands-on-welcome::backdrop {
+  background: #17325728;
+}
+.hands-on-welcome h2 {
+  font-size: clamp(25px, 4vw, 34px);
+  line-height: 1.1;
+  margin: 12px 0;
+}
+.hands-on-welcome .welcome-kicker {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+}
+.hands-on-welcome button {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #c8d9df;
+  border-radius: 14px;
+  font: 700 15px system-ui;
+  color: #173257;
+  background: #fff;
+  cursor: pointer;
+}
+.hands-on-welcome [data-begin] {
+  background: #e9ce73;
+  border-color: #c5b76c;
+}
+@media (max-height: 520px) {
+  .hands-on-welcome {
+    width: min(640px, calc(100% - 32px));
+    padding: 16px 24px;
+  }
+  .hands-on-welcome h2 {
+    font-size: 24px;
+  }
+  .hands-on-welcome p {
+    margin: 8px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .market-object-tag {
+    transition: none;
+  }
+}
+.hands-on-help {
+  display: none;
+}
+body.hands-on-active
+  #help-dialog
+  > :not(.hands-on-help):not(#close-help):not(#help-done) {
+  display: none;
+}
+body.hands-on-active .hands-on-help {
+  display: block;
+}
+body.hands-on-active .hands-on-help li {
+  margin: 12px 0;
+}

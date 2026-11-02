@@ -4773,11 +4773,14 @@ const handsOnCity = mountHandsOnCity({
     yaw: heading,
     site,
     working = false,
+    zoom = 1,
     dt = 0,
   }) => {
     if (view) {
       camera = cityCamera;
       fitCityCamera();
+      cityCamera.zoom = 1 / zoom;
+      cityCamera.updateProjectionMatrix();
       scene.fog.near = 500;
       scene.fog.far = 600;
       camera.position.set(
@@ -4805,6 +4808,7 @@ const handsOnCity = mountHandsOnCity({
         heading,
         boxes: cameraObstacles,
         working,
+        zoom,
       });
       const next = safeCameraBlend(
         camera.position,
@@ -4887,6 +4891,8 @@ const handsOnCity = mountHandsOnCity({
     $("intro").hidden = false;
     $("city-hud").hidden = true;
     playCamera.clearViewOffset();
+    cityCamera.zoom = 1;
+    cityCamera.updateProjectionMatrix();
     scene.fog.near = 115;
     scene.fog.far = 225;
     screenAwake.setPlaying(false);

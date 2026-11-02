@@ -72,3 +72,19 @@ assert.equal(blockedBlend.z, 20, "never ease through a building");
 console.log(
   "PASS: portrait/wide worksite framing, safe cinematic zoom and collision-free transition.",
 );
+
+const zoomScene = {
+  focus: { x: 0, z: 0 },
+  actor: { x: 2, z: 2 },
+  site: { x: 0, z: 0, width: 14, depth: 14, height: 5 },
+  aspect: 0.46,
+};
+const normal = planWorksiteCamera(zoomScene),
+  closer = planWorksiteCamera({ ...zoomScene, zoom: 0.6 });
+assert(
+  closer.distance < normal.distance,
+  "manual zoom can inspect closer than fit-to-site",
+);
+assert(closer.distance >= 12, "manual zoom retains minimum clearance");
+const farther = planWorksiteCamera({ ...zoomScene, zoom: 1.6 });
+assert(farther.distance > normal.distance, "manual zoom can pull back");

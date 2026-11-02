@@ -1,10 +1,20 @@
 import {
+  PRACTICAL_OBJECTS,
+  practicalForChapter,
+  practicalById,
+  newPracticalState,
+  freshPractical,
+  practicalAction,
+  practicalReport,
+  practicalCentre,
+} from "./practical-missions.mjs";
+import { drawPractical, animatePractical } from "./practical-scene.mjs";
+import {
   BUILDER_CHAPTERS,
   CHAPTER_REFLECTIONS,
   SYSTEM_CHAPTERS,
   newChapterSystems,
   chapterComplete,
-  completedChapters,
   chapterReadout,
   systemAction,
   evaluateChapter,
@@ -71,12 +81,53 @@ export function mountHandsOnCity({
     cityView = false,
     unlockedThrough = 1,
     overviewFar = null;
+  let practical = newPracticalState(),
+    activeExtra = null,
+    welcomeSeen = false;
+  let zoom = 1,
+    reveal = null;
+  const reducedMotion = () =>
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  const baseDone = (id) => chapterComplete(id, episode, state, systems);
+  const chapterDone = (id) =>
+    baseDone(id) && practicalForChapter(id).every((m) => practical[m.id].done);
+  const chapterCount = () =>
+    BUILDER_CHAPTERS.filter((c) => chapterDone(c.id)).length;
+  const challengeCount = () =>
+    BUILDER_CHAPTERS.filter((c) => baseDone(c.id)).length +
+    Object.values(practical).filter((s) => s.done).length;
+  const practicalContext = (id = activeExtra) => ({
+    otherChallenges: challengeCount() - (practical[id]?.done ? 1 : 0),
+    prototypes: Object.values(projects).filter((p) => p.open).length,
+  });
+  const currentPractical = () => practicalById(activeExtra);
+  const objectVisible = (spec) =>
+    spec.extra
+      ? spec.extra === activeExtra
+      : !activeExtra &&
+        (spec.system ?? spec.mission ?? spec.project ?? "market") ===
+          activeSite;
+  const revealChange = (id) => {
+    const spec = objects.find((o) => o.id === id);
+    if (!spec || reducedMotion()) {
+      reveal = null;
+      return;
+    }
+    reveal = {
+      x: spec.x,
+      z: spec.z,
+      elapsed: 0,
+      duration: 2.6,
+      yaw: cameraYaw,
+    };
+  };
   const celebrated = new Set();
   const objects = [
     ...MARKET_OBJECTS,
     ...CONSTRUCTION_OBJECTS,
     ...EPISODE_OBJECTS,
     ...CHAPTER_OBJECTS,
+    ...PRACTICAL_OBJECTS,
   ];
   let projects = newConstruction(),
     activeSite = "investigate",
@@ -132,7 +183,7 @@ export function mountHandsOnCity({
   toolbar.className = "hands-on-toolbar";
   toolbar.setAttribute("aria-label", "City controls");
   toolbar.innerHTML =
-    '<button data-menu aria-expanded="false">☰ City menu</button><button data-city-view>View my city</button>';
+    '<button data-menu aria-expanded="false">☰ City menu</button><button data-city-view>View my city</button><div class="hands-on-zoom" role="group" aria-label="City zoom"><button data-zoom-out aria-label="Zoom out">−</button><button data-zoom-in aria-label="Zoom in">+</button></div>';
   const menu = document.createElement("div");
   menu.className = "hands-on-menu";
   menu.hidden = true;
@@ -149,8 +200,42 @@ export function mountHandsOnCity({
   const extras = document.createElement("div");
   extras.className = "menu-extras";
   extras.innerHTML =
-    "<button data-sound>Toggle sound effects</button><button data-music>Toggle music</button><button data-classic>Production city challenges</button><p>Hands-on progress stays in this page session.</p>";
-  menu.append(extras);
+    "<button data-sound>Toggle sound effects</button><button data-music>Toggle music</button><button data-classic hidden>Production city challenges</button><p>Hands-on progress stays in this page session.</p>";
+  const missionParts = document.createElement("div");
+  missionParts.className = "mission-parts";
+  missionParts.setAttribute("aria-label", "Challenges in this chapter");
+  menu.append(missionParts, extras);
+  const welcome = document.createElement("dialog");
+  welcome.className = "hands-on-welcome";
+  welcome.setAttribute("aria-labelledby", "hands-on-welcome-title");
+  welcome.innerHTML =
+    '<span class="welcome-kicker">BUILD A BETTER WORLD</span><h2 id="hands-on-welcome-title">This city needs what you can build.</h2><p>People are waiting for useful ideas. Help them by making things work, testing what changes and improving what fails.</p><p><strong>12 chapters · 36 hands-on challenges</strong><br>Tap a city object to walk there and work. Drag to look around. Pinch or use + and − to see closer.</p><button data-begin>Begin my first challenge →</button><button data-welcome-exit>Return to entrance</button>';
+  document.body.append(welcome);
+  const help = document.createElement("section");
+  help.className = "hands-on-help";
+  help.innerHTML =
+    "<h2>Build a better world</h2><p>12 chapters, three hands-on challenges each. Your next move is written at the bottom of the city.</p><ol><li><strong>Explore the need.</strong> Tap an object or its transparent name. Your character walks to it before doing any work.</li><li><strong>Make something useful.</strong> Carry an item to its matching place, organise people or operate the city objects. You can carry one item at a time.</li><li><strong>Test the result.</strong> A failed test explains what is still missing. Improve the system and test again.</li><li><strong>See what changed.</strong> The camera shows the result. Drag, pinch or use + and − to inspect it yourself. Manual camera input stops the cinematic move.</li><li><strong>Continue.</strong> Finish all three challenges to celebrate a chapter, earn 30 virtual Builder Credits and unlock the next one.</li></ol><p>City menu contains challenge review, worksite controls and six construction prototypes. Build each prototype once; crews repeat the tested design across the city. View my city shows the whole city. The Builder Shop sells virtual decorations and builder cosmetics.</p><p>Work stays in this open page session. Refreshing or closing can reset the hands-on journey. These fictional outcomes do not award real-world XP. A real-world Quest lets you take an idea outside the game.</p>";
+  document
+    .getElementById("help-dialog")
+    ?.insertBefore(help, document.getElementById("help-done"));
+  welcome.querySelector("[data-begin]").onclick = () => {
+    welcomeSeen = true;
+    welcome.close();
+    setCityView(false);
+    walkToSite();
+    updateUI(
+      "People are waiting for water. Tap a labelled object to investigate.",
+    );
+  };
+  welcome.querySelector("[data-welcome-exit]").onclick = () => {
+    welcome.close();
+    close();
+  };
+  welcome.addEventListener("cancel", (e) => {
+    e.preventDefault();
+    welcome.close();
+    close();
+  });
   panel.prepend(toolbar, menu);
   const celebration = document.createElement("section");
   celebration.className = "hands-on-celebration";
@@ -191,6 +276,8 @@ export function mountHandsOnCity({
       overviewFar = null;
     }
     cityView = value;
+    reveal = null;
+    zoom = 1;
     celebration.hidden = true;
     setMenu(false);
     panel.classList.toggle("city-overview", cityView);
@@ -246,14 +333,20 @@ export function mountHandsOnCity({
     else if (!celebration.hidden) celebration.hidden = true;
     else setMenu(false);
   });
+  function changeZoom(factor) {
+    if (!active || welcome.open || document.querySelector("dialog[open]"))
+      return;
+    reveal = null;
+    zoom = Math.max(0.48, Math.min(1.8, zoom * factor));
+    tick(0, getCamera());
+  }
+  toolbar.querySelector("[data-zoom-in]").onclick = () => changeZoom(0.84);
+  toolbar.querySelector("[data-zoom-out]").onclick = () => changeZoom(1 / 0.84);
   function replicas() {
     const occupied = new Set(occupiedParcels());
-    return crewReplicas(
-      projects,
-      episode,
-      undefined,
-      completedChapters(episode, state, systems),
-    ).filter((p) => !occupied.has(p.id));
+    return crewReplicas(projects, episode, undefined, chapterCount()).filter(
+      (p) => !occupied.has(p.id),
+    );
   }
   const tags = document.createElement("div");
   tags.className = "market-tags";
@@ -331,6 +424,19 @@ export function mountHandsOnCity({
   }
   function drawWorld() {
     if (
+      practical["next-generation"].done &&
+      (challengeCount() < 36 ||
+        Object.values(projects).filter((p) => p.open).length < 6)
+    )
+      practical = {
+        ...practical,
+        "next-generation": {
+          ...practical["next-generation"],
+          done: false,
+          result: null,
+        },
+      };
+    if (
       systems.legacy.done &&
       !evaluateChapter("legacy", systems.legacy, {
         episode,
@@ -349,7 +455,7 @@ export function mountHandsOnCity({
     customers.length = 0;
     celebrants.length = 0;
     episodeResidents.length = 0;
-    if (activeSite === "market" || state.opened) {
+    if ((activeSite === "market" && !activeExtra) || state.opened) {
       for (const id of ["stall-a", "stall-b"]) {
         const i = id === "stall-a" ? 0 : 1,
           g = object(id);
@@ -484,26 +590,44 @@ export function mountHandsOnCity({
       projects,
       objectGroups,
       box,
-      systemChapter?.site,
+      activeExtra
+        ? (systemChapter?.site ??
+            (activeSite === "market" ? "homes" : undefined))
+        : systemChapter?.site,
     );
-    drawChapter({
-      root,
-      active: activeSite,
-      systems,
-      objects: objectGroups,
-      box,
-      spawn: spawnPerson,
-      people: episodeResidents,
-    });
-    drawEpisode({
-      root,
-      state: episode,
-      active: activeSite,
-      objects: objectGroups,
-      box,
-      spawn: spawnPerson,
-      people: episodeResidents,
-    });
+    if (!activeExtra)
+      drawChapter({
+        root,
+        active: activeSite,
+        systems,
+        objects: objectGroups,
+        box,
+        spawn: spawnPerson,
+        people: episodeResidents,
+      });
+    if (!activeExtra)
+      drawEpisode({
+        root,
+        state: episode,
+        active: activeSite,
+        objects: objectGroups,
+        box,
+        spawn: spawnPerson,
+        people: episodeResidents,
+      });
+    if (activeExtra)
+      drawPractical({
+        root,
+        mission: currentPractical(),
+        state: practical[activeExtra],
+        object,
+        box,
+        spawn: spawnPerson,
+        people: episodeResidents,
+        context: practicalContext(),
+      });
+    const held = practical[activeExtra]?.carrying;
+    if (held) box(carry, 0.7, 0.45, 0.6, 0xd3b46c, 0, 1, 0.6);
     for (const parcel of replicas()) {
       if (productionReplica) productionReplica(root, parcel);
       else constructionScene.replica(root, parcel);
@@ -552,9 +676,9 @@ export function mountHandsOnCity({
   function productionVisibility() {
     if (!snapshot) return;
     const chapter = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
-    const centre = CITY_PROJECTS.find(
-      (p) => p.id === (chapter?.site ?? activeSite),
-    ) ??
+    const centre = (currentPractical() &&
+      practicalCentre(currentPractical())) ??
+      CITY_PROJECTS.find((p) => p.id === (chapter?.site ?? activeSite)) ??
       BUILDER_MISSIONS.find((m) => m.id === activeSite) ?? { x: 19.5, z: 15 };
     for (const [mesh, visible] of snapshot.assets)
       mesh.visible =
@@ -572,7 +696,7 @@ export function mountHandsOnCity({
     return { point, approach };
   }
   function completedObject(spec) {
-    if (spec.mission || spec.system) return false;
+    if (spec.extra || spec.mission || spec.system) return false;
     if (!spec.project)
       return state.opened && ["timber", "roofing"].includes(spec.id);
     const stage = projects[spec.project].stage;
@@ -590,17 +714,19 @@ export function mountHandsOnCity({
     const mission = BUILDER_MISSIONS.find((m) => m.id === activeSite);
     const system = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
     const chapter = BUILDER_CHAPTERS.find((c) => c.id === activeSite);
-    const done =
-      chapter && chapterComplete(chapter.id, episode, state, systems);
+    const extra = currentPractical();
+    const taskDone =
+      chapter && (extra ? practical[extra.id].done : baseDone(chapter.id));
+    const done = chapter && chapterDone(chapter.id);
     if (done && chapter.number === unlockedThrough)
       unlockedThrough = Math.min(12, unlockedThrough + 1);
     for (const c of BUILDER_CHAPTERS) {
       const option = [...picker.options].find((o) => o.value === c.id);
       option.disabled = c.number > unlockedThrough;
-      option.textContent = `${option.disabled ? "Locked · " : chapterComplete(c.id, episode, state, systems) ? "✓ " : ""}Chapter ${c.number} · ${c.name}`;
+      option.textContent = `${option.disabled ? "Locked · " : chapterDone(c.id) ? "✓ " : ""}Chapter ${c.number} · ${c.name}`;
     }
     const heading = chapter
-      ? `Chapter ${chapter.number}/12 · ${chapter.name}`
+      ? `Chapter ${chapter.number}/12 · Challenge ${extra?.slot ?? 1}/3 · ${extra?.title ?? chapter.name}`
       : mission
         ? mission.name
         : project
@@ -609,14 +735,16 @@ export function mountHandsOnCity({
     panel.querySelector(".hands-on-heading strong").textContent = heading;
     panel.setAttribute("aria-label", heading);
     panel.querySelector("[data-site]").value = activeSite;
-    panel.querySelector("[data-reflection]").hidden = !done;
-    panel.querySelector("[data-reflection]").textContent = done
-      ? "Think back: " + CHAPTER_REFLECTIONS[chapter.id]
+    panel.querySelector("[data-reflection]").hidden = !taskDone;
+    panel.querySelector("[data-reflection]").textContent = taskDone
+      ? extra
+        ? "Take it further: " + extra.reflection
+        : "Think back: " + CHAPTER_REFLECTIONS[chapter.id]
       : "";
     const completed = done || (project && projects[project.id].open);
     const completionKey = chapter?.id ?? project?.id;
     if (!completed) celebrated.delete(completionKey);
-    if (active && completed && !celebrated.has(completionKey)) {
+    if (active && completed && !reveal && !celebrated.has(completionKey)) {
       celebrated.add(completionKey);
       const earned = chapter ? onChapterComplete(chapter.number) : 0;
       celebration.hidden = false;
@@ -631,37 +759,77 @@ export function mountHandsOnCity({
           : `${project.benefit} Crews can now use your tested design across the city.`;
       celebration.querySelector("[data-celebration-next]").hidden = !chapter;
     }
-    panel.querySelector("[data-chapter-next]").hidden = !done;
+    panel.querySelector("[data-chapter-next]").hidden = !taskDone;
     panel.querySelector("[data-chapter-next]").textContent =
-      completedChapters(episode, state, systems) === 12
+      chapterCount() === 12
         ? "All 12 complete · explore your city"
-        : "Continue to next chapter →";
-    panel.querySelector("[data-reset]").textContent = system
-      ? "Restart this chapter"
-      : mission
-        ? "Restart the three episode missions"
-        : "Restart this worksite";
-    panel.querySelector("[data-goal]").textContent = system
-      ? systems[activeSite].done
-        ? "Outcome tested. Continue to the next chapter or improve your design."
-        : system.brief
-      : mission
-        ? episodeHint(episode, activeSite)
-        : project
-          ? constructionHint(projects, activeSite, state.carrying)
-          : marketHint(state);
-    panel.querySelector("[data-progress]").textContent = system
-      ? `${completedChapters(episode, state, systems)}/12 chapter outcomes · ${chapterReadout(activeSite, systems[activeSite]).join(" · ")}`
-      : mission
-        ? `${completedChapters(episode, state, systems)}/12 chapter outcomes · ${episode[activeSite].done ? "Mission complete" : activeSite === "care" ? `Reception ${episode.care.reception} · Support ${episode.care.support} · Stock ${episode.care.stock}/2 · Reached staff ${episode.care.served}/4` : activeSite === "teach" ? `Demonstrations ${episode.teach.demonstrations} · Practice ${episode.teach.tools ? "ready" : "not ready"} · Clamp ${episode.teach.jig ? "fitted" : "not fitted"}` : "Find the cause and test the supply"}`
-        : project
-          ? `${projects[activeSite].stage}/3 build phases · ${projects[activeSite].open ? "Open · finished landscape" : "Test before opening"}`
-          : `${state.roofs.filter(Boolean).length}/2 stalls sheltered · Entrance ${state.cart === "parking" ? "clear" : "blocked"} · Stock ${state.produce === "shelf" ? "safe" : "exposed"}`;
+        : !done
+          ? `Continue to challenge ${(extra?.slot ?? 1) + 1} →`
+          : "Continue to next chapter →";
+    panel.querySelector("[data-reset]").textContent = extra
+      ? "Restart this challenge"
+      : system
+        ? "Restart this chapter"
+        : mission
+          ? "Restart the three episode missions"
+          : "Restart this worksite";
+    panel.querySelector("[data-goal]").textContent = extra
+      ? extra.goal
+      : system
+        ? systems[activeSite].done
+          ? "Outcome tested. Continue to the next chapter or improve your design."
+          : system.brief
+        : mission
+          ? episodeHint(episode, activeSite)
+          : project
+            ? constructionHint(projects, activeSite, state.carrying)
+            : marketHint(state);
+    panel.querySelector("[data-progress]").textContent = extra
+      ? `${challengeCount()}/36 challenges · ${practicalReport(extra, practical[extra.id], practicalContext()).metrics}`
+      : system
+        ? `${challengeCount()}/36 challenges · ${chapterCount()}/12 chapters · ${chapterReadout(activeSite, systems[activeSite]).join(" · ")}`
+        : mission
+          ? `${challengeCount()}/36 challenges · ${chapterCount()}/12 chapters · ${episode[activeSite].done ? "Mission complete" : activeSite === "care" ? `Reception ${episode.care.reception} · Support ${episode.care.support} · Stock ${episode.care.stock}/2 · Reached staff ${episode.care.served}/4` : activeSite === "teach" ? `Demonstrations ${episode.teach.demonstrations} · Practice ${episode.teach.tools ? "ready" : "not ready"} · Clamp ${episode.teach.jig ? "fitted" : "not fitted"}` : "Find the cause and test the supply"}`
+          : project
+            ? `${projects[activeSite].stage}/3 build phases · ${projects[activeSite].open ? "Open · finished landscape" : "Test before opening"}`
+            : `${state.roofs.filter(Boolean).length}/2 stalls sheltered · Entrance ${state.cart === "parking" ? "clear" : "blocked"} · Stock ${state.produce === "shelf" ? "safe" : "exposed"}`;
+    missionParts.replaceChildren();
+    if (chapter) {
+      const labels = [
+        { id: null, name: "1 · " + chapter.name },
+        ...practicalForChapter(chapter.id).map((m) => ({
+          id: m.id,
+          name: `${m.slot} · ${m.title}`,
+        })),
+      ];
+      labels.forEach((item, i) => {
+        const button = document.createElement("button");
+        button.textContent = item.name;
+        button.disabled =
+          i > 0 &&
+          (!baseDone(chapter.id) || (i === 2 && !practical[labels[1].id].done));
+        button.setAttribute("aria-current", String(item.id === activeExtra));
+        button.onclick = () => selectTask(chapter.id, item.id);
+        missionParts.append(button);
+      });
+      if (extra) {
+        const steps = document.createElement("ol");
+        for (const text of extra.steps) {
+          const li = document.createElement("li");
+          li.textContent = text;
+          steps.append(li);
+        }
+        missionParts.append(steps);
+      }
+    }
     if (message !== undefined) {
       panel.querySelector("[data-status]").textContent = message;
     }
-    panel.querySelector("[data-carry]").textContent =
-      state.carrying === "cart"
+    panel.querySelector("[data-carry]").textContent = extra
+      ? practical[extra.id].carrying
+        ? `Carrying: ${practical[extra.id].carrying}`
+        : "Hands free"
+      : state.carrying === "cart"
         ? "Pushing the cart"
         : state.carrying
           ? `Carrying: ${state.carrying.startsWith("kit:") ? CITY_PROJECTS.find((p) => p.id === state.carrying.slice(4))?.kit : state.carrying === "roofing" ? "roof sheets" : state.carrying}`
@@ -669,28 +837,32 @@ export function mountHandsOnCity({
     panel.querySelector("[data-drop]").hidden =
       !state.carrying || state.carrying === "cart";
     panel.querySelector("[data-stop]").hidden = !waypoints.length;
-    const nextWork = system
-      ? activeSite + ":test"
-      : mission
+    const nextWork = extra
+      ? `${extra.id}:test`
+      : system
         ? activeSite + ":test"
-        : project
-          ? project.id +
-            ":" +
-            (projects[project.id].stage === 0
-              ? state.carrying === "kit:" + project.id
-                ? "base"
-                : "kit"
-              : ["base", "structure", "services", "open"][
-                  projects[project.id].stage
-                ])
-          : null;
+        : mission
+          ? activeSite + ":test"
+          : project
+            ? project.id +
+              ":" +
+              (projects[project.id].stage === 0
+                ? state.carrying === "kit:" + project.id
+                  ? "base"
+                  : "kit"
+                : ["base", "structure", "services", "open"][
+                    projects[project.id].stage
+                  ])
+            : null;
     const nextButton = panel.querySelector("[data-next]");
-    nextButton.hidden = system
-      ? systems[activeSite].done
-      : mission
-        ? episode[activeSite].done ||
-          (activeSite === "teach" && episode.teach.running)
-        : !project || projects[project.id].open;
+    nextButton.hidden = extra
+      ? practical[extra.id].done
+      : system
+        ? systems[activeSite].done
+        : mission
+          ? episode[activeSite].done ||
+            (activeSite === "teach" && episode.teach.running)
+          : !project || projects[project.id].open;
     if (nextWork) {
       nextButton.textContent = objects.find((o) => o.id === nextWork).name;
       nextButton.dataset.action = nextWork;
@@ -698,13 +870,15 @@ export function mountHandsOnCity({
     nextButton.disabled = !!work || waypoints.length > 0;
     panel.querySelector("[data-crew]").textContent =
       `${replicas().length} crew-built parcels · Complete a prototype once to unlock a planned batch. Chapter outcomes grow the crew's reach to 70 planned parcels.`;
-    panel.querySelector("[data-quest]").hidden = system
-      ? !systems[activeSite].done
-      : mission
-        ? !episode[activeSite].done
-        : project
-          ? !projects[activeSite].open
-          : !state.opened;
+    panel.querySelector("[data-quest]").hidden = extra
+      ? !practical[extra.id].done
+      : system
+        ? !systems[activeSite].done
+        : mission
+          ? !episode[activeSite].done
+          : project
+            ? !projects[activeSite].open
+            : !state.opened;
     for (const [id, { tag, accessible }] of targets) {
       const spec = objects.find((o) => o.id === id);
       const i = id === "stall-a" ? 0 : 1;
@@ -726,9 +900,7 @@ export function mountHandsOnCity({
           spec.kind === "open" && projects[spec.project].open
             ? "Site open"
             : spec.name;
-      accessible.hidden =
-        (spec.system ?? spec.mission ?? spec.project ?? "market") !==
-          activeSite || completedObject(spec);
+      accessible.hidden = !objectVisible(spec) || completedObject(spec);
       if (id === "investigate:valve" && episode.investigate.valveKnown)
         label = episode.investigate.valveOpen
           ? "Close the supply valve"
@@ -749,6 +921,23 @@ export function mountHandsOnCity({
   }
   function apply(id) {
     const spec = objects.find((o) => o.id === id);
+    if (spec) revealChange(id);
+    if (spec?.extra) {
+      const next = practicalAction(
+        practical,
+        spec.extra,
+        spec.action,
+        practicalContext(spec.extra),
+      );
+      practical = next.state;
+      if (next.changed) {
+        drawWorld();
+        revealChange(id);
+        cue(practical[spec.extra].done ? "built" : "tap");
+      }
+      updateUI(next.message);
+      return;
+    }
     if (spec?.system) {
       const next = systemAction(systems, spec.system, spec.action, {
         episode,
@@ -759,6 +948,7 @@ export function mountHandsOnCity({
       systems = next.state;
       if (next.changed) {
         drawWorld();
+        revealChange(id);
         cue(systems[spec.system].done ? "built" : "tap");
       }
       updateUI(next.message);
@@ -770,6 +960,7 @@ export function mountHandsOnCity({
       state = { ...state, carrying: next.carrying };
       if (next.changed) {
         drawWorld();
+        revealChange(id);
         cue(next.completed ? "built" : "tap");
       }
       updateUI(next.message);
@@ -781,6 +972,7 @@ export function mountHandsOnCity({
       state = { ...state, carrying: next.carrying };
       if (next.changed) {
         drawWorld();
+        revealChange(id);
         cue(next.opened ? "built" : "tap");
       }
       updateUI(next.message);
@@ -790,6 +982,7 @@ export function mountHandsOnCity({
     state = next.state;
     if (next.changed) {
       drawWorld();
+      revealChange(id);
       cue(next.report?.success ? "built" : "tap");
     }
     updateUI(next.message);
@@ -797,6 +990,7 @@ export function mountHandsOnCity({
   function request(id) {
     if (!active) return;
     celebration.hidden = true;
+    reveal = null;
     setMenu(false);
     if (cityView) setCityView(false);
     const selected = objects.find((o) => o.id === id);
@@ -804,7 +998,8 @@ export function mountHandsOnCity({
     const requestedChapter = BUILDER_CHAPTERS.find(
       (c) =>
         c.id ===
-        (selected.system ??
+        (selected.chapter ??
+          selected.system ??
           selected.mission ??
           (!selected.project ? "market" : null)),
     );
@@ -812,14 +1007,33 @@ export function mountHandsOnCity({
       updateUI(`Finish Chapter ${unlockedThrough} to unlock the next chapter.`);
       return;
     }
+    if (selected.extra) {
+      const m = practicalById(selected.extra),
+        previous = practicalForChapter(m.chapter)[0];
+      if (
+        !baseDone(m.chapter) ||
+        (m.slot === 3 && !practical[previous.id].done)
+      ) {
+        updateUI(
+          "Test the previous challenge in this chapter before starting this one.",
+        );
+        return;
+      }
+    }
     if (selected.mission && !missionUnlocked(episode, selected.mission)) {
       updateUI("Complete the previous episode mission first.");
       return;
     }
     const nextSite =
-      selected.system ?? selected.mission ?? selected.project ?? "market";
-    if (nextSite !== activeSite) {
+      selected.chapter ??
+      selected.system ??
+      selected.mission ??
+      selected.project ??
+      "market";
+    if (nextSite !== activeSite || (selected.extra ?? null) !== activeExtra) {
       activeSite = nextSite;
+      activeExtra = selected.extra ?? null;
+      zoom = 1;
       drawWorld();
     }
     if (navigationDirty) {
@@ -924,21 +1138,35 @@ export function mountHandsOnCity({
       return;
     }
     activeSite = nextSite;
+    activeExtra = null;
     drawWorld();
     if (navigationDirty) {
       refreshNavigation();
       navigationDirty = false;
     }
-    const system = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
-    const mission = BUILDER_MISSIONS.find((m) => m.id === activeSite);
-    const project = CITY_PROJECTS.find((p) => p.id === activeSite);
-    const point = system
-      ? CHAPTER_OBJECTS.find((o) => o.system === activeSite).approach
-      : mission
-        ? EPISODE_OBJECTS.find((o) => o.mission === activeSite).approach
-        : project
-          ? { x: project.x - 4.8, z: project.z + 5.9 }
-          : { x: 16.5, z: 18 };
+    activeExtra = null;
+    zoom = 1;
+    reveal = null;
+    drawWorld();
+    walkToSite();
+    updateUI(
+      "Walking to your chosen worksite. Tap a labelled object to begin.",
+    );
+  };
+  function walkToSite() {
+    const extra = currentPractical();
+    const point = extra
+      ? PRACTICAL_OBJECTS.find((o) => o.extra === extra.id).approach
+      : (CHAPTER_OBJECTS.find((o) => o.system === activeSite)?.approach ??
+        EPISODE_OBJECTS.find((o) => o.mission === activeSite)?.approach ??
+        (() => {
+          const p = CITY_PROJECTS.find((p) => p.id === activeSite);
+          return p ? { x: p.x - 4.8, z: p.z + 5.9 } : { x: 16.5, z: 18 };
+        })());
+    if (navigationDirty) {
+      refreshNavigation();
+      navigationDirty = false;
+    }
     const plan = planRoute(
       point,
       [...customers, ...celebrants, ...episodeResidents].map(
@@ -946,25 +1174,35 @@ export function mountHandsOnCity({
       ),
     );
     if (plan) waypoints = [...plan.points];
+  }
+  function selectTask(chapter, id) {
+    stop();
+    if (cityView) setCityView(false);
+    celebration.hidden = true;
+    setMenu(false);
+    activeSite = chapter;
+    activeExtra = id;
+    zoom = 1;
+    reveal = null;
+    drawWorld();
+    walkToSite();
     updateUI(
-      plan
-        ? "Walking to your chosen worksite. Tap a labelled object to begin."
-        : "That route is blocked. Choose another approach.",
+      currentPractical()?.brief ?? "Return to the chapter’s first challenge.",
     );
-  };
+  }
   panel.querySelector("[data-chapter-next]").onclick = () => {
-    const next =
-      completedChapters(episode, state, systems) === 12
-        ? null
-        : BUILDER_CHAPTERS[unlockedThrough - 1];
-    if (!next) {
-      updateUI(
-        "All 12 chapter outcomes are tested. Your city is ready to explore; take a real-world Quest when ready.",
+    const chapter = BUILDER_CHAPTERS.find((c) => c.id === activeSite);
+    if (chapter && !chapterDone(chapter.id)) {
+      const next = practicalForChapter(chapter.id).find(
+        (m) => !practical[m.id].done,
       );
+      if (baseDone(chapter.id) && next) selectTask(chapter.id, next.id);
       return;
     }
-    picker.value = next.id;
-    picker.dispatchEvent(new document.defaultView.Event("change"));
+    const next =
+      chapterCount() === 12 ? null : BUILDER_CHAPTERS[unlockedThrough - 1];
+    if (next) selectTask(next.id, null);
+    else setCityView(true);
   };
   panel.querySelector("[data-stop]").onclick = () => {
     stop();
@@ -976,7 +1214,12 @@ export function mountHandsOnCity({
   };
   panel.querySelector("[data-reset]").onclick = () => {
     stop();
-    if (systems[activeSite]) {
+    if (activeExtra) {
+      practical = {
+        ...practical,
+        [activeExtra]: freshPractical(currentPractical()),
+      };
+    } else if (systems[activeSite]) {
       systems = { ...systems, [activeSite]: newChapterSystems()[activeSite] };
     } else if (BUILDER_MISSIONS.some((m) => m.id === activeSite)) {
       episode = newEpisode();
@@ -1003,6 +1246,9 @@ export function mountHandsOnCity({
   };
   function close() {
     stop();
+    reveal = null;
+    zoom = 1;
+    if (welcome.open) welcome.close();
     if (frameCamera)
       frameCamera({
         view: false,
@@ -1058,13 +1304,21 @@ export function mountHandsOnCity({
     pointer = new T.Vector2();
   let down = null,
     multiple = false;
-  const pointers = new Set();
+  const pointers = new Map();
+  let pinchSpan = null;
   canvas.addEventListener(
     "pointerdown",
     (e) => {
       if (!active) return;
-      pointers.add(e.pointerId);
-      if (pointers.size > 1) multiple = true;
+      if (document.querySelector("dialog[open]")) return;
+      reveal = null;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      canvas.setPointerCapture?.(e.pointerId);
+      if (pointers.size > 1) {
+        multiple = true;
+        const [a, b] = [...pointers.values()];
+        pinchSpan = Math.hypot(a.x - b.x, a.y - b.y);
+      }
       down = { id: e.pointerId, x: e.clientX, y: e.clientY, lastX: e.clientX };
     },
     true,
@@ -1072,7 +1326,21 @@ export function mountHandsOnCity({
   canvas.addEventListener(
     "pointermove",
     (e) => {
-      if (!active || !down || pointers.size !== 1) return;
+      if (
+        !active ||
+        !pointers.has(e.pointerId) ||
+        document.querySelector("dialog[open]")
+      )
+        return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size === 2) {
+        const [a, b] = [...pointers.values()];
+        const span = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinchSpan && span > 0) changeZoom(pinchSpan / span);
+        pinchSpan = span;
+        return;
+      }
+      if (!down || pointers.size !== 1 || multiple) return;
       if (Math.abs(e.clientX - down.x) > 7)
         cameraYaw += (e.clientX - down.lastX) * 0.006;
       down.lastX = e.clientX;
@@ -1084,6 +1352,7 @@ export function mountHandsOnCity({
     () => {
       down = null;
       pointers.clear();
+      pinchSpan = null;
       multiple = false;
     },
     true,
@@ -1093,6 +1362,7 @@ export function mountHandsOnCity({
     (e) => {
       if (!active) return;
       pointers.delete(e.pointerId);
+      pinchSpan = null;
       if (multiple) {
         if (!pointers.size) multiple = false;
         down = null;
@@ -1150,14 +1420,49 @@ export function mountHandsOnCity({
     },
     true,
   );
+  canvas.addEventListener(
+    "wheel",
+    (e) => {
+      if (!active) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      changeZoom(Math.exp(e.deltaY * 0.001));
+    },
+    { capture: true, passive: false },
+  );
+  canvas.addEventListener(
+    "lostpointercapture",
+    (e) => {
+      pointers.delete(e.pointerId);
+      pinchSpan = null;
+      if (!pointers.size) {
+        down = null;
+        multiple = false;
+      }
+    },
+    true,
+  );
   document.addEventListener(
     "keydown",
     (e) => {
-      if (!active) return;
+      if (!active || document.querySelector("dialog[open]")) return;
+      if (
+        ["+", "=", "-", "_"].includes(e.key) &&
+        !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)
+      ) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        changeZoom(["+", "="].includes(e.key) ? 0.84 : 1 / 0.84);
+        return;
+      }
       if (e.key === "Escape") {
         e.preventDefault();
         e.stopImmediatePropagation();
-        close();
+        if (cityView) setCityView(false);
+        else if (reveal) reveal = null;
+        else if (!celebration.hidden) celebration.hidden = true;
+        else if (!menu.hidden) setMenu(false);
+        else close();
       }
     },
     true,
@@ -1167,6 +1472,7 @@ export function mountHandsOnCity({
       stop();
       down = null;
       pointers.clear();
+      pinchSpan = null;
       multiple = false;
       updateUI("Paused. Tap an object to continue.");
     }
@@ -1185,6 +1491,19 @@ export function mountHandsOnCity({
     }
     if (document.hidden) return;
     elapsed += dt;
+    if (reveal) {
+      reveal.elapsed += dt;
+      if (reveal.elapsed >= reveal.duration) {
+        reveal = null;
+        updateUI();
+      }
+    }
+    animatePractical(
+      root,
+      elapsed,
+      reveal ? reveal.elapsed / reveal.duration : 1,
+      reducedMotion(),
+    );
     walking = false;
     if (waypoints.length) {
       const p = waypoints[0],
@@ -1258,6 +1577,7 @@ export function mountHandsOnCity({
     episode = independent.state;
     if (independent.finished) {
       drawWorld();
+      revealChange("teach:test");
       updateUI(independent.message);
       cue(episode.teach.done ? "built" : "tap");
     }
@@ -1324,8 +1644,10 @@ export function mountHandsOnCity({
       );
     const selectedProject = CITY_PROJECTS.find((p) => p.id === activeSite);
     const selectedSystem = SYSTEM_CHAPTERS.find((c) => c.id === activeSite);
-    const centre = (selectedSystem &&
-      CITY_PROJECTS.find((p) => p.id === selectedSystem.site)) ??
+    const centre = (currentPractical() &&
+      practicalCentre(currentPractical())) ??
+      (selectedSystem &&
+        CITY_PROJECTS.find((p) => p.id === selectedSystem.site)) ??
       selectedProject ??
       BUILDER_MISSIONS.find((m) => m.id === activeSite) ?? { x: 19.5, z: 15 };
     const nearSite =
@@ -1348,8 +1670,23 @@ export function mountHandsOnCity({
       camera =
         frameCamera({
           view: cityView,
-          focus: focus.clone(),
-          yaw: cameraYaw,
+          focus: reveal
+            ? new T.Vector3(
+                reveal.x * 0.5 + centre.x * 0.5,
+                0,
+                reveal.z * 0.5 + centre.z * 0.5,
+              )
+            : focus.clone(),
+          yaw: reveal
+            ? reveal.yaw +
+              Math.sin((reveal.elapsed / reveal.duration) * Math.PI) * 0.18
+            : cameraYaw,
+          zoom: reveal
+            ? zoom *
+              (1 -
+                0.22 * Math.sin((reveal.elapsed / reveal.duration) * Math.PI))
+            : zoom,
+          revealing: !!reveal,
           site: {
             x: centre.x,
             z: centre.z,
@@ -1383,6 +1720,7 @@ export function mountHandsOnCity({
       );
     }
     camera.updateMatrixWorld();
+    const placedLabels = [];
     for (const spec of objects) {
       const { tag } = targets.get(spec.id),
         g = objectGroups.get(spec.id);
@@ -1403,8 +1741,8 @@ export function mountHandsOnCity({
       tag.hidden =
         cityView ||
         !celebration.hidden ||
-        (spec.system ?? spec.mission ?? spec.project ?? "market") !==
-          activeSite ||
+        !!reveal ||
+        !objectVisible(spec) ||
         completedObject(spec) ||
         !near ||
         v.z > 1 ||
@@ -1413,8 +1751,47 @@ export function mountHandsOnCity({
         v.y < -0.45 ||
         v.y > 0.9 ||
         (spec.id === "produce" && state.carrying === "produce");
-      tag.style.left = `${(v.x * 0.5 + 0.5) * innerWidth}px`;
-      tag.style.top = `${(-v.y * 0.5 + 0.5) * innerHeight}px`;
+      if (tag.hidden) continue;
+      const anchorX = (v.x * 0.5 + 0.5) * innerWidth,
+        anchorY = (-v.y * 0.5 + 0.5) * innerHeight;
+      const width = Math.min(146, innerWidth * 0.34),
+        height = 48;
+      let label = null;
+      for (const [dx, dy] of [
+        [0, -8],
+        [-width * 0.65, -36],
+        [width * 0.65, -36],
+        [0, -68],
+        [-width * 0.75, 24],
+        [width * 0.75, 24],
+        [0, 56],
+        [-width, -100],
+        [width, -100],
+      ]) {
+        const x = Math.max(
+          width / 2 + 10,
+          Math.min(innerWidth - width / 2 - 10, anchorX + dx),
+        );
+        const y = Math.max(180, Math.min(innerHeight * 0.59, anchorY + dy));
+        if (
+          placedLabels.every(
+            (p) =>
+              Math.abs(p.x - x) > width + 4 || Math.abs(p.y - y) > height + 4,
+          )
+        ) {
+          label = { x, y };
+          break;
+        }
+      }
+      if (!label) {
+        tag.hidden = true;
+        continue;
+      } // All objects remain in menu controls and on the scene itself.
+      placedLabels.push(label);
+      tag.style.left = `${label.x}px`;
+      tag.style.top = `${label.y}px`;
+      tag.style.setProperty("--target-dx", `${anchorX - label.x}px`);
+      tag.style.setProperty("--target-dy", `${anchorY - label.y + height}px`);
     }
     panel.querySelector("[data-stop]").hidden = !waypoints.length;
     panel.querySelector("[data-next]").disabled =
@@ -1429,6 +1806,8 @@ export function mountHandsOnCity({
     },
     resetCamera() {
       cameraYaw = 0.8;
+      zoom = 1;
+      reveal = null;
       focus.copy(actor.g.position);
       tick(0, getCamera());
     },
@@ -1442,7 +1821,19 @@ export function mountHandsOnCity({
       return systems;
     },
     get chaptersCompleted() {
-      return completedChapters(episode, state, systems);
+      return chapterCount();
+    },
+    get challengesCompleted() {
+      return challengeCount();
+    },
+    get practical() {
+      return practical;
+    },
+    get currentChallenge() {
+      return activeExtra;
+    },
+    get cameraState() {
+      return { zoom, revealing: !!reveal, cityView };
     },
     get episode() {
       return episode;
@@ -1495,16 +1886,14 @@ export function mountHandsOnCity({
         BUILDER_MISSIONS.find((m) => m.id === activeSite)?.brief ??
           "Choose a meaningful task or a construction worksite.",
       );
-      const plan = planRoute(
-        CHAPTER_OBJECTS.find((o) => o.system === activeSite)?.approach ??
-          EPISODE_OBJECTS.find((o) => o.mission === activeSite)?.approach ?? {
-            x: 16.5,
-            z: 18,
-          },
-      );
-      if (plan) waypoints = [...plan.points];
-      tick(0, getCamera());
-      toolbar.querySelector("[data-menu]").focus();
+      if (!welcomeSeen) {
+        setCityView(true);
+        welcome.showModal();
+      } else {
+        walkToSite();
+        tick(0, getCamera());
+        toolbar.querySelector("[data-menu]").focus();
+      }
     },
     tick,
     close,
