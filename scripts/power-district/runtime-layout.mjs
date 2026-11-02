@@ -1642,6 +1642,92 @@ const sendPointer = (type, id, x, y) => {
   Object.defineProperty(e, "pointerId", { value: id });
   worldCanvas.dispatchEvent(e);
 };
+const orbitBefore = game.handsOnCity.cameraState;
+sendPointer("pointerdown", 88, 150, 300);
+sendPointer("pointermove", 88, 250, 380);
+sendPointer("pointerup", 88, 250, 380);
+assert.notEqual(
+  game.handsOnCity.cameraState.yaw,
+  orbitBefore.yaw,
+  "horizontal drag turns worksite camera",
+);
+assert.notEqual(
+  game.handsOnCity.cameraState.pitch,
+  orbitBefore.pitch,
+  "vertical drag tilts worksite camera",
+);
+handsPanel.querySelector("[data-city-view]").click();
+const cityPose = game.camera.position.clone(),
+  cityOrbit = game.handsOnCity.cameraState;
+sendPointer("pointerdown", 89, 150, 300);
+sendPointer("pointermove", 89, 350, 360);
+sendPointer("pointerup", 89, 350, 360);
+game.handsOnCity.tick(0.1, game.camera);
+assert.notEqual(
+  game.handsOnCity.cameraState.yaw,
+  cityOrbit.yaw,
+  "overview is no longer fixed",
+);
+assert(
+  game.camera.position.distanceTo(cityPose) > 5,
+  "overview camera actually orbits",
+);
+sendPointer("pointerdown", 91, 100, 300);
+sendPointer("pointerdown", 92, 200, 300);
+sendPointer("pointermove", 91, 120, 320);
+sendPointer("pointermove", 92, 220, 320);
+assert(
+  Math.hypot(
+    game.handsOnCity.cameraState.pan.x,
+    game.handsOnCity.cameraState.pan.z,
+  ) > 0,
+  "two-finger overview pan works",
+);
+sendPointer("pointerup", 91, 120, 320);
+sendPointer("pointerup", 92, 220, 320);
+handsPanel.querySelector("[data-city-view]").click();
+game.handsOnCity.resetCamera();
+const walkingStart = game.player.g.position.clone(),
+  walkingState = JSON.stringify(game.handsOnCity.state);
+let travelled = 0;
+for (const key of ["w", "a", "s", "d"]) {
+  w.document.dispatchEvent(
+    new w.KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }),
+  );
+  for (let i = 0; i < 8; i++) game.handsOnCity.tick(0.1, game.camera);
+  w.document.dispatchEvent(
+    new w.KeyboardEvent("keyup", { key, bubbles: true }),
+  );
+  travelled = Math.max(
+    travelled,
+    game.player.g.position.distanceTo(walkingStart),
+  );
+}
+assert(travelled > 0.5, "WASD walks independently of a mission");
+assert.equal(
+  JSON.stringify(game.handsOnCity.state),
+  walkingState,
+  "free walking performs no pending work",
+);
+const stoppedPosition = game.player.g.position.clone();
+for (let i = 0; i < 5; i++) game.handsOnCity.tick(0.1, game.camera);
+assert(
+  game.player.g.position.distanceTo(stoppedPosition) < 0.001,
+  "key release stops movement",
+);
+const pad = handsPanel.querySelector('[data-walk="up"]');
+const padEvent = new w.MouseEvent("pointerdown", {
+  bubbles: true,
+  cancelable: true,
+});
+Object.defineProperty(padEvent, "pointerId", { value: 190 });
+pad.dispatchEvent(padEvent);
+assert(game.handsOnCity.moving, "touch walking pad engages movement");
+pad.dispatchEvent(new w.MouseEvent("lostpointercapture", { bubbles: true }));
+w.dispatchEvent(new w.Event("blur"));
+assert(!game.handsOnCity.moving, "blur clears held movement");
+game.player.g.position.copy(walkingStart);
+game.handsOnCity.resetCamera();
 const wheelBefore = game.handsOnCity.cameraState.zoom;
 worldCanvas.dispatchEvent(
   new w.WheelEvent("wheel", { deltaY: -100, bubbles: true, cancelable: true }),

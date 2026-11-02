@@ -37,6 +37,7 @@ export function planWorksiteCamera({
   aspect = 1,
   fov = 39,
   heading = 0.8,
+  pitch: preferredPitch = 0.76,
   boxes = [],
   working = false,
   zoom = 1,
@@ -58,7 +59,14 @@ export function planWorksiteCamera({
     horizontal = working ? 0.84 : 0.74,
     vertical = working ? 0.43 : 0.38;
   let fallback = null;
-  for (const pitch of [0.76, 1.02, 1.25, 1.43])
+  for (const pitch of [
+    ...new Set([
+      Math.max(0.32, Math.min(1.36, preferredPitch)),
+      1.02,
+      1.25,
+      1.43,
+    ]),
+  ])
     for (const offset of [0, 0.4, -0.4, 0.8, -0.8, 1.4, -1.4, Math.PI]) {
       const yaw = heading + offset,
         dir = direction(yaw, pitch),

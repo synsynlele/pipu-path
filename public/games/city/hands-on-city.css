@@ -658,3 +658,57 @@ body.hands-on-active .hands-on-help {
 body.hands-on-active .hands-on-help li {
   margin: 12px 0;
 }
+.hands-on-walk-pad {
+  position: fixed;
+  right: 12px;
+  bottom: max(44dvh, 170px);
+  display: grid;
+  grid-template-columns: 44px 44px 44px;
+  grid-template-rows: 44px 44px 44px;
+  gap: 2px;
+  pointer-events: auto;
+  touch-action: none;
+}
+.hands-on-walk-pad span {
+  grid-row: 2;
+  grid-column: 2;
+  align-self: center;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: #173257;
+  text-shadow: 0 1px 2px white;
+}
+#city-hud .hands-on-walk-pad button {
+  padding: 0;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 22px;
+  background: #f9fbff99;
+  touch-action: none;
+  user-select: none;
+}
+.hands-on-walk-pad [data-walk="up"] {
+  grid-column: 2;
+  grid-row: 1;
+}
+.hands-on-walk-pad [data-walk="left"] {
+  grid-column: 1;
+  grid-row: 2;
+}
+.hands-on-walk-pad [data-walk="right"] {
+  grid-column: 3;
+  grid-row: 2;
+}
+.hands-on-walk-pad [data-walk="down"] {
+  grid-column: 2;
+  grid-row: 3;
+}
+.hands-on-panel.city-overview > .hands-on-walk-pad {
+  display: none;
+}
+@media (max-height: 520px) {
+  .hands-on-walk-pad {
+    bottom: 12px;
+  }
+}

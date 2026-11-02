@@ -88,3 +88,37 @@ assert(
 assert(closer.distance >= 12, "manual zoom retains minimum clearance");
 const farther = planWorksiteCamera({ ...zoomScene, zoom: 1.6 });
 assert(farther.distance > normal.distance, "manual zoom can pull back");
+
+const { orbitDelta, walkingVector, overviewPan } =
+  await import("../../public/games/city/free-city-controls.mjs");
+const rotated = orbitDelta({ yaw: 0.8, pitch: 0.76 }, 1100, 100);
+assert(Math.abs(rotated.yaw - 0.8) > Math.PI * 2, "unrestricted full orbit");
+assert(rotated.pitch > 0.76, "vertical drag changes elevation");
+assert.equal(orbitDelta(rotated, 0, 10000).pitch, 1.36);
+assert.equal(orbitDelta(rotated, 0, -10000).pitch, 0.32);
+for (const yaw of [0, Math.PI / 2, Math.PI, Math.PI * 1.5]) {
+  const forward = walkingVector(0, -1, yaw),
+    right = walkingVector(1, 0, yaw),
+    diagonal = walkingVector(1, -1, yaw);
+  assert(
+    Math.abs(forward.x * right.x + forward.z * right.z) < 1e-8,
+    "movement axes stay camera relative",
+  );
+  assert(
+    Math.abs(Math.hypot(diagonal.x, diagonal.z) - 1) < 1e-8,
+    "diagonal movement is not faster",
+  );
+  const plan = planWorksiteCamera({ ...zoomScene, heading: yaw, pitch: 0.45 });
+  assert(
+    Math.abs(plan.yaw - yaw) < 1e-8,
+    "manual heading retained in clear space",
+  );
+  assert.equal(plan.pitch, 0.45, "manual elevation retained in clear space");
+}
+assert.notDeepEqual(overviewPan({ x: 0, z: 0 }, 30, 20, 0.55, 0.95, 1, 844), {
+  x: 0,
+  z: 0,
+});
+console.log(
+  "PASS: full orbit, elevation limits, camera-relative walking in four quadrants, diagonal speed and overview panning.",
+);

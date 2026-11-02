@@ -1,4 +1,9 @@
 import {
+  orbitDelta,
+  walkingVector,
+  overviewPan,
+} from "./free-city-controls.mjs";
+import {
   PRACTICAL_OBJECTS,
   practicalForChapter,
   practicalById,
@@ -86,6 +91,14 @@ export function mountHandsOnCity({
     welcomeSeen = false;
   let zoom = 1,
     reveal = null;
+  let cameraPitch = 0.76,
+    overviewYaw = 0.55,
+    overviewPitch = 0.95,
+    freeWalk = false;
+  let viewPan = { x: 0, z: 0 },
+    pinchMidpoint = null;
+  const movementKeys = new Set(),
+    heldDirections = new Map();
   const reducedMotion = () =>
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
   const baseDone = (id) => chapterComplete(id, episode, state, systems);
@@ -209,12 +222,12 @@ export function mountHandsOnCity({
   welcome.className = "hands-on-welcome";
   welcome.setAttribute("aria-labelledby", "hands-on-welcome-title");
   welcome.innerHTML =
-    '<span class="welcome-kicker">BUILD A BETTER WORLD</span><h2 id="hands-on-welcome-title">This city needs what you can build.</h2><p>People are waiting for useful ideas. Help them by making things work, testing what changes and improving what fails.</p><p><strong>12 chapters · 36 hands-on challenges</strong><br>Tap a city object to walk there and work. Drag to look around. Pinch or use + and − to see closer.</p><button data-begin>Begin my first challenge →</button><button data-welcome-exit>Return to entrance</button>';
+    '<span class="welcome-kicker">BUILD A BETTER WORLD</span><h2 id="hands-on-welcome-title">This city needs what you can build.</h2><p>People are waiting for useful ideas. Help them by making things work, testing what changes and improving what fails.</p><p><strong>12 chapters · 36 hands-on challenges</strong><br>Tap a city object to walk there and work. Drag sideways to rotate or up/down to tilt. Pinch to zoom. Use the arrows to walk.</p><button data-begin>Begin my first challenge →</button><button data-welcome-exit>Return to entrance</button>';
   document.body.append(welcome);
   const help = document.createElement("section");
   help.className = "hands-on-help";
   help.innerHTML =
-    "<h2>Build a better world</h2><p>12 chapters, three hands-on challenges each. Your next move is written at the bottom of the city.</p><ol><li><strong>Explore the need.</strong> Tap an object or its transparent name. Your character walks to it before doing any work.</li><li><strong>Make something useful.</strong> Carry an item to its matching place, organise people or operate the city objects. You can carry one item at a time.</li><li><strong>Test the result.</strong> A failed test explains what is still missing. Improve the system and test again.</li><li><strong>See what changed.</strong> The camera shows the result. Drag, pinch or use + and − to inspect it yourself. Manual camera input stops the cinematic move.</li><li><strong>Continue.</strong> Finish all three challenges to celebrate a chapter, earn 30 virtual Builder Credits and unlock the next one.</li></ol><p>City menu contains challenge review, worksite controls and six construction prototypes. Build each prototype once; crews repeat the tested design across the city. View my city shows the whole city. The Builder Shop sells virtual decorations and builder cosmetics.</p><p>Work stays in this open page session. Refreshing or closing can reset the hands-on journey. These fictional outcomes do not award real-world XP. A real-world Quest lets you take an idea outside the game.</p>";
+    "<h2>Build a better world</h2><p>12 chapters, three hands-on challenges each. Your next move is written at the bottom of the city.</p><ol><li><strong>Explore the need.</strong> Tap an object or its transparent name. Your character walks to it before doing any work.</li><li><strong>Make something useful.</strong> Carry an item to its matching place, organise people or operate the city objects. You can carry one item at a time.</li><li><strong>Test the result.</strong> A failed test explains what is still missing. Improve the system and test again.</li><li><strong>See what changed.</strong> The camera shows the result. Drag sideways to rotate, up/down to tilt, and pinch or use + and − to zoom. Hold the walking arrows or use WASD to explore. In city view, drag with two fingers to pan. Q/E rotate and R/F tilt on a keyboard. Manual camera input stops the cinematic move.</li><li><strong>Continue.</strong> Finish all three challenges to celebrate a chapter, earn 30 virtual Builder Credits and unlock the next one.</li></ol><p>City menu contains challenge review, worksite controls and six construction prototypes. Build each prototype once; crews repeat the tested design across the city. View my city shows the whole city. The Builder Shop sells virtual decorations and builder cosmetics.</p><p>Work stays in this open page session. Refreshing or closing can reset the hands-on journey. These fictional outcomes do not award real-world XP. A real-world Quest lets you take an idea outside the game.</p>";
   document
     .getElementById("help-dialog")
     ?.insertBefore(help, document.getElementById("help-done"));
@@ -259,6 +272,48 @@ export function mountHandsOnCity({
   ])
     instructions.append(panel.querySelector(selector));
   panel.insertBefore(instructions, celebration);
+  const walkPad = document.createElement("nav");
+  walkPad.className = "hands-on-walk-pad";
+  walkPad.setAttribute("aria-label", "Walk around the city");
+  walkPad.innerHTML =
+    '<span>WALK</span><button data-walk="up" aria-label="Walk forward">↑</button><button data-walk="left" aria-label="Walk left">←</button><button data-walk="right" aria-label="Walk right">→</button><button data-walk="down" aria-label="Walk backward">↓</button>';
+  panel.append(walkPad);
+  const beginFreeWalk = () => {
+    if (cityView) setCityView(false);
+    if (!movementKeys.size && !heldDirections.size) stop();
+    reveal = null;
+    freeWalk = true;
+    celebration.hidden = true;
+    setMenu(false);
+    focus.copy(actor.g.position);
+  };
+  for (const button of walkPad.querySelectorAll("button")) {
+    button.onpointerdown = (e) => {
+      if (!active || document.querySelector("dialog[open]")) return;
+      e.preventDefault();
+      beginFreeWalk();
+      button.setPointerCapture?.(e.pointerId);
+      heldDirections.set(e.pointerId, button.dataset.walk);
+    };
+    button.onpointerup =
+      button.onpointercancel =
+      button.onlostpointercapture =
+        (e) => heldDirections.delete(e.pointerId);
+    button.onkeydown = (e) => {
+      if ([" ", "Enter"].includes(e.key)) {
+        e.preventDefault();
+        beginFreeWalk();
+        movementKeys.add(button.dataset.walk);
+      }
+    };
+    button.onkeyup = (e) => {
+      if ([" ", "Enter"].includes(e.key)) {
+        e.preventDefault();
+        movementKeys.delete(button.dataset.walk);
+      }
+    };
+    button.onblur = () => movementKeys.delete(button.dataset.walk);
+  }
 
   const setMenu = (open) => {
     menu.hidden = !open;
@@ -276,6 +331,13 @@ export function mountHandsOnCity({
       overviewFar = null;
     }
     cityView = value;
+    movementKeys.clear();
+    heldDirections.clear();
+    if (value) {
+      overviewYaw = 0.55;
+      overviewPitch = 0.95;
+      viewPan = { x: 0, z: 0 };
+    }
     reveal = null;
     zoom = 1;
     celebration.hidden = true;
@@ -911,6 +973,8 @@ export function mountHandsOnCity({
     }
   }
   function stop() {
+    movementKeys.clear();
+    heldDirections.clear();
     waypoints = [];
     pending = null;
     work = null;
@@ -991,6 +1055,7 @@ export function mountHandsOnCity({
     if (!active) return;
     celebration.hidden = true;
     reveal = null;
+    freeWalk = false;
     setMenu(false);
     if (cityView) setCityView(false);
     const selected = objects.find((o) => o.id === id);
@@ -1145,6 +1210,7 @@ export function mountHandsOnCity({
       navigationDirty = false;
     }
     activeExtra = null;
+    freeWalk = false;
     zoom = 1;
     reveal = null;
     drawWorld();
@@ -1182,6 +1248,7 @@ export function mountHandsOnCity({
     setMenu(false);
     activeSite = chapter;
     activeExtra = id;
+    freeWalk = false;
     zoom = 1;
     reveal = null;
     drawWorld();
@@ -1310,7 +1377,11 @@ export function mountHandsOnCity({
     "pointerdown",
     (e) => {
       if (!active) return;
-      if (document.querySelector("dialog[open]")) return;
+      if (document.querySelector("dialog[open]")) {
+        movementKeys.clear();
+        heldDirections.clear();
+        return;
+      }
       reveal = null;
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       canvas.setPointerCapture?.(e.pointerId);
@@ -1318,8 +1389,16 @@ export function mountHandsOnCity({
         multiple = true;
         const [a, b] = [...pointers.values()];
         pinchSpan = Math.hypot(a.x - b.x, a.y - b.y);
+        pinchMidpoint = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
       }
-      down = { id: e.pointerId, x: e.clientX, y: e.clientY, lastX: e.clientX };
+      down = {
+        id: e.pointerId,
+        x: e.clientX,
+        y: e.clientY,
+        lastX: e.clientX,
+        lastY: e.clientY,
+        dragged: false,
+      };
     },
     true,
   );
@@ -1336,14 +1415,44 @@ export function mountHandsOnCity({
       if (pointers.size === 2) {
         const [a, b] = [...pointers.values()];
         const span = Math.hypot(a.x - b.x, a.y - b.y);
+        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        if (cityView && pinchMidpoint)
+          viewPan = overviewPan(
+            viewPan,
+            mid.x - pinchMidpoint.x,
+            mid.y - pinchMidpoint.y,
+            overviewYaw,
+            overviewPitch,
+            zoom,
+            innerHeight,
+          );
+        pinchMidpoint = mid;
         if (pinchSpan && span > 0) changeZoom(pinchSpan / span);
         pinchSpan = span;
         return;
       }
       if (!down || pointers.size !== 1 || multiple) return;
-      if (Math.abs(e.clientX - down.x) > 7)
-        cameraYaw += (e.clientX - down.lastX) * 0.006;
+      if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 7)
+        down.dragged = true;
+      if (down.dragged) {
+        const pose = orbitDelta(
+          {
+            yaw: cityView ? overviewYaw : cameraYaw,
+            pitch: cityView ? overviewPitch : cameraPitch,
+          },
+          e.clientX - down.lastX,
+          e.clientY - down.lastY,
+        );
+        if (cityView) {
+          overviewYaw = pose.yaw;
+          overviewPitch = pose.pitch;
+        } else {
+          cameraYaw = pose.yaw;
+          cameraPitch = pose.pitch;
+        }
+      }
       down.lastX = e.clientX;
+      down.lastY = e.clientY;
     },
     true,
   );
@@ -1353,6 +1462,7 @@ export function mountHandsOnCity({
       down = null;
       pointers.clear();
       pinchSpan = null;
+      pinchMidpoint = null;
       multiple = false;
     },
     true,
@@ -1363,6 +1473,7 @@ export function mountHandsOnCity({
       if (!active) return;
       pointers.delete(e.pointerId);
       pinchSpan = null;
+      pinchMidpoint = null;
       if (multiple) {
         if (!pointers.size) multiple = false;
         down = null;
@@ -1370,6 +1481,7 @@ export function mountHandsOnCity({
       }
       if (
         !down ||
+        down.dragged ||
         e.pointerId !== down.id ||
         Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8
       ) {
@@ -1405,6 +1517,9 @@ export function mountHandsOnCity({
         new T.Vector3(),
       );
       if (point) {
+        if (cityView) setCityView(false);
+        freeWalk = true;
+        reveal = null;
         const planned = planRoute(
           point,
           [...customers, ...celebrants, ...episodeResidents].map(
@@ -1435,6 +1550,7 @@ export function mountHandsOnCity({
     (e) => {
       pointers.delete(e.pointerId);
       pinchSpan = null;
+      pinchMidpoint = null;
       if (!pointers.size) {
         down = null;
         multiple = false;
@@ -1446,6 +1562,50 @@ export function mountHandsOnCity({
     "keydown",
     (e) => {
       if (!active || document.querySelector("dialog[open]")) return;
+      const direction = {
+        w: "up",
+        ArrowUp: "up",
+        s: "down",
+        ArrowDown: "down",
+        a: "left",
+        ArrowLeft: "left",
+        d: "right",
+        ArrowRight: "right",
+      }[e.key];
+      if (direction && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (!movementKeys.has(direction)) {
+          if (!movementKeys.size) beginFreeWalk();
+          movementKeys.add(direction);
+        }
+        return;
+      }
+      if (
+        ["q", "e", "r", "f"].includes(e.key) &&
+        !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)
+      ) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        reveal = null;
+        const pose = orbitDelta(
+          {
+            yaw: cityView ? overviewYaw : cameraYaw,
+            pitch: cityView ? overviewPitch : cameraPitch,
+          },
+          e.key === "q" ? -30 : e.key === "e" ? 30 : 0,
+          e.key === "r" ? -25 : e.key === "f" ? 25 : 0,
+        );
+        if (cityView) {
+          overviewYaw = pose.yaw;
+          overviewPitch = pose.pitch;
+        } else {
+          cameraYaw = pose.yaw;
+          cameraPitch = pose.pitch;
+        }
+        tick(0, getCamera());
+        return;
+      }
       if (
         ["+", "=", "-", "_"].includes(e.key) &&
         !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)
@@ -1467,12 +1627,34 @@ export function mountHandsOnCity({
     },
     true,
   );
+  document.addEventListener(
+    "keyup",
+    (e) => {
+      if (!active) return;
+      const d = {
+        w: "up",
+        ArrowUp: "up",
+        s: "down",
+        ArrowDown: "down",
+        a: "left",
+        ArrowLeft: "left",
+        d: "right",
+        ArrowRight: "right",
+      }[e.key];
+      if (d) {
+        movementKeys.delete(d);
+        e.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
   const pause = () => {
     if (active) {
       stop();
       down = null;
       pointers.clear();
       pinchSpan = null;
+      pinchMidpoint = null;
       multiple = false;
       updateUI("Paused. Tap an object to continue.");
     }
@@ -1484,7 +1666,11 @@ export function mountHandsOnCity({
   let cameraYaw = 0.8;
   const focus = new T.Vector3();
   function tick(dt, camera) {
-    if (document.querySelector("dialog[open]")) return;
+    if (document.querySelector("dialog[open]")) {
+      movementKeys.clear();
+      heldDirections.clear();
+      return;
+    }
     if (navigationDirty) {
       refreshNavigation();
       navigationDirty = false;
@@ -1505,6 +1691,42 @@ export function mountHandsOnCity({
       reducedMotion(),
     );
     walking = false;
+    const held = new Set([...movementKeys, ...heldDirections.values()]);
+    if (held.size && !cityView) {
+      const delta = walkingVector(
+        Number(held.has("right")) - Number(held.has("left")),
+        Number(held.has("down")) - Number(held.has("up")),
+        cameraYaw,
+      );
+      const total = Math.min(dt, 0.5) * (state.carrying === "cart" ? 3.4 : 5);
+      const slices = Math.max(1, Math.ceil(total / 0.2));
+      for (let i = 0; i < slices; i++) {
+        const from = { x: actor.g.position.x, z: actor.g.position.z };
+        const desired = {
+          x: Math.max(
+            -57.5,
+            Math.min(57.5, from.x + (delta.x * total) / slices),
+          ),
+          z: Math.max(
+            -49.5,
+            Math.min(49.5, from.z + (delta.z * total) / slices),
+          ),
+        };
+        const next = safePersonStep(
+          from,
+          desired,
+          residents(),
+          walkClear,
+          total / slices,
+        );
+        if (Math.hypot(next.x - from.x, next.z - from.z) > 0.001) {
+          actor.g.position.x = next.x;
+          actor.g.position.z = next.z;
+          actor.g.rotation.y = Math.atan2(next.x - from.x, next.z - from.z);
+          walking = true;
+        }
+      }
+    }
     if (waypoints.length) {
       const p = waypoints[0],
         dx = p.x - actor.g.position.x,
@@ -1651,8 +1873,9 @@ export function mountHandsOnCity({
       selectedProject ??
       BUILDER_MISSIONS.find((m) => m.id === activeSite) ?? { x: 19.5, z: 15 };
     const nearSite =
+      !freeWalk &&
       Math.hypot(actor.g.position.x - centre.x, actor.g.position.z - centre.z) <
-      12;
+        12;
     focus.lerp(
       new T.Vector3(
         nearSite
@@ -1665,7 +1888,7 @@ export function mountHandsOnCity({
       ),
       Math.min(1, dt * 4),
     );
-    if (cityView) focus.set(0, 0, 0);
+    if (cityView) focus.set(viewPan.x, 0, viewPan.z);
     if (frameCamera)
       camera =
         frameCamera({
@@ -1677,23 +1900,34 @@ export function mountHandsOnCity({
                 reveal.z * 0.5 + centre.z * 0.5,
               )
             : focus.clone(),
-          yaw: reveal
-            ? reveal.yaw +
-              Math.sin((reveal.elapsed / reveal.duration) * Math.PI) * 0.18
-            : cameraYaw,
+          pitch: cityView ? overviewPitch : cameraPitch,
+          yaw: cityView
+            ? overviewYaw
+            : reveal
+              ? reveal.yaw +
+                Math.sin((reveal.elapsed / reveal.duration) * Math.PI) * 0.18
+              : cameraYaw,
           zoom: reveal
             ? zoom *
               (1 -
                 0.22 * Math.sin((reveal.elapsed / reveal.duration) * Math.PI))
             : zoom,
           revealing: !!reveal,
-          site: {
-            x: centre.x,
-            z: centre.z,
-            width: selectedProject ? selectedProject.width + 6 : 14,
-            depth: selectedProject ? selectedProject.depth + 6 : 14,
-            height: selectedProject?.id === "tower" ? 18 : 5,
-          },
+          site: freeWalk
+            ? {
+                x: actor.g.position.x,
+                z: actor.g.position.z,
+                width: 8,
+                depth: 8,
+                height: 4,
+              }
+            : {
+                x: centre.x,
+                z: centre.z,
+                width: selectedProject ? selectedProject.width + 6 : 14,
+                depth: selectedProject ? selectedProject.depth + 6 : 14,
+                height: selectedProject?.id === "tower" ? 18 : 5,
+              },
           working: !!work,
           dt,
         }) ?? camera;
@@ -1806,6 +2040,11 @@ export function mountHandsOnCity({
     },
     resetCamera() {
       cameraYaw = 0.8;
+      cameraPitch = 0.76;
+      overviewYaw = 0.55;
+      overviewPitch = 0.95;
+      viewPan = { x: 0, z: 0 };
+      freeWalk = true;
       zoom = 1;
       reveal = null;
       focus.copy(actor.g.position);
@@ -1833,7 +2072,15 @@ export function mountHandsOnCity({
       return activeExtra;
     },
     get cameraState() {
-      return { zoom, revealing: !!reveal, cityView };
+      return {
+        zoom,
+        revealing: !!reveal,
+        cityView,
+        yaw: cityView ? overviewYaw : cameraYaw,
+        pitch: cityView ? overviewPitch : cameraPitch,
+        pan: { ...viewPan },
+        freeWalk,
+      };
     },
     get episode() {
       return episode;
@@ -1853,7 +2100,13 @@ export function mountHandsOnCity({
       ];
     },
     get moving() {
-      return !!(waypoints.length || work || episode.teach.running);
+      return !!(
+        waypoints.length ||
+        work ||
+        episode.teach.running ||
+        movementKeys.size ||
+        heldDirections.size
+      );
     },
     open() {
       if (active) return;

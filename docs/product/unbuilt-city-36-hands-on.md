@@ -422,3 +422,7 @@ This is a bounded fictional game, not certification of real skills, medical prac
 ## Verification
 
 The practical-model regression solves all 24 new missions, rejects empty tests and duplicate-resource attempts, checks wrong delivery, cash-flow shortfall, overloaded power recovery and late urgent delivery, and enforces final handover prerequisites. Actual-game regression walks the original avatar through all 36 outcomes, tests early failure and sequential gates, completes all six prototypes, checks shop purchases, verifies 36/36 and the 70-parcel city, then invalidates and recovers the final handover after earlier work changes. Camera regressions cover portrait/wide framing, bounded closer inspection and collision transitions. Browser QA and full validation are recorded in implementation status.
+
+## Free exploration controls
+
+Drag sideways for unrestricted rotation and up/down for elevation. Both the worksite and city overview honour the selected angle. Pinch or +/− controls zoom; two-finger dragging pans the overview. The walking pad, WASD and arrow keys move relative to the current camera. Q/E rotate and R/F tilt on a keyboard. Free walking follows the character and stops the pending guided route, preserving the mission outcome state. Tap a work object to resume work. Solid buildings, people and city edges remain respected. Release, cancellation, lost pointer capture, window blur and modal entry stop held movement.

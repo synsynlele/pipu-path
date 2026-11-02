@@ -4771,6 +4771,7 @@ const handsOnCity = mountHandsOnCity({
     view,
     focus,
     yaw: heading,
+    pitch: viewPitch = 0.76,
     site,
     working = false,
     zoom = 1,
@@ -4784,11 +4785,11 @@ const handsOnCity = mountHandsOnCity({
       scene.fog.near = 500;
       scene.fog.far = 600;
       camera.position.set(
-        Math.sin(0.55) * Math.cos(0.95) * 160,
-        Math.sin(0.95) * 160,
-        Math.cos(0.55) * Math.cos(0.95) * 160,
+        focus.x + Math.sin(heading) * Math.cos(viewPitch) * 160,
+        Math.sin(viewPitch) * 160,
+        focus.z + Math.cos(heading) * Math.cos(viewPitch) * 160,
       );
-      camera.lookAt(0, 0.5, 0);
+      camera.lookAt(focus.x, 0.5, focus.z);
     } else {
       camera = playCamera;
       scene.fog.near = 115;
@@ -4806,6 +4807,7 @@ const handsOnCity = mountHandsOnCity({
         aspect: camera.aspect,
         fov: camera.fov,
         heading,
+        pitch: viewPitch,
         boxes: cameraObstacles,
         working,
         zoom,
