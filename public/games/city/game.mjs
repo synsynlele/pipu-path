@@ -1,3 +1,4 @@
+import { mountRepairQueue } from "./repair-queue-ui.mjs";
 import { followBlend, clearBoomDistance } from "./camera-rig.mjs";
 import { chapterHelp, mountPlayNavigation } from "./play-navigation.mjs";
 import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
@@ -3899,6 +3900,11 @@ $("city-menu").addEventListener("toggle", () => {
   positionCityMenu();
 });
 $("city-menu-options").addEventListener("click", (event) => {
+  if (repairQueue.active && event.target.closest("button")) {
+    event.stopImmediatePropagation();
+    repairQueue.close();
+    return;
+  }
   const button = event.target.closest("button");
   if (
     !button ||
@@ -4691,7 +4697,41 @@ function returnToEntrance() {
   refreshJourneyControls();
   $("start").focus({ preventScroll: true });
 }
-$("menu-entrance").onclick = returnToEntrance;
+let repairPreview =
+  new URLSearchParams(window.location.search).get("workshop") === "hands-on";
+const repairQueue = mountRepairQueue({
+  T,
+  scene,
+  onCue: (cue) => cityAudio.cue(cue),
+  actor: player.g,
+  getCamera: () => camera,
+  walk: goTo,
+  cancelWalk,
+  canSave: () => saveEnabled,
+  getWalking: () => route.length > 0,
+  frame: (point, wide = false) => {
+    activeFeedback = { x: point.x, z: point.z, district: "workshop" };
+    distance = wide ? 40 : Math.max(27, 18 / (innerWidth / innerHeight));
+    pitch = 0.86;
+  },
+  onExit: () => {
+    repairPreview = false;
+    activeFeedback = null;
+    returnToEntrance();
+  },
+});
+const standardHelp = $("help").onclick;
+$("help").onclick = () =>
+  repairQueue.active ? repairQueue.help() : standardHelp?.();
+if (repairPreview) {
+  $("start").textContent = "Enter Ama’s workshop →";
+  const tagline = document.querySelector("#intro h1 + p");
+  if (tagline)
+    tagline.textContent =
+      "Inspect. Arrange the work. Restore the neighbourhood’s services.";
+}
+$("menu-entrance").onclick = () =>
+  repairQueue.active ? repairQueue.close() : returnToEntrance();
 $("start").onclick = () => startCity();
 $("resume-city").onclick = () => startCity();
 $("resume-city").hidden = true;
@@ -4726,6 +4766,18 @@ function startCity() {
   hideBuildVictory();
   document.body.classList.add("city-integrated");
   render();
+  if (repairPreview) {
+    cancelAutoAdvance();
+    cancelWalk();
+    journey.status = "paused";
+    $("detail").hidden = true;
+    $("world-feedback").hidden = true;
+    $("city-menu").open = false;
+    repairQueue.open();
+    navigationSignature = null;
+    rebuildNavigation();
+    return;
+  }
   // All entries recover the same question → tested build sequence.
   const nextStep = integratedStep(state.decisions, state.lab);
   if (state.advanced && canStartAdvanced(state.resilience)) {
@@ -5005,6 +5057,16 @@ canvas.addEventListener("pointerup", (e) => {
       (-e.clientY / innerHeight) * 2 + 1,
     );
     ray.setFromCamera(pointer, camera);
+    if (repairQueue.pick(ray)) {
+      down = null;
+      return;
+    }
+    if (repairQueue.active) {
+      const floor = ray.intersectObject(island)[0];
+      if (floor) goTo(floor.point);
+      down = null;
+      return;
+    }
     const targets = [
       ...cityDevelopment.meshes.values(),
       ...[...caseScenes.effects.values()].map((effect) => effect.group),
@@ -5247,6 +5309,7 @@ function animateWorld(now) {
   if (!frameBudget.takeFrame(now, document.hidden)) return;
   if (graphicsInterrupted) return;
   const dt = Math.min((now - last) / 1000, 0.2);
+  repairQueue.tick(dt);
   last = now;
   time += dt;
   if (builtCityView?.focus)

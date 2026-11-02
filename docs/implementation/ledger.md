@@ -2056,3 +2056,28 @@ The broader validation exposed a pre-existing asynchronous retry-form assertion:
 ## 1 November 2026 — Game entrance brand logo
 
 The entrance now places the exact PNG logo used by the Real Quest BrandMark beside PipuPath and its existing Build a Better World slogan. Explicit 48px dimensions, non-shrinking image and flex alignment keep the mark stable beside the name. The image is decorative within the existing labelled home link. No game logic, progression or save change. Full validation/CI gate one automatic production build; branch previews disabled.
+
+## 2026-11-02 — Direct workshop interaction in the production city
+
+### Authorized scope
+
+After comparing production with replacement proposals, user chose to retain production and approved one hands-on conversion: The long repair queue. Use this slice to establish reusable interactions before converting more chapters.
+
+### Implemented
+
+- Branch from exact production `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`, with a query-gated workshop preview and unchanged normal campaign entry.
+- Independent six-job model: inspections, one carried item, ordered work, finite token budget, timed workloads/deadlines, workflow efficiency, skilled labour and bench capacity; two materially different solutions and causal failure/retry.
+- Direct physical-arrival actions in the existing city, distinct device models, moving work/finished jobs and service indicators, transparent bottom instructions, accessible job/worksite controls, intro/help, pause and retained graphics fallback/camera/audio.
+- Separate opt-in local checkpoint and validation, with no automatic migration or fabricated legacy decisions, network completion, credits or real-world awards. This is one converted challenge, not all chapters.
+
+### Verification
+
+Domain regression verifies both successful approaches, hardware without labour failure, ordering consequences, item conservation, pause/retry and valid/invalid saves. Actual production-controller regression reaches all six devices, carries each to the queue, organises tools, completes a shift and returns to the entrance without altering production campaign decisions. Browser review confirmed the original city renders through its graphics fallback and the preview welcome/bottom controls work. `npm run validate` passed formatting, zero-warning lint, types, all game regressions, 656 coverage tests, 252 integration tests and production build.
+
+### Preview receipt
+
+- Draft PR: https://github.com/synsynlele/pipu-path/pull/157, branch `feat/workshop-hands-on`, base `main` at production SHA `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`.
+- Deployed source: `680298fdf8121b13ad763b99f7fcfcef372f6e0d`; tree `544b2defe3523dd477211a4c6498acf07d4b536c`, matched to the local index before committing.
+- One Vercel staging deployment `dpl_8ARieSecxuqcAnECbpm6nqCcneHY`, READY. Exact public route: https://pipu-path-77w91bzf1-copyartint-2860s-projects.vercel.app/games/city/index.html?workshop=hands-on.
+- Browser opened the public route without sign-in, entered the introduction and rendered the retained production city through the established graphics fallback. Local browser QA also physically inspected all six jobs, organised the workflow, picked up the community pump and dispatched the carry-to-queue walk. Full successful shift completion is verified by the actual controller regression; a complete browser shift and measured phone performance remain further QA.
+- No production promotion or merge. This evidence-only follow-up requires no further deployment.

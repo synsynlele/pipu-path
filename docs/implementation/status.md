@@ -1,5 +1,13 @@
 # Implementation status
 
+## 2 November 2026 — Production-city hands-on repair workshop (preview)
+
+User approved retaining production’s city and replacing the first question/puzzle interaction with a direct workshop experiment. The separate `?workshop=hands-on` preview starts from production commit `9f6ef4e7032fa2d7ec6efae7afb17355f5bebc06`. The original city, colours, menus, sounds, graphics fallback and normal campaign remain. Only this first workshop slice is converted; later campaign questions remain.
+
+Players physically inspect six devices, learn their service deadlines, carry one job at a time, arrange the queue, organise tools, restore a spare bench or bring in a trained repairer. A twelve-minute fictional shift executes actual queued workloads and deadlines. Workflow improvement or a second staffed bench can meet the same outcome; an unstaffed bench, insufficient capacity or poor ordering fail causally. Job geometry moves between waiting, carrying, queued, working and finished locations, with repaired indicators. Success requires all three essential services on time and at least five completed jobs. Players can pause, reset the trial and improve it. No multiple-choice card or detached grid is used in this slice.
+
+Bottom transparent guidance, accessible walk-to controls, introduction/help and retained camera controls support direct play. Workshop device saving is separate and follows the existing opt-in; invalid checkpoints recover safely. The pilot does not fabricate production decisions, completed electrical networks, chapter credits, capability or real-world evidence. Returning to the entrance restores normal campaign entry. `npm run validate` passed formatting, zero-warning lint, typecheck, game regressions, 656 coverage tests, 252 integration tests and production build. Browser review completed six physical inspections, tool organisation and device pickup/queue dispatch. The public deployed introduction and city rendering were verified. READY staging preview `dpl_8ARieSecxuqcAnECbpm6nqCcneHY` uses exact source `680298fdf8121b13ad763b99f7fcfcef372f6e0d`: https://pipu-path-77w91bzf1-copyartint-2860s-projects.vercel.app/games/city/index.html?workshop=hands-on. Draft PR: https://github.com/synsynlele/pipu-path/pull/157. Production was not promoted or merged. This is not a full campaign conversion.
+
 ## 31 October 2026 — Distinct Chapters 5–12 and repeatable virtual city beautification (release candidate)
 
 Branch `feat/varied-city-challenges-repeatable-decor-20261031`, PR #147, replaces
