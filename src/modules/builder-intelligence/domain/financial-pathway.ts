@@ -46,7 +46,7 @@ export const financialIntelligencePathway = validateBuilderPathway({
   schemaVersion: "builder-pathway-v1",
   code: "financial_intelligence",
   title: "Financial Intelligence",
-  humanReviewVersion: "reviewed-2026-11",
+  humanReviewVersion: "candidate-2026-11",
   fallbackVersion: "fallback-v1",
   stages: [
     stage(1, {
