@@ -35,15 +35,28 @@ beforeEach(() => {
   results = [];
   calls = [];
   mock.auth.mockReset();
-  mock.auth.mockResolvedValue({ user: { id: "owner-1" }, profile: { age_band: "under_13" } });
+  mock.auth.mockResolvedValue({
+    user: { id: "owner-1" },
+    profile: { age_band: "under_13" },
+  });
   mock.redirect.mockReset();
-  mock.redirect.mockImplementation(() => { throw new Error("REDIRECT"); });
+  mock.redirect.mockImplementation(() => {
+    throw new Error("REDIRECT");
+  });
   mock.revalidate.mockClear();
   mock.service.mockImplementation(() => ({
     from: (table: string) => {
       calls.push(["from", table]);
       const query: Record<string, unknown> = {};
-      for (const method of ["select", "eq", "in", "filter", "insert", "order", "limit"]) {
+      for (const method of [
+        "select",
+        "eq",
+        "in",
+        "filter",
+        "insert",
+        "order",
+        "limit",
+      ]) {
         query[method] = (...args: unknown[]) => {
           calls.push([method, ...args]);
           return query;
@@ -59,14 +72,20 @@ beforeEach(() => {
 });
 describe("Financial Intelligence reviewed Quest action", () => {
   it("rejects unknown stage without identity or database access", async () => {
-    const result = await startFinancialQuestAction({ status: "idle" }, request("made_up"));
+    const result = await startFinancialQuestAction(
+      { status: "idle" },
+      request("made_up"),
+    );
     expect(result.status).toBe("error");
     expect(mock.auth).not.toHaveBeenCalled();
     expect(calls).toHaveLength(0);
   });
 
   it("checks age before service-role access", async () => {
-    const result = await startFinancialQuestAction({ status: "idle" }, request("responsible_borrowing"));
+    const result = await startFinancialQuestAction(
+      { status: "idle" },
+      request("responsible_borrowing"),
+    );
     expect(result).toEqual({
       status: "error",
       message: "This stage is not available for your age group.",
@@ -76,8 +95,9 @@ describe("Financial Intelligence reviewed Quest action", () => {
 
   it("preserves any existing active real Quest instead of replacing it", async () => {
     results = [{ data: { id: "existing-quest" }, error: null }];
-    await expect(startFinancialQuestAction({ status: "idle" }, request("needs_wants")))
-      .rejects.toThrow("REDIRECT");
+    await expect(
+      startFinancialQuestAction({ status: "idle" }, request("needs_wants")),
+    ).rejects.toThrow("REDIRECT");
     expect(mock.redirect).toHaveBeenCalledWith("/real-quests/existing-quest");
     expect(calls.some(([name]) => name === "insert")).toBe(false);
   });
@@ -89,8 +109,9 @@ describe("Financial Intelligence reviewed Quest action", () => {
       { data: { id: "shared-template" }, error: null },
       { data: { id: "new-attempt" }, error: null },
     ];
-    await expect(startFinancialQuestAction({ status: "idle" }, request("needs_wants")))
-      .rejects.toThrow("REDIRECT");
+    await expect(
+      startFinancialQuestAction({ status: "idle" }, request("needs_wants")),
+    ).rejects.toThrow("REDIRECT");
     const inserts = calls.filter(([name]) => name === "insert");
     expect(inserts).toHaveLength(2);
     expect(inserts[0]?.[1]).toMatchObject({ source: "reviewed" });
@@ -101,9 +122,13 @@ describe("Financial Intelligence reviewed Quest action", () => {
       difficulty: 1,
     });
     expect(mock.redirect).toHaveBeenCalledWith("/real-quests/new-attempt");
-    expect(calls.some(([name, target]) =>
-      name === "from" && (target === "product_events" || target === "builder_xp")
-    )).toBe(false);
+    expect(
+      calls.some(
+        ([name, target]) =>
+          name === "from" &&
+          (target === "product_events" || target === "builder_xp"),
+      ),
+    ).toBe(false);
   });
 
   it("does not unlock a later stage based on a city choice alone", async () => {
@@ -111,7 +136,10 @@ describe("Financial Intelligence reviewed Quest action", () => {
       { data: null, error: null },
       { data: [], error: null },
     ];
-    const result = await startFinancialQuestAction({ status: "idle" }, request("budgeting"));
+    const result = await startFinancialQuestAction(
+      { status: "idle" },
+      request("budgeting"),
+    );
     expect(result.status).toBe("error");
     expect(calls.some(([name]) => name === "insert")).toBe(false);
   });
