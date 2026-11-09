@@ -61,6 +61,7 @@ export async function startFinancialQuestAction(
       .select("challenge")
       .eq("user_id", user.id)
       .eq("status", "recorded")
+      .eq("source", "reviewed")
       .in("challenge->>title", requiredTitles as string[]);
     if (error) return { status: "error", message: unavailable };
     const found = new Set((recorded ?? []).map((item) => item.challenge.title));
