@@ -10,26 +10,33 @@ import { validateChallenge } from "@/modules/real-build/domain/build";
 import { getFinancialStage } from "../domain/financial-pathway";
 import { isStageAllowedForAge } from "../domain/builder-pathway";
 
-export type FinancialStartState = { status: "idle" } | { status: "error"; message: string };
+export type FinancialStartState =
+  { status: "idle" } | { status: "error"; message: string };
 
-const unavailable = "This reviewed Quest could not be started. Your existing work is safe; please try again.";
+const unavailable =
+  "This reviewed Quest could not be started. Your existing work is safe; please try again.";
 
 export async function startFinancialQuestAction(
   _previous: FinancialStartState,
   formData: FormData,
 ): Promise<FinancialStartState> {
   void _previous;
-  const key = z.string().regex(/^[a-z][a-z0-9_]{2,59}$/).safeParse(
-    formData.get("stage"),
-  );
-  if (!key.success) return { status: "error", message: "Choose a valid stage." };
+  const key = z
+    .string()
+    .regex(/^[a-z][a-z0-9_]{2,59}$/)
+    .safeParse(formData.get("stage"));
+  if (!key.success)
+    return { status: "error", message: "Choose a valid stage." };
   const stage = getFinancialStage(key.data);
   if (!stage) return { status: "error", message: "This stage is unavailable." };
 
   // This guard is enforced server-side on every mutation, never only by UI.
   const { user, profile } = await requireAuthenticatedIdentity();
   if (!isStageAllowedForAge(stage, profile.age_band)) {
-    return { status: "error", message: "This stage is not available for your age group." };
+    return {
+      status: "error",
+      message: "This stage is not available for your age group.",
+    };
   }
 
   const service = buildServiceClient();
@@ -44,8 +51,8 @@ export async function startFinancialQuestAction(
 
   // Use existing actor-owned evidence for prerequisites. Never count city choices.
   if (stage.prerequisites.length) {
-    const requiredTitles = stage.prerequisites.map((code) =>
-      getFinancialStage(code)?.quest.challenge.title,
+    const requiredTitles = stage.prerequisites.map(
+      (code) => getFinancialStage(code)?.quest.challenge.title,
     );
     if (requiredTitles.some((title) => !title))
       return { status: "error", message: unavailable };
@@ -58,7 +65,11 @@ export async function startFinancialQuestAction(
     if (error) return { status: "error", message: unavailable };
     const found = new Set((recorded ?? []).map((item) => item.challenge.title));
     if (!requiredTitles.every((title) => found.has(title!))) {
-      return { status: "error", message: "Record an honest real-world attempt for the earlier stage first." };
+      return {
+        status: "error",
+        message:
+          "Record an honest real-world attempt for the earlier stage first.",
+      };
     }
   }
 
@@ -102,7 +113,13 @@ export async function startFinancialQuestAction(
       if (matching.error || !matching.data)
         return { status: "error", message: unavailable };
     } else {
-      matching = { data: created.data, error: null, count: null, status: 200, statusText: "OK" };
+      matching = {
+        data: created.data,
+        error: null,
+        count: null,
+        status: 200,
+        statusText: "OK",
+      };
     }
   }
   if (!matching.data) return { status: "error", message: unavailable };
