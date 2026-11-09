@@ -20,7 +20,10 @@ export default async function FinancePage() {
         description="Make thoughtful money decisions, practise without spending, and keep honest evidence of what you try."
       />
       <div className="journey-body">
-        <Link href="/real-quests" className="mt-4 inline-block py-3 text-sm font-bold">
+        <Link
+          href="/real-quests"
+          className="mt-4 inline-block py-3 text-sm font-bold"
+        >
           ← Real Quests
         </Link>
       </div>
