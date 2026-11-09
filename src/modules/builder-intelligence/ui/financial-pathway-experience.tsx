@@ -256,7 +256,7 @@ export function FinancialPathwayExperience({
               className="build-primary w-full"
             >
               {pending
-                ? "Opening reviewed Quest…"
+                ? "Opening prepared Quest…"
                 : completed.has(selected.code)
                   ? "Repeat this real-world stage →"
                   : "Start this real-world Quest →"}
@@ -279,9 +279,9 @@ export function FinancialPathwayExperience({
           Turn repeated action into a meaningful project
         </h2>
         <p className="mt-2 text-sm leading-6 text-[#465d7a]">
-          Once you have a real outcome, improve it through a Builder Project and
-          choose separately whether any proof should appear in your Portfolio.
-          Nothing is published automatically.
+          Your practical attempts remain in private Quest history. Formal Builder
+          Projects and the Portfolio have separate eligibility and proof
+          requirements; no Quest evidence is transferred or published automatically.
         </p>
         <div className="mt-3 flex flex-wrap gap-3">
           <Link
@@ -291,10 +291,10 @@ export function FinancialPathwayExperience({
             My Projects →
           </Link>
           <Link
-            href="/portfolio"
+            href="/you"
             className="inline-block py-3 text-sm font-bold"
           >
-            My private Portfolio →
+            My saved Quest attempts →
           </Link>
         </div>
       </section>
