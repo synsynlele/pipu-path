@@ -90,9 +90,10 @@ export async function startFinancialQuestAction(
       .eq("source", "reviewed")
       .filter("challenge->>title", "eq", challenge.title)
       .maybeSingle();
-  let matching = await templates();
+  const matching = await templates();
   if (matching.error) return { status: "error", message: unavailable };
-  if (!matching.data) {
+  let templateId = matching.data?.id ?? null;
+  if (!templateId) {
     const created = await service
       .from("real_build_templates")
       .insert({
@@ -109,26 +110,21 @@ export async function startFinancialQuestAction(
       // A concurrent learner may have inserted the shared reviewed template.
       if (created.error.code !== "23505")
         return { status: "error", message: unavailable };
-      matching = await templates();
-      if (matching.error || !matching.data)
+      const concurrent = await templates();
+      if (concurrent.error || !concurrent.data)
         return { status: "error", message: unavailable };
+      templateId = concurrent.data.id;
     } else {
-      matching = {
-        data: created.data,
-        error: null,
-        count: null,
-        status: 200,
-        statusText: "OK",
-      };
+      templateId = created.data?.id ?? null;
     }
   }
-  if (!matching.data) return { status: "error", message: unavailable };
+  if (!templateId) return { status: "error", message: unavailable };
 
   const inserted = await service
     .from("real_build_attempts")
     .insert({
       user_id: user.id,
-      template_id: matching.data.id,
+      template_id: templateId,
       topic: stage.quest.topic,
       minutes: stage.quest.minutes,
       difficulty: stage.difficulty,
