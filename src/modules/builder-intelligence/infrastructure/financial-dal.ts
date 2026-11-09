@@ -25,7 +25,8 @@ export async function getFinancialPathwayState() {
       .eq("status", "active")
       .maybeSingle(),
   ]);
-  if (attempts.error || active.error) throw new Error("FINANCIAL_PATHWAY_LOAD_FAILED");
+  if (attempts.error || active.error)
+    throw new Error("FINANCIAL_PATHWAY_LOAD_FAILED");
   const recordedTitles = new Set(
     (attempts.data ?? []).map((item) => item.challenge.title),
   );
