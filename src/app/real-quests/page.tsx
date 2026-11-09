@@ -31,14 +31,24 @@ export default async function RealQuestsPage({
         description="Turn a real problem into a working solution. Build it, test it, then make it better."
       />
       <div className="journey-body">
-        <section className="build-card mt-6" aria-label="Financial Intelligence pathway">
-          <p className="text-xs font-bold tracking-widest text-[#5b3dd4] uppercase">BUILDER INTELLIGENCE</p>
-          <h2 className="mt-2 text-lg font-bold">Make better financial decisions</h2>
-          <p className="mt-2 text-sm leading-6 text-[#465d7a]">
-            Practise in a fictional city, then try a reviewed real-life challenge.
-            No spending, bank account or AI generation required.
+        <section
+          className="build-card mt-6"
+          aria-label="Financial Intelligence pathway"
+        >
+          <p className="text-xs font-bold tracking-widest text-[#5b3dd4] uppercase">
+            BUILDER INTELLIGENCE
           </p>
-          <Link href="/real-quests/finance" className="build-primary mt-4 w-full">
+          <h2 className="mt-2 text-lg font-bold">
+            Make better financial decisions
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-[#465d7a]">
+            Practise in a fictional city, then try a reviewed real-life
+            challenge. No spending, bank account or AI generation required.
+          </p>
+          <Link
+            href="/real-quests/finance"
+            className="build-primary mt-4 w-full"
+          >
             Explore Financial Intelligence →
           </Link>
         </section>
