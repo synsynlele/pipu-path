@@ -290,10 +290,7 @@ export function FinancialPathwayExperience({
           >
             My Projects →
           </Link>
-          <Link
-            href="/you"
-            className="inline-block py-3 text-sm font-bold"
-          >
+          <Link href="/you" className="inline-block py-3 text-sm font-bold">
             My saved Quest attempts →
           </Link>
         </div>
