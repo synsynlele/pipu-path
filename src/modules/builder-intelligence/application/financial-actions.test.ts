@@ -142,6 +142,11 @@ describe("Financial Intelligence reviewed Quest action", () => {
     );
     expect(result.status).toBe("error");
     expect(calls.some(([name]) => name === "insert")).toBe(false);
-    expect(calls.some(([name, column, value]) => name === "eq" && column === "source" && value === "reviewed")).toBe(true);
+    expect(
+      calls.some(
+        ([name, column, value]) =>
+          name === "eq" && column === "source" && value === "reviewed",
+      ),
+    ).toBe(true);
   });
 });
