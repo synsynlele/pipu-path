@@ -279,9 +279,9 @@ export function FinancialPathwayExperience({
           Turn repeated action into a meaningful project
         </h2>
         <p className="mt-2 text-sm leading-6 text-[#465d7a]">
-          Your practical attempts remain in private Quest history. Formal Builder
-          Projects and the Portfolio have separate eligibility and proof
-          requirements; no Quest evidence is transferred or published automatically.
+          {"Saved Quest attempts stay private. "}
+          {"Formal Projects and Portfolio have separate proof requirements. "}
+          {"Nothing is transferred or published automatically."}
         </p>
         <div className="mt-3 flex flex-wrap gap-3">
           <Link
