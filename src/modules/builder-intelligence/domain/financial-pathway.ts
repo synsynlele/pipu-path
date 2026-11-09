@@ -3,16 +3,16 @@ import {
   type BuilderPathwayStage,
 } from "./builder-pathway";
 
-type StageInput = Omit<
-  BuilderPathwayStage,
-  "order" | "prerequisites" | "evidencePrompts" | "reflectionPrompts"
->;
+type StageInput = Omit<BuilderPathwayStage, "order" | "prerequisites" | "evidencePrompts" | "reflectionPrompts"> & {
+  steps: [string, string, string, string, string];
+};
 const stage = (
   order: number,
   input: StageInput,
 ): BuilderPathwayStage => {
+  const { steps, ...rest } = input;
   return {
-    ...input,
+    ...rest,
     order,
     prerequisites: order === 1 ? [] : [financialStagesKeys[order - 2]],
     evidencePrompts: [
@@ -23,6 +23,7 @@ const stage = (
       "What worked or did not work, and why?",
       "What would you change next time?",
     ],
+    quest: { ...rest.quest, challenge: { ...rest.quest.challenge, steps } },
   };
 };
 
@@ -72,7 +73,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 01 — Put needs before wants",
           outcome: "Use a no-cost needs-first check in one ordinary decision and observe whether it helped.",
-        }),
+          steps: [
+            "Pick a familiar daily decision involving time, phone data or shared supplies.",
+            "Identify what is essential and what is optional; use things already available.",
+            "Put a needs-first check into use before making that ordinary decision.",
+            "Check what happened after the decision and whether the essential need was protected.",
+            "Improve the check so it is easier to use next time and record the honest result.",
+          ],
+          materials: ["Existing everyday supplies or routine"],
+          evidence: "Describe the decision, the needs-first check used and the actual result; no personal financial details.",
+          safety: commonSafety,
+        },
+      },
+      steps: [
+        "Pick a familiar daily decision involving time, phone data or shared supplies.",
+        "Identify what is essential and what is optional; use things already available.",
+        "Put a needs-first check into use before making that ordinary decision.",
+        "Check what happened after the decision and whether the essential need was protected.",
+        "Improve the check so it is easier to use next time and record the honest result.",
+      ],
+    }),
     stage(2, {
       code: "opportunity_cost",
       title: "Opportunity cost",
@@ -97,7 +117,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 02 — Try the better trade-off",
           outcome: "Choose between two safe uses of an existing resource and try the chosen option.",
-        }),
+          steps: [
+            "Notice one familiar situation with two competing uses for the same time or materials.",
+            "Compare what each option offers and what choosing it would give up.",
+            "Put the safer more useful option into action during a normal routine.",
+            "Compare the observed result with what the other option might have provided.",
+            "Improve your decision rule and record what you genuinely noticed.",
+          ],
+          materials: ["Existing time or safe materials"],
+          evidence: "Explain the two options, which was tried, and the observed outcome.",
+          safety: commonSafety,
+        },
+      },
+      steps: [
+        "Notice one familiar situation with two competing uses for the same time or materials.",
+        "Compare what each option offers and what choosing it would give up.",
+        "Put the safer more useful option into action during a normal routine.",
+        "Compare the observed result with what the other option might have provided.",
+        "Improve your decision rule and record what you genuinely noticed.",
+      ],
+    }),
     stage(3, {
       code: "budgeting",
       title: "Budgeting in naira",
@@ -122,7 +161,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 03 — Use a budget check",
           outcome: "Use a hypothetical ₦5,000 budget to improve a real no-spend planning conversation or routine.",
-        }),
+          steps: [
+            "Choose a familiar safe planning situation, or work privately with a trusted caregiver.",
+            "Allocate a hypothetical ₦5,000 to essentials, optional items and a small reserve.",
+            "Put the budget-check method into use when reviewing a normal choice about existing resources.",
+            "Check that the amounts add up and compare the choice with the available limit.",
+            "Improve one allocation after the check and record what changed in the decision.",
+          ],
+          materials: ["Existing notebook or device if available"],
+          evidence: "Record the hypothetical categories and one real decision improved by the check; no purchases required.",
+          safety: commonSafety,
+        },
+      },
+      steps: [
+        "Choose a familiar safe planning situation, or work privately with a trusted caregiver.",
+        "Allocate a hypothetical ₦5,000 to essentials, optional items and a small reserve.",
+        "Put the budget-check method into use when reviewing a normal choice about existing resources.",
+        "Check that the amounts add up and compare the choice with the available limit.",
+        "Improve one allocation after the check and record what changed in the decision.",
+      ],
+    }),
     stage(4, {
       code: "saving",
       title: "Saving and protecting resources",
@@ -147,7 +205,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 04 — Protect a resource",
           outcome: "Try a real no-spend saving habit and compare its effect on a resource you already use.",
-        }),
+          steps: [
+            "Choose a familiar resource such as available phone data, paper or electricity use.",
+            "Identify one safe way to reduce waste without denying essential needs.",
+            "Put the no-spend saving routine into use during one ordinary activity.",
+            "Check how the activity went compared with the previous routine.",
+            "Improve the habit and record what changed without claiming money was saved.",
+          ],
+          materials: ["Existing routine or safe household supplies"],
+          evidence: "Describe your resource-saving action, a real comparison and one next improvement.",
+          safety: commonSafety,
+        },
+      },
+      steps: [
+        "Choose a familiar resource such as available phone data, paper or electricity use.",
+        "Identify one safe way to reduce waste without denying essential needs.",
+        "Put the no-spend saving routine into use during one ordinary activity.",
+        "Check how the activity went compared with the previous routine.",
+        "Improve the habit and record what changed without claiming money was saved.",
+      ],
+    }),
     stage(5, {
       code: "value_of_work",
       title: "The value of useful work",
@@ -172,7 +249,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 05 — Demonstrate useful value",
           outcome: "Help a familiar consenting person use a small practical skill with no payment or selling.",
-        }),
+          steps: [
+            "Ask a familiar consenting person which safe routine they would like to understand.",
+            "Choose a simple skill you already know that requires no purchase.",
+            "Teach the useful skill with one practical demonstration in a permitted setting.",
+            "Check whether the person can use the method and ask what was unclear.",
+            "Improve your explanation and record what genuinely became easier.",
+          ],
+          materials: ["Existing learning or household materials"],
+          evidence: "Describe the skill, the person's consent without naming them, the test and improvement.",
+          safety: commonSafety,
+        },
+      },
+      steps: [
+        "Ask a familiar consenting person which safe routine they would like to understand.",
+        "Choose a simple skill you already know that requires no purchase.",
+        "Teach the useful skill with one practical demonstration in a permitted setting.",
+        "Check whether the person can use the method and ask what was unclear.",
+        "Improve your explanation and record what genuinely became easier.",
+      ],
+    }),
     stage(6, {
       code: "honest_earning",
       title: "Honest value exchange",
@@ -197,7 +293,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 06 — Practise honest exchange",
           outcome: "Agree on and complete a clear, useful favour with consent, without exchanging money.",
-        }),
+          steps: [
+            "Choose a safe everyday task where someone familiar welcomes help.",
+            "Agree on the specific help, what is realistic and what is not promised.",
+            "Deliver the agreed helpful task using resources already available.",
+            "Check whether the result met the honest agreement and invite respectful feedback.",
+            "Improve how you explain commitments and record what really happened.",
+          ],
+          materials: ["Existing safe household or school items"],
+          evidence: "Describe the agreed help, actual delivery and fair feedback; no private identities.",
+          safety: commonSafety,
+        },
+      },
+      steps: [
+        "Choose a safe everyday task where someone familiar welcomes help.",
+        "Agree on the specific help, what is realistic and what is not promised.",
+        "Deliver the agreed helpful task using resources already available.",
+        "Check whether the result met the honest agreement and invite respectful feedback.",
+        "Improve how you explain commitments and record what really happened.",
+      ],
+    }),
     stage(7, {
       code: "cash_flow",
       title: "Cash-flow basics",
@@ -222,7 +337,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 07 — Check cash-flow timing",
           outcome: "Use a fictional timing check to improve a real resource-scheduling conversation or routine.",
-        }),
+          steps: [
+            "Choose a familiar planning routine with things needed now and things needed later.",
+            "Use hypothetical naira amounts to distinguish current resources from future commitments.",
+            "Put the due-first decision rule into use when organising the real routine.",
+            "Check whether the agreed order protects a task that must happen first.",
+            "Improve the sequence and record the actual routine result, not imaginary income.",
+          ],
+          materials: ["Existing calendar or planning materials"],
+          evidence: "Describe a real sequencing decision and what the fictional cash-flow check helped you notice.",
+          safety: commonSafety,
+        },
+      },
+      steps: [
+        "Choose a familiar planning routine with things needed now and things needed later.",
+        "Use hypothetical naira amounts to distinguish current resources from future commitments.",
+        "Put the due-first decision rule into use when organising the real routine.",
+        "Check whether the agreed order protects a task that must happen first.",
+        "Improve the sequence and record the actual routine result, not imaginary income.",
+      ],
+    }),
     stage(8, {
       code: "scam_awareness",
       title: "Spotting suspicious offers",
@@ -247,7 +381,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 08 — Use a scam-safety check",
           outcome: "Practise a no-click scam-safety check in an existing trusted learning activity.",
-        }),
+          steps: [
+            "Use a fictional suspicious offer from this pathway, not an unknown live message.",
+            "Notice pressure, secrecy, unrealistic rewards and requests for personal details.",
+            "Put a short stop-and-check habit into use while discussing the offer with a trusted person.",
+            "Check whether the routine identifies the risks without opening links or sending messages.",
+            "Improve your warning signs and record what you actually checked.",
+          ],
+          materials: ["This fictional offer", "Existing learning space"],
+          evidence: "Record the warning signs found and how the no-click check was used in conversation.",
+          safety: "Do not visit scam websites, contact senders, upload offers, send money or enter personal details.",
+        },
+      },
+      steps: [
+        "Use a fictional suspicious offer from this pathway, not an unknown live message.",
+        "Notice pressure, secrecy, unrealistic rewards and requests for personal details.",
+        "Put a short stop-and-check habit into use while discussing the offer with a trusted person.",
+        "Check whether the routine identifies the risks without opening links or sending messages.",
+        "Improve your warning signs and record what you actually checked.",
+      ],
+    }),
     stage(9, {
       code: "responsible_borrowing",
       title: "Borrowing decisions and risk",
@@ -272,7 +425,26 @@ export const financialIntelligencePathway = validateBuilderPathway({
         challenge: {
           title: "Financial Intelligence 09 — Practise a no-debt check",
           outcome: "Use a fictional repayment-risk checklist to improve one safe everyday planning routine.",
-        }),
+          steps: [
+            "Read the fictional city case; do not use a real bank or payment product.",
+            "Compare a low-risk scaled-down option with an option carrying future obligations.",
+            "Put a pause-and-review rule into use when making a no-spend planning decision.",
+            "Check whether the rule protects existing resources and avoids an unsupported promise.",
+            "Improve the review rule and record the decision and its actual effect.",
+          ],
+          materials: ["Existing personal planning tools"],
+          evidence: "Describe how a real no-spend decision changed after practising a fictional risk check.",
+          safety: "Educational practice only; no borrowing, loan applications, financial account details or personalised investment advice.",
+        },
+      },
+      steps: [
+        "Read the fictional city case; do not use a real bank or payment product.",
+        "Compare a low-risk scaled-down option with an option carrying future obligations.",
+        "Put a pause-and-review rule into use when making a no-spend planning decision.",
+        "Check whether the rule protects existing resources and avoids an unsupported promise.",
+        "Improve the review rule and record the decision and its actual effect.",
+      ],
+    }),
   ],
 });
 
