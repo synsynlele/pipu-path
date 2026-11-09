@@ -101,7 +101,7 @@ export function validateBuilderPathway<T extends BuilderPathway>(
   if (
     pathway.schemaVersion !== BUILDER_PATHWAY_SCHEMA_VERSION ||
     !builderIntelligenceCodes.includes(pathway.code) ||
-    !/^reviewed-\d{4}-\d{2}$/.test(pathway.humanReviewVersion) ||
+    !/^(?:candidate|reviewed)-\d{4}-\d{2}$/.test(pathway.humanReviewVersion) ||
     !/^fallback-v\d+$/.test(pathway.fallbackVersion) ||
     !pathway.stages.length
   )
