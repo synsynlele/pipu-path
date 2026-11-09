@@ -1,4 +1,5 @@
 import { BuildHero } from "@/modules/real-build/ui/build-hero";
+import { financialIntelligencePathway } from "@/modules/builder-intelligence/domain/financial-pathway";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -28,6 +29,9 @@ export default async function RealBuildPage({
   if (!detail) notFound();
   const { build, imageUrl, improvement } = detail;
   const retired = isRetiredPaperworkChallenge(build.challenge);
+  const financeQuest = financialIntelligencePathway.stages.some(
+    (stage) => stage.quest.challenge.title === build.challenge.title,
+  );
   return (
     <main id="main-content">
       <BuildHero
@@ -37,10 +41,10 @@ export default async function RealBuildPage({
       />
       <div className="journey-body">
         <Link
-          href="/real-quests"
+          href={financeQuest ? "/real-quests/finance" : "/real-quests"}
           className="inline-block py-3 text-sm font-bold"
         >
-          ← Real Quests
+          ← {financeQuest ? "Financial Intelligence" : "Real Quests"}
         </Link>
         <p className="mt-3 text-xs font-bold tracking-widest text-[#6347dc] uppercase">
           Level {build.difficulty}/5 · {difficultyLabel(build.difficulty)} ·{" "}
@@ -60,7 +64,7 @@ export default async function RealBuildPage({
             without losing any saved evidence.
           </p>
         ) : null}
-        {build.source === "reviewed" && build.status === "active" ? (
+        {build.source === "reviewed" && build.status === "active" && !financeQuest ? (
           <TailorReviewedButton id={build.id} />
         ) : null}
         <p className="mt-3 text-xs font-semibold text-[#77788e]">
@@ -164,10 +168,10 @@ export default async function RealBuildPage({
               <ImproveBuildForm id={build.id} draft={build.draft} />
             ) : null}
             <Link
-              href={`/real-quests?district=${encodeURIComponent(build.topic)}`}
+              href={financeQuest ? "/real-quests/finance" : `/real-quests?district=${encodeURIComponent(build.topic)}`}
               className="build-primary w-full"
             >
-              Start a new Quest →
+              {financeQuest ? "Continue financial pathway →" : "Start a new Quest →"}
             </Link>
             <p className="text-xs leading-5 text-[#77788e]">
               Start a separate solution with a new goal or topic. Your recorded
