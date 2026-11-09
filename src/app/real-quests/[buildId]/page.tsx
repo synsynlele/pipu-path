@@ -64,7 +64,9 @@ export default async function RealBuildPage({
             without losing any saved evidence.
           </p>
         ) : null}
-        {build.source === "reviewed" && build.status === "active" && !financeQuest ? (
+        {build.source === "reviewed" &&
+        build.status === "active" &&
+        !financeQuest ? (
           <TailorReviewedButton id={build.id} />
         ) : null}
         <p className="mt-3 text-xs font-semibold text-[#77788e]">
@@ -168,10 +170,16 @@ export default async function RealBuildPage({
               <ImproveBuildForm id={build.id} draft={build.draft} />
             ) : null}
             <Link
-              href={financeQuest ? "/real-quests/finance" : `/real-quests?district=${encodeURIComponent(build.topic)}`}
+              href={
+                financeQuest
+                  ? "/real-quests/finance"
+                  : `/real-quests?district=${encodeURIComponent(build.topic)}`
+              }
               className="build-primary w-full"
             >
-              {financeQuest ? "Continue financial pathway →" : "Start a new Quest →"}
+              {financeQuest
+                ? "Continue financial pathway →"
+                : "Start a new Quest →"}
             </Link>
             <p className="text-xs leading-5 text-[#77788e]">
               Start a separate solution with a new goal or topic. Your recorded
