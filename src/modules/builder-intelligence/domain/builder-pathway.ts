@@ -78,7 +78,9 @@ export function simulateCityFinancialDecision(
   stage: BuilderPathwayStage,
   choiceId: string,
 ) {
-  const choice = stage.city.choices.find((candidate) => candidate.id === choiceId);
+  const choice = stage.city.choices.find(
+    (candidate) => candidate.id === choiceId,
+  );
   if (!choice) return null;
   const remaining = stage.city.availableNaira - choice.cost;
   return {
@@ -93,14 +95,17 @@ export function simulateCityFinancialDecision(
  * Compile-time shape plus fail-closed runtime review of every curated pathway.
  * No user input or model output can become a catalog stage through this API.
  */
-export function validateBuilderPathway<T extends BuilderPathway>(pathway: T): T {
+export function validateBuilderPathway<T extends BuilderPathway>(
+  pathway: T,
+): T {
   if (
     pathway.schemaVersion !== BUILDER_PATHWAY_SCHEMA_VERSION ||
     !builderIntelligenceCodes.includes(pathway.code) ||
     !/^reviewed-\d{4}-\d{2}$/.test(pathway.humanReviewVersion) ||
     !/^fallback-v\d+$/.test(pathway.fallbackVersion) ||
     !pathway.stages.length
-  ) throw new Error("PATHWAY_CATALOG_INVALID");
+  )
+    throw new Error("PATHWAY_CATALOG_INVALID");
   const codes = new Set<string>();
   for (const [index, stage] of pathway.stages.entries()) {
     if (
@@ -114,22 +119,30 @@ export function validateBuilderPathway<T extends BuilderPathway>(pathway: T): T 
       stage.city.availableNaira < 0 ||
       !Number.isSafeInteger(stage.city.availableNaira) ||
       stage.city.choices.length < 2 ||
-      !stage.city.choices.every((item) =>
-        /^[a-z][a-z0-9_]+$/.test(item.id) &&
-        Number.isSafeInteger(item.cost) &&
-        item.cost >= 0 &&
-        item.consequence.trim().length >= 10 &&
-        item.tradeOff.trim().length >= 10
+      !stage.city.choices.every(
+        (item) =>
+          /^[a-z][a-z0-9_]+$/.test(item.id) &&
+          Number.isSafeInteger(item.cost) &&
+          item.cost >= 0 &&
+          item.consequence.trim().length >= 10 &&
+          item.tradeOff.trim().length >= 10,
       ) ||
-      new Set(stage.city.choices.map((item) => item.id)).size !== stage.city.choices.length ||
+      new Set(stage.city.choices.map((item) => item.id)).size !==
+        stage.city.choices.length ||
       stage.prerequisites.some((code) => !codes.has(code)) ||
-      stage.resources.some((item) => /(?:buy|payment|bank account|loan)/i.test(item))
-    ) throw new Error("PATHWAY_CATALOG_INVALID");
-    if (!choiceSchema.safeParse({
-      topic: stage.quest.topic,
-      minutes: stage.quest.minutes,
-      focus: stage.quest.focus,
-    }).success) throw new Error("PATHWAY_CATALOG_INVALID");
+      stage.resources.some((item) =>
+        /(?:buy|payment|bank account|loan)/i.test(item),
+      )
+    )
+      throw new Error("PATHWAY_CATALOG_INVALID");
+    if (
+      !choiceSchema.safeParse({
+        topic: stage.quest.topic,
+        minutes: stage.quest.minutes,
+        focus: stage.quest.focus,
+      }).success
+    )
+      throw new Error("PATHWAY_CATALOG_INVALID");
     validateChallenge(stage.quest.challenge);
     codes.add(stage.code);
   }
