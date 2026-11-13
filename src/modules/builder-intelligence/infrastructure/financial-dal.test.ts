@@ -41,10 +41,16 @@ it("uses authenticated owner-scoped, recorded and reviewed evidence only", async
     data: [
       {
         id: "private-attempt-1",
-        challenge: { title: "Financial Intelligence 01 — Put needs before wants" },
+        challenge: {
+          title: "Financial Intelligence 01 — Put needs before wants",
+        },
         recorded_at: "2026-11-11T10:00:00Z",
       },
-      { id: "other", challenge: { title: "Not a finance Quest" }, recorded_at: null },
+      {
+        id: "other",
+        challenge: { title: "Not a finance Quest" },
+        recorded_at: null,
+      },
     ],
     error: null,
   };

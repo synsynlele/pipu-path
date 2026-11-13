@@ -1,10 +1,7 @@
 import { expect, it } from "vitest";
 import catalog from "../../../../public/games/city/finance-scenarios.json";
 import { financialIntelligencePathway } from "./financial-pathway";
-import {
-  FINANCE_BRIDGE_STAGES,
-  isFinanceBridgeStage,
-} from "./finance-bridge";
+import { FINANCE_BRIDGE_STAGES, isFinanceBridgeStage } from "./finance-bridge";
 import {
   allowedFinancialScenario,
   evaluateFinancialCityChoice,
@@ -29,11 +26,21 @@ it("keeps the actual city catalogue identical to the reviewed candidate source",
 
 it("limits public practice to youngest-safe topics and adult-only risk to adults", () => {
   const scenarios = catalog.scenarios;
-  expect(scenarios.filter((item) => allowedFinancialScenario(item, "under_13"))).toHaveLength(6);
-  expect(scenarios.filter((item) => allowedFinancialScenario(item, "16_17"))).toHaveLength(8);
-  expect(scenarios.filter((item) => allowedFinancialScenario(item, "18_24"))).toHaveLength(9);
-  expect(scenarios.filter((item) => allowedFinancialScenario(item, "unknown"))).toHaveLength(0);
-  expect(scenarios.filter((item) => allowedFinancialScenario(item, ""))).toHaveLength(0);
+  expect(
+    scenarios.filter((item) => allowedFinancialScenario(item, "under_13")),
+  ).toHaveLength(6);
+  expect(
+    scenarios.filter((item) => allowedFinancialScenario(item, "16_17")),
+  ).toHaveLength(8);
+  expect(
+    scenarios.filter((item) => allowedFinancialScenario(item, "18_24")),
+  ).toHaveLength(9);
+  expect(
+    scenarios.filter((item) => allowedFinancialScenario(item, "unknown")),
+  ).toHaveLength(0);
+  expect(
+    scenarios.filter((item) => allowedFinancialScenario(item, "")),
+  ).toHaveLength(0);
   expect(isFinanceBridgeStage("budgeting")).toBe(true);
   expect(isFinanceBridgeStage("../portfolio")).toBe(false);
   expect(isFinanceBridgeStage({ code: "budgeting" })).toBe(false);

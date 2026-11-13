@@ -12,8 +12,13 @@ export function allowedFinancialScenario(scenario, ageBand) {
 export function evaluateFinancialCityChoice(scenario, choiceId) {
   if (!scenario || typeof choiceId !== "string") return null;
   const choice = scenario.choices?.find((item) => item.id === choiceId);
-  if (!choice || !Number.isSafeInteger(scenario.availableNaira) ||
-      !Number.isSafeInteger(choice.cost) || choice.cost < 0) return null;
+  if (
+    !choice ||
+    !Number.isSafeInteger(scenario.availableNaira) ||
+    !Number.isSafeInteger(choice.cost) ||
+    choice.cost < 0
+  )
+    return null;
   const remaining = scenario.availableNaira - choice.cost;
   return {
     remaining,
@@ -49,9 +54,10 @@ export function mountFinancialCityPractice({
     output.hidden = !result;
     if (!result) return;
     const heading = document.createElement("strong");
-    heading.textContent = result.shortfall > 0
-      ? "Shortfall: " + money(result.shortfall)
-      : "Remaining: " + money(result.remaining);
+    heading.textContent =
+      result.shortfall > 0
+        ? "Shortfall: " + money(result.shortfall)
+        : "Remaining: " + money(result.remaining);
     const consequence = document.createElement("p");
     consequence.textContent = result.consequence;
     const tradeOff = document.createElement("p");
@@ -84,8 +90,10 @@ export function mountFinancialCityPractice({
         "Financial practice is not available for this age group.";
       return;
     }
-    byId("finance-message").textContent = "Optional city practice · " +
-      available.length + " age-appropriate topics · no payments";
+    byId("finance-message").textContent =
+      "Optional city practice · " +
+      available.length +
+      " age-appropriate topics · no payments";
     byId("finance-district").textContent =
       current.district.replaceAll("-", " ") + " district";
     byId("finance-story").textContent = current.scenario;
@@ -116,19 +124,28 @@ export function mountFinancialCityPractice({
     if (!loading) {
       loading = fetch(new URL("./finance-scenarios.json", import.meta.url), {
         cache: "force-cache",
-      }).then(async (response) => {
-        if (!response.ok) throw new Error("FINANCE_CATALOG_OFFLINE");
-        const data = await response.json();
-        if (data?.version !== CATALOG_VERSION ||
-            !Array.isArray(data.scenarios) || data.scenarios.length !== 9 ||
-            data.scenarios.some((scenario) =>
-              typeof scenario.code !== "string" ||
-              typeof scenario.scenario !== "string" ||
-              !Array.isArray(scenario.choices) ||
-              scenario.choices.length < 2
-            )) throw new Error("FINANCE_CATALOG_INVALID");
-        scenarios = data.scenarios;
-      }).finally(() => { loading = null; });
+      })
+        .then(async (response) => {
+          if (!response.ok) throw new Error("FINANCE_CATALOG_OFFLINE");
+          const data = await response.json();
+          if (
+            data?.version !== CATALOG_VERSION ||
+            !Array.isArray(data.scenarios) ||
+            data.scenarios.length !== 9 ||
+            data.scenarios.some(
+              (scenario) =>
+                typeof scenario.code !== "string" ||
+                typeof scenario.scenario !== "string" ||
+                !Array.isArray(scenario.choices) ||
+                scenario.choices.length < 2,
+            )
+          )
+            throw new Error("FINANCE_CATALOG_INVALID");
+          scenarios = data.scenarios;
+        })
+        .finally(() => {
+          loading = null;
+        });
     }
     return loading;
   }
@@ -173,6 +190,8 @@ export function mountFinancialCityPractice({
       choiceId = null;
       if (root.open && scenarios.length) render();
     },
-    close: () => { if (root.open) root.close(); },
+    close: () => {
+      if (root.open) root.close();
+    },
   };
 }

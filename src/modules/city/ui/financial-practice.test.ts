@@ -11,12 +11,16 @@ const originalFetch = globalThis.fetch;
 
 beforeEach(() => {
   const html = readFileSync("public/games/city/index.html", "utf8");
-  const dialog = html.match(/<dialog\s+id="finance-desk"[\s\S]*?<\/dialog>/)?.[0];
+  const dialog = html.match(
+    /<dialog\s+id="finance-desk"[\s\S]*?<\/dialog>/,
+  )?.[0];
   if (!dialog) throw new Error("Finance dialog missing from city");
   document.body.innerHTML = dialog;
   const element = document.querySelector("dialog")!;
   Object.defineProperty(element, "showModal", {
-    value: () => { element.open = true; },
+    value: () => {
+      element.open = true;
+    },
     configurable: true,
   });
   Object.defineProperty(element, "close", {
@@ -51,16 +55,34 @@ it("opens financial decisions over the existing city without writing game state"
   try {
     await practice.open();
     expect(beforeOpen).toHaveBeenCalledOnce();
-    expect(screen.getByRole("dialog", { name: "Make a thoughtful decision" })).toBeVisible();
-    expect(screen.getByLabelText("Choose a financial challenge")).toHaveValue("needs_wants");
-    expect(screen.getByLabelText("Choose a financial challenge").querySelectorAll("option")).toHaveLength(6);
-    fireEvent.click(screen.getByRole("button", { name: /Maintain essential water containers/ }));
+    expect(
+      screen.getByRole("dialog", { name: "Make a thoughtful decision" }),
+    ).toBeVisible();
+    expect(screen.getByLabelText("Choose a financial challenge")).toHaveValue(
+      "needs_wants",
+    );
+    expect(
+      screen
+        .getByLabelText("Choose a financial challenge")
+        .querySelectorAll("option"),
+    ).toHaveLength(6);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /Maintain essential water containers/,
+      }),
+    );
     expect(screen.getByText(/Remaining: ₦1,800/)).toBeVisible();
     expect(screen.getByText(/Fictional decision only/)).toBeVisible();
     expect(saved).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: /Take this learning into a real Quest/ }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /Take this learning into a real Quest/,
+      }),
+    );
     expect(handoff).toHaveBeenCalledWith("needs_wants");
-    fireEvent.click(screen.getByRole("button", { name: "Close financial practice" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Close financial practice" }),
+    );
     expect(close).toHaveBeenCalledOnce();
   } finally {
     saved.mockRestore();
@@ -83,21 +105,31 @@ it("enforces visible age eligibility while never unlocking server-protected real
   practice.setAgeBand("invalid");
   expect(select.querySelectorAll("option")).toHaveLength(6);
   expect(select).toHaveValue("needs_wants");
-  fireEvent.click(screen.getByRole("button", { name: /Take this learning into a real Quest/ }));
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: /Take this learning into a real Quest/,
+    }),
+  );
   expect(handoff).toHaveBeenCalledWith("needs_wants");
 });
 
 it("recovers from a failed static catalog fetch without clearing the city", async () => {
-  (globalThis.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("offline"));
+  (globalThis.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+    new Error("offline"),
+  );
   const practice = mountFinancialCityPractice({
     root: document.querySelector("dialog")!,
     onBeforeOpen: beforeOpen,
   });
   await practice.open();
   expect(screen.getByText(/could not load/)).toBeVisible();
-  fireEvent.click(screen.getByRole("button", { name: "Retry loading city practice" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Retry loading city practice" }),
+  );
   await vi.waitFor(() => {
-    expect(screen.getByLabelText("Choose a financial challenge")).toHaveValue("needs_wants");
+    expect(screen.getByLabelText("Choose a financial challenge")).toHaveValue(
+      "needs_wants",
+    );
   });
   expect(beforeOpen).toHaveBeenCalledTimes(2);
 });

@@ -83,15 +83,20 @@ export default async function PortfolioPage() {
           My practical finance attempts
         </h2>
         <p className="text-muted mt-2 text-sm leading-6">
-          These are your private, self-reported Real-World Quest attempts.
-          They are not independently verified skills, completed formal Projects,
-          or material approved for public Portfolio sharing.
+          These are your private, self-reported Real-World Quest attempts. They
+          are not independently verified skills, completed formal Projects, or
+          material approved for public Portfolio sharing.
         </p>
         {financeEvidence.length ? (
           <ul className="mt-4 grid gap-2 sm:grid-cols-2">
             {financeEvidence.map((attempt) => (
-              <li key={attempt.id} className="border-border rounded-xl border p-3">
-                <p className="text-navy text-sm font-semibold">{attempt.stageTitle}</p>
+              <li
+                key={attempt.id}
+                className="border-border rounded-xl border p-3"
+              >
+                <p className="text-navy text-sm font-semibold">
+                  {attempt.stageTitle}
+                </p>
                 <p className="text-muted mt-1 text-xs">
                   Attempt recorded · Private reflection preserved
                 </p>
@@ -111,7 +116,11 @@ export default async function PortfolioPage() {
             no-spend activity and keep an honest account of what happened.
           </p>
         )}
-        <ButtonLink href="/real-quests/finance" variant="secondary" className="mt-4">
+        <ButtonLink
+          href="/real-quests/finance"
+          variant="secondary"
+          className="mt-4"
+        >
           Explore Financial Intelligence →
         </ButtonLink>
       </section>

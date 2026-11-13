@@ -76,7 +76,9 @@ export async function getPrivateFinancialAttemptSummaries() {
       recordedAt: row.recorded_at,
     }))
     .filter(
-      (row): row is { id: string; stageTitle: string; recordedAt: string | null } =>
+      (
+        row,
+      ): row is { id: string; stageTitle: string; recordedAt: string | null } =>
         Boolean(row.stageTitle),
     );
 }

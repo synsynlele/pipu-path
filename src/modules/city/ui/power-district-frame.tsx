@@ -103,7 +103,10 @@ export function PowerDistrictFrame({
       if (data.type === "pipupath:city:state") {
         if (!financeAgeSent.current && frameRef.current?.contentWindow) {
           frameRef.current.contentWindow.postMessage(
-            { type: "pipupath:city:finance-age", ageBand: financeAgeBand ?? "under_13" },
+            {
+              type: "pipupath:city:finance-age",
+              ageBand: financeAgeBand ?? "under_13",
+            },
             window.location.origin,
           );
           financeAgeSent.current = true;
@@ -164,7 +167,8 @@ export function PowerDistrictFrame({
   }, []);
 
   function questHrefWithDistrict() {
-    if (financeStage) return "/real-quests/finance?stage=" + encodeURIComponent(financeStage);
+    if (financeStage)
+      return "/real-quests/finance?stage=" + encodeURIComponent(financeStage);
     if (!questHref.startsWith("/real-quests")) return questHref;
     const url = new URL(questHref, window.location.origin);
     if (district) url.searchParams.set("district", district);

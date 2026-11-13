@@ -11,7 +11,11 @@ export const FINANCE_BRIDGE_STAGES = [
   "responsible_borrowing",
 ] as const;
 
-export function isFinanceBridgeStage(value: unknown): value is (typeof FINANCE_BRIDGE_STAGES)[number] {
-  return typeof value === "string" &&
-    (FINANCE_BRIDGE_STAGES as readonly string[]).includes(value);
+export function isFinanceBridgeStage(
+  value: unknown,
+): value is (typeof FINANCE_BRIDGE_STAGES)[number] {
+  return (
+    typeof value === "string" &&
+    (FINANCE_BRIDGE_STAGES as readonly string[]).includes(value)
+  );
 }

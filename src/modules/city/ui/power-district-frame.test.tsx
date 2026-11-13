@@ -318,7 +318,11 @@ describe("City to Quest handoff", () => {
     const frame = screen.getByTitle(
       "The Unbuilt City · 14 connected districts",
     ) as HTMLIFrameElement;
-    const send = (origin: string, source: MessageEventSource | null, stage: unknown) =>
+    const send = (
+      origin: string,
+      source: MessageEventSource | null,
+      stage: unknown,
+    ) =>
       fireEvent(
         window,
         new MessageEvent("message", {
@@ -373,5 +377,4 @@ describe("City to Quest handoff", () => {
       postMessage.mockRestore();
     }
   });
-
 });
