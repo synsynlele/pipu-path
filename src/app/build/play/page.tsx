@@ -12,7 +12,11 @@ export default async function CityPage() {
     <UnbuiltCityExperience
       questHref="/real-quests"
       questLabel="Real Quests →"
-      financeAgeBand={identity.profile.age_band}
+      financeAgeBand={
+        identity.profile.age_band === "unknown"
+          ? undefined
+          : identity.profile.age_band
+      }
       cloudEligible
     />
   );
