@@ -10,8 +10,15 @@ export const metadata: Metadata = {
 };
 export const dynamic = "force-dynamic";
 
-export default async function FinancePage() {
-  const state = await getFinancialPathwayState();
+export default async function FinancePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ stage?: string }>;
+}) {
+  const [state, params] = await Promise.all([
+    getFinancialPathwayState(),
+    searchParams,
+  ]);
   return (
     <main id="main-content">
       <BuildHero
@@ -27,7 +34,7 @@ export default async function FinancePage() {
           ← Real Quests
         </Link>
       </div>
-      <FinancialPathwayExperience {...state} />
+      <FinancialPathwayExperience {...state} initialStageCode={params.stage} />
     </main>
   );
 }
