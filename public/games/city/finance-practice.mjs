@@ -152,6 +152,7 @@ export function mountFinancialCityPractice({
 
   async function open() {
     onBeforeOpen();
+    document.body.classList.add("city-finance-open");
     if (!root.open) root.showModal();
     byId("finance-content").hidden = true;
     byId("finance-retry").hidden = true;
@@ -182,7 +183,10 @@ export function mountFinancialCityPractice({
     if (eligible().some((item) => item.code === selectedCode))
       onRealQuest(selectedCode);
   });
-  root.addEventListener("close", onClose);
+  root.addEventListener("close", () => {
+    document.body.classList.remove("city-finance-open");
+    onClose();
+  });
   return {
     open,
     setAgeBand(value) {
