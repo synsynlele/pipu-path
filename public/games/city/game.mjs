@@ -8,6 +8,7 @@ import { emptyOperations, operationsActivity } from "./facility-operations.mjs";
 import { mountFacilityDesk } from "./facility-ui.mjs";
 import { createCityDevelopmentScene } from "./city-development-scene.mjs";
 import { createScreenAwake } from "./screen-awake.mjs";
+import { mountFinancialCityPractice } from "./finance-practice.mjs";
 import { chapterMenuItems } from "./chapter-menu.mjs";
 import { emptyBuilderRewards } from "./builder-rewards.mjs";
 import { createBuilderCosmetics } from "./builder-cosmetics.mjs";
@@ -1854,6 +1855,7 @@ function focusedPuzzle() {
   return (
     $("build-lab").open ||
     $("facility-desk").open ||
+    $("finance-desk").open ||
     (document.body.classList.contains("advanced-configuring") &&
       (innerWidth <= 760 || innerHeight <= 520))
   );
@@ -1871,6 +1873,10 @@ puzzleObserver.observe($("build-lab"), {
   attributeFilter: ["open"],
 });
 puzzleObserver.observe($("facility-desk"), {
+  attributes: true,
+  attributeFilter: ["open"],
+});
+puzzleObserver.observe($("finance-desk"), {
   attributes: true,
   attributeFilter: ["open"],
 });
@@ -1909,6 +1915,10 @@ function reportParentState() {
 window.addEventListener("message", (event) => {
   if (event.source !== window.parent || event.origin !== window.location.origin)
     return;
+  if (event.data?.type === "pipupath:city:finance-age") {
+    financeDesk.setAgeBand(event.data.ageBand);
+    return;
+  }
   if (event.data?.type === "pipupath:city:chrome") {
     const height = event.data.height;
     if (
@@ -4603,6 +4613,37 @@ const facilityDesk = mountFacilityDesk({
 });
 $("menu-facilities").onclick = () =>
   facilityDesk.open(getCase(journey.caseId)?.district ?? "workshop");
+const financeDesk = mountFinancialCityPractice({
+  root: $("finance-desk"),
+  onBeforeOpen: () => {
+    pauseJourney("Paused while you practise a financial choice.");
+    cancelAutoAdvance();
+    cancelWalk();
+    keys.clear();
+    $("city-menu").open = false;
+    closeCasebook();
+    closeCityStatus();
+    closeDirectory();
+    closeOpportunityPanel();
+    closeResiliencePanel();
+    serviceDesk.close();
+  },
+  onClose: () => {
+    $("menu-finance").focus({ preventScroll: true });
+    reportParentState();
+  },
+  onRealQuest: (stage) => {
+    if (window.parent === window) {
+      window.location.assign("/real-quests/finance?stage=" + encodeURIComponent(stage));
+    } else {
+      window.parent.postMessage(
+        { type: "pipupath:city:finance-quest", stage },
+        window.location.origin,
+      );
+    }
+  },
+});
+$("menu-finance").onclick = () => financeDesk.open();
 facilityDesk.settings();
 updateSaveHealth();
 function continueCurrentChapter() {
