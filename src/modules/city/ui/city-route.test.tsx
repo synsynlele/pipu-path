@@ -8,7 +8,10 @@ beforeEach(() => {
   identity.mockReset();
 });
 it("opens the signed-in city with the current Real Quests handoff and account backup", async () => {
-  identity.mockResolvedValue({ user: { id: "owner" } });
+  identity.mockResolvedValue({
+    user: { id: "owner" },
+    profile: { age_band: "13_15" },
+  });
   const page = await CityPage();
   expect(identity).toHaveBeenCalledOnce();
   expect(page.props.questHref).toBe("/real-quests");
