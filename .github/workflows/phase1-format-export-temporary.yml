@@ -1,0 +1,30 @@
+name: Temporary Phase 1 read-only formatting export
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  format-export:
+    if: github.head_ref == 'agent/pipupath-phase1-financial-intelligence'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Format scoped Phase 1 sources without pushing
+        run: npm exec -- prettier --write "public/games/city/finance-practice.mjs" "public/games/city/game.mjs" "public/games/city/index.html" "src/app/portfolio/page.tsx" "src/modules/builder-intelligence/domain/finance-bridge.ts" "src/modules/builder-intelligence/domain/financial-city-bridge.test.ts" "src/modules/builder-intelligence/infrastructure/financial-dal.test.ts" "src/modules/builder-intelligence/infrastructure/financial-dal.ts" "src/modules/city/ui/financial-practice.test.ts" "src/modules/city/ui/power-district-frame.test.tsx" "src/modules/city/ui/power-district-frame.tsx"
+      - name: Export exact formatted public source
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const paths = ["public/games/city/finance-practice.mjs","public/games/city/game.mjs","public/games/city/index.html","src/app/portfolio/page.tsx","src/modules/builder-intelligence/domain/finance-bridge.ts","src/modules/builder-intelligence/domain/financial-city-bridge.test.ts","src/modules/builder-intelligence/infrastructure/financial-dal.test.ts","src/modules/builder-intelligence/infrastructure/financial-dal.ts","src/modules/city/ui/financial-practice.test.ts","src/modules/city/ui/power-district-frame.test.tsx","src/modules/city/ui/power-district-frame.tsx"];
+          for (const path of paths) {
+            console.log("PHASE1_FMT_FILE=" + JSON.stringify({path,content:fs.readFileSync(path,"utf8")}));
+          }
+          NODE
