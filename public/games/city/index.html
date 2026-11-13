@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="city-glass.css" />
     <link rel="stylesheet" href="facility-workshop.css" />
     <link rel="stylesheet" href="city-workspaces.css" />
+    <link rel="stylesheet" href="finance-practice.css" />
   </head>
   <body>
     <main id="game" aria-label="The Unbuilt City interactive world">
@@ -102,6 +103,14 @@
                     </button>
                     <button id="menu-facilities" type="button">
                       Operate a building · optional practice
+                    </button>
+                    <button
+                      id="menu-finance"
+                      type="button"
+                      aria-haspopup="dialog"
+                      aria-controls="finance-desk"
+                    >
+                      Financial choices · optional city practice
                     </button>
                     <details class="city-menu-subgroup">
                       <summary>City details</summary>
@@ -1489,6 +1498,46 @@
         </details>
         <button id="help-done" class="primary">Back to my city →</button>
         <p id="webgl-note"></p>
+      </dialog>
+      <dialog
+        id="finance-desk"
+        class="finance-city-desk"
+        aria-labelledby="finance-title"
+        aria-describedby="finance-introduction"
+      >
+        <div class="finance-desk-header">
+          <div>
+            <p class="finance-desk-kicker">FINANCIAL INTELLIGENCE · CITY PRACTICE</p>
+            <h2 id="finance-title">Make a thoughtful decision</h2>
+          </div>
+          <button id="finance-close" type="button" aria-label="Close financial practice">
+            ×
+          </button>
+        </div>
+        <p id="finance-introduction">
+          These are fictional city situations, not your money. Try alternatives
+          and see the trade-offs. Your existing city progress stays unchanged.
+        </p>
+        <p id="finance-message" role="status" aria-live="polite">
+          Opening financial decisions…
+        </p>
+        <div id="finance-content" hidden>
+          <label for="finance-stage">Choose a financial challenge</label>
+          <select id="finance-stage"></select>
+          <p id="finance-district" class="finance-desk-kicker"></p>
+          <p id="finance-story"></p>
+          <p id="finance-budget"></p>
+          <div id="finance-choices" role="group" aria-label="Your city decision"></div>
+          <div id="finance-result" role="status" aria-live="polite" hidden></div>
+          <button id="finance-real-quest" type="button" class="finance-to-quest">
+            Take this learning into a real Quest →
+          </button>
+          <p class="finance-desk-safety">
+            No spending, bank details, borrowing, game credits, XP or public
+            evidence. Save your city before leaving if you want to retain its progress.
+          </p>
+        </div>
+        <button id="finance-retry" type="button">Retry loading city practice</button>
       </dialog>
       <div id="loading">Opening the district…</div>
     </main>
