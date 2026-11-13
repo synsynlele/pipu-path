@@ -4634,9 +4634,10 @@ const financeDesk = mountFinancialCityPractice({
   },
   onRealQuest: (stage) => {
     if (window.parent === window) {
-      // Standalone static game has no Next router or parent handoff.
-      window.location.href =
-        "/real-quests/finance?stage=" + encodeURIComponent(stage);
+      // Standalone static game has no Next router. Use a native link.
+      const link = document.createElement("a");
+      link.href = "/real-quests/finance?stage=" + encodeURIComponent(stage);
+      link.click();
     } else {
       window.parent.postMessage(
         { type: "pipupath:city:finance-quest", stage },
