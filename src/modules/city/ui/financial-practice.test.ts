@@ -41,6 +41,7 @@ beforeEach(() => {
 
 afterEach(() => {
   globalThis.fetch = originalFetch;
+  document.body.classList.remove("city-finance-open");
   document.body.innerHTML = "";
 });
 
@@ -55,6 +56,7 @@ it("opens financial decisions over the existing city without writing game state"
   try {
     await practice.open();
     expect(beforeOpen).toHaveBeenCalledOnce();
+    expect(document.body).toHaveClass("city-finance-open");
     expect(
       screen.getByRole("dialog", { name: "Make a thoughtful decision" }),
     ).toBeVisible();
@@ -84,6 +86,7 @@ it("opens financial decisions over the existing city without writing game state"
       screen.getByRole("button", { name: "Close financial practice" }),
     );
     expect(close).toHaveBeenCalledOnce();
+    expect(document.body).not.toHaveClass("city-finance-open");
   } finally {
     saved.mockRestore();
   }
