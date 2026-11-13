@@ -41,3 +41,42 @@ export async function getFinancialPathwayState() {
       : null,
   };
 }
+
+/**
+ * Private read-only Vault bridge. Deliberately does not create a Project,
+ * copy evidence, open minor public publishing or certify a skill.
+ */
+export async function getPrivateFinancialAttemptSummaries() {
+  const { user } = await requireAuthenticatedIdentity();
+  const client = await buildServerClient();
+  const titles = financialIntelligencePathway.stages.map(
+    (stage) => stage.quest.challenge.title,
+  );
+  const { data, error } = await client
+    .from("real_build_attempts")
+    .select("id,challenge,recorded_at")
+    .eq("user_id", user.id)
+    .eq("status", "recorded")
+    .eq("source", "reviewed")
+    .in("challenge->>title", titles)
+    .order("recorded_at", { ascending: false })
+    .limit(12);
+  if (error) throw new Error("FINANCIAL_PRIVATE_EVIDENCE_LOAD_FAILED");
+
+  const byTitle = new Map(
+    financialIntelligencePathway.stages.map((stage) => [
+      stage.quest.challenge.title,
+      stage.title,
+    ]),
+  );
+  return (data ?? [])
+    .map((row) => ({
+      id: row.id,
+      stageTitle: byTitle.get(row.challenge.title),
+      recordedAt: row.recorded_at,
+    }))
+    .filter(
+      (row): row is { id: string; stageTitle: string; recordedAt: string | null } =>
+        Boolean(row.stageTitle),
+    );
+}
