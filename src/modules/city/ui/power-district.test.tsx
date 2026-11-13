@@ -38,7 +38,10 @@ it("keeps the same city in permanent focus even after Escape", () => {
 it("requires an account and hands the city off to the current Real Quests flow", async () => {
   mocks.identity.mockRejectedValueOnce(new Error("AUTH_REQUIRED"));
   await expect(PowerDistrictPage()).rejects.toThrow("AUTH_REQUIRED");
-  mocks.identity.mockResolvedValue({ user: { id: "owner" } });
+  mocks.identity.mockResolvedValue({
+    user: { id: "owner" },
+    profile: { age_band: "16_17" },
+  });
   const page = await PowerDistrictPage();
   expect(page.props.questHref).toBe("/real-quests");
   render(

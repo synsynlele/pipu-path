@@ -334,6 +334,26 @@ export default async function JourneyPage() {
         </div>
       </section>
 
+      <Surface className="mt-6 p-5 sm:p-6">
+        <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+          OPTIONAL PRACTICAL PATHWAY
+        </p>
+        <h2 className="text-navy mt-2 text-xl font-semibold">
+          Financial Intelligence
+        </h2>
+        <p className="text-muted mt-2 text-sm leading-6">
+          Explore sensible choices in a fictional city, then try safe, reviewed
+          no-spend actions. This is optional and does not replace your current
+          Journey.
+        </p>
+        <ButtonLink
+          href="/real-quests/finance"
+          variant="secondary"
+          className="mt-4"
+        >
+          Explore finance pathway →
+        </ButtonLink>
+      </Surface>
       {!context ? (
         <Surface className="mt-6 p-6 sm:p-8">
           <p className="text-primary text-xs font-semibold tracking-wide uppercase">

@@ -311,4 +311,70 @@ describe("City to Quest handoff", () => {
     );
     expect(push).toHaveBeenCalledWith("/real-quests?district=transport");
   });
+  it("accepts finance handoffs only from the same-origin mounted city and a known stage", () => {
+    render(
+      <PowerDistrictFrame questHref="/real-quests" questLabel="Real Quests" />,
+    );
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    ) as HTMLIFrameElement;
+    const send = (
+      origin: string,
+      source: MessageEventSource | null,
+      stage: unknown,
+    ) =>
+      fireEvent(
+        window,
+        new MessageEvent("message", {
+          origin,
+          source,
+          data: { type: "pipupath:city:finance-quest", stage },
+        }),
+      );
+    send("https://untrusted.example", frame.contentWindow, "budgeting");
+    send(window.location.origin, window, "budgeting");
+    send(window.location.origin, frame.contentWindow, "/admin");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    send(window.location.origin, frame.contentWindow, "budgeting");
+    expect(
+      screen.getByRole("dialog", { name: "Continue to a real Quest" }),
+    ).toBeVisible();
+    expect(push).not.toHaveBeenCalled();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Continue without saving" }),
+    );
+    expect(push).toHaveBeenCalledWith("/real-quests/finance?stage=budgeting");
+  });
+
+  it("sends only age-band guidance to the city and never treats it as Quest access", () => {
+    render(
+      <PowerDistrictFrame
+        questHref="/real-quests"
+        questLabel="Real Quests"
+        financeAgeBand="16_17"
+      />,
+    );
+    const frame = screen.getByTitle(
+      "The Unbuilt City · 14 connected districts",
+    ) as HTMLIFrameElement;
+    const postMessage = vi.spyOn(frame.contentWindow!, "postMessage");
+    try {
+      fireEvent(
+        window,
+        new MessageEvent("message", {
+          origin: window.location.origin,
+          source: frame.contentWindow,
+          data: { type: "pipupath:city:state", entered: true, saved: false },
+        }),
+      );
+      expect(postMessage).toHaveBeenCalledWith(
+        { type: "pipupath:city:finance-age", ageBand: "16_17" },
+        window.location.origin,
+      );
+      expect(push).not.toHaveBeenCalled();
+    } finally {
+      postMessage.mockRestore();
+    }
+  });
 });

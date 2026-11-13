@@ -1,0 +1,171 @@
+/* Financial practice is an optional transparent city workspace, not a new game layer. */
+#finance-desk {
+  position: fixed;
+  inset: auto 0 max(12px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  width: min(720px, calc(100vw - 20px));
+  max-width: none;
+  max-height: min(78dvh, 720px);
+  overflow-y: auto;
+  margin: 0 auto;
+  padding: 18px;
+  border: 2px solid #d2b584;
+  border-radius: 24px;
+  background: rgba(254, 250, 239, 0.95);
+  color: #172b40;
+  color-scheme: light;
+  box-shadow: 0 12px 36px rgba(7, 29, 44, 0.26);
+  backdrop-filter: blur(8px);
+}
+#finance-desk::backdrop {
+  background: transparent;
+}
+#finance-desk .finance-desk-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+#finance-desk h2 {
+  margin: 5px 0 0;
+  font-size: clamp(19px, 4vw, 24px);
+  line-height: 1.25;
+  color: #172b40;
+}
+#finance-desk p {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #263d50;
+}
+#finance-desk .finance-desk-kicker {
+  color: #635020;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+#finance-desk button,
+#finance-desk select {
+  box-sizing: border-box;
+  min-height: 48px;
+  border: 1px solid #9caec2;
+  border-radius: 12px;
+  background: #fff;
+  color: #142c44;
+  font-size: 15px;
+  -webkit-text-fill-color: #142c44;
+}
+#finance-desk button {
+  cursor: pointer;
+  padding: 11px 14px;
+  font-weight: 700;
+}
+#finance-desk #finance-close {
+  min-width: 48px;
+  font-size: 26px;
+}
+#finance-desk label {
+  display: block;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 750;
+}
+#finance-desk select {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  appearance: auto;
+}
+#finance-desk select option {
+  background: #fff;
+  color: #142c44;
+  -webkit-text-fill-color: #142c44;
+}
+#finance-desk #finance-budget {
+  padding: 10px 12px;
+  border: 1px solid #9bc4af;
+  border-radius: 12px;
+  background: #e9f5ed;
+  color: #15452b;
+  font-weight: 800;
+}
+#finance-desk #finance-choices {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+#finance-desk #finance-choices .finance-option {
+  width: 100%;
+  text-align: left;
+}
+#finance-desk .finance-option[aria-pressed="true"] {
+  border: 2px solid #3d6a53;
+  background: #e1f2e9;
+}
+#finance-desk #finance-result {
+  padding: 10px 13px;
+  margin-top: 12px;
+  border: 1px solid #b6bfd5;
+  border-radius: 14px;
+  background: #f3f6fc;
+}
+#finance-desk #finance-result strong {
+  font-weight: 800;
+}
+#finance-desk #finance-result p {
+  margin: 6px 0;
+}
+#finance-desk #finance-result small {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+#finance-desk #finance-real-quest {
+  width: 100%;
+  margin-top: 14px;
+  border-color: #2c5f46;
+  background: #2c5f46;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+}
+#finance-desk #finance-retry {
+  margin-top: 8px;
+}
+#finance-desk .finance-desk-safety {
+  font-size: 12px;
+}
+#finance-desk :focus-visible {
+  outline: 3px solid #456ed5;
+  outline-offset: 3px;
+}
+@media (max-width: 520px) {
+  #finance-desk {
+    max-height: min(78dvh, 670px);
+    padding: 14px;
+    border-radius: 18px;
+  }
+}
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  #finance-desk {
+    background: #fff;
+    backdrop-filter: none;
+  }
+}
+
+/* Do not show city questions or celebrations underneath a readable practice workspace. */
+body.city-finance-open #detail,
+body.city-finance-open #mission,
+body.city-finance-open #pilot-mission,
+body.city-finance-open #build-victory,
+body.city-finance-open #world-feedback,
+body.city-finance-open #opportunities-panel,
+body.city-finance-open #resilience-panel,
+body.city-finance-open #service-panel,
+body.city-finance-open #build-dock,
+body.city-finance-open #travel {
+  visibility: hidden !important;
+}

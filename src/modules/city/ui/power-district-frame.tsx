@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { CityCloudControls } from "./city-cloud-controls";
+import type { AgeBand } from "@/modules/identity/domain/identity";
+import { isFinanceBridgeStage } from "@/modules/builder-intelligence/domain/finance-bridge";
 
 /** One mounted full-viewport 3D city. The player exits through explicit navigation. */
 export function PowerDistrictFrame({
@@ -11,11 +13,13 @@ export function PowerDistrictFrame({
   questLabel,
   welcome = false,
   cloudEligible = false,
+  financeAgeBand,
 }: {
   questHref: string;
   questLabel: string;
   welcome?: boolean;
   cloudEligible?: boolean;
+  financeAgeBand?: AgeBand;
 }) {
   const router = useRouter();
   const [entered, setEntered] = useState(!welcome);
@@ -26,6 +30,8 @@ export function PowerDistrictFrame({
   const [problem, setProblem] = useState("");
   const [backupSlot, setBackupSlot] = useState<HTMLElement | null>(null);
   const [puzzleFocused, setPuzzleFocused] = useState(false);
+  const [financeStage, setFinanceStage] = useState<string | null>(null);
+  const financeAgeSent = useRef(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const controlsRef = useRef<HTMLDivElement>(null);
   const syncControlsHeight = useCallback(() => {
@@ -95,6 +101,16 @@ export function PowerDistrictFrame({
       const data = event.data;
       if (!data || typeof data !== "object") return;
       if (data.type === "pipupath:city:state") {
+        if (!financeAgeSent.current && frameRef.current?.contentWindow) {
+          frameRef.current.contentWindow.postMessage(
+            {
+              type: "pipupath:city:finance-age",
+              ageBand: financeAgeBand ?? "under_13",
+            },
+            window.location.origin,
+          );
+          financeAgeSent.current = true;
+        }
         setSaved(data.saved === true);
         if (typeof data.entered === "boolean") setEntered(data.entered);
         if (typeof data.focusedPuzzle === "boolean")
@@ -113,6 +129,13 @@ export function PowerDistrictFrame({
         )
           setService(data.service);
         else if (data.service === null) setService(null);
+      }
+      if (data.type === "pipupath:city:finance-quest") {
+        if (!isFinanceBridgeStage(data.stage)) return;
+        setFinanceStage(data.stage);
+        setProblem("");
+        setHandoff(true);
+        return;
       }
       if (data.type === "pipupath:city:saved" && saving.current) {
         saving.current = false;
@@ -144,6 +167,8 @@ export function PowerDistrictFrame({
   }, []);
 
   function questHrefWithDistrict() {
+    if (financeStage)
+      return "/real-quests/finance?stage=" + encodeURIComponent(financeStage);
     if (!questHref.startsWith("/real-quests")) return questHref;
     const url = new URL(questHref, window.location.origin);
     if (district) url.searchParams.set("district", district);
@@ -152,6 +177,7 @@ export function PowerDistrictFrame({
   }
 
   function navigate() {
+    setFinanceStage(null);
     setProblem("");
     setHandoff(true);
   }
@@ -222,6 +248,7 @@ export function PowerDistrictFrame({
         title="The Unbuilt City · 14 connected districts"
         src="/games/city/index.html?embedded=1"
         onLoad={() => {
+          financeAgeSent.current = false;
           setBackupSlot(
             frameRef.current?.contentDocument?.getElementById(
               "account-backup-slot",
@@ -244,6 +271,7 @@ export function PowerDistrictFrame({
           onCancel={() => {
             saving.current = false;
             setHandoff(false);
+            setFinanceStage(null);
             setProblem("");
           }}
           className="fixed inset-0 m-auto max-h-[90svh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-3xl border-0 bg-[#ffffff] p-0 backdrop:bg-[#08162d]/80"

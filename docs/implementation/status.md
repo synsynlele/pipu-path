@@ -1,5 +1,9 @@
 # Implementation status
 
+## 9 November 2026 — PipuPath Phase 1 Financial Intelligence (isolated review branch)
+
+Established a reusable versioned Builder Intelligence contract and curated nine age-graded Financial Intelligence stages with fictional Nigerian-naira city trade-offs and zero-cost real-world reviewed actions. Stage work uses the existing Real Build template, actor-owned attempt, evidence and reflection lifecycle; original Discovery, Mission/Journey, 3D city engine, camera, game saves, Projects/Portfolio and guardian authorisation remain unchanged. Stage gating and age rules are applied server-side, and city decisions do not count as XP or proof. The pathway is linked from Journey and Real Quests. The new branch is explicitly disabled in Vercel Git auto-deployment configuration. This is **not a released or validated product feature**. Exact branch CI, authenticated device and safeguards tests, full evidence-to-Portfolio continuity and review remain open. Details: `docs/implementation/pipupath-financial-intelligence-phase1.md`.
+
 ## 2 November 2026 — Dark-phone readability and exclusive celebration presentation
 
 User reported unreadable question text on dark-mode phones and question cards visible beneath transparent celebrations. The game now declares its deliberate light palette in both early HTML metadata and root CSS (`color-scheme: only light`) to opt out of automatic colour conversion while retaining the existing forced-colour accessibility rules. This follows the documented browser automatic-darkening opt-out; device/browser overrides that ignore that policy still require real-phone verification.

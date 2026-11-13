@@ -3,6 +3,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Surface } from "@/components/ui/surface";
 import { portfolioStatusLabel } from "@/modules/portfolio/domain/portfolio-contract";
 import { getPortfolioStudioState } from "@/modules/portfolio/infrastructure/portfolio-dal";
+import { getPrivateFinancialAttemptSummaries } from "@/modules/builder-intelligence/infrastructure/financial-dal";
 
 export const metadata: Metadata = {
   title: "Project Portfolio",
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PortfolioPage() {
-  const state = await getPortfolioStudioState();
+  const [state, financeEvidence] = await Promise.all([
+    getPortfolioStudioState(),
+    getPrivateFinancialAttemptSummaries(),
+  ]);
 
   return (
     <main
@@ -66,6 +70,60 @@ export default async function PortfolioPage() {
           Builder Passport
         </ButtonLink>
       </div>
+
+      <section
+        id="financial-private-evidence"
+        className="border-border bg-panel mt-6 rounded-2xl border p-5 sm:p-6"
+        aria-label="Private financial Quest attempts"
+      >
+        <p className="text-primary text-xs font-semibold tracking-wide uppercase">
+          FINANCIAL INTELLIGENCE · PRIVATE ONLY
+        </p>
+        <h2 className="text-navy mt-2 text-xl font-semibold">
+          My practical finance attempts
+        </h2>
+        <p className="text-muted mt-2 text-sm leading-6">
+          These are your private, self-reported Real-World Quest attempts. They
+          are not independently verified skills, completed formal Projects, or
+          material approved for public Portfolio sharing.
+        </p>
+        {financeEvidence.length ? (
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {financeEvidence.map((attempt) => (
+              <li
+                key={attempt.id}
+                className="border-border rounded-xl border p-3"
+              >
+                <p className="text-navy text-sm font-semibold">
+                  {attempt.stageTitle}
+                </p>
+                <p className="text-muted mt-1 text-xs">
+                  Attempt recorded · Private reflection preserved
+                </p>
+                <ButtonLink
+                  href={`/real-quests/${attempt.id}`}
+                  variant="secondary"
+                  className="mt-3"
+                >
+                  Review my attempt →
+                </ButtonLink>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-muted mt-3 text-sm">
+            No financial Quest attempts recorded yet. Start with a safe,
+            no-spend activity and keep an honest account of what happened.
+          </p>
+        )}
+        <ButtonLink
+          href="/real-quests/finance"
+          variant="secondary"
+          className="mt-4"
+        >
+          Explore Financial Intelligence →
+        </ButtonLink>
+      </section>
 
       {!state.adultEligible ? (
         <Surface className="border-gold/30 bg-gold/5 mt-6 p-6 sm:p-8">
