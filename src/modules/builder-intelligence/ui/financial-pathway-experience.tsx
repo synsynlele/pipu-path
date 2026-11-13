@@ -16,6 +16,7 @@ type Props = {
   ageBand: string;
   recordedCodes: string[];
   current: { id: string; title: string } | null;
+  initialStageCode?: string;
 };
 
 function formatNaira(value: number) {
@@ -30,6 +31,7 @@ export function FinancialPathwayExperience({
   ageBand,
   recordedCodes,
   current,
+  initialStageCode,
 }: Props) {
   const stages = financialIntelligencePathway.stages;
   const completed = new Set(recordedCodes);
@@ -40,7 +42,15 @@ export function FinancialPathwayExperience({
         !completed.has(stage.code) &&
         stage.prerequisites.every((code) => completed.has(code)),
     ) ?? stages[0];
-  const [selectedCode, setSelectedCode] = useState(firstAvailable.code);
+  const requested = stages.find(
+    (stage) =>
+      stage.code === initialStageCode &&
+      isStageAllowedForAge(stage, ageBand) &&
+      stage.prerequisites.every((code) => completed.has(code)),
+  );
+  const [selectedCode, setSelectedCode] = useState(
+    requested?.code ?? firstAvailable.code,
+  );
   const [decision, setDecision] = useState<string | null>(null);
   const [formState, formAction, pending] = useActionState(
     startFinancialQuestAction,
