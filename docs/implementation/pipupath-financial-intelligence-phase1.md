@@ -1,14 +1,14 @@
 # PipuPath — Phase 1 Financial Intelligence implementation
 
-**Status:** Isolated draft, awaiting CI, authenticated device testing and safeguarding/product-owner acceptance. **Do not merge or deploy.**  
+**Status:** Isolated draft, final CI for 13 November changes pending; authenticated device testing and safeguarding/product-owner acceptance remain required. **Do not merge or deploy.**  
 **Blueprint:** `PipuPath_Phases_1-4_Implementation_Blueprint.md` supplied 9 November 2026.  
 **Branch:** `agent/pipupath-phase1-financial-intelligence` (Vercel auto-deploy explicitly disabled).
 
 ## Gap analysis (existing architecture)
 
 - Stage 12 `economic-pathways` is **profile-linked possible careers/value creation**, not a practical financial-literacy curriculum. It must not be repurposed or discarded.
-- `journey`, `mission`, and historical HQLS `quest` retain their canonical lifecycles. This addition is an optional, reviewed action path linked from Journey and Real Quests.
-- The existing 3D city is a separate, stateful experience with camera, chapter save and resume logic. This phase **does not touch the 3D game's engine, iframe, camera or progress format**.
+- `journey`, `mission`, and historical HQLS `quest` retain their canonical lifecycles. This addition is an optional, curated action path linked from Journey and Real Quests.
+- The existing 3D city is a separate, stateful experience with camera, chapter save and resume logic. The new optional in-city practice panel is mounted within the existing 3D document and handoff; it **does not change the game engine, camera, chapters, saved decisions or progress format**.
 - `real-build` already provides reviewed/AI templates, owner-only attempt reads, an active-attempt uniqueness constraint, versioned evidence submission, signed private photos and recovery. Reuse it; do not create another user progress table.
 - `project` and `portfolio` are canonical project/selected proof surfaces. The phase provides opt-in links to them, but **does not falsely claim a Real Build attempt is automatically a published or independently verified portfolio artefact**.
 - `requireAuthenticatedIdentity()` checks onboarding completion and guardian authorization; all new mutations use it before service-role access. Unknown age bands are denied, and Stage 9 is adult-only.
@@ -20,13 +20,13 @@
 
 `financial-pathway.ts` curates 9 ordered competencies: needs/wants, opportunity cost, budget, saving, work value, honest exchange, cash flow, scam recognition and borrowing risk. Under-13 can use stages 1–6; ages 13–17 stages 1–8; adults all 9. An actual attempt requires the previous eligible stage's recorded real-world attempt, not a simulated city decision. Failure `not_yet` is a legitimate reported attempt, not a dead end or an invented success.
 
-Each city scenario presents a fictional resource constraint and at least two meaningful options with arithmetic consequences. These are **companion city-district simulations displayed in the Finance page**, not injected as 3D game campaign chapters. Their consequence feedback has no persistence or XP and is not evidence. Full in-world 3D scenario placement requires a separately tested gameplay integration gate and is not represented as completed here.
+Each city scenario presents a fictional resource constraint and at least two meaningful options with arithmetic consequences. These are optional city-district simulations displayed both in the Finance page and **within The Unbuilt City's existing optional Explore menu**. The in-world panel loads a static versioned scenario catalog, uses age-band guidance provided through the same-origin iframe, and shows arithmetic consequences over the still-visible city. It is not a new campaign chapter or an interactive 3D building, and it never writes player saves, credits, XP or private Quest evidence. The parent reuses the existing Save my city / Continue without saving choice when the player requests a real Quest. Game-day progress and camera remain unchanged.
 
 ## Authoritative persistence
 
-A reviewed financial Quest is inserted into **existing** `real_build_templates` and `real_build_attempts` with `source='reviewed'`, a stable versioned catalog title, owner `user_id` and the current Real Build draft/evidence schema. Read history through owner-filtered queries and the existing database RLS. Existing one-active-attempt uniqueness prevents double submission. Stage completion in the pathway means **a recorded self-report**, not audited financial competence, XP, capability verification or publication.
+A reviewed financial Quest is inserted into **existing** `real_build_templates` and `real_build_attempts` with `source='reviewed'`, a stable versioned catalog title, owner `user_id` and the current Real Build draft/evidence schema. Read history through owner-filtered queries and the existing database RLS. A read-only private finance-attempt summary now appears in the learner's authenticated Portfolio Vault and links back to the owned Real-World Quest detail, never a public proof URL. Formal Builder Project creation still requires its existing qualifying Journey Quest, and finance attempts do not bypass that requirement. Existing one-active-attempt uniqueness prevents double submission. Stage completion in the pathway means **a recorded self-report**, not audited financial competence, XP, capability verification or publication.
 
-No migration, new backend service, privileged client API, AI-provider call or automatic cross-product sharing is added.
+No migration, new backend service, privileged client API, AI-provider call or automatic cross-product sharing is added. The finance catalog remains marked **candidate-2026-11** until a human reviewer approves it; `source='reviewed'` reflects the database's existing curated-template category, not an independent safeguarding sign-off.
 
 ## Security and safety controls
 
@@ -40,12 +40,13 @@ No migration, new backend service, privileged client API, AI-provider call or au
 
 ## Test matrix / exit gates
 
-- [x] Catalog and action unit tests authored for age restrictions, safety, review version, budgeting math, no fabricated XP, duplicate-active guard and locked-stage rejection.
+- [x] Catalog, city UI, same-origin iframe, age guidance, private evidence and action tests authored for safety, arithmetic, no fictitious XP, duplicate-active guard, locked-stage rejection and offline retry.
 - [ ] Full `npm run validate` passing on the exact branch SHA (GitHub CI required).
 - [ ] Authenticated browser youth / guardian / educator role acceptance on a non-production environment.
 - [ ] Actual mobile portrait and Android navigation, low-bandwidth recovery and screen-reader review.
 - [ ] Real-build attempt recorded end to end and inspected as private evidence with active/recorded recovery.
-- [ ] Tested secure, useful Portfolio/Project evidence continuity (current change only provides explicit handoff links, no evidence import).
+- [x] Authenticated actor-only private Finance attempt summaries integrated into the existing Portfolio Vault without exposing narratives, and links lead back to owned Real Quest details; automated owner-scope and provenance tests written.
+- [ ] True conversion of Financial Real Build proof into a formal Builder Project remains a separate schema/RPC acceptance decision; the existing HQLS Quest source restriction is not bypassed.
 - [ ] Product-owner and independent safeguarding approval.
 - [ ] Controlled release approval, if any, with rollback and production SHA verification.
 
