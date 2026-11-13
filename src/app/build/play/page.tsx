@@ -7,11 +7,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 export default async function CityPage() {
-  await requireAuthenticatedIdentity();
+  const identity = await requireAuthenticatedIdentity();
   return (
     <UnbuiltCityExperience
       questHref="/real-quests"
       questLabel="Real Quests →"
+      financeAgeBand={identity.profile.age_band}
       cloudEligible
     />
   );
