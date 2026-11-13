@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { PowerDistrictFrame } from "./power-district-frame";
+import type { AgeBand } from "@/modules/identity/domain/identity";
 
 export function UnbuiltCityExperience({
   questTitle,
   outcome,
   cloudEligible = false,
+  financeAgeBand,
 }: {
   questHref?: string;
   questLabel?: string;
   questTitle?: string;
   outcome?: string;
   cloudEligible?: boolean;
+  financeAgeBand?: AgeBand;
 }) {
   return (
     <main
@@ -28,6 +31,7 @@ export function UnbuiltCityExperience({
           questHref="/real-quests"
           questLabel="Real Quests →"
           cloudEligible={cloudEligible}
+          financeAgeBand={financeAgeBand}
         />
         {questTitle ? (
           <section
