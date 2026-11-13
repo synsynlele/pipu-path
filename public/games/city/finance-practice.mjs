@@ -64,6 +64,7 @@ export function mountFinancialCityPractice({
 
   function render() {
     const available = eligible();
+    byId("finance-retry").hidden = true;
     if (!available.some((item) => item.code === selectedCode)) {
       selectedCode = available[0]?.code ?? "";
     }
@@ -136,6 +137,7 @@ export function mountFinancialCityPractice({
     onBeforeOpen();
     if (!root.open) root.showModal();
     byId("finance-content").hidden = true;
+    byId("finance-retry").hidden = true;
     byId("finance-message").textContent = "Opening financial decisions…";
     try {
       await loadCatalog();
@@ -145,6 +147,7 @@ export function mountFinancialCityPractice({
         byId("finance-message").textContent =
           "This optional practice could not load. Your city and saved progress are safe. Check your connection and try again.";
         byId("finance-content").hidden = true;
+        byId("finance-retry").hidden = false;
       }
     }
   }
