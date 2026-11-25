@@ -69,7 +69,8 @@ function parseStructuredOutput(payload: OpenAIResponsePayload) {
   }
 }
 
-function gpt5ReasoningEffort(model: string) {
+function structuredOutputReasoningEffort(model: string) {
+  if (/^gpt-6-luna(?:[.-]|$)/i.test(model)) return "none" as const;
   if (/^gpt-5-pro(?:[.-]|$)/i.test(model)) return null;
   if (/^gpt-5\.1(?:[.-]|$)/i.test(model)) return "low" as const;
   if (/^gpt-5(?:[.-]|$)/i.test(model)) return "minimal" as const;
@@ -109,7 +110,7 @@ async function requestOnce(input: {
 }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), input.timeoutMs);
-  const reasoningEffort = gpt5ReasoningEffort(input.model);
+  const reasoningEffort = structuredOutputReasoningEffort(input.model);
   const lowLatencyControls = reasoningEffort
     ? { reasoning: { effort: reasoningEffort } }
     : {};

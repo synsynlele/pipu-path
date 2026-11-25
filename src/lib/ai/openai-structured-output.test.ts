@@ -37,7 +37,7 @@ describe("OpenAI structured output client", () => {
     vi.clearAllMocks();
     requireOpenAIEnvironment.mockReturnValue({
       apiKey: "server-secret",
-      model: "gpt-5-mini",
+      model: "gpt-6-luna",
     });
   });
 
@@ -74,12 +74,11 @@ describe("OpenAI structured output client", () => {
       String(fetchMock.mock.calls[0]?.[1]?.body),
     ) as Record<string, unknown>;
     expect(request).toMatchObject({
-      model: "gpt-5-mini",
+      model: "gpt-6-luna",
       store: false,
       max_output_tokens: 100,
-      reasoning: { effort: "minimal" },
+      reasoning: { effort: "none" },
       text: {
-        verbosity: "low",
         format: {
           type: "json_schema",
           name: "test_result",
@@ -88,6 +87,7 @@ describe("OpenAI structured output client", () => {
         },
       },
     });
+    expect(request.text).not.toHaveProperty("verbosity");
   });
 
   it("uses GPT-5.1 compatible low reasoning when that model is configured", async () => {

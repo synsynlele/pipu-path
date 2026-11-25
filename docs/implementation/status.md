@@ -1,5 +1,14 @@
 # Implementation status
 
+## 2026-11-25 — GPT-6 Luna migration
+
+The shared OpenAI Responses client uses GPT-6 Luna by default for Discovery,
+Missions, Journeys, Quests, Real-World Build, Builder Guide and Economic
+Pathways. Luna uses reasoning effort `none` to keep the existing output budgets
+focused on generating the structured result. Explicit model overrides remain
+supported. Release requires setting `OPENAI_MODEL=gpt-6-luna` on Vercel for
+preview and production before building the new deployment.
+
 ## 2 November 2026 — Dark-phone readability and exclusive celebration presentation
 
 User reported unreadable question text on dark-mode phones and question cards visible beneath transparent celebrations. The game now declares its deliberate light palette in both early HTML metadata and root CSS (`color-scheme: only light`) to opt out of automatic colour conversion while retaining the existing forced-colour accessibility rules. This follows the documented browser automatic-darkening opt-out; device/browser overrides that ignore that policy still require real-phone verification.

@@ -2130,3 +2130,12 @@ User reported dark-mode question readability and overlapping celebration/questio
 ### Verification
 
 The existing actual reward/shop regression now checks all twelve celebrations, hidden/inert questions, exact visible/hidden state restoration, eleven non-final continuation callbacks, preserved campaign decisions and return from a paused shop to the same task. Focused regression and full `npm run validate` passed: formatting, zero-warning lint, types, game regressions, 656 coverage tests, 252 integration tests and production build. Browser QA checked the actual opening question in a 390 × 844 dark-preference iframe: the preference was dark, the game computed `light only`, and questions/choices remained readable. A temporary labelled UI fixture using the real reward module confirmed hidden/inert questions while the celebration owned the screen, then the same question and a single continuation after Continue. No test campaign progress was represented as real play. Physical-phone overrides remain unverified.
+
+## 2026-11-25 — GPT-6 Luna migration
+
+The shared OpenAI Responses client uses GPT-6 Luna by default for Discovery,
+Missions, Journeys, Quests, Real-World Build, Builder Guide and Economic
+Pathways. Luna uses reasoning effort `none` to keep the existing output budgets
+focused on generating the structured result. Explicit model overrides remain
+supported. Release requires setting `OPENAI_MODEL=gpt-6-luna` on Vercel for
+preview and production before building the new deployment.
