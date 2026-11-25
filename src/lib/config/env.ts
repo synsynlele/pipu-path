@@ -18,7 +18,7 @@ const publicSchema = z.object({
 const serverSchema = publicSchema.extend({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   OPENAI_API_KEY: z.string().min(1).optional(),
-  OPENAI_MODEL: z.string().min(1).default("gpt-5-mini"),
+  OPENAI_MODEL: z.string().min(1).default("gpt-6-luna"),
   GEMINI_API_KEY: z.string().min(1).optional(),
   GEMINI_MODEL: z.string().min(1).default("gemini-3.6-flash"),
 });

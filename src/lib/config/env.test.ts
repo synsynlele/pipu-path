@@ -67,6 +67,12 @@ describe("parseEnvironment", () => {
         OPENAI_MODEL: "gpt-5-mini",
       }),
     ).toEqual({ apiKey: "server-secret", model: "gpt-5-mini" });
+    expect(
+      requireOpenAIEnvironment({ OPENAI_API_KEY: "server-secret" }),
+    ).toEqual({
+      apiKey: "server-secret",
+      model: "gpt-6-luna",
+    });
     expect(() => requireOpenAIEnvironment({})).toThrow(
       "OpenAI server environment is not configured.",
     );
