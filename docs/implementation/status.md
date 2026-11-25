@@ -7,7 +7,8 @@ Missions, Journeys, Quests, Real-World Build, Builder Guide and Economic
 Pathways. Luna uses reasoning effort `none` to keep the existing output budgets
 focused on generating the structured result. Explicit model overrides remain
 supported. Release requires setting `OPENAI_MODEL=gpt-6-luna` on Vercel for
-preview and production before building the new deployment.
+preview and production before building the new deployment. Next.js and its
+ESLint config are patched to 16.4.5 after the build security check flagged 16.4.3.
 
 ## 2 November 2026 — Dark-phone readability and exclusive celebration presentation
 
