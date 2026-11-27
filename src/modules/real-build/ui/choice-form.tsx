@@ -67,9 +67,7 @@ export function BuildChoiceForm({
         if (step === 0) {
           const result = choiceSchema.safeParse(choice);
           if (!result.success) {
-            setMessage(
-              result.error.issues[0]?.message ?? "Check your problem.",
-            );
+            setMessage(result.error.issues[0]?.message ?? "Check your problem.");
             return;
           }
         }
@@ -189,7 +187,9 @@ export function BuildChoiceForm({
               </label>
               {inspirationProblem(topic) ? (
                 <>
-                  <p className="text-sm leading-6">{inspirationProblem(topic)}</p>
+                  <p className="text-sm leading-6">
+                    {inspirationProblem(topic)}
+                  </p>
                   <button
                     type="button"
                     className="w-full border border-[#b8cde6] bg-white text-[#5b3dd4]"
@@ -324,9 +324,7 @@ export function BuildChoiceForm({
             <dl className="mt-3 space-y-2">
               <div>
                 <dt className="font-bold">Direction</dt>
-                <dd>
-                  {questKinds[kind]} · {buildTopicLabel(topic)}
-                </dd>
+                <dd>{questKinds[kind]} · {buildTopicLabel(topic)}</dd>
               </div>
               <div>
                 <dt className="font-bold">Starting point</dt>
