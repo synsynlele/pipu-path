@@ -41,7 +41,8 @@ const recipes: Recipe[] = [
       ],
     ],
     measure: "Number of three comparable words explained without hints.",
-    safety: "Use suitable reading material and respect the partner's choice to stop.",
+    safety:
+      "Use suitable reading material and respect the partner's choice to stop.",
   },
   {
     match: /\b(?:save water|water conservation|reduce water waste|reduce wasted water)\b/i,
@@ -70,7 +71,8 @@ const recipes: Recipe[] = [
       ],
     ],
     measure: "Count unnecessary tap-running events per normal handwash.",
-    safety: "Do not repair taps or alter plumbing. Maintain normal handwashing hygiene.",
+    safety:
+      "Do not repair taps or alter plumbing. Maintain normal handwashing hygiene.",
   },
   {
     match: /\b(?:organise school supplies|organize school supplies|reduce lost supplies|classroom supplies)\b/i,
@@ -79,7 +81,8 @@ const recipes: Recipe[] = [
       "Test whether supplies are easier to find",
       "Improve the return station",
     ],
-    outcome: "A working storage routine that makes permitted shared supplies easier to find.",
+    outcome:
+      "A working storage routine that makes permitted shared supplies easier to find.",
     materials: ["Existing clean container or shelf", "Permitted safe supplies"],
     actions: [
       [
@@ -98,8 +101,10 @@ const recipes: Recipe[] = [
         "Compare the results and ask the responsible adult whether to keep the new arrangement.",
       ],
     ],
-    measure: "Places checked per item and items returned to the agreed location.",
-    safety: "Do not move valuable items, heavy objects or another person's belongings without permission.",
+    measure:
+      "Places checked per item and items returned to the agreed location.",
+    safety:
+      "Do not move valuable items, heavy objects or another person's belongings without permission.",
   },
   {
     match: /\b(?:reduce food waste|food waste reduction|prevent food waste)\b/i,
@@ -108,7 +113,8 @@ const recipes: Recipe[] = [
       "Test the first-use arrangement",
       "Improve the arrangement with a household adult",
     ],
-    outcome: "An adult-approved arrangement that makes existing packaged supplies easier to notice before they are forgotten.",
+    outcome:
+      "An adult-approved arrangement that makes existing packaged supplies easier to notice before they are forgotten.",
     materials: ["Existing safe unopened packages", "Permitted shelf"],
     actions: [
       [
@@ -128,7 +134,8 @@ const recipes: Recipe[] = [
       ],
     ],
     measure: "Number of selected packages visible without moving other items.",
-    safety: "Do not open packages, handle spoiled food or decide whether food is safe. Let the adult manage food storage and use.",
+    safety:
+      "Do not open packages, handle spoiled food or decide whether food is safe. Let the adult manage food storage and use.",
   },
   {
     match: /\b(?:daylight study|natural light|daylight workspace)\b/i,
@@ -137,7 +144,8 @@ const recipes: Recipe[] = [
       "Test the reading spot",
       "Improve the spot without electrical work",
     ],
-    outcome: "A familiar reading area with a tested improvement in ordinary daylight.",
+    outcome:
+      "A familiar reading area with a tested improvement in ordinary daylight.",
     materials: ["Existing book", "Safe permitted reading space"],
     actions: [
       [
@@ -157,7 +165,8 @@ const recipes: Recipe[] = [
       ],
     ],
     measure: "Book or seat adjustments during the same short reading task.",
-    safety: "Do not touch electrical fittings or move heavy furniture. Avoid direct glare and keep exits clear.",
+    safety:
+      "Do not touch electrical fittings or move heavy furniture. Avoid direct glare and keep exits clear.",
   },
   {
     match: /\b(?:reduce study interruptions|study focus|study distractions)\b/i,
@@ -166,7 +175,8 @@ const recipes: Recipe[] = [
       "Test the focus routine",
       "Improve the routine with a partner",
     ],
-    outcome: "A useful distraction-reduction routine that a consenting familiar person can also try.",
+    outcome:
+      "A useful distraction-reduction routine that a consenting familiar person can also try.",
     materials: ["Existing study material", "Clock if already available"],
     actions: [
       [
@@ -186,7 +196,8 @@ const recipes: Recipe[] = [
       ],
     ],
     measure: "Number of interruptions during comparable short study tasks.",
-    safety: "Do not block urgent communication or impose the routine on anyone. Take normal breaks.",
+    safety:
+      "Do not block urgent communication or impose the routine on anyone. Take normal breaks.",
   },
 ];
 
@@ -195,8 +206,9 @@ export function buildYouthPracticalPack(
 ): QuestPackOutput | null {
   if (!context.isMinor) return null;
   // Narrow matching avoids replacing an unrelated or research-only milestone.
-  if (/\b(?:research|investigate|understand|observe|learn about)\b/i.test(context.milestoneTitle))
-    return null;
+  const discoveryOnly =
+    /\b(?:research|investigate|understand|observe|learn about)\b/i;
+  if (discoveryOnly.test(context.milestoneTitle)) return null;
   const recipe = recipes.find((item) => item.match.test(context.milestoneTitle));
   if (!recipe) return null;
   const safety =
