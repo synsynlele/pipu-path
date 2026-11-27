@@ -67,7 +67,7 @@ export function BuildChoiceForm({
         if (step === 0) {
           const result = choiceSchema.safeParse(choice);
           if (!result.success) {
-            setMessage(result.error.issues[0]?.message ?? "Check your problem.");
+            setMessage(result.error.issues[0]?.message ?? "Check your goal.");
             return;
           }
         }
@@ -348,8 +348,7 @@ export function BuildChoiceForm({
           </p>
           <p className="text-xs leading-5 text-[#77788e]">
             <strong>
-              Your improvement goal, age group and selected answers are sent to
-              AI.
+              Your goal, age group and selected answers are sent to AI.
             </strong>{" "}
             Your account identity, saved evidence, photos and reflections are
             not sent. A matching, validated AI Quest may be reused. Generated
