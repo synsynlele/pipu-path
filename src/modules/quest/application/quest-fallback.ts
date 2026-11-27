@@ -1,9 +1,12 @@
 import type { QuestContext, QuestPackOutput } from "../domain/quest-contract";
+import { buildYouthPracticalPack } from "../domain/youth-practical-quests";
 
 /** No external AI or private history: use only the approved milestone. */
 export function buildEvidenceBasedQuestPack(
   context: QuestContext,
 ): QuestPackOutput {
+  const practical = buildYouthPracticalPack(context);
+  if (practical) return practical;
   const focus = context.milestoneTitle.replace(/\s+/g, " ").trim().slice(0, 85);
   const outcome = context.milestoneExpectedOutcome.trim().slice(0, 180);
   const topic = `${context.milestoneTitle} ${context.milestonePurpose}`;

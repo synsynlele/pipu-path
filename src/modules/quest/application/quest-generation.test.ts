@@ -58,10 +58,22 @@ const quest = (sequence_order: number) => ({
   why_it_matters: "This tests the milestone through practical action.",
   estimated_minutes: 60,
   action_steps: [
-    "Choose one small result.",
-    "Carry out the action with trusted people.",
-    "Record what happened honestly.",
-  ],
+    [
+      "Ask a familiar learner which example is difficult.",
+      "Try the example together using existing materials.",
+      "Record the actual difficulty without names.",
+    ],
+    [
+      "Explain the difficult example using a familiar object.",
+      "Ask the learner to try one comparable example.",
+      "Compare the errors with the first attempt.",
+    ],
+    [
+      "Change the explanation based on the learner's errors.",
+      "Try the revised method with a consenting learner.",
+      "Record what changed and what still needs work.",
+    ],
+  ][sequence_order - 1],
   resources_needed: ["Notebook"],
   low_resource_alternative: "Use paper or a basic phone note.",
   evidence_requirements: ["Write what happened and what was created."],
@@ -109,7 +121,7 @@ describe("Stage 7 Quest generation orchestration", () => {
       "create_stage7_quest_request",
       expect.objectContaining({
         milestone_id_input: context.milestoneId,
-        prompt_version_input: "quest-plain-v2",
+        prompt_version_input: "problem-solving-v1",
       }),
     );
     expect(mocks.serviceRpc).toHaveBeenCalledWith(

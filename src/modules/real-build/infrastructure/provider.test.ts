@@ -180,3 +180,23 @@ it("uses explicitly supplied continuation context in initial and correction requ
     "continuation",
   );
 });
+
+it("uses the exact open-ended problem, safe audience and original discovery", async () => {
+  request.mockResolvedValue(draft);
+  const discovery = {
+    kind: "make",
+    setting: "home",
+    obstacle: "starting",
+    resources: "phone",
+  } as const;
+  const focus = "Create a focus tool that can help people in my family.";
+  const saved = await generateBuildTemplate(
+    { topic: "open", minutes: 30, focus, ageBand: "13_15", discovery },
+    [],
+  );
+  const brief = JSON.parse(request.mock.calls[0][0].prompt);
+  expect(brief.improvementGoal).toBe(focus);
+  expect(brief.builderAgeBand).toBe("13_15");
+  expect(brief).not.toHaveProperty("safeStartingIdea");
+  expect(saved.discoveryContext).toEqual(discovery);
+});

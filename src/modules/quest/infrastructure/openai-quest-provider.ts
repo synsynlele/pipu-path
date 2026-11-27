@@ -1,6 +1,7 @@
 import "server-only";
 
 import { builderLanguageInstructions } from "@/lib/ai/builder-language";
+import { questQualityInstructions } from "@/shared/domain/quest-quality";
 
 import { requestOpenAIStructuredOutput } from "@/lib/ai/openai-structured-output";
 import type { QuestContext } from "../domain/quest-contract";
@@ -76,6 +77,7 @@ const questPackResponseSchema = {
 function buildPrompt(input: { context: QuestContext }) {
   return [
     builderLanguageInstructions,
+    questQualityInstructions,
     "Create one private HQLS Quest pack with exactly three ordered real-world Quests for the available Journey milestone.",
     "HQLS means action, honest evidence, reflection and improvement. A Quest must produce a small real-world result, not a lesson plan, motivational statement or quiz.",
     "Make every Quest realistic in Nigeria or another low-resource setting, age-appropriate, safe and possible with little or no money.",

@@ -1,6 +1,10 @@
 import "server-only";
 
 import { requireOpenAIEnvironment } from "@/lib/config/env";
+import {
+  inspectJourneyQuestActions,
+  QUEST_QUALITY_VERSION,
+} from "@/shared/domain/quest-quality";
 import { createLogger } from "@/lib/observability/logger";
 import { requireAuthenticatedIdentity } from "@/modules/identity/infrastructure/identity-dal";
 import {
@@ -106,7 +110,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
     "create_stage7_quest_request",
     {
       milestone_id_input: context.milestoneId,
-      prompt_version_input: "quest-plain-v2",
+      prompt_version_input: QUEST_QUALITY_VERSION,
     },
   );
 
@@ -146,7 +150,19 @@ export async function generateCurrentQuestPack(): Promise<Result> {
       output = buildEvidenceBasedQuestPack(context);
     }
 
-    let validated = validateQuestPackForContext(context, output);
+    // Preserve the local guided path for minors. Apply the new quality
+    // gate only to newly generated external AI packs.
+    const validateGenerated = (value: unknown) => {
+      const result = validateQuestPackForContext(context, value);
+      if (
+        result.ok &&
+        generationMode === "openai" &&
+        inspectJourneyQuestActions(result.value.quests)
+      )
+        return { ok: false as const, code: "QUEST_OUTPUT_INVALID" as const };
+      return result;
+    };
+    let validated = validateGenerated(output);
     if (!validated.ok && generationMode === "openai") {
       logger.warn("quest_provider_output_rejected", {
         requestId,
@@ -158,7 +174,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
           { context },
           { issue: validated.code, timeoutMs: remainingMs },
         );
-        validated = validateQuestPackForContext(context, output);
+        validated = validateGenerated(output);
       }
     }
     if (!validated.ok) throw new Error(validated.code);

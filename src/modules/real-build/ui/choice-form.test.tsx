@@ -85,7 +85,7 @@ it("retains all discovery answers after generation failure and retries the same 
     resources: "none",
   });
   expect(
-    screen.getByText(/selected answers are sent to AI/),
+    screen.getByText(/selected answers are sent to\s+AI/),
   ).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Back" }));
   expect(screen.getByRole("radio", { name: "15 min" })).toBeChecked();
@@ -126,4 +126,38 @@ it("shows a spinner and blocks duplicate submissions while generating", async ()
     ),
   );
   expect(screen.queryByRole("status")).toBeNull();
+});
+
+it("lets a builder submit their own cross-domain problem without a topic", async () => {
+  start.mockResolvedValue({ ok: false, message: "Saved goal." });
+  render(<BuildChoiceForm />);
+  const goal = "Build an offline sign language learning tool for my family.";
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: goal } });
+  reachReview();
+  expect(
+    screen.getByRole("region", { name: "Your Quest brief" }),
+  ).toHaveTextContent(goal);
+  fireEvent.click(screen.getByRole("button", { name: "Create my Quest →" }));
+  await waitFor(() => expect(start).toHaveBeenCalledTimes(1));
+  const data = start.mock.calls[0][1] as FormData;
+  expect(data.get("topic")).toBe("open");
+  expect(data.get("focus")).toBe(goal);
+});
+
+it("offers inspiration without replacing the builder's original problem", () => {
+  render(<BuildChoiceForm />);
+  const goal = "Help family members share chores more fairly.";
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: goal } });
+  fireEvent.click(screen.getByRole("button", { name: "Discover a problem" }));
+  fireEvent.change(
+    screen.getByRole("combobox", {
+      name: "Choose the closest topic (optional)",
+    }),
+    { target: { value: "water" } },
+  );
+  expect(screen.getByRole("textbox")).toHaveValue(goal);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Use my own problem without a topic" }),
+  );
+  expect(screen.getByRole("textbox")).toHaveValue(goal);
 });

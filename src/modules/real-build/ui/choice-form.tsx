@@ -1,6 +1,12 @@
 "use client";
 import { useRef, useState, useTransition } from "react";
-import { buildTopics, choiceSchema } from "../domain/build";
+import {
+  buildTopicLabel,
+  buildTopics,
+  choiceSchema,
+  OPEN_QUEST_TOPIC,
+} from "../domain/build";
+import { inspirationProblem } from "../domain/inspiration-problems";
 import {
   questKinds,
   questSettings,
@@ -26,7 +32,8 @@ export function BuildChoiceForm({
 }) {
   const [step, setStep] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
-  const [topic, setTopic] = useState(initialTopic);
+  const [topic, setTopic] = useState(initialTopic || OPEN_QUEST_TOPIC);
+  const [showIdeas, setShowIdeas] = useState(Boolean(initialTopic));
   const [focus, setFocus] = useState(initialFocus);
   const [kind, setKind] = useState<QuestKind>("make");
   const [setting, setSetting] = useState("personal");
@@ -60,9 +67,7 @@ export function BuildChoiceForm({
         if (step === 0) {
           const result = choiceSchema.safeParse(choice);
           if (!result.success) {
-            setMessage(
-              result.error.issues[0]?.message ?? "Check your goal and topic.",
-            );
+            setMessage(result.error.issues[0]?.message ?? "Check your goal.");
             return;
           }
         }
@@ -129,7 +134,7 @@ export function BuildChoiceForm({
       {step === 0 ? (
         <>
           <label>
-            What exactly would you like to improve?
+            What problem do you want to solve, or what are you building?
             <textarea
               name="focus"
               required
@@ -139,30 +144,69 @@ export function BuildChoiceForm({
               value={focus}
               onChange={(event) => setFocus(event.target.value)}
               className="mt-2"
-              placeholder="For example: I want to spend less time scrolling on social media."
+              placeholder="For example: Goods keep running out at a shop I know. I want to build a way to track them."
             />
           </label>
           <p className="text-xs leading-5 text-[#77788e]">
-            Describe the change, without names, contact details or private
-            information.
+            Bring your own idea, invention or unfinished project. No topic is
+            required. Leave out names, contact details and private information.
           </p>
-          <label>
-            Choose the closest topic
-            <select
-              name="topic"
-              required
-              value={topic}
-              onChange={(event) => setTopic(event.target.value)}
-              className={selectClass}
+          <button
+            type="button"
+            aria-expanded={showIdeas}
+            className="w-full border border-[#b8cde6] bg-white text-[#5b3dd4]"
+            onClick={() => {
+              if (showIdeas) setTopic(OPEN_QUEST_TOPIC);
+              setShowIdeas(!showIdeas);
+            }}
+          >
+            {showIdeas
+              ? "Use my own problem without a topic"
+              : "Discover a problem"}
+          </button>
+          {showIdeas ? (
+            <section
+              aria-label="Optional problem inspiration"
+              className="space-y-3 rounded-xl border border-[#e2daf7] p-3"
             >
-              <option value="">Choose a topic</option>
-              {buildTopics.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          </label>
+              <label>
+                Choose the closest topic (optional)
+                <select
+                  name="topic"
+                  value={topic}
+                  onChange={(event) => setTopic(event.target.value)}
+                  className={selectClass}
+                >
+                  <option value={OPEN_QUEST_TOPIC}>Any problem</option>
+                  {buildTopics.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {inspirationProblem(topic) ? (
+                <>
+                  <p className="text-sm leading-6">
+                    {inspirationProblem(topic)}
+                  </p>
+                  <button
+                    type="button"
+                    className="w-full border border-[#b8cde6] bg-white text-[#5b3dd4]"
+                    onClick={() => setFocus(inspirationProblem(topic) ?? "")}
+                  >
+                    {focus.trim()
+                      ? "Replace my text with this suggestion"
+                      : "Use this suggested problem"}
+                  </button>
+                </>
+              ) : null}
+              <p className="text-xs leading-5 text-[#77788e]">
+                Suggestions are only inspiration. Your own words always guide
+                the Quest.
+              </p>
+            </section>
+          ) : null}
           <label>
             What kind of change is this?
             <select
@@ -280,10 +324,7 @@ export function BuildChoiceForm({
             <dl className="mt-3 space-y-2">
               <div>
                 <dt className="font-bold">Direction</dt>
-                <dd>
-                  {questKinds[kind]} ·{" "}
-                  {buildTopics.find((item) => item.id === topic)?.title}
-                </dd>
+                <dd>{questKinds[kind]} · {buildTopicLabel(topic)}</dd>
               </div>
               <div>
                 <dt className="font-bold">Starting point</dt>
@@ -307,7 +348,7 @@ export function BuildChoiceForm({
           </p>
           <p className="text-xs leading-5 text-[#77788e]">
             <strong>
-              Your improvement goal and selected answers are sent to AI.
+              Your goal, age group and selected answers are sent to AI.
             </strong>{" "}
             Your account identity, saved evidence, photos and reflections are
             not sent. A matching, validated AI Quest may be reused. Generated

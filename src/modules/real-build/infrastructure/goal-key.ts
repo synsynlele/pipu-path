@@ -22,6 +22,12 @@ export function buildGoalKey(choice: BuildChoice) {
       ])
     : "";
   return createHash("sha256")
-    .update(REAL_BUILD_CONTENT_VERSION + ":" + goal + context)
+    .update(
+      REAL_BUILD_CONTENT_VERSION +
+        ":" +
+        goal +
+        context +
+        (choice.ageBand ? ":age:" + choice.ageBand : ""),
+    )
     .digest("hex");
 }
