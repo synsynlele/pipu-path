@@ -45,7 +45,8 @@ const recipes: Recipe[] = [
       "Use suitable reading material and respect the partner's choice to stop.",
   },
   {
-    match: /\b(?:save water|water conservation|reduce water waste|reduce wasted water)\b/i,
+    match:
+      /\b(?:save water|water conservation|reduce water waste|reduce wasted water)\b/i,
     titles: [
       "Introduce a water-saving routine",
       "Compare the water-use routine",
@@ -75,7 +76,8 @@ const recipes: Recipe[] = [
       "Do not repair taps or alter plumbing. Maintain normal handwashing hygiene.",
   },
   {
-    match: /\b(?:organise school supplies|organize school supplies|reduce lost supplies|classroom supplies)\b/i,
+    match:
+      /\b(?:organise school supplies|organize school supplies|reduce lost supplies|classroom supplies)\b/i,
     titles: [
       "Set up a school supply return station",
       "Test whether supplies are easier to find",
@@ -209,7 +211,9 @@ export function buildYouthPracticalPack(
   const discoveryOnly =
     /\b(?:research|investigate|understand|observe|learn about)\b/i;
   if (discoveryOnly.test(context.milestoneTitle)) return null;
-  const recipe = recipes.find((item) => item.match.test(context.milestoneTitle));
+  const recipe = recipes.find((item) =>
+    item.match.test(context.milestoneTitle),
+  );
   if (!recipe) return null;
   const safety =
     "Ask a parent, guardian or teacher before involving others. Use a familiar permitted setting. " +

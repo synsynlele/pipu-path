@@ -211,3 +211,16 @@ it("recognises real cooking/service delivery and pilot tests beyond construction
     }),
   ).toBeTruthy();
 });
+
+it("accepts an unclassified problem and never substitutes a catalogue idea", () => {
+  const focus = "Create an offline sign language learning tool for my family.";
+  const choice = choiceSchema.parse({ focus, minutes: 30 });
+  expect(choice.topic).toBe("open");
+  const brief = publicChallengeBrief(choice, []);
+  expect(brief.improvementGoal).toBe(focus);
+  expect(brief.topic).toBe("Open-ended learner-defined problem");
+  expect(brief).not.toHaveProperty("safeStartingIdea");
+  expect(
+    choiceSchema.safeParse({ ...choice, ageBand: "25_plus" }).success,
+  ).toBe(false);
+});

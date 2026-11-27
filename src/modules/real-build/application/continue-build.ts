@@ -7,10 +7,15 @@ import {
   emptyDraft,
   isRetiredPaperworkChallenge,
   validateChallenge,
+  withBuilderAge,
 } from "../domain/build";
 import { continuationBrief } from "../domain/continuation";
 
-export async function continueBuildForUser(userId: string, previousId: string) {
+export async function continueBuildForUser(
+  userId: string,
+  previousId: string,
+  ageBand?: unknown,
+) {
   const service = buildServiceClient();
   const old = await service
     .from("real_build_attempts")
@@ -22,12 +27,18 @@ export async function continueBuildForUser(userId: string, previousId: string) {
   if (old.error || !old.data) throw new Error("BUILD_PREVIOUS_MISSING");
   if (isRetiredPaperworkChallenge(old.data.challenge))
     throw new Error("BUILD_RETIRED");
-  const choice = choiceSchema.parse({
-    topic: old.data.topic,
-    minutes: old.data.minutes,
-    focus: old.data.focus,
-  });
   const continuation = continuationBrief(old.data.challenge, old.data.draft);
+  const choice = withBuilderAge(
+    choiceSchema.parse({
+      topic: old.data.topic,
+      minutes: old.data.minutes,
+      focus: old.data.focus,
+      ...(continuation.previousSolution.discoveryContext
+        ? { discovery: continuation.previousSolution.discoveryContext }
+        : {}),
+    }),
+    ageBand,
+  );
   const current = await service
     .from("real_build_attempts")
     .select("id")

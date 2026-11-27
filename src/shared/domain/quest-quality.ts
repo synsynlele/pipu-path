@@ -4,7 +4,7 @@
 export const QUEST_QUALITY_VERSION = "problem-solving-v1";
 
 export const questQualityInstructions = [
-  "Develop a problem solver, not a task completer. Keep the user's real problem central. Identify who benefits, the cause or bottleneck to investigate, and an observable baseline.",
+  "Develop a problem solver, not a task completer. Keep the user's real problem central. Suggested categories and pathways never constrain an original idea. Identify who benefits, the cause or bottleneck to investigate, and an observable baseline.",
   "Choose a specific working tool, useful service or repeatable process. Supply actual setup values, examples, materials and words to use. Do not make the learner invent missing instructions.",
   "Adapt to the available resources and the learner's developmental level. Prefer no-cost, accessible work in familiar permitted settings; never assume a phone, electricity, internet, transport, money, coding skill or adult independence.",
   "Do not substitute a poster, survey, essay, presentation, simulated business or motivational advice for a working intervention. Genuine discovery is allowed when it directly informs a subsequent real action.",

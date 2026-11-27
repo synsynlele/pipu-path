@@ -24,10 +24,6 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Temporary Quest formatter diagnosis
-        run: |
-          npx prettier --write src/modules/real-build/domain/build.ts src/modules/quest/domain/youth-practical-quests.ts
-          git diff -- src/modules/real-build/domain/build.ts src/modules/quest/domain/youth-practical-quests.ts
       - run: npm run validate
 
   staging-e2e:

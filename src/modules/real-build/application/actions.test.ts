@@ -234,3 +234,24 @@ it("validates adaptive discovery at the server boundary and forwards only select
     },
   });
 });
+
+it("uses the authenticated age group, not a submitted age or topic", async () => {
+  m.auth.mockResolvedValue({
+    user: { id: "owner" },
+    profile: { age_band: "13_15" },
+  });
+  m.start.mockResolvedValue(id);
+  const request = new FormData();
+  request.set("focus", "Build a tool that helps my family learn sign language.");
+  request.set("minutes", "30");
+  request.set("ageBand", "25_plus");
+  await expect(
+    startRealBuild({ ok: false, message: "" }, request),
+  ).rejects.toThrow("REDIRECT");
+  expect(m.start).toHaveBeenCalledWith("owner", {
+    topic: "open",
+    focus: "Build a tool that helps my family learn sign language.",
+    minutes: 30,
+    ageBand: "13_15",
+  });
+});

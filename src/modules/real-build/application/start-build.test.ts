@@ -6,7 +6,7 @@ vi.mock("../infrastructure/provider", () => ({
 }));
 vi.mock("server-only", () => ({}));
 import { startBuildForUser } from "./start-build";
-import { createHash } from "node:crypto";
+import { buildGoalKey } from "../infrastructure/goal-key";
 const challenge = {
   title: "Introduce a working homework reminder",
   outcome: "Make one genuine homework reminder easier to follow.",
@@ -22,9 +22,7 @@ const choice = {
   minutes: 30,
   focus: "I want to help students track homework more clearly.",
 };
-const focusKey = createHash("sha256")
-  .update("solution-recipes-v6:" + choice.focus.toLowerCase())
-  .digest("hex");
+const focusKey = buildGoalKey(choice);
 const template = {
   id: "template",
   challenge,
@@ -231,7 +229,6 @@ it("creates and saves a tailored guide once, without adding discovery columns to
     obstacle: "automatic",
     resources: "phone",
   } as const;
-  const { buildGoalKey } = await import("../infrastructure/goal-key");
   const contextual = { ...choice, discovery };
   results = [
     { data: null },

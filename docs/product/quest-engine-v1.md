@@ -38,3 +38,19 @@ stored attempts, guardian requirements and the city remain unchanged.
   competence, and preserve legacy attempts.
 - Integrate the outstanding Financial Intelligence branch against current
   main only after the quality gate is accepted. Keep production untouched.
+
+## Open-ended problem discovery
+
+The default Real Quest starts from the builder's own words. No category is
+required. Optional inspiration can be selected or deliberately copied, but
+never silently changes the goal. City handoffs and existing categories still
+work. An open problem uses the neutral database topic `open`, which the
+existing text columns and difficulty function already support; no migration.
+
+The existing server-authenticated Real Quest route supplies only the age
+band to Luna, not identity details. Age band is included in the template key
+to avoid cross-age reuse. New generated recipes preserve validated discovery
+selections inside existing challenge JSON, and continuations reuse them.
+Legacy recipes remain readable. No widening of external AI access, and
+Journey Quests for minors continue using local generation. Independent
+review and staging device/model testing remain required.

@@ -19,7 +19,7 @@ it("opens compact Quest discovery without a profile or Mission prerequisite", as
     }),
   );
   expect(
-    screen.getByRole("combobox", { name: "Choose the closest topic" }),
+    screen.getByRole("combobox", { name: "Choose the closest topic (optional)" }),
   ).toHaveValue("school");
   expect(
     screen.getByRole("button", { name: "Continue →" }),
@@ -55,9 +55,10 @@ it("ignores unknown district values and requires authenticated state", async () 
       searchParams: Promise.resolve({ district: "private narrative" }),
     }),
   );
+  expect(screen.queryByRole("combobox", { name: /closest topic/ })).toBeNull();
   expect(
-    screen.getByRole("combobox", { name: "Choose the closest topic" }),
-  ).toHaveValue("");
+    screen.getByRole("button", { name: "Discover a problem" }),
+  ).toBeInTheDocument();
 });
 it("requires authenticated state before exposing personal work", async () => {
   home.mockRejectedValue(new Error("AUTH_REQUIRED"));

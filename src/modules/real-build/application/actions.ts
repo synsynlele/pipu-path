@@ -11,6 +11,8 @@ import {
   draftSchema,
   canRecordAttempt,
   validateChallenge,
+  withBuilderAge,
+  OPEN_QUEST_TOPIC,
 } from "../domain/build";
 import { buildServiceClient } from "../infrastructure/client";
 import { startBuildForUser } from "./start-build";
@@ -22,7 +24,7 @@ export async function tailorReviewedBuild(
   _previous: BuildFormState,
   form: FormData,
 ): Promise<BuildFormState> {
-  const { user } = await requireAuthenticatedIdentity();
+  const { user, profile } = await requireAuthenticatedIdentity();
   const id = z.uuid().safeParse(form.get("id"));
   if (!id.success)
     return { ok: false, message: "Open your saved Quest and try again." };
@@ -65,7 +67,8 @@ export async function tailorReviewedBuild(
       message:
         "This goal needs a fresh Quest. Set aside the starter and try again.",
     };
-  const focusKey = buildGoalKey(choice.data);
+  const scopedChoice = withBuilderAge(choice.data, profile?.age_band);
+  const focusKey = buildGoalKey(scopedChoice);
   const pool = await service
     .from("real_build_templates")
     .select("*")
@@ -106,7 +109,7 @@ export async function tailorReviewedBuild(
       };
     let challenge;
     try {
-      challenge = await generateBuildTemplate(choice.data, [], old.difficulty);
+      challenge = await generateBuildTemplate(scopedChoice, [], old.difficulty);
     } catch (error) {
       logger.warn("real_build_explicit_tailoring_failed", {
         code:
@@ -171,9 +174,9 @@ export async function startRealBuild(
   _previous: BuildFormState,
   form: FormData,
 ): Promise<BuildFormState> {
-  const { user } = await requireAuthenticatedIdentity();
+  const { user, profile } = await requireAuthenticatedIdentity();
   const choice = choiceSchema.safeParse({
-    topic: form.get("topic"),
+    topic: form.get("topic") ?? OPEN_QUEST_TOPIC,
     minutes: form.get("minutes"),
     focus: form.get("focus"),
     ...(form.has("kind")
@@ -191,11 +194,14 @@ export async function startRealBuild(
     return {
       ok: false,
       message:
-        "Choose a topic, explain what you want to improve and pick a time.",
+        "Explain the problem you want to solve and pick a time.",
     };
   let id: string;
   try {
-    id = await startBuildForUser(user.id, choice.data);
+    id = await startBuildForUser(
+      user.id,
+      withBuilderAge(choice.data, profile?.age_band),
+    );
   } catch (error) {
     const code = error instanceof Error ? error.message : "BUILD_UNKNOWN";
     logger.warn("real_build_start_failed", {
@@ -367,7 +373,7 @@ export async function improveRealBuild(
   _previous: BuildFormState,
   form: FormData,
 ): Promise<BuildFormState> {
-  const { user } = await requireAuthenticatedIdentity();
+  const { user, profile } = await requireAuthenticatedIdentity();
   const id = z.uuid().safeParse(form.get("id"));
   if (!id.success)
     return { ok: false, message: "Open your saved attempt and try again." };
@@ -379,7 +385,9 @@ export async function improveRealBuild(
     };
   let nextId: string;
   try {
-    nextId = await continueBuildForUser(user.id, id.data);
+    nextId = profile?.age_band
+      ? await continueBuildForUser(user.id, id.data, profile.age_band)
+      : await continueBuildForUser(user.id, id.data);
   } catch (error) {
     const code =
       error instanceof Error &&

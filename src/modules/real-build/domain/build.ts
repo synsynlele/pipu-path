@@ -3,8 +3,16 @@ import { discoverySchema, discoveryBrief } from "./discovery";
 import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
 import type { QuestQualityIssue } from "@/shared/domain/quest-quality";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
+import { ageBands, type AgeBand } from "@/modules/identity/domain/identity";
 
 export const buildTopics = cityInterests;
+export const OPEN_QUEST_TOPIC = "open";
+
+export function buildTopicLabel(topic: string) {
+  return (
+    buildTopics.find((item) => item.id === topic)?.title ?? "My own problem"
+  );
+}
 export const REAL_BUILD_CONTENT_VERSION = "solution-recipes-v7";
 export const focusSchema = z
   .string()
@@ -21,13 +29,26 @@ export const focusSchema = z
 
 export const choiceSchema = z
   .object({
-    topic: z.string().refine((v) => buildTopics.some((t) => t.id === v)),
+    topic: z
+      .string()
+      .refine(
+        (v) => v === OPEN_QUEST_TOPIC || buildTopics.some((t) => t.id === v),
+      )
+      .default(OPEN_QUEST_TOPIC),
     minutes: z.coerce.number().refine((v) => [15, 30, 60].includes(v)),
     focus: focusSchema,
     discovery: discoverySchema.optional(),
   })
   .strict();
-export type BuildChoice = z.infer<typeof choiceSchema>;
+// Audience is attached only by the authenticated server, never form input.
+export type BuildChoice = z.infer<typeof choiceSchema> & {
+  ageBand?: AgeBand;
+};
+
+export function withBuilderAge(choice: BuildChoice, age: unknown): BuildChoice {
+  const band = ageBands.find((value) => value === age);
+  return band ? { ...choice, ageBand: band } : choice;
+}
 
 export const difficultySchema = z.number().int().min(1).max(5);
 export type BuildDifficulty = 1 | 2 | 3 | 4 | 5;
@@ -74,6 +95,8 @@ export const challengeSchema = z
     materials: z.array(text(2, 80)).max(5),
     evidence: text(10, 300),
     safety: text(10, 300),
+    // Non-identifying discovery selections, copied by the server, not AI.
+    discoveryContext: discoverySchema.optional(),
   })
   .strict();
 export type BuildChallenge = z.infer<typeof challengeSchema>;
@@ -115,10 +138,7 @@ const planOnly =
 const practicalAction =
   /\b(?:build|set up|reorganis(?:e|ing)|reorganiz(?:e|ing)|organis(?:e|ing)|organiz(?:e|ing)|repair|fix|reuse|repurpose|run|deliver|plant|install|start|update|make|assemble|improve|change|label|sort|configure|create|teach|coach|launch|clean|collect|introduce|serve|put|arrange|implement|enable|activate|switch|turn on|place|position|add|move|schedule|connect|fit|secure|apply|wash|fill|remove|offer|share|invite|send|prepare|cook|bake|host|pair|pack|distribute|harvest|water|sew|stitch|weave|refill|weigh|demonstrate|guide|toggle)\b/i;
 type BuildPracticalityRule =
-  | "PAPER_ONLY"
-  | "NO_IMPLEMENTATION"
-  | "NO_REAL_TEST"
-  | QuestQualityIssue;
+  "PAPER_ONLY" | "NO_IMPLEMENTATION" | "NO_REAL_TEST" | QuestQualityIssue;
 export class BuildPracticalityError extends Error {
   constructor(
     readonly rule: BuildPracticalityRule,
@@ -189,14 +209,15 @@ export function publicChallengeBrief(
   difficulty: BuildDifficulty = 1,
 ) {
   // Only the disclosed goal, validated discovery options and public catalogue data.
-  const topic = buildTopics.find((t) => t.id === choice.topic)!;
+  const topic = buildTopics.find((t) => t.id === choice.topic);
   return {
-    topic: topic.title,
+    topic: topic?.title ?? "Open-ended learner-defined problem",
     improvementGoal: choice.focus,
     ...(choice.discovery
       ? { discovery: discoveryBrief(choice.discovery) }
       : {}),
-    safeStartingIdea: topic.idea,
+    ...(topic ? { safeStartingIdea: topic.idea } : {}),
+    ...(choice.ageBand ? { builderAgeBand: choice.ageBand } : {}),
     minutes: choice.minutes,
     difficulty,
     challengeDesign: difficultyGuides[difficulty].design,
