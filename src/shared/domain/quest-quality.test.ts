@@ -17,7 +17,7 @@ const scenarios = [
   ["accessibility", "clear reading corner"],
   ["waste", "clean reusable container station"],
   ["employment", "skill practice session"],
-  ["finance", "fictional purchase comparison"],
+  ["finance", "reuse-first supply routine"],
   ["leadership", "classroom duty rotation"],
   ["transport", "permitted indoor pickup queue"],
   ["technology", "offline appointment list"],

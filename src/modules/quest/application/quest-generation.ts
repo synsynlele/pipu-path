@@ -152,8 +152,8 @@ export async function generateCurrentQuestPack(): Promise<Result> {
 
     // Preserve the local guided path for minors. Apply the new quality
     // gate only to newly generated external AI packs.
-    function validateGenerated(value: unknown) {
-      const result = validateQuestPackForContext(context!, value);
+    const validateGenerated = (value: unknown) => {
+      const result = validateQuestPackForContext(context, value);
       if (
         result.ok &&
         generationMode === "openai" &&
@@ -161,7 +161,7 @@ export async function generateCurrentQuestPack(): Promise<Result> {
       )
         return { ok: false as const, code: "QUEST_OUTPUT_INVALID" as const };
       return result;
-    }
+    };
     let validated = validateGenerated(output);
     if (!validated.ok && generationMode === "openai") {
       logger.warn("quest_provider_output_rejected", {

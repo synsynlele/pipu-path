@@ -19,6 +19,9 @@ stored attempts, guardian requirements and the city remain unchanged.
 - External AI Journey packs reject duplicate action sequences and bare
   generic instructions before persistence. Youth local generation stays
   local; existing authorisation and AI allowances are unchanged.
+- Six candidate local youth recipes offer matched, concrete real-world trials
+  with no required AI or spending. Unmatched milestones retain the existing
+  guided path; the recipes require independent safeguarding review.
 - Twenty problem contexts with five deterministic checks each. These are
   adversarial structural regressions, not 100 live generation evaluations.
 
@@ -28,7 +31,7 @@ stored attempts, guardian requirements and the city remain unchanged.
   age, resource and domain constraints. Human reviewers must evaluate
   feasibility, relevance, safety and measurable outcomes; regex checks
   cannot establish those properties.
-- Review the local youth Quest library and replace shallow activities with
+- Review the candidate local youth recipes and extend coverage of remaining
   age-appropriate practical pathways without widening AI access.
 - Design versioned persistence of discovery constraints, checkpoints and
   evidence-based progression. Do not promote self-report into verified
