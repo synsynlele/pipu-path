@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { discoverySchema, discoveryBrief } from "./discovery";
 import { containsUnqualifiedClaim } from "@/shared/domain/safety-language";
+import type { QuestQualityIssue } from "@/shared/domain/quest-quality";
 import { cityInterests } from "@/modules/city/domain/city-inspiration";
 
 export const buildTopics = cityInterests;
-export const REAL_BUILD_CONTENT_VERSION = "solution-recipes-v6";
+export const REAL_BUILD_CONTENT_VERSION = "solution-recipes-v7";
 export const focusSchema = z
   .string()
   .trim()
@@ -115,7 +116,11 @@ const practicalAction =
   /\b(?:build|set up|reorganis(?:e|ing)|reorganiz(?:e|ing)|organis(?:e|ing)|organiz(?:e|ing)|repair|fix|reuse|repurpose|run|deliver|plant|install|start|update|make|assemble|improve|change|label|sort|configure|create|teach|coach|launch|clean|collect|introduce|serve|put|arrange|implement|enable|activate|switch|turn on|place|position|add|move|schedule|connect|fit|secure|apply|wash|fill|remove|offer|share|invite|send|prepare|cook|bake|host|pair|pack|distribute|harvest|water|sew|stitch|weave|refill|weigh|demonstrate|guide|toggle)\b/i;
 export class BuildPracticalityError extends Error {
   constructor(
-    readonly rule: "PAPER_ONLY" | "NO_IMPLEMENTATION" | "NO_REAL_TEST",
+    readonly rule:
+      | "PAPER_ONLY"
+      | "NO_IMPLEMENTATION"
+      | "NO_REAL_TEST"
+      | QuestQualityIssue,
     readonly field?: "title" | "steps.2",
   ) {
     super("BUILD_NOT_PRACTICAL");
