@@ -24,6 +24,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Temporary formatter diagnosis (draft only)
+        run: |
+          npx prettier --write src/modules/real-build/ui/choice-form.tsx
+          git diff -- src/modules/real-build/ui/choice-form.tsx
+          exit 1
       - run: npm run validate
 
   staging-e2e:
