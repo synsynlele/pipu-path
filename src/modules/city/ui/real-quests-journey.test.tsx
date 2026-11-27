@@ -19,7 +19,9 @@ it("opens compact Quest discovery without a profile or Mission prerequisite", as
     }),
   );
   expect(
-    screen.getByRole("combobox", { name: "Choose the closest topic (optional)" }),
+    screen.getByRole("combobox", {
+      name: "Choose the closest topic (optional)",
+    }),
   ).toHaveValue("school");
   expect(
     screen.getByRole("button", { name: "Continue →" }),

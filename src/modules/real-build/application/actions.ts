@@ -193,8 +193,7 @@ export async function startRealBuild(
   if (!choice.success)
     return {
       ok: false,
-      message:
-        "Explain the problem you want to solve and pick a time.",
+      message: "Explain the problem you want to solve and pick a time.",
     };
   let id: string;
   try {

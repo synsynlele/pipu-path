@@ -206,3 +206,29 @@ it("rechecks for a saved successor after acquiring the generation lease", async 
   ]);
   expect(calls).toContainEqual(["delete"]);
 });
+
+it("keeps the original open goal and resource constraints in a youth continuation", async () => {
+  const discovery = {
+    kind: "make",
+    setting: "home",
+    obstacle: "starting",
+    resources: "none",
+  } as const;
+  ready();
+  results[0] = {
+    data: {
+      ...old,
+      topic: "open",
+      challenge: { ...challenge, discoveryContext: discovery },
+    },
+  };
+  await expect(
+    continueBuildForUser("owner", "previous", "13_15"),
+  ).resolves.toBe("next");
+  expect(m.generate.mock.calls[0][0]).toMatchObject({
+    topic: "open",
+    focus: old.focus,
+    discovery,
+    ageBand: "13_15",
+  });
+});

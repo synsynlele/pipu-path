@@ -252,3 +252,13 @@ it("creates and saves a tailored guide once, without adding discovery columns to
   expect(insert.focus).toBe(choice.focus);
   expect(insert).not.toHaveProperty("discovery");
 });
+
+it("separates cached templates for the same problem across age groups", () => {
+  const open = { ...choice, topic: "open" };
+  expect(buildGoalKey({ ...open, ageBand: "under_13" })).not.toBe(
+    buildGoalKey({ ...open, ageBand: "25_plus" }),
+  );
+  expect(buildGoalKey(open)).not.toBe(
+    buildGoalKey({ ...open, ageBand: "under_13" }),
+  );
+});

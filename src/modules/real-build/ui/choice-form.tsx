@@ -162,7 +162,9 @@ export function BuildChoiceForm({
               setShowIdeas(!showIdeas);
             }}
           >
-            {showIdeas ? "Use my own problem without a topic" : "Discover a problem"}
+            {showIdeas
+              ? "Use my own problem without a topic"
+              : "Discover a problem"}
           </button>
           {showIdeas ? (
             <section
@@ -187,9 +189,7 @@ export function BuildChoiceForm({
               </label>
               {inspirationProblem(topic) ? (
                 <>
-                  <p className="text-sm leading-6">
-                    {inspirationProblem(topic)}
-                  </p>
+                  <p className="text-sm leading-6">{inspirationProblem(topic)}</p>
                   <button
                     type="button"
                     className="w-full border border-[#b8cde6] bg-white text-[#5b3dd4]"

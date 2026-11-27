@@ -242,7 +242,10 @@ it("uses the authenticated age group, not a submitted age or topic", async () =>
   });
   m.start.mockResolvedValue(id);
   const request = new FormData();
-  request.set("focus", "Build a tool that helps my family learn sign language.");
+  request.set(
+    "focus",
+    "Build a tool that helps my family learn sign language.",
+  );
   request.set("minutes", "30");
   request.set("ageBand", "25_plus");
   await expect(
